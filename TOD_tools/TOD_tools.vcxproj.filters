@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source files\KapowEngine">
+      <UniqueIdentifier>{d8108170-fd6b-406e-b404-2f344662c882}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header files\KapowEngine">
+      <UniqueIdentifier>{43dd2708-429d-40b1-ba35-3f9426f3895f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="KapowWindow.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryAllocators.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="KapowStringBuffer.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="KapowWindow.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryAllocators.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="KapowStringBuffer.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
