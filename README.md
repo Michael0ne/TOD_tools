@@ -6,3 +6,11 @@ This project includes:
 
 I'm using IDA Pro with HexRays decompiler and a lot of patience.
 If you would like to help - get in touch!
+
+# TODO:
+
+* Finish "KapowWindow" class since it's easiest one.
+* Begin to look into "MemoryAllocators" since it's the heaviest part.
+* Begin to look into scripting engine (game uses unknown-for-me TNT script language), entry point could be to figure out how game processes 'scriptdatabase.bin' file. Decompiled version is now present.
+* Since game resources are 'blocks' (fragments), write tool to see information about that kind of files.
+* ???
