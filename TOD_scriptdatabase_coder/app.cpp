@@ -3,49 +3,75 @@
 #include <iostream>
 #include <Windows.h>
 
-#define READ_BLOCK_SIZE 4
-
-//	Dunno what these are, really.
+//	Header.
 struct Database_Header {
-	int		m_nUnk1;
-	int		m_nUnk2;
+	unsigned int	m_nUnk1;	//	Probably unsigned int m_nEntriesTotal;
+};
+
+//	For each 'entry'.
+struct Database_Entry {
+	unsigned char	m_nLength;	//	How many characters to read?
+	char*			m_szEntry;	//	Actual string.
 };
 
 void processFile(FILE* filePtr)
 {
-	fseek(filePtr, 0, 0);
+	FILE* fileOutPtr = fopen("database.bin.txt", "w");
 
-	char*	buffer = nullptr;
-	long	currOffset = 0;
-	long	maxOffset = 0;
+	if (!fileOutPtr) {
+		printf("[ERROR] Could not create and open outer file!\n");
 
-	fseek(filePtr, 0, SEEK_END);
-	maxOffset = ftell(filePtr);
-	rewind(filePtr);
-
-	//	TODO: doesn't work!
-	while (currOffset < maxOffset) {
-		if (!buffer) buffer = (char*)malloc(READ_BLOCK_SIZE); else realloc(buffer, READ_BLOCK_SIZE);
-
-		fgets(buffer, READ_BLOCK_SIZE, filePtr);
-
-		currOffset = ftell(filePtr) + 1;
-
-		if (*buffer == (char)0 || *(buffer + (char)1) == (char)0 || *(buffer + (char)2) == (char)0 || *(buffer + (char)3) == (char)0) continue;
-
-		printf("[0x%x]\t%s\t|\t%x %x %x %x\n", currOffset, buffer, buffer[0], buffer[1], buffer[2], buffer[3]);
+		return;
 	}
 
-	if (buffer)
+	rewind(filePtr);
+	rewind(fileOutPtr);
+
+	//	Read header.
+	Database_Header	header;
+
+	fread(&header, sizeof(header), 1, filePtr);
+
+	//	Output header.
+	printf("[INFO]\tHeader is: %d\n", header.m_nUnk1);
+
+	unsigned int entriesFound = 0;
+
+	while (!feof(filePtr)) {
+		BYTE len = 0;
+		fread(&len, 1, 1, filePtr);
+		if (len == 0) continue;
+
+		char* buffer = (char*)malloc(len);
+		if (buffer == nullptr) continue;
+
+		fseek(filePtr, 3, SEEK_CUR);
+		fread(buffer, len, 1, filePtr);
+
+		printf("[0x%x]\t%s\n", ftell(filePtr), buffer);
+
+		fputs(buffer, fileOutPtr);
+		fputs("\n", fileOutPtr);
+
+		entriesFound++;
+
 		free(buffer);
+	}
+
+	printf("[INFO]\tFound: %d entries.\n", entriesFound);
+
+	fclose(fileOutPtr);
 }
 
 int main()
 {
 	FILE* hFile = fopen("database.bin", "rb");
 
-	if (!hFile)
+	if (!hFile) {
+		printf("[ERROR] Could not open input database file!\n");
+
 		return 0;
+	}
 	
 	processFile(hFile);
 
