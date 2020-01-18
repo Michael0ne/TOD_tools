@@ -99,7 +99,7 @@
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)updateBinkFile.bat" "$(SolutionDir)$(Configuration)\" "$(TargetFileName)" "$(TargetName).pdb"</Command>
+      <Command>call "$(SolutionDir)updateHookFile.bat" "$(SolutionDir)$(Configuration)\" "$(TargetFileName)" "$(TargetName).pdb"</Command>
       <Message>Copying dinput8 (dll and pdb) into game dir.</Message>
     </PostBuildEvent>
     <CustomBuildStep>
@@ -119,14 +119,16 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="KapowStringBuffer.h" />
+    <ClInclude Include="KapowFile.h" />
+    <ClInclude Include="KapowStringsPool.h" />
     <ClInclude Include="KapowWindow.h" />
     <ClInclude Include="MemoryAllocators.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="KapowStringBuffer.cpp" />
+    <ClCompile Include="KapowFile.cpp" />
+    <ClCompile Include="KapowStringsPool.cpp" />
     <ClCompile Include="KapowWindow.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>

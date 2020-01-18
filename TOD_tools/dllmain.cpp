@@ -183,6 +183,7 @@ void MemoryHook()
 	PATCH_SOUND_MANAGER();
 	PATCH_ALLOCATORS();
 	PATCH_STRING_BUFFER();
+	PATCH_FILEPROC();
 }
 
 //=========================================================================

@@ -29,7 +29,10 @@
     <ClInclude Include="MemoryAllocators.h">
       <Filter>Header files\KapowEngine</Filter>
     </ClInclude>
-    <ClInclude Include="KapowStringBuffer.h">
+    <ClInclude Include="KapowFile.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="KapowStringsPool.h">
       <Filter>Header files\KapowEngine</Filter>
     </ClInclude>
   </ItemGroup>
@@ -46,7 +49,10 @@
     <ClCompile Include="MemoryAllocators.cpp">
       <Filter>Source files\KapowEngine</Filter>
     </ClCompile>
-    <ClCompile Include="KapowStringBuffer.cpp">
+    <ClCompile Include="KapowFile.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="KapowStringsPool.cpp">
       <Filter>Source files\KapowEngine</Filter>
     </ClCompile>
   </ItemGroup>
