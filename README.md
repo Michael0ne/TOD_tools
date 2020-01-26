@@ -14,3 +14,10 @@ If you would like to help - get in touch!
 * Begin to look into scripting engine (game uses unknown-for-me TNT script language), entry point could be to figure out how game processes 'scriptdatabase.bin' file. Decompiled version is now present.
 * Since game resources are 'blocks' (fragments), write tool to see information about that kind of files.
 * ???
+
+# Information
+
+* Regarding file types:
+It looks like all files in 'data/overdose_the_game/overdose/shared' contain just memory dumps of actual game classes like models, sounds, textures and so on. Overdose.main could contain generic models/sounds/textures, used across ALL of the maps and files like .map, .submap, .mission and such contain specific models/sounds/textures. Also, since these files are just memory dumps, they might contain references (or implementations) of script function. And by looks of it, game reads these files like 'blocks' with fixed size and puts them somewhere in memory.
+* Regarding scripts:
+Scripts used all across game for everything. The file 'database.bin' looks like a table of all 'variables' used by game and loaded on startup. PS2 version contains 'scriptresource.bin' with currently unknown purpose.
