@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "SoundManager.h"
+
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
 
@@ -49,6 +51,16 @@ void HookDInput()
 	_DirectInput8Create = (HRESULT (*)(HINSTANCE, DWORD, DWORD, DWORD, DWORD))GetProcAddress (dinput, "DirectInput8Create");
 
 	debug("DirectInput8 hooked! Lib addr: %0.4x, DirectInput8Create method addr: %0.4x\n", &dinput, &_DirectInput8Create);
+}
+
+void PrintExeInfo() {
+	char buf[32];
+	PrintBuildNumber(buf);
+	debug("%s\n", buf);
+	buf[0] = '\0';
+	PrintAuthor(buf);
+	debug("%s\n", buf);
+	buf[0] = '\0';
 }
 
 void openzip(char*	szZipName)
@@ -144,8 +156,10 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 
 	while (true) {
 		if (GetAsyncKeyState(VK_TAB) && (*nGameTime) > nLastKeyPress + nInterval) {
-			//debug("gameTime=%d\n", *nGameTime);
-			debug("0xA5D5AC=%d \n", (DWORD*)0xA5D5AC);
+
+			//	Do something!
+			g_soundManager->Dump();
+			
 			nLastKeyPress = *nGameTime;
 		}
 	}
@@ -160,6 +174,9 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 void MemoryHook()
 {
 	//	Insert all hooks here.
+	
+	//	NOTE: don't uncomment line below! Game crashes after intro movies.
+	//PrintExeInfo();
 
 	//	Redirect all logs into our file.
 	//	TODO: this replaces calls to 'log' function. Calls to 'PrintNewFrameInfo' and 'OutputDebugString' should also be hooked.
@@ -184,6 +201,21 @@ void MemoryHook()
 	PATCH_ALLOCATORS();
 	PATCH_STRING_BUFFER();
 	PATCH_FILEPROC();
+	//PATCH_PERF();
+	PATCH_RENDERER();
+
+	/*
+	 *	Regarding file types:
+	 *	It looks like all files in 'data/overdose_the_game/overdose/shared' contain just memory dumps of actual game classes
+	 *	like models, sounds, textures and so on. Overdose.main could contain generic models/sounds/textures, used across ALL of the maps
+	 *	and files like .map, .submap, .mission and such contain specific models/sounds/textures. Also, since these
+	 *	files are just memory dumps, they might contain references (or implementations) of script function. And by looks of it,
+	 *	game reads these files like 'blocks' with fixed size and puts them somewhere in memory.
+	 *
+	 *	Regarding scripts:
+	 *	Scripts used all across game for everything. The file 'database.bin' looks like a table of all 'variables' used by game
+	 *	and loaded on startup. PS2 version contains 'scriptresource.bin' with currently unknown purpose.
+	*/
 }
 
 //=========================================================================

@@ -15,6 +15,12 @@
     <Filter Include="Header files\KapowEngine">
       <UniqueIdentifier>{43dd2708-429d-40b1-ba35-3f9426f3895f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header files\KapowEngine\Scripting">
+      <UniqueIdentifier>{e8edcccd-49ea-459e-9323-6a5c34a03461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\KapowEngine\Scripting">
+      <UniqueIdentifier>{d7d51f51-6951-4c47-96a1-8cac1b72282a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -35,6 +41,15 @@
     <ClInclude Include="KapowStringsPool.h">
       <Filter>Header files\KapowEngine</Filter>
     </ClInclude>
+    <ClInclude Include="Performance.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="KapowConfig.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxInternal_Dx9.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -53,6 +68,15 @@
       <Filter>Source files\KapowEngine</Filter>
     </ClCompile>
     <ClCompile Include="KapowStringsPool.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Performance.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="KapowConfig.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxInternal_Dx9.cpp">
       <Filter>Source files\KapowEngine</Filter>
     </ClCompile>
   </ItemGroup>

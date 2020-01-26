@@ -1,5 +1,7 @@
 #include "KapowWindow.h"
 
+#include "GfxInternal_Dx9.h"
+
 bool KapowWindow::ProcessMessages()
 {
 	tagMSG	Msg;
@@ -453,8 +455,8 @@ LRESULT CALLBACK KapowWindow::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPA
 				return 0;
 			}
 			if (Msg != WM_ERASEBKGND) {
-				if (Msg == WM_ACTIVATEAPP && !wParam && g_unkGlobalWindowObject)
-					if (*((BYTE*)g_unkGlobalWindowObject + 0x310))
+				if (Msg == WM_ACTIVATEAPP && !wParam && g_pRenderer)
+					if (g_pRenderer->m_bResolutionDetected)
 						ShowWindow(hWnd, SW_MINIMIZE);
 				return DefWindowProc(hWnd, Msg, wParam, lParam);
 			}
@@ -475,13 +477,13 @@ LRESULT CALLBACK KapowWindow::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPA
 				((void(__cdecl *)(DWORD))g_kapowWindow->m_pMenuItemClickedCallback)(wParam);
 			return DefWindowProc(hWnd, Msg, wParam, lParam);
 		}
-		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && *((BYTE*)g_unkGlobalWindowObject + 0x310))
+		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && g_pRenderer->m_bResolutionDetected)
 			return 1;
 		
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
 
-	if (!*((BYTE*)g_unkGlobalWindowObject + 0x310))
+	if (!g_pRenderer->m_bResolutionDetected)
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 
 	return 1;
@@ -552,7 +554,7 @@ ATOM KapowWindow::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResour
 //	TODO: fix. This doesn't work right now.
 void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, int unkParam2, UINT16 nIconResourceId)
 {
-	KapowStringBuffer*	desktopDir;
+	KapowString*	desktopDir;
 	HKEY				phkResult;
 	BYTE				szDesktopPath;
 
@@ -636,7 +638,7 @@ void KapowWindow::SetDesktopDirectory(const char* pDesktopPath)
 		memcpy(m_szUserDesktopPath.m_szString, pDesktopPath, m_szUserDesktopPath.m_nLength + 1);
 }
 
-void KapowWindow::ProcessScreenshotsDirs(KapowStringBuffer& outString)
+void KapowWindow::ProcessScreenshotsDirs(KapowString& outString)
 {
 	char	PathName[MAX_PATH];
 	int		screenshotNo = 1;
@@ -691,8 +693,10 @@ int CALLBACK KapowWindow::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 	char	FileName[1024];
 	DWORD	idProcess, cbNeeded;
 
+	//Performance::Init();
 	Performance__Initialise();
 	Sleep(10);
+	//Performance::Calculate();
 	Performance__QueryCounter();
 
 	*g_hInstance = hInstance;
@@ -712,7 +716,7 @@ int CALLBACK KapowWindow::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 
 		if (cbNeeded >> 2 > 0) {
 			do {
-				if (IsProcessAGameProcess(*(&idProcess + procIndex), 0, 0, 0, 0))
+				if (IsProcessAGameProcess(*(&idProcess + procIndex), 0, "TOD.exe", 0, 0))
 					++gameCopiesRunning;
 				++procIndex;
 			} while (procIndex < processesFound);

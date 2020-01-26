@@ -4,7 +4,7 @@
 
 #define KAPOW_STRINGS_POOL_SIZE 32
 
-struct KapowStringBuffer {
+struct KapowString {
 	int		m_nLength;		//	+ 0x0 = how much characters is in this string.
 	char*	m_szString;		//	+ 0x4 = pointer to actual string.
 	int		m_nBitMask;		//	+ 0x8 = unknown bit mask.

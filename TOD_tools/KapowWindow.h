@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 #include "KapowStringsPool.h"
+#include "Performance.h"
 
 enum eWindowStyles {
 	Overlapped = WS_OVERLAPPED,
@@ -41,8 +42,7 @@ enum eWindowStyles {
 */
 class KapowWindow
 {
-	//	Possible size - 0x44 (68) bytes.
-	//	Another possible size - 0x58 (0x3A) bytes.
+	//	Size is 0x44 (68) bytes.
 	//	NOTE: some methods ARE static.
 	//	NOTE: is it CBaseWindow, from DirectShow?
 private:
@@ -50,7 +50,7 @@ private:
 	const char*			m_szClassName;
 	int					m_nWindowStyle;
 	char				m_unkChar;
-	KapowStringBuffer	m_szUserDesktopPath;
+	KapowString			m_szUserDesktopPath;
 	void				*m_pMenuItemClickedCallback;
 	HWND				m_hWindow;
 	int					m_unkInt7;						//	Some unknown flags. TODO: Needs to be union {}.
@@ -62,8 +62,6 @@ private:
 	int					m_unkInt10;
 	LONG				m_nWindowLeft;
 	LONG				m_nWindowTop;
-	BYTE				m_pad[13];
-	int					m_unkInt11_proc;
 
 public:
 	//	>> 43B920
@@ -127,7 +125,7 @@ public:
 	//	>> 43C8B0
 	void						SetDesktopDirectory(const char* pDesktopPath);
 	//	>> 43C900
-	void						ProcessScreenshotsDirs(KapowStringBuffer& outString);
+	void						ProcessScreenshotsDirs(KapowString& outString);
 	//	>> 43C990
 	static	bool				IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char* unkProcName, int unk2, char unk3);
 	//	>> 43CAE0.

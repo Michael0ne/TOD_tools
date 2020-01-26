@@ -119,15 +119,20 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="KapowConfig.h" />
     <ClInclude Include="KapowFile.h" />
+    <ClInclude Include="GfxInternal_Dx9.h" />
     <ClInclude Include="KapowStringsPool.h" />
     <ClInclude Include="KapowWindow.h" />
     <ClInclude Include="MemoryAllocators.h" />
+    <ClInclude Include="Performance.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="KapowConfig.cpp" />
     <ClCompile Include="KapowFile.cpp" />
+    <ClCompile Include="GfxInternal_Dx9.cpp" />
     <ClCompile Include="KapowStringsPool.cpp" />
     <ClCompile Include="KapowWindow.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -139,6 +144,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="MemoryAllocators.cpp" />
+    <ClCompile Include="Performance.cpp" />
     <ClCompile Include="SoundManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

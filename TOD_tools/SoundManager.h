@@ -45,6 +45,9 @@ private:
 	int		m_nAllocatedTotal;			//	+ 0x = number of actual allocated StreamedSoundBuffers.
 
 public:
+	//	>> 43EAD0
+	void					Dump();
+
 	//	>> 43CDA0
 	static void				SetDefaultFxVolumeVar(float fVol);
 	//	>> 43CDB0
