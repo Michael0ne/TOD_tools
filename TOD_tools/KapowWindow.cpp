@@ -117,23 +117,23 @@ void KapowWindow::SetWindowPosNoCopyBits(tagPOINT* newPos)
 //	TODO: fix. This crashes the game now!
 void KapowWindow::GlobalPause()
 {
-	bool	bWindowVisible;
+	bool	bWindowVisible = true;
 
 	WINDOWPLACEMENT	windowPlacement;
 	windowPlacement.length	= 44;
 	GetWindowPlacement(m_hWindow, &windowPlacement);
 
-	if ((windowPlacement.showCmd == SW_MINIMIZE || windowPlacement.showCmd == SW_SHOWMINIMIZED) && !(m_unkInt7 & 4))
+	if ((windowPlacement.showCmd == SW_MINIMIZE || windowPlacement.showCmd == SW_SHOWMINIMIZED) && !(m_unkFlags & 4))
 		bWindowVisible = false;
 
 	if (m_bVisible != bWindowVisible) {
 		m_bVisible = bWindowVisible;
 
 		if (bWindowVisible) {
-			SoundManager__SetGlobalPause((DWORD*)g_soundManager, 0);
+			SoundManager__SetGlobalPause(g_soundManager, 0);
 		}else{
-			SoundManager__SetGlobalPause((DWORD*)g_soundManager, 1);
-			SoundManager__MeasureWaitForSoftPause((DWORD*)g_soundManager);
+			SoundManager__SetGlobalPause(g_soundManager, 1);
+			SoundManager__MeasureWaitForSoftPause(g_soundManager);
 		}
 	}
 }
@@ -185,7 +185,7 @@ int	KapowWindow::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int 
 }
 
 //	TODO: fix. This crashes the game now!
-int __cdecl KapowWindow::GetSystemLanguageCode()
+int KapowWindow::GetSystemLanguageCode()
 {
 	CHAR	LocaleData;
 	int		nLanguageCode = 0;
@@ -310,7 +310,7 @@ int __cdecl KapowWindow::GetSystemLanguageCode()
 	//	4 - Spanish
 	//	3 - German
 	//	1 - French
-	//	0 - English (?)
+	//	0 - English
 }
 
 void KapowWindow::FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize)
@@ -415,7 +415,7 @@ void KapowWindow::SetAccessibilityFeatures(bool bCollect)
 	}
 }
 
-void KapowWindow::_DestroyWindow()
+void KapowWindow::Release()
 {
 	if (m_hWindow)
 		DestroyWindow(m_hWindow);
@@ -431,11 +431,11 @@ void KapowWindow::_DestroyWindow()
 
 void KapowWindow::_CreateWindow(UINT16 nIconResourceId)
 {
-	DWORD	windowStyle = (m_unkInt7 & 1) != 0 ? 0xC70000 : 0xC20000;
+	DWORD	windowStyle = (m_unkFlags & 1) != 0 ? 0xC70000 : 0xC20000;
 	if (nIconResourceId)
 		windowStyle |= 0x80000;
 
-	m_hWindow = CreateWindowExA(0x40000, m_szClassName, m_szClassName, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, *g_hInstance, 0);
+	m_hWindow = CreateWindowExA(0x40000, m_sWindowTitle.m_szString, m_sWindowTitle.m_szString, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, *g_hInstance, 0);
 }
 
 LRESULT CALLBACK KapowWindow::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -491,7 +491,7 @@ LRESULT CALLBACK KapowWindow::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPA
 
 //	TODO: fix. This crashes the game now!
 //	TODO: basic implementation for KapowInput and StreamedSoundBuffers.
-void KapowWindow::ProcessInputDevices(int(*unkGameLoopProc)(void))
+void KapowWindow::ProcessInputDevices(bool(*gameLoop)(void))
 {
 	ShowWindow(m_hWindow, SW_SHOW);
 
@@ -505,23 +505,22 @@ void KapowWindow::ProcessInputDevices(int(*unkGameLoopProc)(void))
 		GlobalPause();
 
 		if (m_bVisible) {
-			if (g_unkMouseDevice)
-				KapowInput__ProcessMouseInput(g_unkMouseDevice);
+			if (g_pInputMouse)
+				KapowInput__ProcessMouse(g_pInputMouse);
 
-			if (g_unkKeyboardDevice)
-				KapowInput__ProcessKeyboardInput(g_unkKeyboardDevice);
+			if (g_pInputKeyboard)
+				KapowInput__ProcessKeyboard(g_pInputKeyboard);
 
-			KapowInput__ProcessControllers();
+			KapowInput__ProcessGameControllers();
 
-			//	NOTE: looks like main game loop procedure.
-			if (!unkGameLoopProc())
+			if (!gameLoop())
 				return;
 
-			if (g_unkMouseDevice)
-				KapowInput_43B410(g_unkMouseDevice);
+			if (g_pInputMouse)
+				KapowInput__ResetMouse(g_pInputMouse);
 
-			if (g_unkKeyboardDevice)
-				KapowInput_43A740(g_unkKeyboardDevice);
+			if (g_pInputKeyboard)
+				KapowInput__ResetKeyboard(g_pInputKeyboard);
 		}
 		else
 			WaitMessage();
@@ -538,7 +537,7 @@ ATOM KapowWindow::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResour
 	WndClass.hCursor = 0;
 	WndClass.hIcon = LoadIconA(*g_hInstance, MAKEINTRESOURCE(nIconResourceId));
 	WndClass.lpszMenuName = MAKEINTRESOURCE(nMenuResourceId);
-	WndClass.lpszClassName = m_szClassName;
+	WndClass.lpszClassName = m_sWindowTitle.m_szString;
 	WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	WndClass.hInstance = *g_hInstance;
 	WndClass.style = 3;
@@ -551,46 +550,35 @@ ATOM KapowWindow::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResour
 	return RegisterClassA(&WndClass);
 }
 
-//	TODO: fix. This doesn't work right now.
+//	FIXME: this crashes the game now!
 void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, int unkParam2, UINT16 nIconResourceId)
 {
-	KapowString*	desktopDir;
 	HKEY				phkResult;
 	BYTE				szDesktopPath;
+	MEMORYSTATUSEX		memoryStatus;
 
-	m_unkChar = 0;
-	m_szClassName = &m_unkChar;
-	m_nClassNameLength = 0;
-	m_nWindowStyle = 0x80000004;
-	m_unkInt7 = unkParam1;
+	m_unkFlags = unkParam1;
 	m_bVisible = true;
 	m_pMenuItemClickedCallback = NULL;
 	m_bDestroyed = true;
 	m_bQuitRequested = false;
 
-	desktopDir = &m_szUserDesktopPath;
-	desktopDir->m_szString = &desktopDir->m_pUnkStrPtr;	//	Probably means 'initialize to empty'.
-	desktopDir->m_nLength = 0;
-	desktopDir->m_nBitMask = 0x80000004;
-
 	g_kapowWindow = this;
 
-	if (wndClassName)
-		m_nClassNameLength = strlen(wndClassName);
-	else
-		m_nClassNameLength = 0;
-
-	//	Originally - KapowStringBuffer::unkAllocationMethod (pretty sure it does same thing, or allocates string in some pool).
-	m_szClassName = (char*)malloc(m_nClassNameLength + 1);
-	memcpy((void*)m_szClassName, wndClassName, m_nClassNameLength + 1);
+	//	TODO: this bullshit should be handled by string class constructor!
+	m_sWindowTitle = KapowString(strlen(wndClassName));
+	KapowStringsPool__unkAllocation(&m_sWindowTitle);
+	strcpy(m_sWindowTitle.m_szString, wndClassName);
 
 	if (!RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\", 0, KEY_QUERY_VALUE, &phkResult)) {
 		DWORD	nMaxValueSize = MAX_PATH;
 		RegQueryValueEx(phkResult, "Desktop", NULL, NULL, &szDesktopPath, &nMaxValueSize);
+		RegCloseKey(phkResult);
 	}
-	desktopDir->m_nLength = strlen((const char*)&szDesktopPath);
-	desktopDir->m_szString = (char*)malloc(desktopDir->m_nLength + 1);
-	memcpy((void*)desktopDir->m_szString, &szDesktopPath, desktopDir->m_nLength + 1);
+
+	m_sUserDesktopPath = KapowString(strlen((const char*)&szDesktopPath));
+	KapowStringsPool__unkAllocation(&m_sUserDesktopPath);
+	strcpy(m_sUserDesktopPath.m_szString, (const char*)&szDesktopPath);
 
 	RegisterWindowClass(nMenuResourceId, nIconResourceId);
 	_CreateWindow(nMenuResourceId);
@@ -603,7 +591,7 @@ void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT1
 
 	SetAccessibilityFeatures(false);
 
-	MEMORYSTATUSEX	memoryStatus;
+	memoryStatus.dwLength = 64;
 	GlobalMemoryStatusEx(&memoryStatus);
 
 	if (memoryStatus.ullTotalPhys < 0xFB00000) {
@@ -618,24 +606,18 @@ void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT1
 
 BOOL KapowWindow::_SetTitle(LPCSTR lpString)
 {
-	m_nClassNameLength = lpString ? strlen(lpString) : 0;
-	m_szClassName = (char*)malloc(m_nClassNameLength + 1);
-	memcpy((void*)m_szClassName, lpString, m_nClassNameLength + 1);
+	m_sWindowTitle = KapowString(strlen(lpString));
+	KapowStringsPool__AllocateSpace(&m_sWindowTitle);
+	strcpy(m_sWindowTitle.m_szString, lpString);
 
 	return SetWindowText(m_hWindow, lpString);
 }
 
 void KapowWindow::SetDesktopDirectory(const char* pDesktopPath)
 {
-	if (pDesktopPath)
-		m_szUserDesktopPath.m_nLength = strlen(pDesktopPath);
-	else
-		m_szUserDesktopPath.m_nLength = 0;
-
-	m_szUserDesktopPath.m_szString = (char*)malloc(m_szUserDesktopPath.m_nLength + 1);
-
-	if (pDesktopPath)
-		memcpy(m_szUserDesktopPath.m_szString, pDesktopPath, m_szUserDesktopPath.m_nLength + 1);
+	m_sUserDesktopPath = KapowString(strlen(pDesktopPath));
+	KapowStringsPool__AllocateSpace(&m_sUserDesktopPath);
+	strcpy(m_sUserDesktopPath.m_szString, pDesktopPath);
 }
 
 void KapowWindow::ProcessScreenshotsDirs(KapowString& outString)
@@ -644,11 +626,11 @@ void KapowWindow::ProcessScreenshotsDirs(KapowString& outString)
 	int		screenshotNo = 1;
 	char(__cdecl *sub_4182A0)(char* pUnkStr) = (char (__cdecl*)(char*))0x4182A0;
 
-	sprintf(PathName, "%s/Kapow Screenshots", m_szUserDesktopPath.m_szString);
+	sprintf(PathName, "%s/Kapow Screenshots", m_sUserDesktopPath.m_szString);
 	CreateDirectory(PathName, NULL);
 
 	do {
-		sprintf(PathName, "%s/Kapow Screenshots/screenshot %03d.bmp", m_szUserDesktopPath.m_szString, screenshotNo++);
+		sprintf(PathName, "%s/Kapow Screenshots/screenshot %03d.bmp", m_sUserDesktopPath.m_szString, screenshotNo++);
 	} while (sub_4182A0(PathName));
 
 	//	Originally - KapowStringBuffer::MakeString. Since I assume that it's actually a strings pool
@@ -676,15 +658,19 @@ bool KapowWindow::IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char*
 	return false;
 }
 
-//	TODO: fix. Needs KapowStringsPool implementation.
-void KapowWindow::GetUserDocumentsDir(DWORD& outString)
+void KapowWindow::GetUserDocumentsDir(KapowString& outString)
 {
-	//char	pszPath[MAX_PATH];
+	char	pszPath[MAX_PATH];
 
-	//if (SHGetFolderPath(NULL, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, NULL, NULL, pszPath) < 0)
-	//	KapowStringsPool__MakeString(outString, "");
-	//else
-	//	KapowStringsPool__MakeString(outString, pszPath);
+	if (SHGetFolderPath(NULL, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, NULL, NULL, pszPath) < 0) {
+		outString = KapowString();
+	}
+	else {
+		outString = KapowString();
+		outString.m_nLength = strlen(pszPath);
+		KapowStringsPool__AllocateSpace(&outString);
+		strcpy(outString.m_szString, pszPath);
+	}
 }
 
 int CALLBACK KapowWindow::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
@@ -726,11 +712,10 @@ int CALLBACK KapowWindow::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 		}
 
 		FindIdFile();
-		KapowEngine__InitialiseEngine();
+		KapowEngine__InitialiseEngine(lpCmdLine);
 	}else{
 		return 0;
 	}
-
 	return 0;
 }
 
@@ -755,9 +740,9 @@ inline void PATCH_WINDOW()
 	hook(0x43C0AC, &KapowWindow::FindStringResource, PATCH_CALL);
 	hook(0x43C0BF, &KapowWindow::FindStringResource, PATCH_CALL);
 
-	_asm	mov		eax, offset KapowWindow::_DestroyWindow
+	_asm	mov		eax, offset KapowWindow::Release
 	_asm	mov		dwFunc, eax
-	//	Override DestroyWindow function.
+	//	Override Release function.
 	hook(0x93CCBF, dwFunc, PATCH_NOTHING);
 
 	//	Override SetAccessibilityFeatures function.
@@ -926,7 +911,7 @@ inline void PATCH_WINDOW()
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
 	//	Override GetUserDocumentsDir function.
-	//hook(0x93E2ED, &KapowWindow::GetUserDocumentsDir, PATCH_CALL);
+	hook(0x93E2ED, &KapowWindow::GetUserDocumentsDir, PATCH_CALL);
 
 	//	Override WinMain function.
 	hook(0x95383F, &KapowWindow::WinMain, PATCH_CALL);

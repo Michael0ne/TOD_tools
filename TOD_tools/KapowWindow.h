@@ -42,18 +42,12 @@ enum eWindowStyles {
 */
 class KapowWindow
 {
-	//	Size is 0x44 (68) bytes.
-	//	NOTE: some methods ARE static.
-	//	NOTE: is it CBaseWindow, from DirectShow?
 private:
-	int					m_nClassNameLength;
-	const char*			m_szClassName;
-	int					m_nWindowStyle;
-	char				m_unkChar;
-	KapowString			m_szUserDesktopPath;
+	KapowString			m_sWindowTitle;
+	KapowString			m_sUserDesktopPath;
 	void				*m_pMenuItemClickedCallback;
 	HWND				m_hWindow;
-	int					m_unkInt7;						//	Some unknown flags. TODO: Needs to be union {}.
+	int					m_unkFlags;						//	Some unknown flags. TODO: Needs to be union {}.
 	bool				m_bVisible;
 	bool				m_bDestroyed;
 	BYTE				m_bQuitRequested;
@@ -95,7 +89,7 @@ public:
 	//	>> 43BD50
 	int							GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type);
 	//	>> 43BDC0
-	static signed int			GetSystemLanguageCode();
+	int							GetSystemLanguageCode();
 	//	>> 43BF70
 	int							GetCoverdemoPlayMode() { return 0; };
 	//	>> 43BF80
@@ -109,13 +103,13 @@ public:
 	//	>> 43C140
 	static void					SetAccessibilityFeatures(bool bCollect);
 	//	>> 43C230
-	void						_DestroyWindow();
+	void						Release();
 	//	>> 43C2C0
 	void						_CreateWindow(UINT16 nIconResourceId);
 	//	>> 43C320
 	static LRESULT CALLBACK		WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	//	>> 43C4A0
-	void						ProcessInputDevices(int (*unkGameLoopProc)(void));
+	void						ProcessInputDevices(bool (*unkGameLoopProc)(void));
 	//	>> 43C570
 	ATOM						RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId);
 	//	>> 43C630
@@ -129,8 +123,9 @@ public:
 	//	>> 43C990
 	static	bool				IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char* unkProcName, int unk2, char unk3);
 	//	>> 43CAE0.
-	static	void				GetUserDocumentsDir(DWORD& outString);
+	static	void				GetUserDocumentsDir(KapowString& outString);
 	//	>> 43CB40
 	static	int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 };
 
+static_assert(sizeof(KapowWindow) == 68, MESSAGE_WRONG_CLASS_SIZE("KapowWindow"));

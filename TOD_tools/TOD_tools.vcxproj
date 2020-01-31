@@ -119,6 +119,9 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="InputGameController.h" />
+    <ClInclude Include="InputKeyboard.h" />
+    <ClInclude Include="InputMouse.h" />
     <ClInclude Include="KapowConfig.h" />
     <ClInclude Include="KapowFile.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
@@ -126,10 +129,14 @@
     <ClInclude Include="KapowWindow.h" />
     <ClInclude Include="MemoryAllocators.h" />
     <ClInclude Include="Performance.h" />
-    <ClInclude Include="SoundManager.h" />
+    <ClInclude Include="SceneNode.h" />
+    <ClInclude Include="StreamedSoundBuffers.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="InputGameController.cpp" />
+    <ClCompile Include="InputKeyboard.cpp" />
+    <ClCompile Include="InputMouse.cpp" />
     <ClCompile Include="KapowConfig.cpp" />
     <ClCompile Include="KapowFile.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
@@ -145,7 +152,8 @@
     </ClCompile>
     <ClCompile Include="MemoryAllocators.cpp" />
     <ClCompile Include="Performance.cpp" />
-    <ClCompile Include="SoundManager.cpp" />
+    <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="StreamedSoundBuffers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

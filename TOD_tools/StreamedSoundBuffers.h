@@ -2,51 +2,109 @@
 
 #include "stdafx.h"
 
+//	TODO: better name.
+struct SoundBufferInstance
+{
+	int *m_nUnkInt1;
+	int m_nUnkInt2;
+	int m_nUnkInt3;
+	int m_nUnkInt4;
+};
+
 /*
  *------------------------------------------------------------
  *------------------------------------------------------------
- *--------------- Handles streamed sounds---------------------
+ *----------------- Handles streamed sounds-------------------
  *------------------------------------------------------------
  *--------- Game's alias is 'StreamedSoundBuffers' -----------
  *------------------------------------------------------------
  * -----------------------------------------------------------
 */
-class SoundManager
+class StreamedSoundBuffers
 {
 private:
-	int		m_nMaxConcurrentSounds;		//	+ 0x0 = originally 41, can be altered via configpc.txt.
-	int		m_nCurrentlyPlaying;		//	+ 0x4 = number of currently playing sounds.
-	int		m_nUnkInt2;
-	int		m_nUnkInt3;
-	int		m_nUnkInt4;
-	int		m_nUnkInt5;
-	int		m_nSoundSystem;				//	+ 0x = probably a enum. 3 is for DieselPower.
-	int		m_nUnkInt6;
-	int		m_nUnkInt7;
-	int		m_nUnkInt8;
-	int		m_nUnkInt9;
-	int		m_nUnkInt10;
-	int		m_nUnkInt11;
-	int		m_nUnkInt12;
-	int		m_nUnkInt13;
-	int		m_nUnkInt14;
-	int		m_nUnkInt15;
-	int		m_nUnkInt16;
-	int		m_nUnkInt17;
-	int		m_nUnkInt18;
-	int		m_nUnkInt19;
-	int		m_nUnkInt20;
-	int		m_nUnkInt21;
-	int		m_nUnkInt22;
-	int		m_nUnkInt23;
-	int		m_nUnkInt24;
-	int		m_nUnkInt25;
-	int		m_nUnkInt26;
-	int		m_nAllocatedTotal;			//	+ 0x = number of actual allocated StreamedSoundBuffers.
+	int m_nMaxConcurrentSounds;
+	int m_nCurrentlyPlaying;
+	int m_nUnkInt2;
+	int m_nUnkInt3;
+	BYTE m_nUnkByte1;
+	BYTE m_bGlobalPauseCalled;
+	BYTE m_bGlobalPause;
+	BYTE m_nUnkByte4;
+	int m_nUnkInt5;
+	int m_nSoundSystem;
+	int m_nUnkInt6;
+	int m_nUnkInt7;
+	int m_nUnkInt8;
+	int m_nUnkInt9;
+	int m_nUnkInt10;
+	int m_nUnkInt11;
+	int m_nUnkInt12;
+	int m_nUnkInt13;
+	int m_nUnkInt14;
+	int m_nUnkInt15;
+	void *(__stdcall *m_GenericSoundLibMethods)();
+	int *m_pUnkObjPtr1;
+	void *(__cdecl *m_pDieselPowerMethods)();
+	int m_nUnkInt19;
+	int m_nUnkInt20;
+	int *m_pUnkObjPtr2;
+	int *m_pUnkObjArrayPtr3;
+	int m_nUnkDieselPowerSoundsCount;
+	int m_nUnkInt24;
+	int m_nUnkInt25;
+	int *m_pUnkObjArrayPtr4;
+	int m_nAllocatedTotal;
+	int m_nUnkInt27;
+	int m_nUnkInt28;
+	int m_nUnkInt29;
+	int m_nUnkInt30;
+	int m_nUnkInt31;
+	int m_nUnkInt32;
+	int m_nUnkInt33;
+	int m_nUnkInt34;
+	int m_nUnkInt35;
+	int m_nUnkInt36;
+	int m_nUnkInt37;
+	int m_nUnkInt38;
+	int m_nUnkInt39;
+	int m_nUnkInt40;
+	int m_nUnkInt41;
+	int m_nUnkInt42;
+	int m_nUnkInt43;
+	int m_nUnkInt44;
+	int m_nUnkInt45;
+	int m_nUnkInt46;
+	int m_nUnkInt47;
+	int m_nUnkInt48;
+	int m_nUnkInt49;
+	int m_nUnkInt50;
+	int m_nUnkInt51;
+	int m_nUnkInt52;
+	int m_nUnkInt53;
+	int m_nUnkInt54;
+	int m_nUnkInt55;
+	int m_nUnkInt56;
+	int m_nUnkInt57;
+	int m_nUnkInt58;
+	int m_nUnkInt59;
+	SoundBufferInstance *m_pInstances;
+	int m_nUnkInt61;
+	int m_nUnkInt62;
+	int m_nUnkInt63;
+	int m_nUnkInt64;
+	int m_nUnkInt65;
+	int m_nUnkInt66;
+	int m_nUnkInt67;
+	int m_nUnkInt68;
+	int m_nUnkInt69;
+	int m_nUnkInt70;
+	int m_nUnkInt71;
+	int m_nUnkInt72;
 
 public:
 	//	>> 43EAD0
-	void					Dump();
+	void					Dump() const;
 
 	//	>> 43CDA0
 	static void				SetDefaultFxVolumeVar(float fVol);

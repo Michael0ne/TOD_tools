@@ -29,9 +29,6 @@
     <ClInclude Include="KapowWindow.h">
       <Filter>Header files\KapowEngine</Filter>
     </ClInclude>
-    <ClInclude Include="SoundManager.h">
-      <Filter>Header files\KapowEngine</Filter>
-    </ClInclude>
     <ClInclude Include="MemoryAllocators.h">
       <Filter>Header files\KapowEngine</Filter>
     </ClInclude>
@@ -50,15 +47,27 @@
     <ClInclude Include="GfxInternal_Dx9.h">
       <Filter>Header files\KapowEngine</Filter>
     </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="InputMouse.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="InputKeyboard.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="InputGameController.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamedSoundBuffers.h">
+      <Filter>Header files\KapowEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="KapowWindow.cpp">
-      <Filter>Source files\KapowEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
       <Filter>Source files\KapowEngine</Filter>
     </ClCompile>
     <ClCompile Include="MemoryAllocators.cpp">
@@ -77,6 +86,21 @@
       <Filter>Source files\KapowEngine</Filter>
     </ClCompile>
     <ClCompile Include="GfxInternal_Dx9.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneNode.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="InputMouse.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="InputKeyboard.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="InputGameController.cpp">
+      <Filter>Source files\KapowEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamedSoundBuffers.cpp">
       <Filter>Source files\KapowEngine</Filter>
     </ClCompile>
   </ItemGroup>

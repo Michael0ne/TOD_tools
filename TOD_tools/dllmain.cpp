@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "SoundManager.h"
+#include "StreamedSoundBuffers.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -74,28 +74,6 @@ void openzip(char*	szZipName)
 		push eax
 		call dwFunc
 	}
-}
-
-//	NOTE: This is really just a part of LoadingScreenNode class. Move out as soon as class is done.
-char _SetLoadscreenEnabled(DWORD unk)
-{
-	DWORD dwFunc = 0x87C6A0;
-	DWORD* dwThis = (DWORD*)0xA3D7E0;
-	char result = 0;
-
-	_asm {
-		mov eax, unk
-		push eax
-
-		mov ecx, dwThis
-		push ecx
-
-		call dwFunc
-		mov result, al
-		add esp, 10h
-	}
-
-	return result != 0;
 }
 
 double get_asin(float angle)
@@ -174,9 +152,6 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 void MemoryHook()
 {
 	//	Insert all hooks here.
-	
-	//	NOTE: don't uncomment line below! Game crashes after intro movies.
-	//PrintExeInfo();
 
 	//	Redirect all logs into our file.
 	//	TODO: this replaces calls to 'log' function. Calls to 'PrintNewFrameInfo' and 'OutputDebugString' should also be hooked.
@@ -241,12 +216,17 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 		if (!VirtualProtect ((LPVOID)0x401000, 0x5B1394, PAGE_EXECUTE_READWRITE, &dwValue))
 			exit(0);
 		else
-			debug("Execution memory unlocked\n");
+			debug("_text seg unlocked\n");
 
 		if (!VirtualProtect((LPVOID)0x9B330C, 0x54CF4, PAGE_EXECUTE_READWRITE, &dwValue))
 			exit(0);
 		else
-			debug("Variables memory unlocked\n");
+			debug("_rdata seg unlocked\n");
+
+		if (!VirtualProtect((LPVOID)0xA08000, 0x5a520, PAGE_EXECUTE_READWRITE, &dwValue))
+			exit(0);
+		else
+			debug("_rsrc seg unlocked\n");
 
 		//	Replace this dll handle with game's handle.
 		DllModuleHandle = hModule;

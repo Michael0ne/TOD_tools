@@ -13,7 +13,6 @@
 */
 class GfxInternal_Dx9
 {
-	//	Size is 0x97A0 (38816) bytes. Huge!
 public:
 	IDirect3DDevice9 *m_pDirect3DDevice9;
 	IDirect3DQuery9 *m_pFramesyncQuery;
@@ -54,3 +53,4 @@ public:
 	GfxInternal_Dx9();
 };
 
+static_assert(sizeof(GfxInternal_Dx9) == 38816, MESSAGE_WRONG_CLASS_SIZE("GfxInternal_Dx9"));

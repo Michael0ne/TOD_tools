@@ -6,15 +6,17 @@
 #include <windows.h>		//	For general windows types.
 #include <xmmintrin.h>		//	For __m128 type.
 #include "stdio.h"			//	For general standart input/output routines.
-#include <stdlib.h>
+#include <stdlib.h>			//	Standard library functions.
 #include <stdarg.h>
 #include <math.h>			//	For mathematical functions.
 #include <psapi.h>			//	For processes.
-#include <ShlObj.h>
+#include <ShlObj.h>			//	For registry operations.
 #include <timeapi.h>		//	For timeGetTime.
 
 #include <WinUser.h>		//	For Windows-specific objects.
-#include <d3d9.h>
+#include <d3d9.h>			//	For all directX related stuff.
+
+#define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
 
 template <typename T>
 struct Vector2 {
@@ -39,8 +41,13 @@ struct Quaternion {
 
 class KapowWindow;
 class MemoryAllocators;
-class SoundManager;
+class StreamedSoundBuffers;
 class GfxInternal_Dx9;
+struct KapowString;
+class SceneNode;
+class InputMouse;
+class InputKeyboard;
+class InputGameController;
 
 //	TODO: move these into tod_global_vars.h
 static char* aShellLaunched = (char*)0x9C59E4;
@@ -55,12 +62,16 @@ static HWND * g_hWnd = (HWND*)0xA35EB8;
 static HINSTANCE * g_hInstance = (HINSTANCE*)0xA35EB0;
 static KapowWindow * g_kapowWindow = (KapowWindow*)0xA35EB8;
 static MemoryAllocators * g_kapowAllocators = (MemoryAllocators*)0xA3AFC0;
-static SoundManager * g_soundManager = (SoundManager*)0xA35EC0;
+static StreamedSoundBuffers * g_soundManager = (StreamedSoundBuffers*)0xA35EC0;
 static GfxInternal_Dx9 * g_pRenderer = (GfxInternal_Dx9*)0xA39F14;
-static DWORD * g_unkMouseDevice = (DWORD*)0xA35EAC;
-static DWORD * g_unkKeyboardDevice = (DWORD*)0xA35E80;
 static LPSTR * g_CmdLine = (LPSTR*)0xA35EB4;
 static DWORD * g_GameConfiguration = (DWORD*)0xA5D5AC;
+static InputMouse * g_pInputMouse = (InputMouse*)0xA35EAC;
+static InputKeyboard * g_pInputKeyboard = (InputKeyboard*)0xA35E80;
+static InputGameController * g_pInputGameController = (InputGameController*)0xA35E7C;
+//	TODO: these two below are different. First used in game, second in editor.
+static SceneNode* g_pSceneNode = (SceneNode*)0xA3DCB8;
+static SceneNode* g_pScene = (SceneNode*)0xA3DCBC;
 
 static STICKYKEYS	*sSTICKYKEYS = (STICKYKEYS*)0xA0917C;
 static TOGGLEKEYS	*sTOGGLEKEYS = (TOGGLEKEYS*)0xA09184;
@@ -72,15 +83,15 @@ static UINT* uType = (UINT*)0xA091A8;
 
 static bool * bGameDiscFound = (bool*)0xA35E68;
 
-static void (__thiscall *SoundManager__SetGlobalPause)(DWORD* _this, bool bPause) = (void (__thiscall*)(DWORD*, bool))0x43D1D0;
-static void (__thiscall *SoundManager__MeasureWaitForSoftPause)(DWORD* _this) = (void (__thiscall*)(DWORD*))0x43E800;
-static void (__thiscall *SoundManager__DumpStreamedSoundBuffers)(DWORD* _this) = (void(__thiscall*)(DWORD *))0x43EAD0;
+static void (__thiscall *SoundManager__SetGlobalPause)(StreamedSoundBuffers* _this, bool bPause) = (void (__thiscall*)(StreamedSoundBuffers*, bool))0x43D1D0;
+static void (__thiscall *SoundManager__MeasureWaitForSoftPause)(StreamedSoundBuffers* _this) = (void (__thiscall*)(StreamedSoundBuffers*))0x43E800;
+static void (__thiscall *SoundManager__DumpStreamedSoundBuffers)(const StreamedSoundBuffers* _this) = (void(__thiscall*)(const StreamedSoundBuffers*))0x43EAD0;
 
-static void(__thiscall *KapowInput__ProcessMouseInput)(DWORD* _this) = (void (__thiscall*)(DWORD*))0x43B670;
-static void(__thiscall *KapowInput__ProcessKeyboardInput)(DWORD* _this) = (void (__thiscall*)(DWORD*))0x43AF60;
-static void(__thiscall *KapowInput__ProcessControllers)() = (void(__thiscall*)())0x43A190;
-static void(__thiscall *KapowInput_43B410)(DWORD* _this) = (void(__thiscall*)(DWORD*))0x43B410;
-static void(__thiscall *KapowInput_43A740)(DWORD* _this) = (void(__thiscall*)(DWORD*))0x43A740;
+static void (__thiscall *KapowInput__ProcessMouse)(InputMouse* _this) = (void (__thiscall*)(InputMouse*))0x43B670;
+static void (__thiscall *KapowInput__ProcessKeyboard)(InputKeyboard* _this) = (void (__thiscall*)(InputKeyboard*))0x43AF60;
+static void (__cdecl *KapowInput__ProcessGameControllers)() = (void(__cdecl*)())0x43A190;
+static void (__thiscall *KapowInput__ResetMouse)(InputMouse* _this) = (void(__thiscall*)(InputMouse*))0x43B410;
+static void (__thiscall *KapowInput__ResetKeyboard)(InputKeyboard* _this) = (void(__thiscall*)(InputKeyboard*))0x43A740;
 
 static void	(__cdecl *Performance__Initialise)() = (void (__cdecl*)())0x4306D0;
 static void	(__cdecl *Performance__QueryCounter)() = (void(__cdecl*)())0x4306F0;
@@ -88,15 +99,18 @@ static long	(__cdecl *Performance__Measure)() = (long(__cdecl*)())0x430570;
 static bool * Performance__bQueryingPerformance = (bool*)0xA08E90;
 static bool * Performance__bMeasuringPerformance = (bool*)0xA35E38;
 
-static void(__cdecl *KapowEngine__InitialiseEngine)() = (void (__cdecl *)())0x93F680;
+static void (__cdecl *KapowEngine__InitialiseEngine)(LPSTR lpCmdLine) = (void (__cdecl *)(LPSTR))0x93F680;
 
-static void(__cdecl *FindIdFile)() = (void(__cdecl*)())0x439230;
+static void (__cdecl *FindIdFile)() = (void(__cdecl*)())0x439230;
 
 static DWORD* (__thiscall *KapowStringsPool__Create)(DWORD* _this, const char* szString) = (DWORD* (__thiscall *)(DWORD*, const char*))0x405D90;
+static KapowString* (__thiscall *KapowStringsPool__AllocateSpace)(KapowString* _this) = (KapowString* (__thiscall *)(KapowString*))0x4056E0;
+static void	(__thiscall *KapowStringsPool__unkAllocation)(KapowString* _this) = (void(__thiscall *)(KapowString*))0x405590;
 
-static void(__thiscall *KapowRenderer__CreateDirect3DDevice)(DWORD* _this, int* unk1, int unk2, int unk3, int unk4, int unk5) = (void(__thiscall *)(DWORD*, int*, int, int, int, int))0x45E620;
+static void (__thiscall *KapowRenderer__CreateDirect3DDevice)(DWORD* _this, int* unk1, int unk2, int unk3, int unk4, int unk5) = (void(__thiscall *)(DWORD*, int*, int, int, int, int))0x45E620;
 
-static void(__cdecl *KapowAllocators__Initialise)() = (void(__cdecl *)())0x9B1AF0;
+static void (__cdecl *KapowAllocators__Initialise)() = (void(__cdecl *)())0x9B1AF0;
+static void (__cdecl *KapowAllocators__AllocateOrRelease)(void *pObj, bool bAllocate) = (void(__cdecl *)(void*, bool))0x4778D0;
 
 static void(__cdecl *PrintBuildNumber)(char* buffer) = (void(__cdecl*)(char*))0x401000;
 static void(__cdecl *PrintAuthor)(char* buffer) = (void(__cdecl*)(char*))0x401020;
