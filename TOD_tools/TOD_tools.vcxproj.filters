@@ -21,87 +21,117 @@
     <Filter Include="Source files\KapowEngine\Scripting">
       <UniqueIdentifier>{d7d51f51-6951-4c47-96a1-8cac1b72282a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source files\KapowEngine\System">
+      <UniqueIdentifier>{dd729f5e-9c12-4862-9b43-458966d18888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\KapowEngine\Render">
+      <UniqueIdentifier>{41d072e6-c5df-450f-b45d-9480f448061b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\KapowEngine\Input">
+      <UniqueIdentifier>{44f5fe70-91a7-4fc5-9c2a-e6fbe68ebe9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\KapowEngine\Memory">
+      <UniqueIdentifier>{689dd6eb-999a-4f73-8b00-2fb8e8fd2c98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\KapowEngine\Audio">
+      <UniqueIdentifier>{0fc35c56-f67b-4152-b5e8-af51a2e268e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\KapowEngine\Input">
+      <UniqueIdentifier>{95943a69-d047-4a4f-9418-7db9b00170b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\KapowEngine\Memory">
+      <UniqueIdentifier>{fafee682-83f1-4c63-a0cb-d58bc131582e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\KapowEngine\Audio">
+      <UniqueIdentifier>{7d14dada-6968-49da-af83-0b7bb9683ce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\KapowEngine\Render">
+      <UniqueIdentifier>{be7fba1d-6d99-4732-b625-55b547b33abf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\KapowEngine\System">
+      <UniqueIdentifier>{f54a249d-93fd-47e8-92ce-3ac29bc99616}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="KapowWindow.h">
-      <Filter>Header files\KapowEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="MemoryAllocators.h">
-      <Filter>Header files\KapowEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="KapowFile.h">
-      <Filter>Header files\KapowEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="KapowStringsPool.h">
-      <Filter>Header files\KapowEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="Performance.h">
-      <Filter>Header files\KapowEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="KapowConfig.h">
-      <Filter>Header files\KapowEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="GfxInternal_Dx9.h">
-      <Filter>Header files\KapowEngine</Filter>
-    </ClInclude>
     <ClInclude Include="SceneNode.h">
       <Filter>Header files\KapowEngine\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="InputMouse.h">
-      <Filter>Header files\KapowEngine</Filter>
+    <ClInclude Include="InputGameController.h">
+      <Filter>Header files\KapowEngine\Input</Filter>
     </ClInclude>
     <ClInclude Include="InputKeyboard.h">
-      <Filter>Header files\KapowEngine</Filter>
+      <Filter>Header files\KapowEngine\Input</Filter>
     </ClInclude>
-    <ClInclude Include="InputGameController.h">
-      <Filter>Header files\KapowEngine</Filter>
+    <ClInclude Include="InputMouse.h">
+      <Filter>Header files\KapowEngine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxInternal_Dx9.h">
+      <Filter>Header files\KapowEngine\Render</Filter>
     </ClInclude>
     <ClInclude Include="StreamedSoundBuffers.h">
-      <Filter>Header files\KapowEngine</Filter>
+      <Filter>Header files\KapowEngine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="KapowStringsPool.h">
+      <Filter>Header files\KapowEngine\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryAllocators.h">
+      <Filter>Header files\KapowEngine\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>Header files\KapowEngine\System</Filter>
+    </ClInclude>
+    <ClInclude Include="KapowConfig.h">
+      <Filter>Header files\KapowEngine\System</Filter>
+    </ClInclude>
+    <ClInclude Include="KapowWindow.h">
+      <Filter>Header files\KapowEngine\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Performance.h">
+      <Filter>Header files\KapowEngine\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="KapowWindow.cpp">
-      <Filter>Source files\KapowEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="MemoryAllocators.cpp">
-      <Filter>Source files\KapowEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="KapowFile.cpp">
-      <Filter>Source files\KapowEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="KapowStringsPool.cpp">
-      <Filter>Source files\KapowEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="Performance.cpp">
-      <Filter>Source files\KapowEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="KapowConfig.cpp">
-      <Filter>Source files\KapowEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="GfxInternal_Dx9.cpp">
-      <Filter>Source files\KapowEngine</Filter>
-    </ClCompile>
     <ClCompile Include="SceneNode.cpp">
       <Filter>Source files\KapowEngine\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="InputMouse.cpp">
-      <Filter>Source files\KapowEngine</Filter>
+    <ClCompile Include="File.cpp">
+      <Filter>Source files\KapowEngine\System</Filter>
     </ClCompile>
-    <ClCompile Include="InputKeyboard.cpp">
-      <Filter>Source files\KapowEngine</Filter>
+    <ClCompile Include="KapowConfig.cpp">
+      <Filter>Source files\KapowEngine\System</Filter>
+    </ClCompile>
+    <ClCompile Include="KapowWindow.cpp">
+      <Filter>Source files\KapowEngine\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Performance.cpp">
+      <Filter>Source files\KapowEngine\System</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxInternal_Dx9.cpp">
+      <Filter>Source files\KapowEngine\Render</Filter>
     </ClCompile>
     <ClCompile Include="InputGameController.cpp">
-      <Filter>Source files\KapowEngine</Filter>
+      <Filter>Source files\KapowEngine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="InputKeyboard.cpp">
+      <Filter>Source files\KapowEngine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="InputMouse.cpp">
+      <Filter>Source files\KapowEngine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="KapowStringsPool.cpp">
+      <Filter>Source files\KapowEngine\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryAllocators.cpp">
+      <Filter>Source files\KapowEngine\Memory</Filter>
     </ClCompile>
     <ClCompile Include="StreamedSoundBuffers.cpp">
-      <Filter>Source files\KapowEngine</Filter>
+      <Filter>Source files\KapowEngine\Audio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

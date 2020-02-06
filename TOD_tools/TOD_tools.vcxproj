@@ -123,7 +123,7 @@
     <ClInclude Include="InputKeyboard.h" />
     <ClInclude Include="InputMouse.h" />
     <ClInclude Include="KapowConfig.h" />
-    <ClInclude Include="KapowFile.h" />
+    <ClInclude Include="File.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
     <ClInclude Include="KapowStringsPool.h" />
     <ClInclude Include="KapowWindow.h" />
@@ -138,7 +138,7 @@
     <ClCompile Include="InputKeyboard.cpp" />
     <ClCompile Include="InputMouse.cpp" />
     <ClCompile Include="KapowConfig.cpp" />
-    <ClCompile Include="KapowFile.cpp" />
+    <ClCompile Include="File.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
     <ClCompile Include="KapowStringsPool.cpp" />
     <ClCompile Include="KapowWindow.cpp" />

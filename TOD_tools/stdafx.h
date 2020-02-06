@@ -15,6 +15,7 @@
 
 #include <WinUser.h>		//	For Windows-specific objects.
 #include <d3d9.h>			//	For all directX related stuff.
+#include <list>				//	For lists, obviously.
 
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
 
@@ -24,12 +25,22 @@ struct Vector2 {
 	T	y;
 };
 
-template<typename T>
+template <typename T>
 struct Vector3 {
 	T	x;
 	T	y;
 	T	z;
 };
+
+template <typename T>
+struct Vector4 {
+	T	x;
+	T	y;
+	T	z;
+	T	a;
+};
+
+typedef Vector4<float> ColorRGB;
 
 template<typename T>
 struct Quaternion {
@@ -38,6 +49,8 @@ struct Quaternion {
 	T	y;
 	T	z;
 };
+
+typedef Quaternion<float> Orientation;
 
 class KapowWindow;
 class MemoryAllocators;
@@ -48,6 +61,7 @@ class SceneNode;
 class InputMouse;
 class InputKeyboard;
 class InputGameController;
+class File;
 
 //	TODO: move these into tod_global_vars.h
 static char* aShellLaunched = (char*)0x9C59E4;
@@ -58,6 +72,18 @@ static DWORD* nFrameNumberA = (DWORD*)0xA0833C;
 //	Used when loading opening zip archive.
 static DWORD* nZipSlotId = (DWORD*)0xA35DDC;
 
+static const File * const g_pFilesArray[8] = {
+	(File*)0xA35DB8,
+	(File*)0xA35DBC,
+	(File*)0xA35DC0,
+	(File*)0xA35DC4,
+	(File*)0xA35DC8,
+	(File*)0xA35DCC,
+	(File*)0xA35DD0,
+	(File*)0xA35DD4
+};
+
+static IDirect3DDevice9 * g_pDirect3DDevice9 = (IDirect3DDevice9*)0xA39F34;
 static HWND * g_hWnd = (HWND*)0xA35EB8;
 static HINSTANCE * g_hInstance = (HINSTANCE*)0xA35EB0;
 static KapowWindow * g_kapowWindow = (KapowWindow*)0xA35EB8;
@@ -65,11 +91,11 @@ static MemoryAllocators * g_kapowAllocators = (MemoryAllocators*)0xA3AFC0;
 static StreamedSoundBuffers * g_soundManager = (StreamedSoundBuffers*)0xA35EC0;
 static GfxInternal_Dx9 * g_pRenderer = (GfxInternal_Dx9*)0xA39F14;
 static LPSTR * g_CmdLine = (LPSTR*)0xA35EB4;
-static DWORD * g_GameConfiguration = (DWORD*)0xA5D5AC;
+static DWORD * g_pGameConfiguration = (DWORD*)0xA5D5AC;
 static InputMouse * g_pInputMouse = (InputMouse*)0xA35EAC;
 static InputKeyboard * g_pInputKeyboard = (InputKeyboard*)0xA35E80;
 static InputGameController * g_pInputGameController = (InputGameController*)0xA35E7C;
-//	TODO: these two below are different. First used in game, second in editor.
+//	TODO: these two below are different. First used in game, second in editor (maybe?).
 static SceneNode* g_pSceneNode = (SceneNode*)0xA3DCB8;
 static SceneNode* g_pScene = (SceneNode*)0xA3DCBC;
 
@@ -114,6 +140,8 @@ static void (__cdecl *KapowAllocators__AllocateOrRelease)(void *pObj, bool bAllo
 
 static void(__cdecl *PrintBuildNumber)(char* buffer) = (void(__cdecl*)(char*))0x401000;
 static void(__cdecl *PrintAuthor)(char* buffer) = (void(__cdecl*)(char*))0x401020;
+
+static void(__thiscall *GfxInternal_Dx9__DumpScreenshot)(GfxInternal_Dx9 *_this, IDirect3DSurface9* pSurface) = (void(__thiscall*)(GfxInternal_Dx9*, IDirect3DSurface9*))0x44E970;
 
 extern HMODULE DllModuleHandle;
 

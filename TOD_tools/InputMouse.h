@@ -47,4 +47,6 @@ public:
 
 };
 
+extern InputMouse * g_pInputMouse;
+
 static_assert(sizeof(InputMouse) == 96, MESSAGE_WRONG_CLASS_SIZE("InputMouse"));
