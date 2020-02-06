@@ -56,7 +56,7 @@ class KapowWindow;
 class MemoryAllocators;
 class StreamedSoundBuffers;
 class GfxInternal_Dx9;
-struct KapowString;
+class String;
 class SceneNode;
 class InputMouse;
 class InputKeyboard;
@@ -130,8 +130,8 @@ static void (__cdecl *KapowEngine__InitialiseEngine)(LPSTR lpCmdLine) = (void (_
 static void (__cdecl *FindIdFile)() = (void(__cdecl*)())0x439230;
 
 static DWORD* (__thiscall *KapowStringsPool__Create)(DWORD* _this, const char* szString) = (DWORD* (__thiscall *)(DWORD*, const char*))0x405D90;
-static KapowString* (__thiscall *KapowStringsPool__AllocateSpace)(KapowString* _this) = (KapowString* (__thiscall *)(KapowString*))0x4056E0;
-static void	(__thiscall *KapowStringsPool__unkAllocation)(KapowString* _this) = (void(__thiscall *)(KapowString*))0x405590;
+static String* (__thiscall *KapowStringsPool__AllocateSpace)(String* _this) = (String* (__thiscall *)(String*))0x4056E0;
+static void	(__thiscall *KapowStringsPool__unkAllocation)(String* _this) = (void(__thiscall *)(String*))0x405590;
 
 static void (__thiscall *KapowRenderer__CreateDirect3DDevice)(DWORD* _this, int* unk1, int unk2, int unk3, int unk4, int unk5) = (void(__thiscall *)(DWORD*, int*, int, int, int, int))0x45E620;
 

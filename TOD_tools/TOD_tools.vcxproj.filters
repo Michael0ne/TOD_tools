@@ -92,6 +92,39 @@
     <ClInclude Include="Performance.h">
       <Filter>Header files\KapowEngine\System</Filter>
     </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="AuxQuadTree.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionList.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Fragment.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Properties.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="NodePosition.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceTypeInfo.h">
+      <Filter>Header files\KapowEngine\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Builtin.h">
+      <Filter>Header files\KapowEngine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>Header files\KapowEngine\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -132,6 +165,39 @@
     </ClCompile>
     <ClCompile Include="StreamedSoundBuffers.cpp">
       <Filter>Source files\KapowEngine\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="AuxQuadTree.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionList.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Fragment.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Properties.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="NodePosition.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Builtin.cpp">
+      <Filter>Source files\KapowEngine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceTypeInfo.cpp">
+      <Filter>Source files\KapowEngine\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="List.cpp">
+      <Filter>Source files\KapowEngine\Memory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

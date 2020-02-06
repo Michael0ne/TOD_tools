@@ -5,17 +5,18 @@
 #define KAPOW_STRINGS_POOL_SIZE 32
 
 //	NOTE: this looks like simple std::string. Maybe needs to be so?
-struct KapowString {
+class String {
+public:
 	int		m_nLength;		//	+ 0x0 = how much characters is in this string.
 	char*	m_szString;		//	+ 0x4 = pointer to actual string.
 	int		m_nBitMask;		//	+ 0x8 = unknown bit mask.
 	char	m_pUnkStrPtr;	//	+ 0xC = unknown pointer to string. Maybe next or default string?
 
-	KapowString() :
+	String() :
 		m_nLength(0), m_szString(NULL), m_nBitMask(0x80000004), m_pUnkStrPtr(NULL)
 	{}
 
-	KapowString(int size)
+	String(int size)
 	{
 		m_nLength = size + 1;
 		m_pUnkStrPtr = NULL;

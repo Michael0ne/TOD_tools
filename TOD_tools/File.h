@@ -1,11 +1,10 @@
 #pragma once
 
 #include "stdafx.h"
+#include "KapowStringsPool.h"
 
 //	NOTE: When performing a Read operation, file is read into m_pBuffer with this size (~128Kb)
 #define FILE_BLOCK_SIZE 131072
-
-class String {};
 
 class File
 {

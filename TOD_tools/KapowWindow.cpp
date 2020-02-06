@@ -566,7 +566,7 @@ void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT1
 	g_kapowWindow = this;
 
 	//	TODO: this bullshit should be handled by string class constructor!
-	m_sWindowTitle = KapowString(strlen(wndClassName));
+	m_sWindowTitle = String(strlen(wndClassName));
 	KapowStringsPool__unkAllocation(&m_sWindowTitle);
 	strcpy(m_sWindowTitle.m_szString, wndClassName);
 
@@ -576,7 +576,7 @@ void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT1
 		RegCloseKey(phkResult);
 	}
 
-	m_sUserDesktopPath = KapowString(strlen((const char*)&szDesktopPath));
+	m_sUserDesktopPath = String(strlen((const char*)&szDesktopPath));
 	KapowStringsPool__unkAllocation(&m_sUserDesktopPath);
 	strcpy(m_sUserDesktopPath.m_szString, (const char*)&szDesktopPath);
 
@@ -606,7 +606,7 @@ void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT1
 
 BOOL KapowWindow::_SetTitle(LPCSTR lpString)
 {
-	m_sWindowTitle = KapowString(strlen(lpString));
+	m_sWindowTitle = String(strlen(lpString));
 	KapowStringsPool__AllocateSpace(&m_sWindowTitle);
 	strcpy(m_sWindowTitle.m_szString, lpString);
 
@@ -615,12 +615,12 @@ BOOL KapowWindow::_SetTitle(LPCSTR lpString)
 
 void KapowWindow::SetDesktopDirectory(const char* pDesktopPath)
 {
-	m_sUserDesktopPath = KapowString(strlen(pDesktopPath));
+	m_sUserDesktopPath = String(strlen(pDesktopPath));
 	KapowStringsPool__AllocateSpace(&m_sUserDesktopPath);
 	strcpy(m_sUserDesktopPath.m_szString, pDesktopPath);
 }
 
-void KapowWindow::ProcessScreenshotsDirs(KapowString& outString)
+void KapowWindow::ProcessScreenshotsDirs(String& outString)
 {
 	char	PathName[MAX_PATH];
 	int		screenshotNo = 1;
@@ -658,15 +658,15 @@ bool KapowWindow::IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char*
 	return false;
 }
 
-void KapowWindow::GetUserDocumentsDir(KapowString& outString)
+void KapowWindow::GetUserDocumentsDir(String& outString)
 {
 	char	pszPath[MAX_PATH];
 
 	if (SHGetFolderPath(NULL, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, NULL, NULL, pszPath) < 0) {
-		outString = KapowString();
+		outString = String();
 	}
 	else {
-		outString = KapowString();
+		outString = String();
 		outString.m_nLength = strlen(pszPath);
 		KapowStringsPool__AllocateSpace(&outString);
 		strcpy(outString.m_szString, pszPath);

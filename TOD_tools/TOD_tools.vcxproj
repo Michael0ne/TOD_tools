@@ -119,6 +119,13 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AuxQuadTree.h" />
+    <ClInclude Include="Builtin.h" />
+    <ClInclude Include="CollisionList.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="ResourceTypeInfo.h" />
+    <ClInclude Include="Fragment.h" />
     <ClInclude Include="InputGameController.h" />
     <ClInclude Include="InputKeyboard.h" />
     <ClInclude Include="InputMouse.h" />
@@ -127,13 +134,24 @@
     <ClInclude Include="GfxInternal_Dx9.h" />
     <ClInclude Include="KapowStringsPool.h" />
     <ClInclude Include="KapowWindow.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="MemoryAllocators.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="NodePosition.h" />
     <ClInclude Include="Performance.h" />
+    <ClInclude Include="Properties.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="StreamedSoundBuffers.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AuxQuadTree.cpp" />
+    <ClCompile Include="Builtin.cpp" />
+    <ClCompile Include="CollisionList.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="List.cpp" />
+    <ClCompile Include="ResourceTypeInfo.cpp" />
+    <ClCompile Include="Fragment.cpp" />
     <ClCompile Include="InputGameController.cpp" />
     <ClCompile Include="InputKeyboard.cpp" />
     <ClCompile Include="InputMouse.cpp" />
@@ -150,8 +168,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="MemoryAllocators.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="NodePosition.cpp" />
     <ClCompile Include="Performance.cpp" />
+    <ClCompile Include="Properties.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="StreamedSoundBuffers.cpp" />
   </ItemGroup>

@@ -43,8 +43,8 @@ enum eWindowStyles {
 class KapowWindow
 {
 private:
-	KapowString			m_sWindowTitle;
-	KapowString			m_sUserDesktopPath;
+	String				m_sWindowTitle;
+	String				m_sUserDesktopPath;
 	void				*m_pMenuItemClickedCallback;
 	HWND				m_hWindow;
 	int					m_unkFlags;						//	Some unknown flags. TODO: Needs to be union {}.
@@ -119,11 +119,11 @@ public:
 	//	>> 43C8B0
 	void						SetDesktopDirectory(const char* pDesktopPath);
 	//	>> 43C900
-	void						ProcessScreenshotsDirs(KapowString& outString);
+	void						ProcessScreenshotsDirs(String& outString);
 	//	>> 43C990
 	static	bool				IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char* unkProcName, int unk2, char unk3);
 	//	>> 43CAE0.
-	static	void				GetUserDocumentsDir(KapowString& outString);
+	static	void				GetUserDocumentsDir(String& outString);
 	//	>> 43CB40
 	static	int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 };
