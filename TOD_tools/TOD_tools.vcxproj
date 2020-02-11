@@ -14,7 +14,7 @@
     <ProjectGuid>{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TOD_tools</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>TOD_hook</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -22,14 +22,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -133,7 +133,7 @@
     <ClInclude Include="File.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
     <ClInclude Include="KapowStringsPool.h" />
-    <ClInclude Include="KapowWindow.h" />
+    <ClInclude Include="Window.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MemoryAllocators.h" />
     <ClInclude Include="Node.h" />
@@ -159,7 +159,7 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
     <ClCompile Include="KapowStringsPool.cpp" />
-    <ClCompile Include="KapowWindow.cpp" />
+    <ClCompile Include="Window.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

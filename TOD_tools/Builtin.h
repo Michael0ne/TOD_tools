@@ -2,24 +2,14 @@
 
 #include "stdafx.h"
 
-class Node;
-class Entity;
-class AuxQuadTree;
-class CollisionList;
-class Fragment;
-class Properties;
-class NodePosition;
+#include "Node.h"
+#include "List.h"
+#include "KapowStringsPool.h"
 
-struct Node__vtbl
-{
-	void(__thiscall *Destroy)(Node *this_);
-	void(__thiscall *Destroy1)(Node *this_);
-	void(__thiscall *TouchPivot)(Node *this_);
-	Entity *(__thiscall *FindNode)(Node *this_, char *szName);
-	void(__thiscall *stub4)(Node *this_);
-	void(__thiscall *stub5)(Node *this_);
-	void(__thiscall *stub6)(Node *this_);
-};
+//	TODO: implementation!
+void Random__Init(int* seed);
+int Random__Integer(signed int maxvalue);
+float Random__Number();
 
 enum eTypes {
 	TYPE_NOTHING,	//	Nothing!
@@ -37,60 +27,79 @@ enum eTypes {
 	TOTAL_TYPES
 };
 
-//	TODO: replace with type-specific creator struc.
-struct Creator_Builtin {
-	void *lpVtbl;
-	int field_4;
-	int field_8;
-	BYTE field_C;
-	byte field_D;
-	byte field_E;
-	byte field_F;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	int field_24;
+template <typename Out, typename InType, int size>
+struct Handler_Params {
+	Out	output;
+	InType	input[size];
 };
 
-class Builtin
+/*
+ *	Used like this:
+ *	Handler_Params<float, float, 1> args = {NULL, 90};
+ *	Builtin::GetSin(&args);
+ *	args contents are: { 1, 90 }. Handy!
+ *	NOTE! Number of actual "inputs" are variadic, but output is always first element!
+*/
+
+struct Builtin_Handler
 {
-	Node__vtbl *lpVtbl;
-	Properties *m_pProperties;
-	int field_8;
-	char *m_szFragment;
-	__int16 field_10;
-	__int16 m_nOrder;
-	int m_nId;
-	int field_18;
-	int field_1C;
-	Creator_Builtin *m_pCreator;
-	void *lpUnkVtbl;
-	int m_nRenderOrderGroup;
-	int field_2C;
-	AuxQuadTree *m_pAuxQuadTree;
-	Entity *m_pNextSibling;
-	CollisionList *m_pIgnoreCollisionList;
-	NodePosition *m_vPosition;
-	Node *m_pParent;
-	Entity *m_pChild;
-	Fragment *m_pFragment;
-	char *m_szName;
-	int field_50;
-	int field_54;
-	int field_58;
-	int field_5C;
-	int field_60;
-	int field_64;
-	int field_68;
-	int field_6C;
-	int field_70;
-	int field_74;
-	int field_78;
-public:
+	String m_sProto;
+	void *m_pFunction;
+	String m_sName;
 };
 
-extern Builtin * g_pBuiltin;
+class Builtin : Node
+{
+private:
 
-static_assert(sizeof(Builtin) == 0x7C, MESSAGE_WRONG_CLASS_SIZE("Builtin"));
+	List<Builtin_Handler> m_MethodsList;
+	int field_88;
+	int field_8C;
+	int field_90;
+	int field_94;
+
+private:
+	Builtin() {}
+
+public:
+	Builtin(const Builtin&) = delete;
+
+	static Builtin& Get() {
+		static Builtin instance;
+
+		return instance;
+	}
+
+public:
+	//	Actual class methods.
+
+	//	MATH OPERATIONS
+	static void Sin(Handler_Params<float, float, 1>& params) { params.output = sin(params.input[0]); }
+	static void Cos(Handler_Params<float, float, 1>& params) { params.output = cos(params.input[0]); }
+	static void Tan(Handler_Params<float, float, 1>& params) { params.output = tan(params.input[0]); }
+	static void Asin(Handler_Params<float, float, 1>& params) { params.output = asin(params.input[0]); }
+	static void Acos(Handler_Params<float, float, 1>& params) { params.output = acos(params.input[0]); }
+	static void Atan(Handler_Params<float, float, 1>& params) { params.output = atan(params.input[0]); }
+	static void Abs(Handler_Params<int, int, 1>& params) { params.output = params.input < 0 ? -params.input[0] : params.input[0]; }
+	static void FAbs(Handler_Params<float, float, 1>& params) { params.output = fabs(params.input[0]); }
+	static void Sqrt(Handler_Params<float, float, 1>& params) { params.output = sqrt(params.input[0]); }
+	static void Floor(Handler_Params<float, float, 1>& params) { params.output = floor(params.input[0]); }
+	static void Ceil(Handler_Params<float, float, 1>& params) { params.output = ceil(params.input[0]); }
+	static void Clamp(Handler_Params<float, float, 2>& params) {
+		if (params.input[1] <= params.input[0])
+			if (params.input[0] <= params.input[2])
+				params.output = params.input[0];
+			else
+				params.output = params.input[2];
+		else
+			params.output = params.input[1];
+	}
+	static void Testbits(Handler_Params<bool, int, 1>& params) { params.output = (params.input[0] & params.input[1]) != 0; }
+	static void SetBit(Handler_Params<int, int, 1>& params) { params.output = params.input[0] | (1 << params.input[1]); }
+	static void GetBit(Handler_Params<bool, int, 1>& params) { params.output = (params.input[0] & (1 << params.input[1])) != 0; }
+	static void Rand_Seed(Handler_Params<int, int, 1>& params) { Random__Init(&params.input[0]); }
+	static void Rand_Integer(Handler_Params<int, int, 1>& params) { params.output = Random__Integer(params.input[0]); }
+	static void Rand_Number(Handler_Params<float, int, 1>& params) { params.output = Random__Number(); }
+};
+
+static_assert(sizeof(Builtin) == 0x98, MESSAGE_WRONG_CLASS_SIZE("Builtin"));

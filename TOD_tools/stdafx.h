@@ -3,6 +3,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
+
 #include <windows.h>		//	For general windows types.
 #include <xmmintrin.h>		//	For __m128 type.
 #include "stdio.h"			//	For general standart input/output routines.
@@ -52,7 +53,7 @@ struct Quaternion {
 
 typedef Quaternion<float> Orientation;
 
-class KapowWindow;
+class Window;
 class MemoryAllocators;
 class StreamedSoundBuffers;
 class GfxInternal_Dx9;
@@ -62,6 +63,7 @@ class InputMouse;
 class InputKeyboard;
 class InputGameController;
 class File;
+class Builtin;
 
 //	TODO: move these into tod_global_vars.h
 static char* aShellLaunched = (char*)0x9C59E4;
@@ -85,8 +87,9 @@ static const File * const g_pFilesArray[8] = {
 
 static IDirect3DDevice9 * g_pDirect3DDevice9 = (IDirect3DDevice9*)0xA39F34;
 static HWND * g_hWnd = (HWND*)0xA35EB8;
+static Builtin * g_pBuiltin = (Builtin *)0xA3B578;
 static HINSTANCE * g_hInstance = (HINSTANCE*)0xA35EB0;
-static KapowWindow * g_kapowWindow = (KapowWindow*)0xA35EB8;
+static Window * g_kapowWindow = (Window*)0xA35EB8;
 static MemoryAllocators * g_kapowAllocators = (MemoryAllocators*)0xA3AFC0;
 static StreamedSoundBuffers * g_soundManager = (StreamedSoundBuffers*)0xA35EC0;
 static GfxInternal_Dx9 * g_pRenderer = (GfxInternal_Dx9*)0xA39F14;

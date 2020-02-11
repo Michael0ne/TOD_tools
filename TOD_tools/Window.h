@@ -40,7 +40,7 @@ enum eWindowStyles {
  *------------------------------------------------------------
  * -----------------------------------------------------------
 */
-class KapowWindow
+class Window
 {
 private:
 	String				m_sWindowTitle;
@@ -59,7 +59,7 @@ private:
 
 public:
 	//	>> 43B920
-	KapowWindow*				GetInstance() { return g_kapowWindow; }
+	Window*				GetInstance() { return g_kapowWindow; }
 	//	>> 43B930
 	void						QuitGame() { m_bQuitRequested = true; }
 	//	>> 43B950
@@ -128,4 +128,4 @@ public:
 	static	int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 };
 
-static_assert(sizeof(KapowWindow) == 68, MESSAGE_WRONG_CLASS_SIZE("KapowWindow"));
+static_assert(sizeof(Window) == 68, MESSAGE_WRONG_CLASS_SIZE("KapowWindow"));

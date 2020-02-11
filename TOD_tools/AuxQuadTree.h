@@ -30,4 +30,3 @@ class AuxQuadTree
 	int m_nLodDistance;
 public:
 };
-

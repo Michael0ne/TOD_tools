@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "StreamedSoundBuffers.h"
+#include "Builtin.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -153,6 +154,9 @@ void MemoryHook()
 {
 	//	Insert all hooks here.
 
+	//	TODO: once some classes are fully implemented - instantiate them here.
+	*(Builtin*)0xA3B578 = Builtin::Get();
+
 	//	Redirect all logs into our file.
 	//	TODO: this replaces calls to 'log' function. Calls to 'PrintNewFrameInfo' and 'OutputDebugString' should also be hooked.
 	hook(0x40C9D0, &debug, PATCH_JUMP);
@@ -178,19 +182,6 @@ void MemoryHook()
 	PATCH_FILEPROC();
 	//PATCH_PERF();
 	PATCH_RENDERER();
-
-	/*
-	 *	Regarding file types:
-	 *	It looks like all files in 'data/overdose_the_game/overdose/shared' contain just memory dumps of actual game classes
-	 *	like models, sounds, textures and so on. Overdose.main could contain generic models/sounds/textures, used across ALL of the maps
-	 *	and files like .map, .submap, .mission and such contain specific models/sounds/textures. Also, since these
-	 *	files are just memory dumps, they might contain references (or implementations) of script function. And by looks of it,
-	 *	game reads these files like 'blocks' with fixed size and puts them somewhere in memory.
-	 *
-	 *	Regarding scripts:
-	 *	Scripts used all across game for everything. The file 'database.bin' looks like a table of all 'variables' used by game
-	 *	and loaded on startup. PS2 version contains 'scriptresource.bin' with currently unknown purpose.
-	*/
 }
 
 //=========================================================================
@@ -269,4 +260,3 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 	}
 	return TRUE;
 }
-

@@ -1,8 +1,7 @@
-#include "KapowWindow.h"
-
+#include "Window.h"
 #include "GfxInternal_Dx9.h"
 
-bool KapowWindow::ProcessMessages()
+bool Window::ProcessMessages()
 {
 	tagMSG	Msg;
 
@@ -20,17 +19,17 @@ bool KapowWindow::ProcessMessages()
 	return 0;
 }
 
-inline void KapowWindow::SetMenuClickCallback(void* pCallback)
+inline void Window::SetMenuClickCallback(void* pCallback)
 {
 	m_pMenuItemClickedCallback = pCallback;
 }
 
-inline void KapowWindow::SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution)
+inline void Window::SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution)
 {
 	SetWindowPos(m_hWindow, 0, 0, 0, resolution.Width, resolution.Height, SWP_NOMOVE);
 }
 
-void KapowWindow::SetWindowResolutionDontMove(const D3DDISPLAYMODE& resolution)
+void Window::SetWindowResolutionDontMove(const D3DDISPLAYMODE& resolution)
 {
 	tagRECT		Rect = { 0, 0, (LONG)resolution.Width, (LONG)resolution.Height };
 	DWORD		dwMenuName = GetClassLongA(m_hWindow, GCL_MENUNAME);
@@ -40,7 +39,7 @@ void KapowWindow::SetWindowResolutionDontMove(const D3DDISPLAYMODE& resolution)
 	SetWindowPos(m_hWindow, 0, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, SWP_NOMOVE);
 }
 
-void KapowWindow::_GetWindowRect(Vector2<LONG>& outRect)
+void Window::_GetWindowRect(Vector2<LONG>& outRect)
 {
 	tagRECT		WindowRect;
 
@@ -60,7 +59,7 @@ void KapowWindow::_GetWindowRect(Vector2<LONG>& outRect)
 	outRect.y	= m_nWindowTop;
 }
 
-void KapowWindow::GetTopCorner(Vector2<LONG>& outRect)
+void Window::GetTopCorner(Vector2<LONG>& outRect)
 {
 	tagRECT		Rect;
 
@@ -70,7 +69,7 @@ void KapowWindow::GetTopCorner(Vector2<LONG>& outRect)
 	outRect.y	= Rect.top;
 }
 
-void KapowWindow::GetWindowCenterRelative(Vector2<LONG>& outRect)
+void Window::GetWindowCenterRelative(Vector2<LONG>& outRect)
 {
 	tagRECT		Rect;
 
@@ -80,7 +79,7 @@ void KapowWindow::GetWindowCenterRelative(Vector2<LONG>& outRect)
 	outRect.y = Rect.bottom - Rect.top;
 }
 
-void KapowWindow::GetClientCenterRelative(Vector2<LONG>& outRect)
+void Window::GetClientCenterRelative(Vector2<LONG>& outRect)
 {
 	tagRECT		Rect;
 
@@ -90,12 +89,12 @@ void KapowWindow::GetClientCenterRelative(Vector2<LONG>& outRect)
 	outRect.y	= Rect.bottom - Rect.top;
 }
 
-inline void KapowWindow::_SetWindowPos(Vector2<int>& pos)
+inline void Window::_SetWindowPos(Vector2<int>& pos)
 {
 	SetWindowPos(m_hWindow, 0, pos.x, pos.y, 0, 0, SWP_NOSIZE);
 }
 
-void KapowWindow::SetWindowPosNoCopyBits(tagPOINT* newPos)
+void Window::SetWindowPosNoCopyBits(tagPOINT* newPos)
 {
 	tagRECT		WindowRect;
 	tagRECT		NewRect;
@@ -115,7 +114,7 @@ void KapowWindow::SetWindowPosNoCopyBits(tagPOINT* newPos)
 }
 
 //	TODO: fix. This crashes the game now!
-void KapowWindow::GlobalPause()
+void Window::GlobalPause()
 {
 	bool	bWindowVisible = true;
 
@@ -138,7 +137,7 @@ void KapowWindow::GlobalPause()
 	}
 }
 
-void KapowWindow::ClipCursorInsideWindow(bool bDontClip)
+void Window::ClipCursorInsideWindow(bool bDontClip)
 {
 	m_bDestroyed = bDontClip;
 
@@ -166,7 +165,7 @@ void KapowWindow::ClipCursorInsideWindow(bool bDontClip)
 	ClipCursor(&ClipRect);
 }
 
-int	KapowWindow::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
+int	Window::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
 {
 	switch (MessageBox(m_hWindow, lpText, lpCaption, uType[type])) {
 	case IDCANCEL:
@@ -185,7 +184,7 @@ int	KapowWindow::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int 
 }
 
 //	TODO: fix. This crashes the game now!
-int KapowWindow::GetSystemLanguageCode()
+int Window::GetSystemLanguageCode()
 {
 	CHAR	LocaleData;
 	int		nLanguageCode = 0;
@@ -313,7 +312,7 @@ int KapowWindow::GetSystemLanguageCode()
 	//	0 - English
 }
 
-void KapowWindow::FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize)
+void Window::FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize)
 {
 	int	unk1 = nBaseStringResourcesAddr & 0xF;
 	*outString = 0;
@@ -344,7 +343,7 @@ void KapowWindow::FindStringResource(int nBaseStringResourcesAddr, wchar_t* outS
 	}
 }
 
-void KapowWindow::IncompatibleMachineParameterError(int messageID, char bWarningIcon)
+void Window::IncompatibleMachineParameterError(int messageID, char bWarningIcon)
 {
 	signed int nMessageId;
 
@@ -385,7 +384,7 @@ void KapowWindow::IncompatibleMachineParameterError(int messageID, char bWarning
 	exit(1);
 }
 
-void KapowWindow::SetAccessibilityFeatures(bool bCollect)
+void Window::SetAccessibilityFeatures(bool bCollect)
 {
 	if (bCollect) {
 		SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
@@ -415,7 +414,7 @@ void KapowWindow::SetAccessibilityFeatures(bool bCollect)
 	}
 }
 
-void KapowWindow::Release()
+void Window::Release()
 {
 	if (m_hWindow)
 		DestroyWindow(m_hWindow);
@@ -429,7 +428,7 @@ void KapowWindow::Release()
 	//	TODO: multithreaded code should go here.
 }
 
-void KapowWindow::_CreateWindow(UINT16 nIconResourceId)
+void Window::_CreateWindow(UINT16 nIconResourceId)
 {
 	DWORD	windowStyle = (m_unkFlags & 1) != 0 ? 0xC70000 : 0xC20000;
 	if (nIconResourceId)
@@ -438,7 +437,7 @@ void KapowWindow::_CreateWindow(UINT16 nIconResourceId)
 	m_hWindow = CreateWindowExA(0x40000, m_sWindowTitle.m_szString, m_sWindowTitle.m_szString, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, *g_hInstance, 0);
 }
 
-LRESULT CALLBACK KapowWindow::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Window::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	Vector2<LONG>	wndRect;
 
@@ -491,7 +490,7 @@ LRESULT CALLBACK KapowWindow::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPA
 
 //	TODO: fix. This crashes the game now!
 //	TODO: basic implementation for KapowInput and StreamedSoundBuffers.
-void KapowWindow::ProcessInputDevices(bool(*gameLoop)(void))
+void Window::ProcessInputDevices(bool(*gameLoop)(void))
 {
 	ShowWindow(m_hWindow, SW_SHOW);
 
@@ -527,7 +526,7 @@ void KapowWindow::ProcessInputDevices(bool(*gameLoop)(void))
 	}
 }
 
-ATOM KapowWindow::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
+ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
 {
 	//_RegisterWindowClass(_this, nMenuResourceId, nIconResourceId);
 	WNDCLASSA WndClass;
@@ -551,7 +550,7 @@ ATOM KapowWindow::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResour
 }
 
 //	FIXME: this crashes the game now!
-void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, int unkParam2, UINT16 nIconResourceId)
+void Window::InitEnvironment(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, int unkParam2, UINT16 nIconResourceId)
 {
 	HKEY				phkResult;
 	BYTE				szDesktopPath;
@@ -604,7 +603,7 @@ void KapowWindow::InitEnvironment(const char* wndClassName, int unkParam1, UINT1
 	}
 }
 
-BOOL KapowWindow::_SetTitle(LPCSTR lpString)
+BOOL Window::_SetTitle(LPCSTR lpString)
 {
 	m_sWindowTitle = String(strlen(lpString));
 	KapowStringsPool__AllocateSpace(&m_sWindowTitle);
@@ -613,14 +612,14 @@ BOOL KapowWindow::_SetTitle(LPCSTR lpString)
 	return SetWindowText(m_hWindow, lpString);
 }
 
-void KapowWindow::SetDesktopDirectory(const char* pDesktopPath)
+void Window::SetDesktopDirectory(const char* pDesktopPath)
 {
 	m_sUserDesktopPath = String(strlen(pDesktopPath));
 	KapowStringsPool__AllocateSpace(&m_sUserDesktopPath);
 	strcpy(m_sUserDesktopPath.m_szString, pDesktopPath);
 }
 
-void KapowWindow::ProcessScreenshotsDirs(String& outString)
+void Window::ProcessScreenshotsDirs(String& outString)
 {
 	char	PathName[MAX_PATH];
 	int		screenshotNo = 1;
@@ -641,7 +640,7 @@ void KapowWindow::ProcessScreenshotsDirs(String& outString)
 }
 
 //	TODO: fix. This crashes the game!
-bool KapowWindow::IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char* unkProcName, int unk2, char unk3)
+bool Window::IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char* unkProcName, int unk2, char unk3)
 {
 	HMODULE	hModule;
 	DWORD	unk;
@@ -658,7 +657,7 @@ bool KapowWindow::IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char*
 	return false;
 }
 
-void KapowWindow::GetUserDocumentsDir(String& outString)
+void Window::GetUserDocumentsDir(String& outString)
 {
 	char	pszPath[MAX_PATH];
 
@@ -673,7 +672,7 @@ void KapowWindow::GetUserDocumentsDir(String& outString)
 	}
 }
 
-int CALLBACK KapowWindow::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+int CALLBACK Window::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	HMODULE	moduleHandle;
 	char	FileName[1024];
@@ -724,31 +723,31 @@ inline void PATCH_WINDOW()
 {
 	void * dwFunc;
 
-	_asm	mov		eax, offset KapowWindow::RegisterWindowClass
+	_asm	mov		eax, offset Window::RegisterWindowClass
 	_asm	mov		dwFunc, eax
 	//	Override RegisterWindowClass function.
 	hook(0x43C767, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::_CreateWindow
+	_asm	mov		eax, offset Window::_CreateWindow
 	_asm	mov		dwFunc, eax
 	//	Override CreateWindow function.
 	hook(0x43C76F, dwFunc, PATCH_NOTHING);
 
 	//	Override FindStringResource function.
-	hook(0x43C807, &KapowWindow::FindStringResource, PATCH_CALL);
-	hook(0x43C81A, &KapowWindow::FindStringResource, PATCH_CALL);
-	hook(0x43C0AC, &KapowWindow::FindStringResource, PATCH_CALL);
-	hook(0x43C0BF, &KapowWindow::FindStringResource, PATCH_CALL);
+	hook(0x43C807, &Window::FindStringResource, PATCH_CALL);
+	hook(0x43C81A, &Window::FindStringResource, PATCH_CALL);
+	hook(0x43C0AC, &Window::FindStringResource, PATCH_CALL);
+	hook(0x43C0BF, &Window::FindStringResource, PATCH_CALL);
 
-	_asm	mov		eax, offset KapowWindow::Release
+	_asm	mov		eax, offset Window::Release
 	_asm	mov		dwFunc, eax
 	//	Override Release function.
 	hook(0x93CCBF, dwFunc, PATCH_NOTHING);
 
 	//	Override SetAccessibilityFeatures function.
-	hook(0x43C7B3, &KapowWindow::SetAccessibilityFeatures, PATCH_CALL);
+	hook(0x43C7B3, &Window::SetAccessibilityFeatures, PATCH_CALL);
 
-	_asm	mov		eax, offset KapowWindow::IncompatibleMachineParameterError
+	_asm	mov		eax, offset Window::IncompatibleMachineParameterError
 	_asm	mov		dwFunc, eax
 	//	Override IncompatibleMachineParameterError function.
 	hook(0x43ADF0, dwFunc, PATCH_NOTHING);
@@ -770,82 +769,82 @@ inline void PATCH_WINDOW()
 	hook(0x45E7A2, dwFunc, PATCH_NOTHING);
 	hook(0x45E7FE, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GetSystemLanguageCode
+	_asm	mov		eax, offset Window::GetSystemLanguageCode
 	_asm	mov		dwFunc, eax
 	//	Override GetSystemLanguageCode function.
 	//hook(0x4855D6, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GetMessageBoxResultButton
+	_asm	mov		eax, offset Window::GetMessageBoxResultButton
 	_asm	mov		dwFunc, eax
 	//	Override GetMessageBoxResultButton function.
 	hook(0x470AF5, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::ClipCursorInsideWindow
+	_asm	mov		eax, offset Window::ClipCursorInsideWindow
 	_asm	mov		dwFunc, eax
 	//	Override ClipCursorInsideWindow function.
 	hook(0x93CBE1, dwFunc, PATCH_NOTHING);
 	hook(0x93F2F0, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GlobalPause
+	_asm	mov		eax, offset Window::GlobalPause
 	_asm	mov		dwFunc, eax
 	//	Override GlobalPause function.
 	//hook(0x43C4E8, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::SetWindowPosNoCopyBits
+	_asm	mov		eax, offset Window::SetWindowPosNoCopyBits
 	_asm	mov		dwFunc, eax
 	//	Override SetWindowPosNoCopyBits function.
 	//	TODO: find references to this function!
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::_SetWindowPos
+	_asm	mov		eax, offset Window::_SetWindowPos
 	_asm	mov		dwFunc, eax
 	//	Override _SetWindowPos function.
 	//	TODO: find references to this function!
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GetClientCenterRelative
+	_asm	mov		eax, offset Window::GetClientCenterRelative
 	_asm	mov		dwFunc, eax
 	//	Override GetClientCenterRelative function.
 	//	TODO: find references to this function!
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GetWindowCenterRelative
+	_asm	mov		eax, offset Window::GetWindowCenterRelative
 	_asm	mov		dwFunc, eax
 	//	Override GetWindowCenterRelative function.
 	//	TODO: find references to this function!
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GetTopCorner
+	_asm	mov		eax, offset Window::GetTopCorner
 	_asm	mov		dwFunc, eax
 	//	Override GetTopCorner function.
 	//	TODO: find references to this function!
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::_GetWindowRect
+	_asm	mov		eax, offset Window::_GetWindowRect
 	_asm	mov		dwFunc, eax
 	//	Override _GetWindowRect function.
 	hook(0x43C398, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::SetWindowResolutionDontMove
+	_asm	mov		eax, offset Window::SetWindowResolutionDontMove
 	_asm	mov		dwFunc, eax
 	//	Override SetWindowResolutionDontMove function.
 	hook(0x45BF08, dwFunc, PATCH_NOTHING);
 	hook(0x45C02C, dwFunc, PATCH_NOTHING);
 	hook(0x45C17E, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::SetWindowResolutionRaw
+	_asm	mov		eax, offset Window::SetWindowResolutionRaw
 	_asm	mov		dwFunc, eax
 	//	Override SetWindowResolutionRaw function.
 	hook(0x45BE9A, dwFunc, PATCH_NOTHING);
 	hook(0x45C000, dwFunc, PATCH_NOTHING);
 	hook(0x45C154, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::SetMenuClickCallback
+	_asm	mov		eax, offset Window::SetMenuClickCallback
 	_asm	mov		dwFunc, eax
 	//	Override SetMenuClickCallback function.
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::ProcessMessages
+	_asm	mov		eax, offset Window::ProcessMessages
 	_asm	mov		dwFunc, eax
 	//	Override ShouldProcessMessages function.
 	//hook(0x43C4DD, dwFunc, PATCH_NOTHING); -- removed, since it's referenced in ProcessInputDevices() that is already hooked.
@@ -862,42 +861,42 @@ inline void PATCH_WINDOW()
 	hook(0x475D4B, dwFunc, PATCH_NOTHING);
 	hook(0x475F4B, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::QuitGame
+	_asm	mov		eax, offset Window::QuitGame
 	_asm	mov		dwFunc, eax
 	//	Override QuitGame function.
 	hook(0x485666, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GetCoverdemoPlayMode
+	_asm	mov		eax, offset Window::GetCoverdemoPlayMode
 	_asm	mov		dwFunc, eax
 	//	Override GetCoverdemoPlayMode function.
 	hook(0x485676, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GetCoverdemoInactiveTimeoutSec
+	_asm	mov		eax, offset Window::GetCoverdemoInactiveTimeoutSec
 	_asm	mov		dwFunc, eax
 	//	Override GetCoverdemoInactiveTimeoutSec function.
 	hook(0x485696, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::GetCoverdemoGameplayTimeoutSec
+	_asm	mov		eax, offset Window::GetCoverdemoGameplayTimeoutSec
 	_asm	mov		dwFunc, eax
 	//	Override GetCoverdemoGameplayTimeoutSec function.
 	hook(0x4856B6, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::ProcessInputDevices
+	_asm	mov		eax, offset Window::ProcessInputDevices
 	_asm	mov		dwFunc, eax
 	//	Override ProcessInputDevices function.
 	//hook(0x93D0BB, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::InitEnvironment
+	_asm	mov		eax, offset Window::InitEnvironment
 	_asm	mov		dwFunc, eax
 	//	Override InitEnvironment function.
 	//hook(0x93E008, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::_SetTitle
+	_asm	mov		eax, offset Window::_SetTitle
 	_asm	mov		dwFunc, eax
 	//	Override _SetTitle function.
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset KapowWindow::SetDesktopDirectory
+	_asm	mov		eax, offset Window::SetDesktopDirectory
 	_asm	mov		dwFunc, eax
 	//	Override SetDesktopDirectory function.
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
@@ -905,14 +904,14 @@ inline void PATCH_WINDOW()
 	//	Override IsProcessAGameProcess function.
 	//hook(0x43CCD4, &KapowWindow::IsProcessAGameProcess, PATCH_CALL);
 
-	_asm	mov		eax, offset KapowWindow::ProcessScreenshotsDirs
+	_asm	mov		eax, offset Window::ProcessScreenshotsDirs
 	_asm	mov		dwFunc, eax
 	//	Override ProcessScreenshotsDirs function.
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
 	//	Override GetUserDocumentsDir function.
-	hook(0x93E2ED, &KapowWindow::GetUserDocumentsDir, PATCH_CALL);
+	hook(0x93E2ED, &Window::GetUserDocumentsDir, PATCH_CALL);
 
 	//	Override WinMain function.
-	hook(0x95383F, &KapowWindow::WinMain, PATCH_CALL);
+	hook(0x95383F, &Window::WinMain, PATCH_CALL);
 }

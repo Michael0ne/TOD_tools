@@ -71,10 +71,9 @@ class Node
 	int field_6C;
 	int field_70;
 	int field_74;
-	int field_78;
 public:
 };
 
 extern Entity * g_pEntity;
 
-static_assert(sizeof(Node) == 0x7C, MESSAGE_WRONG_CLASS_SIZE("Node"));
+static_assert(sizeof(Node) == 0x78, MESSAGE_WRONG_CLASS_SIZE("Node"));
