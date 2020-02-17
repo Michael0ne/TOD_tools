@@ -1,5 +1,8 @@
 #include "Window.h"
 #include "GfxInternal_Dx9.h"
+#include "StringsPool.h"
+
+Window* g_Window = NULL;
 
 bool Window::ProcessMessages()
 {
@@ -19,12 +22,7 @@ bool Window::ProcessMessages()
 	return 0;
 }
 
-inline void Window::SetMenuClickCallback(void* pCallback)
-{
-	m_pMenuItemClickedCallback = pCallback;
-}
-
-inline void Window::SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution)
+void Window::SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution)
 {
 	SetWindowPos(m_hWindow, 0, 0, 0, resolution.Width, resolution.Height, SWP_NOMOVE);
 }
@@ -89,7 +87,7 @@ void Window::GetClientCenterRelative(Vector2<LONG>& outRect)
 	outRect.y	= Rect.bottom - Rect.top;
 }
 
-inline void Window::_SetWindowPos(Vector2<int>& pos)
+void Window::_SetWindowPos(Vector2<int>& pos)
 {
 	SetWindowPos(m_hWindow, 0, pos.x, pos.y, 0, 0, SWP_NOSIZE);
 }
@@ -114,7 +112,7 @@ void Window::SetWindowPosNoCopyBits(tagPOINT* newPos)
 }
 
 //	TODO: fix. This crashes the game now!
-void Window::GlobalPause()
+void Window::UpdateVisibility()
 {
 	bool	bWindowVisible = true;
 
@@ -129,21 +127,21 @@ void Window::GlobalPause()
 		m_bVisible = bWindowVisible;
 
 		if (bWindowVisible) {
-			SoundManager__SetGlobalPause(g_soundManager, 0);
+			SoundManager__SetGlobalPause(g_pSoundManager, 0);
 		}else{
-			SoundManager__SetGlobalPause(g_soundManager, 1);
-			SoundManager__MeasureWaitForSoftPause(g_soundManager);
+			SoundManager__SetGlobalPause(g_pSoundManager, 1);
+			SoundManager__MeasureWaitForSoftPause(g_pSoundManager);
 		}
 	}
 }
 
-void Window::ClipCursorInsideWindow(bool bDontClip)
+void Window::SetCursorReleased(bool bReleased)
 {
-	m_bDestroyed = bDontClip;
+	m_bCursorReleased = bReleased;
 
-	ShowCursor(bDontClip);
+	ShowCursor(bReleased);
 
-	if (bDontClip) {
+	if (bReleased) {
 		ClipCursor(0);
 
 		return;
@@ -184,14 +182,17 @@ int	Window::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
 }
 
 //	TODO: fix. This crashes the game now!
-int Window::GetSystemLanguageCode()
+int GetSystemLanguageCode()
 {
 	CHAR	LocaleData;
 	int		nLanguageCode = 0;
 	bool	bUnk;
 
 	GetLocaleInfoA(LOCALE_SYSTEM_DEFAULT, LOCALE_ILANGUAGE, &LocaleData, 5);
-	sscanf(&LocaleData, "%x", &nLanguageCode);
+	int result = sscanf(&LocaleData, "%x", &nLanguageCode);
+
+	if (result == EOF)
+		return -1;
 
 	debug("Language code is: %d\n", nLanguageCode);
 
@@ -312,13 +313,21 @@ int Window::GetSystemLanguageCode()
 	//	0 - English
 }
 
-void Window::FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize)
+void FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize)
 {
 	int	unk1 = nBaseStringResourcesAddr & 0xF;
 	*outString = 0;
 
 	HRSRC strResHandle = FindResourceExA(NULL, RT_STRING, (LPCSTR)((nBaseStringResourcesAddr >> 4) + 1), 0);
+
+	if (!strResHandle)
+		return;
+
 	HGLOBAL stringResourceData = LoadResource(NULL, strResHandle);
+
+	if (!stringResourceData)
+		return;
+
 	LPVOID pStringResource = LockResource(stringResourceData);
 
 	if (pStringResource) {
@@ -343,7 +352,7 @@ void Window::FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString
 	}
 }
 
-void Window::IncompatibleMachineParameterError(int messageID, char bWarningIcon)
+void IncompatibleMachineParameterError(int messageID, char bWarningIcon)
 {
 	signed int nMessageId;
 
@@ -378,13 +387,13 @@ void Window::IncompatibleMachineParameterError(int messageID, char bWarningIcon)
 	FindStringResource(*stringResourceBaseAddr + 220, &Caption, 256);
 	FindStringResource(*stringResourceBaseAddr + nMessageId, &Text, 512);
 
-	MessageBoxW(m_hWindow, &Text, &Caption, bWarningIcon ? MB_ICONWARNING : MB_ICONERROR);
+	MessageBoxW(g_pWindow->m_hWindow, &Text, &Caption, bWarningIcon ? MB_ICONWARNING : MB_ICONERROR);
 
 	//	TODO: this calls exit_0(1) which calls doexit(...) which does something other than just exit().
 	exit(1);
 }
 
-void Window::SetAccessibilityFeatures(bool bCollect)
+void SetAccessibilityFeatures(bool bCollect)
 {
 	if (bCollect) {
 		SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
@@ -419,37 +428,43 @@ void Window::Release()
 	if (m_hWindow)
 		DestroyWindow(m_hWindow);
 
-	g_kapowWindow = NULL;
+	g_pWindow = NULL;
 
 	SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
 	SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
 	SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
 
-	//	TODO: multithreaded code should go here.
+	if (m_sUserDesktopPath.m_szString != &m_sUserDesktopPath.m_pEmpty && m_sUserDesktopPath.m_nBitMask & 0x80000000)
+		Allocators__ReleaseMemory(m_sUserDesktopPath.m_szString, 0);
+
+	if (m_sWindowTitle.m_szString != &m_sWindowTitle.m_pEmpty && m_sWindowTitle.m_nBitMask & 0x80000000)
+		Allocators__ReleaseMemory(m_sWindowTitle.m_szString, 0);
 }
 
 void Window::_CreateWindow(UINT16 nIconResourceId)
 {
-	DWORD	windowStyle = (m_unkFlags & 1) != 0 ? 0xC70000 : 0xC20000;
+	//DWORD	windowStyle = (m_unkFlags & 1) != 0 ? 0xC70000 : 0xC20000;
+	DWORD windowStyle = (m_unkFlags & 1) != 0 ? WS_CAPTION | WS_MAXIMIZE : WS_CAPTION | WS_MINIMIZE;
 	if (nIconResourceId)
-		windowStyle |= 0x80000;
+		//windowStyle |= 0x80000;
+		windowStyle |= WS_SYSMENU;
 
-	m_hWindow = CreateWindowExA(0x40000, m_sWindowTitle.m_szString, m_sWindowTitle.m_szString, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, *g_hInstance, 0);
+	m_hWindow = CreateWindowExA(WS_EX_APPWINDOW, m_sWindowTitle.m_szString, m_sWindowTitle.m_szString, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, *g_hInstance, 0);
 }
 
-LRESULT CALLBACK Window::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	Vector2<LONG>	wndRect;
 
 	if (Msg <= WM_SETCURSOR) {
 		if (Msg != WM_SETCURSOR) {
 			if (Msg == WM_DESTROY) {
-				g_kapowWindow->_GetWindowRect(wndRect);
-				g_kapowWindow->m_bDestroyed = true;
+				g_pWindow->_GetWindowRect(wndRect);
+				g_pWindow->m_bCursorReleased = true;
 				ShowCursor(1);
 				ClipCursor(0);
 				PostQuitMessage(0);
-				g_kapowWindow->m_hWindow = NULL;
+				g_pWindow->m_hWindow = NULL;
 
 				return 0;
 			}
@@ -461,19 +476,19 @@ LRESULT CALLBACK Window::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
 			}
 			return 1;
 		}
-		if (!g_kapowWindow->m_bDestroyed) {
+		if (!g_pWindow->m_bCursorReleased) {
 			SetCursor(0);
 			return 0;
 		}
-		SetCursor(g_kapowWindow->m_hCursor);
+		SetCursor(g_pWindow->m_hCursor);
 
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
 
 	if (Msg != WM_NCHITTEST) {
 		if (Msg == WM_COMMAND) {
-			if (g_kapowWindow->m_pMenuItemClickedCallback)
-				((void(__cdecl *)(DWORD))g_kapowWindow->m_pMenuItemClickedCallback)(wParam);
+			if (g_pWindow->m_pMenuItemClickedCallback)
+				((void(__cdecl *)(DWORD))g_pWindow->m_pMenuItemClickedCallback)(wParam);
 			return DefWindowProc(hWnd, Msg, wParam, lParam);
 		}
 		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && g_pRenderer->m_bResolutionDetected)
@@ -488,7 +503,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
 	return 1;
 }
 
-//	TODO: fix. This crashes the game now!
+//	FIXME: fix. This crashes the game now!
 //	TODO: basic implementation for KapowInput and StreamedSoundBuffers.
 void Window::ProcessInputDevices(bool(*gameLoop)(void))
 {
@@ -501,7 +516,7 @@ void Window::ProcessInputDevices(bool(*gameLoop)(void))
 		if (!ProcessMessages())
 			break;
 
-		GlobalPause();
+		UpdateVisibility();
 
 		if (m_bVisible) {
 			if (g_pInputMouse)
@@ -528,8 +543,12 @@ void Window::ProcessInputDevices(bool(*gameLoop)(void))
 
 ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
 {
-	//_RegisterWindowClass(_this, nMenuResourceId, nIconResourceId);
 	WNDCLASSA WndClass;
+
+#ifdef _DEBUG
+	nMenuResourceId = 103;
+	nIconResourceId = 101;
+#endif
 
 	debug("Creating menu with resource ID: %d\n", nMenuResourceId);
 
@@ -544,30 +563,31 @@ ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;
 
-	debug("Registering window class...\n");
-
 	return RegisterClassA(&WndClass);
 }
 
-//	FIXME: this crashes the game now!
-void Window::InitEnvironment(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, int unkParam2, UINT16 nIconResourceId)
+//	TODO: make this a constructor! Only called once and seems to initialize all class members here.
+//	NOTE: szFileSystems doesn't seem to be referenced here, but used in Config::Process later.
+void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId)
 {
 	HKEY				phkResult;
-	BYTE				szDesktopPath;
+	BYTE				szDesktopPath = 0;
 	MEMORYSTATUSEX		memoryStatus;
+
+	g_Window = this;
+	patch(0xa35eb8, this, 4);
 
 	m_unkFlags = unkParam1;
 	m_bVisible = true;
 	m_pMenuItemClickedCallback = NULL;
-	m_bDestroyed = true;
+	m_bCursorReleased = true;
 	m_bQuitRequested = false;
 
-	g_kapowWindow = this;
+	//m_sWindowTitle = String(strlen(wndClassName));
+	//KapowStringsPool__unkAllocation(&m_sWindowTitle);
+	//strcpy(m_sWindowTitle.m_szString, wndClassName);
 
-	//	TODO: this bullshit should be handled by string class constructor!
-	m_sWindowTitle = String(strlen(wndClassName));
-	KapowStringsPool__unkAllocation(&m_sWindowTitle);
-	strcpy(m_sWindowTitle.m_szString, wndClassName);
+	m_sWindowTitle = String(wndClassName);
 
 	if (!RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\", 0, KEY_QUERY_VALUE, &phkResult)) {
 		DWORD	nMaxValueSize = MAX_PATH;
@@ -575,9 +595,11 @@ void Window::InitEnvironment(const char* wndClassName, int unkParam1, UINT16 nMe
 		RegCloseKey(phkResult);
 	}
 
-	m_sUserDesktopPath = String(strlen((const char*)&szDesktopPath));
-	KapowStringsPool__unkAllocation(&m_sUserDesktopPath);
-	strcpy(m_sUserDesktopPath.m_szString, (const char*)&szDesktopPath);
+	//m_sUserDesktopPath = String(strlen((const char*)&szDesktopPath));
+	//KapowStringsPool__unkAllocation(&m_sUserDesktopPath);
+	//strcpy(m_sUserDesktopPath.m_szString, (const char*)&szDesktopPath);
+
+	m_sUserDesktopPath = String((const char*)& szDesktopPath);
 
 	RegisterWindowClass(nMenuResourceId, nIconResourceId);
 	_CreateWindow(nMenuResourceId);
@@ -619,65 +641,8 @@ void Window::SetDesktopDirectory(const char* pDesktopPath)
 	strcpy(m_sUserDesktopPath.m_szString, pDesktopPath);
 }
 
-void Window::ProcessScreenshotsDirs(String& outString)
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	char	PathName[MAX_PATH];
-	int		screenshotNo = 1;
-	char(__cdecl *sub_4182A0)(char* pUnkStr) = (char (__cdecl*)(char*))0x4182A0;
-
-	sprintf(PathName, "%s/Kapow Screenshots", m_sUserDesktopPath.m_szString);
-	CreateDirectory(PathName, NULL);
-
-	do {
-		sprintf(PathName, "%s/Kapow Screenshots/screenshot %03d.bmp", m_sUserDesktopPath.m_szString, screenshotNo++);
-	} while (sub_4182A0(PathName));
-
-	//	Originally - KapowStringBuffer::MakeString. Since I assume that it's actually a strings pool
-	//	and there's no reference to this function in exe left, best would be to just pass a KapowStringBuffer
-	//	object created on stack and utility class KapowStringsPool will allocate it on stack and return pointer
-	//	to it, to be set to actual value later.
-	//KapowStringsPool::Insert(outString)->Set(PathName);
-}
-
-//	TODO: fix. This crashes the game!
-bool Window::IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char* unkProcName, int unk2, char unk3)
-{
-	HMODULE	hModule;
-	DWORD	unk;
-	char	baseName[260];
-	HANDLE	procHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_TERMINATE, false, dwProcessId);
-	if (procHandle && EnumProcessModules(procHandle, &hModule, sizeof(hModule), &unk)) {
-		GetModuleBaseName(procHandle, hModule, baseName, 260);
-		
-		if (!strcmp(baseName, unkProcName))
-			return true;
-	}
-	CloseHandle(procHandle);
-
-	return false;
-}
-
-void Window::GetUserDocumentsDir(String& outString)
-{
-	char	pszPath[MAX_PATH];
-
-	if (SHGetFolderPath(NULL, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, NULL, NULL, pszPath) < 0) {
-		outString = String();
-	}
-	else {
-		outString = String();
-		outString.m_nLength = strlen(pszPath);
-		KapowStringsPool__AllocateSpace(&outString);
-		strcpy(outString.m_szString, pszPath);
-	}
-}
-
-int CALLBACK Window::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
-{
-	HMODULE	moduleHandle;
-	char	FileName[1024];
-	DWORD	idProcess, cbNeeded;
-
 	//Performance::Init();
 	Performance__Initialise();
 	Sleep(10);
@@ -687,35 +652,26 @@ int CALLBACK Window::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
 	*g_hInstance = hInstance;
 	*g_CmdLine = lpCmdLine;
 
-	moduleHandle = GetModuleHandle(NULL);
-	GetModuleFileName(moduleHandle, FileName, 1024);
+	FindIdFile();
+	InitialiseGame(lpCmdLine);
 
-	//unkGetExeName(&FileName, &v32, &szString, &v31);
-	//KapowStringsPool__MakeString(a2, &szString);
-	//KapowStringsPool__MakeString(baseStr, &v31);
+	//	NOTE: all bullshit related to finding already running game is removed!
 
-	if (EnumProcesses(&idProcess, 4096, &cbNeeded)) {
-		int processesFound = cbNeeded >> 2;
-		int gameCopiesRunning = 0;
-		int procIndex = 0;
-
-		if (cbNeeded >> 2 > 0) {
-			do {
-				if (IsProcessAGameProcess(*(&idProcess + procIndex), 0, "TOD.exe", 0, 0))
-					++gameCopiesRunning;
-				++procIndex;
-			} while (procIndex < processesFound);
-
-			if (gameCopiesRunning > 1)
-				exit(1);
-		}
-
-		FindIdFile();
-		KapowEngine__InitialiseEngine(lpCmdLine);
-	}else{
-		return 0;
-	}
 	return 0;
+}
+
+void GetUserDocumentsDir(String& outString)
+{
+	char pszPath;
+	outString = String();
+
+	if (SHGetFolderPath(0, 0x8005, 0, 0, &pszPath) < 0)
+		outString.m_szString = &outString.m_pEmpty;
+	else
+		outString.m_szString = &pszPath;
+
+	KapowStringsPool__AllocateSpace(&outString);
+	strcpy(outString.m_szString, &pszPath);
 }
 
 //	Apply patches specific to this class.
@@ -734,10 +690,10 @@ inline void PATCH_WINDOW()
 	hook(0x43C76F, dwFunc, PATCH_NOTHING);
 
 	//	Override FindStringResource function.
-	hook(0x43C807, &Window::FindStringResource, PATCH_CALL);
-	hook(0x43C81A, &Window::FindStringResource, PATCH_CALL);
-	hook(0x43C0AC, &Window::FindStringResource, PATCH_CALL);
-	hook(0x43C0BF, &Window::FindStringResource, PATCH_CALL);
+	hook(0x43C807, &FindStringResource, PATCH_CALL);
+	hook(0x43C81A, &FindStringResource, PATCH_CALL);
+	hook(0x43C0AC, &FindStringResource, PATCH_CALL);
+	hook(0x43C0BF, &FindStringResource, PATCH_CALL);
 
 	_asm	mov		eax, offset Window::Release
 	_asm	mov		dwFunc, eax
@@ -745,9 +701,9 @@ inline void PATCH_WINDOW()
 	hook(0x93CCBF, dwFunc, PATCH_NOTHING);
 
 	//	Override SetAccessibilityFeatures function.
-	hook(0x43C7B3, &Window::SetAccessibilityFeatures, PATCH_CALL);
+	hook(0x43C7B3, &SetAccessibilityFeatures, PATCH_CALL);
 
-	_asm	mov		eax, offset Window::IncompatibleMachineParameterError
+	_asm	mov		eax, offset IncompatibleMachineParameterError
 	_asm	mov		dwFunc, eax
 	//	Override IncompatibleMachineParameterError function.
 	hook(0x43ADF0, dwFunc, PATCH_NOTHING);
@@ -769,26 +725,27 @@ inline void PATCH_WINDOW()
 	hook(0x45E7A2, dwFunc, PATCH_NOTHING);
 	hook(0x45E7FE, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset Window::GetSystemLanguageCode
-	_asm	mov		dwFunc, eax
+	//_asm	mov		eax, offset GetSystemLanguageCode
+	//_asm	mov		dwFunc, eax
 	//	Override GetSystemLanguageCode function.
 	//hook(0x4855D6, dwFunc, PATCH_NOTHING);
+	hook(0x4855D6, &GetSystemLanguageCode, PATCH_CALL);
 
 	_asm	mov		eax, offset Window::GetMessageBoxResultButton
 	_asm	mov		dwFunc, eax
 	//	Override GetMessageBoxResultButton function.
 	hook(0x470AF5, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset Window::ClipCursorInsideWindow
+	_asm	mov		eax, offset Window::SetCursorReleased
 	_asm	mov		dwFunc, eax
 	//	Override ClipCursorInsideWindow function.
 	hook(0x93CBE1, dwFunc, PATCH_NOTHING);
 	hook(0x93F2F0, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset Window::GlobalPause
+	_asm	mov		eax, offset Window::UpdateVisibility
 	_asm	mov		dwFunc, eax
 	//	Override GlobalPause function.
-	//hook(0x43C4E8, dwFunc, PATCH_NOTHING);
+	hook(0x43C4E8, dwFunc, PATCH_NOTHING);
 
 	_asm	mov		eax, offset Window::SetWindowPosNoCopyBits
 	_asm	mov		dwFunc, eax
@@ -884,12 +841,12 @@ inline void PATCH_WINDOW()
 	_asm	mov		eax, offset Window::ProcessInputDevices
 	_asm	mov		dwFunc, eax
 	//	Override ProcessInputDevices function.
-	//hook(0x93D0BB, dwFunc, PATCH_NOTHING);
+	hook(0x93D0BB, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset Window::InitEnvironment
+	_asm	mov		eax, offset Window::Init
 	_asm	mov		dwFunc, eax
 	//	Override InitEnvironment function.
-	//hook(0x93E008, dwFunc, PATCH_NOTHING);
+	hook(0x93E008, dwFunc, PATCH_NOTHING);
 
 	_asm	mov		eax, offset Window::_SetTitle
 	_asm	mov		dwFunc, eax
@@ -901,17 +858,9 @@ inline void PATCH_WINDOW()
 	//	Override SetDesktopDirectory function.
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	//	Override IsProcessAGameProcess function.
-	//hook(0x43CCD4, &KapowWindow::IsProcessAGameProcess, PATCH_CALL);
-
-	_asm	mov		eax, offset Window::ProcessScreenshotsDirs
-	_asm	mov		dwFunc, eax
-	//	Override ProcessScreenshotsDirs function.
-	//hook(0x010000, dwFunc, PATCH_NOTHING);
-
 	//	Override GetUserDocumentsDir function.
-	hook(0x93E2ED, &Window::GetUserDocumentsDir, PATCH_CALL);
+	hook(0x93E2ED, &GetUserDocumentsDir, PATCH_CALL);
 
 	//	Override WinMain function.
-	hook(0x95383F, &Window::WinMain, PATCH_CALL);
+	hook(0x95383F, &WinMain, PATCH_CALL);
 }

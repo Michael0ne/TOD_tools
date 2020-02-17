@@ -1,8 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-#include "KapowStringsPool.h"
-#include "Performance.h"
+#include "StringsPool.h"
 
 enum eWindowStyles {
 	Overlapped = WS_OVERLAPPED,
@@ -36,21 +35,19 @@ enum eWindowStyles {
  *------------------------------------------------------------
  *------------------ Main Window Object ----------------------
  *------------------------------------------------------------
- *------- Probably should be called KapowApplication ---------
- *------------------------------------------------------------
  * -----------------------------------------------------------
 */
 class Window
 {
-private:
+public:
 	String				m_sWindowTitle;
 	String				m_sUserDesktopPath;
 	void				*m_pMenuItemClickedCallback;
 	HWND				m_hWindow;
 	int					m_unkFlags;						//	Some unknown flags. TODO: Needs to be union {}.
 	bool				m_bVisible;
-	bool				m_bDestroyed;
-	BYTE				m_bQuitRequested;
+	bool				m_bCursorReleased;
+	bool				m_bQuitRequested;
 	HCURSOR				m_hCursor;
 	int					m_unkInt9;
 	int					m_unkInt10;
@@ -58,14 +55,12 @@ private:
 	LONG				m_nWindowTop;
 
 public:
-	//	>> 43B920
-	Window*				GetInstance() { return g_kapowWindow; }
 	//	>> 43B930
 	void						QuitGame() { m_bQuitRequested = true; }
 	//	>> 43B950
 	bool						ProcessMessages();
 	//	>> 43B9C0
-	void						SetMenuClickCallback(void* pCallback);
+	void						SetMenuClickCallback(void* pCallback) {m_pMenuItemClickedCallback = pCallback;};
 	//	>> 43B9D0
 	void						SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution);
 	//	>> 43B9F0
@@ -82,50 +77,72 @@ public:
 	void						_SetWindowPos(Vector2<int>& pos);
 	//	>> 43BBA0
 	void						SetWindowPosNoCopyBits(tagPOINT *newPos);
-	//	>> 43BC30. TODO: give better name.
-	void						GlobalPause();
+	//	>> 43BC30
+	void						UpdateVisibility();
 	//	>> 43BCA0
-	void						ClipCursorInsideWindow(bool bDontClip);
+	void						SetCursorReleased(bool bReleased);
 	//	>> 43BD50
 	int							GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type);
-	//	>> 43BDC0
-	int							GetSystemLanguageCode();
 	//	>> 43BF70
 	int							GetCoverdemoPlayMode() { return 0; };
 	//	>> 43BF80
 	int							GetCoverdemoInactiveTimeoutSec() { return MAXINT; }
 	//	>> 43BF90
 	long						GetCoverdemoGameplayTimeoutSec() { return MAXLONG; }
-	//	>> 43BFB0
-	static void					FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize);
-	//	>> 43C040
-	void						IncompatibleMachineParameterError(int messageID, char bWarningIcon);
-	//	>> 43C140
-	static void					SetAccessibilityFeatures(bool bCollect);
 	//	>> 43C230
 	void						Release();
 	//	>> 43C2C0
 	void						_CreateWindow(UINT16 nIconResourceId);
-	//	>> 43C320
-	static LRESULT CALLBACK		WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	//	>> 43C4A0
 	void						ProcessInputDevices(bool (*unkGameLoopProc)(void));
 	//	>> 43C570
 	ATOM						RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId);
 	//	>> 43C630
-	void						InitEnvironment(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, int unkParam2, UINT16 nIconResourceId);
+	void						Init(const char* wndClassName, int unkFlags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId);
 	//	>> 43C850
 	BOOL						_SetTitle(LPCSTR lpString);
 	//	>> 43C8B0
-	void						SetDesktopDirectory(const char* pDesktopPath);
-	//	>> 43C900
-	void						ProcessScreenshotsDirs(String& outString);
-	//	>> 43C990
-	static	bool				IsProcessAGameProcess(DWORD dwProcessId, int unk1, const char* unkProcName, int unk2, char unk3);
-	//	>> 43CAE0.
-	static	void				GetUserDocumentsDir(String& outString);
-	//	>> 43CB40
-	static	int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
+	void						SetDesktopDirectory(const char* szDesktopPath);
+
+public:
+	Window() {
+		m_sWindowTitle = String();
+		m_sUserDesktopPath = String();
+		m_pMenuItemClickedCallback = nullptr;
+		m_hWindow = NULL;
+		m_unkFlags = 0;						//	Some unknown flags. TODO: Needs to be union {}.
+		m_bVisible = false;
+		m_bCursorReleased = false;
+		m_bQuitRequested = false;
+		m_hCursor = NULL;
+		m_unkInt9 = 0;
+		m_unkInt10 = 0;
+		m_nWindowLeft = 0;
+		m_nWindowTop = 0;
+
+		debug("Window constructor\n");
+	}
+
+	~Window() {
+		debug("Window destructor\n");
+	}
 };
 
-static_assert(sizeof(Window) == 68, MESSAGE_WRONG_CLASS_SIZE("KapowWindow"));
+extern Window* g_Window;
+
+//	>> 43BDC0 - ?
+int					GetSystemLanguageCode();
+//	>> 43BFB0
+void				FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize);
+//	>> 43C040
+void				IncompatibleMachineParameterError(int messageID, char bWarningIcon);
+//	>> 43C140
+void				SetAccessibilityFeatures(bool bCollect);
+//	>> 43C320
+LRESULT CALLBACK	WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+//	>> 43CB40
+int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
+//	>> 43CAE0
+void				GetUserDocumentsDir(String& outString);
+
+static_assert(sizeof(Window) == 0x44, MESSAGE_WRONG_CLASS_SIZE("Window"));

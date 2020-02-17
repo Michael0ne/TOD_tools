@@ -2,6 +2,7 @@
 
 #include "StreamedSoundBuffers.h"
 #include "Builtin.h"
+#include "Window.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -137,7 +138,7 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 		if (GetAsyncKeyState(VK_TAB) && (*nGameTime) > nLastKeyPress + nInterval) {
 
 			//	Do something!
-			g_soundManager->Dump();
+			g_pSoundManager->Dump();
 			
 			nLastKeyPress = *nGameTime;
 		}
@@ -155,7 +156,9 @@ void MemoryHook()
 	//	Insert all hooks here.
 
 	//	TODO: once some classes are fully implemented - instantiate them here.
-	*(Builtin*)0xA3B578 = Builtin::Get();
+	g_Window = new Window();
+
+	debug("Window class created at %X\n", g_Window);
 
 	//	Redirect all logs into our file.
 	//	TODO: this replaces calls to 'log' function. Calls to 'PrintNewFrameInfo' and 'OutputDebugString' should also be hooked.
@@ -182,6 +185,13 @@ void MemoryHook()
 	PATCH_FILEPROC();
 	//PATCH_PERF();
 	PATCH_RENDERER();
+}
+
+void MemoryUnHook()
+{
+	delete g_Window;
+
+	debug("Window class destroyed\n");
 }
 
 //=========================================================================
@@ -244,6 +254,9 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 			debug("Hook thread terminated\n");
 			hHookThread = NULL;
 		}
+
+		//	Free allocated memory.
+		MemoryUnHook();
 
 		//	Stop tracing.
 		if (logfile) {

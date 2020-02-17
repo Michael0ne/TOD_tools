@@ -1,4 +1,4 @@
-#include "KapowStringsPool.h"
+#include "StringsPool.h"
 
 inline void PATCH_STRING_BUFFER()
 {

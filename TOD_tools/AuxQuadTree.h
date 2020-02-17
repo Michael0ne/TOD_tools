@@ -1,12 +1,11 @@
 #pragma once
 
 #include "stdafx.h"
-
-class Node;
+#include "Entity.h"
 
 class AuxQuadTree
 {
-	Node *m_pOwner;
+	Entity entity;
 	int field_4;
 	int field_8;
 	int field_C;

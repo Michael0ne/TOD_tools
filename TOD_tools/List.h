@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "KapowStringsPool.h"
+#include "StringsPool.h"
 
 template <typename T>
 class List

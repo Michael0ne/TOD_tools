@@ -2,14 +2,14 @@
 
 #include "stdafx.h"
 
-#include "Node.h"
+#include "Entity.h"
 #include "List.h"
-#include "KapowStringsPool.h"
+#include "StringsPool.h"
 
 //	TODO: implementation!
-void Random__Init(int* seed);
-int Random__Integer(signed int maxvalue);
-float Random__Number();
+void	Random__Init(int* seed);
+int		Random__Integer(signed int maxvalue);
+float	Random__Number();
 
 enum eTypes {
 	TYPE_NOTHING,	//	Nothing!
@@ -48,7 +48,7 @@ struct Builtin_Handler
 	String m_sName;
 };
 
-class Builtin : Node
+class Builtin : Entity
 {
 private:
 
@@ -59,7 +59,13 @@ private:
 	int field_94;
 
 private:
-	Builtin() {}
+	Builtin() {
+		m_MethodsList = List<Builtin_Handler>();
+		field_88 = 0;
+		field_8C = 0;
+		field_90 = 0;
+		field_94 = 0;
+	}
 
 public:
 	Builtin(const Builtin&) = delete;
@@ -74,17 +80,17 @@ public:
 	//	Actual class methods.
 
 	//	MATH OPERATIONS
-	static void Sin(Handler_Params<float, float, 1>& params) { params.output = sin(params.input[0]); }
-	static void Cos(Handler_Params<float, float, 1>& params) { params.output = cos(params.input[0]); }
-	static void Tan(Handler_Params<float, float, 1>& params) { params.output = tan(params.input[0]); }
-	static void Asin(Handler_Params<float, float, 1>& params) { params.output = asin(params.input[0]); }
-	static void Acos(Handler_Params<float, float, 1>& params) { params.output = acos(params.input[0]); }
-	static void Atan(Handler_Params<float, float, 1>& params) { params.output = atan(params.input[0]); }
+	static void Sin(Handler_Params<float, float, 1>& params) { params.output = (float)sin(params.input[0]); }
+	static void Cos(Handler_Params<float, float, 1>& params) { params.output = (float)cos(params.input[0]); }
+	static void Tan(Handler_Params<float, float, 1>& params) { params.output = (float)tan(params.input[0]); }
+	static void Asin(Handler_Params<float, float, 1>& params) { params.output = (float)asin(params.input[0]); }
+	static void Acos(Handler_Params<float, float, 1>& params) { params.output = (float)acos(params.input[0]); }
+	static void Atan(Handler_Params<float, float, 1>& params) { params.output = (float)atan(params.input[0]); }
 	static void Abs(Handler_Params<int, int, 1>& params) { params.output = params.input < 0 ? -params.input[0] : params.input[0]; }
-	static void FAbs(Handler_Params<float, float, 1>& params) { params.output = fabs(params.input[0]); }
-	static void Sqrt(Handler_Params<float, float, 1>& params) { params.output = sqrt(params.input[0]); }
-	static void Floor(Handler_Params<float, float, 1>& params) { params.output = floor(params.input[0]); }
-	static void Ceil(Handler_Params<float, float, 1>& params) { params.output = ceil(params.input[0]); }
+	static void FAbs(Handler_Params<float, float, 1>& params) { params.output = (float)fabs(params.input[0]); }
+	static void Sqrt(Handler_Params<float, float, 1>& params) { params.output = (float)sqrt(params.input[0]); }
+	static void Floor(Handler_Params<float, float, 1>& params) { params.output = (float)floor(params.input[0]); }
+	static void Ceil(Handler_Params<float, float, 1>& params) { params.output = (float)ceil(params.input[0]); }
 	static void Clamp(Handler_Params<float, float, 2>& params) {
 		if (params.input[1] <= params.input[0])
 			if (params.input[0] <= params.input[2])

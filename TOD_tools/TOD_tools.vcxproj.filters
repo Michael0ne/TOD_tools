@@ -74,16 +74,10 @@
     <ClInclude Include="StreamedSoundBuffers.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="KapowStringsPool.h">
-      <Filter>Header files\KapowSystems\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="MemoryAllocators.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
     <ClInclude Include="File.h">
-      <Filter>Header files\KapowSystems\System</Filter>
-    </ClInclude>
-    <ClInclude Include="KapowConfig.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
     <ClInclude Include="Performance.h">
@@ -125,6 +119,39 @@
     <ClInclude Include="Window.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
+    <ClInclude Include="StringsPool.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
+    <ClInclude Include="RewindBuffer.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="SavesDirectoriesInformation.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryCards.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="SavePoint.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorCamera.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="TextBox.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="TextSlot.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundSlot.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -134,9 +161,6 @@
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="File.cpp">
-      <Filter>Source files\KapowSystems\System</Filter>
-    </ClCompile>
-    <ClCompile Include="KapowConfig.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
     <ClCompile Include="Performance.cpp">
@@ -153,9 +177,6 @@
     </ClCompile>
     <ClCompile Include="InputMouse.cpp">
       <Filter>Source files\KapowSystems\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="KapowStringsPool.cpp">
-      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
     <ClCompile Include="MemoryAllocators.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
@@ -198,6 +219,39 @@
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="StringsPool.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="RewindBuffer.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="SavesDirectoriesInformation.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryCards.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="SavePoint.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorCamera.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="TextBox.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="TextSlot.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundSlot.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

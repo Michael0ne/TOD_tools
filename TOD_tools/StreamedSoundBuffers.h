@@ -162,3 +162,6 @@ public:
 	void					MeasureWaitForSoftPause();
 };
 
+extern StreamedSoundBuffers* g_pStreamedSoundBuffers;
+
+static_assert(sizeof(StreamedSoundBuffers) == 0x12C, MESSAGE_WRONG_CLASS_SIZE("StreamedSoundBuffers"));

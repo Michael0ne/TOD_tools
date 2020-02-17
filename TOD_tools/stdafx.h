@@ -26,6 +26,8 @@ struct Vector2 {
 	T	y;
 };
 
+typedef Vector2<int> ScreenResolution;
+
 template <typename T>
 struct Vector3 {
 	T	x;
@@ -89,15 +91,16 @@ static IDirect3DDevice9 * g_pDirect3DDevice9 = (IDirect3DDevice9*)0xA39F34;
 static HWND * g_hWnd = (HWND*)0xA35EB8;
 static Builtin * g_pBuiltin = (Builtin *)0xA3B578;
 static HINSTANCE * g_hInstance = (HINSTANCE*)0xA35EB0;
-static Window * g_kapowWindow = (Window*)0xA35EB8;
-static MemoryAllocators * g_kapowAllocators = (MemoryAllocators*)0xA3AFC0;
-static StreamedSoundBuffers * g_soundManager = (StreamedSoundBuffers*)0xA35EC0;
+static Window * g_pWindow = (Window*)0xA35EB8;
+static MemoryAllocators * g_pAllocators = (MemoryAllocators*)0xA3AFC0;
+static StreamedSoundBuffers * g_pSoundManager = (StreamedSoundBuffers*)0xA35EC0;
 static GfxInternal_Dx9 * g_pRenderer = (GfxInternal_Dx9*)0xA39F14;
 static LPSTR * g_CmdLine = (LPSTR*)0xA35EB4;
 static DWORD * g_pGameConfiguration = (DWORD*)0xA5D5AC;
 static InputMouse * g_pInputMouse = (InputMouse*)0xA35EAC;
 static InputKeyboard * g_pInputKeyboard = (InputKeyboard*)0xA35E80;
 static InputGameController * g_pInputGameController = (InputGameController*)0xA35E7C;
+
 //	TODO: these two below are different. First used in game, second in editor (maybe?).
 static SceneNode* g_pSceneNode = (SceneNode*)0xA3DCB8;
 static SceneNode* g_pScene = (SceneNode*)0xA3DCBC;
@@ -111,6 +114,8 @@ static DWORD* stringResourceBaseAddr = (DWORD*)0xA35E28;
 static UINT* uType = (UINT*)0xA091A8;
 
 static bool * bGameDiscFound = (bool*)0xA35E68;
+
+static void (__cdecl* Allocators__ReleaseMemory)(void* ptr, bool unk) = (void (__cdecl*)(void*, bool))0x4778D0;
 
 static void (__thiscall *SoundManager__SetGlobalPause)(StreamedSoundBuffers* _this, bool bPause) = (void (__thiscall*)(StreamedSoundBuffers*, bool))0x43D1D0;
 static void (__thiscall *SoundManager__MeasureWaitForSoftPause)(StreamedSoundBuffers* _this) = (void (__thiscall*)(StreamedSoundBuffers*))0x43E800;
@@ -128,7 +133,7 @@ static long	(__cdecl *Performance__Measure)() = (long(__cdecl*)())0x430570;
 static bool * Performance__bQueryingPerformance = (bool*)0xA08E90;
 static bool * Performance__bMeasuringPerformance = (bool*)0xA35E38;
 
-static void (__cdecl *KapowEngine__InitialiseEngine)(LPSTR lpCmdLine) = (void (__cdecl *)(LPSTR))0x93F680;
+static void (__cdecl *InitialiseGame)(LPSTR lpCmdLine) = (void (__cdecl *)(LPSTR))0x93F680;
 
 static void (__cdecl *FindIdFile)() = (void(__cdecl*)())0x439230;
 
