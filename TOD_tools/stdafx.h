@@ -44,6 +44,7 @@ struct Vector4 {
 };
 
 typedef Vector4<float> ColorRGB;
+typedef Vector4<float> Vector4f;
 
 template<typename T>
 struct Quaternion {

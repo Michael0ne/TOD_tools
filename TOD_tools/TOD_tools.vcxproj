@@ -126,6 +126,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="MemoryCards.h" />
+    <ClInclude Include="OverdoseVehicle.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceTypeInfo.h" />
     <ClInclude Include="Fragment.h" />
@@ -136,6 +137,7 @@
     <ClInclude Include="File.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
     <ClInclude Include="RewindBuffer.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SavePoint.h" />
     <ClInclude Include="SavesDirectoriesInformation.h" />
     <ClInclude Include="SoundSlot.h" />
@@ -171,9 +173,11 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
     <ClCompile Include="RewindBuffer.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SavePoint.cpp" />
     <ClCompile Include="SavesDirectoriesInformation.cpp" />
     <ClCompile Include="SoundSlot.cpp" />
+    <ClCompile Include="OverdoseVehicle.cpp" />
     <ClCompile Include="StringsPool.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="TextSlot.cpp" />
