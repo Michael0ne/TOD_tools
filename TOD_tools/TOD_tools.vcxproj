@@ -124,6 +124,8 @@
     <ClInclude Include="CollisionList.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="FileInternal.h" />
+    <ClInclude Include="GfxInternal_Dx9_Texture.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="MemoryCards.h" />
     <ClInclude Include="OverdoseVehicle.h" />
@@ -161,8 +163,12 @@
     <ClCompile Include="CollisionList.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FileInternal.cpp" />
+    <ClCompile Include="GfxInternal_Dx9_Texture.cpp" />
     <ClCompile Include="List.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
+    <ClCompile Include="Progress.cpp" />
+    <ClCompile Include="Progress.h" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceTypeInfo.cpp" />
     <ClCompile Include="Fragment.cpp" />
