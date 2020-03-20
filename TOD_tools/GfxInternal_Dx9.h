@@ -9671,6 +9671,8 @@ private:
 
 public:
 	GfxInternal_Dx9();
+
+	inline bool IsResolutionDetected() { return m_bResolutionDetected; };
 };
 
 static_assert(sizeof(GfxInternal_Dx9) == 0x97A0, MESSAGE_WRONG_CLASS_SIZE("GfxInternal_Dx9"));

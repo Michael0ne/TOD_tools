@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "StringsPool.h"
 
+class FileInternal;
+
 struct FileInternal__vtable
 {
 	void(__thiscall* Release)(FileInternal*, bool releasememory);

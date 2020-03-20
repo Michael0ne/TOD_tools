@@ -4,6 +4,8 @@
 #include "GfxInternal_Dx9_Texture.h"
 #include "List.h"
 
+class Progress;
+
 struct Progress__vtable {
 	void(__thiscall* Destroy)(Progress* _this);
 	void(__thiscall* stub1)(Progress* _this);

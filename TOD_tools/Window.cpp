@@ -470,7 +470,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 			}
 			if (Msg != WM_ERASEBKGND) {
 				if (Msg == WM_ACTIVATEAPP && !wParam && g_pRenderer)
-					if (g_pRenderer->m_bResolutionDetected)
+					if (g_pRenderer->IsResolutionDetected())
 						ShowWindow(hWnd, SW_MINIMIZE);
 				return DefWindowProc(hWnd, Msg, wParam, lParam);
 			}
@@ -491,13 +491,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 				((void(__cdecl *)(DWORD))g_pWindow->m_pMenuItemClickedCallback)(wParam);
 			return DefWindowProc(hWnd, Msg, wParam, lParam);
 		}
-		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && g_pRenderer->m_bResolutionDetected)
+		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && g_pRenderer->IsResolutionDetected())
 			return 1;
 		
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
 
-	if (!g_pRenderer->m_bResolutionDetected)
+	if (!g_pRenderer->IsResolutionDetected())
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 
 	return 1;

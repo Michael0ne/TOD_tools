@@ -5,7 +5,7 @@
 
 //	Header.
 struct Database_Header {
-	unsigned int	m_nUnk1;	//	Probably unsigned int m_nEntriesTotal;
+	unsigned int	m_nEntriesTotal;
 };
 
 //	For each 'entry'.
@@ -33,7 +33,7 @@ void processFile(FILE* filePtr)
 	fread(&header, sizeof(header), 1, filePtr);
 
 	//	Output header.
-	printf("[INFO]\tHeader is: %d\n", header.m_nUnk1);
+	printf("[INFO]\tTotal entries: %d\n", header.m_nEntriesTotal);
 
 	unsigned int entriesFound = 0;
 
@@ -68,7 +68,7 @@ int main()
 	FILE* hFile = fopen("database.bin", "rb");
 
 	if (!hFile) {
-		printf("[ERROR] Could not open input database file!\n");
+		printf("[ERROR]\tCould not open input database file!\n");
 
 		return 0;
 	}
