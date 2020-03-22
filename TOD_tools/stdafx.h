@@ -6,7 +6,7 @@
 
 #include <windows.h>		//	For general windows types.
 #include <xmmintrin.h>		//	For __m128 type.
-#include "stdio.h"			//	For general standart input/output routines.
+#include <cstdio>			//	For general standart input/output routines.
 #include <stdlib.h>			//	Standard library functions.
 #include <stdarg.h>
 #include <math.h>			//	For mathematical functions.

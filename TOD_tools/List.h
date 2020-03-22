@@ -6,7 +6,7 @@
 template <typename T>
 class List
 {
-	T *m_pElements;
+	T **m_pElements;
 	int m_nCurrIndex;
 	int m_nCapacity;
 	unsigned int m_nFlags;
