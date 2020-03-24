@@ -1,12 +1,11 @@
 #include "MemoryAllocators.h"
 
-MemoryAllocators::MemoryAllocators()
-{
-}
+namespace Allocators {
 
-
-MemoryAllocators::~MemoryAllocators()
-{
+	MemoryAllocator::MemoryAllocator()
+	{
+		debug("Allocator constructor!\n");
+	}
 }
 
 inline void PATCH_ALLOCATORS()

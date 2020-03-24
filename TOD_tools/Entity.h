@@ -13,13 +13,21 @@ class Entity;
 //	TODO: this is ugly. Most of class methods are virtual, make them so.
 struct Entity__vtbl
 {
-	void(__thiscall* Destroy)(Node* _this);
-	void(__thiscall* Destroy1)(Node* _this);
-	void(__thiscall* TouchPivot)(Node* _this);
-	Entity* (__thiscall* FindNode)(Node* _this, char* szName);
-	void(__thiscall* stub4)(Node* _this);
-	void(__thiscall* stub5)(Node* _this);
+	void(__thiscall* Destroy)(Entity* _this);
+	void(__thiscall* Destroy1)(Entity* _this);
+	void(__thiscall* TouchPivot)(Entity* _this);
+	Entity* (__thiscall* FindNode)(Entity* _this, char* szName);
+	void(__thiscall* stub4)(Entity* _this);
+	void(__thiscall* stub5)(Entity* _this);
 	int(__cdecl* Update)();
+};
+
+struct EntityPosition__vtbl
+{
+	void(__thiscall* GetPosition)(Entity* _this, Vector4f& outVec);	//	@484CD0
+	void(__thiscall* GetUnkPos)(Entity* _this, Vector4f& outVec);	//	@484CF0
+	void(__thiscall* GetWorldMatrix)(Entity* _this, D3DMATRIX& outMat);	//	@484D40
+	void(__thiscall* GetWorldRotation)(Entity* _this, Orientation& outOrient);	//	@9CE80C
 };
 
 /*
@@ -41,7 +49,7 @@ class Entity
 	int field_18;
 	int field_1C;
 	void* m_pCreator;
-	void* lpUnkVtbl;
+	EntityPosition__vtbl* lpPositionVtable;
 	int m_nRenderOrderGroup;
 	int field_2C;
 	AuxQuadTree* m_pAuxQuadTree;
@@ -62,7 +70,7 @@ class Entity
 	int field_6C;
 	int field_70;
 	int field_74;
-public:
+
 };
 
 extern Entity * g_pEntity;
