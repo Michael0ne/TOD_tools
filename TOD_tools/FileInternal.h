@@ -33,19 +33,19 @@ struct FileInternal__vtable
 class FileInternal
 {
 private:
-	FileInternal__vtable*	lpVtbl;
-	String					m_sFileName;
-	File*					m_pFileHandle;
-	char					field_18;
-	char					m_b19;				//	Unknown flag. If set - m_pFileHandle is ignored.
-	short					field_1A;
-	int						m_nSeekPosition;
-	int						field_20;
-	int						field_24;
-	int						m_nZipSlotIndex;	//	When file is open using this class's method, it is placed in memory buffer to be referenced by this index.
-	char					m_bExecute;
-	char					field_30[3];
-	File*					m_pFile;			//	I dunno what's difference between m_pFileHandle and this.
+	FileInternal__vtable* lpVtbl;
+	String m_sFileName;
+	File* m_pFileHandle;
+	byte m_b18;
+	byte m_bReadFromZip;
+	__int16 field_1A;
+	int m_nSeekPosition;
+	int m_nFilenameStrLen;
+	char* m_szFilenameStr;
+	int m_nZipSlotIndex;
+	byte m_bExecute;
+	byte m_b30[3];
+	File* m_pFile;
 };
 
 extern FileInternal* g_pFileInternal;
