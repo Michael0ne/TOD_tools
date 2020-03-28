@@ -57,7 +57,6 @@ struct Quaternion {
 typedef Quaternion<float> Orientation;
 
 class Window;
-class MemoryAllocators;
 class StreamedSoundBuffers;
 class GfxInternal_Dx9;
 class String;
@@ -69,7 +68,6 @@ class File;
 class Builtin;
 
 //	TODO: move these into tod_global_vars.h
-static char* aShellLaunched = (char*)0x9C59E4;
 static int* nGameTime = (int*)0xA3DCD4;
 static __m128* nRealTime = (__m128*)0xA3DCC0;
 static DWORD* nFrameNumber = (DWORD*)0xA3DCE0;
@@ -93,7 +91,6 @@ static HWND * g_hWnd = (HWND*)0xA35EB8;
 static Builtin * g_pBuiltin = (Builtin *)0xA3B578;
 static HINSTANCE * g_hInstance = (HINSTANCE*)0xA35EB0;
 static Window * g_pWindow = (Window*)0xA35EB8;
-static MemoryAllocators * g_pAllocators = (MemoryAllocators*)0xA3AFC0;
 static StreamedSoundBuffers * g_pSoundManager = (StreamedSoundBuffers*)0xA35EC0;
 static GfxInternal_Dx9 * g_pRenderer = (GfxInternal_Dx9*)0xA39F14;
 static LPSTR * g_CmdLine = (LPSTR*)0xA35EB4;
@@ -143,9 +140,6 @@ static String* (__thiscall *KapowStringsPool__AllocateSpace)(String* _this) = (S
 static void	(__thiscall *KapowStringsPool__unkAllocation)(String* _this) = (void(__thiscall *)(String*))0x405590;
 
 static void (__thiscall *KapowRenderer__CreateDirect3DDevice)(DWORD* _this, int* unk1, int unk2, int unk3, int unk4, int unk5) = (void(__thiscall *)(DWORD*, int*, int, int, int, int))0x45E620;
-
-static void (__cdecl *KapowAllocators__Initialise)() = (void(__cdecl *)())0x9B1AF0;
-static void (__cdecl *KapowAllocators__AllocateOrRelease)(void *pObj, bool bAllocate) = (void(__cdecl *)(void*, bool))0x4778D0;
 
 static void(__cdecl *PrintBuildNumber)(char* buffer) = (void(__cdecl*)(char*))0x401000;
 static void(__cdecl *PrintAuthor)(char* buffer) = (void(__cdecl*)(char*))0x401020;

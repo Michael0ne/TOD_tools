@@ -7,7 +7,7 @@ class FileInternal;
 
 struct FileInternal__vtable
 {
-	void(__thiscall* Release)(FileInternal*, bool releasememory);
+	void(__stdcall* Release)(bool releasememory);
 	bool(__thiscall* WriteBuffers)(FileInternal*);
 	int (*vsnprintf)(FileInternal*, char* str, ...);
 	int (*stub3)(FileInternal*, const char* str, ...);
