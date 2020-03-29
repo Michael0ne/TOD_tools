@@ -142,6 +142,7 @@
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SavePoint.h" />
     <ClInclude Include="SavesDirectoriesInformation.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="SoundSlot.h" />
     <ClInclude Include="StringsPool.h" />
     <ClInclude Include="TextBox.h" />
@@ -153,7 +154,6 @@
     <ClInclude Include="NodePosition.h" />
     <ClInclude Include="Performance.h" />
     <ClInclude Include="Properties.h" />
-    <ClInclude Include="SceneNode.h" />
     <ClInclude Include="StreamedSoundBuffers.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -202,7 +202,7 @@
     <ClCompile Include="NodePosition.cpp" />
     <ClCompile Include="Performance.cpp" />
     <ClCompile Include="Properties.cpp" />
-    <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="StreamedSoundBuffers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

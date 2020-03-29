@@ -1,6 +1,8 @@
 #include "Window.h"
 #include "GfxInternal_Dx9.h"
 #include "StringsPool.h"
+#include "MemoryAllocators.h"
+#include "Config.h"
 
 Window* g_Window = NULL;
 
@@ -505,7 +507,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 //	FIXME: fix. This crashes the game now!
 //	TODO: basic implementation for KapowInput and StreamedSoundBuffers.
-void Window::ProcessInputDevices(bool(*gameLoop)(void))
+void Window::Process(bool(*GameLoop)(void))
 {
 	ShowWindow(m_hWindow, SW_SHOW);
 
@@ -527,7 +529,7 @@ void Window::ProcessInputDevices(bool(*gameLoop)(void))
 
 			KapowInput__ProcessGameControllers();
 
-			if (!gameLoop())
+			if (!GameLoop())
 				return;
 
 			if (g_pInputMouse)
@@ -652,10 +654,32 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	*g_hInstance = hInstance;
 	*g_CmdLine = lpCmdLine;
 
-	FindIdFile();
-	InitialiseGame(lpCmdLine);
-
 	//	NOTE: all bullshit related to finding already running game is removed!
+
+#ifdef INCLUDE_FIXES
+	//	NOTE: Patch to make game look for 'game disc' where actual game directory is.
+	patch(0x4392B0, 0x03f883, 3);	//	cmp eax, 5 --> cmp eax, 3	//	5 - cd/dvd, 3 - fixed media.
+#endif
+
+	FindIdFile();
+
+	//	NOTE: InitialiseGame has been inlined! Originally at 93F680.
+	Allocators::AllocatorsList->ALLOCATOR_DEFRAGMENTING;
+	GameConfig::Config* pConfiguration;
+	if (!Allocators::Released) {
+		pConfiguration = (GameConfig::Config*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(CONFIG_CLASS_SIZE);
+
+		if (pConfiguration)
+			pConfiguration->Init();
+	}
+
+	g_Config->Process(lpCmdLine, 0, "", 0);
+
+	//	This is main game loop proc. Process function has standard while loop.
+	g_Window->Process(Scene__Update);
+
+	if (g_Config)
+		Allocators::MemoryAllocators::ReleaseMemory(g_Config, 0);
 
 	return 0;
 }
@@ -838,7 +862,7 @@ inline void PATCH_WINDOW()
 	//	Override GetCoverdemoGameplayTimeoutSec function.
 	hook(0x4856B6, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset Window::ProcessInputDevices
+	_asm	mov		eax, offset Window::Process
 	_asm	mov		dwFunc, eax
 	//	Override ProcessInputDevices function.
 	hook(0x93D0BB, dwFunc, PATCH_NOTHING);

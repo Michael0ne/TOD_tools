@@ -3,6 +3,7 @@
 #include "StreamedSoundBuffers.h"
 #include "Builtin.h"
 #include "Window.h"
+#include "Config.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -157,8 +158,10 @@ void MemoryHook()
 
 	//	TODO: once some classes are fully implemented - instantiate them here.
 	g_Window = new Window();
+	g_Config = new GameConfig::Config();
 
 	debug("Window class created at %X\n", g_Window);
+	debug("Config class created at %X\n", g_Config);
 
 	//	Redirect all logs into our file.
 	//	TODO: this replaces calls to 'log' function. Calls to 'PrintNewFrameInfo' and 'OutputDebugString' should also be hooked.
@@ -179,6 +182,7 @@ void MemoryHook()
 
 	//	Apply reversed and implemented classes.
 	PATCH_WINDOW();
+	PATCH_CONFIG();
 	PATCH_SOUND_MANAGER();
 	PATCH_ALLOCATORS();
 	PATCH_STRING_BUFFER();
@@ -190,8 +194,10 @@ void MemoryHook()
 void MemoryUnHook()
 {
 	delete g_Window;
+	delete g_Config;
 
 	debug("Window class destroyed\n");
+	debug("Config class destroyed\n");
 }
 
 //=========================================================================

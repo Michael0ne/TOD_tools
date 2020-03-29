@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "Entity.h"
 
-class Node : Entity
+class Node : public Entity
 {
 public:
 };

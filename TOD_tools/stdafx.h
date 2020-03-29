@@ -20,6 +20,8 @@
 
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
 
+#define INCLUDE_FIXES 1	//	This includes various fixes of the game code.
+
 template <typename T>
 struct Vector2 {
 	T	x;
@@ -146,6 +148,8 @@ static void(__cdecl *PrintAuthor)(char* buffer) = (void(__cdecl*)(char*))0x40102
 
 static void(__thiscall *GfxInternal_Dx9__DumpScreenshot)(GfxInternal_Dx9 *_this, IDirect3DSurface9* pSurface) = (void(__thiscall*)(GfxInternal_Dx9*, IDirect3DSurface9*))0x44E970;
 
+static bool(__cdecl* Scene__Update)() = (bool(__cdecl*)())0x93CEB0;
+
 extern HMODULE DllModuleHandle;
 
 // --------------------------------------------------------
@@ -200,3 +204,4 @@ extern inline void PATCH_STRING_BUFFER();
 extern inline void PATCH_FILEPROC();
 extern inline void PATCH_PERF();
 extern inline void PATCH_RENDERER();
+extern inline void PATCH_CONFIG();

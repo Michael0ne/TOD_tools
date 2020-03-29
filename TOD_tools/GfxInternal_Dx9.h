@@ -54,7 +54,7 @@ private:
 		char m_bSeparateAlphaBlend;
 		IDirect3D9* m_pDirect3DDevice;
 		D3DCAPS9 m_DeviceCaps;
-		int field_174;
+		D3DDISPLAYMODE* m_pDisplayMode;
 		D3DPRESENT_PARAMETERS m_PresentParameters;
 		char m_bDeviceLost;
 		char field_1B1[3];

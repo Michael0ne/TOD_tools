@@ -56,9 +56,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneNode.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="InputGameController.h">
       <Filter>Header files\KapowSystems\Input</Filter>
     </ClInclude>
@@ -164,13 +161,13 @@
     <ClInclude Include="GfxInternal_Dx9_Texture.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneNode.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="File.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
@@ -282,6 +279,9 @@
     </ClCompile>
     <ClCompile Include="GfxInternal_Dx9_Texture.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -94,7 +94,7 @@ public:
 	//	>> 43C2C0
 	void						_CreateWindow(UINT16 nIconResourceId);
 	//	>> 43C4A0
-	void						ProcessInputDevices(bool (*unkGameLoopProc)(void));
+	void						Process(bool (*GameLoop)(void));
 	//	>> 43C570
 	ATOM						RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId);
 	//	>> 43C630

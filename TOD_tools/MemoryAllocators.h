@@ -2,9 +2,18 @@
 
 #include "stdafx.h"
 
+/*
+ *------------------------------------------------------------
+ *------------------------------------------------------------
+ *-------------------- Memory allocators ---------------------
+ *------------------------------------------------------------
+ * -----------------------------------------------------------
+*/
 namespace Allocators {
 
-	class MemoryAllocator;
+	class Allocator;
+	class SystemSubAllocator;
+	class BestFitAllocator;
 
 	enum eAllocatorType {
 		ALLOCATOR_DEFAULT,
@@ -25,72 +34,129 @@ namespace Allocators {
 		void(__stdcall* free)(void* ptr);
 	};
 
-	struct MemoryAllocator__vtable {
-		void(__thiscall* Release)(MemoryAllocator*, bool FreeMemory);
-		void* (__thiscall* CallMethodAtOffset8)(MemoryAllocator*);
-		void* (__stdcall* allocate)(signed int, char*, int);	//	@951271
-		void(__cdecl* purecall_dup2)();	//	@951271
-		void(__cdecl* purecall_dup3)();	//	@951271
-		void(__cdecl* purecall_dup4)();	//	@951271
-		void(__cdecl* purecall_dup5)();	//	@951271
-		void(__cdecl* purecall_dup6)();	//	@951271
-		void(__cdecl* purecall_dup7)();	//	@951271
-		int(__thiscall* CallMethodAtOffset20)(MemoryAllocator*);	//	@478350
-
-		void(__thiscall* SetField20)(MemoryAllocator*, char);	//	?SetField20
-		void(__thiscall* SetAllocatorSpaceParams)(MemoryAllocator*, void* allocatedSpacePtr, char* allocatorName, int allocatedSize);	//	@47AB60	//	TODO: better name?
-		void* (__thiscall* GetAllocatedSpacePtr)(MemoryAllocator*);	//	?GetField4
-		int (__thiscall* GetAllocatedSpaceSize)(MemoryAllocator*);	//	GetFileName
-		int(__cdecl* ReturnZero_1)();	//	//	GetLinesPerPage
-		int(__cdecl* ReturnZero_1_dup1)();	//	//	GetLinesPerPage
-		const char* (__cdecl* ReturnUnknownStr)();	//	?ReturnUnknownStr
-		void(__thiscall* SetFieldC)(MemoryAllocator*, char);	//	@478380
-		signed int(__cdecl* ReturnMinusOne_dup1)();	//	?ReturnMinusOne
-		signed int(__cdecl* ReturnMinusOne_dup2)();	//	?ReturnMinusOne
-
-		signed int(__cdecl* ReturnMinusOne_dup3)();	//	?ReturnMinusOne
-		signed int(__cdecl* ReturnMinusOne_dup4)();	//	?ReturnMinusOne
-		void(__cdecl* nullsub)();	//	nullsub_41
-		int(__stdcall* ReturnZero_2)(int, int, int, int);	//	?ReturnZero_3
-		int(__stdcall* ReturnZero_3)(int, int, int, int, int);	//	?ReturnZero_2
-		int(__cdecl* ReturnZero_1_dup2)();	//	GetLinesPerPage
-		int(__cdecl* ReturnZero_1_dup3)();	//	//	GetLinesPerPage
-		int(__stdcall* ReturnZero_4_dup1)(int);	//	?ReturnZero
-		int(__stdcall* ReturnZero_4_dup2)(int);	//	?ReturnZero
-		char(__stdcall* ReturnZero_5)(int);	//	?ReturnZero_0
-
-		char(__stdcall* ReturnZero_6)(int, int, int);	//	?ReturnZero_1
-		int(__stdcall* ReturnZero_4_dup3)(int);	//	?ReturnZero
-		int(__stdcall* ReturnZero_4_dup4)(int);	//	?ReturnZero
-		char(__stdcall* ReturnZero_7)(int, int);	//	?ReturnFalse
+	struct SystemSubAllocator__vtable {
+		void(__thiscall* Release)(SystemSubAllocator* _this, bool releasememory);	//	@478410
+		void*(__thiscall* _CallMethodAtOffset8)(SystemSubAllocator* _this);	//	@478340
+		void*(__thiscall* Allocate)(SystemSubAllocator* _this, size_t size);	//	@47AC00
+		void*(__thiscall* AllocateAligned)(SystemSubAllocator* _this, size_t size, size_t alignment);	//	@47AC30
+		void(__thiscall* Free)(SystemSubAllocator* _this, void* objptr);	//	@47AC90
+		void(__thiscall* FreeAligned)(SystemSubAllocator* _this, void* objptr);	//	@47AC70
+		void*(__thiscall* Realloc)(SystemSubAllocator* _this, void* objptr, size_t newsize);	//	@47ACB0	//	NOTE: if newsize is not set (NULL, 0) then memory is free'd!
+		signed int(__stdcall* _ReturnMinusOne)();	//	@47AD60
+		void(__cdecl* nullsub_1)(void);	//	@47ADE0
+		void(__thiscall* CallNullsub_1)(SystemSubAllocator* _this);	//	@478350
+		void(__thiscall* _SetField21)(SystemSubAllocator* _this, char val);	//	@478360
+		void(__cdecl* nullsub_2)(void);	//	@47ADF0
+		void*(__thiscall* GetAllocatedSpacePtr)(SystemSubAllocator* _this);	//	@478370
+		int(__cdecl* GetTotalPhysicalMemory)();	//	@47ADA0
+		int(__cdecl* GetUsedPhysicalMemory)();	//	@47AD30
+		int(__cdecl* _ReturnZero)();	//	@4783C0
+		const char*(__cdecl* GetName)();	//	@47AE10
+		void(__thiscall* _SetFieldC)(SystemSubAllocator* _this, char val);	//	@478380
+		int(__thiscall* GetTotalAllocations)(SystemSubAllocator* _this);	//	@47AD70
+		signed int(__cdecl* _ReturnMinusOne_1)();	//	@47AD80
+		signed int(__cdecl* _ReturnMinusOne_2)();	//	@47AD90
+		int(__cdecl* GetAvailablePhysicalMemory)();	//	@47ADC0
+		void(__cdecl* nullsub_3)(void);	//	@8CB190
+		int(__stdcall* _ReturnZero_1)(int, int, int, int);	//	@4783A0
+		int(__stdcall* _ReturnZero_2)(int, int, int, int, int);	//	@4783B0
+		int(__cdecl* _ReturnZero_3)();	//	@4783C0
+		int(__cdecl* _ReturnZero_4)();	//	@4783C0
+		int(__stdcall* _ReturnZero_5)(int);	//	@993660
+		int(__stdcall* _ReturnZero_6)(int);	//	@993660
+		char(__stdcall* _ReturnZero_7)(int);	//	@4783D0
+		char(__stdcall* _ReturnZero_8)(int, int, int);	//	@4783E0
+		int(__stdcall* _ReturnZero_9)(int);	//	@993660
+		int(__stdcall* _ReturnZero_10)(int);	//	@993660
+		char(__stdcall* _ReturnZero_11)(int, int);	//	@484DB0
+		void(__cdecl* nullsub_4)();	//	@47AE00
 	};
 
-	/*
-	 *------------------------------------------------------------
-	 *------------------------------------------------------------
-	 *-------------------- Memory allocators ---------------------
-	 *------------------------------------------------------------
-	 * -----------------------------------------------------------
-	*/
-	class MemoryAllocator
+	struct SystemSubAllocator_Unk__vtable {
+		void(__thiscall* _47BDD0)(SystemSubAllocator* _this);	//	@47BDD0
+		void(__thiscall* _47AE80)(SystemSubAllocator* _this);	//	@47AE80
+		void(__thiscall* _47AEF0)(SystemSubAllocator* _this);	//	@47AEF0
+		void(__thiscall* _47BD20)(SystemSubAllocator* _this);	//	@47BD20
+		void(__thiscall* _47AFE0)(SystemSubAllocator* _this);	//	@47AFE0
+		void(__thiscall* _4783F0)(SystemSubAllocator* _this);	//	@4783F0
+		void(__cdecl* nullsub_1)();	//	@8CB190
+		void(__cdecl* nullsub_2)();	//	@47AE70
+	};
+
+	struct Allocator__vtable {
+		void(__thiscall* Release)(Allocator* _this, bool freememory);	//	@478410
+		void*(__thiscall* Allocate)(Allocator* _this);	//	@478340	//	NOTE: This just calls next method (below).
+		void(__thiscall* stub3)(Allocator* _this);	//	@951271
+		void(__thiscall* stub4)(Allocator* _this);	//	@951271
+		void(__thiscall* stub5)(Allocator* _this);	//	@951271
+		void(__thiscall* stub6)(Allocator* _this);	//	@951271
+		void(__thiscall* stub7)(Allocator* _this);	//	@951271
+		void(__thiscall* stub8)(Allocator* _this);	//	@951271
+		void(__thiscall* stub9)(Allocator* _this);	//	@951271
+		void(__thiscall* _CallMethodAtOffset20)(Allocator* _this);	//	@478350
+		void(__thiscall* _SetField21)(Allocator* _this, char unk);	//	@478360
+		void(__thiscall* _SetFields_4_8_20)(Allocator* _this, void* ptr, char* name, int size);	//	@47AB60
+		int(__thiscall* _GetField4)(Allocator* _this);	//	@478370
+		char*(__thiscall* _GetField8)(Allocator* _this);	//	@419C40
+		int(__cdecl* _ReturnZero_1)();	//	@4783C0	//	NOTE: maybe pure virtual function?
+		int(__cdecl* _ReturnZero_2)();	//	@4783C0	//	NOTE: maybe pure virtual function?
+		const char*(__cdecl* ReturnUnknownStr)();	//	@47AB80
+		void(__thiscall* _SetFieldC)(Allocator* _this, char unk);	//	@478380
+		signed int(__cdecl* _ReturnMinusOne_1)();	//	@478390
+		signed int(__cdecl* _ReturnMinusOne_2)();	//	@478390
+		signed int(__cdecl* _ReturnMinusOne_3)();	//	@478390
+		signed int(__cdecl* _ReturnMinusOne_4)();	//	@478390
+		void(__cdecl* nullsub_1)();	//	@8CB190
+		int(__stdcall* _ReturnZero_3)(int unk_1, int unk_2, int unk_3, int ukn_4);	//	@4783A0
+		int(__stdcall* _ReturnZero_4)(int unk_1, int unk_2, int unk_3, int unk_4, int unk_5);	//	@4783B0
+		int(__cdecl* _ReturnZero_5)();	//	@4783C0	//	NOTE: maybe pure virtual function?
+		int(__cdecl* _ReturnZero_6)();	//	@4783C0	//	NOTE: maybe pure virtual function?
+		int(__stdcall* _ReturnZero_7)(int unk_1);	//	@993660
+		int(__stdcall* _ReturnZero_8)(int unk_1);	//	@993660
+		char(__stdcall* _ReturnZero_9)(int unk_1);	//	@4783D0
+		char(__stdcall* _ReturnZero_10)(int unk_1, int unk_2, int unk_3);	//	@4783E0
+		int(__stdcall* _ReturnZero_11)(int unk_1);	//	@993660
+		int(__stdcall* _ReturnZero_12)(int unk_1);	//	@993660
+		char(__stdcall* _ReturnZero_13)(int unk_1, int unk_2);	//	@484DB0
+	};
+
+	class Allocator
 	{
 	private:
-		MemoryAllocator__vtable* lpVtbl;
+		Allocator__vtable* lpVtbl;
 		void* m_pAllocatedSpacePtr;	//	Pointer to space allocated for this allocator
 		int m_nAllocatedSpaceSize;	//	In bytes
-		int field_C;
+		char field_C[4];
 		SystemAllocator__vtable* m_pSystemAllocators;
 		char* m_szAllocatorName;
 		int m_nAllocatorIndex;
-		void(__stdcall*** stub1)(int);
+		void* field_1C;
 		char field_20;
 		char field_21;
 		char field_22[2];
-		int field_24;
-		int field_28;
-		int field_2C;
-		int field_30;
-		int field_34;
+		int m_nAllocationsTotal;
+		void* field_28;
+	};
+
+	class SystemSubAllocator
+	{
+	private:
+		SystemSubAllocator__vtable* lpVtbl;
+		void* m_pAllocatedSpacePtr;	//	Pointer to space allocated for this allocator
+		int m_nAllocatedSpaceSize;	//	In bytes
+		char field_C[4];
+		SystemAllocator__vtable* m_pSystemAllocators;
+		char* m_szAllocatorName;
+		int m_nAllocatorIndex;
+		void* field_1C;
+		char field_20;
+		char field_21;
+		char field_22[2];
+		int m_nAllocationsTotal;
+		int m_nInitialised;
+		SystemSubAllocator_Unk__vtable* lpVtbl_Unk;
+		BestFitAllocator* m_pDefragmentingAllocator_1;
+		BestFitAllocator* m_pDefragmentingAllocator_2;
 		int field_38;
 		int field_3C;
 		int field_40;
@@ -102,10 +168,12 @@ namespace Allocators {
 		int field_58;
 		int field_5C;
 	public:
-		MemoryAllocator();
+		void* allocate(size_t size) {
+			return lpVtbl->Allocate(this, size);
+		}
 	};
 
-	struct BestFitAllocator : MemoryAllocator
+	class BestFitAllocator : SystemSubAllocator
 	{
 		int field_60;
 		int field_64;
@@ -158,9 +226,9 @@ namespace Allocators {
 		int field_120;
 	};
 
-	struct FirstFitSubAllocator
+	class FirstFitSubAllocator
 	{
-		MemoryAllocator__vtable* lpVtbl;
+		void* lpVtbl;
 		int field_4;
 		int field_8;
 		int field_C;
@@ -177,9 +245,9 @@ namespace Allocators {
 		int field_38;
 	};
 
-	struct StackBasedSubAllocator
+	class StackBasedSubAllocator
 	{
-		MemoryAllocator__vtable* lpVtbl;
+		void* lpVtbl;
 		int field_4;
 		int field_8;
 		int field_C;
@@ -195,9 +263,9 @@ namespace Allocators {
 		int field_34;
 	};
 
-	struct FrameBasedSubAllocator
+	class FrameBasedSubAllocator
 	{
-		MemoryAllocator__vtable* lpVtbl;
+		void* lpVtbl;
 		int field_4;
 		int field_8;
 		int field_C;
@@ -217,9 +285,9 @@ namespace Allocators {
 		int field_44;
 	};
 
-	struct PoolSubAllocator
+	class PoolSubAllocator
 	{
-		MemoryAllocator__vtable* lpVtbl;
+		void* lpVtbl;
 		int field_4;
 		int field_8;
 		int field_C;
@@ -237,21 +305,26 @@ namespace Allocators {
 		int field_3C;
 	};
 
-	static SystemAllocator__vtable* SystemAllocatorsVtablePtr = (SystemAllocator__vtable*)0xA3AF98;
-	static int* SystemAllocatorsVtablePresent = (int*)0xA3AF9C;
-	static int* Released = (int*)0xA3AFBC;
-	static Allocators::MemoryAllocator* AllocatorsList[eAllocatorType::ALLOCATORS_TOTAL] = {
-		(MemoryAllocator*)0xA3AFC0,
-		(MemoryAllocator*)0xA3AFC4,
-		(MemoryAllocator*)0xA3AFC8,
-		(MemoryAllocator*)0xA3AFCC,
-		(MemoryAllocator*)0xA3AFD0,
-		(MemoryAllocator*)0xA3AFD4,
-		(MemoryAllocator*)0xA3AFD8,
-		(MemoryAllocator*)0xA3AFDC,
-		(MemoryAllocator*)0xA3AFE0,
-		(MemoryAllocator*)0xA3AFE4
+	static const SystemAllocator__vtable* const SystemAllocatorsVtablePtr = (SystemAllocator__vtable*)0xA3AF98;
+	static int& SystemAllocatorsVtablePresent = *(int*)0xA3AF9C;
+	static int& Released = *(int*)0xA3AFBC;
+	static int& TotalInitialised = *(int*)0xA3B54C;
+
+	struct AllocatorsPtrsList {
+		SystemSubAllocator*	ALLOCATOR_DEFAULT;
+		FrameBasedSubAllocator* ALLOCATOR_MAIN_ASSETS;
+		FrameBasedSubAllocator* ALLOCATOR_MISSION_ASSETS;
+		FrameBasedSubAllocator* ALLOCATOR_CUTSCENE_OR_REWIND;
+		FrameBasedSubAllocator* ALLOCATOR_PLAYER_DATA;
+		FirstFitSubAllocator* ALLOCATOR_TEMP;
+		BestFitAllocator* ALLOCATOR_RENDERLIST;
+		StackBasedSubAllocator* ALLOCATOR_SCRATCHPAD;
+		PoolSubAllocator* ALLOCATOR_COLLISION_CACHE_ENTRIES;
+		BestFitAllocator* ALLOCATOR_DEFRAGMENTING;
 	};
+
+	static AllocatorsPtrsList* AllocatorsList = (AllocatorsPtrsList*)0xA3AFC0;
+
 	static void* AllocatorBuffers[eAllocatorType::ALLOCATORS_TOTAL] = {
 		(void*)0xA3B0A0,
 		(void*)0xA3B0A4,
@@ -264,16 +337,6 @@ namespace Allocators {
 		(void*)0xA3B0C0,
 		(void*)0xA3B0C4
 	};
-	static Allocators::MemoryAllocator* g_pAllocatorDefault = (Allocators::MemoryAllocator*)0xA3B0D0;
-	static Allocators::BestFitAllocator* g_pAllocatorDefragmenting = (Allocators::BestFitAllocator*)0xA3B130;
-	static Allocators::PoolSubAllocator* g_pAllocatorCollisionCacheEntries = (Allocators::PoolSubAllocator*)0xA3B258;
-	static Allocators::StackBasedSubAllocator* g_pAllocatorScratchpad = (Allocators::StackBasedSubAllocator*)0xA3B298;
-	static Allocators::BestFitAllocator* g_pAllocatorRenderlist = (Allocators::BestFitAllocator*)0xA3B2D0;
-	static Allocators::FirstFitSubAllocator* g_pAllocatorTemp = (Allocators::FirstFitSubAllocator*)0xA3B3F4;
-	static Allocators::FrameBasedSubAllocator* g_pAllocatorPlayerData = (Allocators::FrameBasedSubAllocator*)0xA3B430;
-	static Allocators::FrameBasedSubAllocator* g_pAllocatorCutsceneOrRewind = (Allocators::FrameBasedSubAllocator*)0xA3B478;
-	static Allocators::FrameBasedSubAllocator* g_pAllocatorMissionAssets = (Allocators::FrameBasedSubAllocator*)0xA3B4C0;
-	static Allocators::FrameBasedSubAllocator* g_pAllocatorMainAssets = (Allocators::FrameBasedSubAllocator*)0xA3B508;
 
 	//	Actual static class object that holds all MemoryAllocator class and subclasses objects.
 	class MemoryAllocators
@@ -281,7 +344,7 @@ namespace Allocators {
 	private:
 		int		field_0;	//	Maybe vtable pointer?
 
-		MemoryAllocator	ALLOCATOR_DEFAULT;
+		SystemSubAllocator	ALLOCATOR_DEFAULT;
 		BestFitAllocator ALLOCATOR_DEFRAGMENTING;
 		PoolSubAllocator ALLOCATOR_COLLISION_CACHE_ENTRIES;
 		StackBasedSubAllocator ALLOCATOR_SCRATCHPAD;
@@ -291,9 +354,12 @@ namespace Allocators {
 		FrameBasedSubAllocator ALLOCATOR_CUTSCENE_OR_REWIND;
 		FrameBasedSubAllocator ALLOCATOR_MISSION_ASSETS;
 		FrameBasedSubAllocator ALLOCATOR_MAIN_ASSETS;
+
+	public:
+		static void ReleaseMemory(void* obj, bool);
 	};
 
-	static MemoryAllocators* g_pAllocators = (MemoryAllocators*)0xA3B0CC
+	static const MemoryAllocators* const g_pAllocators = (MemoryAllocators*)0xA3B0CC;
 }
 
-static_assert(sizeof(Allocators::MemoryAllocator) == 0x60, MESSAGE_WRONG_CLASS_SIZE("MemoryAllocator"));
+//static_assert(sizeof(Allocators::MemoryAllocator) == 0x60, MESSAGE_WRONG_CLASS_SIZE("MemoryAllocator"));	//	TODO: what size check should be performed?

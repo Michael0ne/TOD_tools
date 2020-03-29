@@ -12,7 +12,7 @@ public:
 	char	m_pEmpty;		//	Default empty string.
 
 	String() :
-		m_nLength(0), m_szString(NULL), m_nBitMask(0x80000000), m_pEmpty(NULL)
+		m_nLength(0), m_szString(NULL), m_nBitMask(0x80000004), m_pEmpty(NULL)
 	{}
 
 	String(int size)
