@@ -44,4 +44,8 @@ public:
 		m_nBitMask = 0x80000004;
 		m_pEmpty = NULL;
 	}
+
+private:
+
+	void _AllocateSpaceForString();
 };

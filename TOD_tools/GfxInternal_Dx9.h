@@ -2,8 +2,12 @@
 
 #include "stdafx.h"
 
+#include "Types.h"
+
 #include "GfxInternal_Dx9_Texture.h"
 #include "List.h"
+
+#define GFXINTERNALDX9_CLASS_SIZE 38816
 
 constexpr size_t capssize = sizeof(D3DCAPS9);	//	304 bytes
 
@@ -13,6 +17,32 @@ struct DisplayModeInfo {
 	bool available;
 	int refreshrate;
 	int format;
+};
+
+struct GfxInternal_Dx9_Vertex {
+	int field_0;
+	int field_4;
+	int field_8;
+	int field_C;
+	int field_10;
+	int m_nStride;
+	int field_18;
+	int field_1C;
+	int field_20;
+	int field_24;
+};
+
+struct GfxInternal_Dx9_Struc10 {
+	int	field_0;
+	int	field_4;
+	int	field_8;
+	int	field_C;
+	int	field_10;
+	int	field_14;
+	int	field_18;
+	int	field_1C;
+	int	field_20;
+	int	field_24;
 };
 
 /*
@@ -52,7 +82,7 @@ private:
 		char m_bFogAndSpecularAlpha;
 		char m_bRangeFog;
 		char m_bSeparateAlphaBlend;
-		IDirect3D9* m_pDirect3DDevice;
+		IDirect3D9* m_pDirect3D;
 		D3DCAPS9 m_DeviceCaps;
 		D3DDISPLAYMODE* m_pDisplayMode;
 		D3DPRESENT_PARAMETERS m_PresentParameters;
@@ -5413,7 +5443,7 @@ private:
 		int field_5554;
 		int field_5558;
 		int field_555C;
-		int field_5560;
+		GfxInternal_Dx9_Vertex* m_pVertexBuffer_1;
 		D3DMATRIX m_ProjectionMatrix;
 		float field_55A4;
 		float field_55A8;
@@ -9559,7 +9589,7 @@ private:
 		float m_fFogDensity;
 		ColorRGB m_FogColor;
 		IDirect3DIndexBuffer9* m_pIndexBuffer;
-		IDirect3DVertexBuffer9* m_pVertexBuffer;
+		GfxInternal_Dx9_Vertex* m_pVertexBuffer;
 		GfxInternal_Dx9_Texture* m_pTexturesArray_2[2];
 		int field_9700;
 		int field_9704;
@@ -9602,4 +9632,6 @@ public:
 	inline bool IsResolutionDetected() { return m_bResolutionDetected; };
 };
 
-static_assert(sizeof(GfxInternal_Dx9) == 0x97A0, MESSAGE_WRONG_CLASS_SIZE("GfxInternal_Dx9"));
+extern GfxInternal_Dx9* g_RendererDx;
+
+static_assert(sizeof(GfxInternal_Dx9) == GFXINTERNALDX9_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("GfxInternal_Dx9"));

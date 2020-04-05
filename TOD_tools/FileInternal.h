@@ -1,7 +1,12 @@
 #pragma once
 
 #include "stdafx.h"
+
+#include "File.h"
+
 #include "StringsPool.h"
+
+#define FILEINTERNAL_CLASS_SIZE 52
 
 class FileInternal;
 
@@ -9,7 +14,7 @@ struct FileInternal__vtable
 {
 	void(__stdcall* Release)(bool releasememory);
 	bool(__thiscall* WriteBuffers)(FileInternal*);
-	int (*vsnprintf)(FileInternal*, char* str, ...);
+	int (*vsnprintf)(FileInternal*, const char* str, ...);
 	int (*stub3)(FileInternal*, const char* str, ...);
 	int(__thiscall* WriteFormattedVarlistDataToBuffer)(FileInternal*, char* str, va_list arguments);
 	void(__thiscall* _CheckFormattingSymbol)(FileInternal*, char* str, int* unk);
@@ -48,6 +53,6 @@ private:
 	File* m_pFile;
 };
 
-extern FileInternal* g_pFileInternal;
+extern FileInternal* g_FileInternal;
 
-static_assert(sizeof(FileInternal) == 0x34, MESSAGE_WRONG_CLASS_SIZE("FileInternal"));
+static_assert(sizeof(FileInternal) == FILEINTERNAL_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("FileInternal"));

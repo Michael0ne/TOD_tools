@@ -1,8 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-
-class Node;
+#include "Node.h"
 
 class CollisionList
 {
@@ -14,7 +13,7 @@ class CollisionList
 	int field_14;
 	int field_18;
 	int field_1C;
-	Vector4<float> m_vPosition;
+	Vector4f m_vPosition;
 	int field_30;
 	int field_34;
 	int field_38;

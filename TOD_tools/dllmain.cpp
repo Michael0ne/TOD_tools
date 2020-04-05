@@ -4,6 +4,9 @@
 #include "Builtin.h"
 #include "Window.h"
 #include "Config.h"
+#include "InputMouse.h"
+#include "InputKeyboard.h"
+#include "InputGameController.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -24,10 +27,10 @@ void debug (char * message, ...) {
 
 extern "C"
 {
-	HRESULT (*_DirectInput8Create)(HINSTANCE hinst, DWORD dwVersion, DWORD riidltf, DWORD ppvOut, DWORD punkOuter);
+	HRESULT (*__DirectInput8Create)(HINSTANCE hinst, DWORD dwVersion, DWORD riidltf, DWORD ppvOut, DWORD punkOuter);
 
-	__declspec(dllexport) HRESULT DirectInput8Create(HINSTANCE hinst, DWORD dwVersion, DWORD riidltf, DWORD ppvOut, DWORD punkOuter)
-	{ return _DirectInput8Create (hinst, dwVersion, riidltf, ppvOut, punkOuter); }
+	__declspec(dllexport) HRESULT _DirectInput8Create(HINSTANCE hinst, DWORD dwVersion, DWORD riidltf, DWORD ppvOut, DWORD punkOuter)
+	{ return __DirectInput8Create (hinst, dwVersion, riidltf, ppvOut, punkOuter); }
 }
 
 HMODULE dinput = NULL;
@@ -51,87 +54,16 @@ void HookDInput()
 	*	dinput8 + 0x18	- Initialize
 	*	dinput8 + 0x1C	- RunControlPanel
 	*/
-	_DirectInput8Create = (HRESULT (*)(HINSTANCE, DWORD, DWORD, DWORD, DWORD))GetProcAddress (dinput, "DirectInput8Create");
+	__DirectInput8Create = (HRESULT (*)(HINSTANCE, DWORD, DWORD, DWORD, DWORD))GetProcAddress (dinput, "DirectInput8Create");
 
-	debug("DirectInput8 hooked! Lib addr: %0.4x, DirectInput8Create method addr: %0.4x\n", &dinput, &_DirectInput8Create);
-}
-
-void PrintExeInfo() {
-	char buf[32];
-	PrintBuildNumber(buf);
-	debug("%s\n", buf);
-	buf[0] = '\0';
-	PrintAuthor(buf);
-	debug("%s\n", buf);
-	buf[0] = '\0';
-}
-
-void openzip(char*	szZipName)
-{
-	//debug("openzip: %s slot %d\n", zipname, *nZipSlotId);
-
-	DWORD dwFunc = 0x419100;	// actual address of OpenZip(char* zipname);
-
-	_asm {
-		mov eax, szZipName
-		push eax
-		call dwFunc
-	}
-}
-
-double get_asin(float angle)
-{
-	double result = asin(angle);
-
-	return result;
-}
-
-double get_acos(float angle)
-{
-	double result = acos(angle);
-
-	return result;
-}
-
-float __stdcall sqrt_handler(float eq)
-{
-	float result = sqrtf(eq);
-
-	return result;
-}
-
-//	NOTE: Most visible effect when modifying return value - changed FOV.
-double get_atan(float angle)
-{
-	float result = atanf(angle);
-
-	return result;
-}
-
-DWORD __stdcall testbits_handler(DWORD* a1)
-{
-	return *a1 = (a1[1] & a1[2]) != 0;
-}
-
-int __stdcall getRandInt()
-{
-	return rand();
-}
-
-long double __cdecl power(float basis, float exponent)
-{
-	return pow(basis, exponent);
-}
-
-void __cdecl dummy()
-{
-	return;
+	debug("DirectInput8 hooked! Lib addr: %0.4x, DirectInput8Create method addr: %0.4x\n", &dinput, &__DirectInput8Create);
 }
 
 DWORD WINAPI HookThread(LPVOID lpParam)
 {
 	debug("HookThread started...\n");
 
+	/*
 	int nLastKeyPress = 0;
 	const int nInterval = 100;
 
@@ -144,60 +76,48 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 			nLastKeyPress = *nGameTime;
 		}
 	}
+	*/
 
 	debug("HookThread has finished!\n");
 
 	return 0;
 }
 
-//	C3	retn
-//	90	nop
 void MemoryHook()
 {
 	//	Insert all hooks here.
-
-	//	TODO: once some classes are fully implemented - instantiate them here.
-	g_Window = new Window();
-	g_Config = new GameConfig::Config();
-
-	debug("Window class created at %X\n", g_Window);
-	debug("Config class created at %X\n", g_Config);
 
 	//	Redirect all logs into our file.
 	//	TODO: this replaces calls to 'log' function. Calls to 'PrintNewFrameInfo' and 'OutputDebugString' should also be hooked.
 	hook(0x40C9D0, &debug, PATCH_JUMP);
 
-	//	Have control over loading zip's.
-	hook(0x4195B7, &openzip, PATCH_CALL);
-	hook(0x4198A3, &openzip, PATCH_CALL);
-
-	//	Move to BuiltinTypes.h when class is ready.
-	hook(0x465C90, &get_asin, PATCH_JUMP);
-	hook(0x465C80, &get_acos, PATCH_JUMP);
-	hook(0x487D20, &sqrt_handler, PATCH_JUMP);
-	hook(0x465CA0, &get_atan, PATCH_JUMP);
-	hook(0x487D90, &testbits_handler, PATCH_JUMP);
-	//hook(0x484F80, &getRandInt, PATCH_JUMP);
-	hook(0x465E90, &power, PATCH_JUMP);
-
 	//	Apply reversed and implemented classes.
+	PATCH_ALLOCATORS();
 	PATCH_WINDOW();
 	PATCH_CONFIG();
 	PATCH_SOUND_MANAGER();
-	PATCH_ALLOCATORS();
 	PATCH_STRING_BUFFER();
 	PATCH_FILEPROC();
 	//PATCH_PERF();
 	PATCH_RENDERER();
+	PATCH_INPUT_MOUSE();
+	PATCH_INPUT_KEYBOARD();
+	PATCH_INPUT_GAMEPAD();
+
+	g_Window = new Window();
+	g_Config = new GameConfig::Config();
+	g_InputMouse = new Input::Mouse();
+	g_InputKeyboard = new Input::Keyboard();
+	g_InputGamepad = new Input::Gamepad();
 }
 
 void MemoryUnHook()
 {
 	delete g_Window;
 	delete g_Config;
-
-	debug("Window class destroyed\n");
-	debug("Config class destroyed\n");
+	delete g_InputMouse;
+	delete g_InputKeyboard;
+	delete g_InputGamepad;
 }
 
 //=========================================================================

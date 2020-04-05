@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "StringsPool.h"
 
+#define FILE_CLASS_SIZE 92
+
 //	NOTE: When performing a Read operation, file is read into m_pBuffer with this size (~128Kb)
 #define FILE_BLOCK_SIZE 131072
 
@@ -31,9 +33,19 @@ private:
 	char* m_pBufferEnd;
 
 public:
-	File();
+	File()
+	{
+		debug("File created at %X\n", this);
+	}
+
+	~File()
+	{
+		debug("File destroyed!\n");
+	}
+
+	static const File* const g_pFilesArray[8];
 };
 
 extern File * g_pFile;
 
-static_assert(sizeof(File) == 0x5C, MESSAGE_WRONG_CLASS_SIZE("File"));
+static_assert(sizeof(File) == FILE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("File"));

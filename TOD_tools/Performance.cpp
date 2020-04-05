@@ -1,5 +1,19 @@
 #include "Performance.h"
 
+void Performance::Init()
+{
+	void(__cdecl * _Init)() = (void(__cdecl*)())0x4306D0;
+
+	_Init();
+}
+
+void Performance::Calculate()
+{
+	void(__cdecl * _Calculate)() = (void(__cdecl*)())0x4306F0;
+
+	_Calculate();
+}
+
 /*
 LARGE_INTEGER	Performance::n64Frequency = *(LARGE_INTEGER*)0xA35E30;
 bool	Performance::bMeasuringPerformance = *(bool*)0xA35E38;

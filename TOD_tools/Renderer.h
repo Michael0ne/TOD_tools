@@ -1,8 +1,13 @@
 #pragma once
 
 #include "stdafx.h"
+
+#include "Types.h"
 #include "List.h"
+
 #include "GfxInternal_Dx9_Texture.h"
+
+#define RENDERER_CLASS_SIZE 72
 
 struct Scene_Buffer276
 {
@@ -52,4 +57,6 @@ private:
 	__int64 m_nUnkTime_2;
 };
 
-static_assert(sizeof(Renderer) == 0x48, MESSAGE_WRONG_CLASS_SIZE("Renderer"));
+extern Renderer* g_Renderer;
+
+static_assert(sizeof(Renderer) == RENDERER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Renderer"));

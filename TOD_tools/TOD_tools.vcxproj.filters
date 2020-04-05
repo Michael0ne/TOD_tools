@@ -164,6 +164,18 @@
     <ClInclude Include="Scene.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Blocks.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptTypes.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -283,5 +295,16 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="Blocks.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptTypes.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dinput_h.def">
+      <Filter>Source files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -359,7 +359,7 @@ namespace Allocators {
 		static void ReleaseMemory(void* obj, bool);
 	};
 
-	static const MemoryAllocators* const g_pAllocators = (MemoryAllocators*)0xA3B0CC;
+	static const MemoryAllocators* const g_Allocators = (MemoryAllocators*)0xA3B0CC;
 }
 
 //static_assert(sizeof(Allocators::MemoryAllocator) == 0x60, MESSAGE_WRONG_CLASS_SIZE("MemoryAllocator"));	//	TODO: what size check should be performed?

@@ -3,6 +3,12 @@
 #include "StringsPool.h"
 #include "MemoryAllocators.h"
 #include "Config.h"
+#include "InputMouse.h"
+#include "InputKeyboard.h"
+#include "InputGameController.h"
+#include "StreamedSoundBuffers.h"
+#include "Performance.h"
+#include "Scene.h"
 
 Window* g_Window = NULL;
 
@@ -129,10 +135,10 @@ void Window::UpdateVisibility()
 		m_bVisible = bWindowVisible;
 
 		if (bWindowVisible) {
-			SoundManager__SetGlobalPause(g_pSoundManager, 0);
+			g_StreamedSoundBuffers->SetGlobalPause(false);
 		}else{
-			SoundManager__SetGlobalPause(g_pSoundManager, 1);
-			SoundManager__MeasureWaitForSoftPause(g_pSoundManager);
+			g_StreamedSoundBuffers->SetGlobalPause(true);
+			g_StreamedSoundBuffers->MeasureWaitForSoftPause();
 		}
 	}
 }
@@ -386,10 +392,10 @@ void IncompatibleMachineParameterError(int messageID, char bWarningIcon)
 	}
 
 	WCHAR	Caption, Text;
-	FindStringResource(*stringResourceBaseAddr + 220, &Caption, 256);
-	FindStringResource(*stringResourceBaseAddr + nMessageId, &Text, 512);
+	FindStringResource(*StringResourceBaseAddr + 220, &Caption, 256);
+	FindStringResource(*StringResourceBaseAddr + nMessageId, &Text, 512);
 
-	MessageBoxW(g_pWindow->m_hWindow, &Text, &Caption, bWarningIcon ? MB_ICONWARNING : MB_ICONERROR);
+	MessageBoxW(g_Window->m_hWindow, &Text, &Caption, bWarningIcon ? MB_ICONWARNING : MB_ICONERROR);
 
 	//	TODO: this calls exit_0(1) which calls doexit(...) which does something other than just exit().
 	exit(1);
@@ -430,28 +436,24 @@ void Window::Release()
 	if (m_hWindow)
 		DestroyWindow(m_hWindow);
 
-	g_pWindow = NULL;
-
 	SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
 	SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
 	SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
 
 	if (m_sUserDesktopPath.m_szString != &m_sUserDesktopPath.m_pEmpty && m_sUserDesktopPath.m_nBitMask & 0x80000000)
-		Allocators__ReleaseMemory(m_sUserDesktopPath.m_szString, 0);
+		Allocators::g_Allocators->ReleaseMemory(m_sUserDesktopPath.m_szString, 0);
 
 	if (m_sWindowTitle.m_szString != &m_sWindowTitle.m_pEmpty && m_sWindowTitle.m_nBitMask & 0x80000000)
-		Allocators__ReleaseMemory(m_sWindowTitle.m_szString, 0);
+		Allocators::g_Allocators->ReleaseMemory(m_sWindowTitle.m_szString, 0);
 }
 
 void Window::_CreateWindow(UINT16 nIconResourceId)
 {
-	//DWORD	windowStyle = (m_unkFlags & 1) != 0 ? 0xC70000 : 0xC20000;
 	DWORD windowStyle = (m_unkFlags & 1) != 0 ? WS_CAPTION | WS_MAXIMIZE : WS_CAPTION | WS_MINIMIZE;
 	if (nIconResourceId)
-		//windowStyle |= 0x80000;
 		windowStyle |= WS_SYSMENU;
 
-	m_hWindow = CreateWindowExA(WS_EX_APPWINDOW, m_sWindowTitle.m_szString, m_sWindowTitle.m_szString, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, *g_hInstance, 0);
+	m_hWindow = CreateWindowExA(WS_EX_APPWINDOW, m_sWindowTitle.m_szString, m_sWindowTitle.m_szString, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, g_hInstance, 0);
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -461,52 +463,50 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	if (Msg <= WM_SETCURSOR) {
 		if (Msg != WM_SETCURSOR) {
 			if (Msg == WM_DESTROY) {
-				g_pWindow->_GetWindowRect(wndRect);
-				g_pWindow->m_bCursorReleased = true;
+				g_Window->_GetWindowRect(wndRect);
+				g_Window->m_bCursorReleased = true;
 				ShowCursor(1);
 				ClipCursor(0);
 				PostQuitMessage(0);
-				g_pWindow->m_hWindow = NULL;
+				g_Window->m_hWindow = NULL;
 
 				return 0;
 			}
 			if (Msg != WM_ERASEBKGND) {
-				if (Msg == WM_ACTIVATEAPP && !wParam && g_pRenderer)
-					if (g_pRenderer->IsResolutionDetected())
+				if (Msg == WM_ACTIVATEAPP && !wParam && g_RendererDx)
+					if (g_RendererDx->IsResolutionDetected())
 						ShowWindow(hWnd, SW_MINIMIZE);
 				return DefWindowProc(hWnd, Msg, wParam, lParam);
 			}
 			return 1;
 		}
-		if (!g_pWindow->m_bCursorReleased) {
+		if (!g_Window->m_bCursorReleased) {
 			SetCursor(0);
 			return 0;
 		}
-		SetCursor(g_pWindow->m_hCursor);
+		SetCursor(g_Window->m_hCursor);
 
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
 
 	if (Msg != WM_NCHITTEST) {
 		if (Msg == WM_COMMAND) {
-			if (g_pWindow->m_pMenuItemClickedCallback)
-				((void(__cdecl *)(DWORD))g_pWindow->m_pMenuItemClickedCallback)(wParam);
+			if (g_Window->m_pMenuItemClickedCallback)
+				g_Window->m_pMenuItemClickedCallback(wParam);
 			return DefWindowProc(hWnd, Msg, wParam, lParam);
 		}
-		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && g_pRenderer->IsResolutionDetected())
+		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && g_RendererDx->IsResolutionDetected())
 			return 1;
 		
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
 
-	if (!g_pRenderer->IsResolutionDetected())
+	if (!g_RendererDx->IsResolutionDetected())
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 
 	return 1;
 }
 
-//	FIXME: fix. This crashes the game now!
-//	TODO: basic implementation for KapowInput and StreamedSoundBuffers.
 void Window::Process(bool(*GameLoop)(void))
 {
 	ShowWindow(m_hWindow, SW_SHOW);
@@ -521,22 +521,22 @@ void Window::Process(bool(*GameLoop)(void))
 		UpdateVisibility();
 
 		if (m_bVisible) {
-			if (g_pInputMouse)
-				KapowInput__ProcessMouse(g_pInputMouse);
+			if (g_InputMouse)
+				g_InputMouse->Process();
 
-			if (g_pInputKeyboard)
-				KapowInput__ProcessKeyboard(g_pInputKeyboard);
+			if (g_InputKeyboard)
+				g_InputKeyboard->Process();
 
-			KapowInput__ProcessGameControllers();
+			g_InputGamepad->Process();
 
 			if (!GameLoop())
 				return;
 
-			if (g_pInputMouse)
-				KapowInput__ResetMouse(g_pInputMouse);
+			if (g_InputMouse)
+				g_InputMouse->Reset();
 
-			if (g_pInputKeyboard)
-				KapowInput__ResetKeyboard(g_pInputKeyboard);
+			if (g_InputKeyboard)
+				g_InputKeyboard->Reset();
 		}
 		else
 			WaitMessage();
@@ -555,11 +555,11 @@ ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
 	debug("Creating menu with resource ID: %d\n", nMenuResourceId);
 
 	WndClass.hCursor = 0;
-	WndClass.hIcon = LoadIconA(*g_hInstance, MAKEINTRESOURCE(nIconResourceId));
+	WndClass.hIcon = LoadIconA(g_hInstance, MAKEINTRESOURCE(nIconResourceId));
 	WndClass.lpszMenuName = MAKEINTRESOURCE(nMenuResourceId);
 	WndClass.lpszClassName = m_sWindowTitle.m_szString;
 	WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	WndClass.hInstance = *g_hInstance;
+	WndClass.hInstance = g_hInstance;
 	WndClass.style = 3;
 	WndClass.lpfnWndProc = WindowProc;
 	WndClass.cbClsExtra = 0;
@@ -568,15 +568,13 @@ ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
 	return RegisterClassA(&WndClass);
 }
 
-//	TODO: make this a constructor! Only called once and seems to initialize all class members here.
 //	NOTE: szFileSystems doesn't seem to be referenced here, but used in Config::Process later.
 void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId)
 {
 	HKEY				phkResult;
-	BYTE				szDesktopPath = 0;
+	char				szDesktopPath[MAX_PATH];
 	MEMORYSTATUSEX		memoryStatus;
 
-	g_Window = this;
 	patch(0xa35eb8, this, 4);
 
 	m_unkFlags = unkParam1;
@@ -585,23 +583,15 @@ void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceI
 	m_bCursorReleased = true;
 	m_bQuitRequested = false;
 
-	//m_sWindowTitle = String(strlen(wndClassName));
-	//KapowStringsPool__unkAllocation(&m_sWindowTitle);
-	//strcpy(m_sWindowTitle.m_szString, wndClassName);
-
 	m_sWindowTitle = String(wndClassName);
 
 	if (!RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\", 0, KEY_QUERY_VALUE, &phkResult)) {
 		DWORD	nMaxValueSize = MAX_PATH;
-		RegQueryValueEx(phkResult, "Desktop", NULL, NULL, &szDesktopPath, &nMaxValueSize);
+		RegQueryValueEx(phkResult, "Desktop", NULL, NULL, (byte*)szDesktopPath, &nMaxValueSize);
 		RegCloseKey(phkResult);
 	}
 
-	//m_sUserDesktopPath = String(strlen((const char*)&szDesktopPath));
-	//KapowStringsPool__unkAllocation(&m_sUserDesktopPath);
-	//strcpy(m_sUserDesktopPath.m_szString, (const char*)&szDesktopPath);
-
-	m_sUserDesktopPath = String((const char*)& szDesktopPath);
+	m_sUserDesktopPath = String(szDesktopPath);
 
 	RegisterWindowClass(nMenuResourceId, nIconResourceId);
 	_CreateWindow(nMenuResourceId);
@@ -620,8 +610,8 @@ void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceI
 	if (memoryStatus.ullTotalPhys < 0xFB00000) {
 		WCHAR	Caption, Text;
 
-		FindStringResource(*stringResourceBaseAddr + 220, &Caption, 256);
-		FindStringResource(*stringResourceBaseAddr + 290, &Text, 512);
+		FindStringResource(*StringResourceBaseAddr + 220, &Caption, 256);
+		FindStringResource(*StringResourceBaseAddr + 290, &Text, 512);
 
 		MessageBoxW(m_hWindow, &Text, &Caption, MB_ICONEXCLAMATION);
 	}
@@ -629,54 +619,45 @@ void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceI
 
 BOOL Window::_SetTitle(LPCSTR lpString)
 {
-	m_sWindowTitle = String(strlen(lpString));
-	KapowStringsPool__AllocateSpace(&m_sWindowTitle);
-	strcpy(m_sWindowTitle.m_szString, lpString);
+	m_sWindowTitle = String(lpString);
 
 	return SetWindowText(m_hWindow, lpString);
 }
 
 void Window::SetDesktopDirectory(const char* pDesktopPath)
 {
-	m_sUserDesktopPath = String(strlen(pDesktopPath));
-	KapowStringsPool__AllocateSpace(&m_sUserDesktopPath);
-	strcpy(m_sUserDesktopPath.m_szString, pDesktopPath);
+	m_sUserDesktopPath = String(pDesktopPath);
 }
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	//Performance::Init();
-	Performance__Initialise();
+	Performance::Init();
 	Sleep(10);
-	//Performance::Calculate();
-	Performance__QueryCounter();
+	Performance::Calculate();
 
-	*g_hInstance = hInstance;
-	*g_CmdLine = lpCmdLine;
+	g_hInstance	= hInstance;
+	g_CmdLine	= lpCmdLine;
 
 	//	NOTE: all bullshit related to finding already running game is removed!
 
 #ifdef INCLUDE_FIXES
 	//	NOTE: Patch to make game look for 'game disc' where actual game directory is.
 	patch(0x4392B0, 0x03f883, 3);	//	cmp eax, 5 --> cmp eax, 3	//	5 - cd/dvd, 3 - fixed media.
+
+	//	NOTE: Patch to change default adapter when creating D3D device.
+	patch(0x4511CE, 0x006a, 2);	//	push 0 --> push 1
 #endif
 
 	FindIdFile();
 
 	//	NOTE: InitialiseGame has been inlined! Originally at 93F680.
-	Allocators::AllocatorsList->ALLOCATOR_DEFRAGMENTING;
-	GameConfig::Config* pConfiguration;
-	if (!Allocators::Released) {
-		pConfiguration = (GameConfig::Config*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(CONFIG_CLASS_SIZE);
-
-		if (pConfiguration)
-			pConfiguration->Init();
-	}
+	if (g_Config)
+		g_Config->Init();
 
 	g_Config->Process(lpCmdLine, 0, "", 0);
 
 	//	This is main game loop proc. Process function has standard while loop.
-	g_Window->Process(Scene__Update);
+	g_Window->Process(Scene::Update);
 
 	if (g_Config)
 		Allocators::MemoryAllocators::ReleaseMemory(g_Config, 0);
@@ -686,16 +667,19 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 void GetUserDocumentsDir(String& outString)
 {
-	char pszPath;
-	outString = String();
+	char pszPath[MAX_PATH];
 
-	if (SHGetFolderPath(0, 0x8005, 0, 0, &pszPath) < 0)
-		outString.m_szString = &outString.m_pEmpty;
+	if (SHGetFolderPath(0, 0x8005, 0, 0, pszPath) < 0)
+		outString = String();
 	else
-		outString.m_szString = &pszPath;
+		outString = String(pszPath);
+}
 
-	KapowStringsPool__AllocateSpace(&outString);
-	strcpy(outString.m_szString, &pszPath);
+void FindIdFile()
+{
+	void(__cdecl * _FindIdFile)() = (void(__cdecl*)())0x439230;
+
+	_FindIdFile();
 }
 
 //	Apply patches specific to this class.

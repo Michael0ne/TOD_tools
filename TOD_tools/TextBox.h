@@ -1,8 +1,13 @@
 #pragma once
 
 #include "stdafx.h"
+
+#include "StringsPool.h"
+
 #include "Entity.h"
 #include "TextSlot.h"
+
+#define TEXTBOX_CLASS_SIZE 220
 
 class TextBox : Entity
 {
@@ -33,4 +38,6 @@ class TextBox : Entity
 	unsigned int m_nFlags;
 };
 
-static_assert(sizeof(TextBox) == 0xDC, MESSAGE_WRONG_CLASS_SIZE("TextBox"));
+extern TextBox* g_TextBox;
+
+static_assert(sizeof(TextBox) == TEXTBOX_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("TextBox"));

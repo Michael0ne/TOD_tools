@@ -1,6 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
+#include "Types.h"
+
+#define STREAMEDSOUNDBUFFERS_CLASS_SIZE 300
 
 //	TODO: better name.
 struct SoundBufferInstance
@@ -127,9 +130,9 @@ public:
 	//	>> 43CE90
 	void					Init();
 	//	>> 43CFD0
-	void					sub_43CFD0(int* pOut);
+	void					_43CFD0(int* pOut);
 	//	>> 43D060
-	int						sub_43D060(int nUnk);
+	int						_43D060(int nUnk);
 	//	>> 43D0D0
 	bool					InitPrimarySoundFormat(int nChannels, int nSampleRate, int nBits);
 	//	>> 43D180
@@ -157,11 +160,11 @@ public:
 	//	>> 43E640
 	void					WaitForSoftPause();
 	//	>> 43E7B0
-	int						sub_43E7B0();
+	int						_43E7B0();
 	//	>> 43E800
 	void					MeasureWaitForSoftPause();
 };
 
-extern StreamedSoundBuffers* g_pStreamedSoundBuffers;
+extern StreamedSoundBuffers* g_StreamedSoundBuffers;
 
-static_assert(sizeof(StreamedSoundBuffers) == 0x12C, MESSAGE_WRONG_CLASS_SIZE("StreamedSoundBuffers"));
+static_assert(sizeof(StreamedSoundBuffers) == STREAMEDSOUNDBUFFERS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("StreamedSoundBuffers"));

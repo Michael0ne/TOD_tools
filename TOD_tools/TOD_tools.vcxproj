@@ -79,7 +79,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <Optimization>Full</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;TOD_TOOLS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -93,10 +93,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;dxguid.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <AssemblyDebug>true</AssemblyDebug>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <ModuleDefinitionFile>dinput_h.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>call "$(SolutionDir)updateHookFile.bat" "$(SolutionDir)$(Configuration)\" "$(TargetFileName)" "$(TargetName).pdb"</Command>
@@ -120,12 +121,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AuxQuadTree.h" />
+    <ClInclude Include="Blocks.h" />
     <ClInclude Include="Builtin.h" />
     <ClInclude Include="CollisionList.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FileInternal.h" />
     <ClInclude Include="GfxInternal_Dx9_Texture.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="MemoryCards.h" />
     <ClInclude Include="OverdoseVehicle.h" />
@@ -143,10 +146,12 @@
     <ClInclude Include="SavePoint.h" />
     <ClInclude Include="SavesDirectoriesInformation.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="ScriptTypes.h" />
     <ClInclude Include="SoundSlot.h" />
     <ClInclude Include="StringsPool.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="TextSlot.h" />
+    <ClInclude Include="Types.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MemoryAllocators.h" />
@@ -159,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AuxQuadTree.cpp" />
+    <ClCompile Include="Blocks.cpp" />
     <ClCompile Include="Builtin.cpp" />
     <ClCompile Include="CollisionList.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
@@ -182,6 +188,7 @@
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SavePoint.cpp" />
     <ClCompile Include="SavesDirectoriesInformation.cpp" />
+    <ClCompile Include="ScriptTypes.cpp" />
     <ClCompile Include="SoundSlot.cpp" />
     <ClCompile Include="OverdoseVehicle.cpp" />
     <ClCompile Include="StringsPool.cpp" />
@@ -204,6 +211,9 @@
     <ClCompile Include="Properties.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="StreamedSoundBuffers.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dinput_h.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

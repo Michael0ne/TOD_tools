@@ -21,7 +21,7 @@ class AuxQuadTree
 	int *m_pContactNode;
 	int field_38;
 	int m_nFlags;
-	Vector4<float> m_vPosition;
+	Vector4f m_vPosition;
 	byte field_4D;
 	byte m_bLod;
 	byte m_bLodFade;

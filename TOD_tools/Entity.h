@@ -1,6 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
+#include "Types.h"
+
+#define ENTITY_CLASS_SIZE 120
 
 class Node;
 class AuxQuadTree;
@@ -70,9 +73,8 @@ class Entity
 	int field_6C;
 	int field_70;
 	int field_74;
-
 };
 
-extern Entity * g_pEntity;
+extern Entity * g_Entity;
 
-static_assert(sizeof(Entity) == 0x78, MESSAGE_WRONG_CLASS_SIZE("Entity"));
+static_assert(sizeof(Entity) == ENTITY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Entity"));

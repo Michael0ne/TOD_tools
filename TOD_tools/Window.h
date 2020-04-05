@@ -1,7 +1,11 @@
 #pragma once
 #include "stdafx.h"
+#include "Types.h"
+#include "Globals.h"
 
 #include "StringsPool.h"
+
+#define WINDOW_CLASS_SIZE 68
 
 enum eWindowStyles {
 	Overlapped = WS_OVERLAPPED,
@@ -42,7 +46,7 @@ class Window
 public:
 	String				m_sWindowTitle;
 	String				m_sUserDesktopPath;
-	void				*m_pMenuItemClickedCallback;
+	void				(__cdecl *m_pMenuItemClickedCallback)(WPARAM);
 	HWND				m_hWindow;
 	int					m_unkFlags;						//	Some unknown flags. TODO: Needs to be union {}.
 	bool				m_bVisible;
@@ -60,7 +64,7 @@ public:
 	//	>> 43B950
 	bool						ProcessMessages();
 	//	>> 43B9C0
-	void						SetMenuClickCallback(void* pCallback) {m_pMenuItemClickedCallback = pCallback;};
+	void						SetMenuClickCallback(void (__cdecl* pCallback)(WPARAM)) {m_pMenuItemClickedCallback = pCallback;};
 	//	>> 43B9D0
 	void						SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution);
 	//	>> 43B9F0
@@ -120,11 +124,11 @@ public:
 		m_nWindowLeft = 0;
 		m_nWindowTop = 0;
 
-		debug("Window constructor\n");
+		debug("Window created at %X\n", this);
 	}
 
 	~Window() {
-		debug("Window destructor\n");
+		debug("Window destroyed!\n");
 	}
 };
 
@@ -144,5 +148,7 @@ LRESULT CALLBACK	WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 //	>> 43CAE0
 void				GetUserDocumentsDir(String& outString);
+//	>> 439230
+void				FindIdFile();
 
-static_assert(sizeof(Window) == 0x44, MESSAGE_WRONG_CLASS_SIZE("Window"));
+static_assert(sizeof(Window) == WINDOW_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Window"));

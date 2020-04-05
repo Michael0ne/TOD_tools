@@ -2,10 +2,12 @@
 
 #include "stdafx.h"
 
-#include "StringsPool.h"
-
 #include "Node.h"
 #include "EditorCamera.h"
+
+#include "StringsPool.h"
+
+#define SCENE_CLASS_SIZE 620
 
 class Scene;
 class CollisionProbe;
@@ -190,6 +192,11 @@ private:
 	int m_nTimeMilliseconds_1;
 	int m_nTimeMilliseconds;
 	int field_264;
+
+public:
+	static bool		Update();
 };
 
-static_assert(sizeof(Scene) == 0x26C, MESSAGE_WRONG_CLASS_SIZE("Scene"));
+extern Scene* g_Scene;
+
+static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Scene"));

@@ -2,12 +2,32 @@
 
 #include "stdafx.h"
 
-class InputGameController
-{
-private:
-	BYTE	_pad[228];
-};
+namespace Input {
 
-extern InputGameController * g_pInputGameController;
+#define INPUT_GAMEPAD_CLASS_SIZE 228
 
-static_assert(sizeof(InputGameController) == 228, MESSAGE_WRONG_CLASS_SIZE("InputGameController"));
+	class Gamepad
+	{
+	private:
+		BYTE	_pad[228];
+
+	public:
+		Gamepad()
+		{
+			debug("Input::Gamepad created at %X\n", this);
+		}
+
+		~Gamepad()
+		{
+			debug("Input::Gamepad destroyed!\n");
+		}
+
+		void	Init();
+		void	Process();
+		void	Reset();
+	};
+}
+
+extern Input::Gamepad * g_InputGamepad;
+
+static_assert(sizeof(Input::Gamepad) == INPUT_GAMEPAD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("InputGamepad"));
