@@ -104,9 +104,6 @@
     <ClInclude Include="Light.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceTypeInfo.h">
-      <Filter>Header files\KapowSystems\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="Builtin.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
@@ -176,6 +173,18 @@
     <ClInclude Include="ScriptTypes.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="Scratchpad.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourcesTypes.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
+    <ClInclude Include="DieselPowerSound.h">
+      <Filter>Header files\KapowSystems\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -231,9 +240,6 @@
     </ClCompile>
     <ClCompile Include="Builtin.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceTypeInfo.cpp">
-      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
     <ClCompile Include="List.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
@@ -300,6 +306,15 @@
     </ClCompile>
     <ClCompile Include="ScriptTypes.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Scratchpad.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneNode.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourcesTypes.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -12,26 +12,25 @@ class FileInternal;
 
 struct FileInternal__vtable
 {
-	void(__stdcall* Release)(bool releasememory);
-	bool(__thiscall* WriteBuffers)(FileInternal*);
-	int (*vsnprintf)(FileInternal*, const char* str, ...);
-	int (*stub3)(FileInternal*, const char* str, ...);
-	int(__thiscall* WriteFormattedVarlistDataToBuffer)(FileInternal*, char* str, va_list arguments);
-	void(__thiscall* _CheckFormattingSymbol)(FileInternal*, char* str, int* unk);
-	int(__thiscall* _ReadAndGetNewLineSymbol)(FileInternal*);
-	void(__thiscall* stub7)(FileInternal*, int);
-	void(__thiscall* snprintf)(FileInternal*, int);
-	void(__thiscall* stub9)(FileInternal*, int);
-	void(__thiscall* Read)(FileInternal*, char* buffer, int numofbytestoread);
-	int(__thiscall* WriteBuffer)(FileInternal*, const char*);
-	int(__thiscall* WriteBufferWithSize)(FileInternal*, const char* buffer, signed int size);
-	void(__thiscall* Seek)(FileInternal*, int position);
-	char(__thiscall* WriteBufferAndSetToStart)(FileInternal*);
-	void(__thiscall* stub15)(FileInternal*, int);
-	int(__thiscall* GetPosition)(FileInternal*);
-	void(__thiscall* stub17)(FileInternal*, int);
-	void(__thiscall* stub18)(FileInternal*, int);
-	char* (__thiscall* GetFileName)(FileInternal*);
+	void(__thiscall* Release)(FileInternal* _this, bool releasememory);	//	@41A030
+	bool(__thiscall* WriteBuffers)(FileInternal* _this);	//	@417D20
+	int (*vsnprintf)(FileInternal*, const char* str, ...);	//	@42EFC0
+	int (* _CheckFormattingSymbolsList)(FileInternal* _this, const char* str, ...);	//	@417960
+	int(__thiscall* WriteFormattedVarlistDataToBuffer)(FileInternal*, char* str, va_list arguments);	//	@42F040
+	signed int (__thiscall* _CheckFormattingSymbol)(FileInternal* _this, char* str, int* unk);	//	@42F0A0
+	bool(__thiscall* ReadBlock)(FileInternal* _this);	//	@417980
+	void(__thiscall* ReadBlockAndGetPosition)(FileInternal* _this, int);	//	@419BD0
+	bool(__thiscall* WriteBufferblockAndInsertNewLine)(FileInternal* _this, char newlinesym);	//	@419BF0
+	int(__thiscall* Read)(FileInternal* _this, void* buffer, int bytestoread);	//	@417A30
+	signed int (__thiscall* WriteBuffer)(FileInternal* _this, const char* buffer);	//	@419C10
+	signed int(__thiscall* WriteBufferWithSize)(FileInternal* _this, const char* buffer, signed int size);	//	@419C00
+	void(__thiscall* Seek)(FileInternal* _this, int position);	//	@417B90
+	char(__thiscall* WriteBufferAndSetToStart)(FileInternal* _this);	//	@417BB0
+	char(__thiscall* WriteFromBuffer)(FileInternal* _this);	//	@417BD0
+	int(__thiscall* GetPosition)(FileInternal* _this);	//	@417BF0
+	void(__thiscall* ReadBlockDecreasePosition)(FileInternal* _this);	//	@417C50
+	char(__thiscall* ReadBlockIfFailed)(FileInternal* _this);	//	@417850
+	const char* (__thiscall* GetFileName)(FileInternal* _this);	//	@419C40
 };
 
 

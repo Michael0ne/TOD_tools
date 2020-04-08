@@ -4,6 +4,7 @@
 #include "Globals.h"
 
 #include "StringsPool.h"
+#include "MemoryAllocators.h"
 
 #define WINDOW_CLASS_SIZE 68
 
@@ -129,6 +130,17 @@ public:
 
 	~Window() {
 		debug("Window destroyed!\n");
+	}
+
+	void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
 };
 

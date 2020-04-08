@@ -3,6 +3,7 @@
 #include "stdafx.h"
 
 #include "List.h"
+#include "MemoryAllocators.h"
 
 #define BLOCKS_CLASS_SIZE 500
 
@@ -106,7 +107,7 @@ private:
 	int field_1CC;
 	int field_1D0;
 	int field_1D4;
-	int field_1D8;
+	signed int m_nRegionId;
 	int field_1DC;
 	int field_1E0;
 	int field_1E4;
@@ -120,7 +121,7 @@ private:
 public:
 	Blocks()
 	{
-		debug("Blocks class created at %X\n", this);
+		debug("Blocks created at %X\n", this);
 	}
 
 	~Blocks()
@@ -128,7 +129,23 @@ public:
 		debug("Blocks destroyed!\n");
 	}
 
+	void* operator new (size_t size)
+	{
+		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+	}
+
 	void Init(bool unk);	//	@76E20
+
+	void	SetRegionId(signed int id)	//	@875434
+	{
+		m_nRegionId = id;
+	}
 };
 
 extern Blocks* g_Blocks;

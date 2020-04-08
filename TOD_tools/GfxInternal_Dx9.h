@@ -9,8 +9,6 @@
 
 #define GFXINTERNALDX9_CLASS_SIZE 38816
 
-constexpr size_t capssize = sizeof(D3DCAPS9);	//	304 bytes
-
 struct DisplayModeInfo {
 	int width;
 	int height;
@@ -9627,9 +9625,23 @@ private:
 		int field_979C;
 
 public:
-	GfxInternal_Dx9();
+	GfxInternal_Dx9()
+	{
+		debug("GfxInternal_Dx9 created at %X\n", this);
+	}
+
+	~GfxInternal_Dx9()
+	{
+		debug("GfxInternal_Dx9 destroyed!\n");
+	}
 
 	inline bool IsResolutionDetected() { return m_bResolutionDetected; };
+
+	static Map<int, int>& g_UnkMap_1;
+	static Map<int, int>& g_UnkMap_2;
+	static Map<int, int>& g_RenderedTexturesMap;
+
+	static void* g_RenderBuffer;
 };
 
 extern GfxInternal_Dx9* g_RendererDx;

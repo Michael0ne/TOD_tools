@@ -3,6 +3,7 @@
 #include "stdafx.h"
 
 #include "Node.h"
+#include "List.h"
 
 #define LIGHT_CLASS_SIZE 228
 
@@ -40,7 +41,13 @@ private:
 	int field_D8;
 	int field_DC;
 	int field_E0;
+
+	static List<Light>& g_LightsList;
+
 public:
+	static List<Light>& GetLightsList();	//	@880D80
+
+	static void OverrideLights(bool unk);	//	@880DC0
 };
 
 extern Light* g_Light;

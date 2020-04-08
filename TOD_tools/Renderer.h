@@ -4,6 +4,7 @@
 
 #include "Types.h"
 #include "List.h"
+#include "MemoryAllocators.h"
 
 #include "GfxInternal_Dx9_Texture.h"
 
@@ -55,6 +56,35 @@ private:
 	int field_34;
 	__int64 m_nUnkTime_1;
 	__int64 m_nUnkTime_2;
+
+public:
+
+	Renderer()
+	{
+		debug("Renderer created at %X\n", this);
+	}
+
+	~Renderer()
+	{
+		debug("Renderer destroyed!\n");
+	}
+
+	void* operator new (size_t size)
+	{
+		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+	}
+
+	void	CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, void* buffers);	//	@421320
+
+	static bool& WideScreen;
+	static bool FSAA;
+	static float& RatioXY;
 };
 
 extern Renderer* g_Renderer;

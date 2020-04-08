@@ -1,7 +1,6 @@
 #include "Window.h"
 #include "GfxInternal_Dx9.h"
 #include "StringsPool.h"
-#include "MemoryAllocators.h"
 #include "Config.h"
 #include "InputMouse.h"
 #include "InputKeyboard.h"
@@ -135,10 +134,10 @@ void Window::UpdateVisibility()
 		m_bVisible = bWindowVisible;
 
 		if (bWindowVisible) {
-			g_StreamedSoundBuffers->SetGlobalPause(false);
+			Audio::g_StreamedSoundBuffers->SetGlobalPause(false);
 		}else{
-			g_StreamedSoundBuffers->SetGlobalPause(true);
-			g_StreamedSoundBuffers->MeasureWaitForSoftPause();
+			Audio::g_StreamedSoundBuffers->SetGlobalPause(true);
+			Audio::g_StreamedSoundBuffers->MeasureWaitForSoftPause();
 		}
 	}
 }
@@ -547,11 +546,6 @@ ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
 {
 	WNDCLASSA WndClass;
 
-#ifdef _DEBUG
-	nMenuResourceId = 103;
-	nIconResourceId = 101;
-#endif
-
 	debug("Creating menu with resource ID: %d\n", nMenuResourceId);
 
 	WndClass.hCursor = 0;
@@ -651,16 +645,16 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	FindIdFile();
 
 	//	NOTE: InitialiseGame has been inlined! Originally at 93F680.
-	if (g_Config)
-		g_Config->Init();
+	if (!Allocators::Released)
+		if (g_Config = new GameConfig::Config())//(GameConfig::Config*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(sizeof(GameConfig::Config)))
+			g_Config->Init();
 
 	g_Config->Process(lpCmdLine, 0, "", 0);
 
 	//	This is main game loop proc. Process function has standard while loop.
 	g_Window->Process(Scene::Update);
 
-	if (g_Config)
-		Allocators::MemoryAllocators::ReleaseMemory(g_Config, 0);
+	delete g_Config;
 
 	return 0;
 }
@@ -669,10 +663,8 @@ void GetUserDocumentsDir(String& outString)
 {
 	char pszPath[MAX_PATH];
 
-	if (SHGetFolderPath(0, 0x8005, 0, 0, pszPath) < 0)
-		outString = String();
-	else
-		outString = String(pszPath);
+	if (SHGetFolderPath(0, 0x8005, 0, 0, pszPath) != S_FALSE)
+		outString.Set(pszPath);
 }
 
 void FindIdFile()
@@ -865,9 +857,6 @@ inline void PATCH_WINDOW()
 	_asm	mov		dwFunc, eax
 	//	Override SetDesktopDirectory function.
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
-
-	//	Override GetUserDocumentsDir function.
-	hook(0x93E2ED, &GetUserDocumentsDir, PATCH_CALL);
 
 	//	Override WinMain function.
 	hook(0x95383F, &WinMain, PATCH_CALL);

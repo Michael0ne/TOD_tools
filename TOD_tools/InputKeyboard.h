@@ -2,9 +2,12 @@
 
 #include "stdafx.h"
 
+#include "MemoryAllocators.h"
+
 namespace Input {
 
 #define INPUT_KEYBOARD_CLASS_SIZE 532
+#define INPUT_KEYBOARD_BUFFER_SIZE 600
 
 	class Keyboard
 	{
@@ -18,15 +21,44 @@ namespace Input {
 		DIDEVICEOBJECTDATA* m_pBuffer;
 		int m_nBufferSize;
 
+		void	CreateDevice();
+
 	public:
 		Keyboard()
 		{
+			memset(&m_nButtonStates, 0, sizeof(m_nButtonStates));
+			memset(&m_nButtonStates1, 0, sizeof(m_nButtonStates1));
+
+			m_bAcquired = 0;
+			_pad[0] = 0;
+			_pad[1] = 0;
+			_pad[2] = 0;
+
+			m_pDInputDevice = nullptr;
+			m_pDeviceObject = nullptr;
+			m_pBuffer = nullptr;
+
+			m_nBufferSize = 0;
+
 			debug("Input::Keyboard created at %X\n", this);
 		}
 
 		~Keyboard()
 		{
 			debug("Input::Keyboard destroyed!\n");
+		}
+
+		void* operator new(size_t size)
+		{
+			void* ptr = Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+
+			return ptr;
+		}
+
+		void operator delete(void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 		}
 
 		void Init();	//	@43AD80

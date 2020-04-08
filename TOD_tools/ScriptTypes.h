@@ -2,6 +2,7 @@
 
 #include "Types.h"
 #include "StringsPool.h"
+#include "MemoryAllocators.h"
 
 namespace ScriptTypes
 {
@@ -266,6 +267,33 @@ namespace ScriptTypes
 		int m_nId;
 
 	public:
+		ScriptType()
+		{
+			lpVtbl = nullptr;
+			m_sTypeName = String();
+			m_nTypeId = 0;
+			m_nSizeInBytes = 0;
+			m_nId = 0;
+
+			debug("ScriptTypes::ScriptType created at %X\n", this);
+		}
+
+		~ScriptType()
+		{
+			debug("ScriptTypes::ScriptType destroyed!\n");
+		}
+
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		}
+
+		void operator delete (void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+
 		void	Register(unsigned int typeId, const char* typeName, unsigned int typeSize);	//	@862E90
 
 		//	NOTE: this is temporary, until proper classes for each type has been made.
@@ -282,14 +310,14 @@ namespace ScriptTypes
 	static ScriptType* tyString = nullptr;
 
 	//	In scripts, use these.
-	static ScriptType* tNOTHING = (ScriptType*)0xA3CE94;
-	static ScriptType* tNUMBER = (ScriptType*)0xA3CEC0;
-	static ScriptType* tINTEGER = (ScriptType*)0xA3CEB8;
-	static ScriptType* tBOOLEAN = (ScriptType*)0xA3CEC4;
-	static ScriptType* tVECTOR = (ScriptType*)0xA3CEB4;
-	static ScriptType* tQUATERNION = (ScriptType*)0xA3CE98;
-	static ScriptType* tCOLOR = (ScriptType*)0xA3CEA4;
-	static ScriptType* tSTRING = (ScriptType*)0xA3CEB0;
+	static ScriptType** tNOTHING = (ScriptType**)0xA3CE94;
+	static ScriptType** tNUMBER = (ScriptType**)0xA3CEC0;
+	static ScriptType** tINTEGER = (ScriptType**)0xA3CEB8;
+	static ScriptType** tBOOLEAN = (ScriptType**)0xA3CEC4;
+	static ScriptType** tVECTOR = (ScriptType**)0xA3CEB4;
+	static ScriptType** tQUATERNION = (ScriptType**)0xA3CE98;
+	static ScriptType** tCOLOR = (ScriptType**)0xA3CEA4;
+	static ScriptType** tSTRING = (ScriptType**)0xA3CEB0;
 
 	static const ScriptType_Nothing__vtable* tNOTHING_vtable = (ScriptType_Nothing__vtable*)0x9CB1F8;
 	static const ScriptType_Number__vtable* tNUMBER_vtable = (ScriptType_Number__vtable*)0x9CB250;

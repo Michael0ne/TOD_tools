@@ -10,6 +10,8 @@
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
+HMODULE g_DirectInput = NULL;
+DINPUT8CREATEORIGINAL DirectInput8Create_Hooked = NULL;
 
 static FILE * logfile;
 void debug (char * message, ...) {
@@ -33,11 +35,10 @@ extern "C"
 	{ return __DirectInput8Create (hinst, dwVersion, riidltf, ppvOut, punkOuter); }
 }
 
-HMODULE dinput = NULL;
 void HookDInput()
 {
-	dinput = LoadLibrary("C:\\Windows\\System32\\dinput8.dll");
-	if (!dinput) {
+	g_DirectInput = LoadLibrary("C:\\Windows\\System32\\dinput8.dll");
+	if (!g_DirectInput) {
 		debug("Failed to find dinput8 library!\n");
 
 		return;
@@ -54,9 +55,11 @@ void HookDInput()
 	*	dinput8 + 0x18	- Initialize
 	*	dinput8 + 0x1C	- RunControlPanel
 	*/
-	__DirectInput8Create = (HRESULT (*)(HINSTANCE, DWORD, DWORD, DWORD, DWORD))GetProcAddress (dinput, "DirectInput8Create");
+	__DirectInput8Create = (HRESULT (*)(HINSTANCE, DWORD, DWORD, DWORD, DWORD))GetProcAddress (g_DirectInput, "DirectInput8Create");
 
-	debug("DirectInput8 hooked! Lib addr: %0.4x, DirectInput8Create method addr: %0.4x\n", &dinput, &__DirectInput8Create);
+	DirectInput8Create_Hooked = (DINPUT8CREATEORIGINAL)GetProcAddress(g_DirectInput, "DirectInput8Create");
+
+	debug("DirectInput8 hooked! Lib addr: %0.4x, DirectInput8Create method addr: %0.4x\n", &g_DirectInput, &__DirectInput8Create);
 }
 
 DWORD WINAPI HookThread(LPVOID lpParam)
@@ -103,21 +106,10 @@ void MemoryHook()
 	PATCH_INPUT_MOUSE();
 	PATCH_INPUT_KEYBOARD();
 	PATCH_INPUT_GAMEPAD();
-
-	g_Window = new Window();
-	g_Config = new GameConfig::Config();
-	g_InputMouse = new Input::Mouse();
-	g_InputKeyboard = new Input::Keyboard();
-	g_InputGamepad = new Input::Gamepad();
 }
 
 void MemoryUnHook()
 {
-	delete g_Window;
-	delete g_Config;
-	delete g_InputMouse;
-	delete g_InputKeyboard;
-	delete g_InputGamepad;
 }
 
 //=========================================================================
@@ -135,7 +127,7 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 		//	Replace DirectInput8 methods with stubs.
 		HookDInput();
 
-		if (!dinput)
+		if (!g_DirectInput)
 			return false;
 
 		// Unlock memory.
@@ -192,8 +184,8 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 		}
 
 		//	Free DirectInput8 library.
-		if (dinput)
-			FreeLibrary(dinput);
+		if (g_DirectInput)
+			FreeLibrary(g_DirectInput);
 
 		break;
 	}

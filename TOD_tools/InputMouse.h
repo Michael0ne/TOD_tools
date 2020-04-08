@@ -3,9 +3,12 @@
 #include "stdafx.h"
 #include "Globals.h"
 
+#include "MemoryAllocators.h"
+
 namespace Input {
 
 #define INPUT_MOUSE_CLASS_SIZE 96
+#define INPUT_MOUSE_BUFFER_SIZE 600
 
 	enum eMouseButtons {
 		MOUSE_BUTTON_0,
@@ -81,6 +84,19 @@ namespace Input {
 		~Mouse()
 		{
 			debug("Input::Mouse destroyed!\n");
+		}
+
+		void* operator new(size_t size)
+		{
+			void* ptr = Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+
+			return ptr;
+		}
+
+		void operator delete(void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 		}
 
 		void Init();	//	@43B4E0

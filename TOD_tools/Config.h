@@ -2,61 +2,134 @@
 
 #include "stdafx.h"
 
+#include "Types.h"
+#include "List.h"
 #include "StringsPool.h"
+#include "MemoryAllocators.h"
 
 namespace GameConfig {
 
 	#define CONFIG_CLASS_SIZE 0x9C	//	156 bytes
 
 	#define CONFIG_GAMENAME "Total Overdose"
+	#define CONFIG_SAVEDIR	"/Total Overdose/"
+
+#ifdef INCLUDE_FIXES
+	#define CONFIG_MENU_RESOURCEID 103
+#else
+	#define CONFIG_MENU_RESOURCEID 0
+#endif // INCLUDE_FIXES
+
+	struct Session_Variables_Entry
+	{
+		String	m_sVariableName;
+		String	m_sVariableValue;
+	};
 
 	struct Session_Variables
 	{
 		int field_0;
 		int field_4;
-		int field_8;
+		String* field_8;
 		int field_C;
-		int field_10;
+
+		int* field_10;
 		int field_14;
 		int field_18;
 		int field_1C;
+
 		int field_20;
 		int field_24;
 		int field_28;
 		int field_2C;
-		int field_30;
+
+		int* field_30;
 		int field_34;
 		int field_38;
 		int field_3C;
-		int field_40;
+
+		int* field_40;
 		int field_44;
 		int field_48;
 		int field_4C;
+
 		int field_50;
 		int field_54;
 		int field_58;
 		int field_5C;
-		int field_60;
+
+		int m_nTotalVariables;
 		int field_64;
 
 	public:
+		Session_Variables()
+		{
+			field_0 = 0;
+			field_4 = 0;
+			field_8 = 0;
+			field_C = 0;
+
+			field_10 = 0;
+			field_14 = 0;
+			field_18 = 0;
+			field_1C = 0;
+
+			field_20 = 0;
+			field_24 = 0;
+			field_28 = 0;
+			field_2C = 0;
+
+			field_30 = 0;
+			field_34 = 0;
+			field_38 = 0;
+			field_3C = 0;
+
+			field_40 = 0;
+			field_44 = 0;
+			field_48 = 0;
+			field_4C = 0;
+
+			field_50 = 0;
+			field_54 = 0;
+			field_58 = 0;
+			field_5C = 0;
+
+			m_nTotalVariables = 0;
+			field_64 = 0;
+
+			debug("GameConfig::Session_Variables created at %X\n", this);
+		}
+
+		~Session_Variables()
+		{
+			debug("GameConfig::Session_Variables destroyed!\n");
+		}
+
+		void* operator new(size_t size)
+		{
+			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		}
+
+		void operator delete(void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+
 		Session_Variables* CreateBuffer(int unk);	//	@410680
 		Session_Variables* CreateBuffer(const char* szPath, bool unk);	//	@4124D0
 
 		bool IsVariableSet(const char* variableName);	//	@410080
-		bool IsVariableValueTrue(const char* variableName);	//	@410900
 
-		template <typename T>
-		T GetParamValue(const char* variableName);
-		/*
-		 *	int @410A30,
-		 *	float @410AC0,
-		 *	array[2] @410B50,
-		 *	vector2 @410BE0,
-		 *	vector4 @410C70,
-		 *	vector4(color?) @410D90,
-		 *	string @410E30
-		*/
+		bool GetParamValueBool(const char* variableName);	//	@410900
+		int GetParamValueInt(const char* variableName);	//	@410A30
+		float GetParamValueFloat(const char* variableName);	//	@410AC0
+		const Vector2<int>& GetParamValueVector2(const char* variableName, Vector2<int>& outVec, char delimiter);	//	@410B50
+		const Vector2<float>& GetParamValueVector2(const char* variableName, Vector2<float>& outVec, char delimiter);	//	@410BE0
+		const Vector3<float>& GetParamValueVector3(const char* variableName, Vector3<float>& outVec, char delimiter);	//	@410C70
+		const Vector4f& GetParamValueVector4(const char* variableName, Vector4f& outVec, char delimiter);	//	@410D90
+		void GetParamValueString(const char* variableName, String& outStr);	//	@410E30
+		const String& GetParamValueString(const char* variableName);
 
 		void SetParamValue(const char* variableName, char* value);	//	@4114E0
 		void SetParamValueBool(const char* variableName, int value);	//	@4116D0
@@ -84,10 +157,7 @@ namespace GameConfig {
 		int field_5C;
 		int field_60;
 		int field_64;
-		int field_68;
-		int field_6C;
-		int field_70;
-		int field_74;
+		Vector4f m_vBackgroundSize;	//	TODO: better name?
 		int m_nCRCForScriptsListUnk;
 		int m_nCRCForScriptsGlobalList;
 		int m_nCRCForTypesList;
@@ -122,10 +192,7 @@ namespace GameConfig {
 			field_5C = 0;
 			field_60 = 0;
 			field_64 = 0;
-			field_68 = 0;
-			field_6C = 0;
-			field_70 = 0;
-			field_74 = 0;
+			m_vBackgroundSize = Vector4<float>();
 			m_nCRCForScriptsListUnk = 0;
 			m_nCRCForScriptsGlobalList = 0;
 			m_nCRCForTypesList = 0;
@@ -141,21 +208,60 @@ namespace GameConfig {
 			debug("GameConfig::Config destroyed!\n");
 		}
 
+		void* operator new(size_t size)
+		{
+			void* ptr = Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+
+			return ptr;
+		}
+
+		void operator delete(void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+
 		void Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId);	//	@93D480
 		void Init();	//	@93CB60
 		void InitEntitiesDatabase();	//	@93C950
 	};
 
-	static void ReadZipDirectories(const char szFileSystem[]);	//	@419550
+	static void ReadZipDirectories(const char* szFileSystem);	//	@419550
+	static void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo); //	@418F90
+	static void SetCountryCode(const char* szCode);	//	@42E530
+	static signed int GetRegionId(String& regionStr);	//	@875450
+
+	static void _GetDeveloperPath(String* outStr);	//	@4098D0
 }
 
 namespace Script
 {
-	static const String& LanguageMode = *(String*)0xA086A8;
+	static String& LanguageMode = *(String*)0xA086A8;
 	static bool& FileCheck = *(bool*)0xA35DE0;
 	static bool& ForceFeedback = *(bool*)0xA35E70;
 	static String ControlType;
 	static bool LoadBlocks;
+	static int& Ps2MaxTextureSize = *(int*)0xA10FF0;
+	static bool Fullscreen;
+	static String Filesystem;
+	static List<String>& DirectoryMappings = *(List<String>*)0xA35DE4;
+	static String& ScriptsPath = *(String*)0xA0B434;
+	static bool& RelaxBuildVersionCheck = *(bool*)0xA5D5B0;
+	static int IconResourceId;
+	static int& LanguageStringsOffset = *(int*)0xA35E28;
+	static const char** CountryCodes[6] = {
+		(const char**)0xA089BC,	//	UK
+		(const char**)0xA089C0,	//	FR
+		(const char**)0xA089C4,	//	IT
+		(const char**)0xA089C8,	//	DE
+		(const char**)0xA089CC,	//	ES
+		(const char**)0xA089D0	//	DK
+	};
+	static bool& SavePlatformPS2 = *(bool*)0xA090C8;
+	static bool& CutsceneDisableAware = *(bool*)0xA3D892;
+	static bool& CutsceneForceCompleteLodUpdates = *(bool*)0xA5D5A8;
+	static String& StreamedSoundExt = *(String*)0xA35EE4;
+	static String Region;
 }
 
 extern GameConfig::Config* g_Config;

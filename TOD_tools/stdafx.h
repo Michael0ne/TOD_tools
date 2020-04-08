@@ -1,6 +1,7 @@
 #pragma once
 #pragma comment (lib, "Winmm.Lib")
 #pragma comment (lib, "dinput8.lib")
+#pragma comment (lib, "dsound.lib")
 
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
@@ -20,10 +21,16 @@
 #include <d3d9.h>			//	For all directX related stuff.
 #include <list>				//	For lists, obviously.
 #include <dinput.h>			//	For DirectInput stuff.
+#include <mmsystem.h>		//	Necessary for dsound.
+#include <dsound.h>			//	For DirectSound stuff.
 
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
 
 #define INCLUDE_FIXES 1	//	This includes various fixes of the game code.
+
+extern HMODULE g_DirectInput;
+typedef HRESULT(__stdcall* DINPUT8CREATEORIGINAL)(HINSTANCE, DWORD, const IID&, LPVOID*, LPUNKNOWN);
+extern DINPUT8CREATEORIGINAL DirectInput8Create_Hooked;
 
 // --------------------------------------------------------
 // Useful functions.
