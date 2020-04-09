@@ -47,7 +47,7 @@ class Window
 public:
 	String				m_sWindowTitle;
 	String				m_sUserDesktopPath;
-	void				(__cdecl *m_pMenuItemClickedCallback)(WPARAM);
+	int					(__stdcall *m_pMenuItemClickedCallback)(WPARAM);
 	HWND				m_hWindow;
 	int					m_unkFlags;						//	Some unknown flags. TODO: Needs to be union {}.
 	bool				m_bVisible;
@@ -65,7 +65,7 @@ public:
 	//	>> 43B950
 	bool						ProcessMessages();
 	//	>> 43B9C0
-	void						SetMenuClickCallback(void (__cdecl* pCallback)(WPARAM)) {m_pMenuItemClickedCallback = pCallback;};
+	void						SetMenuClickCallback(int (__stdcall* pCallback)(WPARAM)) {m_pMenuItemClickedCallback = pCallback;};
 	//	>> 43B9D0
 	void						SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution);
 	//	>> 43B9F0
@@ -162,5 +162,9 @@ int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 void				GetUserDocumentsDir(String& outString);
 //	>> 439230
 void				FindIdFile();
+
+#ifdef INCLUDE_FIXES
+int CALLBACK		MenuClickCallback(WPARAM wParam);
+#endif
 
 static_assert(sizeof(Window) == WINDOW_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Window"));

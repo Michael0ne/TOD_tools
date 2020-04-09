@@ -1,6 +1,6 @@
 #include "GfxInternal_Dx9.h"
 
-GfxInternal_Dx9* g_RendererDx = NULL;
+GfxInternal_Dx9* g_RendererDx = (GfxInternal_Dx9*)0xA39F14;
 
 Map<int, int>& GfxInternal_Dx9::g_UnkMap_1 = *(Map<int, int>*)0xA39F58;
 Map<int, int>& GfxInternal_Dx9::g_UnkMap_2 = *(Map<int, int>*)0xA39F38;

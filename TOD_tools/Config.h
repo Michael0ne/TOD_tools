@@ -9,7 +9,7 @@
 
 namespace GameConfig {
 
-	#define CONFIG_CLASS_SIZE 0x9C	//	156 bytes
+	#define CONFIG_CLASS_SIZE 156
 
 	#define CONFIG_GAMENAME "Total Overdose"
 	#define CONFIG_SAVEDIR	"/Total Overdose/"
@@ -142,21 +142,12 @@ namespace GameConfig {
 		String m_sConfigFilePath;
 		Session_Variables* m_pConfigurationVariables;
 		Session_Variables* m_pSessionVariables;
-		int field_2C;
-		int field_30;
-		int field_34;
-		int field_38;
-		int field_3C;
-		int field_40;
-		int field_44;
-		int field_48;
+		String m_sUnkString_1;
+		String m_sUnkString_2;
 		int field_4C;
 		int field_50;
-		int field_54;
-		int field_58;
-		int field_5C;
-		int field_60;
-		int field_64;
+		void* field_54;
+		String m_sUnkString_3;
 		Vector4f m_vBackgroundSize;	//	TODO: better name?
 		int m_nCRCForScriptsListUnk;
 		int m_nCRCForScriptsGlobalList;
@@ -175,23 +166,13 @@ namespace GameConfig {
 			field_0 = 0;
 			m_sGameName = String();
 			m_sConfigFilePath = String();
+			m_sUnkString_1 = String();
+			m_sUnkString_2 = String();
+			m_sUnkString_3 = String();
 			m_pConfigurationVariables = nullptr;
 			m_pSessionVariables = nullptr;
-			field_2C = 0;
-			field_30 = 0;
-			field_34 = 0;
-			field_38 = 0;
-			field_3C = 0;
-			field_40 = 0;
-			field_44 = 0;
-			field_48 = 0;
 			field_4C = 0;
 			field_50 = 0;
-			field_54 = 0;
-			field_58 = 0;
-			field_5C = 0;
-			field_60 = 0;
-			field_64 = 0;
 			m_vBackgroundSize = Vector4<float>();
 			m_nCRCForScriptsListUnk = 0;
 			m_nCRCForScriptsGlobalList = 0;
@@ -205,6 +186,15 @@ namespace GameConfig {
 		}
 
 		~Config() {
+			if (field_0)
+				UninitialiseGame();
+
+			delete &m_sUnkString_1;
+			delete &m_sUnkString_2;
+			delete &m_sUnkString_3;
+			delete &m_sConfigFilePath;
+			delete &m_sGameName;
+
 			debug("GameConfig::Config destroyed!\n");
 		}
 
@@ -224,12 +214,13 @@ namespace GameConfig {
 		void Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId);	//	@93D480
 		void Init();	//	@93CB60
 		void InitEntitiesDatabase();	//	@93C950
+		void UninitialiseGame();	//	@93CBC0
 	};
 
 	static void ReadZipDirectories(const char* szFileSystem);	//	@419550
 	static void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo); //	@418F90
 	static void SetCountryCode(const char* szCode);	//	@42E530
-	static signed int GetRegionId(String& regionStr);	//	@875450
+	static signed int GetRegionId(String* regionStr);	//	@875450
 
 	static void _GetDeveloperPath(String* outStr);	//	@4098D0
 }
@@ -261,7 +252,8 @@ namespace Script
 	static bool& CutsceneDisableAware = *(bool*)0xA3D892;
 	static bool& CutsceneForceCompleteLodUpdates = *(bool*)0xA5D5A8;
 	static String& StreamedSoundExt = *(String*)0xA35EE4;
-	static String Region;
+	static String& VersionName = *(String*)0xA1B9C8;
+	static char& _A1B98D = *(char*)0xA1B98D;
 }
 
 extern GameConfig::Config* g_Config;

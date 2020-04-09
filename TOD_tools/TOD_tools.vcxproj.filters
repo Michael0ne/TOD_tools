@@ -185,6 +185,9 @@
     <ClInclude Include="DieselPowerSound.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -315,6 +318,9 @@
     </ClCompile>
     <ClCompile Include="ResourcesTypes.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

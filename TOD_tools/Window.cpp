@@ -439,11 +439,8 @@ void Window::Release()
 	SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
 	SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
 
-	if (m_sUserDesktopPath.m_szString != &m_sUserDesktopPath.m_pEmpty && m_sUserDesktopPath.m_nBitMask & 0x80000000)
-		Allocators::g_Allocators->ReleaseMemory(m_sUserDesktopPath.m_szString, 0);
-
-	if (m_sWindowTitle.m_szString != &m_sWindowTitle.m_pEmpty && m_sWindowTitle.m_nBitMask & 0x80000000)
-		Allocators::g_Allocators->ReleaseMemory(m_sWindowTitle.m_szString, 0);
+	delete &m_sUserDesktopPath;
+	delete &m_sWindowTitle;
 }
 
 void Window::_CreateWindow(UINT16 nIconResourceId)
@@ -562,7 +559,30 @@ ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
 	return RegisterClassA(&WndClass);
 }
 
-//	NOTE: szFileSystems doesn't seem to be referenced here, but used in Config::Process later.
+#ifdef INCLUDE_FIXES
+int CALLBACK MenuClickCallback(WPARAM wParam)
+{
+	if (wParam == 40006) {
+		//	ID_EXIT
+		g_Window->m_bQuitRequested = true;
+
+		return 0;
+	}
+
+	char szBuffer[8] = "";
+	memset(szBuffer, 0, sizeof(szBuffer));
+
+	int written = sprintf(szBuffer, "%i", wParam);
+
+	szBuffer[written] = NULL;
+
+	MessageBoxA(g_Window->m_hWindow, szBuffer, g_Window->m_sWindowTitle.m_szString, MB_ICONEXCLAMATION | MB_OK);
+
+	return 1;
+}
+#endif
+
+//	NOTE: szFileSystem is passed in, but never used.
 void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId)
 {
 	HKEY				phkResult;
@@ -573,7 +593,11 @@ void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceI
 
 	m_unkFlags = unkParam1;
 	m_bVisible = true;
+#ifndef INCLUDE_FIXES
 	m_pMenuItemClickedCallback = NULL;
+#else
+	m_pMenuItemClickedCallback = MenuClickCallback;
+#endif
 	m_bCursorReleased = true;
 	m_bQuitRequested = false;
 
@@ -646,7 +670,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	//	NOTE: InitialiseGame has been inlined! Originally at 93F680.
 	if (!Allocators::Released)
-		if (g_Config = new GameConfig::Config())//(GameConfig::Config*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(sizeof(GameConfig::Config)))
+		if (g_Config = new GameConfig::Config())
 			g_Config->Init();
 
 	g_Config->Process(lpCmdLine, 0, "", 0);
@@ -654,7 +678,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	//	This is main game loop proc. Process function has standard while loop.
 	g_Window->Process(Scene::Update);
 
-	delete g_Config;
+	//	When deleting config class, rest of game objects are deleted as well.
+	if (g_Config)
+		delete g_Config;
 
 	return 0;
 }

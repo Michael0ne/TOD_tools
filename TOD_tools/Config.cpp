@@ -17,6 +17,7 @@
 #include "MemoryCards.h"
 #include "StreamedSoundBuffers.h"
 #include "Renderer.h"
+#include "Font.h"
 
 GameConfig::Config* g_Config = NULL;
 
@@ -267,7 +268,7 @@ namespace GameConfig {
 			String platform = m_pConfigurationVariables->GetParamValueString("save_platform");
 
 			//	For PS2 we want 2 memory cards and harddisk available.
-			if (String::Equal(&platform, new String("PS2"))) {
+			if (platform.Equal("PS2")) {
 				const char* szMemcard0[2] = {
 					"/savegames/memorycard0/",
 					"/savegames/memorycard1/"
@@ -327,11 +328,11 @@ namespace GameConfig {
 
 			soundrenderer.ToLowerCase();
 
-			if (String::Equal(&soundrenderer, &String("directsound")))
+			if (soundrenderer.Equal("directsound"))
 				rendererid = 2;
-			if (String::Equal(&soundrenderer, &String("dieselpower")))
+			if (soundrenderer.Equal("dieselpower"))
 				rendererid = 3;
-			if (String::Equal(&soundrenderer, &String("auto")))
+			if (soundrenderer.Equal("auto"))
 				rendererid = 1;
 
 			if (rendererid != 0)
@@ -420,30 +421,64 @@ namespace GameConfig {
 		//	Create renderer, this also creates and initializes Direct3D device.
 		if (!Allocators::Released)
 			if (g_Renderer = new Renderer())
-				if (Script::Fullscreen) {
+				if (Script::Fullscreen)
 					g_Renderer->CreateRenderer(&vScreensize, 32, 16, (Renderer::FSAA != 0 ? 0x200 : 0) | 0x80, 31, 20, &buff);
-					ShowCursor(0);
-				}
 				else
 					g_Renderer->CreateRenderer(&vScreensize, 32, 16, 130, 31, 20, &buff);
 
 		//	Set region.
-		//	NOTE: fuckin' RVO!
-		Script::Region = "europe";
+		String sRegion = "europe";
 
 		//	NOTE: this is set to return 0 (false) always, so maybe get rid of it?
 		if (!(*(int(__cdecl*)())0x420160)())
-			Script::Region.Set("usa");
+			sRegion.Set("usa");
 
 		if (m_pConfigurationVariables->IsVariableSet("region"))
-			Script::Region = m_pConfigurationVariables->GetParamValueString("region");
+			sRegion.Set(m_pConfigurationVariables->GetParamValueString("region").m_szString);
 
-		g_Blocks->SetRegionId(GetRegionId(Script::Region));
-		debug("Using region: %s\n", Script::Region.m_szString);
+		g_Blocks->SetRegionId(GetRegionId(&sRegion));
+		debug("Using region: %s\n", sRegion.m_szString);
 
-		if (m_pConfigurationVariables->IsVariableSet("virtual_hud_screensize"))
-			;
-		//	TODO: finish!
+		if (m_pConfigurationVariables->IsVariableSet("virtual_hud_screensize")) {
+			Vector2<float> vHudSize;
+			m_pConfigurationVariables->GetParamValueVector2("virtual_hud_screensize", vHudSize, ',');
+
+			Renderer::g_ScreenProperties.SetHudScreenSize(vHudSize.x, vHudSize.y, 1.0, 1.0);
+		}
+
+		if (m_pConfigurationVariables->IsVariableSet("screen_safe_area"))
+			Renderer::g_ScreenProperties.SetSafeArea(m_pConfigurationVariables->GetParamValueFloat("screen_safe_area"));
+
+		//	NOTE: maybe this is 'SetBackBufferSize'?
+		g_Renderer->_41FDF0(&m_vBackgroundSize, -1);
+
+		//	TODO: what is this?
+		Renderer::_A08704 = 0;
+		Renderer::_A0870C = 0;
+		Renderer::_A0872C = 0;
+
+		if (m_pConfigurationVariables->IsVariableSet("version_name"))
+			Script::VersionName = m_pConfigurationVariables->GetParamValueString("version_name");
+
+		Script::_A1B98D = 0;
+
+		//	Initialize baked font.
+		Font::MakeCharactersMap();
+
+		if (!Allocators::Released)
+			if (g_Font = new Font())
+				g_Font->Init();
+
+		//	Load assets.
+		ReadZipDirectories(Script::Filesystem.m_szString);
+
+		//	Parse collmat file
+		//	EnumMaterialsInCollmat();
+		//	Parse facecolmat file
+		//	EnumFaceColMaterials();
+
+		//	Init random numbers generator.
+		(*(void(__cdecl*)(int))0x46C420)(__rdtsc());
 	}
 
 	//	TODO: implementation!
@@ -452,6 +487,51 @@ namespace GameConfig {
 		void(__thiscall * _InitEntitiesDatabase)(Config * _this) = (void(__thiscall*)(Config*))0x93C950;
 
 		_InitEntitiesDatabase(this);
+	}
+
+	void Config::UninitialiseGame()
+	{
+		//	g_Scene->_895E40();
+		//	ScriptTypes::Release();
+		//	g_Light->ClearList();
+		g_Window->SetCursorReleased(true);
+
+		if (m_pConfigurationVariables)
+			//	m_pConfigurationVariables->Release();	//	@107B0
+			delete m_pConfigurationVariables;
+
+		if (g_Blocks)
+			//	g_Blocks->Release();	//	@877250
+			delete g_Blocks;
+
+		if (g_InputMouse)
+			delete g_InputMouse;
+
+		if (g_InputKeyboard)
+			//	g_InputKeyboard->Release();	//	@43AF20
+			delete g_InputKeyboard;
+
+		if (Control::GetGamepadByIndex(0))
+			//	g_InputGamepad->Release();	//	@439D60
+			delete g_InputGamepad;
+
+		if (g_Renderer)
+			//	g_Renderer->Release();	//	@421470
+			delete g_Renderer;
+
+		if (g_Window) {
+			g_Window->Release();	//	@43C230
+			delete g_Window;
+		}
+
+		CoUninitialize();
+
+		if (field_54)
+			(*(void (__stdcall*)(int))field_54)(1);
+
+		field_0 = 0;
+
+		debug("Game uninitialized!\n");
 	}
 
 	Session_Variables* Session_Variables::CreateBuffer(int unk)
@@ -470,11 +550,9 @@ namespace GameConfig {
 
 	bool Session_Variables::IsVariableSet(const char* variableName)
 	{
-		return String::Equal(field_8, new String(variableName)) != 0;
-
-		//bool(__thiscall * _IsVariableSet)(Session_Variables* _this, const char* _varname) = (bool (__thiscall*)(Session_Variables*, const char*))0x410080;
+		bool(__thiscall * _IsVariableSet)(Session_Variables* _this, const char* _varname) = (bool (__thiscall*)(Session_Variables*, const char*))0x410080;
 		
-		//return _IsVariableSet(this, variableName);
+		return _IsVariableSet(this, variableName);
 	}
 
 	bool Session_Variables::GetParamValueBool(const char* variableName)
@@ -583,6 +661,9 @@ namespace GameConfig {
 						break;
 					if (cCurrentChar == ' ' || cCurrentChar == ',')
 						break;
+
+					++nCurrentArchiveIndex;
+					szZipName[nCharIndex++] = cCurrentChar;
 				} while (nCharIndex < 255);
 
 				szZipName[nCharIndex] = 0;
@@ -593,7 +674,7 @@ namespace GameConfig {
 					if (cCurrentChar != ' ' && cCurrentChar != ',')
 						break;
 
-					nCurrentArchiveIndex++;
+					++nCurrentArchiveIndex;
 				}
 
 				_OpenZip(szZipName);
@@ -628,7 +709,7 @@ namespace GameConfig {
 		_SetCountryCode(szCode);
 	}
 
-	signed int GetRegionId(String& regionStr)
+	signed int GetRegionId(String* regionStr)
 	{
 		/*
 		 *	Europe - 0
@@ -636,13 +717,13 @@ namespace GameConfig {
 		 *	Asia - 2
 		*/
 
-		if (regionStr.Equal("europe"))
+		if (regionStr->Equal("europe"))
 			return 0;
 
-		if (regionStr.Equal("usa"))
+		if (regionStr->Equal("usa"))
 			return 1;
 
-		if (regionStr.Equal("asia"))
+		if (regionStr->Equal("asia"))
 			return 2;
 
 		return -1;

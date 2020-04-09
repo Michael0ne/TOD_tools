@@ -7,7 +7,7 @@ class String {
 public:
 	int		m_nLength;		//	String length, including null terminator.
 	char*	m_szString;		//	Actual string ptr.
-	int		m_nBitMask;		//	Bit mask, also contains string's length.
+	unsigned int	m_nBitMask;		//	Bit mask, also contains string's length.
 	char	m_pEmpty;		//	Default empty string.
 
 	inline String() :
@@ -17,50 +17,38 @@ public:
 	String(const char* str)
 	{
 		m_nLength = strlen(str);
-		m_nBitMask = 0x80000000 ^ (0x80000000 ^ (m_nLength + (m_nLength >> 1))) & 0x7FFFFFFF;	//	Bitmask contains string length + 1.
+		m_nBitMask = (m_nBitMask ^ (m_nLength + (m_nLength >> 2))) & 0x7FFFFFFF ^ m_nBitMask;
 
 		m_szString = (char*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(m_nBitMask & 0x7FFFFFFF);
-		m_nBitMask |= 0x80000000;
 
-		m_pEmpty = '\0';
+		m_pEmpty = NULL;
 
 		strcpy(m_szString, str);
 	}
 
-	//	Override copy constructor to allow full copy of an object.
-	String(const String& _copy)
-		: m_nLength(_copy.m_nLength), m_szString(nullptr), m_nBitMask(_copy.m_nBitMask), m_pEmpty(NULL)
-	{
-		m_szString = (char*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(m_nBitMask & 0x7FFFFFFF);
-
-		strcpy(m_szString, _copy.m_szString);
-	}
-
 	//	Override assignment operator, when rvalue is String object.
-	String& operator=(const String& _r)
+	void operator=(const String& _r)
 	{
-		if (this == &_r)
-			return *this;
-
 		if (m_szString != &m_pEmpty && m_nBitMask < 0)
 			Allocators::MemoryAllocators::ReleaseMemory(m_szString, 0);
 
 		m_nLength = _r.m_nLength;
 		m_nBitMask = _r.m_nBitMask;
-
 		m_szString = (char*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(m_nBitMask & 0x7FFFFFFF);
-
-		m_pEmpty = '\0';
+		m_pEmpty = NULL;
 
 		strcpy(m_szString, _r.m_szString);
-
-		return *this;
 	}
 
 	inline ~String()
 	{
-		if (m_szString != &m_pEmpty && m_nBitMask < 0)
+		if (m_szString != &m_pEmpty && m_nBitMask & 0x80000000)
 			Allocators::MemoryAllocators::ReleaseMemory(m_szString, 0);
+
+		m_szString = &m_pEmpty;
+		m_nLength = 0;
+		m_nBitMask &= 0x80000000;
+		m_pEmpty = NULL;
 	}
 
 	//	NOTE: used when String object passed by reference.
@@ -104,39 +92,44 @@ public:
 		} while (_ind < m_nLength);
 	}
 
-	String* Equal(String* str)
+	bool Equal(const char* _str)	//	@40FE30
 	{
-		if (m_nLength == 0 || m_szString == &m_pEmpty)
-			return nullptr;
+		//	If base string is empty.
+		if (m_szString == &m_pEmpty && m_nBitMask < 0)
+			return false;
 
-		String* (__stdcall* _AreEqual)(String* _this, String* _str) = (String* (__stdcall*)(String*, String*))0x412A30;
+		//	If strings have same mem address.
+		if (m_szString == _str)
+			return true;
 
-		return _AreEqual(this, str);
-	}
+		//	If first character is null.
+		if (!*m_szString)
+			if (!*_str)
+				return true;
+			else
+				return false;
 
-	String* Equal(const char* str)
-	{
-		if (m_nLength == 0 || m_szString == &m_pEmpty)
-			return nullptr;
+		char* _base = m_szString;
+		char _char = *m_szString;
+		while (_char == *_str)
+		{
+			_char = (_base++)[1];
+			_str++;
 
-		String _stemp = String(str);
-		String* (__stdcall * _AreEqual)(String * _this, String * _str) = (String * (__stdcall*)(String*, String*))0x412A30;
+			if (!_char)
+				if (!*_str)
+					return true;
+				else
+					return false;
+		}
 
-		return _AreEqual(this, &_stemp);
-	}
+		if (*m_szString)
+			return false;
 
-	static String* Equal(String* base, String* str)	//	@412A30
-	{
-		String* (__stdcall * _AreEqual)(String* _this, String* _str) = (String* (__stdcall*)(String*, String*))0x412A30;
+		if (!*_str)
+			return true;
 
-		return _AreEqual(base, str);
-	}
-
-	static String* Equal(const String& base, String* str)
-	{
-		String* (__stdcall * _AreEqual)(const String * _this, String * _str) = (String * (__stdcall*)(const String*, String*))0x412A30;
-
-		return _AreEqual(&base, str);
+		return false;
 	}
 
 	String* Substring(String* outStr, int posStart, int length)

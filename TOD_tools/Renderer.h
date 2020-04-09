@@ -40,6 +40,35 @@ struct Scene_Buffer276
 	ColorRGB m_unkColor;
 };
 
+struct ScreenProperties
+{
+private:
+	float m_fVirtualHudScreensizeWidth;
+	float m_fVirtualHudScreensizeHeight;
+	float field_8;	//	NOTE: scaleX?
+	float field_C;	//	NOTE: scaleY?
+	float m_nScreenWidth;
+	float m_fScreenHeight;
+	float m_fScreenRatio;
+	float m_fScreenSafeArea;
+	char m_bSafeArea;	//	NOTE: is this float?
+	char field_21[3];
+	float m_fVirtualHudScreensizeHalfWidth;
+	float m_fVirtualHudScreensizeHalfHeight;
+	float field_2C;
+	float field_30;
+	float m_fScreenWidthHalf;
+	float m_fScreenHeightHalf;
+	float field_3C;
+	float field_40;
+
+public:
+	void	SetHudScreenSize(float width, float height, float unk1, float unk2);	//	@420D60
+	void	AdjustWindowScalings();	//	@420190
+	void	SetSafeArea(float area);	//	@420DD0
+};
+
+
 class Renderer
 {
 private:
@@ -81,10 +110,15 @@ public:
 	}
 
 	void	CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, void* buffers);	//	@421320
+	void	_41FDF0(Vector4<float>* size, int bufferIndex);	//	@41FDF0	NOTE: maybe 'SetBackBufferSize'?
 
 	static bool& WideScreen;
 	static bool FSAA;
 	static float& RatioXY;
+	static ScreenProperties& g_ScreenProperties;
+	static int& _A08704;
+	static int& _A0870C;
+	static int& _A0872C;
 };
 
 extern Renderer* g_Renderer;
