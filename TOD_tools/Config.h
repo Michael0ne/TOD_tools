@@ -102,6 +102,8 @@ namespace GameConfig {
 
 		~Session_Variables()
 		{
+			(*(void(__thiscall*)(Session_Variables*))0x107B0)(this);
+
 			debug("GameConfig::Session_Variables destroyed!\n");
 		}
 
@@ -147,17 +149,15 @@ namespace GameConfig {
 		int field_4C;
 		int field_50;
 		void* field_54;
-		String m_sUnkString_3;
+		String m_sSceneName;
 		Vector4f m_vBackgroundSize;	//	TODO: better name?
-		int m_nCRCForScriptsListUnk;
-		int m_nCRCForScriptsGlobalList;
-		int m_nCRCForTypesList;
+		int _pad[3];
 		int m_nScriptsListUnkCurrentIndex;
 		int m_nScriptsListGlobalCurrentIndex;
 		int m_nTypesListCurrentIndex;
-		int field_90;
-		int field_94;
-		int field_98;
+		int m_nCRCForScriptsListUnk;
+		int m_nCRCForScriptsGlobalList;
+		int m_nCRCForTypesList;
 
 	public:
 		Config() {
@@ -168,7 +168,7 @@ namespace GameConfig {
 			m_sConfigFilePath = String();
 			m_sUnkString_1 = String();
 			m_sUnkString_2 = String();
-			m_sUnkString_3 = String();
+			m_sSceneName = String();
 			m_pConfigurationVariables = nullptr;
 			m_pSessionVariables = nullptr;
 			field_4C = 0;
@@ -180,9 +180,9 @@ namespace GameConfig {
 			m_nScriptsListUnkCurrentIndex = 0;
 			m_nScriptsListGlobalCurrentIndex = 0;
 			m_nTypesListCurrentIndex = 0;
-			field_90 = 0;
-			field_94 = 0;
-			field_98 = 0;
+			_pad[0] = 0;
+			_pad[1] = 0;
+			_pad[2] = 0;
 		}
 
 		~Config() {
@@ -191,7 +191,7 @@ namespace GameConfig {
 
 			delete &m_sUnkString_1;
 			delete &m_sUnkString_2;
-			delete &m_sUnkString_3;
+			delete &m_sSceneName;
 			delete &m_sConfigFilePath;
 			delete &m_sGameName;
 
@@ -218,6 +218,7 @@ namespace GameConfig {
 	};
 
 	static void ReadZipDirectories(const char* szFileSystem);	//	@419550
+	static void OpenZip(const char* szZipPath);	//	@419100
 	static void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo); //	@418F90
 	static void SetCountryCode(const char* szCode);	//	@42E530
 	static signed int GetRegionId(String* regionStr);	//	@875450
@@ -229,12 +230,10 @@ namespace Script
 {
 	static String& LanguageMode = *(String*)0xA086A8;
 	static bool& FileCheck = *(bool*)0xA35DE0;
-	static bool& ForceFeedback = *(bool*)0xA35E70;
-	static String ControlType;
+	static bool& ForceFeedback = *(bool*)0xA35E70;	
 	static bool LoadBlocks;
 	static int& Ps2MaxTextureSize = *(int*)0xA10FF0;
 	static bool Fullscreen;
-	static String Filesystem;
 	static List<String>& DirectoryMappings = *(List<String>*)0xA35DE4;
 	static String& ScriptsPath = *(String*)0xA0B434;
 	static bool& RelaxBuildVersionCheck = *(bool*)0xA5D5B0;
@@ -254,6 +253,22 @@ namespace Script
 	static String& StreamedSoundExt = *(String*)0xA35EE4;
 	static String& VersionName = *(String*)0xA1B9C8;
 	static char& _A1B98D = *(char*)0xA1B98D;
+	static bool& ShowHud = *(bool*)0xA3E0C8;
+	static bool& CheckOriginalAsset = *(bool*)0xA11540;
+	static bool& WarningShow = *(bool*)0xA082FE;
+	static bool& FrameConsoleMarker = *(bool*)0xA1B98C;
+	static bool& CheckDataSanity = *(bool*)0xA5D5A9;
+	static bool& CheckDivisionByZero = *(bool*)0xA5D5AA;
+	static bool& Ps2PlayCtrl = *(bool*)0xA5D5B8;
+	static float& MinFadeDist = *(float*)0xA11C8C;
+	static bool& LodAndFade = *(bool*)0xA11C88;
+	static bool& CheckDanglingRefs = *(bool*)0xA11C88;
+	static bool& FixDanglingRefs = *(bool*)0xA1207D;
+	static bool& SimulateReleaseBuild = *(bool*)0xA3B584;
+
+	extern String Filesystem;
+	extern String ControlType;
+	extern String Region;
 }
 
 extern GameConfig::Config* g_Config;

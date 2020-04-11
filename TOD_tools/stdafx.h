@@ -26,8 +26,6 @@
 
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
 
-#define INCLUDE_FIXES 1	//	This includes various fixes of the game code.
-
 extern HMODULE g_DirectInput;
 typedef HRESULT(__stdcall* DINPUT8CREATEORIGINAL)(HINSTANCE, DWORD, const IID&, LPVOID*, LPUNKNOWN);
 extern DINPUT8CREATEORIGINAL DirectInput8Create_Hooked;

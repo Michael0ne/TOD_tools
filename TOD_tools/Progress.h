@@ -3,12 +3,15 @@
 #include "Entity.h"
 #include "GfxInternal_Dx9_Texture.h"
 #include "List.h"
+#include "MemoryAllocators.h"
+
+#define PROGRESS_CLASS_SIZE 112
 
 class Progress;
 
 struct Progress__vtable {
 	void(__thiscall* Destroy)(Progress* _this);
-	void(__thiscall* stub1)(Progress* _this);
+	void(__thiscall* nullsub1)(Progress* _this);
 	void(__thiscall* UpdateProgress)(Progress* _this, int time, signed int);
 };
 
@@ -40,8 +43,32 @@ private:
 	byte m_bEnabled;
 	byte field_69[3];
 	int field_6C;
+
+public:
+	Progress()
+	{
+		debug("Progress created at %X\n", this);
+	}
+
+	~Progress()
+	{
+		debug("Progress destroyed!\n");
+	}
+
+	void* operator new (size_t size)
+	{
+		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+	}
+
+	void	Init();	//	@87B720
 };
 
-extern Progress* g_pProgress;
+extern Progress* g_Progress;	//	@A3D7D0
 
-static_assert(sizeof(Progress) == 0x70, MESSAGE_WRONG_CLASS_SIZE("Progress"));
+static_assert(sizeof(Progress) == PROGRESS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Progress"));

@@ -112,8 +112,9 @@ private:
 	float m_fTimeMultiplier;
 	float field_118;
 	float m_fRewindTimeMultiplier;
-	byte m_bFixedFramerate[4];
-	float m_fFixedFramerateVal;
+	bool m_bFixedFramerate;	//	120
+	char field_121[3];
+	float m_fFixedFramerateVal;	//	124
 	int field_128;
 	int field_12C;
 	int field_130;
@@ -194,9 +195,23 @@ private:
 	int field_264;
 
 public:
-	static bool		Update();
+	static bool		Update();	//	@93CEB0
+	static bool		Instantiate(const char* szSceneName);	//	@93CE00
+	void		Start();	//	@89A100
+	void	UpdateCamera();	//	@893480
+
+	void	SetFramerate(float frate)
+	{
+		m_bFixedFramerate = true;
+		m_fFixedFramerateVal = 1.0 / frate;
+	}
+
+	EditorCamera* GetEditorCamera()
+	{
+		return m_pEditorCamera;
+	}
 };
 
-extern Scene* g_Scene;
+extern Scene* g_Scene;	//	@A3DCBC
 
 static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Scene"));

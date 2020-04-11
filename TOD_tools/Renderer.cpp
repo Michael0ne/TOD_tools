@@ -37,6 +37,7 @@ void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, f
 	AdjustWindowScalings();
 }
 
+//	TODO: implementation!
 void ScreenProperties::AdjustWindowScalings()
 {
 	(*(void(__thiscall*)(ScreenProperties*))0x420190)(this);

@@ -2,6 +2,7 @@
 
 namespace ScriptTypes
 {
+	//	TODO: implementation!
 	void ScriptType::Register(unsigned int typeId, const char* typeName, unsigned int typeSize)
 	{
 		void(__thiscall * _Register)(ScriptType * _this, unsigned int _tyid, const char* _tyname, unsigned int _tysize) = (void(__thiscall*)(ScriptType*, unsigned int, const char*, unsigned int))0x862E90;

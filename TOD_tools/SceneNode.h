@@ -89,6 +89,12 @@ public:
 	}
 
 	void	Init();	//	@874510
+	void	RegisterEntity()	//	@86C770
+	{
+		void(__thiscall * _Register)(void* _this) = (void(__thiscall*)(void*))0x86C770;
+
+		_Register(this);
+	}
 };
 
 extern SceneNode* g_SceneNode;

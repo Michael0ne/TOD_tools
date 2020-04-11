@@ -82,7 +82,7 @@
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;TOD_TOOLS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INCLUDE_FIXES;WIN32;NDEBUG;_WINDOWS;_USRDLL;TOD_TOOLS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -132,6 +132,7 @@
     <ClInclude Include="GfxInternal_Dx9_Texture.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="List.h" />
+    <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="MemoryCards.h" />
     <ClInclude Include="OverdoseVehicle.h" />
     <ClInclude Include="Renderer.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GfxInternal_Dx9_Texture.cpp" />
     <ClCompile Include="List.cpp" />
+    <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
     <ClCompile Include="Progress.cpp" />
     <ClCompile Include="Progress.h" />

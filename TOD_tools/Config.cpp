@@ -7,6 +7,7 @@
 #include "ScriptTypes.h"
 #include "Scratchpad.h"
 #include "SceneNode.h"
+#include "Scene.h"
 #include "ResourcesTypes.h"
 #include "Light.h"
 #include "Window.h"
@@ -18,8 +19,14 @@
 #include "StreamedSoundBuffers.h"
 #include "Renderer.h"
 #include "Font.h"
+#include "File.h"
+#include "LoadScreen.h"
+#include "Progress.h"
 
 GameConfig::Config* g_Config = NULL;
+String Script::Filesystem = String();
+String Script::ControlType = String();
+String Script::Region = String();
 
 namespace GameConfig {
 
@@ -42,6 +49,7 @@ namespace GameConfig {
 		m_sGameName = String(CONFIG_GAMENAME);
 
 		//	Try and look for configuration variables file.
+		//	TODO: CreateBuffer implementation!
 		if (!Utils::FindFileEverywhere(m_sConfigFilePath.m_szString)) {
 			if (!Allocators::Released) {
 				m_pConfigurationVariables = new Session_Variables();
@@ -85,24 +93,29 @@ namespace GameConfig {
 			Script::LoadBlocks = m_pConfigurationVariables->GetParamValueBool("loadblocks");
 
 		//	Try and initialize Blocks class.
+		//	TODO: Blocks implementation!
 		if (!Allocators::Released)
 			if (g_Blocks = new Blocks())
 				g_Blocks->Init(Script::LoadBlocks);
 
 		//	Init script types.
+		//	TODO: implementation for Register method!
 		ScriptTypes::Init();
 
 		//	Init scratchpad (mostly used in CollisionProbe calculations).
+		//	TODO: implementation!
 		if (!Allocators::Released)
 			if (g_Scratchpad = new Scratchpad())
 				g_Scratchpad->Init();
 
 		//	Init SceneNode (contains rewind buffer).
+		//	TODO: implementation!
 		if (!Allocators::Released)
 			if (g_SceneNode = new SceneNode())
 				g_SceneNode->Init();
 
 		//	Init resources types.
+		//	TODO: implementation for Register class!
 		Types::Resources::Texture::Init();
 		Types::Resources::Font::Init();
 		Types::Resources::Text::Init();
@@ -116,22 +129,28 @@ namespace GameConfig {
 		Types::Resources::MeshColor::Init();
 
 		//	Init unknown vectors.
+		//	TODO: implementation!
 		(*(void(__cdecl*)())0x93D360)();
 
 		//	Register script entities.
+		//	TODO: implementation!
 		InitEntitiesDatabase();
 
 		//	Init unknown maps (lists), somehow related to renderer.
+		//	TODO: implementation!
 		(*(void(__cdecl*)())0x460AB0)();
 		(*(void(__cdecl*)())0x4651B0)();
 
 		//	Init rendered textures map.
+		//	TODO: implementation!
 		(*(void(__cdecl*)())0x464120)();
 
 		//	Init renderer commands buffer.
+		//	TODO: implementation!
 		(*(void(__cdecl*)())0x436070)();
 
-		//	Init lights
+		//	Init lights.
+		//	TODO: implementation!
 		(*(void(__cdecl*)())0x881070)();
 
 		if (m_pConfigurationVariables->IsVariableSet("ps2_max_texture_size"))
@@ -148,9 +167,11 @@ namespace GameConfig {
 		if (m_pConfigurationVariables->IsVariableSet("filesystem"))
 			Script::Filesystem = m_pConfigurationVariables->GetParamValueString("filesystem");
 
+		//	TODO: what does this do?
 		field_54 = 0;
 
 		//	If log dump file is here - open it.
+		//	TODO: implementation!
 		if (m_pConfigurationVariables->IsVariableSet("logdumpfile")) {
 			void(__cdecl* _OpenLogDumpFile)(const char* szLogFilename) = (void(__cdecl*)(const char*))0x40CA80;
 
@@ -158,6 +179,7 @@ namespace GameConfig {
 		}
 
 		//	If we have 'profile.txt' available, check directory mappings and other stuff.
+		//	TODO: implementation!
 		if (pProfileVariables) {
 			char szDirectorymapping[24];
 			int index = 0;
@@ -169,12 +191,11 @@ namespace GameConfig {
 			while (pProfileVariables->IsVariableSet(szDirectorymapping)) {
 				String dirmapping = pProfileVariables->GetParamValueString(szDirectorymapping);
 
-				//	TODO: implementation!
 				//AddDirectoryMappingsListEntry(dirmapping);
 			}
 		}
 
-		//	Is it testing build?
+		//	Is this the testing build?
 		String sTestingPath = String();
 		_GetDeveloperPath(&sTestingPath);
 
@@ -208,6 +229,7 @@ namespace GameConfig {
 		//	Detect and set language.
 		Script::LanguageStringsOffset = 0;
 
+		//	TODO: implementation for utilities functions!
 		if (Utils::IsFileAvailable("/es_sounds.zip") || Utils::IsFileAvailable("/es_sounds.naz"))
 			Script::LanguageStringsOffset = 4;
 		if (Utils::IsFileAvailable("/fr_sounds.zip") || Utils::IsFileAvailable("/fr_sounds.naz"))
@@ -219,6 +241,7 @@ namespace GameConfig {
 		if (Utils::IsFileAvailable("/uk_sounds.zip") || Utils::IsFileAvailable("/uk_sounds.naz"))
 			Script::LanguageStringsOffset = 0;
 
+		//	TODO: implementation for SetCountryCode!
 		if (m_pConfigurationVariables->IsVariableSet("language_mode"))
 			SetCountryCode(m_pConfigurationVariables->GetParamValueString("language_mode").m_szString);
 
@@ -241,22 +264,27 @@ namespace GameConfig {
 			if (g_InputKeyboard)
 				g_InputKeyboard->Init();
 
+			//	TODO: implementation for Gamepad class!
 			g_InputGamepad = new Input::Gamepad();
 
 			if (g_InputGamepad)
 				g_InputGamepad->Init();
 		}
 
+		//	TODO: implementation!
 		Control::GetGamepadByIndex(0);
 
 		//	Init saves directories information (ps2 emulation and pc).
 		if (!Allocators::Released) {
+			//	PS2 memcard0
 			if (g_SavesDirsInfo[0] = new SavesDirectoriesInformation())
 				g_SavesDirsInfo[0]->Init(0);
 
+			//	PS2 memcard1
 			if (g_SavesDirsInfo[1] = new SavesDirectoriesInformation())
 				g_SavesDirsInfo[1]->Init(1);
 
+			//	PS2 harddisk OR PC savedir
 			if (g_SavesDirsInfo[2] = new SavesDirectoriesInformation())
 				g_SavesDirsInfo[2]->Init(8);
 		}
@@ -277,6 +305,7 @@ namespace GameConfig {
 				int memcardindex = 0;
 
 				do {
+					//	TODO: implementation for utility function!
 					Utils::CreateDirectoriesRecursive(szMemcard0[memcardindex]);
 					g_SavesDirsInfo[memcardindex]->SetSaveFolderPath(szMemcard0[memcardindex]);
 
@@ -291,6 +320,7 @@ namespace GameConfig {
 			Utils::CreateDirectoriesRecursive(szHarddisk);
 			g_SavesDirsInfo[2]->SetSaveFolderPath(szHarddisk);
 
+			//	TODO: implementation for memorycards class methods!
 			if (!g_SavesDirsInfo[2]->IsFormatted())
 				g_SavesDirsInfo[2]->FormatCard();
 		}else{
@@ -340,6 +370,7 @@ namespace GameConfig {
 		}
 
 		//	Init sound renderer.
+		//	TODO: implementation for StreamedSoundBuffers class!
 		if (!Allocators::Released)
 			if (Audio::g_StreamedSoundBuffers = new Audio::StreamedSoundBuffers())
 				Audio::g_StreamedSoundBuffers->SelectAudioRenderer(1, 44100);
@@ -385,8 +416,8 @@ namespace GameConfig {
 
 			if (sWidescreenType.Equal("pal")) {
 				Renderer::WideScreen = true;
-				vScreensize.x = 720.0;
-				vScreensize.y = 576.0;
+				vScreensize.x = 720;
+				vScreensize.y = 576;
 
 				debug("EMULATING Pal-Wide\n");
 			}
@@ -419,6 +450,7 @@ namespace GameConfig {
 		memset(buff, 0, 31 * 4);
 
 		//	Create renderer, this also creates and initializes Direct3D device.
+		//	TODO: implementation!
 		if (!Allocators::Released)
 			if (g_Renderer = new Renderer())
 				if (Script::Fullscreen)
@@ -427,17 +459,17 @@ namespace GameConfig {
 					g_Renderer->CreateRenderer(&vScreensize, 32, 16, 130, 31, 20, &buff);
 
 		//	Set region.
-		String sRegion = "europe";
+		Script::Region = "europe";
 
 		//	NOTE: this is set to return 0 (false) always, so maybe get rid of it?
 		if (!(*(int(__cdecl*)())0x420160)())
-			sRegion.Set("usa");
+			Script::Region.Set("usa");
 
 		if (m_pConfigurationVariables->IsVariableSet("region"))
-			sRegion.Set(m_pConfigurationVariables->GetParamValueString("region").m_szString);
+			Script::Region.Set(m_pConfigurationVariables->GetParamValueString("region").m_szString);
 
-		g_Blocks->SetRegionId(GetRegionId(&sRegion));
-		debug("Using region: %s\n", sRegion.m_szString);
+		g_Blocks->SetRegionId(GetRegionId(&Script::Region));
+		debug("Using region: %s\n", Script::Region.m_szString);
 
 		if (m_pConfigurationVariables->IsVariableSet("virtual_hud_screensize")) {
 			Vector2<float> vHudSize;
@@ -450,6 +482,7 @@ namespace GameConfig {
 			Renderer::g_ScreenProperties.SetSafeArea(m_pConfigurationVariables->GetParamValueFloat("screen_safe_area"));
 
 		//	NOTE: maybe this is 'SetBackBufferSize'?
+		//	TODO: implementation!
 		g_Renderer->_41FDF0(&m_vBackgroundSize, -1);
 
 		//	TODO: what is this?
@@ -460,16 +493,20 @@ namespace GameConfig {
 		if (m_pConfigurationVariables->IsVariableSet("version_name"))
 			Script::VersionName = m_pConfigurationVariables->GetParamValueString("version_name");
 
+		//	TODO: what is this?
 		Script::_A1B98D = 0;
 
 		//	Initialize baked font.
+		//	TODO: implementation!
 		Font::MakeCharactersMap();
 
+		//	TODO: implementation!
 		if (!Allocators::Released)
 			if (g_Font = new Font())
 				g_Font->Init();
 
 		//	Load assets.
+		//	TODO: implementation for OpenZip.
 		ReadZipDirectories(Script::Filesystem.m_szString);
 
 		//	Parse collmat file
@@ -479,6 +516,121 @@ namespace GameConfig {
 
 		//	Init random numbers generator.
 		(*(void(__cdecl*)(int))0x46C420)(__rdtsc());
+
+		//	Load screen and progress class.
+		if (!Allocators::Released) {
+			if (g_CurrentLoadScreen = new CurrentLoadScreen())
+				g_CurrentLoadScreen->Init(NULL);
+
+			//	TODO: implementation!
+			if (g_Progress = new Progress())
+				g_Progress->Init();
+		}
+
+		if (m_pConfigurationVariables->IsVariableSet("show_hud") &&
+			m_pConfigurationVariables->GetParamValueBool("show_hud"))
+			Script::ShowHud = true;
+
+		if (m_pConfigurationVariables->IsVariableSet("check_original_asset") &&
+			!m_pConfigurationVariables->GetParamValueBool("check_original_asset"))
+			Script::CheckOriginalAsset = false;
+
+		if (m_pConfigurationVariables->IsVariableSet("warning_window"))
+			Script::WarningShow = m_pConfigurationVariables->GetParamValueBool("warning_window");
+
+		//	NOTE: Something related to scripts?
+		(*(void(__cdecl*)(int, int))0x8C66E0)(8192, 512);
+
+		//	NOTE: Init global entities? Really large function.
+		(*(void(__cdecl*)())0x7A1F60)();
+
+		//	Since scripts loaded and ready, calculate CRC and remember it.
+		//	NOTE: implementation!
+		m_nCRCForScriptsListUnk = (*(int(__cdecl*)())0x873440)();
+		m_nCRCForScriptsGlobalList = (*(int (__cdecl*)())0x871DD0)();
+		m_nCRCForTypesList = (*(int(__cdecl*)())0x862CF0)();
+
+		//	Instantiate scene.
+		bool SceneSet = false;
+		if (m_pConfigurationVariables->IsVariableSet("scenefile")) {
+			const char* sceneFile = m_pConfigurationVariables->GetParamValueString("scenefile").m_szString;
+			debug("Opening scene %s\n", sceneFile);
+
+			SceneSet = Scene::Instantiate(sceneFile);
+		}
+
+		if (!SceneSet)
+			if (!(SceneSet = Scene::Instantiate("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
+				g_SceneNode->RegisterEntity();
+
+		//	TODO: implementation! Scene is not initialized here!
+		if (m_pConfigurationVariables->IsVariableSet("fixedframerate"))
+			g_Scene->SetFramerate(m_pConfigurationVariables->GetParamValueFloat("fixedframerate"));
+
+		//	NOTE: Adjust cameras matricies if not in full screen?
+		//	Also, needs correct implementation.
+		if (!Script::Fullscreen) {
+			if (g_Scene->GetEditorCamera()) {
+				g_Scene->UpdateCamera();
+			}
+		}
+
+		if (m_pConfigurationVariables->IsVariableSet("frame_console_marker"))
+			Script::FrameConsoleMarker = m_pConfigurationVariables->GetParamValueBool("frame_console_marker");
+
+		Script::CheckDataSanity = false;
+		Script::CheckDivisionByZero = false;
+
+		if (pProfileVariables) {
+			if (pProfileVariables->IsVariableSet("check_data_sanity"))
+				Script::CheckDataSanity = pProfileVariables->GetParamValueBool("check_data_sanity");
+
+			if (pProfileVariables->IsVariableSet("check_division_by_zero"))
+				Script::CheckDivisionByZero = pProfileVariables->GetParamValueBool("check_division_by_zero");
+		}
+
+		//	Start editor or game.
+		field_50 = 0;
+		if (SceneSet)
+			field_50 = 1;
+
+		if (m_pConfigurationVariables->IsVariableSet("starteditor") &&
+			m_pConfigurationVariables->GetParamValueBool("starteditor"))
+			field_50 = 0;
+
+		if (field_50)
+			g_Scene->Start();
+
+		if (m_pConfigurationVariables->IsVariableSet("ps2_play_ctrl") &&
+			m_pConfigurationVariables->GetParamValueBool("ps2_play_ctrl"))
+			Script::Ps2PlayCtrl = true;
+
+		if (m_pConfigurationVariables->IsVariableSet("min_fade_dist"))
+			Script::MinFadeDist = m_pConfigurationVariables->GetParamValueFloat("min_fade_dist");
+
+		if (m_pConfigurationVariables->IsVariableSet("lod_and_fade"))
+			Script::LodAndFade = m_pConfigurationVariables->GetParamValueBool("lod_and_fade");
+
+		if (m_pConfigurationVariables->IsVariableSet("check_dangling_refs"))
+			Script::CheckDanglingRefs = m_pConfigurationVariables->GetParamValueBool("check_dangling_refs");
+
+		if (m_pConfigurationVariables->IsVariableSet("fix_dangling_refs"))
+			Script::FixDanglingRefs = m_pConfigurationVariables->GetParamValueBool("fix_dangling_refs");
+
+		//	NOTE: this is unused. Keep it here?
+		String* _str = (String*)0xA0B4C4;
+		Utils::SetWarningString(_str->m_szString);
+
+		if (m_pConfigurationVariables->IsVariableSet("simulate_release_build")) {
+			Script::SimulateReleaseBuild = m_pConfigurationVariables->GetParamValueBool("simulate_release_build");
+			debug("Script::SimulateReleaseBuild == %i\n", Script::SimulateReleaseBuild);
+		}
+
+		//	Finish.
+		g_Window->SetCursorReleased(false);
+
+		if (pProfileVariables)
+			delete pProfileVariables;
 	}
 
 	//	TODO: implementation!
@@ -489,6 +641,7 @@ namespace GameConfig {
 		_InitEntitiesDatabase(this);
 	}
 
+	//	TODO: implementation!
 	void Config::UninitialiseGame()
 	{
 		//	g_Scene->_895E40();
@@ -644,8 +797,6 @@ namespace GameConfig {
 
 	void ReadZipDirectories(const char* szFileSystem)
 	{
-		void(__cdecl * _OpenZip)(const char* szName) = (void(__cdecl*)(const char*))0x419100;
-
 		if (szFileSystem && *szFileSystem) {
 			int nCurrentArchiveIndex = 0;
 			char szZipName[255];
@@ -677,7 +828,7 @@ namespace GameConfig {
 					++nCurrentArchiveIndex;
 				}
 
-				_OpenZip(szZipName);
+				OpenZip(szZipName);
 
 				String sZipNameLocalised;
 
@@ -685,7 +836,7 @@ namespace GameConfig {
 				sZipNameLocalised.Append("_");
 				sZipNameLocalised.Append(szZipName);
 
-				_OpenZip(sZipNameLocalised.m_szString);
+				OpenZip(sZipNameLocalised.m_szString);
 
 				if (!szFileSystem[nCurrentArchiveIndex])
 					break;
@@ -693,6 +844,56 @@ namespace GameConfig {
 				memset(&szZipName, 0, sizeof(szZipName));
 			}
 		}
+	}
+
+	void OpenZip(const char* szZipPath)
+	{
+		void(__cdecl * _OpenZip)(const char* szName) = (void(__cdecl*)(const char*))0x419100;
+
+		_OpenZip(szZipPath);
+		return;
+
+		if (!Utils::IsFileAvailable(szZipPath))
+			return;
+
+		int currentSlotId = g_ZipSlotId;
+		int newSlotId = g_ZipSlotId++;
+
+		debug("Opening zip <%s> into slot %i\n", szZipPath, newSlotId);
+
+		int zipIndex = 16 * currentSlotId;
+		*g_ZipStatus[zipIndex] = (char)15;
+
+		g_ZipNames[currentSlotId]->Set(szZipPath);
+
+		File* ZipFile;
+		if (!Allocators::Released)
+			if (ZipFile = new File())
+				ZipFile->Open(szZipPath, 33, true);
+
+		File::g_FilesArray[currentSlotId] = ZipFile;
+		*File::g_FileSemaphores[currentSlotId] = CreateSemaphoreA(NULL, 1, 1, NULL);
+
+		unsigned char buffer[20];
+		memset(&buffer, 0, sizeof(buffer));
+
+		ZipFile->Seek(ZipFile->GetPosition() - 22);
+		ZipFile->Read(&buffer, 20);
+
+		unsigned int check = buffer[0] + ((buffer[1] + ((buffer[2] + (buffer[3] << 8)) << 8)) << 8);
+		unsigned int totalfiles = buffer[10] + (buffer[11] << 8);
+		unsigned int bytestoread = buffer[12] + ((buffer[13] + ((buffer[14] + (buffer[15] << 8)) << 8)) << 8);
+		unsigned int seekoffset = buffer[16] + ((buffer[17] + ((buffer[18] + (buffer[19] << 8)) << 8)) << 8);
+
+		ZipFile->Seek(seekoffset);
+
+		void* buffer_1 = malloc(bytestoread);
+		ZipFile->Read(&buffer_1, bytestoread);
+
+		//	TODO: implementation!
+
+		free(buffer_1);
+		delete ZipFile;
 	}
 
 	void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo)
