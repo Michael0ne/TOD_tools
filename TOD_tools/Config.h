@@ -102,7 +102,7 @@ namespace GameConfig {
 
 		~Session_Variables()
 		{
-			(*(void(__thiscall*)(Session_Variables*))0x107B0)(this);
+			(*(void(__thiscall*)(Session_Variables*))0x4107B0)(this);
 
 			debug("GameConfig::Session_Variables destroyed!\n");
 		}

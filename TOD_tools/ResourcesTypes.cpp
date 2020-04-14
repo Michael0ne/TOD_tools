@@ -5,11 +5,38 @@ namespace Types
 	namespace Resources
 	{
 		//	TODO: implementation!
-		void TypeInfo::RegisterBase(const char* szTypeName, TypeInfo_Creator* (__cdecl* pCreator)())
+		void TypeInfo::RegisterBase(const char* szTypeName, void* (__cdecl* pCreator)())
 		{
-			void(__thiscall * _Register)(TypeInfo * _this, const char* _typename, TypeInfo_Creator* (__cdecl* _creator)()) = (void(__thiscall*)(TypeInfo*, const char*, TypeInfo_Creator* (__cdecl*)()))0x852440;
+			void(__thiscall * _Register)(TypeInfo * _this, const char* _typename, void* (__cdecl* _creator)()) = (void(__thiscall*)(TypeInfo*, const char*, void* (__cdecl*)()))0x852440;
 
 			_Register(this, szTypeName, pCreator);
+
+			m_sTypename.Set(szTypeName);
+			m_nId = g_TypesList.m_nCurrIndex;
+
+			g_TypesList.AddElement(this);
+
+			lpVtbl = pCreator;
+			field_2C = 0;
+			field_2D = 0;
+
+			m_UnkBufferArray[1] = 16;
+			m_UnkBufferArray[2] = 16;
+			m_UnkBufferArray[0] = 16;
+
+			if (*g_UnkTypeBufferSizes[1] < 16)
+				*g_UnkTypeBufferSizes[1] = 16;
+
+			if (*g_UnkTypeBufferSizes[2] < 16)
+				*g_UnkTypeBufferSizes[2] = 16;
+
+			if (*g_UnkTypeBufferSizes[0] < 16)
+				*g_UnkTypeBufferSizes[0] = 16;
+
+			void* lpUnk = (*(void*(__thiscall*)(TypeInfo*))lpVtbl)(this);
+			lpTypeVtbl = (TypeInfo__vtable*)lpUnk;
+
+			(*(void(__cdecl*)(void*))0x851FC0)(lpUnk);	//	Call creator
 		}
 
 		void TypeInfo::InitUnkBuffer(unsigned int size, unsigned int index)

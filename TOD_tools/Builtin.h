@@ -5,6 +5,9 @@
 #include "Entity.h"
 #include "List.h"
 #include "StringsPool.h"
+#include "MemoryAllocators.h"
+
+#define BUILTIN_CLASS_SIZE 152
 
 //	TODO: implementation!
 void	Random__Init(int* seed);
@@ -58,26 +61,32 @@ private:
 	int field_90;
 	int field_94;
 
-private:
+public:
 	Builtin() {
 		m_MethodsList = List<Builtin_Handler>();
 		field_88 = 0;
 		field_8C = 0;
 		field_90 = 0;
 		field_94 = 0;
+
+		debug("Builtin created at %X\n", this);
 	}
 
-public:
-	Builtin(const Builtin&) = delete;
-
-	static Builtin& Get() {
-		static Builtin instance;
-
-		return instance;
+	~Builtin()
+	{
+		debug("Builtin destroyed!\n");
 	}
 
-public:
-	//	Actual class methods.
+	void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+	}
 
 	//	MATH OPERATIONS
 	static void Sin(Handler_Params<float, float, 1>& params) { params.output = (float)sin(params.input[0]); }
@@ -106,6 +115,17 @@ public:
 	static void Rand_Seed(Handler_Params<int, int, 1>& params) { Random__Init(&params.input[0]); }
 	static void Rand_Integer(Handler_Params<int, int, 1>& params) { params.output = Random__Integer(params.input[0]); }
 	static void Rand_Number(Handler_Params<float, int, 1>& params) { params.output = Random__Number(); }
+
+	static const Vector4f& m_RightVector;
+	static const Vector4f& m_UpVector;
+	static const Vector4f& m_InVector;
+	static const Quaternion<float>& m_Orientation;
+	static const Vector4f& m_LeftVector;
+	static const Vector4f& m_DownVector;
+	static const Vector4f& m_OutVector;
+	static const Vector4f& m_vUnkColor;	//	NOTE: not a color!
 };
 
-static_assert(sizeof(Builtin) == 0x98, MESSAGE_WRONG_CLASS_SIZE("Builtin"));
+extern Builtin* g_Builtin;
+
+static_assert(sizeof(Builtin) == BUILTIN_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Builtin"));

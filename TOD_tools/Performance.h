@@ -37,7 +37,10 @@ private:
 
 public:
 	//	>> 430570
-	static long			GetMilliseconds();
+	static long			GetMilliseconds()
+	{
+		return (*(long(__cdecl*)(void))0x430570)();
+	}
 	//	>> 430600
 	static long			GetSeconds();
 	//	>> 4306A0

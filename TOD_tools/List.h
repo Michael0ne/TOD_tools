@@ -3,14 +3,32 @@
 #include "stdafx.h"
 #include "StringsPool.h"
 
+#define LIST_CLASS_SIZE 16
+
 template <typename T>
 class List
 {
-	T* m_pElements;
+public:
+	T** m_pElements;
 	int m_nCurrIndex;
 	int m_nCapacity;
 	unsigned int m_nFlags;
+
 public:
+	void	AddElement(T* _el)
+	{
+		if (m_nCurrIndex >= m_nCapacity &&
+			m_nCurrIndex + 1 > m_nCapacity) {
+			m_nCapacity = m_nCurrIndex + 1 + ((m_nCurrIndex + 1) >> 1);
+			(*(void(__thiscall*)(List*))0x889F70)(this);	//	::Adjust
+		}
+
+		T** _t = &m_pElements[m_nCurrIndex];
+		*_t = _el;
+
+		m_nCurrIndex++;
+	}
+
 	void			Erase()	//	@4054C0
 	{
 		void(__thiscall * _Erase)(List * _this) = (void(__thiscall*)(List*))0x405E80;
@@ -54,6 +72,4 @@ public:
 	}
 };
 
-extern List<String> * g_pList;	//	@A3D7EC
-
-static_assert(sizeof(List<String>) == 0x10, MESSAGE_WRONG_CLASS_SIZE("List"));
+static_assert(sizeof(List<String>) == LIST_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("List"));

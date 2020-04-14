@@ -438,9 +438,6 @@ void Window::Release()
 	SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
 	SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
 	SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
-
-	delete &m_sUserDesktopPath;
-	delete &m_sWindowTitle;
 }
 
 void Window::_CreateWindow(UINT16 nIconResourceId)

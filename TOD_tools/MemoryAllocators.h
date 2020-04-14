@@ -86,13 +86,13 @@ namespace Allocators {
 	struct Allocator__vtable {
 		void(__thiscall* Release)(Allocator* _this, bool freememory);	//	@478410
 		void*(__thiscall* Allocate)(Allocator* _this);	//	@478340	//	NOTE: This just calls next method (below).
-		void(__thiscall* stub3)(Allocator* _this);	//	@951271
-		void(__thiscall* stub4)(Allocator* _this);	//	@951271
-		void(__thiscall* stub5)(Allocator* _this);	//	@951271
-		void(__thiscall* stub6)(Allocator* _this);	//	@951271
-		void(__thiscall* stub7)(Allocator* _this);	//	@951271
-		void(__thiscall* stub8)(Allocator* _this);	//	@951271
-		void(__thiscall* stub9)(Allocator* _this);	//	@951271
+		void(__thiscall* stub3)(Allocator* _this);	//	@951271 pure virtual
+		void(__thiscall* stub4)(Allocator* _this);	//	@951271 pure virtual
+		void(__thiscall* stub5)(Allocator* _this);	//	@951271 pure virtual
+		void(__thiscall* stub6)(Allocator* _this);	//	@951271 pure virtual
+		void(__thiscall* stub7)(Allocator* _this);	//	@951271 pure virtual
+		void(__thiscall* stub8)(Allocator* _this);	//	@951271 pure virtual
+		void(__thiscall* stub9)(Allocator* _this);	//	@951271 pure virtual
 		void(__thiscall* _CallMethodAtOffset20)(Allocator* _this);	//	@478350
 		void(__thiscall* _SetField21)(Allocator* _this, char unk);	//	@478360
 		void(__thiscall* _SetFields_4_8_20)(Allocator* _this, void* ptr, char* name, int size);	//	@47AB60

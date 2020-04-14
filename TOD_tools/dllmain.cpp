@@ -1,12 +1,7 @@
 #include "stdafx.h"
 
+#include "Renderer.h"
 #include "StreamedSoundBuffers.h"
-#include "Builtin.h"
-#include "Window.h"
-#include "Config.h"
-#include "InputMouse.h"
-#include "InputKeyboard.h"
-#include "InputGameController.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -66,20 +61,21 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 {
 	debug("HookThread started...\n");
 
-	/*
 	int nLastKeyPress = 0;
 	const int nInterval = 100;
 
 	while (true) {
-		if (GetAsyncKeyState(VK_TAB) && (*nGameTime) > nLastKeyPress + nInterval) {
+		if (!g_Renderer || !Audio::g_StreamedSoundBuffers)
+			continue;
+
+		if (GetAsyncKeyState(VK_TAB) && g_Renderer->GetTime() > nLastKeyPress + nInterval) {
 
 			//	Do something!
-			g_pSoundManager->Dump();
+			Audio::g_StreamedSoundBuffers->Dump();
 			
-			nLastKeyPress = *nGameTime;
+			nLastKeyPress = (int)g_Renderer->GetTime() - nInterval;
 		}
 	}
-	*/
 
 	debug("HookThread has finished!\n");
 

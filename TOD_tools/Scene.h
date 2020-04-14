@@ -203,7 +203,7 @@ public:
 	void	SetFramerate(float frate)
 	{
 		m_bFixedFramerate = true;
-		m_fFixedFramerateVal = 1.0 / frate;
+		m_fFixedFramerateVal = 1.0f / frate;
 	}
 
 	EditorCamera* GetEditorCamera()

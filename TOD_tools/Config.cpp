@@ -1,4 +1,5 @@
 #include "Config.h"
+#include "time.h"
 
 #include "Types.h"
 #include "Globals.h"
@@ -37,6 +38,10 @@ namespace GameConfig {
 
 	void Config::Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId)
 	{
+#ifdef INCLUDE_FIXES
+		clock_t timeStart = clock();
+#endif
+
 		CoInitialize(0);
 
 		//	Set filename for configuration file.
@@ -446,17 +451,18 @@ namespace GameConfig {
 			Renderer::RatioXY = m_pConfigurationVariables->GetParamValueFloat("ratioxy");
 
 		//	TODO: what buffer is this? what size should be used?
-		void* buff = (void*)malloc(31 * 4);
-		memset(buff, 0, 31 * 4);
+		Vector3<float> vBuff;
+		//void* buff = (void*)malloc(31 * 4);
+		//memset(buff, 0, 31 * 4);
 
 		//	Create renderer, this also creates and initializes Direct3D device.
 		//	TODO: implementation!
 		if (!Allocators::Released)
 			if (g_Renderer = new Renderer())
 				if (Script::Fullscreen)
-					g_Renderer->CreateRenderer(&vScreensize, 32, 16, (Renderer::FSAA != 0 ? 0x200 : 0) | 0x80, 31, 20, &buff);
+					g_Renderer->CreateRenderer(&vScreensize, 32, 16, (Renderer::FSAA != 0 ? 0x200 : 0) | 0x80, 31, 20, &vBuff);
 				else
-					g_Renderer->CreateRenderer(&vScreensize, 32, 16, 130, 31, 20, &buff);
+					g_Renderer->CreateRenderer(&vScreensize, 32, 16, 130, 31, 20, &vBuff);
 
 		//	Set region.
 		Script::Region = "europe";
@@ -515,7 +521,7 @@ namespace GameConfig {
 		//	EnumFaceColMaterials();
 
 		//	Init random numbers generator.
-		(*(void(__cdecl*)(int))0x46C420)(__rdtsc());
+		(*(void(__cdecl*)(__int64))0x46C420)(__rdtsc());
 
 		//	Load screen and progress class.
 		if (!Allocators::Released) {
@@ -559,9 +565,9 @@ namespace GameConfig {
 			SceneSet = Scene::Instantiate(sceneFile);
 		}
 
-		if (!SceneSet)
-			if (!(SceneSet = Scene::Instantiate("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-				g_SceneNode->RegisterEntity();
+		//if (!SceneSet)
+		//	if (!(SceneSet = Scene::Instantiate("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
+		//		g_SceneNode->RegisterEntity();
 
 		//	TODO: implementation! Scene is not initialized here!
 		if (m_pConfigurationVariables->IsVariableSet("fixedframerate"))
@@ -626,11 +632,17 @@ namespace GameConfig {
 			debug("Script::SimulateReleaseBuild == %i\n", Script::SimulateReleaseBuild);
 		}
 
-		//	Finish.
 		g_Window->SetCursorReleased(false);
+
+		field_0 = 1;
 
 		if (pProfileVariables)
 			delete pProfileVariables;
+
+		//	Initialization completed. Game is running.
+#ifdef INCLUDE_FIXES
+		debug("Game init complete! Took %i ms\n", clock() - timeStart);
+#endif
 	}
 
 	//	TODO: implementation!

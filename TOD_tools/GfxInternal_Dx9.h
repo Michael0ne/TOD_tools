@@ -3,9 +3,10 @@
 #include "stdafx.h"
 
 #include "Types.h"
+#include "List.h"
+#include "MemoryAllocators.h"
 
 #include "GfxInternal_Dx9_Texture.h"
-#include "List.h"
 
 #define GFXINTERNALDX9_CLASS_SIZE 38816
 
@@ -54,7 +55,8 @@ struct GfxInternal_Dx9_Struc10 {
 */
 class GfxInternal_Dx9
 {
-private:
+friend class Renderer;
+protected:
 		IDirect3DDevice9* m_pDirect3DDevice9;
 		IDirect3DQuery9* m_pFramesyncQuery;
 		char m_bDeviceResetIssued;
@@ -180,8 +182,8 @@ private:
 		int m_nDisplayModeFormat;
 		int field_318;
 		int field_31C;
-		int m_nViewportWidth;
-		int m_nViewportHeight;
+		float m_nViewportWidth;
+		float m_nViewportHeight;
 		D3DDISPLAYMODE m_DisplayMode;
 		int field_338;
 		int field_33C;
@@ -9635,6 +9637,18 @@ public:
 		debug("GfxInternal_Dx9 destroyed!\n");
 	}
 
+	void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+	}
+
+	void	Init(void* resolution, int unk1, int unk2, int fsaa, int unk3);	//	@45E620
 	inline bool IsResolutionDetected() { return m_bResolutionDetected; };
 
 	static Map<int, int>& g_UnkMap_1;

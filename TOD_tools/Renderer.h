@@ -2,42 +2,72 @@
 
 #include "stdafx.h"
 
-#include "Types.h"
-#include "List.h"
-#include "MemoryAllocators.h"
-
-#include "GfxInternal_Dx9_Texture.h"
+#include "GfxInternal_Dx9.h"
 
 #define RENDERER_CLASS_SIZE 72
 
-struct Scene_Buffer276
+class Scene_Buffer276
 {
+private:
 	Vector3<float> m_vUnkDimensionsVec_1;
 	int field_C;
 	int field_10;
-	char field_14[4];
+	int field_14;
+
 	Vector4f m_vRightVec;
 	Vector4f m_vUpVec;
 	Vector4f m_vInVec;
-	Vector4f m_vUnkVec_1;
+	Quaternion<float> m_vUnkVec_1;
+
 	Vector4f m_vRightVec_1;
 	Vector4f m_vUpVec_1;
 	Vector4f m_vInVec_1;
-	Vector4f m_vUnkVec_2;
+	Quaternion<float> m_vUnkVec_2;
+
 	int _pad;
+
 	Vector4f m_vRightVec_2;
 	Vector4f m_vUpVec_2;
 	Vector4f m_vInVec_2;
-	Vector4f m_vUnkVec_3;
-	char field_DC[4];
-	float m_fE0;
-	float m_fE4;
-	float m_fE8;
-	float m_fEC;
-	Vector2<float> m_vUnkVec_4;
+	Quaternion<float> m_vUnkVec_3;
+
+	int field_DC;
+
+	Vector4f m_vUnkVec_4;
+	//float m_fE0;
+	//float m_fE4;
+	//float m_fE8;
+	//float m_fEC;
+
+	Vector2<float> m_vUnkVec_5;
 	Vector2<float> m_vResolution;
 	int field_100;
-	ColorRGB m_unkColor;
+	Vector4f m_unkColor;
+
+public:
+	Scene_Buffer276()
+	{
+		debug("Renderer::Scene_Buffer276 created at %X\n", this);
+	}
+
+	~Scene_Buffer276()
+	{
+		debug("Renderer::Scene_Buffer276 destroyed!\n");
+	}
+
+	void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+	}
+
+	void	Init(const Vector3<float>& vDimensions);	//	@41FE80
+	void	SetResolution(const Vector2<float>& vResolution);
 };
 
 struct ScreenProperties
@@ -73,7 +103,7 @@ class Renderer
 {
 private:
 	char field_0[4];
-	List<GfxInternal_Dx9_Texture*> m_TexturesList;
+	List<GfxInternal_Dx9_Texture> m_TexturesList;
 	int field_14;
 	int* field_18;
 	int m_nUnkBuffersCount;
@@ -95,6 +125,13 @@ public:
 
 	~Renderer()
 	{
+		if (m_nUnkBuffersCount > 0)
+			while (m_nUnkBuffersCount) {
+				if (&m_pUnkBuffersArray[m_nUnkBuffersCount])
+					delete& m_pUnkBuffersArray[m_nUnkBuffersCount];
+				m_nUnkBuffersCount--;
+			}
+
 		debug("Renderer destroyed!\n");
 	}
 
@@ -109,8 +146,13 @@ public:
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
 
-	void	CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, void* buffers);	//	@421320
+	void	CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, Vector3<float>* buffers);	//	@421320
 	void	_41FDF0(Vector4<float>* size, int bufferIndex);	//	@41FDF0	NOTE: maybe 'SetBackBufferSize'?
+
+	__int64	GetTime()
+	{
+		return m_nUnkTime_1;
+	}
 
 	static bool& WideScreen;
 	static bool FSAA;

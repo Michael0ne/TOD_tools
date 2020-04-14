@@ -39,43 +39,26 @@ namespace Types {
 
 		struct TypeInfo__vtable
 		{
-			void(__thiscall* stub1)(TypeInfo* _this);
-			void(__thiscall* stub2)(TypeInfo* _this);
-			void(__thiscall* stub3)(TypeInfo* _this);
-			void(__thiscall* stub4)(TypeInfo* _this);
-			void(__thiscall* stub5)(TypeInfo* _this);
-			void(__thiscall* stub6)(TypeInfo* _this);
-			void(__thiscall* stub7)(TypeInfo* _this);
-			void(__thiscall* stub8)(TypeInfo* _this);
-			void(__thiscall* stub9)(TypeInfo* _this);
-			void(__thiscall* stub10)(TypeInfo* _this);
-			void(__thiscall* stub11)(TypeInfo* _this);
-			void(__thiscall* stub12)(TypeInfo* _this);
-			void(__thiscall* stub13)(TypeInfo* _this);
-		};
-
-		struct TypeInfo_Creator
-		{
-			TypeInfo__vtable* lpVtbl;
-			int field_4;
-			int field_8;
-			int field_C;
-			int field_10;
-			int field_14;
-			int m_nUnkBitField;
-			int field_1C;
-			int field_20;
-			int field_24;
-			int field_28;
-			int field_2C;
+			void(__thiscall* Release)(TypeInfo* _this, bool freememory);	//	@851F90
+			TypeInfo* (__thiscall* GetThisPtr)(TypeInfo* _this);	//	pure virtual
+			void(__thiscall* SetUnkFlag)(TypeInfo* _this, unsigned char unk1, int unk2, int unk3);	//	@851400
+			unsigned int(__thiscall* GetUnkFlag)(TypeInfo* _this);	//	@851E80
+			void(__cdecl* nullsub)();	//	@883EC0
+			void (__stdcall* GetResourcesDir)(String* str, int platform);	//	@851EC0
+			void(__cdecl* nullsub_1)();	//	@851420
+			char(__cdecl* ReturnZero)();	//	@42F4F0
+			int(__thiscall* _851EA0)(TypeInfo* _this);	//	@851EA0
+			void(__thiscall* stub10)(TypeInfo* _this, String* str, int unk);	//	@851DB0
+			void(__cdecl* nullsub_2)();	//	@883EC0
+			void(__thiscall* _851E90)(TypeInfo* _this);	//	@851E90
 		};
 
 		class TypeInfo
 		{
 		protected:
-			TypeInfo_Creator* m_pCreator;
+			void* lpVtbl;	//	Actually, is this a creator?
 			String m_sTypename;
-			void* lpTypeVtbl;
+			TypeInfo__vtable* lpTypeVtbl;
 			int m_nId;
 			List<String> m_sExtensionList;
 			byte field_2C;
@@ -87,7 +70,7 @@ namespace Types {
 		public:
 			TypeInfo()
 			{
-				m_pCreator = nullptr;
+				lpVtbl = nullptr;
 				m_sTypename = String();
 				lpTypeVtbl = nullptr;
 				m_nId = 0;
@@ -121,7 +104,7 @@ namespace Types {
 					Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 			}
 
-			void	RegisterBase(const char* szTypeName, TypeInfo_Creator* (__cdecl* pCreator)());	//	@852440
+			void	RegisterBase(const char* szTypeName, void* (__cdecl* pCreator)());	//	@852440
 			void	InitUnkBuffer(unsigned int size, unsigned int index);	//	@852160
 		};
 
@@ -140,7 +123,7 @@ namespace Types {
 		public:
 			Texture()
 			{
-				RegisterBase(TYPERES_TEXTURE_NAME, (TypeInfo_Creator * (__cdecl*)())0x853830);
+				RegisterBase(TYPERES_TEXTURE_NAME, (void * (__cdecl*)())0x853830);
 
 				debug("Types::Resources::Texture created at %X\n", this);
 			}
@@ -170,7 +153,7 @@ namespace Types {
 		public:
 			Font()
 			{
-				RegisterBase(TYPERES_FONT_NAME, (TypeInfo_Creator* (__cdecl*)())0x85B350);
+				RegisterBase(TYPERES_FONT_NAME, (void* (__cdecl*)())0x85B350);
 
 				debug("Types::Resources::Font created at %X\n", this);
 			}
@@ -200,7 +183,7 @@ namespace Types {
 		public:
 			Text()
 			{
-				RegisterBase(TYPERES_TEXT_NAME, (TypeInfo_Creator* (__cdecl*)())0x861BD0);
+				RegisterBase(TYPERES_TEXT_NAME, (void* (__cdecl*)())0x861BD0);
 
 				debug("Types::Resources::Text created at %X\n", this);
 			}
@@ -230,7 +213,7 @@ namespace Types {
 		public:
 			Model()
 			{
-				RegisterBase(TYPERES_MODEL_NAME, (TypeInfo_Creator* (__cdecl*)())0x8581F0);
+				RegisterBase(TYPERES_MODEL_NAME, (void* (__cdecl*)())0x8581F0);
 
 				debug("Typeres::Resources::Model created at %X\n", this);
 			}
@@ -260,7 +243,7 @@ namespace Types {
 		public:
 			Fragment()
 			{
-				RegisterBase(TYPERES_FRAGMENT_NAME, (TypeInfo_Creator* (__cdecl*)())0x85DE30);
+				RegisterBase(TYPERES_FRAGMENT_NAME, (void* (__cdecl*)())0x85DE30);
 
 				debug("Types::Resources::Fragment created at %X\n", this);
 			}
@@ -290,7 +273,7 @@ namespace Types {
 		public:
 			Movie()
 			{
-				RegisterBase(TYPERES_MOVIE_NAME, (TypeInfo_Creator* (__cdecl*)())0x85BC40);
+				RegisterBase(TYPERES_MOVIE_NAME, (void* (__cdecl*)())0x85BC40);
 
 				debug("Types::Resources::Movie created at %X\n", this);
 			}
@@ -320,7 +303,7 @@ namespace Types {
 		public:
 			Cutscene()
 			{
-				RegisterBase(TYPERES_CUTSCENE_NAME, (TypeInfo_Creator* (__cdecl*)())0x916100);
+				RegisterBase(TYPERES_CUTSCENE_NAME, (void* (__cdecl*)())0x916100);
 
 				debug("Types::Resources::Cutscene created at %X\n", this);
 			}
@@ -350,7 +333,7 @@ namespace Types {
 		public:
 			Sound()
 			{
-				RegisterBase(TYPERES_SOUND_NAME, (TypeInfo_Creator* (__cdecl*)())0x85C430);
+				RegisterBase(TYPERES_SOUND_NAME, (void* (__cdecl*)())0x85C430);
 
 				debug("Types::Resources::Sound created at %X\n", this);
 			}
@@ -380,7 +363,7 @@ namespace Types {
 		public:
 			StreamedSoundInfo()
 			{
-				RegisterBase(TYPERES_STREAMEDSOUNDINFO_NAME, (TypeInfo_Creator* (__cdecl*)())0x85CDA0);
+				RegisterBase(TYPERES_STREAMEDSOUNDINFO_NAME, (void* (__cdecl*)())0x85CDA0);
 
 				debug("Types::Resources::StreamedSoundInfo created at %X\n", this);
 			}
@@ -410,7 +393,7 @@ namespace Types {
 		public:
 			Animation()
 			{
-				RegisterBase(TYPERES_ANIMATION_NAME, (TypeInfo_Creator* (__cdecl*)())0x900EF0);
+				RegisterBase(TYPERES_ANIMATION_NAME, (void* (__cdecl*)())0x900EF0);
 
 				debug("Types::Resources::Animation created at %X\n", this);
 			}
@@ -440,7 +423,7 @@ namespace Types {
 		public:
 			MeshColor()
 			{
-				RegisterBase(TYPERES_MESHCOLOR_NAME, (TypeInfo_Creator* (__cdecl*)())0x85E950);
+				RegisterBase(TYPERES_MESHCOLOR_NAME, (void* (__cdecl*)())0x85E950);
 
 				debug("Types::Resources::MeshColor created at %X\n", this);
 			}
