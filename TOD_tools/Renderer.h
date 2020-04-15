@@ -67,7 +67,10 @@ public:
 	}
 
 	void	Init(const Vector3<float>& vDimensions);	//	@41FE80
-	void	SetResolution(const Vector2<float>& vResolution);
+	inline void	SetResolution(const Vector2<float>& vResolution)
+	{
+		m_vResolution = vResolution;
+	}
 };
 
 struct ScreenProperties
@@ -77,7 +80,7 @@ private:
 	float m_fVirtualHudScreensizeHeight;
 	float field_8;	//	NOTE: scaleX?
 	float field_C;	//	NOTE: scaleY?
-	float m_nScreenWidth;
+	float m_fScreenWidth;
 	float m_fScreenHeight;
 	float m_fScreenRatio;
 	float m_fScreenSafeArea;
@@ -96,6 +99,7 @@ public:
 	void	SetHudScreenSize(float width, float height, float unk1, float unk2);	//	@420D60
 	void	AdjustWindowScalings();	//	@420190
 	void	SetSafeArea(float area);	//	@420DD0
+	void	SetWindowProperties(float width, float height, float ratio, float safearea);	//	@420D90
 };
 
 

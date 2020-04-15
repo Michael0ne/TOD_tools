@@ -108,11 +108,6 @@ void Scene_Buffer276::Init(const Vector3<float>& vDimensions)
 	m_vUnkVec_5 = { 0.0f, 0.0f };
 }
 
-void Scene_Buffer276::SetResolution(const Vector2<float>& vResolution)
-{
-	m_vResolution = vResolution;
-}
-
 void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, float unk2)
 {
 	field_8 = unk1;
@@ -133,6 +128,18 @@ void ScreenProperties::SetSafeArea(float area)
 {
 	m_bSafeArea = true;
 	m_fScreenSafeArea = area;
+
+	AdjustWindowScalings();
+}
+
+void ScreenProperties::SetWindowProperties(float width, float height, float ratio, float safearea)
+{
+	m_fScreenWidth = width;
+	m_fScreenHeight = height;
+	m_fScreenRatio = ratio;
+	
+	if (!m_bSafeArea)
+		m_fScreenSafeArea = safearea;
 
 	AdjustWindowScalings();
 }

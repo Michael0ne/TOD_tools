@@ -14,7 +14,7 @@ struct DisplayModeInfo {
 	int width;
 	int height;
 	bool available;
-	int refreshrate;
+	unsigned int refreshrate;
 	int format;
 };
 
@@ -64,24 +64,24 @@ protected:
 		int field_C;
 		int field_10;
 		int field_14;
-		List<DisplayModeInfo*> m_DisplayModesList;
+		List<DisplayModeInfo> m_DisplayModesList;
 		union {
-			char m_bVertexShader11 : 1;
-			char m_bVertexShader20 : 1;
-			char m_bPixelShader13 : 1;
-			char m_bPixelShader20 : 1;
+			unsigned char m_bVertexShader11 : 1;
+			unsigned char m_bVertexShader20 : 1;
+			unsigned char m_bPixelShader13 : 1;
+			unsigned char m_bPixelShader20 : 1;
 		} m_bShaderCapabilities;
 		int m_nMaxVertexShaderConst;
-		char m_bTextureRequiresPow2;
-		char m_bMipmapLodBias;
-		char m_bAnisotropy;
-		char m_bMinAnisotropy;
+		unsigned char m_bTextureRequiresPow2;
+		unsigned char m_bMipmapLodBias;
+		unsigned char m_bAnisotropy;
+		unsigned char m_bMinAnisotropy;
 		int m_nMagAnisotropy;
 		int m_nMaxAnisotropy;
-		char m_bBlendOP;
-		char m_bFogAndSpecularAlpha;
-		char m_bRangeFog;
-		char m_bSeparateAlphaBlend;
+		unsigned char m_bBlendOP;
+		unsigned char m_bFogAndSpecularAlpha;
+		unsigned char m_bRangeFog;
+		unsigned char m_bSeparateAlphaBlend;
 		IDirect3D9* m_pDirect3D;
 		D3DCAPS9 m_DeviceCaps;
 		D3DDISPLAYMODE* m_pDisplayMode;
@@ -179,7 +179,7 @@ protected:
 		byte m_bSceneBegan;
 		byte field_30F;
 		byte field_310;
-		int m_nDisplayModeFormat;
+		D3DFORMAT m_nDisplayModeFormat;
 		int field_318;
 		int field_31C;
 		float m_nViewportWidth;
@@ -5461,7 +5461,7 @@ protected:
 		float field_55D8;
 		float field_55DC;
 		float field_55E0;
-		D3DMATRIX m_unkMatrix;
+		D3DMATRIX m_IdentityMatrix;
 		D3DMATRIX m_TransformMatrix;
 		int field_5664;
 		int field_5668;
@@ -9612,7 +9612,7 @@ protected:
 		int field_9754;
 		float m_f9758;
 		int field_975C;
-		List<int*> m_UnkList_1;
+		List<int> m_UnkList_1;
 		int field_9770;
 		int field_9774;
 		int field_9778;
@@ -9649,6 +9649,16 @@ public:
 	}
 
 	void	Init(void* resolution, int unk1, int unk2, int fsaa, int unk3);	//	@45E620
+	int		GetDeviceCaps();	//	@44EBC0
+	void	RememberResolution();	//	@44CFF0
+	bool	GetRegistryResolution(DisplayModeInfo& mode);	//	@44D080
+	void	SetupWindowParams(int width, int height);	//	@45BE30
+	void	SetupWindowParams(D3DDISPLAYMODE mode);	//	@45BEF0
+	const DisplayModeInfo* IsScreenResolutionAvailable(int width, int height, bool dontIgnoreUnavailable);	//	@450890
+	void	CreateRenderDevice();	//	@451110
+	void	SetupProjectionMatrix(float unk1, float aspectratio, float unk3, float farPlane);	//	@44E580
+	void	TransformProjection(D3DMATRIX& projMatrix, double fov, double aspectratio, double nearplane, double farplane);	//	@9676B4
+
 	inline bool IsResolutionDetected() { return m_bResolutionDetected; };
 
 	static Map<int, int>& g_UnkMap_1;
@@ -9656,6 +9666,7 @@ public:
 	static Map<int, int>& g_RenderedTexturesMap;
 
 	static void* g_RenderBuffer;
+	static const D3DMATRIX& g_IdentityMatrix;
 };
 
 extern GfxInternal_Dx9* g_RendererDx;

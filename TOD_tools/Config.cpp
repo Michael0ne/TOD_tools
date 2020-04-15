@@ -450,7 +450,7 @@ namespace GameConfig {
 		if (m_pConfigurationVariables->IsVariableSet("ratioxy"))
 			Renderer::RatioXY = m_pConfigurationVariables->GetParamValueFloat("ratioxy");
 
-		//	TODO: what buffer is this? what size should be used?
+		//	NOTE: is this backbuffer size?
 		Vector3<float> vBuff;
 		//void* buff = (void*)malloc(31 * 4);
 		//memset(buff, 0, 31 * 4);
@@ -565,9 +565,9 @@ namespace GameConfig {
 			SceneSet = Scene::Instantiate(sceneFile);
 		}
 
-		//if (!SceneSet)
-		//	if (!(SceneSet = Scene::Instantiate("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-		//		g_SceneNode->RegisterEntity();
+		if (!SceneSet)
+			if (!(SceneSet = Scene::Instantiate("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
+				g_SceneNode->RegisterEntity();
 
 		//	TODO: implementation! Scene is not initialized here!
 		if (m_pConfigurationVariables->IsVariableSet("fixedframerate"))
