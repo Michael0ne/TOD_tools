@@ -14,6 +14,7 @@ class LoadScreen : public Node
 
 class CurrentLoadScreen
 {
+public:
 	void* lpVtbl;
 	String m_sTexturePath;
 	BYTE m_bEnabled;

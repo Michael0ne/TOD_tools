@@ -140,7 +140,7 @@ namespace Allocators {
 
 	class SystemSubAllocator
 	{
-	private:
+	public:
 		SystemSubAllocator__vtable* lpVtbl;
 		void* m_pAllocatedSpacePtr;	//	Pointer to space allocated for this allocator
 		int m_nAllocatedSpaceSize;	//	In bytes
@@ -148,7 +148,7 @@ namespace Allocators {
 		SystemAllocator__vtable* m_pSystemAllocators;
 		char* m_szAllocatorName;
 		int m_nAllocatorIndex;
-		void* field_1C;
+		int* field_1C;
 		char field_20;
 		char field_21;
 		char field_22[2];
@@ -173,7 +173,7 @@ namespace Allocators {
 		}
 	};
 
-	class BestFitAllocator : SystemSubAllocator
+	class BestFitAllocator : public SystemSubAllocator
 	{
 		int field_60;
 		int field_64;
@@ -357,6 +357,7 @@ namespace Allocators {
 
 	public:
 		static void ReleaseMemory(void* obj, bool);
+		static void DefragmentIfNecessary(int* unk);	//	@47B780
 	};
 
 	static const MemoryAllocators* const g_Allocators = (MemoryAllocators*)0xA3B0CC;

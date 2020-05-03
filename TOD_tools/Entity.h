@@ -73,6 +73,12 @@ class Entity
 	int field_6C;
 	int field_70;
 	int field_74;
+
+public:
+	D3DMATRIX* GetMatrix(D3DMATRIX* outMatrix)	//	@87BC60
+	{
+		return (*(D3DMATRIX * (__thiscall*)(Entity*, D3DMATRIX*))0x87BC60)(this, outMatrix);
+	}
 };
 
 extern Entity * g_Entity;

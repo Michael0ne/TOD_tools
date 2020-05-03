@@ -11,6 +11,12 @@ namespace Allocators {
 
 		_Release(obj, _unk);
 	}
+
+	void MemoryAllocators::DefragmentIfNecessary(int* unk)
+	{
+		(*(void(__thiscall*)(int*))0x47B780)(unk);
+	}
+
 }
 
 inline void PATCH_ALLOCATORS()

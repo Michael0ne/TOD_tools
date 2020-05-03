@@ -4,6 +4,8 @@
 
 #include "Node.h"
 #include "EditorCamera.h"
+#include "Camera.h"
+#include "AuxQuadTree.h"
 
 #include "StringsPool.h"
 
@@ -13,7 +15,36 @@ class Scene;
 class CollisionProbe;
 class RewindBuffer;
 
-struct Scene_Buffer92;
+struct Scene_Buffer92 {
+private:
+	int field_0;
+	int field_4;
+	int field_8;
+	int field_C;
+	int field_10;
+	int field_14;
+	int field_18;
+	int field_1C;
+	int field_20;
+	int field_24;
+	int field_28;
+	int field_2C;
+	int field_30;
+	int field_34;
+	int field_38;
+	int field_3C;
+	int field_40;
+	int field_44;
+	int field_48;
+	int field_4C;
+	int field_50;
+	int field_54;
+	int field_58;
+
+public:
+	void	Reset();	//	@436AE0
+};
+
 struct Scene_Buffer24;
 
 struct Scene__vtable {
@@ -65,9 +96,9 @@ private:
 	int field_58;
 	int m_nPlayMode;
 	Entity* m_pCamera;
-	Entity* m_pUnkEntityPtr;
+	Camera* m_pUnkEntityPtr;
 	char m_bQuadTreesAllocated[4];
-	Entity* m_pEntity;
+	Camera* m_pCameraEntity;
 	int field_70;
 	int field_74;
 	int field_78;
@@ -140,7 +171,7 @@ private:
 	int* field_188;
 	int m_nSaveGameSize;
 	int field_190;
-	Vector4f m_vUnkBounds;
+	Vector4f m_vCameraPosition;
 	byte field_1A4;
 	byte m_nWindMode;
 	byte field_1A6;
@@ -199,6 +230,7 @@ public:
 	static bool		Instantiate(const char* szSceneName);	//	@93CE00
 	void		Start();	//	@89A100
 	void	UpdateCamera();	//	@893480
+	void	ForceLodCalculation(int unk);	//	@88D100
 
 	void	SetFramerate(float frate)
 	{
@@ -210,6 +242,18 @@ public:
 	{
 		return m_pEditorCamera;
 	}
+
+	Entity* GetCamera()
+	{
+		return m_pCamera;
+	}
+
+	Camera* GetCameraEntity()
+	{
+		return m_pCameraEntity;
+	}
+
+	static int& UnkInt_1;	//	@A3DCE4
 };
 
 extern Scene* g_Scene;	//	@A3DCBC

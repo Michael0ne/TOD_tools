@@ -152,6 +152,7 @@ public:
 
 	void	CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, Vector3<float>* buffers);	//	@421320
 	void	_41FDF0(Vector4<float>* size, int bufferIndex);	//	@41FDF0	NOTE: maybe 'SetBackBufferSize'?
+	void	_SetBufferStateByIndex(int state, int index);	//	@41FD90
 
 	__int64	GetTime()
 	{

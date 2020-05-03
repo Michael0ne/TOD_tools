@@ -77,6 +77,11 @@ void Renderer::_41FDF0(Vector4<float>* size, int bufferIndex)
 	(*(void(__thiscall*)(Renderer*, Vector4<float>*, int))0x41FDF0)(this, size, bufferIndex);
 }
 
+void Renderer::_SetBufferStateByIndex(int state, int index)
+{
+	(*(void(__thiscall*)(Renderer*, int, int))0x41FD90)(this, state, index);
+}
+
 void Scene_Buffer276::Init(const Vector3<float>& vDimensions)
 {
 	m_vUnkDimensionsVec_1 = vDimensions;

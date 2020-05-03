@@ -28,4 +28,8 @@ class AuxQuadTree
 	byte m_pContactFilter;
 	int m_nLodDistance;
 public:
+	void	CalculateLodForAllChildren()	//	@8A3820
+	{
+		(*(void(__thiscall*)(AuxQuadTree*))0x8A3820)(this);
+	}
 };

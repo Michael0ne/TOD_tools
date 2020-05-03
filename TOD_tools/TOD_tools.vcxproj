@@ -123,6 +123,7 @@
     <ClInclude Include="AuxQuadTree.h" />
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="Builtin.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionList.h" />
     <ClInclude Include="DieselPowerSound.h" />
     <ClInclude Include="EditorCamera.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="AuxQuadTree.cpp" />
     <ClCompile Include="Blocks.cpp" />
     <ClCompile Include="Builtin.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionList.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="Entity.cpp" />
