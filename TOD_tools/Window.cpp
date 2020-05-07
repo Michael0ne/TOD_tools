@@ -520,7 +520,7 @@ void Window::Process(bool(*GameLoop)(void))
 			if (g_InputKeyboard)
 				g_InputKeyboard->Process();
 
-			g_InputGamepad->Process();
+			Input::Gamepad::Process();
 
 			if (!GameLoop())
 				return;

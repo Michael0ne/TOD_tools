@@ -2,8 +2,8 @@
 
 #include "stdafx.h"
 
-#include "Node.h"
 #include "List.h"
+#include "Entity.h"
 
 #define LIGHT_CLASS_SIZE 228
 
@@ -17,7 +17,7 @@ struct Light_unkStru1 {
 	int field_24;
 };
 
-class Light : Node
+class Light : public Entity
 {
 private:
 	int field_78;

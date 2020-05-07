@@ -1,14 +1,15 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Node.h"
 #include "StringsPool.h"
 #include "MemoryAllocators.h"
+
+#include "Entity.h"
 
 #define LOADSCREEN_CLASS_SIZE 120
 #define LOADSCREEN_CURRENT_CLASS_SIZE 28
 
-class LoadScreen : public Node
+class LoadScreen : public Entity
 {
 };
 

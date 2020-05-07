@@ -5,6 +5,12 @@
 GfxInternal_Dx9* g_RendererDx = NULL;
 const D3DMATRIX& GfxInternal_Dx9::g_IdentityMatrix = *(D3DMATRIX*)0xA0AD38;
 
+void GfxInternal_Dx9::GetScreenResolution(Vector2<int>& outRes)
+{
+	outRes.x = g_RendererDx->m_DisplayMode.Width;
+	outRes.y = g_RendererDx->m_DisplayMode.Height;
+}
+
 Map<int, int>& GfxInternal_Dx9::g_UnkMap_1 = *(Map<int, int>*)0xA39F58;
 Map<int, int>& GfxInternal_Dx9::g_UnkMap_2 = *(Map<int, int>*)0xA39F38;
 Map<int, int>& GfxInternal_Dx9::g_RenderedTexturesMap = *(Map<int, int>*)0xA39F50;
@@ -186,7 +192,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	}
 
 	//	Finalize.
-	if ((char)resolution & 2)
+	if ((int)resolution & 2)
 		SetupWindowParams(m_DisplayMode.Width, m_DisplayMode.Height);
 	else
 		SetupWindowParams(m_DisplayMode);

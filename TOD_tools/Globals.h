@@ -54,6 +54,9 @@ namespace Utils
 	static void(__cdecl* GetFileAbsolutePath)(String* outStr) = (void(__cdecl*)(String*))0x437A70;	//	Also, at 437B80
 	static void(__cdecl* SetWarningString)(const char* str) = (void(__cdecl*)(const char*))0x406E00;
 	static const char* (__cdecl* GetErrorCodeDescription)(unsigned int code) = (const char* (__cdecl*)(unsigned int))0x45BF32;
+	static void(__cdecl* ExtractFilePath)(const char* inPath, char* outDirectory, char* outFilename, char* outExtension) = (void(__cdecl*)(const char*, char*, char*, char*))0x4088E0;
+	static String* (__cdecl* ExtractFilenameFromPath)(String* outFilename, const char* path) = (String * (__cdecl*)(String*, const char*))0x4093B0;
+	static void(__cdecl* GetResourcePathRelative)(String* outPath, String resourceName, int blockTypeIndex, const char* languageCode) = (void(__cdecl*)(String*, String, int, const char*))0x882DF0;	//	It'll return "<languageCode>/<resourceName>_<languageCode>.<blockTypeExtension>"
 }
 
 namespace Control

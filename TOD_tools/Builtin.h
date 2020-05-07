@@ -116,6 +116,7 @@ public:
 	static void Rand_Integer(Handler_Params<int, int, 1>& params) { params.output = Random__Integer(params.input[0]); }
 	static void Rand_Number(Handler_Params<float, int, 1>& params) { params.output = Random__Number(); }
 
+	static const Vector4f& m_ZeroVector;
 	static const Vector4f& m_RightVector;
 	static const Vector4f& m_UpVector;
 	static const Vector4f& m_InVector;

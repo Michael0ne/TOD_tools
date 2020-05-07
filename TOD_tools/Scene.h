@@ -2,10 +2,10 @@
 
 #include "stdafx.h"
 
-#include "Node.h"
 #include "EditorCamera.h"
 #include "Camera.h"
 #include "AuxQuadTree.h"
+#include "MemoryAllocators.h"
 
 #include "StringsPool.h"
 
@@ -50,9 +50,9 @@ struct Scene_Buffer24;
 struct Scene__vtable {
 	void(__thiscall* Destroy)(Scene* _this, bool freememory);	//	@89A7E0
 	void(__thiscall* _895E40)(Scene* _this);	//	@895E40
-	void(__thiscall* _484CC0)(Node* _this, int unk_1);	//	@484CC0
-	int* (__thiscall* FindNode)(Node* _this, const char* searchNode);	//	@88EED0
-	void* (__thiscall* _88EC20)(Node* _this, int unk_1);	//	@88EC20
+	void(__thiscall* _484CC0)(Scene* _this, int unk_1);	//	@484CC0
+	int* (__thiscall* FindNode)(Scene* _this, const char* searchNode);	//	@88EED0
+	void* (__thiscall* _88EC20)(Scene* _this, int unk_1);	//	@88EC20
 	void(__thiscall* _QuadTreeRefresh)(Scene* _this);	//	@88DE70
 	int(__thiscall* Update)(Scene* _this);	//	@897450
 	void(__cdecl* nullsub_1)();	//	@8CB190
@@ -60,17 +60,17 @@ struct Scene__vtable {
 	char(__stdcall* _ReturnZero_1)(int unk_1, int unk_2);	//	@484DB0
 	double(__stdcall* _ReturnMinusOne)(int unk_1, int unk_2);	//	@8F8650
 	void(__cdecl* stub1)();	//	@88C600
-	int(__thiscall* _88C610)(Node* _this);	//	@88C610
+	int(__thiscall* _88C610)(Scene* _this);	//	@88C610
 	void(__cdecl* nullsub_2)();	//	@883EC0
 	void(__cdecl* nullsub_3)();	//	@8CB190
 	void(__cdecl* nullsub_4)();	//	@883EC0
 	void(__stdcall* ReturnEmptyString)(String* outString);	//	@484E80
-	Node* (__stdcall* _484DC0)(Node* _this);	//	@484DC0
+	Scene* (__stdcall* _484DC0)(Scene* _this);	//	@484DC0
 };
 
 class Scene
 {
-private:
+public:
 	Scene__vtable* lpVtbl;
 	int field_4;
 	int field_8;
@@ -220,17 +220,39 @@ private:
 	int field_24C;
 	Scene_Buffer92* m_pBuffer_92_1;
 	Scene_Buffer92* m_pBuffer_92_2;
-	int m_nLoadTime;
-	int m_nTimeMilliseconds_1;
+	int m_nLoadTime[2];	//	FIXME: __int64 should be here, but size gets broken somehow...
 	int m_nTimeMilliseconds;
 	int field_264;
 
 public:
-	static bool		Update();	//	@93CEB0
-	static bool		Instantiate(const char* szSceneName);	//	@93CE00
+	void* operator new (size_t size)
+	{
+		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+	}
+
+	Scene()
+	{
+		debug("Scene created at %X\n", this);
+	}
+
+	~Scene()
+	{
+		debug("Scene destroyed!\n");
+	}
+
 	void		Start();	//	@89A100
-	void	UpdateCamera();	//	@893480
-	void	ForceLodCalculation(int unk);	//	@88D100
+	void		Load(const char* szSceneName);	//	@8980C0
+	void		UpdateLoadedBlocks(int unk1, int unk2);	//	@8986E0
+	void		UpdateCamera();	//	@893480
+	void		ForceLodCalculation(int unk);	//	@88D100
+	void		RefreshChildNodes();	//	@88C2B0
+	void		FinishCreation(const char* logtitle);	//	@8935F0
 
 	void	SetFramerate(float frate)
 	{
@@ -253,9 +275,14 @@ public:
 		return m_pCameraEntity;
 	}
 
+	static bool		Update();	//	@93CEB0
+	static bool		Instantiate(const char* szSceneName);	//	@93CE00
+
 	static int& UnkInt_1;	//	@A3DCE4
 };
 
 extern Scene* g_Scene;	//	@A3DCBC
+
+constexpr size_t scenesize = sizeof(Scene);
 
 static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Scene"));

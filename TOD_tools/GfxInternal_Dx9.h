@@ -9667,6 +9667,8 @@ public:
 
 	static void* g_RenderBuffer;
 	static const D3DMATRIX& g_IdentityMatrix;
+
+	static void GetScreenResolution(Vector2<int>& outRes);	//	@41FD70
 };
 
 extern GfxInternal_Dx9* g_RendererDx;

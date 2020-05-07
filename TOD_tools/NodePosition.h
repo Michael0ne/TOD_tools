@@ -1,18 +1,18 @@
 #pragma once
 
-#include "stdafx.h"
+#include "Types.h"
 
-#include "Node.h"
+class Entity;
 
+//	NOTE: is this just D3DMATRIX?
 class NodePosition
 {
-	Vector4<float> m_vPosition1;
+public:
+	Quaternion<float> m_vOrientation;
 	Vector4<float> m_vPosition2;
 	Vector4<float> m_vPosition3;
 	Vector4<float> m_vPosition4;
 	Vector4<float> m_vPosition5;
 	Vector4<float> m_vPosition6;
-	Node* m_pOwner;
-public:
+	Entity* m_pOwner;
 };
-

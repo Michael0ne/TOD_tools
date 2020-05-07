@@ -3,6 +3,8 @@
 #include "Renderer.h"
 #include "LoadScreen.h"
 #include "StreamedSoundBuffers.h"
+#include "Performance.h"
+#include "Blocks.h"
 
 Scene* g_Scene = (Scene*)0xA3DCBC;
 int& Scene::UnkInt_1 = *(int*)0xA3DCE4;
@@ -30,7 +32,7 @@ bool Scene::Update()
 
 	Allocators::MemoryAllocators::DefragmentIfNecessary(Allocators::AllocatorsList->ALLOCATOR_DEFRAGMENTING->field_1C);
 
-	__int64 timeStart = __rdtsc();
+	auto timeStart = __rdtsc();
 
 	g_Scene->lpVtbl->Update(g_Scene);
 
@@ -45,7 +47,7 @@ bool Scene::Update()
 
 	Scene::UnkInt_1++;
 
-	g_Scene->m_nLoadTime = __rdtsc() - timeStart;
+	*(DWORD64*)&g_Scene->m_nLoadTime = __rdtsc() - timeStart;
 
 	if (Audio::g_StreamedSoundBuffers && g_Scene->m_pCameraEntity) {
 		//Audio::g_StreamedSoundBuffers->SetListener3DPos(0);
@@ -58,9 +60,16 @@ bool Scene::Update()
 
 bool Scene::Instantiate(const char* szSceneName)
 {
-	bool(__cdecl * _Instantiate)(const char* _scenename) = (bool(__cdecl*)(const char*))0x93CE00;
+	g_Scene = (Scene*)(new Entity(true));
 
-	return _Instantiate(szSceneName);
+	g_Blocks->SetSceneName(szSceneName);
+	g_Scene->Load(szSceneName);
+	g_Scene->UpdateLoadedBlocks(0, 0);
+	g_Scene->m_nTimeMilliseconds = Performance::GetMilliseconds();
+	g_Scene->RefreshChildNodes();
+	g_Scene->FinishCreation("Scene instantiate all completed.");
+
+	return true;
 }
 
 void Scene::Start()
@@ -70,6 +79,16 @@ void Scene::Start()
 	_Start(this);
 }
 
+void Scene::Load(const char* szSceneName)
+{
+	(*(void (__thiscall*)(Scene*, const char*))0x8980C0)(this, szSceneName);
+}
+
+void Scene::UpdateLoadedBlocks(int unk1, int unk2)
+{
+	(*(void(__thiscall*)(Scene*, int, int))0x8986E0)(this, unk1, unk2);
+}
+
 void Scene::ForceLodCalculation(int unk)
 {
 	if (m_pQuadTree)
@@ -77,6 +96,17 @@ void Scene::ForceLodCalculation(int unk)
 	else
 		for (EditorCamera* pEditorCamera = m_pEditorCamera; pEditorCamera; pEditorCamera = (EditorCamera*)field_34)
 			ForceLodCalculation(unk);
+}
+
+void Scene::RefreshChildNodes()
+{
+	(*(void(__thiscall*)(Scene*))0x88C2B0)(this);
+}
+
+void Scene::FinishCreation(const char* logtitle)
+{
+	debug("Load Time: '%s'. %dms of %dms.\n", logtitle, Performance::GetMilliseconds() - m_nTimeMilliseconds, Performance::GetMilliseconds() - *(DWORD64*)&m_nLoadTime);
+	m_nTimeMilliseconds = Performance::GetMilliseconds();
 }
 
 void Scene::UpdateCamera()

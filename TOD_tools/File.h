@@ -11,7 +11,7 @@
 
 class File
 {
-private:
+public:
 	void* m_nUnkInt1;
 	int m_nUnkInt2;
 	int m_nUnkInt3;

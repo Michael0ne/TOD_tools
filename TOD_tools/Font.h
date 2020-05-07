@@ -59,6 +59,7 @@ public:
 
 	static void	MakeCharactersMap();	//	@938E10
 	void	Init();	//	@41EA80
+	void	CreateBakedFont(void* unkStruc);	//	@41E6D0
 };
 
 extern Font* g_Font;

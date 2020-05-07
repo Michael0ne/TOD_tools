@@ -270,10 +270,10 @@ namespace GameConfig {
 				g_InputKeyboard->Init();
 
 			//	TODO: implementation for Gamepad class!
-			g_InputGamepad = new Input::Gamepad();
+			g_InputGamepad[0] = new Input::Gamepad();
 
-			if (g_InputGamepad)
-				g_InputGamepad->Init();
+			if (g_InputGamepad[0])
+				g_InputGamepad[0]->Init();
 		}
 
 		//	TODO: implementation!
@@ -516,9 +516,9 @@ namespace GameConfig {
 		ReadZipDirectories(Script::Filesystem.m_szString);
 
 		//	Parse collmat file
-		//	EnumMaterialsInCollmat();
+		EnumMaterialsInCollmat();
 		//	Parse facecolmat file
-		//	EnumFaceColMaterials();
+		EnumFaceColMaterials();
 
 		//	Init random numbers generator.
 		(*(void(__cdecl*)(__int64))0x46C420)(__rdtsc());
@@ -529,7 +529,7 @@ namespace GameConfig {
 				g_CurrentLoadScreen->Init(NULL);
 
 			//	TODO: implementation!
-			if (g_Progress = new Progress())
+			if ((g_Progress = new Progress()) != NULL)
 				g_Progress->Init();
 		}
 
@@ -678,7 +678,7 @@ namespace GameConfig {
 
 		if (Control::GetGamepadByIndex(0))
 			//	g_InputGamepad->Release();	//	@439D60
-			delete g_InputGamepad;
+			delete g_InputGamepad[0];
 
 		if (g_Renderer)
 			//	g_Renderer->Release();	//	@421470
@@ -940,6 +940,36 @@ namespace GameConfig {
 			return 2;
 
 		return -1;
+	}
+
+	void EnumMaterialsInCollmat()
+	{
+		(*(void(*)())0x87D330)();
+	}
+
+	void EnumFaceColMaterials()
+	{
+		if (FaceColList.m_nCurrIndex > 0)
+			//	Already loaded.
+			return;
+
+		if (!Utils::FindFileEverywhere("/FaceColl.mat"))
+			return;
+
+		FileInternal faceColFile;
+		faceColFile.Open("/FaceColl.mat", 1, true);
+
+		if (!faceColFile.IsFileOpen())
+			return;
+
+		String buffer;
+
+		while (faceColFile.ReadString(&buffer)) {
+			buffer.ToLowerCase();
+			FaceColList.Add(&buffer);
+		}
+
+		faceColFile.Close();
 	}
 
 	//	NOTE:	what does this do?

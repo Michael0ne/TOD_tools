@@ -2,6 +2,7 @@
 
 Builtin* g_Builtin = NULL;
 
+const Vector4f& Builtin::m_ZeroVector = *(Vector4f*)0x9B7084;
 const Vector4f& Builtin::m_RightVector = *(Vector4f*)0x9B70A4;
 const Vector4f& Builtin::m_UpVector = *(Vector4f*)0x9B70B4;
 const Vector4f& Builtin::m_InVector = *(Vector4f*)0x9B70C4;

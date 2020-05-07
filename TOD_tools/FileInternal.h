@@ -50,6 +50,14 @@ private:
 	byte m_bExecute;
 	byte m_b30[3];
 	File* m_pFile;
+
+public:
+	void	Open(const char* szFileName, unsigned int dwDesiredAccess, bool bCreateIfNotFound);	//	@418E30
+	bool	IsFileOpen();	//	@417CF0
+	void	Close();	//	@417E20
+	char	ReadString(String* outStr);	//	@4180C0
+
+	static int& FilesOpen;	//	@A35DD8
 };
 
 extern FileInternal* g_FileInternal;

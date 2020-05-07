@@ -5,6 +5,7 @@
 
 class AuxQuadTree
 {
+public:
 	Entity entity;
 	int field_4;
 	int field_8;
@@ -27,9 +28,15 @@ class AuxQuadTree
 	byte m_bLodFade;
 	byte m_pContactFilter;
 	int m_nLodDistance;
+
 public:
 	void	CalculateLodForAllChildren()	//	@8A3820
 	{
 		(*(void(__thiscall*)(AuxQuadTree*))0x8A3820)(this);
+	}
+
+	void	CalculateLod()		//	@8A24F0
+	{
+		(*(void(__thiscall*)(AuxQuadTree*))0x8A24F0)(this);
 	}
 };

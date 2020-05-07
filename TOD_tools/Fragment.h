@@ -6,12 +6,15 @@ class Node;
 
 class Fragment
 {
+public:
 	Node *m_pOwner;
-	int field_4;
+	void* field_4;
 	int field_8;
-	int field_C;
+	const char* m_szName;
 	time_t m_nUniqueId0;
 	int m_nUniqueId1;
+
 public:
+	const char*		_GetResourcePath();		//	@851720
 };
 

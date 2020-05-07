@@ -89,6 +89,7 @@ public:
 		do {
 			if (m_szString[_ind] >= 65 && m_szString[_ind] <= 90)
 				m_szString[_ind] += 32;
+			_ind++;
 		} while (_ind < m_nLength);
 	}
 
@@ -138,6 +139,8 @@ public:
 
 		return _Substr(this, outStr, posStart, length);
 	}
+
+	void Format(const char* format, ...);	//	@415300	NOTE: adapted to be String's class method.
 
 private:
 

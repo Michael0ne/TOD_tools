@@ -8,6 +8,7 @@
 namespace Input {
 
 #define INPUT_GAMEPAD_CLASS_SIZE 228
+#define INPUT_GAMEPAD_MAX_GAMEPADS 4
 
 	class Gamepad
 	{
@@ -91,14 +92,17 @@ namespace Input {
 		}
 
 		void	Init();	//	@43A2F0
-		void	Process();
+		void	ProcessController();	//	@439E00
 		void	Reset();
 
-		static int& ControllersCreated;
-		static LPDIENUMDEVICESCALLBACK EnumCallback;
+		static void	Process();	//	@43A190
+
+		static int& ControllersCreated;	//	@A35E74
+		static LPDIENUMDEVICESCALLBACK EnumCallback;	//	@43A1D0
+		static int& DirectInputGamepadsFound;	//	@A08FD0
 	};
 }
 
-extern Input::Gamepad * g_InputGamepad;
+extern Input::Gamepad * g_InputGamepad[INPUT_GAMEPAD_MAX_GAMEPADS];
 
 static_assert(sizeof(Input::Gamepad) == INPUT_GAMEPAD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("InputGamepad"));

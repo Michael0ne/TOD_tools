@@ -6,6 +6,7 @@
 #include "List.h"
 #include "StringsPool.h"
 #include "MemoryAllocators.h"
+#include "FileInternal.h"
 
 namespace GameConfig {
 
@@ -204,7 +205,6 @@ namespace GameConfig {
 
 			return ptr;
 		}
-
 		void operator delete(void* ptr)
 		{
 			if (ptr)
@@ -222,8 +222,13 @@ namespace GameConfig {
 	static void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo); //	@418F90
 	static void SetCountryCode(const char* szCode);	//	@42E530
 	static signed int GetRegionId(String* regionStr);	//	@875450
+	static void EnumMaterialsInCollmat();	//	@87D330
+	static void EnumFaceColMaterials();	//	@87D100
 
 	static void _GetDeveloperPath(String* outStr);	//	@4098D0
+
+	static List<String>& FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
+	static FileInternal& ColMatFilePtr = *(FileInternal*)0xA3D7E8;	//	@A3D7E8
 }
 
 namespace Script

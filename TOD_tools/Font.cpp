@@ -14,3 +14,8 @@ void Font::Init()
 {
 	//	TODO: 41EA80
 }
+
+void Font::CreateBakedFont(void* unkStruc)
+{
+
+}

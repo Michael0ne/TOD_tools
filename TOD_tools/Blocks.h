@@ -7,11 +7,13 @@
 
 #define BLOCKS_CLASS_SIZE 500
 
+class TypeInfo;
+
 class Blocks
 {
 private:
 	int field_0;
-	int field_4;
+	int m_nBlockType;
 	int field_8;
 	int field_C;
 	int field_10;
@@ -92,7 +94,7 @@ private:
 	List<int> m_UnkList_4;
 	List<int> m_UnkList_5;
 	List<int> m_UnkList_6;
-	List<int> m_UnkList_7;
+	List<TypeInfo> m_ResourceTypesList;
 	int field_1A0;
 	int field_1A4;
 	int field_1A8;
@@ -140,12 +142,46 @@ public:
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
 
-	void Init(bool unk);	//	@76E20
+	void	Init(bool unk);	//	@76E20
+	void	SetSceneName(const char* szSceneName);	//	@877F40
+	int		GetFreeResourceTypeListItem(unsigned int index);	//	@875540
 
 	void	SetRegionId(signed int id)	//	@875434
 	{
 		m_nRegionId = id;
 	}
+
+	signed int GetAllocatorType()	//	@875360
+	{
+		if (!m_bLoad)
+			return 0;
+
+		if (m_nBlockType >= 0)
+			return GetResourceBlockTypeNumber(m_nBlockType);
+
+		return 0;
+	}
+
+	static signed int GetResourceBlockTypeNumber(int resourceBlockId)	//	@851FE0
+	{
+		if (!resourceBlockId ||
+			memcmp(g_szBlockTypes[resourceBlockId], "map", 4) ||
+			memcmp(g_szBlockTypes[resourceBlockId], "submap", 7))
+			return 1;
+
+		if (!memcmp(g_szBlockTypes[resourceBlockId], "mission", 8))
+			return 2;
+
+		if (!memcmp(g_szBlockTypes[resourceBlockId], "cutscene", 9))
+			return 3;
+
+		if (!memcmp(g_szBlockTypes[resourceBlockId], "playerdata", 12))
+			return 4;
+
+		return 0;
+	}
+
+	static const char* g_szBlockTypes[7];	//	@A11B64
 };
 
 extern Blocks* g_Blocks;

@@ -80,9 +80,6 @@
     <ClInclude Include="Performance.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="AuxQuadTree.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
@@ -194,6 +191,9 @@
     <ClInclude Include="Camera.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionProbe.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -222,9 +222,6 @@
     </ClCompile>
     <ClCompile Include="StreamedSoundBuffers.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="Node.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="AuxQuadTree.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
@@ -332,6 +329,9 @@
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionProbe.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
