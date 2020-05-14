@@ -1,20 +1,20 @@
 #pragma once
 
 #include "stdafx.h"
-
-class Node;
+#include "Entity.h"
 
 class Fragment
 {
 public:
-	Node *m_pOwner;
-	void* field_4;
+	Entity *m_pOwner;
+	void* m_pUnkStructPtr;
 	int field_8;
 	const char* m_szName;
 	time_t m_nUniqueId0;
 	int m_nUniqueId1;
 
 public:
+	Fragment(const Entity* owner);	//	@87F1E0
 	const char*		_GetResourcePath();		//	@851720
 };
 

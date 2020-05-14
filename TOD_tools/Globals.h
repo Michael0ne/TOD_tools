@@ -15,36 +15,6 @@ static FILTERKEYS* sFILTERKEYS = (FILTERKEYS*)0xA0918C;
 
 static LPCSTR& RegistryKey = *(LPCSTR*)0xA09178;
 
-static int& g_ZipSlotId = *(int*)0xA35DDC;
-static char* g_ZipStatus[16] = {
-	(char*)0xA0862C,
-	(char*)0xA0862D,
-	(char*)0xA0862E,
-	(char*)0xA0862F,
-	(char*)0xA08630,
-	(char*)0xA08631,
-	(char*)0xA08632,
-	(char*)0xA08633,
-	(char*)0xA08634,
-	(char*)0xA08635,
-	(char*)0xA08636,
-	(char*)0xA08637,
-	(char*)0xA08638,
-	(char*)0xA08639,
-	(char*)0xA0863A,
-	(char*)0xA0863B
-};
-static String* g_ZipNames[8] = {
-	(String*)0xA085A8,
-	(String*)0xA085B8,
-	(String*)0xA085C8,
-	(String*)0xA085D8,
-	(String*)0xA085E8,
-	(String*)0xA085F8,
-	(String*)0xA08608,
-	(String*)0xA08618
-};
-
 namespace Utils
 {
 	static bool(__cdecl* FindFileEverywhere)(const char* szPath) = (bool(__cdecl*)(const char*))0x4182A0;

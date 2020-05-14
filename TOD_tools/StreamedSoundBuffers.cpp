@@ -1,4 +1,5 @@
 #include "StreamedSoundBuffers.h"
+#include "Performance.h"
 
 namespace Audio
 {
@@ -21,16 +22,50 @@ namespace Audio
 
 	void StreamedSoundBuffers::SetGlobalPause(bool bPause)
 	{
-		void(__thiscall * SoundManager__SetGlobalPause)(StreamedSoundBuffers * _this, bool _pause) = (void(__thiscall*)(StreamedSoundBuffers*, bool))0x43D1D0;
+		if (!bPause)
+			debug("global pause off\n");
+		else
+			debug("global pause on\n");
 
-		SoundManager__SetGlobalPause(this, bPause);
+		m_bGlobalPause = bPause;
+		m_bGlobalPauseCalled = true;
+	}
+
+	int StreamedSoundBuffers::GetSoundRenderer()
+	{
+		if (g_StreamedSoundBuffers->SoundRendererId)
+			return g_StreamedSoundBuffers->SoundRendererId;
+
+		g_StreamedSoundBuffers->SoundRendererId = 1;
+
+		HKEY phkResult;
+
+		if (!RegOpenKeyExA(HKEY_CURRENT_USER, RegistryKey, 0, 1, &phkResult)) {
+			DWORD cbData = 4;
+			DWORD cbType;
+			LPBYTE regData;
+
+			if (!RegQueryValueExA(phkResult, "SoundRenderer", 0, &cbType, regData, &cbData) && cbType == 4)
+				g_StreamedSoundBuffers->SoundRendererId = *(int*)regData;
+			RegCloseKey(phkResult);
+		}
+
+		return g_StreamedSoundBuffers->SoundRendererId;
 	}
 
 	void StreamedSoundBuffers::MeasureWaitForSoftPause()
 	{
-		void(__thiscall * SoundManager__MeasureWaitForSoftPause)(StreamedSoundBuffers * _this) = (void(__thiscall*)(StreamedSoundBuffers*))0x43E800;
+		long startTime = Performance::GetMilliseconds();
 
-		SoundManager__MeasureWaitForSoftPause(this);
+		while (m_bGlobalPauseCalled) {
+			WaitForSoftPause();
+			Sleep(10);
+		}
+
+		long endTime = Performance::GetMilliseconds();
+
+		if (endTime > 10)
+			debug("WaitForSoftPause slept %dms\n", endTime);
 	}
 
 	void StreamedSoundBuffers::SelectAudioRenderer(int nChannels, int nSampleRate)
@@ -38,6 +73,11 @@ namespace Audio
 		void(__thiscall * _SelectAudioRend)(StreamedSoundBuffers * _this, int _chann, int _samplrat) = (void(__thiscall*)(StreamedSoundBuffers*, int, int))0x43E080;
 
 		_SelectAudioRend(this, nChannels, nSampleRate);
+	}
+
+	void StreamedSoundBuffers::WaitForSoftPause()
+	{
+		(*(void(__thiscall*)(StreamedSoundBuffers*))0x43E640)(this);
 	}
 
 	void StreamedSoundBuffers::RememberSoundRenderer(signed int id)

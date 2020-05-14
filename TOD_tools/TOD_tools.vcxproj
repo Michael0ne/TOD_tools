@@ -121,6 +121,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AuxQuadTree.h" />
+    <ClInclude Include="bink.h" />
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="Builtin.h" />
     <ClInclude Include="Camera.h" />
@@ -136,7 +137,9 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="MemoryCards.h" />
+    <ClInclude Include="MoviePlayer.h" />
     <ClInclude Include="OverdoseVehicle.h" />
+    <ClInclude Include="radbase.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourcesTypes.h" />
     <ClInclude Include="Fragment.h" />
@@ -162,11 +165,11 @@
     <ClInclude Include="Window.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MemoryAllocators.h" />
-    <ClInclude Include="NodePosition.h" />
     <ClInclude Include="Performance.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="StreamedSoundBuffers.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="ZipArch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AuxQuadTree.cpp" />
@@ -175,6 +178,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionList.cpp" />
     <ClCompile Include="CollisionProbe.cpp" />
+    <ClCompile Include="DieselPowerSound.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FileInternal.cpp" />
@@ -183,6 +187,7 @@
     <ClCompile Include="List.cpp" />
     <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
+    <ClCompile Include="MoviePlayer.cpp" />
     <ClCompile Include="Progress.cpp" />
     <ClCompile Include="Progress.h" />
     <ClCompile Include="Renderer.cpp" />
@@ -217,11 +222,11 @@
     </ClCompile>
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MemoryAllocators.cpp" />
-    <ClCompile Include="NodePosition.cpp" />
     <ClCompile Include="Performance.cpp" />
     <ClCompile Include="Properties.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="StreamedSoundBuffers.cpp" />
+    <ClCompile Include="ZipArch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dinput_h.def" />

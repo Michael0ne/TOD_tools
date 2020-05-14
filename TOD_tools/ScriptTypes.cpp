@@ -2,12 +2,17 @@
 
 namespace ScriptTypes
 {
-	//	TODO: implementation!
 	void ScriptType::Register(unsigned int typeId, const char* typeName, unsigned int typeSize)
 	{
-		void(__thiscall * _Register)(ScriptType * _this, unsigned int _tyid, const char* _tyname, unsigned int _tysize) = (void(__thiscall*)(ScriptType*, unsigned int, const char*, unsigned int))0x862E90;
+		SetVtablePtr((ScriptType__vtable*)0x9CB1A8);
+		m_sTypeName.Set(typeName);
+		m_nTypeId = typeId;
+		m_nSizeInBytes = typeSize;
 
-		_Register(this, typeId, typeName, typeSize);
+		ListTypes.AddElement(this);
+
+		m_nId = ListTypes.m_nCurrIndex - 1;
+		_A3CEC8 = 0;
 	}
 
 	void Init()

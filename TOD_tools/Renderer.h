@@ -73,6 +73,13 @@ public:
 	}
 };
 
+struct Scene_Buffer2
+{
+public:
+	int		field_0;	//	Colud be 0, 1 or 2. Maybe enum?
+	int		m_nIndex;	//	Always incremental from 0 to 27.
+};
+
 struct ScreenProperties
 {
 private:
@@ -166,6 +173,7 @@ public:
 	static int& _A08704;
 	static int& _A0870C;
 	static int& _A0872C;
+	static Scene_Buffer2& Buffer_A08704;
 };
 
 extern Renderer* g_Renderer;

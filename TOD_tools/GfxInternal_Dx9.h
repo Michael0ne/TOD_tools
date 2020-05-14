@@ -159,7 +159,7 @@ protected:
 		int field_2C4;
 		int field_2C8;
 		int field_2CC;
-		IDirect3DBaseTexture9* m_pTexturesArray;
+		IDirect3DTexture9** m_pTexturesArray;		//	Array of god-knows-how-many textures.
 		int field_2D4;
 		int field_2D8;
 		int field_2DC;
@@ -9658,6 +9658,7 @@ public:
 	void	CreateRenderDevice();	//	@451110
 	void	SetupProjectionMatrix(float unk1, float aspectratio, float unk3, float farPlane);	//	@44E580
 	void	TransformProjection(D3DMATRIX& projMatrix, double fov, double aspectratio, double nearplane, double farplane);	//	@9676B4
+	void	LoadDDSTexture(unsigned int index, const char* texturePath);	//	@44D920
 
 	inline bool IsResolutionDetected() { return m_bResolutionDetected; };
 
@@ -9669,6 +9670,7 @@ public:
 	static const D3DMATRIX& g_IdentityMatrix;
 
 	static void GetScreenResolution(Vector2<int>& outRes);	//	@41FD70
+	static HRESULT CALLBACK _CreateD3DTextureFromFile(IDirect3DDevice9* d3ddev, LPCWSTR texturePath, IDirect3DTexture9** outTexture);	//	@964E47
 };
 
 extern GfxInternal_Dx9* g_RendererDx;

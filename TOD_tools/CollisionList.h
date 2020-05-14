@@ -1,9 +1,12 @@
 #pragma once
 
+#include "stdafx.h"
 #include "Types.h"
 
 class Entity;
 class CollisionProbe;
+
+#define COLLISIONLIST_CLASS_SIZE 124
 
 class CollisionList
 {
@@ -32,6 +35,7 @@ public:
 	int m_nSize;
 	int field_70;
 	int field_74;
+	int field_78;
 
 public:
 	void	AddEntity(const Entity* pEnt);	//	@8A6410
@@ -39,3 +43,4 @@ public:
 	void	Init();	//	@891E10
 };
 
+static_assert(sizeof(CollisionList) == COLLISIONLIST_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("CollisionList"));

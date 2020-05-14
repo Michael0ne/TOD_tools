@@ -51,6 +51,12 @@
     <Filter Include="Source files\KapowSystems\Audio">
       <UniqueIdentifier>{0fc35c56-f67b-4152-b5e8-af51a2e268e2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header files\ThirdParty">
+      <UniqueIdentifier>{8f8e6b23-de7e-497d-8dd8-451ef0b786f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ThirdParty\Bink">
+      <UniqueIdentifier>{c018d629-d05c-4e52-bdd8-5ec8fd8d8176}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -93,9 +99,6 @@
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Properties.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="NodePosition.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
@@ -194,6 +197,18 @@
     <ClInclude Include="CollisionProbe.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="MoviePlayer.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="bink.h">
+      <Filter>Header files\ThirdParty\Bink</Filter>
+    </ClInclude>
+    <ClInclude Include="radbase.h">
+      <Filter>Header files\ThirdParty\Bink</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipArch.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -236,9 +251,6 @@
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Properties.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="NodePosition.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
@@ -333,6 +345,15 @@
     </ClCompile>
     <ClCompile Include="CollisionProbe.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="DieselPowerSound.cpp">
+      <Filter>Source files\KapowSystems\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="MoviePlayer.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="ZipArch.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

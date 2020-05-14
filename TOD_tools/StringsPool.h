@@ -80,7 +80,7 @@ public:
 		memcpy(&m_szString[_len], str, _len_str + 1);
 	}
 
-	void ToLowerCase()
+	inline void ToLowerCase()
 	{
 		if (!m_szString || m_szString == &m_pEmpty)
 			return;
@@ -129,6 +129,37 @@ public:
 
 		if (!*_str)
 			return true;
+
+		return false;
+	}
+
+	static bool EqualIgnoreCase(const char* str1, const char* str2, unsigned int len)	//	@4177C0
+	{
+		if (!len)
+			return true;
+
+		char* str1_ = (char*)str1;
+		char* str2_ = (char*)str2;
+		unsigned int ind = 0;
+
+		while (true)
+		{
+			char str1_char = *str1_;
+			char str2_char = *str2_;
+
+			++str1_;
+			++str2_;
+			++ind;
+
+			if (!str1_char)
+				return str2_char == 0;
+
+			if (!str2_char || (str2_char & str1_char) & 0xDF)
+				break;
+
+			if (ind == len)
+				return true;
+		}
 
 		return false;
 	}
