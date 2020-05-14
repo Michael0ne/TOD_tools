@@ -3,6 +3,7 @@
 #include "Types.h"
 #include "StringsPool.h"
 #include "MemoryAllocators.h"
+#include "List.h"
 
 namespace ScriptTypes
 {
@@ -39,28 +40,41 @@ namespace ScriptTypes
 #define SCRIPTTYPE_COLOR_NAME "color"
 #define SCRIPTTYPE_COLOR_SIZE 1
 
+#define SCRIPTTYPE_LIST_ID 8
+#define SCRIPTTYPE_LIST_NAME "list"
+#define SCRIPTTYPE_LIST_SIZE 1
+
+#define SCRIPTTYPE_DICT_ID 9
+#define SCRIPTTYPE_DICT_NAME "dict"
+#define SCRIPTTYPE_DICT_SIZE 1
+
+//	Used for any entity being created.
+#define SCRIPTTYPE_ENTITY_ID 10
+#define SCRIPTTYPE_ENTITY_NAME NULL
+#define SCRIPTTYPE_ENTITY_SIZE 1
+
 	class ScriptType;
 
 	struct ScriptType__vtable
 	{
 		void* (__stdcall* free)(bool);
-		int* (__thiscall* stub1)(ScriptType* _this, int, int*);
-		void(__thiscall* nullstub0)(ScriptType* _this);
-		void(__thiscall* nullstub1)(ScriptType* _this);
+		int* (__thiscall* stub1)(ScriptType* _this, int, List<ScriptType>*);
+		void(__thiscall* RemoveVtable)(ScriptType* _this);
+		void(__stdcall* nullstub1)();
 		int* (__thiscall* stub2)(ScriptType* _this, int*, int*);
-		String* (__cdecl* makeEmptyString)(String* outString, int, int);
-		signed int(__stdcall* return_negative_one)(int, int);
+		void (__cdecl* makeEmptyString)(String* outString, int*, int);	//	SetFormattingPrecision
+		signed int(__stdcall* return_negative_one)(const char*, int*);	//	OverrideOperator
 		int(__thiscall* stub3)(ScriptType* _this, int);
 		int(__thiscall* stub4)(ScriptType* _this, char*, char*);
 		int(__thiscall* stub5)(ScriptType* _this, char*, char*);
 		int(__thiscall* stub6)(ScriptType* _this, int, String* str, int);
 		int(__thiscall* stub7)(ScriptType* _this, int, int, int*);
-		void(__thiscall* nullstub2)(ScriptType* _this);
-		void(__thiscall* nullstub3)(ScriptType* _this);
+		int(__stdcall* nullstub2)(int, int, int (__thiscall*)(int), int, int, int, void* outParam);
+		int(__stdcall* nullstub3)(int*, int, int (__thiscall*)(int, int), int, int, int);
 		bool(__thiscall* stub8)(ScriptType* _this, int, int);
-		bool(__stdcall* returnTrue)(int, int);
-		void(__stdcall* setParamNegativeOne)(int, int* out, int, int);
-		void(__thiscall* nullstub4)(ScriptType* _this);
+		bool(__stdcall* returnTrue)(void*, void*);	//	return *arg1 != *arg2
+		void(__stdcall* _ParseOperator)(const char* operatorStr, int* outOperationId, ScriptType** outResultType, char* dummyParam);
+		void(__thiscall* _DoOperation)(ScriptType* _this, const int operationId, void* inParams);
 		bool(__stdcall* returnTrue1)(int, int);
 		bool(__stdcall* returnTrue2)(int);
 	};
@@ -287,7 +301,6 @@ namespace ScriptTypes
 		{
 			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
 		}
-
 		void operator delete (void* ptr)
 		{
 			if (ptr)
@@ -295,7 +308,6 @@ namespace ScriptTypes
 		}
 
 		void	Register(unsigned int typeId, const char* typeName, unsigned int typeSize);	//	@862E90
-
 		//	NOTE: this is temporary, until proper classes for each type has been made.
 		void	SetVtablePtr(ScriptType__vtable* ptr) { lpVtbl = ptr; }
 	};
@@ -329,4 +341,7 @@ namespace ScriptTypes
 	static const ScriptType_String__vtable* tSTRING_vtable = (ScriptType_String__vtable*)0x9CC358;
 
 	void Init();	//	@8634E0
+
+	static List<ScriptType>& ListTypes = *(List<ScriptType>*)0xA3CECC;	//	@A3CECC
+	static int& _A3CEC8 = *(int*)0xA3CEC8;	//	@A3CEC8
 }

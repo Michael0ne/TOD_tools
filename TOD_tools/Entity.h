@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "Types.h"
 
-#include "NodePosition.h"
 #include "MemoryAllocators.h"
 #include "StringsPool.h"
 #include "ScriptTypes.h"
@@ -37,6 +36,20 @@ struct EntityPosition__vtbl
 	void(__thiscall* GetWorldRotation)(Entity* _this, Orientation& outOrient);	//	@9CE80C
 };
 
+class EntityPosition
+{
+public:
+	Quaternion<float> m_vOrientation;
+	Vector4<float> m_vPosition2;
+	Vector4<float> m_vPosition3;
+	Vector4<float> m_vPosition4;
+	Vector4<float> m_vPosition5;
+	Vector4<float> m_vPosition6;
+	Entity* m_pOwner;
+public:
+	EntityPosition(Entity* owner);	//	@892300	//	NOTE: is it copy constructor?
+};
+
 /*
  *------------------------------------------------------------
  *------------------------------------------------------------
@@ -62,7 +75,7 @@ class Entity
 	AuxQuadTree* m_pAuxQuadTree;
 	Entity* m_pNextSibling;
 	CollisionList* m_pIgnoreCollisionList;
-	NodePosition* m_vPosition;
+	EntityPosition* m_vPosition;
 	Entity* m_pParent;
 	Entity* m_pChild;
 	Fragment* m_pFragment;
@@ -117,6 +130,8 @@ public:
 	void			FastSetPos(const Vector4f& vPos);	//	@88BB20
 	static void		ResolveObject(const Entity& _this, int unk);	//	@8C7C30
 	void			SetParam(int index, void* param, ScriptTypes::ScriptType* type);	//	@86A3C0
+	AuxQuadTree*	GetEntityQuadTreeOrParentQuadTree();	//	@88C260
+	void			SetParent(Entity* parent);	//	@88E8A0
 
 	//	Getters
 	const char*		GetTypename();	//	@891160

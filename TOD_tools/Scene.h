@@ -168,17 +168,16 @@ public:
 	String m_sSaveDir;
 	int m_nMemoryCardIndex;
 	int m_nSaveSlotIndex;
-	int* field_188;
+	int* field_18C;
 	int m_nSaveGameSize;
-	int field_190;
+	int field_194;
 	Vector4f m_vCameraPosition;
-	byte field_1A4;
+	byte field_1A8;
 	byte m_nWindMode;
-	byte field_1A6;
+	byte field_1AA;
 	byte m_bWindPause;
 	byte m_bFlushRewindRequested[4];
-	int field_1AC[1];
-	int field_1B0;
+	int* m_pBlocksArray;
 	int field_1B4;
 	int field_1B8;
 	int field_1BC;
@@ -191,9 +190,9 @@ public:
 	int field_1D8;
 	int field_1DC;
 	int field_1E0;
-	int* field_1E4;
+	int field_1E4;
 	int* field_1E8;
-	int field_1EC;
+	int* field_1EC;
 	int field_1F0;
 	int field_1F4;
 	int field_1F8;
@@ -206,8 +205,8 @@ public:
 	int field_214;
 	int field_218;
 	int field_21C;
-	int* field_220;
-	int field_224;
+	int field_220;
+	int* field_224;
 	int field_228;
 	int field_22C;
 	int field_230;
@@ -218,11 +217,12 @@ public:
 	int field_244;
 	int field_248;
 	int field_24C;
+	int field_250;
 	Scene_Buffer92* m_pBuffer_92_1;
 	Scene_Buffer92* m_pBuffer_92_2;
 	int m_nLoadTime[2];	//	FIXME: __int64 should be here, but size gets broken somehow...
 	int m_nTimeMilliseconds;
-	int field_264;
+	int field_268;
 
 public:
 	void* operator new (size_t size)

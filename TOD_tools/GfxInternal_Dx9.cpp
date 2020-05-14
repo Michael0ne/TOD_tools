@@ -440,6 +440,29 @@ void GfxInternal_Dx9::TransformProjection(D3DMATRIX& projMatrix, double fov, dou
 	projMatrix._44 = 0.0f;
 }
 
+void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath)
+{
+	if (m_pTexturesArray[index]) {
+		(*m_pTexturesArray)->Release();
+		*m_pTexturesArray = nullptr;
+	}
+
+	if (texturePath) {
+		char textureExtension[32];
+		char dummybuff[256];
+		Utils::ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
+
+		if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) &&
+			GfxInternal_Dx9::_CreateD3DTextureFromFile(m_pDirect3DDevice9, (LPCWSTR)texturePath, m_pTexturesArray) < 0)
+			*m_pTexturesArray = nullptr;
+	}
+}
+
+HRESULT CALLBACK GfxInternal_Dx9::_CreateD3DTextureFromFile(IDirect3DDevice9* d3ddev, LPCWSTR texturePath, IDirect3DTexture9** outTexture)
+{
+	return (*(HRESULT(CALLBACK*)(IDirect3DDevice9*, LPCWSTR, IDirect3DTexture9**))0x964E47)(d3ddev, texturePath, outTexture);
+}
+
 inline void PATCH_RENDERER()
 {
 	void* dwFunc;

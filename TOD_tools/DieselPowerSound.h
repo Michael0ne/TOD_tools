@@ -9,10 +9,12 @@ namespace Audio {
 
 #define AUDIO_DIESELPO_CLASS_SIZE 40
 
+	typedef int (*DIESELPOWERCREATEPROC)(int, int, int, int, int, int, int, int, int);
+
 	class DieselPower;
 
-	struct DieselPower__vtable {
-		;
+	struct DieselPower__vtable
+	{
 		int field_0;
 		int field_4;
 		int field_8;
@@ -89,12 +91,21 @@ namespace Audio {
 		{
 			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
 		}
-
 		void operator delete(void* ptr)
 		{
 			if (ptr)
 				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 		}
+
+		static DieselPower* CallFactory(unsigned int versionMajor, unsigned int versionMinor, unsigned int versionBuild, float unk, HWND windowHandle, int unk1, int unk2, int unk3);	//	@940A70
+
+		static const char* RequiredVersion;	//	@A1BA50
+		static char* DetectedVersion;	//	@A5E800
+		static HMODULE& LibraryHandle;	//	@A5E840
+		static int& ErrorCode;	//	@A5E844
+		static DIESELPOWERCREATEPROC FactoryFunction;	//	@A5E868
+		static char* ErrorMessageBuffer;	//	@A5E700
+		static bool& Created;	//	@A5E84C
 	};
 
 	extern DieselPower* g_DieselPower;

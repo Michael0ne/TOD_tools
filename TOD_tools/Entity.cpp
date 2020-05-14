@@ -5,7 +5,6 @@
 #include "Blocks.h"
 #include "Properties.h"
 #include "Fragment.h"
-#include "NodePosition.h"
 #include "Scene.h"
 #include "CollisionList.h"
 #include "CollisionProbe.h"
@@ -65,6 +64,31 @@ void Entity::SetParam(int index, void* param, ScriptTypes::ScriptType* type)
 	(*(void(__thiscall*)(Entity*, int, void*, ScriptTypes::ScriptType*))0x86A3C0)(this, index, param, type);
 }
 
+AuxQuadTree* Entity::GetEntityQuadTreeOrParentQuadTree()
+{
+	if (m_pAuxQuadTree)
+		return m_pAuxQuadTree;
+
+	Entity* parent_ = m_pParent;
+
+	while (true) {
+		if (!parent_)
+			break;
+
+		if (parent_->m_pAuxQuadTree)
+			return parent_->m_pAuxQuadTree;
+
+		parent_ = parent_->m_pParent;
+	}
+
+	return nullptr;
+}
+
+void Entity::SetParent(Entity* parent)
+{
+	(*(void(__thiscall*)(Entity*, Entity*))0x88E8A0)(this, parent);
+}
+
 const char* Entity::GetTypename()
 {
 	return m_pProperties->m_sTypeName;
@@ -106,7 +130,7 @@ const char* Entity::GetFragment()
 	if (!(m_nRenderOrderGroup & 0x40000000))
 		return m_pFragment->m_szName;
 
-	if (m_pFragment->field_4)
+	if (m_pFragment->m_pUnkStructPtr)
 		return m_pFragment->_GetResourcePath();
 
 	return NULL;
@@ -172,7 +196,7 @@ const char* Entity::GetName()
 float Entity::GetLodThreshold()
 {
 	if (m_pAuxQuadTree)
-		return m_pAuxQuadTree->m_nFlags * (float)0.0049999999;
+		return *(float*)&m_pAuxQuadTree->m_nFlags * (float)0.0049999999;
 	else
 		return 0.0f;
 }
@@ -180,7 +204,7 @@ float Entity::GetLodThreshold()
 float Entity::GetFadeThreshold()
 {
 	if (m_pAuxQuadTree)
-		return (m_pAuxQuadTree->m_nFlags & 127) * (float)0.0099999998;
+		return (*(int*)&m_pAuxQuadTree->m_nFlags & 127) * (float)0.0099999998;
 	else
 		return 0.0f;
 }
@@ -188,7 +212,7 @@ float Entity::GetFadeThreshold()
 bool Entity::GetSlowFade()
 {
 	if (m_pAuxQuadTree)
-		return m_pAuxQuadTree->m_nFlags >> 7;
+		return *(int*)&m_pAuxQuadTree->m_nFlags >> 7;
 	else
 		return false;
 }
@@ -196,7 +220,7 @@ bool Entity::GetSlowFade()
 float Entity::GetTraverseDistance()
 {
 	if (m_pAuxQuadTree)
-		return (float)m_pAuxQuadTree->m_nFlags;
+		return *(float*)&m_pAuxQuadTree->m_nFlags;
 	else
 		return 0.0f;
 }
@@ -440,4 +464,11 @@ int Entity::sGetBlockIdBelow()
 {
 	//	TODO: implementation!
 	return NULL;
+}
+
+EntityPosition::EntityPosition(Entity* owner)
+{
+	m_vOrientation = Builtin::m_Orientation;
+	m_vPosition2 = { 0.0f, 0.0f, 0.0f, 0.0f };
+	m_pOwner = owner;
 }

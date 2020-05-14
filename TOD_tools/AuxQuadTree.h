@@ -3,13 +3,15 @@
 #include "stdafx.h"
 #include "Entity.h"
 
+#define AUXQUADTREE_CLASS_SIZE 88
+
 class AuxQuadTree
 {
 public:
-	Entity entity;
+	Entity* m_pOwner;
 	int field_4;
-	int field_8;
-	int field_C;
+	AuxQuadTree* m_pChildLast;
+	AuxQuadTree* m_pChildFirst;
 	int field_10;
 	int field_14;
 	int field_18;
@@ -19,9 +21,15 @@ public:
 	int field_28;
 	int field_2C;
 	int field_30;
-	int *m_pContactNode;
+	int* m_pContactNode;
 	int field_38;
-	int m_nFlags;
+	union {
+		char flag0 : 1;
+		char flag1 : 1;
+		char flag2 : 1;
+		char flag3 : 1;
+	} m_nFlags;
+	//int m_nFlags;
 	Vector4f m_vPosition;
 	byte field_4D;
 	byte m_bLod;
@@ -39,4 +47,8 @@ public:
 	{
 		(*(void(__thiscall*)(AuxQuadTree*))0x8A24F0)(this);
 	}
+
+	AuxQuadTree(const Entity* owner);	//	@89F430
 };
+
+static_assert(sizeof(AuxQuadTree) == AUXQUADTREE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("AuxQuadTree"));

@@ -9,16 +9,12 @@ float& Renderer::RatioXY = *(float*)0xA119F4;
 int& Renderer::_A08704 = *(int*)0xA08704;
 int& Renderer::_A0870C = *(int*)0xA0870C;
 int& Renderer::_A0872C = *(int*)0xA0872C;
-
+Scene_Buffer2& Renderer::Buffer_A08704 = *(Scene_Buffer2*)0xA08704;
 ScreenProperties& Renderer::g_ScreenProperties = *(ScreenProperties*)0xA08810;
 
 void Renderer::CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, Vector3<float>* buffers)
 {
 	patch(0xA35E04, this, 4);
-
-	//void(__thiscall * _CreateRend)(Renderer * _this, void* _res, int _unk1, int _unk2, int _fsaa, int _buffc, int _unk4, void* _buff) = (void(__thiscall*)(Renderer*, void*, int, int, int, int, int, void*))0x421320;
-
-	//_CreateRend(this, resolution, unk1, unk2, fsaa, buffersCount, unk4, buffers);
 
 	m_TexturesList = List<GfxInternal_Dx9_Texture>();
 	m_fTimeDelta = 0.0f;
@@ -74,7 +70,21 @@ void Renderer::CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, in
 
 void Renderer::_41FDF0(Vector4<float>* size, int bufferIndex)
 {
-	(*(void(__thiscall*)(Renderer*, Vector4<float>*, int))0x41FDF0)(this, size, bufferIndex);
+	//(*(void(__thiscall*)(Renderer*, Vector4<float>*, int))0x41FDF0)(this, size, bufferIndex);
+	if (bufferIndex == -1) {
+		if (m_nUnkBuffersCount > 0) {
+			int ind = 0;
+			int ind_ = 0;
+			do {
+				*(Vector4f*)&m_pUnkBuffersArray[ind_ + 65] = *size;
+				++ind;
+				ind_ += 69;
+			} while (ind < m_nUnkBuffersCount);
+		}
+	}else{
+		*(Vector4f*)&m_pUnkBuffersArray[69 * bufferIndex + 65] = *size;
+	}
+
 }
 
 void Renderer::_SetBufferStateByIndex(int state, int index)

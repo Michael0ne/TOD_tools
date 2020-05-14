@@ -11,6 +11,8 @@ namespace Audio {
 
 #define STREAMEDSOUNDBUFFERS_CLASS_SIZE 300
 
+	class DieselPower;
+
 	//	TODO: better name.
 	struct SoundBufferInstance
 	{
@@ -42,7 +44,7 @@ namespace Audio {
 		BYTE m_bSound;
 		int	field_14;
 		int m_nSoundSystem;
-		int	field_1C;
+		int m_nSpeakerConfig;
 		int	field_20;
 		int	field_24;
 		int	field_28;
@@ -50,11 +52,11 @@ namespace Audio {
 		int	field_30;
 		int	field_34;
 		int	field_38;
-		int	field_3C;
+		int m_nMonoStreamsTotal;
 		int	field_40;
 		void* (__stdcall* m_GenericSoundLibMethods)();
 		int* field_48;
-		void* (__cdecl* m_pDieselPowerMethods)();
+		DieselPower* m_pDieselPower;
 		int	field_50;
 		int	field_54;
 		int* m_pUnkObjPtr2;
@@ -62,7 +64,7 @@ namespace Audio {
 		int m_nUnkDieselPowerSoundsCount;
 		int	field_64;
 		int	field_68;
-		int* m_pUnkObjArrayPtr4;
+		int* m_pSoundBuffers;
 		int m_nAllocatedTotal;
 		int	field_74;
 		int	field_78;
@@ -126,7 +128,6 @@ namespace Audio {
 		{
 			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
 		}
-
 		void operator delete (void* ptr)
 		{
 			if (ptr)
@@ -165,7 +166,7 @@ namespace Audio {
 		float					GetDefaultVolumeForType(int nWhat);	//	@43D180
 		void					SetGlobalPause(bool bPause);	//	@43D1D0
 		void					nullsub_35();	//	@43D200
-		static void				GetSoundRenderer();	//	@43D280
+		static int				GetSoundRenderer();	//	@43D280
 		void					InitiDirectSound(char bUnk, int nSampleRate);	//	@43D310
 		void					SetListener3DPos(const Vector3<float>& vPos);	//	@43D560
 		void					SetListener3DOrient(const Quaternion<float>& orient);	//	@43D6F0
