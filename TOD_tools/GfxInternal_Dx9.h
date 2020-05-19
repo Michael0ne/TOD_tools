@@ -21,14 +21,14 @@ struct DisplayModeInfo {
 struct GfxInternal_Dx9_Vertex {
 	int field_0;
 	int field_4;
-	int field_8;
+	int m_FVF;
 	int field_C;
 	int field_10;
-	int m_nStride;
+	signed int m_nStride;
 	int field_18;
 	int field_1C;
 	int field_20;
-	int field_24;
+	IDirect3DVertexBuffer9* m_pVertexBuffer;
 };
 
 struct GfxInternal_Dx9_Struc10 {
@@ -62,8 +62,8 @@ protected:
 		char m_bDeviceResetIssued;
 		char field_9[3];
 		int field_C;
-		int field_10;
-		int field_14;
+		int field_10;	//	NOTE: could be value of how much primitives were drawn this frame.
+		int field_14;	//	NOTE: could be value of how many triangles were drawn this frame.
 		List<DisplayModeInfo> m_DisplayModesList;
 		union {
 			unsigned char m_bVertexShader11 : 1;
@@ -108,7 +108,7 @@ protected:
 		int field_1F8;
 		int field_1FC;
 		int field_200;
-		int m_nSamplerType;
+		int *m_nSamplerType;
 		int field_208;
 		int field_20C;
 		byte field_210[4];
@@ -9569,10 +9569,10 @@ protected:
 		ColorRGB m_ColorUnk;
 		int field_9690;
 		int m_nBlendMode;
-		int field_9698;
+		float field_9698;
 		int field_969C;
 		int m_nSamplerRate;
-		int field_96A4;
+		int *field_96A4;
 		int field_96A8;
 		int field_96AC;
 		int field_96B0;
@@ -9580,7 +9580,7 @@ protected:
 		char gap96B8[4];
 		float field_96BC;
 		int field_96C0;
-		int field_96C4;
+		int m_FVF;
 		int field_96C8;
 		int field_96CC;
 		int m_nRenderStateRop2Type;

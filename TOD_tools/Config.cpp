@@ -23,6 +23,7 @@
 #include "File.h"
 #include "LoadScreen.h"
 #include "Progress.h"
+#include "ZipArch.h"
 
 GameConfig::Config* g_Config = NULL;
 String Script::Filesystem = String();
@@ -529,7 +530,7 @@ namespace GameConfig {
 				g_CurrentLoadScreen->Init(NULL);
 
 			//	TODO: implementation!
-			if ((g_Progress = new Progress()) != NULL)
+			if (g_Progress = new Progress())
 				g_Progress->Init();
 		}
 
@@ -868,15 +869,15 @@ namespace GameConfig {
 		if (!Utils::IsFileAvailable(szZipPath))
 			return;
 
-		int currentSlotId = g_ZipSlotId;
-		int newSlotId = g_ZipSlotId++;
+		int currentSlotId = ZipArch::SlotId;
+		int newSlotId = ZipArch::SlotId++;
 
 		debug("Opening zip <%s> into slot %i\n", szZipPath, newSlotId);
 
 		int zipIndex = 16 * currentSlotId;
-		*g_ZipStatus[zipIndex] = (char)15;
+		*(unsigned char*)(&ZipArch::_A08628[zipIndex]->field_4) = (unsigned char)15;
 
-		g_ZipNames[currentSlotId]->Set(szZipPath);
+		ZipArch::ZipNames[currentSlotId]->Set(szZipPath);
 
 		File* ZipFile;
 		if (!Allocators::Released)

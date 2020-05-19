@@ -4,9 +4,9 @@
 
 #include "Types.h"
 #include "List.h"
-#include "StringsPool.h"
 #include "MemoryAllocators.h"
 #include "FileInternal.h"
+#include "StringsPool.h"
 
 namespace GameConfig {
 
