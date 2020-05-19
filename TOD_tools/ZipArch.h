@@ -11,10 +11,10 @@ struct ZipSlotInfo_fldC
 
 struct ZipSlotInfo
 {
-private:
-	int		field_0;
-	int		field_4;
-	int*	field_8;
+public:
+	int					field_0;
+	unsigned int		field_4;
+	int*				field_8;
 	ZipSlotInfo_fldC*	field_C;
 public:
 	String*				_4198F0(const char* hashStr);			//	@4198F0

@@ -88,6 +88,8 @@ public:
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
 
+	static int GetMessageId_Impl(const char* szMessage);	//	@872410
+
 	//	MATH OPERATIONS
 	static void Sin(Handler_Params<float, float, 1>& params) { params.output = (float)sin(params.input[0]); }
 	static void Cos(Handler_Params<float, float, 1>& params) { params.output = (float)cos(params.input[0]); }

@@ -52,123 +52,30 @@ public:
 	}
 
 	//	NOTE: used when String object passed by reference.
-	void Set(const char* str)
-	{
-		if (m_szString != &m_pEmpty && m_nBitMask < 0)
-			Allocators::MemoryAllocators::ReleaseMemory(m_szString, 0);
+	void Set(const char* str);
 
-		m_nLength = strlen(str);
-		m_nBitMask = 0x80000000 ^ (0x80000000 ^ (m_nLength + (m_nLength >> 1))) & 0x7FFFFFFF;
-
-		m_szString = (char*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(m_nBitMask & 0x7FFFFFFF);
-		m_nBitMask |= 0x80000000;
-
-		m_pEmpty = '\0';
-
-		strcpy(m_szString, str);
-	}
-
-	void Append(const char* str)
-	{
-		int _len = m_nLength;
-		int _len_str = strlen(str);
-		
-		m_nLength = _len + _len_str;
-
-		_AdjustBufferSize();
-
-		memcpy(&m_szString[_len], str, _len_str + 1);
-	}
+	void Append(const char* str);
 
 	inline void ToLowerCase()
 	{
-		if (!m_szString || m_szString == &m_pEmpty)
-			return;
-
-		int _ind = 0;
-		do {
-			if (m_szString[_ind] >= 65 && m_szString[_ind] <= 90)
-				m_szString[_ind] += 32;
-			_ind++;
-		} while (_ind < m_nLength);
+		char* s_ = m_szString;
+		while (*(s_++))
+			if (*s_ >= 65 && *s_ <= 90)
+				*s_ += 32;
 	}
 
-	bool Equal(const char* _str)	//	@40FE30
+	bool Equal(const char* _str);	//	@40FE30
+
+	static bool EqualIgnoreCase(const char* str1, const char* str2, unsigned int len);	//	@4177C0
+
+	String* Substring(String* outStr, int posStart, int length);	//	@409E90
+
+	inline void	ConvertBackslashes()	//	Always used as inlined function.
 	{
-		//	If base string is empty.
-		if (m_szString == &m_pEmpty && m_nBitMask < 0)
-			return false;
-
-		//	If strings have same mem address.
-		if (m_szString == _str)
-			return true;
-
-		//	If first character is null.
-		if (!*m_szString)
-			if (!*_str)
-				return true;
-			else
-				return false;
-
-		char* _base = m_szString;
-		char _char = *m_szString;
-		while (_char == *_str)
-		{
-			_char = (_base++)[1];
-			_str++;
-
-			if (!_char)
-				if (!*_str)
-					return true;
-				else
-					return false;
-		}
-
-		if (*m_szString)
-			return false;
-
-		if (!*_str)
-			return true;
-
-		return false;
-	}
-
-	static bool EqualIgnoreCase(const char* str1, const char* str2, unsigned int len)	//	@4177C0
-	{
-		if (!len)
-			return true;
-
-		char* str1_ = (char*)str1;
-		char* str2_ = (char*)str2;
-		unsigned int ind = 0;
-
-		while (true)
-		{
-			char str1_char = *str1_;
-			char str2_char = *str2_;
-
-			++str1_;
-			++str2_;
-			++ind;
-
-			if (!str1_char)
-				return str2_char == 0;
-
-			if (!str2_char || (str2_char & str1_char) & 0xDF)
-				break;
-
-			if (ind == len)
-				return true;
-		}
-
-		return false;
-	}
-
-	String* Substring(String* outStr, int posStart, int length)
-	{
-		String* (__thiscall * _Substr)(String * _this, String * _out, int _start, int _len) = (String * (__thiscall*)(String*, String*, int, int))0x409E90;
-
-		return _Substr(this, outStr, posStart, length);
+		char* strPtr = m_szString;
+		while (*(strPtr++))
+			if (*strPtr == '\\')
+				*strPtr = '/';
 	}
 
 	void Format(const char* format, ...);	//	@415300	NOTE: adapted to be String's class method.

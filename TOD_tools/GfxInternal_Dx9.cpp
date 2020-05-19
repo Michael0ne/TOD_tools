@@ -81,7 +81,6 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	m_pVertexBuffer = 0;
 	field_970C = 0;
 	field_9670 = -1;
-	field_96C4 = -1;
 	field_9674 = 0;
 	field_96C8 = 0;
 	field_9750 = 0;
