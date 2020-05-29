@@ -1,8 +1,4 @@
 #include "Config.h"
-#include "time.h"
-
-#include "Types.h"
-#include "Globals.h"
 
 #include "Blocks.h"
 #include "ScriptTypes.h"
@@ -22,13 +18,15 @@
 #include "Font.h"
 #include "File.h"
 #include "LoadScreen.h"
-#include "Progress.h"
 #include "ZipArch.h"
+#include "Progress.h"
 
 GameConfig::Config* g_Config = NULL;
 String Script::Filesystem = String();
 String Script::ControlType = String();
 String Script::Region = String();
+
+//	var & 0x7FFFFF -- quick modulus operation - invert number if it's negative.
 
 namespace GameConfig {
 
@@ -49,7 +47,7 @@ namespace GameConfig {
 		if (szConfigFilename && *szConfigFilename)
 			m_sConfigFilePath = String(szConfigFilename);
 		else
-			m_sConfigFilePath = String("/configpc.txt");
+			m_sConfigFilePath = String(CONFIG_CONFIGFILE);
 
 		//	Set gamename.
 		m_sGameName = String(CONFIG_GAMENAME);

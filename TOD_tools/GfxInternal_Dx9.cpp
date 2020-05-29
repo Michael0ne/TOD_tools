@@ -113,7 +113,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	for (int adapterIndex = 0; adapterIndex < adapterModesTotal; ++adapterIndex) {
 		memset(&adapterModes, 0, sizeof(adapterModes));
 		m_pDirect3D->EnumAdapterModes(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8, adapterMode, &adapterModes);
-		int ind = 0;
+		unsigned int ind = 0;
 
 		if (m_DisplayModesList.m_nCurrIndex > 0) {
 			DisplayModeInfo** mode = m_DisplayModesList.m_pElements;
@@ -146,7 +146,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 
 	debug("Kapow will use these modes when in full-screen:\n");
 
-	for (int i = 0; i < m_DisplayModesList.m_nCurrIndex; ++i)
+	for (unsigned int i = 0; i < m_DisplayModesList.m_nCurrIndex; ++i)
 		debug("%ix%i @ %iHz - format=%i, available=%i\n", 
 			m_DisplayModesList.m_pElements[i]->width,
 			m_DisplayModesList.m_pElements[i]->height,
@@ -168,7 +168,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 		if (GetRegistryResolution(mode)) {
 			if (m_DisplayModesList.m_nCurrIndex > 0) {
 				DisplayModeInfo** _modes = m_DisplayModesList.m_pElements;
-				int index = 0;
+				unsigned int index = 0;
 
 				while (true) {
 					if ((*_modes)->width == mode.width && (*_modes)->height == mode.height && (*_modes)->available)
@@ -211,7 +211,7 @@ const DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(int width, i
 		return nullptr;
 
 	DisplayModeInfo** mode = m_DisplayModesList.m_pElements;
-	int index = 0;
+	unsigned int index = 0;
 
 	while (true) {
 		if ((*mode)->width == width &&

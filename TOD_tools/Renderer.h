@@ -8,41 +8,30 @@
 
 class Scene_Buffer276
 {
-private:
-	Vector3<float> m_vUnkDimensionsVec_1;
+public:
+	Vector3<float> m_vRes_1;
 	int field_C;
 	int field_10;
 	int field_14;
-
-	Vector4f m_vRightVec;
-	Vector4f m_vUpVec;
-	Vector4f m_vInVec;
-	Quaternion<float> m_vUnkVec_1;
-
 	Vector4f m_vRightVec_1;
 	Vector4f m_vUpVec_1;
 	Vector4f m_vInVec_1;
-	Quaternion<float> m_vUnkVec_2;
-
-	int _pad;
-
+	Orientation m_vOrient_1;
 	Vector4f m_vRightVec_2;
 	Vector4f m_vUpVec_2;
 	Vector4f m_vInVec_2;
-	Quaternion<float> m_vUnkVec_3;
-
+	Orientation m_vOrient_2;
+	int field_98;
+	Vector4f m_vRightVec_3;
+	Vector4f m_vUpVec_3;
+	Vector4f m_vInVec_3;
+	Orientation m_vOrient_3;
 	int field_DC;
-
-	Vector4f m_vUnkVec_4;
-	//float m_fE0;
-	//float m_fE4;
-	//float m_fE8;
-	//float m_fEC;
-
-	Vector2<float> m_vUnkVec_5;
-	Vector2<float> m_vResolution;
+	Vector4f m_vDimens_1;
+	Vector2<float> m_vRes_2;
+	Vector2<float> m_vRes_3;
 	int field_100;
-	Vector4f m_unkColor;
+	Vector4f m_vPos_1;
 
 public:
 	Scene_Buffer276()
@@ -57,7 +46,10 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		if (Allocators::Released)
+			return nullptr;
+		else
+			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -69,15 +61,123 @@ public:
 	void	Init(const Vector3<float>& vDimensions);	//	@41FE80
 	inline void	SetResolution(const Vector2<float>& vResolution)
 	{
-		m_vResolution = vResolution;
+		m_vRes_3 = vResolution;
 	}
 };
 
 struct Scene_Buffer2
 {
 public:
-	int		field_0;	//	Colud be 0, 1 or 2. Maybe enum?
+	int		field_0;	//	Could be 0, 1 or 2. Maybe enum?
 	int		m_nIndex;	//	Always incremental from 0 to 27.
+};
+
+struct Scene_Buffer108
+{
+private:
+	int	field_0;
+	int	field_4;
+	int	field_8;
+	int	field_C;
+	int	field_10;
+	int	field_14;
+	int	field_18;
+	int	field_1C;
+	int	field_20;
+	int	field_24;
+	int	field_28;
+	int	field_2C;
+	int	field_30;
+	int	field_34;
+	int	field_38;
+	int	field_3C;
+	int	field_40;
+	int	field_44;
+	int	field_48;
+	int	field_4C;
+	int	field_50;
+	int	field_54;
+	int	field_58;
+	int	field_5C;
+	int	field_60;
+	int	field_64;
+	int	field_68;
+
+public:
+	void* operator new(size_t size)
+	{
+		if (Allocators::Released)
+			return nullptr;
+		else
+			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, true);
+	}
+
+	Scene_Buffer108()
+	{
+		debug("Scene_Buffer108 created at %X\n", this);
+	}
+
+	~Scene_Buffer108()
+	{
+		debug("Scene_Buffer108 destroyed!\n");
+	}
+
+	void	Init(unsigned int unk1, unsigned char unk2, unsigned int unk3);	//	@422330
+};
+
+struct Scene_Buffer68
+{
+private:
+	int	field_0;
+	int	field_4;
+	int	field_8;
+	int	field_C;
+	int	field_10;
+	int	field_14;
+	int	field_18;
+	int	field_1C;
+	int	field_20;
+	int	field_24;
+	int	field_28;
+	int	field_2C;
+	int	field_30;
+	int	field_34;
+	int	field_38;
+	int	field_3C;
+	int	field_40;
+
+public:
+	void* operator new(size_t size)
+	{
+		if (Allocators::Released)
+			return nullptr;
+		else
+			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+	}
+
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, true);
+	}
+
+	Scene_Buffer68()
+	{
+		debug("Scene_Buffer68 created at %X\n", this);
+	}
+
+	~Scene_Buffer68()
+	{
+		debug("Scene_Buffer68 destroyed!\n");
+	}
+
+	void	Init(const Scene_Buffer108& buf, unsigned int unk);	//	@4617D0
 };
 
 struct ScreenProperties
@@ -109,17 +209,16 @@ public:
 	void	SetWindowProperties(float width, float height, float ratio, float safearea);	//	@420D90
 };
 
-
 class Renderer
 {
 private:
 	char field_0[4];
 	List<GfxInternal_Dx9_Texture> m_TexturesList;
-	int field_14;
-	int* field_18;
-	int m_nUnkBuffersCount;
+	Scene_Buffer68* m_pBuffer68;
+	Scene_Buffer108* m_pBuffer108;
+	int m_BuffersCount;
 	int field_20;
-	Scene_Buffer276* m_pUnkBuffersArray;
+	Scene_Buffer276* m_pBuffersArray;
 	float m_fTimeDelta;
 	int m_nTimeMilliseconds;
 	int field_30;
@@ -136,11 +235,11 @@ public:
 
 	~Renderer()
 	{
-		if (m_nUnkBuffersCount > 0)
-			while (m_nUnkBuffersCount) {
-				if (&m_pUnkBuffersArray[m_nUnkBuffersCount])
-					delete& m_pUnkBuffersArray[m_nUnkBuffersCount];
-				m_nUnkBuffersCount--;
+		if (m_BuffersCount > 0)
+			while (m_BuffersCount) {
+				if (&m_pBuffersArray[m_BuffersCount])
+					delete& m_pBuffersArray[m_BuffersCount];
+				m_BuffersCount--;
 			}
 
 		debug("Renderer destroyed!\n");
@@ -148,7 +247,10 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		if (Allocators::Released)
+			return nullptr;
+		else
+			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
 	}
 
 	void operator delete(void* ptr)
