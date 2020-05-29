@@ -22,27 +22,24 @@ void Renderer::CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, in
 	m_nTimeMilliseconds = Performance::GetMilliseconds();
 	field_34 = 0;
 
-	if (!Allocators::Released)
-		if (g_RendererDx = new GfxInternal_Dx9())
-			g_RendererDx->Init(resolution, unk1, unk2, fsaa, 0);
+	g_RendererDx = new GfxInternal_Dx9();
+	g_RendererDx->Init(resolution, unk1, unk2, fsaa, 0);	//	No null pointer check intended.
 
 	field_20 = unk4;
-	m_nUnkBuffersCount = buffersCount;
+	m_BuffersCount = buffersCount;
 
-	if (!Allocators::Released)
-		m_pUnkBuffersArray = new Scene_Buffer276[buffersCount];
+	m_pBuffersArray = new Scene_Buffer276[buffersCount];
 
 	if (buffersCount > 0) {
 		Vector3<float>* buffers_ = buffers;
 		int index = 0;
 
 		do {
-			m_pUnkBuffersArray[index].Init(*buffers_);
+			m_pBuffersArray[index].Init(*buffers_);
+			m_pBuffersArray[index].SetResolution(Vector2<float>{g_RendererDx->m_nViewportWidth, g_RendererDx->m_nViewportHeight});
 
-			m_pUnkBuffersArray[index].SetResolution(Vector2<float>{g_RendererDx->m_nViewportWidth, g_RendererDx->m_nViewportHeight});
-
-			buffers_++;
-			index++;
+			++buffers_;
+			++index;
 			--buffersCount;
 		} while (buffersCount);
 	}
@@ -70,21 +67,14 @@ void Renderer::CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, in
 
 void Renderer::_41FDF0(Vector4<float>* size, int bufferIndex)
 {
-	//(*(void(__thiscall*)(Renderer*, Vector4<float>*, int))0x41FDF0)(this, size, bufferIndex);
-	if (bufferIndex == -1) {
-		if (m_nUnkBuffersCount > 0) {
-			int ind = 0;
-			int ind_ = 0;
-			do {
-				*(Vector4f*)&m_pUnkBuffersArray[ind_ + 65] = *size;
-				++ind;
-				ind_ += 69;
-			} while (ind < m_nUnkBuffersCount);
+	if (bufferIndex == -1)
+		if (m_BuffersCount > 0) {
+			unsigned char ind_ = 0;
+			while (++ind_ < m_BuffersCount)
+				m_pBuffersArray[ind_].m_vPos_1 = *size;
 		}
-	}else{
-		*(Vector4f*)&m_pUnkBuffersArray[69 * bufferIndex + 65] = *size;
-	}
-
+	else
+		m_pBuffersArray[bufferIndex].m_vPos_1 = *size;
 }
 
 void Renderer::_SetBufferStateByIndex(int state, int index)
@@ -94,33 +84,33 @@ void Renderer::_SetBufferStateByIndex(int state, int index)
 
 void Scene_Buffer276::Init(const Vector3<float>& vDimensions)
 {
-	m_vUnkDimensionsVec_1 = vDimensions;
-	field_14 = 1;
+	m_vRes_1 = vDimensions;
+
 	field_10 = 0;
+	field_14 = 1;
 	field_C = 0;
-
-	//	Init matricies (MVP?)
-	m_vRightVec = Builtin::m_RightVector;
-	m_vUpVec = Builtin::m_UpVector;
-	m_vInVec = Builtin::m_InVector;
-	m_vUnkVec_1 = Builtin::m_Orientation;
-	m_vRightVec_1 = Builtin::m_RightVector;
-	m_vUpVec_1 = Builtin::m_UpVector;
-	m_vInVec_1 = Builtin::m_InVector;
-	m_vUnkVec_2 = Builtin::m_Orientation;
-	m_vRightVec_2 = Builtin::m_RightVector;
-	m_vUpVec_2 = Builtin::m_UpVector;
-	m_vInVec_2 = Builtin::m_InVector;
-	m_vUnkVec_3 = Builtin::m_Orientation;
-
-	m_vUnkVec_4 = { 70.0f, 1.0f, 1.0f, 1000.0f };
-
 	field_DC = 0;
 	field_100 = 0;
 
-	m_unkColor = Builtin::m_vUnkColor;
+	m_vDimens_1 = { 70.0f, 1.0f, 1.0f, 1000.0f };
 
-	m_vUnkVec_5 = { 0.0f, 0.0f };
+	m_vRightVec_1 = Builtin::m_RightVector;
+	m_vUpVec_1 = Builtin::m_UpVector;
+	m_vInVec_1 = Builtin::m_InVector;
+	m_vOrient_1 = Builtin::m_Orientation;
+
+	m_vRightVec_2 = Builtin::m_RightVector;
+	m_vUpVec_2 = Builtin::m_UpVector;
+	m_vInVec_2 = Builtin::m_InVector;
+	m_vOrient_2 = Builtin::m_Orientation;
+
+	m_vRightVec_3 = Builtin::m_RightVector;
+	m_vUpVec_3 = Builtin::m_UpVector;
+	m_vInVec_3 = Builtin::m_InVector;
+	m_vOrient_3 = Builtin::m_Orientation;
+
+	m_vPos_1 = Builtin::m_vUnkColor;
+	memset(&m_vRes_2, 0, sizeof(m_vRes_2));
 }
 
 void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, float unk2)
@@ -157,4 +147,14 @@ void ScreenProperties::SetWindowProperties(float width, float height, float rati
 		m_fScreenSafeArea = safearea;
 
 	AdjustWindowScalings();
+}
+
+void Scene_Buffer108::Init(unsigned int unk1, unsigned char unk2, unsigned int unk3)
+{
+
+}
+
+void Scene_Buffer68::Init(const Scene_Buffer108& buf, unsigned int unk)
+{
+
 }

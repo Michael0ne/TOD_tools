@@ -11,6 +11,13 @@ namespace Audio {
 
 #define STREAMEDSOUNDBUFFERS_CLASS_SIZE 300
 
+	enum E_SOUND_SYSTEM_TYPE : unsigned int
+	{
+		UNKNOWN = 1,
+		DIRECT_SOUND = 2,
+		DIESELPOWER = 3
+	};
+
 	class DieselPower;
 
 	//	TODO: better name.
@@ -43,23 +50,23 @@ namespace Audio {
 		BYTE m_bGlobalPause;
 		BYTE m_bSound;
 		int	field_14;
-		int m_nSoundSystem;
+		E_SOUND_SYSTEM_TYPE m_nSoundSystem;
 		int m_nSpeakerConfig;
 		int	field_20;
 		int	field_24;
 		int	field_28;
-		int	field_2C;
-		int	field_30;
-		int	field_34;
+		int m_nDirectSoundChannels;
+		int m_nDirectSoundSampleRate;
+		int m_nDirectSoundBits;
 		int	field_38;
 		int m_nMonoStreamsTotal;
 		int	field_40;
-		void* (__stdcall* m_GenericSoundLibMethods)();
-		int* field_48;
+		LPDIRECTSOUND3DBUFFER m_pDirectSound3DBuffer;
+		LPDIRECTSOUNDBUFFER m_pDirectSoundBuffer;
 		DieselPower* m_pDieselPower;
 		int	field_50;
 		int	field_54;
-		int* m_pUnkObjPtr2;
+		LPDIRECTSOUND m_pDirectSound;
 		int* m_pUnkObjArrayPtr3;
 		int m_nUnkDieselPowerSoundsCount;
 		int	field_64;
@@ -162,12 +169,12 @@ namespace Audio {
 		void					InitDieselPower();	//	@43CE90
 		void					_43CFD0(int* pOut);	//	@43CFD0
 		int						_43D060(int nUnk);	//	@43D060
-		bool					InitPrimarySoundFormat(int nChannels, int nSampleRate, int nBits);	//	@43D0D0
+		void					SetDirectSoundBufferFormat(int nChannels, int nSampleRate, int nBits);	//	@43D0D0
 		float					GetDefaultVolumeForType(int nWhat);	//	@43D180
 		void					SetGlobalPause(bool bPause);	//	@43D1D0
 		void					nullsub_35();	//	@43D200
 		static int				GetSoundRenderer();	//	@43D280
-		void					InitiDirectSound(char bUnk, int nSampleRate);	//	@43D310
+		void					InitiDirectSound(char nChannels, int nSampleRate);	//	@43D310
 		void					SetListener3DPos(const Vector3<float>& vPos);	//	@43D560
 		void					SetListener3DOrient(const Quaternion<float>& orient);	//	@43D6F0
 		void					GetListener3DOrientation(Quaternion<float>& pOutOrient);	//	@43DFD0

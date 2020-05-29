@@ -122,7 +122,7 @@ namespace Allocators {
 
 	class Allocator
 	{
-	private:
+	public:
 		Allocator__vtable* lpVtbl;
 		void* m_pAllocatedSpacePtr;	//	Pointer to space allocated for this allocator
 		int m_nAllocatedSpaceSize;	//	In bytes
@@ -130,30 +130,20 @@ namespace Allocators {
 		SystemAllocator__vtable* m_pSystemAllocators;
 		char* m_szAllocatorName;
 		int m_nAllocatorIndex;
-		void* field_1C;
-		char field_20;
-		char field_21;
-		char field_22[2];
-		int m_nAllocationsTotal;
-		void* field_28;
-	};
-
-	class SystemSubAllocator
-	{
-	public:
-		SystemSubAllocator__vtable* lpVtbl;
-		void* m_pAllocatedSpacePtr;	//	Pointer to space allocated for this allocator
-		int m_nAllocatedSpaceSize;	//	In bytes
-		char field_C[4];
-		SystemAllocator__vtable* m_pSystemAllocators;
-		char* m_szAllocatorName;
-		int m_nAllocatorIndex;
-		int* field_1C;
+		void* field_1C;		//	Pointer to ALLOCATOR_DEFAULT.
 		char field_20;
 		char field_21;
 		char field_22[2];
 		int m_nAllocationsTotal;
 		int m_nInitialised;
+
+	public:
+		Allocator();	//	@47AB30
+	};
+
+	class SystemSubAllocator : public Allocator
+	{
+	public:
 		SystemSubAllocator_Unk__vtable* lpVtbl_Unk;
 		BestFitAllocator* m_pDefragmentingAllocator_1;
 		BestFitAllocator* m_pDefragmentingAllocator_2;
@@ -167,9 +157,12 @@ namespace Allocators {
 		int field_54;
 		int field_58;
 		int field_5C;
+
+		SystemSubAllocator();	//	@47AB90
 	public:
 		void* allocate(size_t size) {
-			return lpVtbl->Allocate(this, size);
+			//	TODO: proper virtual functions implementation!
+			return ((SystemSubAllocator__vtable*)lpVtbl)->Allocate(this, size);
 		}
 	};
 
@@ -224,6 +217,7 @@ namespace Allocators {
 		int field_118;
 		int field_11C;
 		int field_120;
+		int field_124;
 	};
 
 	class FirstFitSubAllocator
@@ -305,10 +299,14 @@ namespace Allocators {
 		int field_3C;
 	};
 
-	static const SystemAllocator__vtable* const SystemAllocatorsVtablePtr = (SystemAllocator__vtable*)0xA3AF98;
-	static int& SystemAllocatorsVtablePresent = *(int*)0xA3AF9C;
-	static int& Released = *(int*)0xA3AFBC;
-	static int& TotalInitialised = *(int*)0xA3B54C;
+	static SystemAllocator__vtable* SystemAllocatorsVtablePtr = (SystemAllocator__vtable*)0xA3AF98;
+	static int&		SystemAllocatorsVtableLoaded = *(int*)0xA3AF9C;
+	static bool&		Released = *(bool*)0xA3AFBC;
+	static int&		TotalInitialised = *(int*)0xA3B54C;
+	static void*	GetSystemAllocatorsVtable();	//	@4775C0
+	static void*	BufferPtr;	//	@A3B09C
+	static int&		_A3AFB8 = *(int*)0xA3AFB8;	//	@A3AFB8
+	static CRITICAL_SECTION& CriticalSection = *(CRITICAL_SECTION*)0xA3AFA0;	//	@A3AFA0
 
 	struct AllocatorsPtrsList {
 		SystemSubAllocator*	ALLOCATOR_DEFAULT;
@@ -346,6 +344,7 @@ namespace Allocators {
 
 		SystemSubAllocator	ALLOCATOR_DEFAULT;
 		BestFitAllocator ALLOCATOR_DEFRAGMENTING;
+		int		_pad;
 		PoolSubAllocator ALLOCATOR_COLLISION_CACHE_ENTRIES;
 		StackBasedSubAllocator ALLOCATOR_SCRATCHPAD;
 		BestFitAllocator ALLOCATOR_RENDERLIST;
@@ -355,9 +354,15 @@ namespace Allocators {
 		FrameBasedSubAllocator ALLOCATOR_MISSION_ASSETS;
 		FrameBasedSubAllocator ALLOCATOR_MAIN_ASSETS;
 
+		int		BestFitAllocatorValue;	//	Initialized to 16 and never changed.
+
+		static	unsigned int&	_A3B0C8;	//	@A3B0C8
 	public:
+		MemoryAllocators();	//	@478040
+		~MemoryAllocators();	//	@9B1AF0
+
 		static void ReleaseMemory(void* obj, bool);
-		static void DefragmentIfNecessary(int* unk);	//	@47B780
+		static void DefragmentIfNecessary(void* unk);	//	@47B780
 	};
 
 	static const MemoryAllocators* const g_Allocators = (MemoryAllocators*)0xA3B0CC;

@@ -1,18 +1,17 @@
 #pragma once
 
-#include "Entity.h"
-#include "GfxInternal_Dx9_Texture.h"
 #include "List.h"
 #include "MemoryAllocators.h"
 
 #define PROGRESS_CLASS_SIZE 112
 
-class Progress;
+class Entity;
+class GfxInternal_Dx9_Texture;
 
 struct Progress__vtable {
-	void(__thiscall* Destroy)(Progress* _this);
-	void(__thiscall* nullsub1)(Progress* _this);
-	void(__thiscall* UpdateProgress)(Progress* _this, int time, signed int);
+	void(__thiscall* Destroy)(int* _this);
+	void(__thiscall* nullsub1)(int* _this);
+	void(__thiscall* UpdateProgress)(int* _this, int time, signed int);
 };
 
 class Progress
@@ -40,8 +39,8 @@ private:
 	GfxInternal_Dx9_Texture* m_pTexture;
 	int* m_p60;
 	int* m_p64;
-	byte m_bEnabled;
-	byte field_69[3];
+	bool m_bEnabled;
+	unsigned char field_69[3];
 	int field_6C;
 
 public:

@@ -13,7 +13,13 @@ struct ZipSlotInfo
 {
 public:
 	int					field_0;
-	unsigned int		field_4;
+	//unsigned int		field_4;	//	bit field.
+	union {
+		unsigned char flag0 : 1;
+		unsigned char flag1 : 1;
+		unsigned char flag2 : 1;
+		unsigned char flag3 : 1;
+	} field_4;
 	int*				field_8;
 	ZipSlotInfo_fldC*	field_C;
 public:
@@ -29,3 +35,5 @@ public:
 	static ZipSlotInfo* _A08628[8];			//	@A08628
 	static int&			SlotId;				//	@A35DDC
 };
+
+static_assert(sizeof(ZipSlotInfo) == 0x10, MESSAGE_WRONG_CLASS_SIZE("ZipSlotInfo"));

@@ -209,6 +209,9 @@
     <ClInclude Include="ZipArch.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
+    <ClInclude Include="DumpTable.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -354,6 +357,9 @@
     </ClCompile>
     <ClCompile Include="ZipArch.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpTable.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

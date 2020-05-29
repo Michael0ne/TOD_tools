@@ -9639,7 +9639,10 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		if (Allocators::Released)
+			return nullptr;
+		else
+			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
 	}
 
 	void operator delete(void* ptr)

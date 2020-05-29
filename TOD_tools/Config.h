@@ -1,7 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
+#include "time.h"
 
+#include "Globals.h"
 #include "Types.h"
 #include "List.h"
 #include "MemoryAllocators.h"
@@ -14,6 +16,7 @@ namespace GameConfig {
 
 	#define CONFIG_GAMENAME "Total Overdose"
 	#define CONFIG_SAVEDIR	"/Total Overdose/"
+	#define CONFIG_CONFIGFILE "/configpc.txt"
 
 #ifdef INCLUDE_FIXES
 	#define CONFIG_MENU_RESOURCEID 103

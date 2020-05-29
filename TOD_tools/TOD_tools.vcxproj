@@ -128,6 +128,7 @@
     <ClInclude Include="CollisionList.h" />
     <ClInclude Include="CollisionProbe.h" />
     <ClInclude Include="DieselPowerSound.h" />
+    <ClInclude Include="DumpTable.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FileInternal.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="CollisionList.cpp" />
     <ClCompile Include="CollisionProbe.cpp" />
     <ClCompile Include="DieselPowerSound.cpp" />
+    <ClCompile Include="DumpTable.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FileInternal.cpp" />
