@@ -27,6 +27,9 @@ namespace Utils
 	static void(__cdecl* ExtractFilePath)(const char* inPath, char* outDirectory, char* outFilename, char* outExtension) = (void(__cdecl*)(const char*, char*, char*, char*))0x4088E0;
 	static String* (__cdecl* ExtractFilenameFromPath)(String* outFilename, const char* path) = (String * (__cdecl*)(String*, const char*))0x4093B0;
 	static void(__cdecl* GetResourcePathRelative)(String* outPath, String resourceName, int blockTypeIndex, const char* languageCode) = (void(__cdecl*)(String*, String, int, const char*))0x882DF0;	//	It'll return "<languageCode>/<resourceName>_<languageCode>.<blockTypeExtension>"
+	static bool (__cdecl* IsDirectoryValid)(const char* inPath) = (bool (__cdecl*)(const char*))0x418410;	//	NOTE: actual function at 437FD0.
+	static void (__cdecl* DeleteAllFilesInFolder)(const char* inPath) = (void (__cdecl*)(const char*))0x418B50;
+	static void (__cdecl* CreateDirectoryIfNotFound)(const char* inPath) = (void (__cdecl*)(const char*))0x4186F0;
 }
 
 namespace Control

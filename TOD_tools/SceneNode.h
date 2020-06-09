@@ -79,7 +79,7 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -99,4 +99,4 @@ public:
 
 extern SceneNode* g_SceneNode;
 
-static_assert(sizeof(SceneNode) == SCENENODE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("SceneNode"));
+static_assert(sizeof(SceneNode) == SCENENODE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SceneNode));

@@ -95,7 +95,7 @@ namespace Types {
 
 			void* operator new(size_t size)
 			{
-				return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+				return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 			}
 
 			void operator delete(void* ptr)
@@ -448,4 +448,4 @@ namespace Types {
 	}
 }
 
-static_assert(sizeof(Types::Resources::TypeInfo) == TYPEINFO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("TypeInfo"));
+static_assert(sizeof(Types::Resources::TypeInfo) == TYPEINFO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TypeInfo));

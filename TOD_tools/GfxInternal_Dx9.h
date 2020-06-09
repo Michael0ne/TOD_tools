@@ -9639,10 +9639,7 @@ public:
 
 	void* operator new(size_t size)
 	{
-		if (Allocators::Released)
-			return nullptr;
-		else
-			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -9678,4 +9675,4 @@ public:
 
 extern GfxInternal_Dx9* g_RendererDx;
 
-static_assert(sizeof(GfxInternal_Dx9) == GFXINTERNALDX9_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("GfxInternal_Dx9"));
+static_assert(sizeof(GfxInternal_Dx9) == GFXINTERNALDX9_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(GfxInternal_Dx9));

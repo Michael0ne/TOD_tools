@@ -1,3 +1,16 @@
+/*
+ *
+ *	Hello...
+ *
+ *	If you're here and willing to help, please, take time to explore the code already written
+ *	and also reference IDB file before any changes.
+ *
+ *	Some terms used in code:
+ *	TODO -- things that need to be done sometime (sooner the better);
+ *	NOTE -- a note, obviously, explaining why stuff is like that;
+ *	FIXME -- uh-oh, this code MUST be fixed as soon as possible.
+ *
+*/
 #pragma once
 #pragma comment (lib, "Winmm.Lib")
 #pragma comment (lib, "dinput8.lib")
@@ -55,15 +68,21 @@ static void _nop(void* pAddress, DWORD size)
 	}
 }
 
-// by SilentPL
+// by SilentPL (https://github.com/CookiePLMonster)
 #define PATCH_NOTHING	0x00
 #define PATCH_CALL		0xE8
+#define PATCH_JUMP_SHORT 0xEB
 #define PATCH_JUMP		0xE9
 
+//	TODO: add version for 2 byte "jmp near short".
 static void hook (DWORD address, void * function, BYTE type) {
 	BYTE * patch = (BYTE *)address;
 	if (type) *patch = type;	// JMP
-	*(DWORD *)(patch+1) = ((DWORD)function-(address+5));	
+//	if (type != PATCH_JUMP_SHORT)
+	*(DWORD*)(patch + 1) = ((DWORD)function - (address + 5));
+//	else
+//		if (((int)function - address) > (char)-127 && ((int)function - address) < (char)127)
+//			*(char*)(patch + 1) = (char)((int)function - address);
 }
 
 #define patch(addr, data, size) _patch((void*)(addr), (DWORD)(data), (size))

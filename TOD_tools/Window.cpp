@@ -118,7 +118,6 @@ void Window::SetWindowPosNoCopyBits(tagPOINT* newPos)
 	SetWindowPos(m_hWindow, 0, NewRect.left, NewRect.top, 0, 0, SWP_NOCOPYBITS);
 }
 
-//	TODO: fix. This crashes the game now!
 void Window::UpdateVisibility()
 {
 	bool	bWindowVisible = true;
@@ -188,8 +187,7 @@ int	Window::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
 	}
 }
 
-//	TODO: fix. This crashes the game now!
-int GetSystemLanguageCode()
+int CALLBACK GetSystemLanguageCode()
 {
 	CHAR	LocaleData;
 	int		nLanguageCode = 0;

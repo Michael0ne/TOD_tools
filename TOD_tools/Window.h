@@ -60,54 +60,30 @@ public:
 	LONG				m_nWindowTop;
 
 public:
-	//	>> 43B930
-	void						QuitGame() { m_bQuitRequested = true; }
-	//	>> 43B950
-	bool						ProcessMessages();
-	//	>> 43B9C0
-	void						SetMenuClickCallback(int (__stdcall* pCallback)(WPARAM)) {m_pMenuItemClickedCallback = pCallback;};
-	//	>> 43B9D0
-	void						SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution);
-	//	>> 43B9F0
-	void						SetWindowResolutionDontMove(const D3DDISPLAYMODE& resolution);
-	//	>> 43BA70
-	void						_GetWindowRect(Vector2<LONG>& outRect);
-	//	>> 43BAD0
-	void						GetTopCorner(Vector2<LONG>& outRect);
-	//	>> 43BB00
-	void						GetWindowCenterRelative(Vector2<LONG>& outRect);
-	//	>> 43BB40
-	void						GetClientCenterRelative(Vector2<LONG>& outRect);
-	//	>> 43BB80
-	void						_SetWindowPos(Vector2<int>& pos);
-	//	>> 43BBA0
-	void						SetWindowPosNoCopyBits(tagPOINT *newPos);
-	//	>> 43BC30
-	void						UpdateVisibility();
-	//	>> 43BCA0
-	void						SetCursorReleased(bool bReleased);
-	//	>> 43BD50
-	int							GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type);
-	//	>> 43BF70
-	int							GetCoverdemoPlayMode() { return 0; };
-	//	>> 43BF80
-	int							GetCoverdemoInactiveTimeoutSec() { return MAXINT; }
-	//	>> 43BF90
-	long						GetCoverdemoGameplayTimeoutSec() { return MAXLONG; }
-	//	>> 43C230
-	void						Release();
-	//	>> 43C2C0
-	void						_CreateWindow(UINT16 nIconResourceId);
-	//	>> 43C4A0
-	void						Process(bool (*GameLoop)(void));
-	//	>> 43C570
-	ATOM						RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId);
-	//	>> 43C630
-	void						Init(const char* wndClassName, int unkFlags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId);
-	//	>> 43C850
-	BOOL						_SetTitle(LPCSTR lpString);
-	//	>> 43C8B0
-	void						SetDesktopDirectory(const char* szDesktopPath);
+	void						QuitGame() { m_bQuitRequested = true; }	//	@43B930
+	bool						ProcessMessages();	//	@43B950
+	void						SetMenuClickCallback(int (__stdcall* pCallback)(WPARAM)) {m_pMenuItemClickedCallback = pCallback;};	//	@43B9C0
+	void						SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution);	//	@43B9D0
+	void						SetWindowResolutionDontMove(const D3DDISPLAYMODE& resolution);	//	@43B9F0
+	void						_GetWindowRect(Vector2<LONG>& outRect);	//	@43BA70
+	void						GetTopCorner(Vector2<LONG>& outRect);	//	@43BAD0
+	void						GetWindowCenterRelative(Vector2<LONG>& outRect);	//	@43BB00
+	void						GetClientCenterRelative(Vector2<LONG>& outRect);	//	@43BB40
+	void						_SetWindowPos(Vector2<int>& pos);	//	@43BB80
+	void						SetWindowPosNoCopyBits(tagPOINT *newPos);	//	@43BBA0
+	void						UpdateVisibility();	//	@43BC30
+	void						SetCursorReleased(bool bReleased);	//	@43BCA0
+	int							GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type);	//	@43BD50
+	int							GetCoverdemoPlayMode() { return 0; };	//	@43BF70
+	int							GetCoverdemoInactiveTimeoutSec() { return MAXINT; }	//	@43BF80
+	long						GetCoverdemoGameplayTimeoutSec() { return MAXLONG; }	//	@43BF90
+	void						Release();	//	@43C230
+	void						_CreateWindow(UINT16 nIconResourceId);	//	@43C2C0
+	void						Process(bool (*GameLoop)(void));	//	@43C4A0
+	ATOM						RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId);	//	@43C570
+	void						Init(const char* wndClassName, int unkFlags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId);	//	@43C630
+	BOOL						_SetTitle(LPCSTR lpString);	//	@43C850
+	void						SetDesktopDirectory(const char* szDesktopPath);	//	@43C8B0
 
 public:
 	Window() {
@@ -134,7 +110,7 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -146,25 +122,17 @@ public:
 
 extern Window* g_Window;
 
-//	>> 43BDC0 - ?
-int					GetSystemLanguageCode();
-//	>> 43BFB0
-void				FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize);
-//	>> 43C040
-void				IncompatibleMachineParameterError(int messageID, char bWarningIcon);
-//	>> 43C140
-void				SetAccessibilityFeatures(bool bCollect);
-//	>> 43C320
-LRESULT CALLBACK	WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-//	>> 43CB40
-int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
-//	>> 43CAE0
-void				GetUserDocumentsDir(String& outString);
-//	>> 439230
-void				FindIdFile();
+int	CALLBACK		GetSystemLanguageCode();	//	@43BDC0
+void				FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize);	//	@43BFB0
+void				IncompatibleMachineParameterError(int messageID, char bWarningIcon);	//	@43C040
+void				SetAccessibilityFeatures(bool bCollect);	//	@43C140
+LRESULT CALLBACK	WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);	//	@43C320
+int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);	//	@43CB40
+void				GetUserDocumentsDir(String& outString);	//	@43CAE0
+void				FindIdFile();	//	@439230
 
 #ifdef INCLUDE_FIXES
 int CALLBACK		MenuClickCallback(WPARAM wParam);
 #endif
 
-static_assert(sizeof(Window) == WINDOW_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Window"));
+static_assert(sizeof(Window) == WINDOW_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Window));

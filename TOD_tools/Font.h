@@ -46,7 +46,7 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -64,4 +64,4 @@ public:
 
 extern Font* g_Font;
 
-static_assert(sizeof(Font) == FONT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Font"));
+static_assert(sizeof(Font) == FONT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Font));

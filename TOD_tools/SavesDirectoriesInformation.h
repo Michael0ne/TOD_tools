@@ -39,7 +39,7 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete (void* ptr)
@@ -55,21 +55,8 @@ public:
 		m_sSaveFolderPath = String(szPath);
 	}
 
-	//	TODO: implementation!
-	bool	IsFormatted()	//	@43B0B0
-	{
-		bool(__thiscall * _IsFormatted)(SavesDirectoriesInformation * _this) = (bool(__thiscall*)(SavesDirectoriesInformation*))0x43B0B0;
-
-		return _IsFormatted(this);
-	}
-
-	//	TODO: implementation!
-	void	FormatCard()	//	@928840
-	{
-		void(__thiscall * _FormatCard)(SavesDirectoriesInformation * _this) = (void(__thiscall*)(SavesDirectoriesInformation*))0x928840;
-
-		_FormatCard(this);
-	}
+	bool	IsFormatted();	//	@43B0B0
+	bool	FormatCard();	//	@928840
 };
 
 extern SavesDirectoriesInformation* g_SavesDirsInfo[3];

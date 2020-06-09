@@ -18,4 +18,4 @@ private:
 	int field_28;
 };
 
-static_assert(sizeof(GfxInternal_Dx9_Texture) == 0x2C, MESSAGE_WRONG_CLASS_SIZE("GfxInternal_Dx9_Texture"));
+static_assert(sizeof(GfxInternal_Dx9_Texture) == 0x2C, MESSAGE_WRONG_CLASS_SIZE(GfxInternal_Dx9_Texture));

@@ -43,4 +43,4 @@ public:
 	void	Init();	//	@891E10
 };
 
-static_assert(sizeof(CollisionList) == COLLISIONLIST_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("CollisionList"));
+static_assert(sizeof(CollisionList) == COLLISIONLIST_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(CollisionList));

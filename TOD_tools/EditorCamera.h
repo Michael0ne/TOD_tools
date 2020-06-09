@@ -52,4 +52,4 @@ private:
 
 extern EditorCamera* g_EditorCamera;
 
-static_assert(sizeof(EditorCamera) == EDITORCAMERA_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("EditorCamera"));
+static_assert(sizeof(EditorCamera) == EDITORCAMERA_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(EditorCamera));

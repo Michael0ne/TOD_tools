@@ -1,5 +1,6 @@
 #include "Config.h"
 
+#include "Progress.h"
 #include "Blocks.h"
 #include "ScriptTypes.h"
 #include "Scratchpad.h"
@@ -19,12 +20,12 @@
 #include "File.h"
 #include "LoadScreen.h"
 #include "ZipArch.h"
-#include "Progress.h"
 
 GameConfig::Config* g_Config = NULL;
 String Script::Filesystem = String();
 String Script::ControlType = String();
 String Script::Region = String();
+Progress* g_Progress = nullptr;
 
 //	var & 0x7FFFFF -- quick modulus operation - invert number if it's negative.
 
@@ -976,21 +977,8 @@ namespace GameConfig {
 	{
 		String sDevPath = "E:\\Develop\\KapowSystems\\TOD1\\Libs\\Toolbox\\Functions.cpp";
 
-		//	Replace slashes.
-		int charind = 0;
-		do {
-			if (sDevPath.m_szString[charind] == '\\')
-				sDevPath.m_szString[charind] = '/';
-			charind++;
-		} while (charind < sDevPath.m_nLength);
-
-		//	To lower case.
-		charind = 0;
-		do {
-			if (sDevPath.m_szString[charind] >= 65 && sDevPath.m_szString[charind] <= 90)
-				sDevPath.m_szString[charind] += 32;
-			charind++;
-		} while (charind < sDevPath.m_nLength);
+		sDevPath.ConvertBackslashes();
+		sDevPath.ToLowerCase();
 
 		char* szKapSysStr = strstr(sDevPath.m_szString, "KapowSystems");
 

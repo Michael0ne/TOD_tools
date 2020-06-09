@@ -89,7 +89,7 @@ namespace Audio {
 
 		void* operator new (size_t size)
 		{
-			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
 		void operator delete(void* ptr)
 		{
@@ -111,4 +111,4 @@ namespace Audio {
 	extern DieselPower* g_DieselPower;
 }
 
-static_assert(sizeof(Audio::DieselPower) == AUDIO_DIESELPO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("DieselPower"));
+static_assert(sizeof(Audio::DieselPower) == AUDIO_DIESELPO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(DieselPower));

@@ -19,7 +19,7 @@ public:
 		m_nLength = strlen(str);
 		m_nBitMask = (m_nBitMask ^ (m_nLength + (m_nLength >> 2))) & 0x7FFFFFFF ^ m_nBitMask;
 
-		m_szString = (char*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(m_nBitMask & 0x7FFFFFFF);
+		m_szString = (char*)Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(m_nBitMask & 0x7FFFFFFF);
 
 		m_pEmpty = NULL;
 
@@ -34,7 +34,7 @@ public:
 
 		m_nLength = _r.m_nLength;
 		m_nBitMask = _r.m_nBitMask;
-		m_szString = (char*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(m_nBitMask & 0x7FFFFFFF);
+		m_szString = (char*)Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(m_nBitMask & 0x7FFFFFFF);
 		m_pEmpty = NULL;
 
 		strcpy(m_szString, _r.m_szString);

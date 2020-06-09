@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "Entity.h"
 
+#define SOUNDSLOT_CLASS_SIZE 176
+
 class SoundSlot : Entity
 {
 private:
@@ -23,4 +25,4 @@ private:
 	float m_fDopplerFactor;
 };
 
-static_assert(sizeof(SoundSlot) == 0xB0, MESSAGE_WRONG_CLASS_SIZE("SoundSlot"));
+static_assert(sizeof(SoundSlot) == SOUNDSLOT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SoundSlot));

@@ -48,4 +48,4 @@ public:
 	void Init(unsigned int size);	//	@8AADA0
 };
 
-static_assert(sizeof(RewindBuffer) == REWINDBUFFER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("RewindBuffer"));
+static_assert(sizeof(RewindBuffer) == REWINDBUFFER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(RewindBuffer));

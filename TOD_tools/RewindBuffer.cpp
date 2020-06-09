@@ -13,7 +13,7 @@ void RewindBuffer::Init(unsigned int size)
 
 	//	NOTE: figure out allocator number?
 	if (!Allocators::Released)
-		m_pBuffer = (void*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		m_pBuffer = Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 
 	m_pUnkStr.Init();
 	m_pUnkPtrToUnkStr = m_pUnkStr.m_pUnkBuffer_Size32;

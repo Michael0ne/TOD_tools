@@ -80,9 +80,7 @@ namespace Input {
 
 		void* operator new(size_t size)
 		{
-			void* ptr = Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
-
-			return ptr;
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
 
 		void operator delete(void* ptr)
@@ -105,4 +103,4 @@ namespace Input {
 
 extern Input::Gamepad * g_InputGamepad[INPUT_GAMEPAD_MAX_GAMEPADS];
 
-static_assert(sizeof(Input::Gamepad) == INPUT_GAMEPAD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("InputGamepad"));
+static_assert(sizeof(Input::Gamepad) == INPUT_GAMEPAD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Input::Gamepad));

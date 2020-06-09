@@ -52,4 +52,4 @@ public:
 
 extern Light* g_Light;
 
-static_assert(sizeof(Light) == LIGHT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Light"));
+static_assert(sizeof(Light) == LIGHT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Light));

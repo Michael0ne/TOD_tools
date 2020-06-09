@@ -114,4 +114,4 @@ class RigidBody
 
 extern RigidBody* g_pRigidBody;
 
-static_assert(sizeof(RigidBody) == 0x244, MESSAGE_WRONG_CLASS_SIZE("RigidBody"));
+static_assert(sizeof(RigidBody) == 0x244, MESSAGE_WRONG_CLASS_SIZE(RigidBody));
