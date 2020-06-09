@@ -113,7 +113,7 @@ namespace GameConfig {
 
 		void* operator new(size_t size)
 		{
-			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
 
 		void operator delete(void* ptr)
@@ -204,9 +204,7 @@ namespace GameConfig {
 
 		void* operator new(size_t size)
 		{
-			void* ptr = Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
-
-			return ptr;
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
 		void operator delete(void* ptr)
 		{
@@ -281,4 +279,4 @@ namespace Script
 
 extern GameConfig::Config* g_Config;
 
-static_assert(sizeof(GameConfig::Config) == CONFIG_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Config"));
+static_assert(sizeof(GameConfig::Config) == CONFIG_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Config));

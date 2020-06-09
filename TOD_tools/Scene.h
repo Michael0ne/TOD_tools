@@ -227,7 +227,7 @@ public:
 public:
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -285,4 +285,4 @@ extern Scene* g_Scene;	//	@A3DCBC
 
 constexpr size_t scenesize = sizeof(Scene);
 
-static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Scene"));
+static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Scene));

@@ -38,6 +38,7 @@ namespace Audio {
 	 *------------------------------------------------------------
 	 * -----------------------------------------------------------
 	*/
+	//	FIXME: alignment is probably fucked up here, because lack of 'lpVtbl' member.
 	class StreamedSoundBuffers
 	{
 	private:
@@ -67,15 +68,15 @@ namespace Audio {
 		int	field_50;
 		int	field_54;
 		LPDIRECTSOUND m_pDirectSound;
-		int* m_pUnkObjArrayPtr3;
+		int* m_pSoundBuffers;
 		int m_nUnkDieselPowerSoundsCount;
 		int	field_64;
 		int	field_68;
-		int* m_pSoundBuffers;
+		int* m_pSoundBuffers_1;
 		int m_nAllocatedTotal;
 		int	field_74;
 		int	field_78;
-		int	field_7C;
+		int	field_7C;	//	NOTE: Below are 8 lists of 'StreamBuffers'.
 		int	field_80;
 		int	field_84;
 		int	field_88;
@@ -133,7 +134,7 @@ namespace Audio {
 
 		void* operator new (size_t size)
 		{
-			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
 		void operator delete (void* ptr)
 		{
@@ -207,4 +208,4 @@ namespace Audio {
 	extern StreamedSoundBuffers* g_StreamedSoundBuffers;
 }
 
-static_assert(sizeof(Audio::StreamedSoundBuffers) == STREAMEDSOUNDBUFFERS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("StreamedSoundBuffers"));
+static_assert(sizeof(Audio::StreamedSoundBuffers) == STREAMEDSOUNDBUFFERS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(StreamedSoundBuffers));

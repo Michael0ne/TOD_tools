@@ -34,10 +34,10 @@ public:
 	static Vector4f& CameraPosition;
 	static void StoreCameraMatrix();	//	@87E160
 
-	const float GetFov() const
+	inline const float GetFov() const
 	{
 		return m_fFov;
 	}
 };
 
-static_assert(sizeof(Camera) == CAMERA_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Camera"));
+static_assert(sizeof(Camera) == CAMERA_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Camera));

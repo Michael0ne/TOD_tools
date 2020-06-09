@@ -62,4 +62,4 @@ public:
 
 extern FileInternal* g_FileInternal;
 
-static_assert(sizeof(FileInternal) == FILEINTERNAL_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("FileInternal"));
+static_assert(sizeof(FileInternal) == FILEINTERNAL_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(FileInternal));

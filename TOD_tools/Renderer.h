@@ -46,10 +46,7 @@ public:
 
 	void* operator new(size_t size)
 	{
-		if (Allocators::Released)
-			return nullptr;
-		else
-			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -106,10 +103,7 @@ private:
 public:
 	void* operator new(size_t size)
 	{
-		if (Allocators::Released)
-			return nullptr;
-		else
-			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -155,10 +149,7 @@ private:
 public:
 	void* operator new(size_t size)
 	{
-		if (Allocators::Released)
-			return nullptr;
-		else
-			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -247,10 +238,7 @@ public:
 
 	void* operator new (size_t size)
 	{
-		if (Allocators::Released)
-			return nullptr;
-		else
-			return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -280,4 +268,4 @@ public:
 
 extern Renderer* g_Renderer;
 
-static_assert(sizeof(Renderer) == RENDERER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Renderer"));
+static_assert(sizeof(Renderer) == RENDERER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Renderer));

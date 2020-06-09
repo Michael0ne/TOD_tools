@@ -3,7 +3,6 @@
 #include "stdafx.h"
 
 #include "StringsPool.h"
-
 #include "Entity.h"
 #include "TextSlot.h"
 
@@ -40,4 +39,4 @@ class TextBox : Entity
 
 extern TextBox* g_TextBox;
 
-static_assert(sizeof(TextBox) == TEXTBOX_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("TextBox"));
+static_assert(sizeof(TextBox) == TEXTBOX_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TextBox));

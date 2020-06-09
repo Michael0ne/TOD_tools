@@ -88,9 +88,7 @@ namespace Input {
 
 		void* operator new(size_t size)
 		{
-			void* ptr = Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
-
-			return ptr;
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
 
 		void operator delete(void* ptr)
@@ -107,4 +105,4 @@ namespace Input {
 
 extern Input::Mouse* g_InputMouse;
 
-static_assert(sizeof(Input::Mouse) == INPUT_MOUSE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("InputMouse"));
+static_assert(sizeof(Input::Mouse) == INPUT_MOUSE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Input::Mouse));

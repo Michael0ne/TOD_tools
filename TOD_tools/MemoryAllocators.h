@@ -86,8 +86,8 @@ namespace Allocators {
 	struct Allocator__vtable {
 		void(__thiscall* Release)(Allocator* _this, bool freememory);	//	@478410
 		void*(__thiscall* Allocate)(Allocator* _this);	//	@478340	//	NOTE: This just calls next method (below).
-		void(__thiscall* stub3)(Allocator* _this);	//	@951271 pure virtual
-		void(__thiscall* stub4)(Allocator* _this);	//	@951271 pure virtual
+		void(__thiscall* stub3)(Allocator* _this);	//	@951271 pure virtual	//	NOTE: this calls next method (below).
+		void(__thiscall* stub4)(Allocator* _this);	//	@951271 pure virtual	//	NOTE: this methods seems to actually allocate stuff.
 		void(__thiscall* stub5)(Allocator* _this);	//	@951271 pure virtual
 		void(__thiscall* stub6)(Allocator* _this);	//	@951271 pure virtual
 		void(__thiscall* stub7)(Allocator* _this);	//	@951271 pure virtual
@@ -100,7 +100,7 @@ namespace Allocators {
 		char*(__thiscall* _GetField8)(Allocator* _this);	//	@419C40
 		int(__cdecl* _ReturnZero_1)();	//	@4783C0	//	NOTE: maybe pure virtual function?
 		int(__cdecl* _ReturnZero_2)();	//	@4783C0	//	NOTE: maybe pure virtual function?
-		const char*(__cdecl* ReturnUnknownStr)();	//	@47AB80
+		const char*(__cdecl* GetAllocatorName)();	//	@47AB80
 		void(__thiscall* _SetFieldC)(Allocator* _this, char unk);	//	@478380
 		signed int(__cdecl* _ReturnMinusOne_1)();	//	@478390
 		signed int(__cdecl* _ReturnMinusOne_2)();	//	@478390
@@ -139,6 +139,11 @@ namespace Allocators {
 
 	public:
 		Allocator();	//	@47AB30
+
+		void* allocate(size_t size)
+		{
+			return ((SystemSubAllocator__vtable*)lpVtbl)->Allocate((SystemSubAllocator*)this, size);	//	FIXME: this is wrong. Don't cast vtable directly, it's replaced when instantiating object.
+		}
 	};
 
 	class SystemSubAllocator : public Allocator
@@ -257,8 +262,33 @@ namespace Allocators {
 		int field_34;
 	};
 
-	class FrameBasedSubAllocator
+	//	TODO: don't really know size for this right now, but it's derived from Allocator.
+	class SequentialSubAllocator : public Allocator
 	{
+		int	field_0;
+		int	field_4;
+		int	field_8;
+		int	field_C;
+		int	field_10;
+		int	field_14;
+		int	field_18;
+		int	field_1C;
+		int	field_20;
+		int	field_24;
+		int	field_28;
+		int	field_2C;
+		int	field_30;
+		int	field_34;
+		int	field_38;
+		int field_3C;
+
+	public:
+		SequentialSubAllocator();	//	@47A420
+	};
+
+	class FrameBasedSubAllocator : public SequentialSubAllocator
+	{
+	public:
 		void* lpVtbl;
 		int field_4;
 		int field_8;
@@ -277,6 +307,8 @@ namespace Allocators {
 		int field_3C;
 		int field_40;
 		int field_44;
+	public:
+		FrameBasedSubAllocator();	//	@479EE0
 	};
 
 	class PoolSubAllocator
@@ -321,7 +353,18 @@ namespace Allocators {
 		BestFitAllocator* ALLOCATOR_DEFRAGMENTING;
 	};
 
-	static AllocatorsPtrsList* AllocatorsList = (AllocatorsPtrsList*)0xA3AFC0;
+	static Allocator* AllocatorsList[10] = {
+		(Allocator*)0xA3AFC0,	//	ALLOCATOR_DEFAULT
+		(Allocator*)0xA3AFC4,	//	ALLOCATOR_MAIN_ASSETS
+		(Allocator*)0xA3AFC8,	//	ALLOCATOR_MISSION_ASSETS
+		(Allocator*)0xA3AFCC,	//	ALLOCATOR_CUTSCENE_OR_REWIND
+		(Allocator*)0xA3AFD0,	//	ALLOCATOR_PLAYER_DATA
+		(Allocator*)0xA3AFD4,	//	ALLOCATOR_TEMP
+		(Allocator*)0xA3AFD8,	//	ALLOCATOR_RENDERLIST
+		(Allocator*)0xA3AFDC,	//	ALLOCATOR_SCRATCHPAD
+		(Allocator*)0xA3AFE0,	//	ALLOCATOR_COLLISION_CACHE_ENTRIES
+		(Allocator*)0xA3AFE4	//	ALLOCATOR_DEFRAGMENTING
+	};
 
 	static void* AllocatorBuffers[eAllocatorType::ALLOCATORS_TOTAL] = {
 		(void*)0xA3B0A0,
@@ -365,7 +408,7 @@ namespace Allocators {
 		static void DefragmentIfNecessary(void* unk);	//	@47B780
 	};
 
-	static const MemoryAllocators* const g_Allocators = (MemoryAllocators*)0xA3B0CC;
+	static  MemoryAllocators* g_Allocators = (MemoryAllocators*)0xA3B0CC;
 }
 
 //static_assert(sizeof(Allocators::MemoryAllocator) == 0x60, MESSAGE_WRONG_CLASS_SIZE("MemoryAllocator"));	//	TODO: what size check should be performed?

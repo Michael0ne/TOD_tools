@@ -79,7 +79,7 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -131,4 +131,4 @@ public:
 
 extern Builtin* g_Builtin;
 
-static_assert(sizeof(Builtin) == BUILTIN_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("Builtin"));
+static_assert(sizeof(Builtin) == BUILTIN_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Builtin));

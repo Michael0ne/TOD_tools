@@ -51,4 +51,4 @@ public:
 	AuxQuadTree(const Entity* owner);	//	@89F430
 };
 
-static_assert(sizeof(AuxQuadTree) == AUXQUADTREE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("AuxQuadTree"));
+static_assert(sizeof(AuxQuadTree) == AUXQUADTREE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(AuxQuadTree));

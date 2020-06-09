@@ -30,7 +30,7 @@ bool Scene::Update()
 	g_Scene->m_pBuffer_92_1->Reset();
 	g_Scene->m_pBuffer_92_2->Reset();
 
-	Allocators::MemoryAllocators::DefragmentIfNecessary(Allocators::AllocatorsList->ALLOCATOR_DEFRAGMENTING->field_1C);
+	Allocators::MemoryAllocators::DefragmentIfNecessary(Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFRAGMENTING]->field_1C);
 
 	auto timeStart = __rdtsc();
 

@@ -50,9 +50,7 @@ namespace Input {
 
 		void* operator new(size_t size)
 		{
-			void* ptr = Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
-
-			return ptr;
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
 
 		void operator delete(void* ptr)
@@ -69,4 +67,4 @@ namespace Input {
 
 extern Input::Keyboard * g_InputKeyboard;
 
-static_assert(sizeof(Input::Keyboard) == INPUT_KEYBOARD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("InputKeyboard"));
+static_assert(sizeof(Input::Keyboard) == INPUT_KEYBOARD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Input::Keyboard));

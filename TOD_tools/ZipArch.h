@@ -36,4 +36,4 @@ public:
 	static int&			SlotId;				//	@A35DDC
 };
 
-static_assert(sizeof(ZipSlotInfo) == 0x10, MESSAGE_WRONG_CLASS_SIZE("ZipSlotInfo"));
+static_assert(sizeof(ZipSlotInfo) == 0x10, MESSAGE_WRONG_CLASS_SIZE(ZipSlotInfo));

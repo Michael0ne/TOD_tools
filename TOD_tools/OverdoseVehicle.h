@@ -199,4 +199,4 @@ class OverdoseVehicle : RigidBody
 
 extern OverdoseVehicle* g_pOverdoseVehicle;
 
-static_assert(sizeof(OverdoseVehicle) == 0x5A0, MESSAGE_WRONG_CLASS_SIZE("OverdoseVehicle"));
+static_assert(sizeof(OverdoseVehicle) == 0x5A0, MESSAGE_WRONG_CLASS_SIZE(OverdoseVehicle));

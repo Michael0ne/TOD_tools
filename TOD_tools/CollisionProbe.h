@@ -52,4 +52,4 @@ public:
 	int field_120;
 };
 
-static_assert(sizeof(CollisionProbe) == COLLISIONPROBE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("CollisionProbe"));
+static_assert(sizeof(CollisionProbe) == COLLISIONPROBE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(CollisionProbe));

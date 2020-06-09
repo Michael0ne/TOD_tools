@@ -12,18 +12,18 @@ namespace Allocators {
 		//	NOTE: default constructor for ALLOCATOR_DEFAULT is called from here in code.
 		ALLOCATOR_DEFAULT.m_szAllocatorName = "ALLOCATOR_DEFAULT";
 		ALLOCATOR_DEFAULT.field_20 = 0;
-		AllocatorsList->ALLOCATOR_DEFAULT = &ALLOCATOR_DEFAULT;
+		AllocatorsList[eAllocatorType::ALLOCATOR_DEFAULT] = &ALLOCATOR_DEFAULT;
 		ALLOCATOR_DEFAULT.m_nAllocatorIndex = eAllocatorType::ALLOCATOR_DEFAULT;
 
-		AllocatorsList->ALLOCATOR_MAIN_ASSETS = nullptr;
-		AllocatorsList->ALLOCATOR_MISSION_ASSETS = nullptr;
-		AllocatorsList->ALLOCATOR_CUTSCENE_OR_REWIND = nullptr;
-		AllocatorsList->ALLOCATOR_PLAYER_DATA = nullptr;
-		AllocatorsList->ALLOCATOR_TEMP = nullptr;
-		AllocatorsList->ALLOCATOR_RENDERLIST = nullptr;
-		AllocatorsList->ALLOCATOR_SCRATCHPAD = nullptr;
-		AllocatorsList->ALLOCATOR_COLLISION_CACHE_ENTRIES = nullptr;
-		AllocatorsList->ALLOCATOR_DEFRAGMENTING = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_MAIN_ASSETS] = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_MISSION_ASSETS] = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_CUTSCENE_OR_REWIND] = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_PLAYER_DATA] = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_TEMP] = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_RENDERLIST] = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_SCRATCHPAD] = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_COLLISION_CACHE_ENTRIES] = nullptr;
+		AllocatorsList[eAllocatorType::ALLOCATOR_DEFRAGMENTING] = nullptr;
 
 		AllocatorBuffers[eAllocatorType::ALLOCATOR_MAIN_ASSETS] = nullptr;
 		AllocatorBuffers[eAllocatorType::ALLOCATOR_MISSION_ASSETS] = nullptr;
@@ -37,10 +37,17 @@ namespace Allocators {
 
 		BufferPtr = malloc(0x400);
 
-		//	NOTE: call to all class objects constructors here
-		(*(void (*)())0x478440)();
+		//	NOTE:	478440 inlined!
+		ALLOCATOR_MAIN_ASSETS.field_44 = 0;
+
+		if (!((unsigned char)ALLOCATOR_MAIN_ASSETS.field_44 & 1)) {
+			ALLOCATOR_MAIN_ASSETS.field_44 |= 1;
+
+			
+		}
 
 		_A3AFB8 = 0xABCDEF;
+		
 		InitializeCriticalSection(&CriticalSection);
 	}
 
@@ -49,11 +56,12 @@ namespace Allocators {
 		if (BufferPtr)
 			free(BufferPtr);
 
-		//int index = 0;
-		//do {
-			//if (AllocatorsList[index])
-				//((Allocator*)AllocatorsList[index]).m_pSystemAllocators->free(AllocatorBuffers[index + 1]);
-		//} while (index < 9);
+		unsigned int index = 0;
+		do {
+			if (AllocatorsList[index + 1])
+				AllocatorsList[index + 1]->m_pSystemAllocators->free(AllocatorBuffers[index + 1]);
+			++index;
+		} while (index < 9);
 
 		Released = true;
 	}
@@ -101,6 +109,17 @@ namespace Allocators {
 
 		return (void*)SystemAllocatorsVtablePtr;
 	}
+
+	FrameBasedSubAllocator::FrameBasedSubAllocator()
+	{
+		//	field_64 = 0;
+	}
+
+	SequentialSubAllocator::SequentialSubAllocator()
+	{
+		field_24 = field_28 = field_2C = field_30 = field_34 = field_38 = field_3C = 0;
+	}
+
 }
 
 inline void PATCH_ALLOCATORS()

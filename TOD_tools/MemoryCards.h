@@ -4,6 +4,8 @@
 #include "StringsPool.h"
 #include "Entity.h"
 
+#define MEMORYCARDS_CLASS_SIZE 164
+
 class MemoryCards
 {
 private:
@@ -18,4 +20,4 @@ private:
 	int m_nSaveFileSize;
 };
 
-static_assert(sizeof(MemoryCards) == 0xA4, MESSAGE_WRONG_CLASS_SIZE("MemoryCards"));
+static_assert(sizeof(MemoryCards) == MEMORYCARDS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(MemoryCards));

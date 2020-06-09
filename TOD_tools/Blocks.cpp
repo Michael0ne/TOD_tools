@@ -24,7 +24,7 @@ int Blocks::GetFreeResourceTypeListItem(unsigned int index)	//	@875540
 		return 0;
 
 	TypeInfo** restype = &m_ResourceTypesList.m_pElements[index + 1];
-	int freeind = index + 1;
+	unsigned int freeind = index + 1;
 
 	while (!*restype) {
 		restype++;

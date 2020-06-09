@@ -43,7 +43,7 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(size);
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
 
 	void operator delete(void* ptr)
@@ -58,5 +58,5 @@ public:
 extern LoadScreen* g_LoadScreen;	//	@A3D7E4
 extern CurrentLoadScreen* g_CurrentLoadScreen;	//	@A3D7E0
 
-static_assert(sizeof(LoadScreen) == LOADSCREEN_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("LoadScreen"));
-static_assert(sizeof(CurrentLoadScreen) == LOADSCREEN_CURRENT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("CurrentLoadScreen"));
+static_assert(sizeof(LoadScreen) == LOADSCREEN_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(LoadScreen));
+static_assert(sizeof(CurrentLoadScreen) == LOADSCREEN_CURRENT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(CurrentLoadScreen));

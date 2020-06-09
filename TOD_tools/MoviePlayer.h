@@ -38,4 +38,4 @@ public:
 
 extern MoviePlayer* g_MoviePlayer;
 
-static_assert(sizeof(MoviePlayer) == MOVIEPLAYER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("MoviePlayer"));
+static_assert(sizeof(MoviePlayer) == MOVIEPLAYER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(MoviePlayer));

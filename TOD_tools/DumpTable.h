@@ -30,4 +30,4 @@ public:
 
 };
 
-static_assert(sizeof(DumpTable_Item) == DUMPTABLE_ELEMENT_LIST_SIZE, MESSAGE_WRONG_CLASS_SIZE("DumpTable_Item"));
+static_assert(sizeof(DumpTable_Item) == DUMPTABLE_ELEMENT_LIST_SIZE, MESSAGE_WRONG_CLASS_SIZE(DumpTable_Item));

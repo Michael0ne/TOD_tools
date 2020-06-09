@@ -15,6 +15,6 @@ void SceneNode::Init()
 	field_4C = 0;
 
 	if (!Allocators::Released)
-		if (m_pRewindBuffer = (RewindBuffer*)Allocators::AllocatorsList->ALLOCATOR_DEFAULT->allocate(sizeof(RewindBuffer)))
+		if (m_pRewindBuffer = (RewindBuffer*)Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(sizeof(RewindBuffer)))
 			m_pRewindBuffer->Init(REWINDBUFFER_DEFAULT_SIZE);
 }
