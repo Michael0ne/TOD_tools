@@ -1,6 +1,5 @@
 #include "Config.h"
 
-#include "Progress.h"
 #include "Blocks.h"
 #include "ScriptTypes.h"
 #include "Scratchpad.h"
@@ -25,7 +24,6 @@ GameConfig::Config* g_Config = NULL;
 String Script::Filesystem = String();
 String Script::ControlType = String();
 String Script::Region = String();
-Progress* g_Progress = nullptr;
 
 //	var & 0x7FFFFF -- quick modulus operation - invert number if it's negative.
 
@@ -250,7 +248,7 @@ namespace GameConfig {
 		if (m_pConfigurationVariables->IsVariableSet("language_mode"))
 			SetCountryCode(m_pConfigurationVariables->GetParamValueString("language_mode").m_szString);
 
-		Script::LanguageMode = String(*Script::CountryCodes[Script::LanguageStringsOffset]);
+		Script::LanguageMode = String(Script::CountryCodes[Script::LanguageStringsOffset]);
 
 		//	Create required devices - window, mouse, keyboard, gamepad.
 		if (!Allocators::Released) {
@@ -783,15 +781,6 @@ namespace GameConfig {
 
 		return _GetParamString(this, outStr, variableName);
 	}
-	/*
-	 *	int @410A30,
-	 *	float @410AC0,
-	 *	array[2] @410B50,
-	 *	vector2 @410BE0,
-	 *	vector4 @410C70,
-	 *	vector3 @410D90,
-	 *	string @410E30
-	*/
 
 	void Session_Variables::SetParamValue(const char* variableName, char* value)
 	{
@@ -917,9 +906,14 @@ namespace GameConfig {
 
 	void SetCountryCode(const char* szCode)
 	{
-		void(__cdecl * _SetCountryCode)(const char* _code) = (void(__cdecl*)(const char*))0x42E530;
+		unsigned int languageIndex = 0;
 
-		_SetCountryCode(szCode);
+		while (languageIndex++ < CONFIG_LANGUAGES) {
+			if (Script::CountryCodes[languageIndex] && strncmp(szCode, Script::CountryCodes[languageIndex], 2) == 0)
+				break;
+		}
+
+		Script::LanguageStringsOffset = languageIndex;
 	}
 
 	signed int GetRegionId(String* regionStr)

@@ -9,6 +9,7 @@
 #include "MemoryAllocators.h"
 #include "FileInternal.h"
 #include "StringsPool.h"
+#include "Progress.h"
 
 namespace GameConfig {
 
@@ -17,6 +18,7 @@ namespace GameConfig {
 	#define CONFIG_GAMENAME "Total Overdose"
 	#define CONFIG_SAVEDIR	"/Total Overdose/"
 	#define CONFIG_CONFIGFILE "/configpc.txt"
+	#define CONFIG_LANGUAGES 6
 
 #ifdef INCLUDE_FIXES
 	#define CONFIG_MENU_RESOURCEID 103
@@ -245,13 +247,21 @@ namespace Script
 	static bool& RelaxBuildVersionCheck = *(bool*)0xA5D5B0;
 	static int IconResourceId;
 	static int& LanguageStringsOffset = *(int*)0xA35E28;
-	static const char** CountryCodes[6] = {
+	/*static const char** CountryCodes[6] = {
 		(const char**)0xA089BC,	//	UK
 		(const char**)0xA089C0,	//	FR
 		(const char**)0xA089C4,	//	IT
 		(const char**)0xA089C8,	//	DE
 		(const char**)0xA089CC,	//	ES
 		(const char**)0xA089D0	//	DK
+	};*/
+	static const char* CountryCodes[CONFIG_LANGUAGES] = {
+		"uk",
+		"fr",
+		"it",
+		"de",
+		"es",
+		"dk"
 	};
 	static bool& SavePlatformPS2 = *(bool*)0xA090C8;
 	static bool& CutsceneDisableAware = *(bool*)0xA3D892;

@@ -3,10 +3,11 @@
 namespace Allocators {
 
 	unsigned int& MemoryAllocators::_A3B0C8 = *(unsigned int*)0xA3B0C8;
+	bool Allocator::ms_bSystemAllocatorsVtablePresent = false;
+	Allocators::SystemAllocator__vtable* Allocator::ms_pSystemAllocatorsVtable = nullptr;
 
 	MemoryAllocators::MemoryAllocators()
 	{
-		//	This is a global instance of a class.
 		_A3B0C8 = 0;
 
 		//	NOTE: default constructor for ALLOCATOR_DEFAULT is called from here in code.
@@ -43,7 +44,7 @@ namespace Allocators {
 		if (!((unsigned char)ALLOCATOR_MAIN_ASSETS.field_44 & 1)) {
 			ALLOCATOR_MAIN_ASSETS.field_44 |= 1;
 
-			
+			//	TODO: !!!
 		}
 
 		_A3AFB8 = 0xABCDEF;
@@ -66,14 +67,22 @@ namespace Allocators {
 		Released = true;
 	}
 
-	void MemoryAllocators::ReleaseMemory(void* obj, bool _unk)
+	void MemoryAllocators::ReleaseMemory(void* obj, bool aligned)
 	{
-		debug("Memory release on: %X\n", obj);
+		if (Released)
+			return;
 
-		//	TODO: once MemoryAllocator class is finished - make proper implementation!
-		void(__cdecl * _Release)(void* _obj, bool __unk) = (void(__cdecl*)(void*, bool))0x4778D0;
+		EnterCriticalSection(&CriticalSection);
 
-		_Release(obj, _unk);
+		if (obj < (AllocatorsList + 0x20 + (TotalAllocators * 8) - 1))
+			while (obj < (AllocatorsList + 0x20 + (TotalAllocators-- * 8)));
+
+		if (aligned)
+			_A3AFEC[TotalAllocators - 1 * 2]->lpVtbl->FreeAligned(obj);
+		else
+			_A3AFEC[TotalAllocators - 1 * 2]->lpVtbl->Free(obj);
+
+		LeaveCriticalSection(&CriticalSection);
 	}
 
 	void MemoryAllocators::DefragmentIfNecessary(void* unk)
@@ -88,6 +97,17 @@ namespace Allocators {
 		memcpy(&lpVtbl, (const void*)0x9B7CD8, 4);	//	NOTE: this will be fixed automatically once proper inheritance model is ready.
 	}
 
+	Allocators::SystemAllocator__vtable* Allocator::GetSystemAllocatorsVtable()
+	{
+		if (Allocator::ms_bSystemAllocatorsVtablePresent)
+			return Allocator::ms_pSystemAllocatorsVtable;
+
+		Allocator::ms_bSystemAllocatorsVtablePresent = true;
+		Allocator::ms_pSystemAllocatorsVtable = (SystemAllocator__vtable*)0x9B750C;
+
+		return Allocator::ms_pSystemAllocatorsVtable;
+	}
+
 	Allocator::Allocator()
 	{
 		lpVtbl = (Allocator__vtable*)0x9B75C8;
@@ -99,15 +119,22 @@ namespace Allocators {
 		field_20 = 1;
 	}
 
-	void* GetSystemAllocatorsVtable()
+	void Allocator::Init(Allocator* allocator, unsigned int index, const char* name, int size)
 	{
-		if (SystemAllocatorsVtableLoaded & 1)
-			return (void*)SystemAllocatorsVtablePtr;
+		if (!allocator->m_pSystemAllocators)
+			allocator->m_pSystemAllocators = Allocator::GetSystemAllocatorsVtable();	//	NOTE: inline maybe?
 
-		SystemAllocatorsVtableLoaded |= 1;
-		SystemAllocatorsVtablePtr = (SystemAllocator__vtable*)0x9B750C;
+		AllocatorsList[index] = allocator;
+		AllocatorsList[index]->m_pSystemAllocators = allocator->m_pSystemAllocators;
+		allocator->m_nAllocatorIndex = index;
 
-		return (void*)SystemAllocatorsVtablePtr;
+		void* allocatedSpace = AllocatorsList[index]->m_pSystemAllocators->malloc((size + 64) & 0xFFFFFFC0);
+		AllocatorBuffers[index] = allocatedSpace;
+
+		allocator->lpVtbl->_SetFields_4_8_20(allocator, allocatedSpace, name, size);	//	TODO: better name
+
+		if (allocator->field_1C)
+			(**(void (__stdcall*)(int))allocator->field_1C)(0);	//	TODO: this is ugly! what is 'field_1C'?
 	}
 
 	FrameBasedSubAllocator::FrameBasedSubAllocator()
