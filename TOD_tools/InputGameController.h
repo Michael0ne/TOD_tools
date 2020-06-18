@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 
+#include "Types.h"
 #include "StringsPool.h"
 #include "MemoryAllocators.h"
 
@@ -47,13 +48,10 @@ namespace Input {
 		int field_7C;
 		int field_80;
 		String m_sModelName;
-		int field_94;
-		int field_98;
-		int field_9C;
-		int field_A0;
+		Orientation m_vAxisRotation;
 		int field_A4;
 		int field_A8;
-		int field_AC;
+		float m_fAC;	//	NOTE: this is related to axis rotation.
 		int field_B0;
 		int field_B4;
 		int field_B8;
@@ -92,6 +90,8 @@ namespace Input {
 		void	Init();	//	@43A2F0
 		void	ProcessController();	//	@439E00
 		void	Reset();
+		Orientation*	GetControllerAxisRotation(Orientation* outOrientation, unsigned int axisNumber);	//	@439710
+		char			_439970(int);	//	@439970 NOTE: could be 'GetKeyState'.
 
 		static void	Process();	//	@43A190
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
 #include "StringsPool.h"
 #include "SavesDirectoriesInformation.h"
 
@@ -8,6 +7,17 @@ class FileInternal;
 class SavePoint;
 
 #define SAVEPOINT_CLASS_SIZE 64
+
+struct SavePoint_File {
+	unsigned int	field_0;	//	NOTE: seems to be always equals to 9.
+	unsigned int	ScriptsListCRC;
+	unsigned int	BuildVersion;	//	NOTE: engine's build version is 1925. This maybe end for 'header' section.
+	unsigned int	field_C;	//	NOTE: initialized to 0 first time.
+	unsigned int	field_10;	//	NOTE: initialized to 0 first time.
+	unsigned int	field_14;	//	NOTE: initialized to 6.
+	unsigned int	RewindBuffer_PtrToStruc;	//	NOTE: initialized with pointer to unknown struct from RewindBuffer.
+	//	NOTE: next thing is unknown RewindBuffer Entity's script properties written to a file.
+};
 
 struct SavePoint__vtable {
 	void(__thiscall* Release)(SavePoint* _this, bool);	//	@86BFE0
@@ -21,7 +31,7 @@ struct SavePoint__vtable {
 	char(__thiscall* WriteBufferBlockAndInsertNewLine)(SavePoint* _this, int unk);	//	@86C3A0
 	int(__thiscall* Read)(SavePoint* _this, void* buffer, int size);	//	@86C420
 	int(__thiscall* WriteBuffer)(SavePoint* _this, int unk);	//	@86C540
-	int(__thiscall* WriteBufferWithSize)(SavePoint* _this, const char* buffer, int size);	//	@86C340
+	int(__thiscall* WriteBufferWithSize)(SavePoint* _this, const char* buffer, int size);	//	@86C340 NOTE: returns number of bytes written.
 	int(__thiscall* Seek)(SavePoint* _this, int position);	//	@86C570
 	bool(__thiscall* _86BFC0)(SavePoint* _this);	//	@86BFC0
 	bool(__thiscall* _86C700)(SavePoint* _this);	//	@86C700
@@ -41,6 +51,9 @@ private:
 	FileInternal* m_pSaveFileHandle;
 	int m_nUnkState;
 	String m_sUnkStr3;
+
+public:
+	static bool		WriteSavePointFileData(const SavePoint& savepoint, const struct RewindBuffer& rewbuff);	//	@873DA0
 };
 
 static_assert(sizeof(SavePoint) == SAVEPOINT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SavePoint));

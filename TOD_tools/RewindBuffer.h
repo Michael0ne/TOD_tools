@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 
+class Entity;
+
 struct RewindBuffer_UnkStr
 {
 	int field_0;
@@ -24,7 +26,7 @@ private:
 	int field_C;
 	RewindBuffer_UnkStr m_pUnkStr;
 	void* m_pUnkPtrToUnkStr;
-	int field_20;
+	Entity* field_20;
 
 public:
 	RewindBuffer()
