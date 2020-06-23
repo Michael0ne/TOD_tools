@@ -61,6 +61,9 @@ private:
 	int field_90;
 	int field_94;
 
+private:
+	int			_GetMessageId(const char* szMessage);	//	@872360
+
 public:
 	Builtin() {
 		m_MethodsList = List<Builtin_Handler>();
@@ -87,8 +90,6 @@ public:
 		if (ptr)
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
-
-	static int GetMessageId_Impl(const char* szMessage);	//	@872410
 
 	//	MATH OPERATIONS
 	static void Sin(Handler_Params<float, float, 1>& params) { params.output = (float)sin(params.input[0]); }
@@ -117,6 +118,11 @@ public:
 	static void Rand_Seed(Handler_Params<int, int, 1>& params) { Random__Init(&params.input[0]); }
 	static void Rand_Integer(Handler_Params<int, int, 1>& params) { params.output = Random__Integer(params.input[0]); }
 	static void Rand_Number(Handler_Params<float, int, 1>& params) { params.output = Random__Number(); }
+
+	void		GetEditorActive(int* outActive);	//	@4853D0 NOTE: this always returns 0, maybe modify to allow editor be enabled?
+
+	int			GetMessageId_Impl(const char* msg);	//	@872410
+	void		GetMessageId(Handler_Params<int, const char*, 1>& params) { params.output = GetMessageId_Impl(params.input[0]); }	//	@488040
 
 	static const Vector4f& m_ZeroVector;
 	static const Vector4f& m_RightVector;

@@ -16,7 +16,7 @@ struct Database_Entry {
 
 void processFile(FILE* filePtr)
 {
-	FILE* fileOutPtr = fopen("database.bin.txt", "w");
+	FILE* fileOutPtr = fopen("entities.txt", "w");
 
 	if (!fileOutPtr) {
 		printf("[ERROR] Could not create and open outer file!\n");
@@ -33,32 +33,39 @@ void processFile(FILE* filePtr)
 	fread(&header, sizeof(header), 1, filePtr);
 
 	//	Output header.
-	printf("[INFO]\tTotal entries: %d\n", header.m_nEntriesTotal);
+	printf("[INFO]\tTotal global entities: %u\n", header.m_nEntriesTotal);
 
 	unsigned int entriesFound = 0;
+	char buffer[MAX_PATH];
+	memset(&buffer, 0, sizeof(buffer));
 
 	while (!feof(filePtr)) {
-		BYTE len = 0;
+		if (entriesFound == header.m_nEntriesTotal) {
+			printf("[INFO]\tFinished reading total %u out of %u global entities.\n", entriesFound, header.m_nEntriesTotal);
+
+			unsigned int cmds = 0;
+			fread(&cmds, 4, 1, filePtr);
+
+			printf("[INFO]\tTotal commands: %u\n", cmds);
+
+			fclose(fileOutPtr);
+
+			fileOutPtr = fopen("commands.txt", "w");
+			rewind(fileOutPtr);
+		}
+
+		unsigned char len = 0;
 		fread(&len, 1, 1, filePtr);
 		if (len == 0) continue;
 
-		char* buffer = (char*)malloc(len);
-		if (buffer == nullptr) continue;
-
 		fseek(filePtr, 3, SEEK_CUR);
 		fread(buffer, len, 1, filePtr);
-
-		printf("[0x%x]\t%s\n", ftell(filePtr), buffer);
 
 		fputs(buffer, fileOutPtr);
 		fputs("\n", fileOutPtr);
 
 		entriesFound++;
-
-		free(buffer);
 	}
-
-	printf("[INFO]\tFound: %d entries.\n", entriesFound);
 
 	fclose(fileOutPtr);
 }
@@ -76,6 +83,8 @@ int main()
 	processFile(hFile);
 
 	fclose(hFile);
+
+	getchar();
 
 	return 1;
 }
