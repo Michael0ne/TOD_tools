@@ -30,6 +30,13 @@ namespace Utils
 	static bool (__cdecl* IsDirectoryValid)(const char* inPath) = (bool (__cdecl*)(const char*))0x418410;	//	NOTE: actual function at 437FD0.
 	static void (__cdecl* DeleteAllFilesInFolder)(const char* inPath) = (void (__cdecl*)(const char*))0x418B50;
 	static void (__cdecl* CreateDirectoryIfNotFound)(const char* inPath) = (void (__cdecl*)(const char*))0x4186F0;
+
+	static inline void ToLowercase(char* str) {
+		char* str_ = str;
+		while (*(str_++))
+			if (*str_ >= 65 && *str_ <= 90)
+				*str_ += 32;
+	}
 }
 
 namespace Control

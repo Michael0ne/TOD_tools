@@ -1,10 +1,36 @@
 #include "Builtin.h"
+#include "Globals.h"
 
 Builtin* g_Builtin = NULL;
 
 int Builtin::GetMessageId_Impl(const char* szMessage)
 {
-	return (*(int (*)(const char*))0x872410)(szMessage);
+	//	Figure out where colon character is and cut out from beginning of string up to it's position.
+	unsigned int pos = 0;
+	while (pos < strlen(szMessage))
+		if (szMessage[pos] == ':')
+			break;
+
+	return _GetMessageId(&szMessage[pos]);
+}
+
+int Builtin::_GetMessageId(const char* szMessage)
+{
+	char* msg = (char*)szMessage;
+	Utils::ToLowercase(msg);
+
+	//	NOTE: this 'method' below used in many places and looks like just comparing string from 2nd and 3rd arguments.
+	int* var_0 = (*(int*(__thiscall*)(int*, int*, const String*))0x8729F0)((int*)0xA3CF08, (int*)0xA3CF10, &String(msg));
+
+	if (var_0 && var_0 + 4 != 0)
+		return *(var_0 + 4);
+	else
+		return -1;
+}
+
+void Builtin::GetEditorActive(int* outActive)
+{
+	*outActive = 0;
 }
 
 const Vector4f& Builtin::m_ZeroVector = *(Vector4f*)0x9B7084;

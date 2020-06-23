@@ -66,7 +66,7 @@ class Entity
 	__int16 field_10;
 	__int16 m_nOrder;
 	int m_nId;
-	int field_18;
+	int* field_18;	//	NOTE: this is pointer to unknown struct, used widely across all game code.
 	int field_1C;
 	Entity* (__cdecl* Create)(int allocatorId);
 	EntityPosition__vtbl* lpPositionVtable;
