@@ -36,7 +36,7 @@ struct FileInternal__vtable
 
 class FileInternal
 {
-private:
+public:
 	FileInternal__vtable* lpVtbl;
 	String m_sFileName;
 	File* m_pFileHandle;

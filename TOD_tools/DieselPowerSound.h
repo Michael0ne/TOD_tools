@@ -79,12 +79,12 @@ namespace Audio {
 	public:
 		DieselPower()
 		{
-			debug("Audio::DieselPower created at %X\n", this);
+			MESSAGE_CLASS_CREATED(DieselPower);
 		}
 
 		~DieselPower()
 		{
-			debug("Audio::DieselPower destroyed!\n");
+			MESSAGE_CLASS_DESTROYED(DieselPower);
 		}
 
 		void* operator new (size_t size)

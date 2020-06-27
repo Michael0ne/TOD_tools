@@ -38,6 +38,8 @@
 #include <dsound.h>			//	For DirectSound stuff.
 
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
+#define MESSAGE_CLASS_CREATED(x) debug(#x " created at %X\n", this)
+#define MESSAGE_CLASS_DESTROYED(x) debug(#x " destroyed!\n")
 
 extern HMODULE g_DirectInput;
 typedef HRESULT(__stdcall* DINPUT8CREATEORIGINAL)(HINSTANCE, DWORD, const IID&, LPVOID*, LPUNKNOWN);

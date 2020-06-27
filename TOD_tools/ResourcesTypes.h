@@ -70,6 +70,8 @@ namespace Types {
 		public:
 			TypeInfo()
 			{
+				MESSAGE_CLASS_CREATED(TypeInfo);
+
 				lpVtbl = nullptr;
 				m_sTypename = String();
 				lpTypeVtbl = nullptr;
@@ -82,15 +84,13 @@ namespace Types {
 				m_UnkBufferArray[0] = 0;
 				m_UnkBufferArray[1] = 0;
 				m_UnkBufferArray[2] = 0;
-
-				debug("Types::Resources::TypeInfo created at %X\n", this);
 			}
 
 			~TypeInfo()
 			{
-				m_sExtensionList.Erase();
+				MESSAGE_CLASS_DESTROYED(TypeInfo);
 
-				debug("Types::Resources::TypeInfo destroyed!\n");
+				m_sExtensionList.Erase();
 			}
 
 			void* operator new(size_t size)
@@ -125,12 +125,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_TEXTURE_NAME, (void * (__cdecl*)())0x853830);
 
-				debug("Types::Resources::Texture created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Texture);
 			}
 
 			~Texture()
 			{
-				debug("Types::Resources::Texture destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(Texture);
 			}
 
 			static void Init()
@@ -155,12 +155,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_FONT_NAME, (void* (__cdecl*)())0x85B350);
 
-				debug("Types::Resources::Font created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Font);
 			}
 
 			~Font()
 			{
-				debug("Types::Resources::Font destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(Font);
 			}
 
 			static void Init()
@@ -185,12 +185,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_TEXT_NAME, (void* (__cdecl*)())0x861BD0);
 
-				debug("Types::Resources::Text created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Text);
 			}
 
 			~Text()
 			{
-				debug("Types::Resources::Text destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(Text);
 			}
 
 			static void Init()
@@ -215,12 +215,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_MODEL_NAME, (void* (__cdecl*)())0x8581F0);
 
-				debug("Typeres::Resources::Model created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Model);
 			}
 
 			~Model()
 			{
-				debug("Typeres::Resources::Model destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(Model);
 			}
 
 			static void Init()
@@ -245,12 +245,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_FRAGMENT_NAME, (void* (__cdecl*)())0x85DE30);
 
-				debug("Types::Resources::Fragment created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Fragment);
 			}
 
 			~Fragment()
 			{
-				debug("Types::Resources::Fragment destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(Fragment);
 			}
 
 			static void Init()
@@ -275,12 +275,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_MOVIE_NAME, (void* (__cdecl*)())0x85BC40);
 
-				debug("Types::Resources::Movie created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Movie);
 			}
 
 			~Movie()
 			{
-				debug("Types::Resources::Movie destroyed!");
+				MESSAGE_CLASS_DESTROYED(Movie);
 			}
 
 			static void Init()
@@ -305,12 +305,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_CUTSCENE_NAME, (void* (__cdecl*)())0x916100);
 
-				debug("Types::Resources::Cutscene created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Cutscene);
 			}
 
 			~Cutscene()
 			{
-				debug("Types::Resources::Cutscene destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(Cutscene);
 			}
 
 			static void Init()
@@ -335,12 +335,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_SOUND_NAME, (void* (__cdecl*)())0x85C430);
 
-				debug("Types::Resources::Sound created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Sound);
 			}
 
 			~Sound()
 			{
-				debug("Types::Resources::Sound destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(Sound);
 			}
 
 			static void Init()
@@ -365,12 +365,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_STREAMEDSOUNDINFO_NAME, (void* (__cdecl*)())0x85CDA0);
 
-				debug("Types::Resources::StreamedSoundInfo created at %X\n", this);
+				MESSAGE_CLASS_CREATED(StreamedSoundInfo);
 			}
 
 			~StreamedSoundInfo()
 			{
-				debug("Types::Resources::StreamedSoundInfo destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(StreamedSoundInfo);
 			}
 
 			static void Init()
@@ -395,12 +395,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_ANIMATION_NAME, (void* (__cdecl*)())0x900EF0);
 
-				debug("Types::Resources::Animation created at %X\n", this);
+				MESSAGE_CLASS_CREATED(Animation);
 			}
 
 			~Animation()
 			{
-				debug("Types::Resources::Animation destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(Animation);
 			}
 
 			static void Init()
@@ -425,12 +425,12 @@ namespace Types {
 			{
 				RegisterBase(TYPERES_MESHCOLOR_NAME, (void* (__cdecl*)())0x85E950);
 
-				debug("Types::Resources::MeshColor created at %X\n", this);
+				MESSAGE_CLASS_CREATED(MeshColor);
 			}
 
 			~MeshColor()
 			{
-				debug("Types::Resources::MeshColor destroyed!\n");
+				MESSAGE_CLASS_DESTROYED(MeshColor);
 			}
 
 			static void Init()

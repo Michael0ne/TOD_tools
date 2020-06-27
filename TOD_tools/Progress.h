@@ -46,12 +46,12 @@ private:
 public:
 	Progress()
 	{
-		debug("Progress created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Progress);
 	}
 
 	~Progress()
 	{
-		debug("Progress destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Progress);
 	}
 
 	void* operator new (size_t size)

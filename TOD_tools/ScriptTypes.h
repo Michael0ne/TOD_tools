@@ -283,18 +283,18 @@ namespace ScriptTypes
 	public:
 		ScriptType()
 		{
+			MESSAGE_CLASS_CREATED(ScriptType);
+
 			lpVtbl = nullptr;
 			m_sTypeName = String();
 			m_nTypeId = 0;
 			m_nSizeInBytes = 0;
 			m_nId = 0;
-
-			debug("ScriptTypes::ScriptType created at %X\n", this);
 		}
 
 		~ScriptType()
 		{
-			debug("ScriptTypes::ScriptType destroyed!\n");
+			MESSAGE_CLASS_DESTROYED(ScriptType);
 		}
 
 		void* operator new (size_t size)

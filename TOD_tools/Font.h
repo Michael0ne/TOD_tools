@@ -36,12 +36,12 @@ private:
 public:
 	Font()
 	{
-		debug("Font created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Font);
 	}
 
 	~Font()
 	{
-		debug("Font destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Font);
 	}
 
 	void* operator new (size_t size)

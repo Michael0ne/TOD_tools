@@ -31,6 +31,8 @@ private:
 public:
 	RewindBuffer()
 	{
+		MESSAGE_CLASS_CREATED(RewindBuffer);
+
 		m_pBuffer = nullptr;
 		m_nChunks = 0;
 		m_nSize = 0;
@@ -38,13 +40,11 @@ public:
 		m_pUnkStr = RewindBuffer_UnkStr();
 		m_pUnkPtrToUnkStr = nullptr;
 		field_20 = 0;
-
-		debug("RewindBuffer created at %X\n", this);
 	}
 
 	~RewindBuffer()
 	{
-		debug("RewindBuffer destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(RewindBuffer);
 	}
 
 	void Init(unsigned int size);	//	@8AADA0

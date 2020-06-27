@@ -50,6 +50,9 @@ public:
 	int field_118;
 	int field_11C;
 	int field_120;
+
+public:
+	static List<CollisionProbe>&		ms_CollisionProbesList;	//	@A3DD4C
 };
 
 static_assert(sizeof(CollisionProbe) == COLLISIONPROBE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(CollisionProbe));

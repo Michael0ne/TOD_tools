@@ -87,6 +87,8 @@ public:
 
 public:
 	Window() {
+		MESSAGE_CLASS_CREATED(Window);
+
 		m_sWindowTitle = String();
 		m_sUserDesktopPath = String();
 		m_pMenuItemClickedCallback = nullptr;
@@ -100,12 +102,11 @@ public:
 		m_unkInt10 = 0;
 		m_nWindowLeft = 0;
 		m_nWindowTop = 0;
-
-		debug("Window created at %X\n", this);
 	}
 
-	~Window() {
-		debug("Window destroyed!\n");
+	~Window()
+	{
+		MESSAGE_CLASS_DESTROYED(Window);
 	}
 
 	void* operator new(size_t size)

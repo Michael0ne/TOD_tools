@@ -124,12 +124,12 @@ namespace Audio {
 	public:
 		StreamedSoundBuffers()
 		{
-			debug("Audio::StreamedSoundBuffers created at %X\n", this);
+			MESSAGE_CLASS_CREATED(StreamedSoundBuffers);
 		}
 
 		~StreamedSoundBuffers()
 		{
-			debug("Audio::StreamedSoundBuffers destroyed!\n");
+			MESSAGE_CLASS_DESTROYED(StreamedSoundBuffers);
 		}
 
 		void* operator new (size_t size)

@@ -54,7 +54,7 @@ namespace Input {
 	public:
 		Mouse()
 		{
-			debug("Input::Mouse created at %X\n", this);
+			MESSAGE_CLASS_CREATED(Mouse);
 
 			for (int ind = 0; ind < 10; ind++)
 				m_nMouseButtons[ind] = 0;
@@ -83,7 +83,7 @@ namespace Input {
 
 		~Mouse()
 		{
-			debug("Input::Mouse destroyed!\n");
+			MESSAGE_CLASS_DESTROYED(Mouse);
 		}
 
 		void* operator new(size_t size)

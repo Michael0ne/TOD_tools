@@ -36,12 +36,12 @@ public:
 public:
 	Scene_Buffer276()
 	{
-		debug("Renderer::Scene_Buffer276 created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Scene_Buffer276);
 	}
 
 	~Scene_Buffer276()
 	{
-		debug("Renderer::Scene_Buffer276 destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Scene_Buffer276);
 	}
 
 	void* operator new(size_t size)
@@ -114,12 +114,12 @@ public:
 
 	Scene_Buffer108()
 	{
-		debug("Scene_Buffer108 created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Scene_Buffer108);
 	}
 
 	~Scene_Buffer108()
 	{
-		debug("Scene_Buffer108 destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Scene_Buffer108);
 	}
 
 	void	Init(unsigned int unk1, unsigned char unk2, unsigned int unk3);	//	@422330
@@ -160,12 +160,12 @@ public:
 
 	Scene_Buffer68()
 	{
-		debug("Scene_Buffer68 created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Scene_Buffer68);
 	}
 
 	~Scene_Buffer68()
 	{
-		debug("Scene_Buffer68 destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Scene_Buffer68);
 	}
 
 	void	Init(const Scene_Buffer108& buf, unsigned int unk);	//	@4617D0
@@ -221,19 +221,19 @@ public:
 
 	Renderer()
 	{
-		debug("Renderer created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Renderer);
 	}
 
 	~Renderer()
 	{
+		MESSAGE_CLASS_DESTROYED(Renderer);
+
 		if (m_BuffersCount > 0)
 			while (m_BuffersCount) {
 				if (&m_pBuffersArray[m_BuffersCount])
 					delete& m_pBuffersArray[m_BuffersCount];
 				m_BuffersCount--;
 			}
-
-		debug("Renderer destroyed!\n");
 	}
 
 	void* operator new (size_t size)

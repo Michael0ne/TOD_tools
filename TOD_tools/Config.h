@@ -70,6 +70,8 @@ namespace GameConfig {
 	public:
 		Session_Variables()
 		{
+			MESSAGE_CLASS_CREATED(Session_Variables);
+
 			field_0 = 0;
 			field_4 = 0;
 			field_8 = 0;
@@ -102,15 +104,13 @@ namespace GameConfig {
 
 			m_nTotalVariables = 0;
 			field_64 = 0;
-
-			debug("GameConfig::Session_Variables created at %X\n", this);
 		}
 
 		~Session_Variables()
 		{
-			(*(void(__thiscall*)(Session_Variables*))0x4107B0)(this);
+			MESSAGE_CLASS_DESTROYED(Session_Variables);
 
-			debug("GameConfig::Session_Variables destroyed!\n");
+			(*(void(__thiscall*)(Session_Variables*))0x4107B0)(this);
 		}
 
 		void* operator new(size_t size)
@@ -157,17 +157,23 @@ namespace GameConfig {
 		void* field_54;
 		String m_sSceneName;
 		Vector4f m_vBackgroundSize;	//	TODO: better name?
-		int _pad[3];
-		int m_nScriptsListUnkCurrentIndex;
-		int m_nScriptsListGlobalCurrentIndex;
-		int m_nTypesListCurrentIndex;
+
+		int m_nGlobalPropertiesListCRC;
+		int m_nGlobalCommandsListCRC;
+		int m_nTypesListCRC;
+
+		int m_nTotalGlobalProperties;
+		int m_nTotalGlobalCommands;
+		int m_nTotalTypes;
+
 		int m_nCRCForScriptsListUnk;
 		int m_nCRCForScriptsGlobalList;
 		int m_nCRCForTypesList;
 
 	public:
-		Config() {
-			debug("GameConfig::Config created at %X\n", this);
+		Config()
+		{
+			MESSAGE_CLASS_CREATED(Config);
 
 			field_0 = 0;
 			m_sGameName = String();
@@ -180,18 +186,21 @@ namespace GameConfig {
 			field_4C = 0;
 			field_50 = 0;
 			m_vBackgroundSize = Vector4<float>();
+			m_nGlobalPropertiesListCRC = 0;
+			m_nGlobalCommandsListCRC = 0;
+			m_nTypesListCRC = 0;
+			m_nTotalGlobalProperties = 0;
+			m_nTotalGlobalCommands = 0;
+			m_nTotalTypes = 0;
 			m_nCRCForScriptsListUnk = 0;
 			m_nCRCForScriptsGlobalList = 0;
 			m_nCRCForTypesList = 0;
-			m_nScriptsListUnkCurrentIndex = 0;
-			m_nScriptsListGlobalCurrentIndex = 0;
-			m_nTypesListCurrentIndex = 0;
-			_pad[0] = 0;
-			_pad[1] = 0;
-			_pad[2] = 0;
 		}
 
-		~Config() {
+		~Config()
+		{
+			MESSAGE_CLASS_DESTROYED(Config);
+
 			if (field_0)
 				UninitialiseGame();
 
@@ -200,8 +209,6 @@ namespace GameConfig {
 			delete &m_sSceneName;
 			delete &m_sConfigFilePath;
 			delete &m_sGameName;
-
-			debug("GameConfig::Config destroyed!\n");
 		}
 
 		void* operator new(size_t size)

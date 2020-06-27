@@ -10,9 +10,9 @@ class List
 {
 public:
 	T** m_pElements;
-	unsigned int m_nCurrIndex;
-	unsigned int m_nCapacity;
-	unsigned int m_nFlags;
+	int m_nCurrIndex;
+	int m_nCapacity;
+	int m_nFlags;
 
 public:
 	void	AddElement(T* _el)

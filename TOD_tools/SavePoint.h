@@ -2,19 +2,23 @@
 
 #include "StringsPool.h"
 #include "SavesDirectoriesInformation.h"
+#include "MemoryAllocators.h"
+#include "FileInternal.h"
 
-class FileInternal;
 class SavePoint;
 
 #define SAVEPOINT_CLASS_SIZE 64
+#define SAVEPOINT_FILE_VERSION 9
+#define ENGINE_VERSION 1925
+#define SAVEPOINT_FILE_BUFFERS 6
 
 struct SavePoint_File {
-	unsigned int	field_0;	//	NOTE: seems to be always equals to 9.
-	unsigned int	ScriptsListCRC;
-	unsigned int	BuildVersion;	//	NOTE: engine's build version is 1925. This maybe end for 'header' section.
-	unsigned int	field_C;	//	NOTE: initialized to 0 first time.
-	unsigned int	field_10;	//	NOTE: initialized to 0 first time.
-	unsigned int	field_14;	//	NOTE: initialized to 6.
+	unsigned int	FileVersion;
+	unsigned int	GlobalPropertiesListCRC;
+	unsigned int	BuildVersion;
+	unsigned int	HeaderChecksum;
+	unsigned int	HeaderChecksum_1;	//	NOTE: this value is ignored.
+	unsigned int	BuffersInFile;	//	NOTE: initialized with 6 and doesn't change.
 	unsigned int	RewindBuffer_PtrToStruc;	//	NOTE: initialized with pointer to unknown struct from RewindBuffer.
 	//	NOTE: next thing is unknown RewindBuffer Entity's script properties written to a file.
 };
@@ -33,14 +37,22 @@ struct SavePoint__vtable {
 	int(__thiscall* WriteBuffer)(SavePoint* _this, int unk);	//	@86C540
 	int(__thiscall* WriteBufferWithSize)(SavePoint* _this, const char* buffer, int size);	//	@86C340 NOTE: returns number of bytes written.
 	int(__thiscall* Seek)(SavePoint* _this, int position);	//	@86C570
-	bool(__thiscall* _86BFC0)(SavePoint* _this);	//	@86BFC0
-	bool(__thiscall* _86C700)(SavePoint* _this);	//	@86C700
+	bool(__thiscall* RewindFileToBeginning)(SavePoint* _this);	//	@86BFC0
+	bool(__thiscall* IsFileOpen)(SavePoint* _this);	//	@86C700
 	int(__thiscall* GetPosition)(SavePoint* _this);	//	@86C5D0
 	bool(__thiscall* ReadBlockAndDecreasePosition)(SavePoint* _this);	//	@86C630
 	bool(__thiscall* ReadBlockIfFailed)(SavePoint* _this);	//	@86C680
 	const char* (__thiscall* GetSaveSlotDir)(SavePoint* _this);	//	@86C250
 };
 
+enum eSavePointStatus {
+	E_SUCCESS = 0,
+	E_UNKNOWN_1 = 1,
+	E_UNKNOWN_2 = 2,
+	E_UNKNOWN_3 = 3
+};
+
+//	NOTE: this is actually derived from FileInternal class, so methods are same.
 class SavePoint
 {
 private:
@@ -49,11 +61,27 @@ private:
 	String m_sSaveDir;
 	String m_sSlotId;
 	FileInternal* m_pSaveFileHandle;
-	int m_nUnkState;
-	String m_sUnkStr3;
+	int m_nLastError;
+	String m_sSaveSlotDir;
 
 public:
+	void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::MemoryAllocators::ReleaseMemory(ptr, false);
+	}
+
+	SavePoint(SavesDirectoriesInformation* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize);	//	@86C160
+	~SavePoint();	//	@86BF20
+
 	static bool		WriteSavePointFileData(const SavePoint& savepoint, const struct RewindBuffer& rewbuff);	//	@873DA0
+	static bool		VerifyFileChecksum(SavePoint*);	//	@874230
+
+	static int		ms_FilesOpen;	//	@A35EA8
 };
 
 static_assert(sizeof(SavePoint) == SAVEPOINT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SavePoint));
