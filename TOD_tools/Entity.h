@@ -30,10 +30,10 @@ struct Entity__vtbl
 
 struct EntityPosition__vtbl
 {
-	void(__thiscall* GetPosition)(Entity* _this, Vector4f& outVec);	//	@484CD0
-	void(__thiscall* GetUnkPos)(Entity* _this, Vector4f& outVec);	//	@484CF0
+	Vector4f* (__thiscall* GetPosition)(Entity* _this, Vector4f& outVec);	//	@484CD0
+	void(__thiscall* GetOrientation)(Entity* _this, Vector4f& outVec);	//	@484CF0
 	void(__thiscall* GetWorldMatrix)(Entity* _this, D3DMATRIX& outMat);	//	@484D40
-	void(__thiscall* GetWorldRotation)(Entity* _this, Orientation& outOrient);	//	@9CE80C
+	Orientation* (__thiscall* GetWorldRotation)(Entity* _this, Orientation& outOrient);	//	@9CE80C
 };
 
 class EntityPosition
@@ -47,7 +47,7 @@ public:
 	Vector4<float> m_vPosition6;
 	Entity* m_pOwner;
 public:
-	EntityPosition(Entity* owner);	//	@892300	//	NOTE: is it copy constructor?
+	EntityPosition(Entity* owner);	//	@892300	//	NOTE: is it copy constructor? Single call is from GEKeyFrame constructor.
 };
 
 /*
@@ -59,37 +59,37 @@ public:
 */
 class Entity
 {
-	Entity__vtbl* lpVtbl;
-	Properties* m_pProperties;
-	int field_8;
-	char* m_szFragment;
-	__int16 field_10;
-	__int16 m_nOrder;
-	int m_nId;
-	int* field_18;	//	NOTE: this is pointer to unknown struct, used widely across all game code.
-	int field_1C;
-	Entity* (__cdecl* Create)(int allocatorId);
-	EntityPosition__vtbl* lpPositionVtable;
-	int m_nRenderOrderGroup;
-	int field_2C;
-	AuxQuadTree* m_pAuxQuadTree;
-	Entity* m_pNextSibling;
-	CollisionList* m_pIgnoreCollisionList;
-	EntityPosition* m_vPosition;
-	Entity* m_pParent;
-	Entity* m_pChild;
-	Fragment* m_pFragment;
-	char* m_szName;
-	int* m_pUnkResourcePtr;
-	int* m_pUnkStructPtr;
-	int* m_p58;
-	int field_5C;
-	int field_60;
-	int field_64;
-	int field_68;
-	int field_6C;
-	int field_70;
-	int field_74;
+	Entity__vtbl*			lpVtbl;
+	Properties*				m_pProperties;
+	char*					m_szName_2;
+	char*					m_szFragment;
+	__int16					field_10;
+	__int16					m_nOrder;
+	int						m_nId;	//	NOTE: this field bits contain different values, so this will be replaced with union in future.
+	Orientation*			m_vOrientation;
+	int						field_1C;
+	Entity*					(__cdecl* m_Creator)(unsigned int allocatorIndex);
+	EntityPosition__vtbl*	lpPositionVtable;
+	int						m_nRenderOrderGroup;
+	int*					field_2C;
+	AuxQuadTree*			m_pAuxQuadTree;
+	Entity*					m_pNextSibling;
+	CollisionList*			m_pIgnoreCollisionList;
+	EntityPosition*			m_vPosition;
+	Entity*					m_pParent;
+	Entity*					m_pChild;
+	Fragment*				m_pFragment;
+	char*					m_szName;
+	int*					m_pUnkResourcePtr;	//	NOTE: this could be an array of pivots, sizeof(124).
+	int*					m_pUnkStructPtr;
+	int*					m_p58;
+	int						field_5C;
+	int						field_60;
+	int						field_64;
+	int						field_68;
+	int						field_6C;
+	int						field_70;
+	int						field_74;
 
 public:
 	void* operator new (size_t size)
@@ -104,12 +104,12 @@ public:
 
 	Entity()
 	{
-		debug("Entity created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Entity);
 	}
 
 	~Entity()
 	{
-		debug("Entity destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Entity);
 	}
 
 	explicit Entity(bool bExplicitConstructor);	//	@86C770
@@ -165,7 +165,7 @@ public:
 
 	//	Global Scripts
 	bool			sIsDisabled();		//	@88C8D0
-	bool			sIsSuspended();		//	@88E430
+	bool			sIsSuspended(int* outParam);		//	@88E430
 	void			sMove(const Vector4f& newPos);	//	@88E470
 	//	skipped...
 	Entity*			sCreateNode(const char* szTypeName);	//	@88D0C0

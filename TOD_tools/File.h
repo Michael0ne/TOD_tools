@@ -36,12 +36,12 @@ public:
 public:
 	File()
 	{
-		debug("File created at %X\n", this);
+		MESSAGE_CLASS_CREATED(File);
 	}
 
 	~File()
 	{
-		debug("File destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(File);
 	}
 
 	void* operator new(size_t size)

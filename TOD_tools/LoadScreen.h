@@ -13,6 +13,7 @@ class LoadScreen : public Entity
 {
 };
 
+//	NOTE: not sure this class really exists.
 class CurrentLoadScreen
 {
 public:
@@ -25,6 +26,8 @@ public:
 public:
 	CurrentLoadScreen()
 	{
+		MESSAGE_CLASS_CREATED(CurrentLoadScreen);
+
 		lpVtbl = nullptr;
 		m_sTexturePath = String();
 		m_bEnabled = false;
@@ -32,13 +35,11 @@ public:
 		_pad1[1] = 0;
 		_pad1[2] = 0;
 		m_nEnabledTime = 0;
-
-		debug("CurrentLoadScreen created at %X\n", this);
 	}
 
 	~CurrentLoadScreen()
 	{
-		debug("CurrentLoadScreen destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(CurrentLoadScreen);
 	}
 
 	void* operator new (size_t size)

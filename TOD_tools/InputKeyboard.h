@@ -26,6 +26,8 @@ namespace Input {
 	public:
 		Keyboard()
 		{
+			MESSAGE_CLASS_CREATED(Keyboard);
+
 			memset(&m_nButtonStates, 0, sizeof(m_nButtonStates));
 			memset(&m_nButtonStates1, 0, sizeof(m_nButtonStates1));
 
@@ -39,13 +41,11 @@ namespace Input {
 			m_pBuffer = nullptr;
 
 			m_nBufferSize = 0;
-
-			debug("Input::Keyboard created at %X\n", this);
 		}
 
 		~Keyboard()
 		{
-			debug("Input::Keyboard destroyed!\n");
+			MESSAGE_CLASS_DESTROYED(Keyboard);
 		}
 
 		void* operator new(size_t size)

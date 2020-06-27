@@ -13,14 +13,14 @@ private:
 public:
 	Scratchpad()
 	{
-		memset(&_pad, 0, sizeof(_pad));
+		MESSAGE_CLASS_CREATED(Scratchpad);
 
-		debug("Scratchpad created at %X\n", this);
+		memset(&_pad, 0, sizeof(_pad));
 	}
 
 	~Scratchpad()
 	{
-		debug("Scratchpad destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Scratchpad);
 	}
 
 	void* operator new (size_t size)

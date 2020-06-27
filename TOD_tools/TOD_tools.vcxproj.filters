@@ -212,6 +212,18 @@
     <ClInclude Include="DumpTable.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="NodeSpatial.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="DecalManager.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicSurroundGeometry.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="GFXEffect.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -360,6 +372,18 @@
     </ClCompile>
     <ClCompile Include="DumpTable.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeSpatial.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalManager.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicSurroundGeometry.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="GFXEffect.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

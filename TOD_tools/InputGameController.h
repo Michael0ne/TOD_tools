@@ -68,12 +68,12 @@ namespace Input {
 	public:
 		Gamepad()
 		{
-			debug("Input::Gamepad created at %X\n", this);
+			MESSAGE_CLASS_CREATED(Gamepad);
 		}
 
 		~Gamepad()
 		{
-			debug("Input::Gamepad destroyed!\n");
+			MESSAGE_CLASS_DESTROYED(Gamepad);
 		}
 
 		void* operator new(size_t size)

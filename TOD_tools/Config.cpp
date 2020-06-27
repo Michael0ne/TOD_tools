@@ -643,12 +643,84 @@ namespace GameConfig {
 #endif
 	}
 
-	//	TODO: implementation!
 	void Config::InitEntitiesDatabase()
 	{
-		void(__thiscall * _InitEntitiesDatabase)(Config * _this) = (void(__thiscall*)(Config*))0x93C950;
+		/*
+		Entity::Register();
+		Scripts::RegisterGlobalProperty("block_id:integer", 1);
+		Node::Register();
+		NodeSpatial::Register();
+		NodeLogical::Register();
+		Camera::Register();
+		Model::Register();
+		Folder::Register();
+		Scene::Register();
+		MockupBox::Register();
+		EditorCamera::Register();
+		Character::Register();
+		Bone::Register();
+		AnimSlot::Register();
+		MotionAnimSlot::Register();
+		AnimLayer::Register();
+		CutscenePlayer::Register();
+		MotionLayer::Register();
+		CollisionBox::Register();
+		CollisionSphere::Register();
+		WayPoint::Register();
+		TrackPoint::Register();
+		Navigator::Register();
+		SignPost::Register();
+		Track::Register();
+		ControlSetup::Register();
+		Control::Register();
+		Group::Register();
+		CollisionProbe::Register();
+		RigidBody::Register();
+		OverdoseVehicle::Register();
+		StretchModel::Register();
+		SkyBox::Register();
+		Fog::Register();
+		Wind::Register();
+		Cloth::Register();
+		GFXEffect::Register();
+		Shadow::Register();
+		LensFlare::Register();
+		LensFlareManager::Register();
+		DecalManager::Register();
+		SurroundGeometry::Register();
+		DynamicSurroundGeometry::Register();
+		Light::Register();
+		Sprite::Register();
+		TextBox::Register();
+		TextSlot::Register();
+		GuideBox::Register();
+		Bullet::Register();
+		SoundSlot::Register();
+		SoundEmitter::Register();
+		StaticLighting::Register();
+		MoviePlayer::Register();
+		ParticleSystem::Register();
+		GEKeyFrame::Register();
+		GeometryEffect::Register();
+		ProfilerInput::Register();
+		RealtimeFolder::Register();
+		Builtin::Register();
+		PlaceHolder::Register();
+		CharacterPlaceHolder::Register();
+		HavocPlaceHolder::Register();
+		GoodiePlaceHolder::Register();
+		WeaponPlaceHolder::Register();
+		MemoryCards::Register();
+		LoadScreenNode::Register();
+		*/
 
-		_InitEntitiesDatabase(this);
+		m_nGlobalPropertiesListCRC = (*(int (*)())0x873440)();
+		m_nGlobalCommandsListCRC = (*(int (*)())0x871DD0)();
+		m_nTypesListCRC = (*(int (*)())0x862CF0)();
+
+		m_nTotalGlobalProperties = (*(int (*)())0x872FB0)();
+		m_nTotalGlobalCommands = (*(int (*)())0x871A20)();
+		m_nTotalTypes = (*(int (*)())0x862B30)();
 	}
 
 	//	TODO: implementation!

@@ -18,13 +18,13 @@ void Blocks::SetSceneName(const char* szSceneName)
 	(*(void(__thiscall*)(Blocks*, const char*))0x877F40)(this, szSceneName);
 }
 
-int Blocks::GetFreeResourceTypeListItem(unsigned int index)	//	@875540
+int Blocks::GetFreeResourceTypeListItem(int index)	//	@875540
 {
 	if (index + 1 >= m_ResourceTypesList.m_nCurrIndex)
 		return 0;
 
 	TypeInfo** restype = &m_ResourceTypesList.m_pElements[index + 1];
-	unsigned int freeind = index + 1;
+	int freeind = index + 1;
 
 	while (!*restype) {
 		restype++;

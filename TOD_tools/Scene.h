@@ -238,12 +238,12 @@ public:
 
 	Scene()
 	{
-		debug("Scene created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Scene);
 	}
 
 	~Scene()
 	{
-		debug("Scene destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Scene);
 	}
 
 	void		Start();	//	@89A100

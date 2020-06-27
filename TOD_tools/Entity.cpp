@@ -15,8 +15,17 @@ String& Entity::IgnoredCollisionNodes = *(String*)0xA11CD0;
 Entity::Entity(bool bExplicitConstructor)
 {
 	//	TODO: redo!
-	Entity* tmp = Create(g_Blocks->GetAllocatorType());
+	Entity* tmp = m_Creator(g_Blocks->GetAllocatorType());
 	tmp->_CopyPropertiesOnCreation(this);
+}
+
+EntityPosition::EntityPosition(Entity* owner)
+{
+	MESSAGE_CLASS_CREATED(EntityPosition);
+
+	m_vOrientation = Builtin::m_Orientation;
+	m_vPosition2 = Vector4f();
+	m_pOwner = owner;
 }
 
 Vector4f* Entity::ConvertToWorldSpace(Vector4f* vPos1, Vector4f* vPos2)
@@ -334,10 +343,12 @@ bool Entity::sIsDisabled()
 	return (m_nRenderOrderGroup | (m_nRenderOrderGroup >> 16)) & 1;
 }
 
-bool Entity::sIsSuspended()
+bool Entity::sIsSuspended(int* outParam)
 {
-	//	TODO: wtf is this?
-	return Create && *((int*)Create + 1) && (*(int*)(*((int*)Create + 1) + 52) >> 26) & 1;
+	if ((Entity*)m_Creator && ((Entity*)m_Creator)->m_pProperties && (((Properties*)((Entity*)m_Creator)->m_pProperties)->field_30 >> 26) & 1)
+		return *outParam = 1;
+	else
+		return *outParam = 0;
 }
 
 void Entity::sMove(const Vector4f& newPos)
@@ -464,11 +475,4 @@ int Entity::sGetBlockIdBelow()
 {
 	//	TODO: implementation!
 	return NULL;
-}
-
-EntityPosition::EntityPosition(Entity* owner)
-{
-	m_vOrientation = Builtin::m_Orientation;
-	m_vPosition2 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	m_pOwner = owner;
 }

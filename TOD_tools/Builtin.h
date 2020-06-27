@@ -65,19 +65,20 @@ private:
 	int			_GetMessageId(const char* szMessage);	//	@872360
 
 public:
-	Builtin() {
+	Builtin()
+	{
+		MESSAGE_CLASS_CREATED(Builtin);
+
 		m_MethodsList = List<Builtin_Handler>();
 		field_88 = 0;
 		field_8C = 0;
 		field_90 = 0;
 		field_94 = 0;
-
-		debug("Builtin created at %X\n", this);
 	}
 
 	~Builtin()
 	{
-		debug("Builtin destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Builtin);
 	}
 
 	void* operator new(size_t size)

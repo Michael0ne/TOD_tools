@@ -39,6 +39,8 @@ private:
 public:
 	SceneNode()
 	{
+		MESSAGE_CLASS_CREATED(SceneNode);
+
 		m_pUnkPtr = nullptr;
 		m_pRewindBuffer = nullptr;
 		
@@ -68,13 +70,11 @@ public:
 		m_nGameTime = 0;
 		m_nNewFrameNumber = 0;
 		field_78 = 0;
-
-		debug("SceneNode created at %X\n", this);
 	}
 
 	~SceneNode()
 	{
-		debug("SceneNode destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(SceneNode);
 	}
 
 	void* operator new (size_t size)

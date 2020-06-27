@@ -9629,12 +9629,12 @@ protected:
 public:
 	GfxInternal_Dx9()
 	{
-		debug("GfxInternal_Dx9 created at %X\n", this);
+		MESSAGE_CLASS_CREATED(GfxInternal_Dx9);
 	}
 
 	~GfxInternal_Dx9()
 	{
-		debug("GfxInternal_Dx9 destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(GfxInternal_Dx9);
 	}
 
 	void* operator new(size_t size)

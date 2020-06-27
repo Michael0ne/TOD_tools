@@ -8,6 +8,7 @@
 #define BLOCKS_CLASS_SIZE 500
 
 class TypeInfo;
+class Entity;
 
 class Blocks
 {
@@ -123,28 +124,28 @@ private:
 public:
 	Blocks()
 	{
-		debug("Blocks created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Blocks);
 	}
 
 	~Blocks()
 	{
-		debug("Blocks destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Blocks);
 	}
 
 	void* operator new (size_t size)
 	{
 		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
-
 	void operator delete(void* ptr)
 	{
 		if (ptr)
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
 
-	void	Init(bool unk);	//	@76E20
-	void	SetSceneName(const char* szSceneName);	//	@877F40
-	int		GetFreeResourceTypeListItem(unsigned int index);	//	@875540
+	void			Init(bool unk);	//	@76E20
+	void			SetSceneName(const char* szSceneName);	//	@877F40
+	int				GetFreeResourceTypeListItem( int index);	//	@875540
+	unsigned int	AddEntity(const Entity& ent);	//	@875FA0	//	NOTE: returns index
 
 	void	SetRegionId(signed int id)	//	@875434
 	{

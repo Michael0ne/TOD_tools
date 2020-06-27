@@ -22,19 +22,19 @@ private:
 public:
 	SavesDirectoriesInformation()
 	{
+		MESSAGE_CLASS_CREATED(SavesDirectoriesInformation);
+
 		lpVtbl = nullptr;
 		field_4 = 0;
 		m_sSaveFolderPath = String();
 		m_bFormatted = false;
 		field_16 = 0;
 		field_17 = 0;
-
-		debug("SavesDirectoriesInformation created at %X\n", this);
 	}
 
 	~SavesDirectoriesInformation()
 	{
-		debug("SavesDirectoriesInformation destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(SavesDirectoriesInformation);
 	}
 
 	void* operator new (size_t size)
