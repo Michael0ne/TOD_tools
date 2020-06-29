@@ -15,6 +15,7 @@ public:
 
 public:
 	Fragment(const Entity* owner);	//	@87F1E0
+
 	const char*		_GetResourcePath();		//	@851720
 };
 

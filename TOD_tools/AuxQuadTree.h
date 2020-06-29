@@ -23,13 +23,9 @@ public:
 	int field_30;
 	int* m_pContactNode;
 	int field_38;
-	union {
-		char flag0 : 1;
-		char flag1 : 1;
-		char flag2 : 1;
-		char flag3 : 1;
-	} m_nFlags;
-	//int m_nFlags;
+	char field_3C;
+	char field_3D;
+	short field_3E;
 	Vector4f m_vPosition;
 	byte field_4D;
 	byte m_bLod;
