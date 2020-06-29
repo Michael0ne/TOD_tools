@@ -57,7 +57,7 @@ namespace Input {
 		int field_B8;
 		GUID m_nGUID;
 		char field_CC[4];
-		void* field_D0;
+		IDirectInputEffect* m_pDirectInputEffect;
 		int field_D4;
 		float m_fVibrationForceDefault;
 		float m_fVibrationForce;

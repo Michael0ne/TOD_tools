@@ -135,6 +135,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FileInternal.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="GEKeyFrame.h" />
     <ClInclude Include="GFXEffect.h" />
     <ClInclude Include="GfxInternal_Dx9_Texture.h" />
     <ClInclude Include="Globals.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FileInternal.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="GEKeyFrame.cpp" />
     <ClCompile Include="GFXEffect.cpp" />
     <ClCompile Include="GfxInternal_Dx9_Texture.cpp" />
     <ClCompile Include="List.cpp" />

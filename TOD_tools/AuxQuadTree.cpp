@@ -2,6 +2,8 @@
 
 AuxQuadTree::AuxQuadTree(const Entity* owner)
 {
+	MESSAGE_CLASS_CREATED(AuxQuadTree);
+
 	m_vPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
 	m_bLodFade = -1;
 	m_pContactFilter = -1;
@@ -10,9 +12,9 @@ AuxQuadTree::AuxQuadTree(const Entity* owner)
 	m_pChildFirst = nullptr;
 	m_pChildLast = nullptr;
 	field_38 = 0;
-	m_nFlags.flag0 = 0x3C;
-	m_nFlags.flag1 = 0xB;
-	m_nFlags.flag2 = 0x32;
+	field_3C = 60;
+	field_3D = 11;
+	field_3E = 50;
 	m_nLodDistance = 0;
 	m_bLod = 0;
 	m_pContactNode = nullptr;
