@@ -145,6 +145,7 @@
     <ClInclude Include="MoviePlayer.h" />
     <ClInclude Include="NodeSpatial.h" />
     <ClInclude Include="OverdoseVehicle.h" />
+    <ClInclude Include="ProfilerInput.h" />
     <ClInclude Include="radbase.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourcesTypes.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="MemoryCards.cpp" />
     <ClCompile Include="MoviePlayer.cpp" />
     <ClCompile Include="NodeSpatial.cpp" />
+    <ClCompile Include="ProfilerInput.cpp" />
     <ClCompile Include="Progress.cpp" />
     <ClCompile Include="Progress.h" />
     <ClCompile Include="Renderer.cpp" />

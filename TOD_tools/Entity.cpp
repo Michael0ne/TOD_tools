@@ -205,7 +205,7 @@ const char* Entity::GetName()
 float Entity::GetLodThreshold()
 {
 	if (m_pAuxQuadTree)
-		return *(float*)&m_pAuxQuadTree->m_nFlags * (float)0.0049999999;
+		return *(float*)&m_pAuxQuadTree->field_3C * (float)0.0049999999;
 	else
 		return 0.0f;
 }
@@ -213,7 +213,7 @@ float Entity::GetLodThreshold()
 float Entity::GetFadeThreshold()
 {
 	if (m_pAuxQuadTree)
-		return (*(int*)&m_pAuxQuadTree->m_nFlags & 127) * (float)0.0099999998;
+		return (*(int*)&m_pAuxQuadTree->field_3C & 127) * (float)0.0099999998;
 	else
 		return 0.0f;
 }
@@ -221,7 +221,7 @@ float Entity::GetFadeThreshold()
 bool Entity::GetSlowFade()
 {
 	if (m_pAuxQuadTree)
-		return *(int*)&m_pAuxQuadTree->m_nFlags >> 7;
+		return *(int*)&m_pAuxQuadTree->field_3C >> 7;
 	else
 		return false;
 }
@@ -229,7 +229,7 @@ bool Entity::GetSlowFade()
 float Entity::GetTraverseDistance()
 {
 	if (m_pAuxQuadTree)
-		return *(float*)&m_pAuxQuadTree->m_nFlags;
+		return *(float*)&m_pAuxQuadTree->field_3C;
 	else
 		return 0.0f;
 }

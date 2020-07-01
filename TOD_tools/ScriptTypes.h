@@ -1,300 +1,132 @@
 #pragma once
 
+#include "stdafx.h"
 #include "Types.h"
 #include "StringsPool.h"
 #include "MemoryAllocators.h"
 #include "List.h"
 
+#define SCRIPT_TYPE_CLASS_SIZE 32
+
 namespace ScriptTypes
 {
-
-#define SCRIPTTYPE_NOTHING_ID 0
-#define SCRIPTTYPE_NOTHING_NAME "nothing"
-#define SCRIPTTYPE_NOTHING_SIZE 0
-
-#define SCRIPTTYPE_NUMBER_ID 1
-#define SCRIPTTYPE_NUMBER_NAME "number"
-#define SCRIPTTYPE_NUMBER_SIZE 1
-
-#define SCRIPTTYPE_INTEGER_ID 2
-#define SCRIPTTYPE_INTEGER_NAME "integer"
-#define SCRIPTTYPE_INTEGER_SIZE 1
-
-#define SCRIPTTYPE_STRING_ID 3
-#define SCRIPTTYPE_STRING_NAME "string"
-#define SCRIPTTYPE_STRING_SIZE 1
-
-#define SCRIPTTYPE_TRUTH_ID 4
-#define SCRIPTTYPE_TRUTH_NAME "truth"
-#define SCRIPTTYPE_TRUTH_SIZE 1
-
-#define SCRIPTTYPE_VECTOR_ID 5
-#define SCRIPTTYPE_VECTOR_NAME "vector"
-#define SCRIPTTYPE_VECTOR_SIZE 3
-
-#define SCRIPTTYPE_QUATERNION_ID 6
-#define SCRIPTTYPE_QUATERNION_NAME "quaternion"
-#define SCRIPTTYPE_QUATERNION_SIZE 4
-
-#define SCRIPTTYPE_COLOR_ID 7
-#define SCRIPTTYPE_COLOR_NAME "color"
-#define SCRIPTTYPE_COLOR_SIZE 1
-
-#define SCRIPTTYPE_LIST_ID 8
-#define SCRIPTTYPE_LIST_NAME "list"
-#define SCRIPTTYPE_LIST_SIZE 1
-
-#define SCRIPTTYPE_DICT_ID 9
-#define SCRIPTTYPE_DICT_NAME "dict"
-#define SCRIPTTYPE_DICT_SIZE 1
-
-//	Used for any entity being created.
-#define SCRIPTTYPE_ENTITY_ID 10
-#define SCRIPTTYPE_ENTITY_NAME NULL
-#define SCRIPTTYPE_ENTITY_SIZE 1
-
-	class ScriptType;
-
-	struct ScriptType__vtable
-	{
-		void* (__stdcall* free)(bool);
-		int* (__thiscall* stub1)(ScriptType* _this, int, List<ScriptType>*);
-		void(__thiscall* RemoveVtable)(ScriptType* _this);
-		void(__stdcall* nullstub1)();
-		int* (__thiscall* stub2)(ScriptType* _this, int*, int*);
-		void (__cdecl* makeEmptyString)(String* outString, int*, int);	//	SetFormattingPrecision
-		signed int(__stdcall* return_negative_one)(const char*, int*);	//	OverrideOperator
-		int(__thiscall* stub3)(ScriptType* _this, int);
-		int(__thiscall* stub4)(ScriptType* _this, char*, char*);
-		int(__thiscall* stub5)(ScriptType* _this, char*, char*);
-		int(__thiscall* stub6)(ScriptType* _this, int, String* str, int);
-		int(__thiscall* stub7)(ScriptType* _this, int, int, int*);
-		int(__stdcall* nullstub2)(int, int, int (__thiscall*)(int), int, int, int, void* outParam);
-		int(__stdcall* nullstub3)(int*, int, int (__thiscall*)(int, int), int, int, int);
-		bool(__thiscall* stub8)(ScriptType* _this, int, int);
-		bool(__stdcall* returnTrue)(void*, void*);	//	return *arg1 != *arg2
-		void(__stdcall* _ParseOperator)(const char* operatorStr, int* outOperationId, ScriptType** outResultType, char* dummyParam);
-		void(__thiscall* _DoOperation)(ScriptType* _this, const int operationId, void* inParams);
-		bool(__stdcall* returnTrue1)(int, int);
-		bool(__stdcall* returnTrue2)(int);
+	enum E_SCRIPT_TYPE_ID {
+		TYPE_NOTHING = 0,		//	NOTHING! Really!
+		TYPE_NUMBER = 1,		//	FLOAT
+		TYPE_INTEGER = 2,		//	INTEGER! Really!
+		TYPE_STRING = 3,		//	LIBC STRING
+		TYPE_TRUTH = 4,			//	BOOLEAN
+		TYPE_VECTOR = 5,		//	VECTOR4
+		TYPE_QUATERNION = 6,	//	QUATERNION
+		TYPE_COLOR = 7,			//	COLOR RGBA
+		TYPE_LIST = 8,			//	SIMPLE LIST
+		TYPE_DICT = 9,			//	DICTIONARY. (HASHMAP)
+		TYPE_ENTITY = 10,		//	SCRIPT ENTITY
+		TYPE_SCRIPT = 11		//	SCRIPT WITH PARAMETERS
 	};
 
-	//	@9CB1F8
-	struct ScriptType_Nothing__vtable {
-		void(__thiscall* stub0)(ScriptType* _this);
-		void(__thiscall* stub1)(ScriptType* _this);
-		void(__thiscall* stub2)(ScriptType* _this);
-		void(__thiscall* stub3)(ScriptType* _this);
-		void(__thiscall* stub4)(ScriptType* _this);
-		void(__thiscall* stub5)(ScriptType* _this);
-		void(__thiscall* stub6)(ScriptType* _this);
-		void(__thiscall* stub7)(ScriptType* _this);
-		void(__thiscall* stub8)(ScriptType* _this);
-		void(__thiscall* stub9)(ScriptType* _this);
-		void(__thiscall* stub10)(ScriptType* _this);
-		void(__thiscall* stub11)(ScriptType* _this);
-		void(__thiscall* stub12)(ScriptType* _this);
-		void(__thiscall* stub13)(ScriptType* _this);
-		void(__thiscall* stub14)(ScriptType* _this);
-		void(__thiscall* stub15)(ScriptType* _this);
-		void(__thiscall* stub16)(ScriptType* _this);
-		void(__thiscall* stub17)(ScriptType* _this);
-		void(__thiscall* stub18)(ScriptType* _this);
-		void(__thiscall* stub19)(ScriptType* _this);
+	enum E_SCRIPT_TYPE_SIZE {
+		TYPE_NOTHING_SIZE = 0,
+		TYPE_NUMBER_SIZE = 1,
+		TYPE_INTEGER_SIZE = 1,
+		TYPE_STRING_SIZE = 1,
+		TYPE_TRUTH_SIZE = 1,
+		TYPE_VECTOR_SIZE = 3,
+		TYPE_QUATERNION_SIZE = 4,
+		TYPE_COLOR_SIZE = 1,
+		TYPE_LIST_SIZE = 1,
+		TYPE_DICT_SIZE = 1,
+		TYPE_ENTITY_SIZE = 1,
+		TYPE_SCRIPT_SIZE = 1
 	};
 
-	//	@9CB250
-	struct ScriptType_Number__vtable {
-		void(__thiscall* stub0)(ScriptType* _this);
-		void(__thiscall* stub1)(ScriptType* _this);
-		void(__thiscall* stub2)(ScriptType* _this);
-		void(__thiscall* stub3)(ScriptType* _this);
-		void(__thiscall* stub4)(ScriptType* _this);
-		void(__thiscall* stub5)(ScriptType* _this);
-		void(__thiscall* stub6)(ScriptType* _this);
-		void(__thiscall* stub7)(ScriptType* _this);
-		void(__thiscall* stub8)(ScriptType* _this);
-		void(__thiscall* stub9)(ScriptType* _this);
-		void(__thiscall* stub10)(ScriptType* _this);
-		void(__thiscall* stub11)(ScriptType* _this);
-		void(__thiscall* stub12)(ScriptType* _this);
-		void(__thiscall* stub13)(ScriptType* _this);
-		void(__thiscall* stub14)(ScriptType* _this);
-		void(__thiscall* stub15)(ScriptType* _this);
-		void(__thiscall* stub16)(ScriptType* _this);
-		void(__thiscall* stub17)(ScriptType* _this);
-		void(__thiscall* stub18)(ScriptType* _this);
-		void(__thiscall* stub19)(ScriptType* _this);
+	static const char* szScriptTypeName[TYPE_ENTITY + 1] = {
+		"nothing",
+		"number",
+		"integer",
+		"string",
+		"truth",
+		"vector",
+		"quaternion",
+		"color",
+		"list",
+		"dict",
+		NULL,
+		NULL
 	};
 
-	//	@9CB340
-	struct ScriptType_Integer__vtable {
-		void(__thiscall* stub0)(ScriptType* _this);
-		void(__thiscall* stub1)(ScriptType* _this);
-		void(__thiscall* stub2)(ScriptType* _this);
-		void(__thiscall* stub3)(ScriptType* _this);
-		void(__thiscall* stub4)(ScriptType* _this);
-		void(__thiscall* stub5)(ScriptType* _this);
-		void(__thiscall* stub6)(ScriptType* _this);
-		void(__thiscall* stub7)(ScriptType* _this);
-		void(__thiscall* stub8)(ScriptType* _this);
-		void(__thiscall* stub9)(ScriptType* _this);
-		void(__thiscall* stub10)(ScriptType* _this);
-		void(__thiscall* stub11)(ScriptType* _this);
-		void(__thiscall* stub12)(ScriptType* _this);
-		void(__thiscall* stub13)(ScriptType* _this);
-		void(__thiscall* stub14)(ScriptType* _this);
-		void(__thiscall* stub15)(ScriptType* _this);
-		void(__thiscall* stub16)(ScriptType* _this);
-		void(__thiscall* stub17)(ScriptType* _this);
-		void(__thiscall* stub18)(ScriptType* _this);
-		void(__thiscall* stub19)(ScriptType* _this);
-	};
-
-	//	@9CB428
-	struct ScriptType_Boolean__vtable {
-		void(__thiscall* stub0)(ScriptType* _this);
-		void(__thiscall* stub1)(ScriptType* _this);
-		void(__thiscall* stub2)(ScriptType* _this);
-		void(__thiscall* stub3)(ScriptType* _this);
-		void(__thiscall* stub4)(ScriptType* _this);
-		void(__thiscall* stub5)(ScriptType* _this);
-		void(__thiscall* stub6)(ScriptType* _this);
-		void(__thiscall* stub7)(ScriptType* _this);
-		void(__thiscall* stub8)(ScriptType* _this);
-		void(__thiscall* stub9)(ScriptType* _this);
-		void(__thiscall* stub10)(ScriptType* _this);
-		void(__thiscall* stub11)(ScriptType* _this);
-		void(__thiscall* stub12)(ScriptType* _this);
-		void(__thiscall* stub13)(ScriptType* _this);
-		void(__thiscall* stub14)(ScriptType* _this);
-		void(__thiscall* stub15)(ScriptType* _this);
-		void(__thiscall* stub16)(ScriptType* _this);
-		void(__thiscall* stub17)(ScriptType* _this);
-		void(__thiscall* stub18)(ScriptType* _this);
-		void(__thiscall* stub19)(ScriptType* _this);
-	};
-
-	//	@9CB4B0
-	struct ScriptType_Vector__vtable {
-		void(__thiscall* stub0)(ScriptType* _this);
-		void(__thiscall* stub1)(ScriptType* _this);
-		void(__thiscall* stub2)(ScriptType* _this);
-		void(__thiscall* stub3)(ScriptType* _this);
-		void(__thiscall* stub4)(ScriptType* _this);
-		void(__thiscall* stub5)(ScriptType* _this);
-		void(__thiscall* stub6)(ScriptType* _this);
-		void(__thiscall* stub7)(ScriptType* _this);
-		void(__thiscall* stub8)(ScriptType* _this);
-		void(__thiscall* stub9)(ScriptType* _this);
-		void(__thiscall* stub10)(ScriptType* _this);
-		void(__thiscall* stub11)(ScriptType* _this);
-		void(__thiscall* stub12)(ScriptType* _this);
-		void(__thiscall* stub13)(ScriptType* _this);
-		void(__thiscall* stub14)(ScriptType* _this);
-		void(__thiscall* stub15)(ScriptType* _this);
-		void(__thiscall* stub16)(ScriptType* _this);
-		void(__thiscall* stub17)(ScriptType* _this);
-		void(__thiscall* stub18)(ScriptType* _this);
-		void(__thiscall* stub19)(ScriptType* _this);
-	};
-
-	//	@9CB5B8
-	struct ScriptType_Quaternion__vtable {
-		void(__thiscall* stub0)(ScriptType* _this);
-		void(__thiscall* stub1)(ScriptType* _this);
-		void(__thiscall* stub2)(ScriptType* _this);
-		void(__thiscall* stub3)(ScriptType* _this);
-		void(__thiscall* stub4)(ScriptType* _this);
-		void(__thiscall* stub5)(ScriptType* _this);
-		void(__thiscall* stub6)(ScriptType* _this);
-		void(__thiscall* stub7)(ScriptType* _this);
-		void(__thiscall* stub8)(ScriptType* _this);
-		void(__thiscall* stub9)(ScriptType* _this);
-		void(__thiscall* stub10)(ScriptType* _this);
-		void(__thiscall* stub11)(ScriptType* _this);
-		void(__thiscall* stub12)(ScriptType* _this);
-		void(__thiscall* stub13)(ScriptType* _this);
-		void(__thiscall* stub14)(ScriptType* _this);
-		void(__thiscall* stub15)(ScriptType* _this);
-		void(__thiscall* stub16)(ScriptType* _this);
-		void(__thiscall* stub17)(ScriptType* _this);
-		void(__thiscall* stub18)(ScriptType* _this);
-		void(__thiscall* stub19)(ScriptType* _this);
-	};
-
-	//	@9CB778
-	struct ScriptType_Color__vtable {
-		void(__thiscall* stub0)(ScriptType* _this);
-		void(__thiscall* stub1)(ScriptType* _this);
-		void(__thiscall* stub2)(ScriptType* _this);
-		void(__thiscall* stub3)(ScriptType* _this);
-		void(__thiscall* stub4)(ScriptType* _this);
-		void(__thiscall* stub5)(ScriptType* _this);
-		void(__thiscall* stub6)(ScriptType* _this);
-		void(__thiscall* stub7)(ScriptType* _this);
-		void(__thiscall* stub8)(ScriptType* _this);
-		void(__thiscall* stub9)(ScriptType* _this);
-		void(__thiscall* stub10)(ScriptType* _this);
-		void(__thiscall* stub11)(ScriptType* _this);
-		void(__thiscall* stub12)(ScriptType* _this);
-		void(__thiscall* stub13)(ScriptType* _this);
-		void(__thiscall* stub14)(ScriptType* _this);
-		void(__thiscall* stub15)(ScriptType* _this);
-		void(__thiscall* stub16)(ScriptType* _this);
-		void(__thiscall* stub17)(ScriptType* _this);
-		void(__thiscall* stub18)(ScriptType* _this);
-		void(__thiscall* stub19)(ScriptType* _this);
-	};
-
-	//	@9CC358
-	struct ScriptType_String__vtable {
-		void(__thiscall* stub0)(ScriptType* _this);
-		void(__thiscall* stub1)(ScriptType* _this);
-		void(__thiscall* stub2)(ScriptType* _this);
-		void(__thiscall* stub3)(ScriptType* _this);
-		void(__thiscall* stub4)(ScriptType* _this);
-		void(__thiscall* stub5)(ScriptType* _this);
-		void(__thiscall* stub6)(ScriptType* _this);
-		void(__thiscall* stub7)(ScriptType* _this);
-		void(__thiscall* stub8)(ScriptType* _this);
-		void(__thiscall* stub9)(ScriptType* _this);
-		void(__thiscall* stub10)(ScriptType* _this);
-		void(__thiscall* stub11)(ScriptType* _this);
-		void(__thiscall* stub12)(ScriptType* _this);
-		void(__thiscall* stub13)(ScriptType* _this);
-		void(__thiscall* stub14)(ScriptType* _this);
-		void(__thiscall* stub15)(ScriptType* _this);
-		void(__thiscall* stub16)(ScriptType* _this);
-		void(__thiscall* stub17)(ScriptType* _this);
-		void(__thiscall* stub18)(ScriptType* _this);
-		void(__thiscall* stub19)(ScriptType* _this);
-	};
-
+	//	NOTE: THIS is base class for all script entities.
 	class ScriptType
 	{
 	private:
-		ScriptType__vtable* lpVtbl;
 		String m_sTypeName;
 		int m_nTypeId;
 		int m_nSizeInBytes;
 		int m_nId;
 
+		virtual void stub0() = 0;
+		virtual void stub1() = 0;
+		virtual void stub2() = 0;
+		virtual void stub3() = 0;
+		virtual void stub4() = 0;
+		virtual void stub5() = 0;
+		virtual void stub6() = 0;
+		virtual void stub7() = 0;
+		virtual void stub8() = 0;
+		virtual void stub9() = 0;
+		virtual void stub10() = 0;
+		virtual void stub11() = 0;
+		virtual void stub12() = 0;
+		virtual void stub13() = 0;
+		virtual void stub14() = 0;
+		virtual void stub15() = 0;
+		virtual void stub16() = 0;
+		virtual void stub17() = 0;
+		virtual void stub18() = 0;
+		virtual void stub19() = 0;
+
 	public:
-		ScriptType()
-		{
-			MESSAGE_CLASS_CREATED(ScriptType);
+		ScriptType(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize);	//	@862E90
 
-			lpVtbl = nullptr;
-			m_sTypeName = String();
-			m_nTypeId = 0;
-			m_nSizeInBytes = 0;
-			m_nId = 0;
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
-
-		~ScriptType()
+		void operator delete (void* ptr)
 		{
-			MESSAGE_CLASS_DESTROYED(ScriptType);
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+	};
+
+	class ScriptType_Nothing : public ScriptType
+	{
+	private:
+		virtual void stub0() override;
+		virtual void stub1() override;
+		virtual void stub2() override;
+		virtual void stub3() override;
+		virtual void stub4() override;
+		virtual void stub5() override;
+		virtual void stub6() override;
+		virtual void stub7() override;
+		virtual void stub8() override;
+		virtual void stub9() override;
+		virtual void stub10() override;
+		virtual void stub11() override;
+		virtual void stub12() override;
+		virtual void stub13() override;
+		virtual void stub14() override;
+		virtual void stub15() override;
+		virtual void stub16() override;
+		virtual void stub17() override;
+		virtual void stub18() override;
+		virtual void stub19() override;
+
+	public:
+		ScriptType_Nothing(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		{
+			MESSAGE_CLASS_CREATED(ScriptType_Nothing);
 		}
 
 		void* operator new (size_t size)
@@ -306,42 +138,318 @@ namespace ScriptTypes
 			if (ptr)
 				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 		}
-
-		void	Register(unsigned int typeId, const char* typeName, unsigned int typeSize);	//	@862E90
-		//	NOTE: this is temporary, until proper classes for each type has been made.
-		void	SetVtablePtr(ScriptType__vtable* ptr) { lpVtbl = ptr; }
 	};
 
-	static ScriptType* tyNothing = (ScriptType*)0xA3CE88;
-	static ScriptType* tyNumber = (ScriptType*)0xA3CEA8;
-	static ScriptType* tyInteger = (ScriptType*)0xA3CE8C;
-	static ScriptType* tyBoolean = (ScriptType*)0xA3CEBC;
-	static ScriptType* tyVector = (ScriptType*)0xA3CEAC;
-	static ScriptType* tyQuaternion = (ScriptType*)0xA3CE90;
-	static ScriptType* tyColor = (ScriptType*)0xA3CE9C;
-	static ScriptType* tyString = nullptr;
+	ScriptType_Nothing*			tyNothing = (ScriptType_Nothing*)0xA3CE88;	//	@A3CE88
 
-	//	In scripts, use these.
-	static ScriptType** tNOTHING = (ScriptType**)0xA3CE94;
-	static ScriptType** tNUMBER = (ScriptType**)0xA3CEC0;
-	static ScriptType** tINTEGER = (ScriptType**)0xA3CEB8;
-	static ScriptType** tBOOLEAN = (ScriptType**)0xA3CEC4;
-	static ScriptType** tVECTOR = (ScriptType**)0xA3CEB4;
-	static ScriptType** tQUATERNION = (ScriptType**)0xA3CE98;
-	static ScriptType** tCOLOR = (ScriptType**)0xA3CEA4;
-	static ScriptType** tSTRING = (ScriptType**)0xA3CEB0;
+	class ScriptType_Number : public ScriptType
+	{
+	private:
+		virtual void stub0() override;
+		virtual void stub1() override;
+		virtual void stub2() override;
+		virtual void stub3() override;
+		virtual void stub4() override;
+		virtual void stub5() override;
+		virtual void stub6() override;
+		virtual void stub7() override;
+		virtual void stub8() override;
+		virtual void stub9() override;
+		virtual void stub10() override;
+		virtual void stub11() override;
+		virtual void stub12() override;
+		virtual void stub13() override;
+		virtual void stub14() override;
+		virtual void stub15() override;
+		virtual void stub16() override;
+		virtual void stub17() override;
+		virtual void stub18() override;
+		virtual void stub19() override;
+	public:
+		ScriptType_Number(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		{
+			MESSAGE_CLASS_CREATED(ScriptType_Number);
+		}
 
-	static const ScriptType_Nothing__vtable* tNOTHING_vtable = (ScriptType_Nothing__vtable*)0x9CB1F8;
-	static const ScriptType_Number__vtable* tNUMBER_vtable = (ScriptType_Number__vtable*)0x9CB250;
-	static const ScriptType_Integer__vtable* tINTEGER_vtable = (ScriptType_Integer__vtable*)0x9CB340;
-	static const ScriptType_Boolean__vtable* tBOOLEAN_vtable = (ScriptType_Boolean__vtable*)0x9CB428;
-	static const ScriptType_Vector__vtable* tVECTOR_vtable = (ScriptType_Vector__vtable*)0x9CB4B0;
-	static const ScriptType_Quaternion__vtable* tQUATERNION_vtable = (ScriptType_Quaternion__vtable*)0x9CB5B8;
-	static const ScriptType_Color__vtable* tCOLOR_vtable = (ScriptType_Color__vtable*)0x9CB778;
-	static const ScriptType_String__vtable* tSTRING_vtable = (ScriptType_String__vtable*)0x9CC358;
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		}
+		void operator delete (void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+	};
 
-	void Init();	//	@8634E0
+	ScriptType_Number*			tyNumber = (ScriptType_Number*)0xA3CEA8;	//	@A3CEA8
 
-	static List<ScriptType>& ListTypes = *(List<ScriptType>*)0xA3CECC;	//	@A3CECC
-	static int& _A3CEC8 = *(int*)0xA3CEC8;	//	@A3CEC8
+	class ScriptType_Integer : public ScriptType
+	{
+	private:
+		virtual void stub0() override;
+		virtual void stub1() override;
+		virtual void stub2() override;
+		virtual void stub3() override;
+		virtual void stub4() override;
+		virtual void stub5() override;
+		virtual void stub6() override;
+		virtual void stub7() override;
+		virtual void stub8() override;
+		virtual void stub9() override;
+		virtual void stub10() override;
+		virtual void stub11() override;
+		virtual void stub12() override;
+		virtual void stub13() override;
+		virtual void stub14() override;
+		virtual void stub15() override;
+		virtual void stub16() override;
+		virtual void stub17() override;
+		virtual void stub18() override;
+		virtual void stub19() override;
+	public:
+		ScriptType_Integer(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		{
+			MESSAGE_CLASS_CREATED(ScriptType_Integer);
+		}
+
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		}
+		void operator delete (void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+	};
+
+	ScriptType_Integer*			tyInteger = (ScriptType_Integer*)0xA3CE8C;	//	@A3CE8C
+
+	class ScriptType_Boolean : public ScriptType
+	{
+	private:
+		virtual void stub0() override;
+		virtual void stub1() override;
+		virtual void stub2() override;
+		virtual void stub3() override;
+		virtual void stub4() override;
+		virtual void stub5() override;
+		virtual void stub6() override;
+		virtual void stub7() override;
+		virtual void stub8() override;
+		virtual void stub9() override;
+		virtual void stub10() override;
+		virtual void stub11() override;
+		virtual void stub12() override;
+		virtual void stub13() override;
+		virtual void stub14() override;
+		virtual void stub15() override;
+		virtual void stub16() override;
+		virtual void stub17() override;
+		virtual void stub18() override;
+		virtual void stub19() override;
+	public:
+		ScriptType_Boolean(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		{
+			MESSAGE_CLASS_CREATED(ScriptType_Boolean);
+		}
+
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		}
+		void operator delete (void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+	};
+
+	ScriptType_Boolean*			tyBoolean = (ScriptType_Boolean*)0xA3CEBC;	//	@A3CEBC
+
+	class ScriptType_Vector : public ScriptType
+	{
+	private:
+		virtual void stub0() override;
+		virtual void stub1() override;
+		virtual void stub2() override;
+		virtual void stub3() override;
+		virtual void stub4() override;
+		virtual void stub5() override;
+		virtual void stub6() override;
+		virtual void stub7() override;
+		virtual void stub8() override;
+		virtual void stub9() override;
+		virtual void stub10() override;
+		virtual void stub11() override;
+		virtual void stub12() override;
+		virtual void stub13() override;
+		virtual void stub14() override;
+		virtual void stub15() override;
+		virtual void stub16() override;
+		virtual void stub17() override;
+		virtual void stub18() override;
+		virtual void stub19() override;
+	public:
+		ScriptType_Vector(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		{
+			MESSAGE_CLASS_CREATED(ScriptType_Vector);
+		}
+
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		}
+		void operator delete (void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+	};
+
+	ScriptType_Vector*			tyVector = (ScriptType_Vector*)0xA3CEAC;	//	@A3CEAC
+
+	class ScriptType_Quaternion : public ScriptType
+	{
+	private:
+		virtual void stub0() override;
+		virtual void stub1() override;
+		virtual void stub2() override;
+		virtual void stub3() override;
+		virtual void stub4() override;
+		virtual void stub5() override;
+		virtual void stub6() override;
+		virtual void stub7() override;
+		virtual void stub8() override;
+		virtual void stub9() override;
+		virtual void stub10() override;
+		virtual void stub11() override;
+		virtual void stub12() override;
+		virtual void stub13() override;
+		virtual void stub14() override;
+		virtual void stub15() override;
+		virtual void stub16() override;
+		virtual void stub17() override;
+		virtual void stub18() override;
+		virtual void stub19() override;
+	public:
+		ScriptType_Quaternion(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		{
+			MESSAGE_CLASS_CREATED(ScriptType_Quaternion);
+		}
+
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		}
+		void operator delete (void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+	};
+
+	ScriptType_Quaternion*		tyQuaternion = (ScriptType_Quaternion*)0xA3CE90;	//	@A3CE90
+
+	class ScriptType_Color : public ScriptType
+	{
+	private:
+		virtual void stub0() override;
+		virtual void stub1() override;
+		virtual void stub2() override;
+		virtual void stub3() override;
+		virtual void stub4() override;
+		virtual void stub5() override;
+		virtual void stub6() override;
+		virtual void stub7() override;
+		virtual void stub8() override;
+		virtual void stub9() override;
+		virtual void stub10() override;
+		virtual void stub11() override;
+		virtual void stub12() override;
+		virtual void stub13() override;
+		virtual void stub14() override;
+		virtual void stub15() override;
+		virtual void stub16() override;
+		virtual void stub17() override;
+		virtual void stub18() override;
+		virtual void stub19() override;
+	public:
+		ScriptType_Color(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		{
+			MESSAGE_CLASS_CREATED(ScriptType_Color);
+		}
+
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		}
+		void operator delete (void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+	};
+
+	ScriptType_Color*			tyColor = (ScriptType_Color*)0xA3CE9C;		//	@A3CE9C
+
+	class ScriptType_String : public ScriptType
+	{
+	private:
+		virtual void stub0() override;
+		virtual void stub1() override;
+		virtual void stub2() override;
+		virtual void stub3() override;
+		virtual void stub4() override;
+		virtual void stub5() override;
+		virtual void stub6() override;
+		virtual void stub7() override;
+		virtual void stub8() override;
+		virtual void stub9() override;
+		virtual void stub10() override;
+		virtual void stub11() override;
+		virtual void stub12() override;
+		virtual void stub13() override;
+		virtual void stub14() override;
+		virtual void stub15() override;
+		virtual void stub16() override;
+		virtual void stub17() override;
+		virtual void stub18() override;
+		virtual void stub19() override;
+	public:
+		ScriptType_String(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		{
+			MESSAGE_CLASS_CREATED(ScriptType_String);
+		}
+
+		void* operator new (size_t size)
+		{
+			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		}
+		void operator delete (void* ptr)
+		{
+			if (ptr)
+				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+		}
+	};
+
+	ScriptType_String*			tyString = (ScriptType_String*)0xA3CEA0;	//	@A3CEA0
+
+	ScriptType_Nothing*			tNOTHING = (ScriptType_Nothing*)0xA3CE94;	//	@A3CE94
+	ScriptType_Number*			tNUMBER = (ScriptType_Number*)0xA3CEC0;		//	@A3CEC0
+	ScriptType_Integer*			tINTEGER = (ScriptType_Integer*)0xA3CEB8;	//	@A3CEB8
+	ScriptType_Boolean*			tBOOLEAN = (ScriptType_Boolean*)0xA3CEC4;	//	@A3CEC4
+	ScriptType_Vector*			tVECTOR = (ScriptType_Vector*)0xA3CEB4;		//	@A3CEB4
+	ScriptType_Quaternion*		tQUATERNION = (ScriptType_Quaternion*)0xA3CE98;	//	@A3CE98
+	ScriptType_Color*			tCOLOR = (ScriptType_Color*)0xA3CEA4;		//	@A3CEA4
+	ScriptType_String*			tSTRING = (ScriptType_String*)0xA3CEB0;		//	@A3CEB0
+
+	static void					Init();	//	@8634E0
+
+	static bool&				TypesListCRCCalculated = *(bool*)0xA3CEC8;	//	@A3CEC8
+	static List<ScriptType>&	TypesList = *(List<ScriptType>*)0xA3CECC;	//	@A3CECC
+	static int&					TypesListCRC = *(int*)0xA3CEDC;				//	@A3CEDC
 }
+
+static_assert(sizeof(ScriptTypes::ScriptType) == SCRIPT_TYPE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ScriptTypes::ScriptType));

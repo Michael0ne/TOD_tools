@@ -102,7 +102,6 @@ namespace GameConfig {
 				g_Blocks->Init(Script::LoadBlocks);
 
 		//	Init script types.
-		//	TODO: implementation for Register method!
 		ScriptTypes::Init();
 
 		//	Init scratchpad (mostly used in CollisionProbe calculations).
