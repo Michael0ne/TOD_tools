@@ -9,7 +9,7 @@ Fragment::Fragment(const Entity* owner)
 	m_pOwner = (Entity*)owner;
 	//	NOTE: 40FEA0 inlined.
 	m_nUniqueId0 = (*(time_t(*)(time_t*))0x9513DD)(NULL);	//	NOTE: if NULL is passed in, it returns current timestamp, otherwise value is returned in passed param.
-	m_nUniqueId1 = __rdtsc();	//	NOTE: this uses high dword returned by func.
+	m_nUniqueId1 = (int)__rdtsc();	//	NOTE: this uses high dword returned by func.
 	m_szName = nullptr;
 }
 

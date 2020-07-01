@@ -2,8 +2,11 @@
 
 #include "RigidBody.h"
 
-class OverdoseVehicle : RigidBody
+#define OVERDOSE_VEHICLE_CLASS_SIZE 1440 //	FIXME: 980 bytes is size specified for constructor in EXE, perhaps, RigidBody size should not include EntityType class size.
+
+class OverdoseVehicle : public RigidBody
 {
+private:
 	float m_fLFspring;
 	float m_fRFspring;
 	float m_fLRspring;
@@ -17,7 +20,7 @@ class OverdoseVehicle : RigidBody
 	float m_fSpringDamping;
 	float m_fStiffness;
 	float m_fRealMainBody_DefaultY;
-	byte m_bIsBike[4];
+	char m_bIsBike[4];
 	Vector4f m_vFrontPointVelocity;
 	Vector4f m_vRearPointVelocity;
 	Vector4f m_vFrontPointT;
@@ -195,8 +198,9 @@ class OverdoseVehicle : RigidBody
 	int field_3C8;
 	int field_3CC;
 	int field_3D0;
+
+public:
+	OverdoseVehicle();	//	@92D3B0
 };
 
-extern OverdoseVehicle* g_pOverdoseVehicle;
-
-static_assert(sizeof(OverdoseVehicle) == 0x5A0, MESSAGE_WRONG_CLASS_SIZE(OverdoseVehicle));
+static_assert(sizeof(OverdoseVehicle) == OVERDOSE_VEHICLE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(OverdoseVehicle));
