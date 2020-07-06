@@ -1,12 +1,8 @@
 #pragma once
 
 #include "stdafx.h"
-
-#include "EditorCamera.h"
-#include "Camera.h"
-#include "AuxQuadTree.h"
+#include "Types.h"
 #include "MemoryAllocators.h"
-
 #include "StringsPool.h"
 
 #define SCENE_CLASS_SIZE 620
@@ -14,6 +10,11 @@
 class Scene;
 class CollisionProbe;
 class RewindBuffer;
+class EditorCamera;
+class Camera;
+class AuxQuadTree;
+class Fragment;
+class Entity;
 
 struct Scene_Buffer92 {
 private:
@@ -229,7 +230,6 @@ public:
 	{
 		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
-
 	void operator delete(void* ptr)
 	{
 		if (ptr)
@@ -246,31 +246,28 @@ public:
 		MESSAGE_CLASS_DESTROYED(Scene);
 	}
 
-	void		Start();	//	@89A100
-	void		Load(const char* szSceneName);	//	@8980C0
-	void		UpdateLoadedBlocks(int unk1, int unk2);	//	@8986E0
-	void		UpdateCamera();	//	@893480
-	void		ForceLodCalculation(int unk);	//	@88D100
-	void		RefreshChildNodes();	//	@88C2B0
-	void		FinishCreation(const char* logtitle);	//	@8935F0
+	void			Start();	//	@89A100
+	void			Load(const char* szSceneName);	//	@8980C0
+	void			UpdateLoadedBlocks(int unk1, int unk2);	//	@8986E0
+	void			UpdateCamera();	//	@893480
+	void			ForceLodCalculation(int unk);	//	@88D100
+	void			RefreshChildNodes();	//	@88C2B0
+	void			FinishCreation(const char* logtitle);	//	@8935F0
 
-	void	SetFramerate(float frate)
+	void			SetFramerate(float frate)
 	{
 		m_bFixedFramerate = true;
 		m_fFixedFramerateVal = 1.0f / frate;
 	}
-
-	EditorCamera* GetEditorCamera()
+	EditorCamera*	GetEditorCamera()
 	{
 		return m_pEditorCamera;
 	}
-
-	Entity* GetCamera()
+	Entity*			GetCamera()
 	{
 		return m_pCamera;
 	}
-
-	Camera* GetCameraEntity()
+	Camera*			GetCameraEntity()
 	{
 		return m_pCameraEntity;
 	}
@@ -279,10 +276,10 @@ public:
 	static bool		Instantiate(const char* szSceneName);	//	@93CE00
 
 	static int& UnkInt_1;	//	@A3DCE4
+	static int& RewindBufferSize_1;	//	@A12088
+	static int& RewindBufferSize_2;	//	@A1208C
 };
 
-extern Scene* g_Scene;	//	@A3DCBC
-
-constexpr size_t scenesize = sizeof(Scene);
+extern Scene* g_Scene;
 
 static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Scene));

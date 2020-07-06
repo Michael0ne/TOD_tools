@@ -34,17 +34,20 @@ public:
 	int m_nLodDistance;
 
 public:
+	AuxQuadTree(const Entity* owner);	//	@89F430
+	~AuxQuadTree()
+	{
+		MESSAGE_CLASS_DESTROYED(AuxQuadTree);
+	}
+
 	void	CalculateLodForAllChildren()	//	@8A3820
 	{
 		(*(void(__thiscall*)(AuxQuadTree*))0x8A3820)(this);
 	}
-
 	void	CalculateLod()		//	@8A24F0
 	{
 		(*(void(__thiscall*)(AuxQuadTree*))0x8A24F0)(this);
 	}
-
-	AuxQuadTree(const Entity* owner);	//	@89F430
 };
 
 static_assert(sizeof(AuxQuadTree) == AUXQUADTREE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(AuxQuadTree));

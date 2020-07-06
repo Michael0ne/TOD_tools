@@ -1,4 +1,5 @@
 #include "Blocks.h"
+#include "Globals.h"
 
 Blocks* g_Blocks = NULL;
 
@@ -13,9 +14,24 @@ const char* Blocks::g_szBlockTypes[7] = //	@A11B64
 	"",
 };
 
+Blocks::Blocks(bool loadBlocks)
+{
+	MESSAGE_CLASS_CREATED(Blocks);
+
+	patch(0xA3D7C4, this, 4);
+
+	//	TODO: initialize lists
+}
+
 void Blocks::SetSceneName(const char* szSceneName)
 {
-	(*(void(__thiscall*)(Blocks*, const char*))0x877F40)(this, szSceneName);
+	String sceneDir;
+	Utils::ExtractFileDir(&sceneDir, szSceneName);
+
+	if (sceneDir.m_nLength > 0 && sceneDir.m_szString[sceneDir.m_nLength - 1] != '/')
+		sceneDir.Append("/");
+
+	m_SceneNames.Add(&sceneDir);
 }
 
 int Blocks::GetFreeResourceTypeListItem(int index)	//	@875540
@@ -35,13 +51,4 @@ int Blocks::GetFreeResourceTypeListItem(int index)	//	@875540
 	}
 
 	return freeind;
-}
-
-void Blocks::Init(bool unk)
-{
-	patch(0xA3D7C4, this, 4);
-
-	void(__thiscall * _Init)(Blocks * _this, bool _unk) = (void(__thiscall*)(Blocks*, bool))0x876E20;
-
-	_Init(this, unk);
 }

@@ -96,10 +96,7 @@ private:
 	List<int> m_UnkList_5;
 	List<int> m_UnkList_6;
 	List<TypeInfo> m_ResourceTypesList;
-	int field_1A0;
-	int field_1A4;
-	int field_1A8;
-	int field_1AC;
+	List<String>	m_SceneNames;
 	int field_1B0;
 	int field_1B4;
 	int field_1B8;
@@ -122,11 +119,7 @@ private:
 	char field_1F3;
 
 public:
-	Blocks()
-	{
-		MESSAGE_CLASS_CREATED(Blocks);
-	}
-
+	Blocks(bool loadBlocks);	//	@876E20
 	~Blocks()
 	{
 		MESSAGE_CLASS_DESTROYED(Blocks);
@@ -142,17 +135,16 @@ public:
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
 
-	void			Init(bool unk);	//	@76E20
 	void			SetSceneName(const char* szSceneName);	//	@877F40
 	int				GetFreeResourceTypeListItem( int index);	//	@875540
-	unsigned int	AddEntity(const Entity& ent);	//	@875FA0	//	NOTE: returns index
+	unsigned int	AddEntity(Entity* ent);	//	@875FA0	//	NOTE: returns index
 
-	void	SetRegionId(signed int id)	//	@875434
+	void			SetRegionId(signed int id)	//	@875434
 	{
 		m_nRegionId = id;
 	}
 
-	signed int GetAllocatorType()	//	@875360
+	signed int		GetAllocatorType()	//	@875360
 	{
 		if (!m_bLoad)
 			return 0;
