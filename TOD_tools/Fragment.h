@@ -1,21 +1,22 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Entity.h"
+
+#define FRAGMENT_CLASS_SIZE 24
 
 class Fragment
 {
 public:
-	Entity *m_pOwner;
-	void* m_pUnkStructPtr;
-	int field_8;
-	const char* m_szName;
-	time_t m_nUniqueId0;
-	int m_nUniqueId1;
+	class Entity	*m_pOwner;
+	void*			m_ResourceInfo;
+	int				field_8;
+	const char*		m_szName;
+	__int64			m_nUniqueId;
 
 public:
-	Fragment(const Entity* owner);	//	@87F1E0
+	Fragment(const class Entity* owner);	//	@87F1E0
 
 	const char*		_GetResourcePath();		//	@851720
 };
 
+static_assert(sizeof(Fragment) == FRAGMENT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Fragment));

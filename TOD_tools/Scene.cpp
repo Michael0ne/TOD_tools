@@ -5,9 +5,12 @@
 #include "StreamedSoundBuffers.h"
 #include "Performance.h"
 #include "Blocks.h"
+#include "Camera.h"
 
 Scene* g_Scene = (Scene*)0xA3DCBC;
 int& Scene::UnkInt_1 = *(int*)0xA3DCE4;
+int& Scene::RewindBufferSize_1 = *(int*)0xA12088;
+int& Scene::RewindBufferSize_2 = *(int*)0xA1208C;
 
 void Scene_Buffer92::Reset()
 {

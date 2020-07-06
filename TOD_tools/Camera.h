@@ -6,7 +6,7 @@
 
 #define CAMERA_CLASS_SIZE 212
 
-struct Camera : public Entity
+class Camera : public Entity
 {
 private:
 	int field_78;

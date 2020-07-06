@@ -92,29 +92,22 @@ namespace GameConfig {
 		if (m_pConfigurationVariables->IsVariableSet("forcefeedback"))
 			Script::ForceFeedback = m_pConfigurationVariables->GetParamValueBool("forcefeedback");
 
+		Script::LoadBlocks = true;
 		if (m_pConfigurationVariables->IsVariableSet("loadblocks"))
 			Script::LoadBlocks = m_pConfigurationVariables->GetParamValueBool("loadblocks");
 
 		//	Try and initialize Blocks class.
 		//	TODO: Blocks implementation!
-		if (!Allocators::Released)
-			if (g_Blocks = new Blocks())
-				g_Blocks->Init(Script::LoadBlocks);
+		g_Blocks = new Blocks(Script::LoadBlocks);
 
 		//	Init script types.
 		ScriptTypes::Init();
 
 		//	Init scratchpad (mostly used in CollisionProbe calculations).
-		//	TODO: implementation!
-		if (!Allocators::Released)
-			if (g_Scratchpad = new Scratchpad())
-				g_Scratchpad->Init();
+		g_Scratchpad = new Scratchpad();
 
 		//	Init SceneNode (contains rewind buffer).
-		//	TODO: implementation!
-		if (!Allocators::Released)
-			if (g_SceneNode = new SceneNode())
-				g_SceneNode->Init();
+		g_SceneNode = new SceneNode();
 
 		//	Init resources types.
 		//	TODO: implementation for Register class!

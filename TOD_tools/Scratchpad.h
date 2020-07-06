@@ -16,8 +16,8 @@ public:
 		MESSAGE_CLASS_CREATED(Scratchpad);
 
 		memset(&_pad, 0, sizeof(_pad));
+		patch(0xA3DE4C, this, 4);
 	}
-
 	~Scratchpad()
 	{
 		MESSAGE_CLASS_DESTROYED(Scratchpad);
@@ -27,14 +27,11 @@ public:
 	{
 		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
-
 	void operator delete(void* ptr)
 	{
 		if (ptr)
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
-
-	void	Init();	//	@8C1650
 };
 
 extern Scratchpad* g_Scratchpad;

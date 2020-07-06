@@ -30,6 +30,7 @@ namespace Utils
 	static bool (__cdecl* IsDirectoryValid)(const char* inPath) = (bool (__cdecl*)(const char*))0x418410;	//	NOTE: actual function at 437FD0.
 	static void (__cdecl* DeleteAllFilesInFolder)(const char* inPath) = (void (__cdecl*)(const char*))0x418B50;
 	static void (__cdecl* CreateDirectoryIfNotFound)(const char* inPath) = (void (__cdecl*)(const char*))0x4186F0;
+	static String* (__cdecl* ExtractFileDir)(String* outDir, const char* inPath) = (String * (__cdecl*)(String * outDir, const char*))0x409360;
 
 	static inline void ToLowercase(char* str) {
 		char* str_ = str;

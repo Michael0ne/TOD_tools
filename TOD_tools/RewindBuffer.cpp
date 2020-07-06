@@ -1,31 +1,22 @@
 #include "RewindBuffer.h"
 
-#include "MemoryAllocators.h"
-
-void RewindBuffer::Init(unsigned int size)
+RewindBuffer::RewindBuffer(const unsigned int bufferSize)
 {
-	m_pUnkPtrToUnkStr = nullptr;
-	m_nChunks = size / 4;
+	MESSAGE_CLASS_CREATED(RewindBuffer);
 
-	//	TODO: allocate 'pUnkStr'
-	m_pUnkStr.m_pUnkBuffer_Size32 = (*(void*(__cdecl*)())0x8AB060)();
-	m_pUnkStr.field_8 = 0;
-
-	//	NOTE: figure out allocator number?
-	if (!Allocators::Released)
-		m_pBuffer = Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
-
-	m_pUnkStr.Init();
-	m_pUnkPtrToUnkStr = m_pUnkStr.m_pUnkBuffer_Size32;
-
+	m_UnknownList.field_4 = (*(void* (*)())0x8AB060)();
+	m_UnknownList.field_8 = 0;
+	field_1C = 0;
+	m_nChunks = bufferSize / 4;
+	m_pBuffer = new char(bufferSize);
 	field_C = 0;
+	m_UnknownList._8751D0();
 	m_nSize = 0;
 	field_20 = 0;
+	field_1C = m_UnknownList.field_4;
 }
 
-void RewindBuffer_UnkStr::Init()
+void RewindBuffer_List::_8751D0()
 {
-	void(__thiscall * _Init)(RewindBuffer_UnkStr * _this) = (void(__thiscall*)(RewindBuffer_UnkStr*))0x8751D0;
-
-	_Init(this);
+	(*(void(__thiscall*)(RewindBuffer_List*))0x8751D0)(this);
 }

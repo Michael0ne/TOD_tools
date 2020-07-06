@@ -143,8 +143,10 @@
     <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="MemoryCards.h" />
     <ClInclude Include="MoviePlayer.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="NodeSpatial.h" />
     <ClInclude Include="OverdoseVehicle.h" />
+    <ClInclude Include="Position.h" />
     <ClInclude Include="ProfilerInput.h" />
     <ClInclude Include="radbase.h" />
     <ClInclude Include="Renderer.h" />
@@ -200,7 +202,9 @@
     <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
     <ClCompile Include="MoviePlayer.cpp" />
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeSpatial.cpp" />
+    <ClCompile Include="Position.cpp" />
     <ClCompile Include="ProfilerInput.cpp" />
     <ClCompile Include="Progress.cpp" />
     <ClCompile Include="Progress.h" />
