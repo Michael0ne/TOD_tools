@@ -1,16 +1,16 @@
 #include "Camera.h"
-#include "Scene.h"
 
-Vector4f& Camera::CameraPosition = *(Vector4f*)0xA3D898;
-
-void Camera::StoreCameraMatrix()
+Camera::Camera() : Node(NODE_MASK_POSITION)
 {
-	D3DMATRIX cameraPositionMatrix;
+	MESSAGE_CLASS_CREATED(Camera);
 
-	g_Scene->GetCameraEntity()->GetMatrix(&cameraPositionMatrix);
+	(*(void(__thiscall*)(Vector4f*))0x4087C0)(&m_vUnknown_2);
 
-	CameraPosition.x = cameraPositionMatrix._41;
-	CameraPosition.y = cameraPositionMatrix._42;
-	CameraPosition.z = cameraPositionMatrix._43;
-	CameraPosition.a = (float)tan(g_Scene->GetCameraEntity()->GetFov() * 0.017453292f * 0.5f);
+	m_Offset = 0.0f;
+	m_Fov = 70.0f;
+	m_NearClip = 1.0f;
+	m_FarClip = 1000.0f;
+	m_DynlightCullRange = 100.0f;
+
+	m_vUnknown_1 = Vector4<float>();
 }

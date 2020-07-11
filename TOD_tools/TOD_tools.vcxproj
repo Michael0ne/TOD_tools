@@ -134,6 +134,7 @@
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FileInternal.h" />
+    <ClInclude Include="Folder.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GEKeyFrame.h" />
     <ClInclude Include="GFXEffect.h" />
@@ -142,8 +143,10 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="MemoryCards.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="MoviePlayer.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="NodeLogical.h" />
     <ClInclude Include="NodeSpatial.h" />
     <ClInclude Include="OverdoseVehicle.h" />
     <ClInclude Include="Position.h" />
@@ -194,6 +197,7 @@
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FileInternal.cpp" />
+    <ClCompile Include="Folder.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GEKeyFrame.cpp" />
     <ClCompile Include="GFXEffect.cpp" />
@@ -201,6 +205,7 @@
     <ClCompile Include="List.cpp" />
     <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="MoviePlayer.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeSpatial.cpp" />

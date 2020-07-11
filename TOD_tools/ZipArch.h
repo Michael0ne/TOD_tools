@@ -3,9 +3,11 @@
 #include "Types.h"
 #include "StringsPool.h"
 
+#define ZIPSLOT_STRUCT_SIZE 16
+
 struct ZipSlotInfo_fldC
 {
-	int		field_0;	//	String pointer originally.
+	int		field_0;
 	int		field_4;
 };
 
@@ -13,7 +15,6 @@ struct ZipSlotInfo
 {
 public:
 	int					field_0;
-	//unsigned int		field_4;	//	bit field.
 	union {
 		unsigned char flag0 : 1;
 		unsigned char flag1 : 1;
@@ -36,4 +37,4 @@ public:
 	static int&			SlotId;				//	@A35DDC
 };
 
-static_assert(sizeof(ZipSlotInfo) == 0x10, MESSAGE_WRONG_CLASS_SIZE(ZipSlotInfo));
+static_assert(sizeof(ZipSlotInfo) == ZIPSLOT_STRUCT_SIZE, MESSAGE_WRONG_CLASS_SIZE(ZipSlotInfo));

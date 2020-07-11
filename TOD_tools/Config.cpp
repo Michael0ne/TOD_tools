@@ -931,10 +931,7 @@ namespace GameConfig {
 
 		ZipArch::ZipNames[currentSlotId]->Set(szZipPath);
 
-		File* ZipFile;
-		if (!Allocators::Released)
-			if (ZipFile = new File())
-				ZipFile->Open(szZipPath, 33, true);
+		File* ZipFile = new File(szZipPath, 33, true);
 
 		File::g_FilesArray[currentSlotId] = ZipFile;
 		*File::g_FileSemaphores[currentSlotId] = CreateSemaphoreA(NULL, 1, 1, NULL);
@@ -1014,8 +1011,7 @@ namespace GameConfig {
 		if (!Utils::FindFileEverywhere("/FaceColl.mat"))
 			return;
 
-		FileInternal faceColFile;
-		faceColFile.Open("/FaceColl.mat", 1, true);
+		FileInternal faceColFile("/FaceColl.mat", 1, true);
 
 		if (!faceColFile.IsFileOpen())
 			return;
@@ -1026,8 +1022,6 @@ namespace GameConfig {
 			buffer.ToLowerCase();
 			FaceColList.Add(&buffer);
 		}
-
-		faceColFile.Close();
 	}
 
 	//	NOTE:	what does this do?

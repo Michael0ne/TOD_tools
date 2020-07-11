@@ -67,9 +67,7 @@ bool SavesDirectoriesInformation::FormatCard()
 	strcpy(temp, m_sSaveFolderPath.m_szString);
 	strcat(temp, "Formatted.txt");
 
-	FileInternal formattedFile;
-	formattedFile.Open(temp, 2, true);
-	formattedFile.Close();
+	FileInternal formattedFile(temp, 2, true);
 
 	return true;
 }

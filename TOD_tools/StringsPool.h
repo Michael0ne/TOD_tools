@@ -23,7 +23,19 @@ public:
 
 		m_pEmpty = NULL;
 
-		strcpy(m_szString, str);
+		strcpy_s(m_szString, m_nLength, str);
+	}
+
+	String(const String* rhs)
+	{
+		m_nLength = rhs->m_nLength;
+		m_nBitMask = rhs->m_nBitMask;
+		m_pEmpty = NULL;
+		m_szString = &m_pEmpty;
+
+		m_szString = (char*)Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(m_nBitMask & 0x7FFFFFFF);
+
+		strcpy_s(m_szString, m_nLength, rhs->m_szString);
 	}
 
 	//	Override assignment operator, when rvalue is String object.

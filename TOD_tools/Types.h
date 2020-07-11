@@ -31,6 +31,8 @@ struct Vector3 {
 	{}
 };
 
+typedef Vector3<float> Vector3f;
+
 template <typename T>
 struct Vector4 {
 	T	x;

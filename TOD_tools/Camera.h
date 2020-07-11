@@ -1,14 +1,19 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "Entity.h"
+#include "Node.h"
 
 #define CAMERA_CLASS_SIZE 212
 
-class Camera : public Entity
+class Camera : public Node
 {
 private:
+	Vector4f m_vUnknown_2;
+	int field_60;
+	int field_64;
+	int field_68;
+	int field_6C;
+	int field_70;
+	int field_74;
 	int field_78;
 	int field_7C;
 	int field_80;
@@ -23,21 +28,14 @@ private:
 	int field_A4;
 	int field_A8;
 	int field_AC;
-	float m_fOffset;
-	float m_fFov;
-	float m_fNearclip;
-	float m_fFarclip;
-	float m_fDynlightCullRange;
-	Vector4f m_vUnkVec1;
-
+	float m_Offset;
+	float m_Fov;
+	float m_NearClip;
+	float m_FarClip;
+	float m_DynlightCullRange;
+	Vector4f m_vUnknown_1;
 public:
-	static Vector4f& CameraPosition;
-	static void StoreCameraMatrix();	//	@87E160
-
-	inline const float GetFov() const
-	{
-		return m_fFov;
-	}
+	Camera();	//	@87D8F0
 };
 
 static_assert(sizeof(Camera) == CAMERA_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Camera));
