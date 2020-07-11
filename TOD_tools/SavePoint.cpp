@@ -18,7 +18,7 @@ SavePoint::~SavePoint()
 {
 	if (m_pSaveFileHandle) {
 		--ms_FilesOpen;
-		m_pSaveFileHandle->lpVtbl->Release(m_pSaveFileHandle, true);
+		m_pSaveFileHandle->scalar_destructor(m_pSaveFileHandle, true);
 		m_pSaveFileHandle = nullptr;
 	}
 

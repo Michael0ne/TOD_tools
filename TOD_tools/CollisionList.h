@@ -12,13 +12,8 @@ class CollisionList
 {
 public:
 	Entity *m_pOwner;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
+	Vector3f m_vPosition_1;
+	Orientation m_vOrientation;
 	Vector4f m_vPosition;
 	int field_30;
 	int field_34;

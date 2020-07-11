@@ -4,9 +4,10 @@
 
 #define NODE_CLASS_SIZE 80
 
-#define NODE_MASK_POSITION 1
-#define NODE_MASK_QUADTREE 2
-#define NODE_MASK_FRAGMENT 4
+#define NODE_MASK_EMPTY		0
+#define NODE_MASK_POSITION	1
+#define NODE_MASK_QUADTREE	2
+#define NODE_MASK_FRAGMENT	4
 
 #define NODE_FLAG_DISABLED_ON_CUTSCENE 00010000000000000000000000000000b
 
@@ -18,11 +19,11 @@ private:
 	unsigned int m_Flags;
 	int field_2C;	//	NOTE: it looks like short[2].
 	class AuxQuadTree* m_QuadTree;
-	ScriptTypes::ScriptType_Entity* m_NextSibling;	//	NOTE: this more likely to be the Node class.
+	Node* m_NextSibling;
 	class CollisionList* m_CollisionIgnoreList;
 	class Position* m_Position;
 	ScriptTypes::ScriptType_Entity* m_Parent;
-	ScriptTypes::ScriptType_Entity* m_FirstChild;	//	NOTE: this more likely to be the Node class.
+	Node* m_FirstChild;
 	class Fragment* m_Fragment;
 	char* m_Name;
 

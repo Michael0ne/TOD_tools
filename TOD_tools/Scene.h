@@ -1,105 +1,57 @@
 #pragma once
 
-#include "stdafx.h"
-#include "Types.h"
-#include "MemoryAllocators.h"
-#include "StringsPool.h"
+#include "Folder.h"
 
 #define SCENE_CLASS_SIZE 620
 
-class Scene;
-class CollisionProbe;
-class RewindBuffer;
-class EditorCamera;
-class Camera;
-class AuxQuadTree;
-class Fragment;
-class Entity;
-
-struct Scene_Buffer92 {
-private:
-	int field_0;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	int field_24;
-	int field_28;
-	int field_2C;
-	int field_30;
-	int field_34;
-	int field_38;
-	int field_3C;
-	int field_40;
-	int field_44;
-	int field_48;
-	int field_4C;
-	int field_50;
-	int field_54;
-	int field_58;
-
-public:
-	void	Reset();	//	@436AE0
-};
-
-struct Scene_Buffer24;
-
-struct Scene__vtable {
-	void(__thiscall* Destroy)(Scene* _this, bool freememory);	//	@89A7E0
-	void(__thiscall* _895E40)(Scene* _this);	//	@895E40
-	void(__thiscall* _484CC0)(Scene* _this, int unk_1);	//	@484CC0
-	int* (__thiscall* FindNode)(Scene* _this, const char* searchNode);	//	@88EED0
-	void* (__thiscall* _88EC20)(Scene* _this, int unk_1);	//	@88EC20
-	void(__thiscall* _QuadTreeRefresh)(Scene* _this);	//	@88DE70
-	int(__thiscall* Update)(Scene* _this);	//	@897450
-	void(__cdecl* nullsub_1)();	//	@8CB190
-	__int64(__thiscall* _896370)(Scene* _this);	//	@896370
-	char(__stdcall* _ReturnZero_1)(int unk_1, int unk_2);	//	@484DB0
-	double(__stdcall* _ReturnMinusOne)(int unk_1, int unk_2);	//	@8F8650
-	void(__cdecl* stub1)();	//	@88C600
-	int(__thiscall* _88C610)(Scene* _this);	//	@88C610
-	void(__cdecl* nullsub_2)();	//	@883EC0
-	void(__cdecl* nullsub_3)();	//	@8CB190
-	void(__cdecl* nullsub_4)();	//	@883EC0
-	void(__stdcall* ReturnEmptyString)(String* outString);	//	@484E80
-	Scene* (__stdcall* _484DC0)(Scene* _this);	//	@484DC0
-};
-
-class Scene
+class Scene_Buffer
 {
+private:
+	int	field_0;
+	int	field_4;
+	int	field_8;
+	int	field_C;
+	int	field_10;
+	int	field_14;
+	int	field_18;
+	int	field_1C;
+	int	field_20;
+	int	field_24;
+	int	field_28;
+	int	field_2C;
+	int	field_30;
+	int	field_34;
+	int	field_38;
+	int	field_3C;
+	int	field_40;
+	int	field_44;
+	int	field_48;
+	int	field_4C;
+	int	field_50;
+	int	field_54;
+	int	field_58;
+
 public:
-	Scene__vtable* lpVtbl;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	void* m_pPositionVtable;
-	int field_28;
-	int field_2C;
-	AuxQuadTree* m_pQuadTree;
-	int field_34;
-	int field_38;
-	int field_3C;
-	int field_40;
-	EditorCamera* m_pEditorCamera;
-	Fragment* m_pUnkFragment;
-	char* m_szUnkBlockName;
-	int field_50;
-	Scene_Buffer24* m_pBuffer24;
+	Scene_Buffer(int unk1, char unk2, int unk3);	//	@436B00
+};
+
+enum ePlayModes
+{
+	MODE_UNKNOWN = 0,
+	MODE_UNKNOWN_1 = 1,
+	MODE_UNKNOWN_2 = 2,
+	MODE_UNKNOWN_3 = 3
+};
+
+class Scene : public Folder
+{
+private:
 	int field_58;
-	int m_nPlayMode;
-	Entity* m_pCamera;
-	Camera* m_pUnkEntityPtr;
-	char m_bQuadTreesAllocated[4];
-	Camera* m_pCameraEntity;
+	int m_PlayMode;
+	class ScriptType_Entity* m_pCamera;
+	int* field_64;
+	char m_bQuadTreesAllocated;
+	class Camera* m_CameraEntity;
 	int field_70;
 	int field_74;
 	int field_78;
@@ -114,71 +66,47 @@ public:
 	int field_9C;
 	int field_A0;
 	int field_A4;
-	CollisionProbe* m_pSharedProbe;
-	RewindBuffer* m_pRewindBuffer1;
-	RewindBuffer* m_pRewindBuffer2;
+	class CollisionProbe* m_pSharedProbe;
+	class RewindBuffer* m_pRewindBuffer1;
+	class RewindBuffer* m_pRewindBuffer2;
 	int field_B4;
 	int field_B8;
 	int field_BC;
 	int field_C0;
-	int m_nRewindResumeTimeMs;
+	int m_RewindResumeTimeMs;
 	int field_C8;
-	int field_CC;
-	int field_D0;
-	int field_D4;
-	int field_D8;
-	int field_DC;
-	int field_E0;
-	int field_E4;
-	int field_E8;
-	int field_EC;
-	int field_F0;
-	int field_F4;
-	int field_F8;
-	int field_FC;
-	int field_100;
-	int field_104;
-	int field_108;
-	int m_nNodesWithUpdateOrBlockingScripts;
-	int m_nInitMode;
-	float m_fTimeMultiplier;
-	float field_118;
-	float m_fRewindTimeMultiplier;
-	bool m_bFixedFramerate;	//	120
+	List<int> m_List_1;
+	List<int> m_List_2;
+	List<int> m_List_3;
+	List<int> m_List_4;
+	int m_NodesWithUpdateOrBlockingScripts;
+	char m_InitMode;
+	float m_TimeMultiplier;
+	float m_f118;
+	float m_RewindTimeMultiplier;
+	bool m_FixedFramerate;
 	char field_121[3];
-	float m_fFixedFramerateVal;	//	124
+	float m_FixedFramerateVal;
 	int field_128;
-	int field_12C;
-	int field_130;
-	int field_134;
-	int field_138;
-	int field_13C;
-	int field_140;
-	int field_144;
-	int field_148;
-	int field_14C;
-	int field_150;
-	int field_154;
-	int field_158;
-	int field_15C;
-	int field_160;
-	int field_164;
-	int field_168;
+	List<int> m_List_5;
+	List<int> m_List_6;
+	List<int> m_List_7;
+	List<int> m_List_8;
 	int field_16C;
 	int m_nSavePointOperationError;
 	String m_sSaveDir;
 	int m_nMemoryCardIndex;
 	int m_nSaveSlotIndex;
-	int* field_18C;
+	ScriptType_Entity* field_18C;
 	int m_nSaveGameSize;
-	int field_194;
-	Vector4f m_vCameraPosition;
-	byte field_1A8;
-	byte m_nWindMode;
-	byte field_1AA;
-	byte m_bWindPause;
-	byte m_bFlushRewindRequested[4];
-	int* m_pBlocksArray;
+	class MemoryCards* m_MemoryCards;
+	Vector4f m_CameraPosition;
+	char field_1A8;
+	char m_WindMode;
+	char field_1AA;
+	char m_WindPause;
+	char m_FlushRewindRequested;
+	Node* m_LoadedBlocks;
 	int field_1B4;
 	int field_1B8;
 	int field_1BC;
@@ -219,65 +147,14 @@ public:
 	int field_248;
 	int field_24C;
 	int field_250;
-	Scene_Buffer92* m_pBuffer_92_1;
-	Scene_Buffer92* m_pBuffer_92_2;
-	int m_nLoadTime[2];	//	FIXME: __int64 should be here, but size gets broken somehow...
+	Scene_Buffer* m_Buffer_1;
+	Scene_Buffer* m_Buffer_2;
+	int m_nLoadTime[2];
 	int m_nTimeMilliseconds;
 	int field_268;
 
 public:
-	void* operator new (size_t size)
-	{
-		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
-	}
-	void operator delete(void* ptr)
-	{
-		if (ptr)
-			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
-	}
-
-	Scene()
-	{
-		MESSAGE_CLASS_CREATED(Scene);
-	}
-
-	~Scene()
-	{
-		MESSAGE_CLASS_DESTROYED(Scene);
-	}
-
-	void			Start();	//	@89A100
-	void			Load(const char* szSceneName);	//	@8980C0
-	void			UpdateLoadedBlocks(int unk1, int unk2);	//	@8986E0
-	void			UpdateCamera();	//	@893480
-	void			ForceLodCalculation(int unk);	//	@88D100
-	void			RefreshChildNodes();	//	@88C2B0
-	void			FinishCreation(const char* logtitle);	//	@8935F0
-
-	void			SetFramerate(float frate)
-	{
-		m_bFixedFramerate = true;
-		m_fFixedFramerateVal = 1.0f / frate;
-	}
-	EditorCamera*	GetEditorCamera()
-	{
-		return m_pEditorCamera;
-	}
-	Entity*			GetCamera()
-	{
-		return m_pCamera;
-	}
-	Camera*			GetCameraEntity()
-	{
-		return m_pCameraEntity;
-	}
-
-	static bool		Update();	//	@93CEB0
-	static bool		Instantiate(const char* szSceneName);	//	@93CE00
-
-	static int& UnkInt_1;	//	@A3DCE4
-	static int& RewindBufferSize_1;	//	@A12088
-	static int& RewindBufferSize_2;	//	@A1208C
+	Scene();	//	@896D40
 };
 
 extern Scene* g_Scene;

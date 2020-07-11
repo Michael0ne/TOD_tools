@@ -21,7 +21,6 @@ namespace Utils
 	static int(__cdecl* CalcCRC32)(const char* str, unsigned int strlength) = (int(__cdecl*)(const char*, unsigned int))0x4657C0;
 	static bool(__cdecl* IsFileAvailable)(const char* szPath) = (bool(__cdecl*)(const char*))0x418B00;
 	static void(__cdecl* CreateDirectoriesRecursive)(const char* szPath) = (void(__cdecl*)(const char*))0x4096E0;
-	static void(__cdecl* GetFileAbsolutePath)(String* outStr) = (void(__cdecl*)(String*))0x437A70;	//	Also, at 437B80
 	static void(__cdecl* SetWarningString)(const char* str) = (void(__cdecl*)(const char*))0x406E00;
 	static const char* (__cdecl* GetErrorCodeDescription)(unsigned int code) = (const char* (__cdecl*)(unsigned int))0x45BF32;
 	static void(__cdecl* ExtractFilePath)(const char* inPath, char* outDirectory, char* outFilename, char* outExtension) = (void(__cdecl*)(const char*, char*, char*, char*))0x4088E0;
@@ -31,6 +30,10 @@ namespace Utils
 	static void (__cdecl* DeleteAllFilesInFolder)(const char* inPath) = (void (__cdecl*)(const char*))0x418B50;
 	static void (__cdecl* CreateDirectoryIfNotFound)(const char* inPath) = (void (__cdecl*)(const char*))0x4186F0;
 	static String* (__cdecl* ExtractFileDir)(String* outDir, const char* inPath) = (String * (__cdecl*)(String * outDir, const char*))0x409360;
+	static String* (__cdecl* GetPathFromDirectoryMappings)(String* outPath, const char* inPath) = (String * (__cdecl*)(String*, const char*))0x41A360;
+	static bool(__cdecl* ReadFileAttributes)(const char* path) = (bool (__cdecl*)(const char*))0x437E90;
+	static void (__cdecl* GetWorkingDirRelativePath)(String* outPath) = (void (__cdecl*)(String*))0x437A70;
+	static void (__cdecl* GetGameWorkingDirRelativePath)(String* outPath) = (void (__cdecl*)(String*))0x437B80;
 
 	static inline void ToLowercase(char* str) {
 		char* str_ = str;

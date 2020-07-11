@@ -8,13 +8,16 @@ Node::Node(unsigned char allocationBitmask)
 	MESSAGE_CLASS_CREATED(Node);
 
 	m_Flags = m_Flags & 0xC000F000 | 0x40000000;
-	field_4C = field_34 = field_38 = 0;
+	field_2C = 0;
 	((Entity*)this)->field_10 = 0;
-	m_Parent = nullptr;
-	m_Fragment = nullptr;
-	m_Position = nullptr;
 	m_QuadTree = nullptr;
-	field_44 = nullptr;
+	m_NextSibling = nullptr;
+	m_CollisionIgnoreList = nullptr;
+	m_Position = nullptr;
+	m_Parent = nullptr;
+	m_FirstChild = nullptr;
+	m_Fragment = nullptr;
+	m_Name = nullptr;
 
 	if (allocationBitmask & NODE_MASK_POSITION)
 		m_Position = new Position(this);
