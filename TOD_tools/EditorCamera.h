@@ -1,38 +1,19 @@
 #pragma once
 
-#include "stdafx.h"
-#include "Entity.h"
+#include "Camera.h"
 
 #define EDITORCAMERA_CLASS_SIZE 312
 
-class EditorCamera
+class EditorCamera : public Camera
 {
-private:
-	Entity entity;
-	int field_78;
-	int field_7C;
-	int field_80;
-	int field_84;
-	int field_88;
-	int field_8C;
-	int field_90;
-	int field_94;
-	int field_98;
-	int field_9C;
-	int field_A0;
-	int field_A4;
-	int field_A8;
-	int field_AC;
-	float m_fB0;
-	float m_fB4;
-	float m_fB8;
-	float m_fBC;
-	float m_fC0;
-	Vector4f m_vUnkVector1;
-	byte field_D4[4];
+protected:
+	char field_D4;
+	char field_D5;
+	char field_D6;
+	char field_D7;
 	float m_fD8;
 	float m_fDC;
-	byte field_E0[4];
+	char field_E0;
 	int field_E4;
 	int field_E8;
 	int field_EC;
@@ -42,14 +23,14 @@ private:
 	int field_FC;
 	int field_100;
 	int field_104;
-	byte field_108[4];
-	Vector4f m_vUnkVector2;
-	Vector4f m_vUnkVector3;
+	char field_108;
+	Orientation m_Orient_1;
+	Orientation m_Orient_2;
 	int field_12C;
 	int field_130;
 	int field_134;
+public:
+	EditorCamera();	//	@484B20
 };
-
-extern EditorCamera* g_EditorCamera;
 
 static_assert(sizeof(EditorCamera) == EDITORCAMERA_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(EditorCamera));

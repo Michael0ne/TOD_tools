@@ -120,13 +120,18 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimLayer.h" />
+    <ClInclude Include="AnimSlot.h" />
     <ClInclude Include="AuxQuadTree.h" />
     <ClInclude Include="bink.h" />
     <ClInclude Include="Blocks.h" />
+    <ClInclude Include="Bone.h" />
     <ClInclude Include="Builtin.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Character.h" />
     <ClInclude Include="CollisionList.h" />
     <ClInclude Include="CollisionProbe.h" />
+    <ClInclude Include="CutscenePlayer.h" />
     <ClInclude Include="DecalManager.h" />
     <ClInclude Include="DieselPowerSound.h" />
     <ClInclude Include="DumpTable.h" />
@@ -143,7 +148,10 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="MemoryCards.h" />
+    <ClInclude Include="MockupBox.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="MotionAnimSlot.h" />
+    <ClInclude Include="MotionLayer.h" />
     <ClInclude Include="MoviePlayer.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="NodeLogical.h" />
@@ -184,12 +192,17 @@
     <ClInclude Include="ZipArch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimLayer.cpp" />
+    <ClCompile Include="AnimSlot.cpp" />
     <ClCompile Include="AuxQuadTree.cpp" />
     <ClCompile Include="Blocks.cpp" />
+    <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Builtin.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="CollisionList.cpp" />
     <ClCompile Include="CollisionProbe.cpp" />
+    <ClCompile Include="CutscenePlayer.cpp" />
     <ClCompile Include="DecalManager.cpp" />
     <ClCompile Include="DieselPowerSound.cpp" />
     <ClCompile Include="DumpTable.cpp" />
@@ -205,7 +218,10 @@
     <ClCompile Include="List.cpp" />
     <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
+    <ClCompile Include="MockupBox.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="MotionAnimSlot.cpp" />
+    <ClCompile Include="MotionLayer.cpp" />
     <ClCompile Include="MoviePlayer.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeSpatial.cpp" />

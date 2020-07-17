@@ -37,3 +37,9 @@ Node::Node(unsigned char allocationBitmask)
 	field_2C = field_2C | 0xFFFFFFFF;
 	m_Flags = m_Flags | 0xF000;
 }
+
+//	TODO: implementation!
+void Node::SetParam(int index, void* param, ScriptTypes::ScriptType* type)
+{
+	(*(void(__thiscall*)(Node*, int, void*, ScriptTypes::ScriptType*))0x86A3C0)(this, index, param, type);
+}

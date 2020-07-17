@@ -14,7 +14,7 @@
 //	NOTE: this is actual base class for game 'entities'.
 class Node : public Entity
 {
-private:
+protected:
 	void* lpPositionVtable;	//	NOTE: is Position class virtual methods only?
 	unsigned int m_Flags;
 	int field_2C;	//	NOTE: it looks like short[2].
@@ -22,7 +22,7 @@ private:
 	Node* m_NextSibling;
 	class CollisionList* m_CollisionIgnoreList;
 	class Position* m_Position;
-	ScriptTypes::ScriptType_Entity* m_Parent;
+	Node* m_Parent;
 	Node* m_FirstChild;
 	class Fragment* m_Fragment;
 	char* m_Name;
@@ -53,6 +53,8 @@ public:
 	{
 		MESSAGE_CLASS_DESTROYED(Node);
 	}
+
+	void			SetParam(int index, void* param, ScriptTypes::ScriptType* type);	//	@86A3C0
 
 	const char*		GetTypename();	//	@891160
 	const char*		GetScript();	//	@86A230

@@ -114,7 +114,7 @@ HANDLE File::Create()
 			m_hFile = nullptr;
 
 			LeaveCriticalSection((LPCRITICAL_SECTION)m_hFile);
-			return m_hFile
+			return m_hFile;
 		}
 
 		if (GameDiscFound)
@@ -137,7 +137,7 @@ HANDLE File::Create()
 
 const char* File::GetLastErrorMessage()
 {
-	char* msgBuf;
+	char* msgBuf = nullptr;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_ARGUMENT_ARRAY | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), FORMAT_MESSAGE_FROM_STRING, msgBuf, NULL, NULL);
 
 	return msgBuf;

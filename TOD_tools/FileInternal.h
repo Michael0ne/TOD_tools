@@ -8,7 +8,8 @@
 
 class FileInternal
 {
-private:
+	friend class SavePoint;
+protected:
 	String			m_sFileName;
 	File*			m_pFileHandle;
 	char			m_FileReadAttribute;
