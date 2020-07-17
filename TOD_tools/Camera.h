@@ -6,7 +6,7 @@
 
 class Camera : public Node
 {
-private:
+protected:
 	Vector4f m_vUnknown_2;
 	int field_60;
 	int field_64;
