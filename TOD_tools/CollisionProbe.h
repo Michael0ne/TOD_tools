@@ -1,58 +1,51 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "Entity.h"
+#include "Node.h"
 
 #define COLLISIONPROBE_CLASS_SIZE 292
 
-class CollisionProbe
+class CollisionProbe : public Node
 {
-public:
-	Entity entity;
-	int field_78;
-	int field_7C;
-	int field_80;
-	int field_84;
-	int field_88;
-	int field_8C;
-	int field_90;
-	int field_94;
-	int field_98;
-	int field_9C;
-	int field_A0;
-	int field_A4;
-	int field_A8;
+protected:
+	Vector4f m_ResolvedPos;
+	Vector4f m_ContactPos;
+	Vector4f m_ClosestNormal;
+	Node* m_ClosestNode;
+	Node* m_RealNode;
+	int m_ClosestCollisionVolume;
+	float m_MinDistance;
+	class ScriptType_Entity* m_TouchingNodes;
+	List<int> m_List_1;
+	int m_SurfaceID;
+	int m_MaterialID;
 	int field_AC;
-	float m_fB0;
-	int field_B4;
-	int field_B8;
-	int field_BC;
-	int field_C0;
-	int field_C4;
-	int field_C8;
-	int field_CC;
+	float m_Angle;
+	float m_Radius;
+	List<Node> m_IgnoredNodes;
+	int m_DynamicMask;
+	int m_UserMask;
 	int* field_D0;
-	int field_D4;
-	int field_D8;
-	int field_DC;
-	int field_E0;
-	int field_E4;
-	int field_E8;
-	int field_EC;
-	int field_F0;
-	int field_F4;
-	int field_F8;
-	char field_FC[4];
-	Vector4f m_vUnkVec1;
+	class ScriptType_Entity* m_Nodes;
+	List<int> m_List_3;
+	int m_CollisionMask;
+	int m_LineMode;
+	float m_LineThickness;
+	int m_LineWidth;
+	int m_LineHeight;
+	char field_FC;
+	Vector4f m_Unknown_1;
 	int field_110;
 	int field_114;
-	int field_118;
-	int field_11C;
-	int field_120;
+	Node* m_HintNode;
+	int m_HintCollisionVolume;
+	char m_OptimisticMode;
 
 public:
-	static List<CollisionProbe>&		ms_CollisionProbesList;	//	@A3DD4C
+	CollisionProbe(int unk1, float unk2);	//	@8BA600
+
+	void		Reset();	//	@8B61D0
+	
+	static List<Node>&	ms_List;	//	@A3DD4C
 };
 
 static_assert(sizeof(CollisionProbe) == COLLISIONPROBE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(CollisionProbe));

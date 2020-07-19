@@ -1,37 +1,13 @@
 #pragma once
 
-#include "stdafx.h"
-#include "Types.h"
-#include "List.h"
+#include "Node.h"
 
 #define RIGIDBODY_CLASS_SIZE 580
 
-class Entity;
-
-class RigidBody
+class RigidBody : public Node
 {
-private:
-	void* m_pVtbl;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	void* Creator;
-	void* lpPositionVtbl;
-	int field_28;
-	int field_2C;
-	int field_30;
-	int field_34;
-	int field_38;
-	int field_3C;
-	Entity* m_pEntity;
-	int field_44;
-	int field_48;
-	int field_4C;
-	float m_fCollMass;
+protected:
+	float m_CollMass;
 	D3DMATRIX m_Matrix;
 	float field_94;
 	float field_98;
@@ -49,15 +25,15 @@ private:
 	float field_C8;
 	float field_CC;
 	float field_D0;
-	float m_fElasticity;
+	float m_Elasticity;
 	int field_D8;
-	Vector4f m_vUnkVec_1;
-	Vector4f m_vPosition;
-	Orientation m_vOrientation;
-	Vector4f m_vLinearSpeed;
-	Vector4f m_vAngularMomentum;
-	Vector4f m_vUnkVec_7;
-	Vector4f m_vUnkVec_6;
+	Vector4f m_UnkVec_1;
+	Vector4f m_Position_t;
+	Orientation m_Orientation_t;
+	Vector4f m_LinearSpeed;
+	Vector4f m_AngularMomentum;
+	Vector4f m_UnkVec_7;
+	Orientation m_UnkVec_6;
 	int field_14C;
 	int field_150;
 	int field_154;
@@ -66,9 +42,9 @@ private:
 	int field_160;
 	int field_164;
 	int field_168;
-	Vector4f m_vUnkVec_8;
-	Vector4f m_vUnkVec_9;
-	Vector4f m_vUnkVec_10;
+	Vector4f m_UnkVec_8;
+	Vector4f m_UnkVec_9;
+	Vector4f m_UnkVec_10;
 	int field_19C;
 	int field_1A0;
 	int field_1A4;
@@ -89,8 +65,8 @@ private:
 	int field_1E0;
 	int field_1E4;
 	int field_1E8;
-	Vector4f m_vLinearVelocity;
-	Vector4f m_vCollAngularSpeed;
+	Vector4f m_LinearVelocity;
+	Vector4f m_CollAngularSpeed;
 	float field_20C;
 	float field_210;
 	float field_214;
@@ -99,14 +75,16 @@ private:
 	float field_220;
 	float field_224;
 	int field_228;
-	char field_22C[4];
+	char field_22C;
+	char field_22D;
+	__int16 field_22E;
 	List<int> m_Unknown_1;
-	bool m_bGrounded;
-
-	void		SetBoxInertialMatrix_Impl(const Vector4f& box);	//	@9332C0
+	bool m_Grounded;
 
 public:
 	RigidBody();	//	@9376E0
+
+	void		SetBoxInertialMatrix(const Vector4f* vec);	//	@9332C0
 };
 
 static_assert(sizeof(RigidBody) == RIGIDBODY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(RigidBody));

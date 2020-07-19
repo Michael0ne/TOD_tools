@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "AuxQuadTree.h"
 
 #define NODE_CLASS_SIZE 80
 
@@ -18,7 +19,7 @@ protected:
 	void* lpPositionVtable;	//	NOTE: is Position class virtual methods only?
 	unsigned int m_Flags;
 	int field_2C;	//	NOTE: it looks like short[2].
-	class AuxQuadTree* m_QuadTree;
+	AuxQuadTree* m_QuadTree;
 	Node* m_NextSibling;
 	class CollisionList* m_CollisionIgnoreList;
 	class Position* m_Position;
