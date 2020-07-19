@@ -6,7 +6,7 @@
 
 class Model : public Node
 {
-private:
+protected:
 	int* m_ModelRes;
 	int field_54;
 	int field_58;
@@ -37,6 +37,7 @@ private:
 	int field_E8;
 	int field_EC;
 	List<int> m_List_6;
+
 public:
 	Model();	//	@884BA0
 };

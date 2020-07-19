@@ -11,7 +11,7 @@ AuxQuadTree::AuxQuadTree(const Entity* owner)
 	field_4 = 0;
 	m_pChildFirst = nullptr;
 	m_pChildLast = nullptr;
-	field_38 = 0;
+	field_38 = nullptr;
 	field_3C = 60;
 	field_3D = 11;
 	field_3E = 50;
@@ -22,4 +22,9 @@ AuxQuadTree::AuxQuadTree(const Entity* owner)
 	field_4D = field_4D & 0x88 | 8;
 	field_30 = 0;
 	field_18 = 0;
+}
+
+void AuxQuadTree::_8A3810(void* ptr)
+{
+	(*(void(__thiscall*)(AuxQuadTree*, void*))0x8A3810)(this, ptr);
 }

@@ -1,14 +1,14 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Entity.h"
+#include "Types.h"
 
 #define AUXQUADTREE_CLASS_SIZE 88
 
 class AuxQuadTree
 {
 public:
-	Entity* m_pOwner;
+	class Entity* m_pOwner;
 	int field_4;
 	AuxQuadTree* m_pChildLast;
 	AuxQuadTree* m_pChildFirst;
@@ -22,19 +22,19 @@ public:
 	int field_2C;
 	int field_30;
 	int* m_pContactNode;
-	int field_38;
+	int* field_38;
 	char field_3C;
 	char field_3D;
 	short field_3E;
 	Vector4f m_vPosition;
-	byte field_4D;
-	byte m_bLod;
-	byte m_bLodFade;
-	byte m_pContactFilter;
+	char field_4D;
+	char m_bLod;
+	char m_bLodFade;
+	char m_pContactFilter;
 	int m_nLodDistance;
 
 public:
-	AuxQuadTree(const Entity* owner);	//	@89F430
+	AuxQuadTree(const class Entity* owner);	//	@89F430
 	~AuxQuadTree()
 	{
 		MESSAGE_CLASS_DESTROYED(AuxQuadTree);
@@ -48,6 +48,7 @@ public:
 	{
 		(*(void(__thiscall*)(AuxQuadTree*))0x8A24F0)(this);
 	}
+	void	_8A3810(void* ptr);
 };
 
 static_assert(sizeof(AuxQuadTree) == AUXQUADTREE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(AuxQuadTree));
