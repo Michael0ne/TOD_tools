@@ -30,12 +30,11 @@ protected:
 
 	virtual Node*	scalar_destructor(bool freeMemory);		//	@86C6D0
 	virtual void	destructor();							//	@88F770
-
 	virtual void	_484CC0(int);							//	@484CC0
 	virtual Entity* FindNode(const char* nodeName);			//	@88EED0
 	virtual void	_88EC20(int);							//	@88EC20
 	virtual void	RefreshQuadTree();						//	@88DE70
-	virtual void	nullsub_1();							//	@8CB190
+	virtual void	Update();								//	@8CB190
 	virtual void	_88C300();								//	@88C300	//	NOTE: void _88C300() { *(unsigned char*)0xA3D890 = 1; };
 	virtual void	nullsub_2();							//	@8CB190
 	virtual char	_484DB0(int, int);						//	@484DB0	//	NOTE: char _484DB0(int, int) { return 0; }

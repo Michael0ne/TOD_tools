@@ -314,6 +314,36 @@
     <ClInclude Include="Cloth.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="Shadow.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="LensFlare.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="LensFlareManager.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="SurroundGeometry.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="GuideBox.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEmitter.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticLighting.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -560,6 +590,36 @@
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Cloth.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Shadow.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="LensFlare.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="LensFlareManager.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="SurroundGeometry.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="GuideBox.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEmitter.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticLighting.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>

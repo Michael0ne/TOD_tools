@@ -127,6 +127,7 @@
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Builtin.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Cloth.h" />
@@ -152,6 +153,9 @@
     <ClInclude Include="GfxInternal_Dx9_Texture.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Group.h" />
+    <ClInclude Include="GuideBox.h" />
+    <ClInclude Include="LensFlare.h" />
+    <ClInclude Include="LensFlareManager.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="MemoryCards.h" />
@@ -165,6 +169,7 @@
     <ClInclude Include="NodeLogical.h" />
     <ClInclude Include="NodeSpatial.h" />
     <ClInclude Include="OverdoseVehicle.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="ProfilerInput.h" />
     <ClInclude Include="radbase.h" />
@@ -185,11 +190,16 @@
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Scratchpad.h" />
     <ClInclude Include="ScriptTypes.h" />
+    <ClInclude Include="Shadow.h" />
     <ClInclude Include="SignPost.h" />
     <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="SoundEmitter.h" />
     <ClInclude Include="SoundSlot.h" />
+    <ClInclude Include="Sprite.h" />
+    <ClInclude Include="StaticLighting.h" />
     <ClInclude Include="StretchModel.h" />
     <ClInclude Include="StringsPool.h" />
+    <ClInclude Include="SurroundGeometry.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="TextSlot.h" />
     <ClInclude Include="Track.h" />
@@ -213,6 +223,7 @@
     <ClCompile Include="Blocks.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Builtin.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Cloth.cpp" />
@@ -237,6 +248,9 @@
     <ClCompile Include="GFXEffect.cpp" />
     <ClCompile Include="GfxInternal_Dx9_Texture.cpp" />
     <ClCompile Include="Group.cpp" />
+    <ClCompile Include="GuideBox.cpp" />
+    <ClCompile Include="LensFlare.cpp" />
+    <ClCompile Include="LensFlareManager.cpp" />
     <ClCompile Include="List.cpp" />
     <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
@@ -248,6 +262,7 @@
     <ClCompile Include="Navigator.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeSpatial.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="ProfilerInput.cpp" />
     <ClCompile Include="Progress.cpp" />
@@ -268,12 +283,17 @@
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Scratchpad.cpp" />
     <ClCompile Include="ScriptTypes.cpp" />
+    <ClCompile Include="Shadow.cpp" />
     <ClCompile Include="SignPost.cpp" />
     <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="SoundEmitter.cpp" />
     <ClCompile Include="SoundSlot.cpp" />
     <ClCompile Include="OverdoseVehicle.cpp" />
+    <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="StaticLighting.cpp" />
     <ClCompile Include="StretchModel.cpp" />
     <ClCompile Include="StringsPool.cpp" />
+    <ClCompile Include="SurroundGeometry.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="TextSlot.cpp" />
     <ClCompile Include="Track.cpp" />

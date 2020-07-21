@@ -1,12 +1,27 @@
 #pragma once
 
-#include "stdafx.h"
-#include "Entity.h"
+#include "Node.h"
 
-#define TEXTSLOT_CLASS_SIZE 120
+#define TEXTSLOT_CLASS_SIZE 96
 
-class TextSlot : Entity
+class TextSlot : public Node
 {
+protected:
+	char* field_50;
+	int m_CurrentIndex;
+	int* m_TextRes;
+	int field_5C;
+
+public:
+	TextSlot() : Node(NODE_MASK_EMPTY)	//	NOTE: no constructor.
+	{
+		MESSAGE_CLASS_CREATED(TextSlot);
+
+		m_TextRes = nullptr;
+		field_5C = 1;
+		field_50 = 0;
+		m_CurrentIndex = 0;
+	}
 };
 
 static_assert(sizeof(TextSlot) == TEXTSLOT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TextSlot));

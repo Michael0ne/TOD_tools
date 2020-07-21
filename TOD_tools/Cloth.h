@@ -7,7 +7,7 @@
 class Cloth : public Node
 {
 protected:
-	Vector4 m_BoundingRadius;
+	Vector4f m_BoundingRadius;
 	int field_60;
 	int* m_ResourceInfo;
 	int field_68;

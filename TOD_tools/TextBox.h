@@ -1,42 +1,37 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "StringsPool.h"
-#include "Entity.h"
-#include "TextSlot.h"
+#include "Sprite.h"
 
 #define TEXTBOX_CLASS_SIZE 220
 
-class TextBox : Entity
+enum E_TEXTBOX_HORIZONTAL_ALIGNMENT
 {
-	int field_78;
-	int field_7C;
-	float m_f80;
-	int field_84;
-	int field_88;
-	int field_8C;
-	int field_90;
-	int field_94;
-	int field_98;
-	int field_9C;
-	int field_A0;
-	int* m_pFont;
-	int field_A8;
-	String* m_sText;
-	int* m_pTextSlotParams;
-	TextSlot* m_pTextSlot;
-	int field_B8;
-	ColorRGB* m_vColor1;
-	ColorRGB* m_vColor2;
-	float m_fScaleX;
-	float m_fScaleY;
-	float m_fHorizontalSpacing;
-	float m_fVerticalSpacing;
-	float m_fVerticalScroll;
-	unsigned int m_nFlags;
+	ALIGN_LEFT = 0,
+	ALIGN_RIGHT = 1,
+	ALIGN_CENTER = 2,
+	ALIGN_JUSTIFY = 3
 };
 
-extern TextBox* g_TextBox;
+class TextBox : public Sprite
+{
+protected:
+	int* m_Font;
+	int field_A8;
+	String* m_Text;
+	int field_B0;
+	class TextSlot* m_TextSlot;
+	int field_B8;
+	int m_TextColor;
+	int m_TextColor2;
+	float m_ScaleX;
+	float m_ScaleY;
+	float m_HorizontalSpacing;
+	float m_VerticalSpacing;
+	float m_VerticalScroll;
+	unsigned int m_Flags;
+
+public:
+	TextBox();	//	@8FDAA0
+};
 
 static_assert(sizeof(TextBox) == TEXTBOX_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TextBox));
