@@ -1,41 +1,22 @@
 #pragma once
 
-#include "stdafx.h"
-#include "Types.h"
+#include "Node.h"
 
 #define DECAL_MANAGER_CLASS_SIZE 100
 
-class DecalManager
+class DecalManager : public Node
 {
-private:
-	void* lpVtbl;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	void* lpPositionVtbl;
-	int field_28;
-	int field_2C;
-	int* field_30;
-	int field_34;
-	int field_38;
-	int field_3C;
-	int field_40;
-	int field_44;
-	int field_48;
-	int field_4C;
+protected:
 	int field_50;
-	int* m_szTexture;
+	int* m_ResourceInfo;
 	int field_58;
-	char m_nBufferSize;
-	char m_nPerFrameFillSize;
+	char m_BufferSize;
+	char m_PerFrameFillSize;
 	__int16 field_5E;
-	int* field_60;
+	void* field_60;
 
 public:
-	void		SetDecal(float* params);	//	@8D3D80
+	DecalManager();	//	NOTE: no constructor.
 };
+
+static_assert(sizeof(DecalManager) == DECAL_MANAGER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(DecalManager));

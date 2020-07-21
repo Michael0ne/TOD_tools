@@ -1,36 +1,32 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "List.h"
-#include "Entity.h"
+#include "Node.h"
 
 #define LIGHT_CLASS_SIZE 228
 
-//	NOTE: Maybe light point properties?
-struct Light_unkStru1 {
+struct Light_Properties
+{
+	friend class Light;
+protected:
 	int field_0;
-	Vector3<float> m_vPosition1;
-	Vector3<float> m_vPosition2;
-	float m_f1C;
-	float m_f20;
+	Vector3f m_Vec_1;
+	Vector3f m_Vec_2;
+	float m_Range;
+	float m_Brightness;
 	int field_24;
+
+	Light_Properties();	//	@422100
 };
 
-class Light : public Entity
+class Light : public Node
 {
-private:
-	int field_78;
-	int field_7C;
-	int field_80;
-	int field_84;
-	int field_88;
-	float m_fRange;
-	float m_fBrightness;
-	int m_nLightType;
-	unsigned int m_nEmissionFlags;	//	TODO: should be enum!
-	Vector4f m_vUnkPos3;
-	Vector4f m_vUnkPos4;
+protected:
+	ColorRGB m_LightColor;
+	ColorRGB m_StaticColor;
+	Light_Properties m_LightProperties;
+	unsigned int m_Flags;
+	Vector4f m_Vec_1;
+	Vector4f m_Vec_2;
 	int field_BC;
 	int field_C0;
 	int field_C4;
@@ -42,14 +38,13 @@ private:
 	int field_DC;
 	int field_E0;
 
-	static List<Light>& g_LightsList;
-
 public:
-	static List<Light>& GetLightsList();	//	@880D80
+	Light();	//	@87FDF0
 
-	static void OverrideLights(bool unk);	//	@880DC0
+	void				AddLightToList(void* list, Light* light);	//	@8812A0
+
+	static int&			TotalLights;	//	@A3D81C
+	static List<Light>&	LightsList;		//	@A3D820
 };
-
-extern Light* g_Light;
 
 static_assert(sizeof(Light) == LIGHT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Light));
