@@ -49,6 +49,7 @@ public:
 		(*(void(__thiscall*)(AuxQuadTree*))0x8A24F0)(this);
 	}
 	void	_8A3810(void* ptr);
+	void	Refresh();	//	@8A2EE0;
 };
 
 static_assert(sizeof(AuxQuadTree) == AUXQUADTREE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(AuxQuadTree));

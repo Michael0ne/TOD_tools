@@ -1,7 +1,98 @@
 #include "Node.h"
 #include "Position.h"
-#include "AuxQuadTree.h"
 #include "Fragment.h"
+
+void Node::_484CC0(int)
+{
+	field_14 |= 10;
+}
+
+Entity* Node::FindNode(const char* nodeName)
+{
+	return (*(Entity * (__thiscall*)(Node*, const char*))0x88EED0)(this, nodeName);
+}
+
+void Node::_88EC20(int unk)
+{
+	(*(void(__thiscall*)(Node*, int))0x88EC20)(this, unk);
+}
+
+void Node::RefreshQuadTree()
+{
+	if (m_CollisionIgnoreList)
+		*(int*)((int*)m_CollisionIgnoreList + 0x78) |= 0x80000000;
+
+	field_14 &= 0xFE;
+
+	if (m_QuadTree)
+		m_QuadTree->Refresh();
+
+	field_14 |= 0x40;
+}
+
+void Node::Update()
+{
+	return;
+}
+
+void Node::_88C300()
+{
+	*(char*)0xA3D890 = (char)1;
+}
+
+void Node::nullsub_2()
+{
+	return;
+}
+
+char Node::_484DB0(int, int)
+{
+	return 0;
+}
+
+float Node::_8F8650(int, int)
+{
+	return -1.0f;
+}
+
+void Node::nullsub_3(int)
+{
+	return;
+}
+
+void Node::_88C610()
+{
+	(*(void(__thiscall*)(void*, Node*))0x86CFF0)(m_ScriptEntity, this);
+}
+
+void Node::nullsub_4(int)
+{
+	return;
+}
+
+void Node::nullsub_5()
+{
+	return;
+}
+
+void Node::nullsub_6(int)
+{
+	return;
+}
+
+String* Node::_484E80(String* unk)
+{
+	*unk = String();
+
+	return unk;
+}
+
+Vector4f* Node::_484DC0(Vector4f* unk)
+{
+	*unk = Vector4f();
+
+	return unk;
+}
 
 Node::Node(unsigned char allocationBitmask)
 {
@@ -9,7 +100,7 @@ Node::Node(unsigned char allocationBitmask)
 
 	m_Flags = m_Flags & 0xC000F000 | 0x40000000;
 	field_2C = 0;
-	((Entity*)this)->field_10 = 0;
+	field_10 = 0;
 	m_QuadTree = nullptr;
 	m_NextSibling = nullptr;
 	m_CollisionIgnoreList = nullptr;
@@ -42,4 +133,10 @@ Node::Node(unsigned char allocationBitmask)
 void Node::SetParam(int index, void* param, ScriptTypes::ScriptType* type)
 {
 	(*(void(__thiscall*)(Node*, int, void*, ScriptTypes::ScriptType*))0x86A3C0)(this, index, param, type);
+}
+
+//	TODO: implementation!
+void Node::SetOrient(const Orientation& orient)
+{
+	(*(void(__thiscall*)(Node*, const Orientation&))0x88DB20)(this, orient);
 }

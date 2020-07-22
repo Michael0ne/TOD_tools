@@ -1,5 +1,6 @@
 #include "Config.h"
 
+#include "Globals.h"
 #include "Blocks.h"
 #include "ScriptTypes.h"
 #include "Scratchpad.h"
@@ -19,6 +20,7 @@
 #include "File.h"
 #include "LoadScreen.h"
 #include "ZipArch.h"
+#include "LoadScreenInfo.h"
 
 GameConfig::Config* g_Config = NULL;
 String Script::Filesystem = String();
@@ -29,9 +31,30 @@ String Script::Region = String();
 
 namespace GameConfig {
 
-	void Config::Init()
+	Config::Config()
 	{
-		patch(0xA5D5AC, this, 4);
+		MESSAGE_CLASS_CREATED(Config);
+
+		field_0 = 0;
+		m_sGameName = String();
+		m_sConfigFilePath = String();
+		m_sUnkString_1 = String();
+		m_sUnkString_2 = String();
+		m_sSceneName = String();
+		m_pConfigurationVariables = nullptr;
+		m_pSessionVariables = nullptr;
+		field_4C = 0;
+		field_50 = 0;
+		m_vBackgroundSize = Vector4<float>();
+		m_nGlobalPropertiesListCRC = 0;
+		m_nGlobalCommandsListCRC = 0;
+		m_nTypesListCRC = 0;
+		m_nTotalGlobalProperties = 0;
+		m_nTotalGlobalCommands = 0;
+		m_nTotalTypes = 0;
+		m_nCRCForScriptsListUnk = 0;
+		m_nCRCForScriptsGlobalList = 0;
+		m_nCRCForTypesList = 0;
 	}
 
 	void Config::Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId)
@@ -240,7 +263,7 @@ namespace GameConfig {
 		if (m_pConfigurationVariables->IsVariableSet("language_mode"))
 			SetCountryCode(m_pConfigurationVariables->GetParamValueString("language_mode").m_szString);
 
-		Script::LanguageMode = String(Script::CountryCodes[Script::LanguageStringsOffset]);
+		Script::LanguageMode = String(*Script::CountryCodes[Script::LanguageStringsOffset]);
 
 		//	Create required devices - window, mouse, keyboard, gamepad.
 		if (!Allocators::Released) {
@@ -514,14 +537,9 @@ namespace GameConfig {
 		(*(void(__cdecl*)(__int64))0x46C420)(__rdtsc());
 
 		//	Load screen and progress class.
-		if (!Allocators::Released) {
-			if (g_CurrentLoadScreen = new CurrentLoadScreen())
-				g_CurrentLoadScreen->Init(NULL);
 
-			//	TODO: implementation!
-			if (g_Progress = new Progress())
-				g_Progress->Init();
-		}
+		g_LoadScreenInfo = new LoadScreenInfo("");
+		g_Progress = new Progress();
 
 		if (m_pConfigurationVariables->IsVariableSet("show_hud") &&
 			m_pConfigurationVariables->GetParamValueBool("show_hud"))
@@ -552,23 +570,22 @@ namespace GameConfig {
 			const char* sceneFile = m_pConfigurationVariables->GetParamValueString("scenefile").m_szString;
 			debug("Opening scene %s\n", sceneFile);
 
-			SceneSet = Scene::Instantiate(sceneFile);
+			SceneSet = OpenScene(sceneFile);
 		}
 
 		if (!SceneSet)
-			if (!(SceneSet = Scene::Instantiate("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-				g_SceneNode->RegisterEntity();
+			if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
+				g_Scene->m_ScriptEntity->CreateNode();
 
 		//	TODO: implementation! Scene is not initialized here!
 		if (m_pConfigurationVariables->IsVariableSet("fixedframerate"))
-			g_Scene->SetFramerate(m_pConfigurationVariables->GetParamValueFloat("fixedframerate"));
+			g_Scene->SetFixedFramerate(m_pConfigurationVariables->GetParamValueFloat("fixedframerate"));
 
 		//	NOTE: Adjust cameras matricies if not in full screen?
 		//	Also, needs correct implementation.
-		if (!Script::Fullscreen) {
-			if (g_Scene->GetEditorCamera()) {
-				g_Scene->UpdateCamera();
-			}
+		if (!Script::Fullscreen)
+		{
+			//	TODO: update cameras here.
 		}
 
 		if (m_pConfigurationVariables->IsVariableSet("frame_console_marker"))
@@ -761,6 +778,12 @@ namespace GameConfig {
 		debug("Game uninitialized!\n");
 	}
 
+	//	TODO: implementation!
+	bool Config::OpenScene(const char* scene)
+	{
+		return (*(bool(__thiscall*)(Config*, const char*))0x93CE00)(this, scene);
+	}
+
 	Session_Variables* Session_Variables::CreateBuffer(int unk)
 	{
 		Session_Variables* (__thiscall * _CreateBuffer)(Session_Variables * _this, int unk) = (Session_Variables * (__thiscall*)(Session_Variables*, int))0x410680;
@@ -913,49 +936,8 @@ namespace GameConfig {
 
 	void OpenZip(const char* szZipPath)
 	{
-		void(__cdecl * _OpenZip)(const char* szName) = (void(__cdecl*)(const char*))0x419100;
-
-		_OpenZip(szZipPath);
-		return;
-
-		if (!Utils::IsFileAvailable(szZipPath))
-			return;
-
-		int currentSlotId = ZipArch::SlotId;
-		int newSlotId = ZipArch::SlotId++;
-
-		debug("Opening zip <%s> into slot %i\n", szZipPath, newSlotId);
-
-		int zipIndex = 16 * currentSlotId;
-		*(unsigned char*)(&ZipArch::_A08628[zipIndex]->field_4) = (unsigned char)15;
-
-		ZipArch::ZipNames[currentSlotId]->Set(szZipPath);
-
-		File* ZipFile = new File(szZipPath, 33, true);
-
-		File::g_FilesArray[currentSlotId] = ZipFile;
-		*File::g_FileSemaphores[currentSlotId] = CreateSemaphoreA(NULL, 1, 1, NULL);
-
-		unsigned char buffer[20];
-		memset(&buffer, 0, sizeof(buffer));
-
-		ZipFile->Seek(ZipFile->GetPosition() - 22);
-		ZipFile->Read(&buffer, 20);
-
-		unsigned int check = buffer[0] + ((buffer[1] + ((buffer[2] + (buffer[3] << 8)) << 8)) << 8);
-		unsigned int totalfiles = buffer[10] + (buffer[11] << 8);
-		unsigned int bytestoread = buffer[12] + ((buffer[13] + ((buffer[14] + (buffer[15] << 8)) << 8)) << 8);
-		unsigned int seekoffset = buffer[16] + ((buffer[17] + ((buffer[18] + (buffer[19] << 8)) << 8)) << 8);
-
-		ZipFile->Seek(seekoffset);
-
-		void* buffer_1 = malloc(bytestoread);
-		ZipFile->Read(&buffer_1, bytestoread);
-
 		//	TODO: implementation!
-
-		free(buffer_1);
-		delete ZipFile;
+		(*(void (*)(const char*))0x419100)(szZipPath);
 	}
 
 	void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo)
@@ -970,7 +952,7 @@ namespace GameConfig {
 		unsigned int languageIndex = 0;
 
 		while (languageIndex++ < CONFIG_LANGUAGES) {
-			if (Script::CountryCodes[languageIndex] && strncmp(szCode, Script::CountryCodes[languageIndex], 2) == 0)
+			if (Script::CountryCodes[languageIndex] && strncmp(szCode, *Script::CountryCodes[languageIndex], 2) == 0)
 				break;
 		}
 

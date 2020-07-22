@@ -11,7 +11,6 @@
 
 class Entity
 {
-	friend class Node;
 protected:
 	ScriptTypes::ScriptType_Entity* m_ScriptEntity;
 	int field_8;

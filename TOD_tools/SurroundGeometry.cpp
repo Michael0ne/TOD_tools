@@ -17,7 +17,7 @@ SurroundGeometry::SurroundGeometry() : Node(NODE_MASK_QUADTREE)
 	m_Properbility1 = m_Properbility2 = m_Properbility3 = m_Properbility4 = 1.0f;
 	m_FarDistance = 900.0f;
 	m_CloseDistance = 400.0f;
-	m_Variation = 0.1;
+	m_Variation = 0.1f;
 	m_MaxCount = 50;
 	m_Category = 0;
 	m_RandomSeed = (*(int (*)(int*))0x9513DD)(NULL);

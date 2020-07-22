@@ -25,17 +25,17 @@ enum E_BLOCK_ID
 	ID_PLAYERDATA = 5
 };
 
-class Folder : public Node
+class Folder_ : public Node
 {
 private:
 	int	m_BlockId;
 	Folder_Unknown_Struct* field_54;
 public:
-	Folder() : Node(NODE_MASK_EMPTY)	//	NOTE: no actual constructor
+	Folder_() : Node(NODE_MASK_EMPTY)	//	NOTE: no actual constructor
 	{
-		MESSAGE_CLASS_CREATED(Folder);
+		MESSAGE_CLASS_CREATED(Folder_);
 	}
 };
 
-static_assert(sizeof(Folder) == FOLDER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Folder));
+static_assert(sizeof(Folder_) == FOLDER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Folder_));
 static_assert(sizeof(Folder_Unknown_Struct) == FOLDER_UNK_STRUCT_SIZE, MESSAGE_WRONG_CLASS_SIZE(Folder_Unknown_Struct));

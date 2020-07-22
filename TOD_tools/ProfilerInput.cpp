@@ -1,15 +1,17 @@
 #include "ProfilerInput.h"
 
-ProfilerInput::ProfilerInput()
+ProfilerInput::ProfilerInput() : Node(NODE_MASK_EMPTY)
 {
-	m_sProfilerScript = String();
-	m_sCommand = String();
+	MESSAGE_CLASS_CREATED(ProfilerInput);
 
-	m_nCurrentPage = 0;
-	m_nCodeProfileMode = ABSOLUTE_;
-	m_nTraverseProfileMode = TRAVERSE_TIME;
-	m_nScriptProfileMode = ALL;
-	m_nSortAscending = 0;
-	m_nProfileType = TRAVERSE_PROFILE;
-	m_nSortByColumn = NO_SORTING;
+	m_ProfilerScript = String();
+	m_Command = String();
+
+	m_CurrentPage = 0;
+	m_CodeProfileMode = ABSOLUTE_;
+	m_TraverseProfileMode = TRAVERSE_TIME;
+	m_ScriptProfileMode = ALL;
+	m_SortAscending = false;
+	m_ProfileType = TRAVERSE_PROFILE;
+	m_SortByColumn = NO_SORTING;
 }

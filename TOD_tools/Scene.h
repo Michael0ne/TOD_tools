@@ -43,15 +43,15 @@ enum ePlayModes
 	MODE_UNKNOWN_3 = 3
 };
 
-class Scene : public Folder
+class Scene : public Folder_
 {
 private:
 	int field_58;
 	int m_PlayMode;
-	class ScriptType_Entity* m_pCamera;
+	class Camera* m_pCamera;
 	int* field_64;
 	char m_bQuadTreesAllocated;
-	class Camera* m_CameraEntity;
+	class ScriptTypes::ScriptType_Entity* m_CameraEntity;
 	int field_70;
 	int field_74;
 	int field_78;
@@ -97,7 +97,7 @@ private:
 	String m_sSaveDir;
 	int m_nMemoryCardIndex;
 	int m_nSaveSlotIndex;
-	ScriptType_Entity* field_18C;
+	class ScriptType_Entity* field_18C;
 	int m_nSaveGameSize;
 	class MemoryCards* m_MemoryCards;
 	Vector4f m_CameraPosition;
@@ -155,6 +155,10 @@ private:
 
 public:
 	Scene();	//	@896D40
+
+	inline void		SetFixedFramerate(float framerate);
+	void			Start();	//	@89A100
+	static bool		GameUpdate();	//	@93CEB0
 };
 
 extern Scene* g_Scene;

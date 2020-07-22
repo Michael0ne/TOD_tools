@@ -1,4 +1,5 @@
 #include "ScriptTypes.h"
+#include "Blocks.h"
 
 namespace ScriptTypes
 {
@@ -84,5 +85,13 @@ namespace ScriptTypes
 
 		m_PropertiesList_1 = List<EntityProperties>(0x19300);
 		m_PropertiesList_2 = List<EntityProperties>(0x19300);
+	}
+
+	void* ScriptType_Entity::CreateNode()
+	{
+		void* ent = m_Creator(g_Blocks->GetAllocatorType());
+		(*(void(__thiscall*)(void*, ScriptType_Entity*))0x869E20)(ent, this);
+
+		return ent;
 	}
 }

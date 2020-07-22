@@ -307,8 +307,8 @@ namespace ScriptTypes
 
 	class ScriptType_Entity : public ScriptType
 	{
-	private:
-		class Entity* (*m_Creator)(unsigned int allocatorIndex);
+	protected:
+		void* (*m_Creator)(unsigned int allocatorIndex);
 		ScriptType_Entity* m_Parent;
 		class GlobalNode* m_ParentNode;
 		int field_2C;
@@ -331,7 +331,7 @@ namespace ScriptTypes
 			MESSAGE_CLASS_DESTROYED(ScriptType_Entity);
 		}
 
-		class Entity*		CreateNode();	//	@86C770
+		void*	CreateNode();	//	@86C770
 	};
 
 	ScriptType_Entity*			tENTITY = (ScriptType_Entity*)0xA3CEE0;		//	@A3CEE0

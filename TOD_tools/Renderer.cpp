@@ -94,22 +94,22 @@ void Scene_Buffer276::Init(const Vector3<float>& vDimensions)
 
 	m_vDimens_1 = { 70.0f, 1.0f, 1.0f, 1000.0f };
 
-	m_vRightVec_1 = Builtin::m_RightVector;
-	m_vUpVec_1 = Builtin::m_UpVector;
-	m_vInVec_1 = Builtin::m_InVector;
-	m_vOrient_1 = Builtin::m_Orientation;
+	m_vRightVec_1 = Builtin::RightVector;
+	m_vUpVec_1 = Builtin::UpVector;
+	m_vInVec_1 = Builtin::InVector;
+	m_vOrient_1 = Builtin::Orientation;
 
-	m_vRightVec_2 = Builtin::m_RightVector;
-	m_vUpVec_2 = Builtin::m_UpVector;
-	m_vInVec_2 = Builtin::m_InVector;
-	m_vOrient_2 = Builtin::m_Orientation;
+	m_vRightVec_2 = Builtin::RightVector;
+	m_vUpVec_2 = Builtin::UpVector;
+	m_vInVec_2 = Builtin::InVector;
+	m_vOrient_2 = Builtin::Orientation;
 
-	m_vRightVec_3 = Builtin::m_RightVector;
-	m_vUpVec_3 = Builtin::m_UpVector;
-	m_vInVec_3 = Builtin::m_InVector;
-	m_vOrient_3 = Builtin::m_Orientation;
+	m_vRightVec_3 = Builtin::RightVector;
+	m_vUpVec_3 = Builtin::UpVector;
+	m_vInVec_3 = Builtin::InVector;
+	m_vOrient_3 = Builtin::Orientation;
 
-	m_vPos_1 = Builtin::m_vUnkColor;
+	m_vPos_1 = Builtin::UnkColor;
 	memset(&m_vRes_2, 0, sizeof(m_vRes_2));
 }
 

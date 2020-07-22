@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-Scene::Scene() : Folder()
+Scene::Scene() : Folder_()
 {
 	MESSAGE_CLASS_CREATED(Scene);
 
@@ -31,7 +31,24 @@ Scene::Scene() : Folder()
 	//	TODO: initialize lots more stuff here...
 }
 
+inline void Scene::SetFixedFramerate(float framerate)
+{
+	m_FixedFramerate = true;
+	m_FixedFramerateVal = 1.0f / framerate;
+}
+
+void Scene::Start()
+{
+	(*(void(__thiscall*)(Scene*))0x89A100)(this);
+}
+
+//	TODO: implementation!
+bool Scene::GameUpdate()
+{
+	return (*(bool (*)())0x93CEB0)();
+}
+
+//	TODO: implementation!
 Scene_Buffer::Scene_Buffer(int unk1, char unk2, int unk3)
 {
-	//	TODO: implementation!
 }

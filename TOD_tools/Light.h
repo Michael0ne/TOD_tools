@@ -42,6 +42,8 @@ public:
 	Light();	//	@87FDF0
 
 	void				AddLightToList(void* list, Light* light);	//	@8812A0
+	
+	static void			OverrideLights(bool unk);	//	@880DC0
 
 	static int&			TotalLights;	//	@A3D81C
 	static List<Light>&	LightsList;		//	@A3D820

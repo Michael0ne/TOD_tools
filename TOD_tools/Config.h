@@ -145,7 +145,7 @@ namespace GameConfig {
 
 	class Config
 	{
-		int field_0;
+		char field_0;
 		String m_sGameName;
 		String m_sConfigFilePath;
 		Session_Variables* m_pConfigurationVariables;
@@ -171,32 +171,7 @@ namespace GameConfig {
 		int m_nCRCForTypesList;
 
 	public:
-		Config()
-		{
-			MESSAGE_CLASS_CREATED(Config);
-
-			field_0 = 0;
-			m_sGameName = String();
-			m_sConfigFilePath = String();
-			m_sUnkString_1 = String();
-			m_sUnkString_2 = String();
-			m_sSceneName = String();
-			m_pConfigurationVariables = nullptr;
-			m_pSessionVariables = nullptr;
-			field_4C = 0;
-			field_50 = 0;
-			m_vBackgroundSize = Vector4<float>();
-			m_nGlobalPropertiesListCRC = 0;
-			m_nGlobalCommandsListCRC = 0;
-			m_nTypesListCRC = 0;
-			m_nTotalGlobalProperties = 0;
-			m_nTotalGlobalCommands = 0;
-			m_nTotalTypes = 0;
-			m_nCRCForScriptsListUnk = 0;
-			m_nCRCForScriptsGlobalList = 0;
-			m_nCRCForTypesList = 0;
-		}
-
+		Config();	//	@93CB60
 		~Config()
 		{
 			MESSAGE_CLASS_DESTROYED(Config);
@@ -222,9 +197,9 @@ namespace GameConfig {
 		}
 
 		void Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId);	//	@93D480
-		void Init();	//	@93CB60
 		void InitEntitiesDatabase();	//	@93C950
 		void UninitialiseGame();	//	@93CBC0
+		bool OpenScene(const char* scene);	//	@93CE00
 	};
 
 	static void ReadZipDirectories(const char* szFileSystem);	//	@419550
@@ -239,59 +214,6 @@ namespace GameConfig {
 
 	static List<String>& FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
 	static FileInternal& ColMatFilePtr = *(FileInternal*)0xA3D7E8;	//	@A3D7E8
-}
-
-namespace Script
-{
-	static String& LanguageMode = *(String*)0xA086A8;
-	static bool& FileCheck = *(bool*)0xA35DE0;
-	static bool& ForceFeedback = *(bool*)0xA35E70;	
-	static bool LoadBlocks;
-	static int& Ps2MaxTextureSize = *(int*)0xA10FF0;
-	static bool Fullscreen;
-	static List<String>& DirectoryMappings = *(List<String>*)0xA35DE4;
-	static String& ScriptsPath = *(String*)0xA0B434;
-	static bool& RelaxBuildVersionCheck = *(bool*)0xA5D5B0;
-	static int IconResourceId;
-	static int& LanguageStringsOffset = *(int*)0xA35E28;
-	/*static const char** CountryCodes[6] = {
-		(const char**)0xA089BC,	//	UK
-		(const char**)0xA089C0,	//	FR
-		(const char**)0xA089C4,	//	IT
-		(const char**)0xA089C8,	//	DE
-		(const char**)0xA089CC,	//	ES
-		(const char**)0xA089D0	//	DK
-	};*/
-	static const char* CountryCodes[CONFIG_LANGUAGES] = {
-		"uk",
-		"fr",
-		"it",
-		"de",
-		"es",
-		"dk"
-	};
-	static bool& SavePlatformPS2 = *(bool*)0xA090C8;
-	static bool& CutsceneDisableAware = *(bool*)0xA3D892;
-	static bool& CutsceneForceCompleteLodUpdates = *(bool*)0xA5D5A8;
-	static String& StreamedSoundExt = *(String*)0xA35EE4;
-	static String& VersionName = *(String*)0xA1B9C8;
-	static char& _A1B98D = *(char*)0xA1B98D;
-	static bool& ShowHud = *(bool*)0xA3E0C8;
-	static bool& CheckOriginalAsset = *(bool*)0xA11540;
-	static bool& WarningShow = *(bool*)0xA082FE;
-	static bool& FrameConsoleMarker = *(bool*)0xA1B98C;
-	static bool& CheckDataSanity = *(bool*)0xA5D5A9;
-	static bool& CheckDivisionByZero = *(bool*)0xA5D5AA;
-	static bool& Ps2PlayCtrl = *(bool*)0xA5D5B8;
-	static float& MinFadeDist = *(float*)0xA11C8C;
-	static bool& LodAndFade = *(bool*)0xA11C88;
-	static bool& CheckDanglingRefs = *(bool*)0xA11C88;
-	static bool& FixDanglingRefs = *(bool*)0xA1207D;
-	static bool& SimulateReleaseBuild = *(bool*)0xA3B584;
-
-	extern String Filesystem;
-	extern String ControlType;
-	extern String Region;
 }
 
 extern GameConfig::Config* g_Config;

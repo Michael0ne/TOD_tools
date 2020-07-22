@@ -664,14 +664,12 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	FindIdFile();
 
 	//	NOTE: InitialiseGame has been inlined! Originally at 93F680.
-	if (!Allocators::Released)
-		if (g_Config = new GameConfig::Config())
-			g_Config->Init();
+	g_Config = new GameConfig::Config();
 
 	g_Config->Process(lpCmdLine, 0, "", 0);
 
 	//	This is main game loop proc. Process function has standard while loop.
-	g_Window->Process(Scene::Update);
+	g_Window->Process(Scene::GameUpdate);
 
 	//	When deleting config class, rest of game objects are deleted as well.
 	if (g_Config)

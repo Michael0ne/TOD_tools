@@ -1,44 +1,23 @@
 #include "Builtin.h"
-#include "Globals.h"
 
-Builtin* g_Builtin = NULL;
-
-int Builtin::GetMessageId_Impl(const char* szMessage)
+Builtin::Builtin() : ScriptTypes::ScriptType_Entity("builtin")
 {
-	//	Figure out where colon character is and cut out from beginning of string up to it's position.
-	unsigned int pos = 0;
-	while (pos < strlen(szMessage))
-		if (szMessage[pos] == ':')
-			break;
+	MESSAGE_CLASS_CREATED(Builtin);
 
-	return _GetMessageId(&szMessage[pos]);
+	m_HandlersList = List<Builtin_Handler>(0x19300);
+
+	field_88 = 0 | 0x80000000;
+	field_90 = 0;
+	field_94 = 0;
+	field_8C = 50 & 0xFF800000 | 0x800000;
 }
 
-int Builtin::_GetMessageId(const char* szMessage)
-{
-	char* msg = (char*)szMessage;
-	Utils::ToLowercase(msg);
-
-	//	NOTE: this 'method' below used in many places and looks like just comparing string from 2nd and 3rd arguments.
-	int* var_0 = (*(int*(__thiscall*)(int*, int*, const String*))0x8729F0)((int*)0xA3CF08, (int*)0xA3CF10, &String(msg));
-
-	if (var_0 && var_0 + 4 != 0)
-		return *(var_0 + 4);
-	else
-		return -1;
-}
-
-void Builtin::GetEditorActive(int* outActive)
-{
-	*outActive = 0;
-}
-
-const Vector4f& Builtin::m_ZeroVector = *(Vector4f*)0x9B7084;
-const Vector4f& Builtin::m_RightVector = *(Vector4f*)0x9B70A4;
-const Vector4f& Builtin::m_UpVector = *(Vector4f*)0x9B70B4;
-const Vector4f& Builtin::m_InVector = *(Vector4f*)0x9B70C4;
-const Quaternion<float>& Builtin::m_Orientation = *(Quaternion<float>*)0x9B70D4;
-const Vector4f& Builtin::m_LeftVector = *(Vector4f*)0x9B70E4;
-const Vector4f& Builtin::m_DownVector = *(Vector4f*)0x9B70F4;
-const Vector4f& Builtin::m_OutVector = *(Vector4f*)0x9B7104;
-const Vector4f& Builtin::m_vUnkColor = *(Vector4f*)0x9B7114;
+const Vector4f& Builtin::ZeroVector = *(Vector4f*)0x9B7084;
+const Vector4f& Builtin::RightVector = *(Vector4f*)0x9B70A4;
+const Vector4f& Builtin::UpVector = *(Vector4f*)0x9B70B4;
+const Vector4f& Builtin::InVector = *(Vector4f*)0x9B70C4;
+const Orientation& Builtin::Orientation = *(Quaternion<float>*)0x9B70D4;
+const Vector4f& Builtin::LeftVector = *(Vector4f*)0x9B70E4;
+const Vector4f& Builtin::DownVector = *(Vector4f*)0x9B70F4;
+const Vector4f& Builtin::OutVector = *(Vector4f*)0x9B7104;
+const Vector4f& Builtin::UnkColor = *(Vector4f*)0x9B7114;

@@ -1,7 +1,7 @@
 #include "File.h"
 #include "Globals.h"
 
-File* File::g_FilesArray[8] = {
+File* File::OpenedFiles[8] = {
 	(File*)0xA35DB8,
 	(File*)0xA35DBC,
 	(File*)0xA35DC0,
