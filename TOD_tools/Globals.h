@@ -1,6 +1,6 @@
 #pragma once
 
-class String;
+#include "List.h"
 
 //	TODO: maybe put these into different namespaces?
 
@@ -46,4 +46,49 @@ namespace Utils
 namespace Control
 {
 	static void* (__cdecl* GetGamepadByIndex)(signed int index) = (void* (__cdecl*)(signed int))0x439660;
+}
+
+namespace Script
+{
+	static String& LanguageMode = *(String*)0xA086A8;
+	static bool& FileCheck = *(bool*)0xA35DE0;
+	static bool& ForceFeedback = *(bool*)0xA35E70;
+	static bool LoadBlocks;
+	static int& Ps2MaxTextureSize = *(int*)0xA10FF0;
+	static bool Fullscreen;
+	static List<String>& DirectoryMappings = *(List<String>*)0xA35DE4;
+	static String& ScriptsPath = *(String*)0xA0B434;
+	static bool& RelaxBuildVersionCheck = *(bool*)0xA5D5B0;
+	static int IconResourceId;
+	static int& LanguageStringsOffset = *(int*)0xA35E28;
+	static const char** CountryCodes[6] = {
+		(const char**)0xA089BC,	//	UK
+		(const char**)0xA089C0,	//	FR
+		(const char**)0xA089C4,	//	IT
+		(const char**)0xA089C8,	//	DE
+		(const char**)0xA089CC,	//	ES
+		(const char**)0xA089D0	//	DK
+	};
+	static bool& SavePlatformPS2 = *(bool*)0xA090C8;
+	static bool& CutsceneDisableAware = *(bool*)0xA3D892;
+	static bool& CutsceneForceCompleteLodUpdates = *(bool*)0xA5D5A8;
+	static String& StreamedSoundExt = *(String*)0xA35EE4;
+	static String& VersionName = *(String*)0xA1B9C8;
+	static char& _A1B98D = *(char*)0xA1B98D;
+	static bool& ShowHud = *(bool*)0xA3E0C8;
+	static bool& CheckOriginalAsset = *(bool*)0xA11540;
+	static bool& WarningShow = *(bool*)0xA082FE;
+	static bool& FrameConsoleMarker = *(bool*)0xA1B98C;
+	static bool& CheckDataSanity = *(bool*)0xA5D5A9;
+	static bool& CheckDivisionByZero = *(bool*)0xA5D5AA;
+	static bool& Ps2PlayCtrl = *(bool*)0xA5D5B8;
+	static float& MinFadeDist = *(float*)0xA11C8C;
+	static bool& LodAndFade = *(bool*)0xA11C88;
+	static bool& CheckDanglingRefs = *(bool*)0xA11C88;
+	static bool& FixDanglingRefs = *(bool*)0xA1207D;
+	static bool& SimulateReleaseBuild = *(bool*)0xA3B584;
+
+	extern String Filesystem;
+	extern String ControlType;
+	extern String Region;
 }

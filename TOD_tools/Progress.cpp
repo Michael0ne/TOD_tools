@@ -2,11 +2,9 @@
 
 Progress* g_Progress = nullptr;
 
-void Progress::Init()
+Progress::Progress()
 {
-	patch(0xA3D7D0, this, 4);
+	MESSAGE_CLASS_CREATED(Progress);
 
-	(*(void(__thiscall*)(Progress*))0x87B720)(this);
-
-	//	TODO: Create empty texture 8x8 and set it as m_pTexture.
+	(*(Progress * (__thiscall*)(Progress*))0x87B720)(this);
 }

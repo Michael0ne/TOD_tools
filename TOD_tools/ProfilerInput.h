@@ -1,7 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
-#include "StringsPool.h"
+#include "Node.h"
 
 #define PROFILER_INPUT_CLASS_SIZE 140
 
@@ -42,38 +41,19 @@ enum E_PROFILER_SCRIPT_PROFILE_MODE {
 	SPECIFIC_SCRIPT = 1
 };
 
-class ProfilerInput
+class ProfilerInput : public Node
 {
-private:
-	void* lpVtbl;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	void* lpPositionVtbl;
-	int field_28;
-	int field_2C;
-	int field_30;
-	int field_34;
-	int field_38;
-	int field_3C;
-	int field_40;
-	int field_44;
-	int field_48;
-	int field_4C;
-	E_PROFILER_PROFILE_TYPE m_nProfileType;
-	int m_nCurrentPage;
-	E_PROFILER_CODE_PROFILE_MODE m_nCodeProfileMode;
-	E_PROFILER_TRAVERSE_PROFILE_MODE m_nTraverseProfileMode;
-	E_PROFILER_SCRIPT_PROFILE_MODE  m_nScriptProfileMode;
-	String m_sProfilerScript;
-	String m_sCommand;
-	E_PROFILER_SORT_BY_COLUMN m_nSortByColumn;
-	int m_nSortAscending;
+protected:
+	E_PROFILER_PROFILE_TYPE m_ProfileType;
+	int m_CurrentPage;
+	E_PROFILER_CODE_PROFILE_MODE m_CodeProfileMode;
+	E_PROFILER_TRAVERSE_PROFILE_MODE m_TraverseProfileMode;
+	E_PROFILER_SCRIPT_PROFILE_MODE m_ScriptProfileMode;
+	String m_ProfilerScript;
+	String m_Command;
+	E_PROFILER_SORT_BY_COLUMN m_SortByColumn;
+	bool m_SortAscending;
+
 public:
 	ProfilerInput();	//	@929450
 };

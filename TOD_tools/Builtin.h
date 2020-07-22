@@ -1,141 +1,63 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "Entity.h"
-#include "List.h"
-#include "StringsPool.h"
-#include "MemoryAllocators.h"
+#include "ScriptTypes.h"
 
 #define BUILTIN_CLASS_SIZE 152
 
-//	TODO: implementation!
-void	Random__Init(int* seed);
-int		Random__Integer(signed int maxvalue);
-float	Random__Number();
-
-enum eTypes {
-	TYPE_NOTHING,	//	Nothing!
-	TYPE_NUMBER,	//	Float
-	TYPE_INTEGER,	//	Integer
-	TYPE_STRING,	//	String
-	TYPE_TRUTH,		//	Boolean
-	TYPE_VECTOR,	//	Vector4 OR Vector3
-	TYPE_QUATERNION,//	Quaternion
-	TYPE_COLOR,		//	ColorRGB
-	TYPE_LIST,		//	Actual list
-	TYPE_DICT,		//	Dictionary
-	TYPE_ENTITY,	//	Entity (base node class)
-	TYPE_STRUCT,	//	Structure (?)
-	TOTAL_TYPES
+struct Builtin_Member
+{
+	ScriptTypes::ScriptType* m_ReturnType;
+	void* m_GetProcPtr;
+	void* m_SetProcPtr;
+	String m_MemberProto;
+	String m_Unknown_2;
 };
-
-template <typename Out, typename InType, int size>
-struct Handler_Params {
-	Out	output;
-	InType	input[size];
-};
-
-/*
- *	Used like this:
- *	Handler_Params<float, float, 1> args = {NULL, 90};
- *	Builtin::GetSin(&args);
- *	args contents are: { 1, 90 }. Handy!
- *	NOTE! Number of actual "inputs" are variadic, but output is always first element!
-*/
 
 struct Builtin_Handler
 {
 	String m_sProto;
-	void *m_pFunction;
+	void* m_pFunction;
 	String m_sName;
 };
 
-class Builtin : Entity
+class Builtin : public ScriptTypes::ScriptType_Entity
 {
-private:
-
-	List<Builtin_Handler> m_MethodsList;
+protected:
+	List<Builtin_Handler> m_HandlersList;
 	int field_88;
 	int field_8C;
 	int field_90;
 	int field_94;
 
-private:
-	int			_GetMessageId(const char* szMessage);	//	@872360
-
 public:
-	Builtin()
-	{
-		MESSAGE_CLASS_CREATED(Builtin);
-
-		m_MethodsList = List<Builtin_Handler>();
-		field_88 = 0;
-		field_8C = 0;
-		field_90 = 0;
-		field_94 = 0;
-	}
-
+	Builtin();	//	@486D00
 	~Builtin()
 	{
 		MESSAGE_CLASS_DESTROYED(Builtin);
 	}
 
+	void	RegisterHandler(const char* handlerProto, void* handler, const char* handlerName);	//	@486430
+	void	RegisterMember(ScriptTypes::ScriptType* returnType, const char* memberName, void* memberProc, int unk1, const char* memberProto, const char* unk2);	//	@486D90
+
 	void* operator new(size_t size)
 	{
 		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
-
 	void operator delete(void* ptr)
 	{
 		if (ptr)
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
 
-	//	MATH OPERATIONS
-	static void Sin(Handler_Params<float, float, 1>& params) { params.output = (float)sin(params.input[0]); }
-	static void Cos(Handler_Params<float, float, 1>& params) { params.output = (float)cos(params.input[0]); }
-	static void Tan(Handler_Params<float, float, 1>& params) { params.output = (float)tan(params.input[0]); }
-	static void Asin(Handler_Params<float, float, 1>& params) { params.output = (float)asin(params.input[0]); }
-	static void Acos(Handler_Params<float, float, 1>& params) { params.output = (float)acos(params.input[0]); }
-	static void Atan(Handler_Params<float, float, 1>& params) { params.output = (float)atan(params.input[0]); }
-	static void Abs(Handler_Params<int, int, 1>& params) { params.output = params.input < 0 ? -params.input[0] : params.input[0]; }
-	static void FAbs(Handler_Params<float, float, 1>& params) { params.output = (float)fabs(params.input[0]); }
-	static void Sqrt(Handler_Params<float, float, 1>& params) { params.output = (float)sqrt(params.input[0]); }
-	static void Floor(Handler_Params<float, float, 1>& params) { params.output = (float)floor(params.input[0]); }
-	static void Ceil(Handler_Params<float, float, 1>& params) { params.output = (float)ceil(params.input[0]); }
-	static void Clamp(Handler_Params<float, float, 2>& params) {
-		if (params.input[1] <= params.input[0])
-			if (params.input[0] <= params.input[2])
-				params.output = params.input[0];
-			else
-				params.output = params.input[2];
-		else
-			params.output = params.input[1];
-	}
-	static void Testbits(Handler_Params<bool, int, 1>& params) { params.output = (params.input[0] & params.input[1]) != 0; }
-	static void SetBit(Handler_Params<int, int, 1>& params) { params.output = params.input[0] | (1 << params.input[1]); }
-	static void GetBit(Handler_Params<bool, int, 1>& params) { params.output = (params.input[0] & (1 << params.input[1])) != 0; }
-	static void Rand_Seed(Handler_Params<int, int, 1>& params) { Random__Init(&params.input[0]); }
-	static void Rand_Integer(Handler_Params<int, int, 1>& params) { params.output = Random__Integer(params.input[0]); }
-	static void Rand_Number(Handler_Params<float, int, 1>& params) { params.output = Random__Number(); }
-
-	void		GetEditorActive(int* outActive);	//	@4853D0 NOTE: this always returns 0, maybe modify to allow editor be enabled?
-
-	int			GetMessageId_Impl(const char* msg);	//	@872410
-	void		GetMessageId(Handler_Params<int, const char*, 1>& params) { params.output = GetMessageId_Impl(params.input[0]); }	//	@488040
-
-	static const Vector4f& m_ZeroVector;
-	static const Vector4f& m_RightVector;
-	static const Vector4f& m_UpVector;
-	static const Vector4f& m_InVector;
-	static const Quaternion<float>& m_Orientation;
-	static const Vector4f& m_LeftVector;
-	static const Vector4f& m_DownVector;
-	static const Vector4f& m_OutVector;
-	static const Vector4f& m_vUnkColor;	//	NOTE: not a color!
+	static const Vector4f& ZeroVector;
+	static const Vector4f& RightVector;
+	static const Vector4f& UpVector;
+	static const Vector4f& InVector;
+	static const Orientation& Orientation;
+	static const Vector4f& LeftVector;
+	static const Vector4f& DownVector;
+	static const Vector4f& OutVector;
+	static const Vector4f& UnkColor;
 };
-
-extern Builtin* g_Builtin;
 
 static_assert(sizeof(Builtin) == BUILTIN_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Builtin));

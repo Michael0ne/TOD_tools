@@ -344,6 +344,30 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="GeometryEffect.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="RealtimeFolder.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Placeholder.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPlaceholder.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="HavocPlaceHolder.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="GoodiePlaceHolder.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponPlaceHolder.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadScreenInfo.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -621,6 +645,30 @@
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryEffect.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="RealtimeFolder.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Placeholder.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterPlaceholder.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="HavocPlaceHolder.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="GoodiePlaceHolder.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponPlaceHolder.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadScreenInfo.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

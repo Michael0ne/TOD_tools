@@ -6,6 +6,7 @@
 
 class Model : public Node
 {
+	friend class GeometryEffect;
 protected:
 	int* m_ModelRes;
 	int field_54;

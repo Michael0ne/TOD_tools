@@ -50,7 +50,7 @@ public:
 	HANDLE		Create();	//	@4378D0
 	const char* GetLastErrorMessage();	//	@437820
 
-	static File* g_FilesArray[8];
+	static File* OpenedFiles[8];
 	static HANDLE* g_FileSemaphores[8];
 	static bool& GameDiscFound;	//	@A35E68
 };

@@ -33,6 +33,11 @@ void Light::AddLightToList(void* list, Light* light)
 	(*(void(__thiscall*)(void*, Light*))0x8812A0)(list, light);
 }
 
+void Light::OverrideLights(bool unk)
+{
+	(*(void(__thiscall*)(void*, bool))0x880DC0)(&LightsList, unk);
+}
+
 Light_Properties::Light_Properties()
 {
 	m_Vec_1 = Vector3f();

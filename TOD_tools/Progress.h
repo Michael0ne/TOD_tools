@@ -44,11 +44,7 @@ private:
 	int field_6C;
 
 public:
-	Progress()
-	{
-		MESSAGE_CLASS_CREATED(Progress);
-	}
-
+	Progress();		//	@87B720
 	~Progress()
 	{
 		MESSAGE_CLASS_DESTROYED(Progress);
@@ -58,14 +54,11 @@ public:
 	{
 		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 	}
-
 	void operator delete(void* ptr)
 	{
 		if (ptr)
 			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 	}
-
-	void	Init();	//	@87B720
 };
 
 extern Progress* g_Progress;	//	@A3D7D0

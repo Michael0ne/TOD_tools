@@ -100,7 +100,6 @@ extern inline void PATCH_WINDOW();
 extern inline void PATCH_SOUND_MANAGER();
 extern inline void PATCH_ALLOCATORS();
 extern inline void PATCH_STRING_BUFFER();
-extern inline void PATCH_FILEPROC();
 extern inline void PATCH_PERF();
 extern inline void PATCH_RENDERER();
 extern inline void PATCH_CONFIG();
