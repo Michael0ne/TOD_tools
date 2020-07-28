@@ -91,9 +91,6 @@ void MemoryHook()
 	//	TODO: this replaces calls to 'log' function. Calls to 'PrintNewFrameInfo' and 'OutputDebugString' should also be hooked.
 	hook(0x40C9D0, &debug, PATCH_JUMP);
 
-	//	Some classes are staic, so they are constructed at start. Do it here!
-	Allocators::g_Allocators = new Allocators::MemoryAllocators();
-
 	//	Apply reversed and implemented classes.
 	PATCH_ALLOCATORS();
 	PATCH_WINDOW();
@@ -109,8 +106,6 @@ void MemoryHook()
 
 void MemoryUnHook()
 {
-	if (Allocators::g_Allocators)
-		delete Allocators::g_Allocators;
 }
 
 //=========================================================================

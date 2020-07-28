@@ -1,153 +1,217 @@
 #include "MemoryAllocators.h"
 
-namespace Allocators {
+void Allocator::RetrieveSystemAllocators()
+{
+	m_SystemAllocators->_malloc	= malloc;
+	m_SystemAllocators->_free	= free;
+}
 
-	unsigned int& MemoryAllocators::_A3B0C8 = *(unsigned int*)0xA3B0C8;
-	bool Allocator::ms_bSystemAllocatorsVtablePresent = false;
-	Allocators::SystemAllocator__vtable* Allocator::ms_pSystemAllocatorsVtable = nullptr;
+Allocator::Allocator()
+{
+	MESSAGE_CLASS_CREATED(Allocator);
 
-	MemoryAllocators::MemoryAllocators()
+	m_AllocatedSpacePtr = nullptr;
+	m_AllocatedSpaceSize = NULL;
+	RetrieveSystemAllocators();
+
+	field_1C = nullptr;
+	field_20 = NULL;
+	field_21 = NULL;
+}
+
+SystemSubAllocator::SystemSubAllocator()
+{
+	MESSAGE_CLASS_CREATED(SystemSubAllocator);
+
+	m_AllocationsTotal = NULL;
+}
+
+FirstFitSubAllocator::FirstFitSubAllocator()
+{
+	MESSAGE_CLASS_CREATED(FirstFitSubAllocator);
+
+	field_24 = 8;
+	field_28 = NULL;
+	field_2C = NULL;
+	field_30 = NULL;
+	field_34 = NULL;
+	field_38 = NULL;
+}
+
+FrameBasedSubAllocator::FrameBasedSubAllocator()
+{
+	MESSAGE_CLASS_CREATED(FrameBasedSubAllocator);
+
+	field_40 = nullptr;
+}
+
+BestFitAllocator::BestFitAllocator()
+{
+	MESSAGE_CLASS_CREATED(BestFitAllocator);
+
+	int _f0 = 32;
+
+	for (int ind = 0; ind < 20; ind++)
 	{
-		_A3B0C8 = 0;
+		field_28[ind].field_0 = _f0;
+		field_28[ind].field_4 = NULL;
+		field_28[ind].field_8 = NULL;
 
-		//	NOTE: default constructor for ALLOCATOR_DEFAULT is called from here in code.
-		ALLOCATOR_DEFAULT.m_szAllocatorName = "ALLOCATOR_DEFAULT";
-		ALLOCATOR_DEFAULT.field_20 = 0;
-		AllocatorsList[eAllocatorType::ALLOCATOR_DEFAULT] = &ALLOCATOR_DEFAULT;
-		ALLOCATOR_DEFAULT.m_nAllocatorIndex = eAllocatorType::ALLOCATOR_DEFAULT;
-
-		AllocatorsList[eAllocatorType::ALLOCATOR_MAIN_ASSETS] = nullptr;
-		AllocatorsList[eAllocatorType::ALLOCATOR_MISSION_ASSETS] = nullptr;
-		AllocatorsList[eAllocatorType::ALLOCATOR_CUTSCENE_OR_REWIND] = nullptr;
-		AllocatorsList[eAllocatorType::ALLOCATOR_PLAYER_DATA] = nullptr;
-		AllocatorsList[eAllocatorType::ALLOCATOR_TEMP] = nullptr;
-		AllocatorsList[eAllocatorType::ALLOCATOR_RENDERLIST] = nullptr;
-		AllocatorsList[eAllocatorType::ALLOCATOR_SCRATCHPAD] = nullptr;
-		AllocatorsList[eAllocatorType::ALLOCATOR_COLLISION_CACHE_ENTRIES] = nullptr;
-		AllocatorsList[eAllocatorType::ALLOCATOR_DEFRAGMENTING] = nullptr;
-
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_MAIN_ASSETS] = nullptr;
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_MISSION_ASSETS] = nullptr;
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_CUTSCENE_OR_REWIND] = nullptr;
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_PLAYER_DATA] = nullptr;
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_TEMP] = nullptr;
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_RENDERLIST] = nullptr;
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_SCRATCHPAD] = nullptr;
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_COLLISION_CACHE_ENTRIES] = nullptr;
-		AllocatorBuffers[eAllocatorType::ALLOCATOR_DEFRAGMENTING] = nullptr;
-
-		BufferPtr = malloc(0x400);
-
-		//	NOTE:	478440 inlined!
-		ALLOCATOR_MAIN_ASSETS.field_44 = 0;
-
-		if (!((unsigned char)ALLOCATOR_MAIN_ASSETS.field_44 & 1)) {
-			ALLOCATOR_MAIN_ASSETS.field_44 |= 1;
-
-			//	TODO: !!!
-		}
-
-		_A3AFB8 = 0xABCDEF;
-		
-		InitializeCriticalSection(&CriticalSection);
+		_f0 = _f0 * 1.5f;
 	}
 
-	MemoryAllocators::~MemoryAllocators()
-	{
-		if (BufferPtr)
-			free(BufferPtr);
+	field_10C = 0x7FFFFFFF;
+	field_114 = nullptr;
+	field_118 = field_11C = field_120 = 0;
 
-		unsigned int index = 0;
-		do {
-			if (AllocatorsList[index + 1])
-				AllocatorsList[index + 1]->m_pSystemAllocators->free(AllocatorBuffers[index + 1]);
-			++index;
-		} while (index < 9);
+	g_Allocators.m_BestFitAllocator_UnknownValue = 16;
+}
 
-		Released = true;
-	}
+SequentialSubAllocator::SequentialSubAllocator()
+{
+	MESSAGE_CLASS_CREATED(SequentialSubAllocator);
 
-	void MemoryAllocators::ReleaseMemory(void* obj, bool aligned)
-	{
-		if (Released)
-			return;
+	field_24 = field_28 = field_2C = NULL;
+	field_30 = field_34 = field_38 = field_3C = NULL;
+}
 
-		EnterCriticalSection(&CriticalSection);
+PoolSubAllocator::PoolSubAllocator(int unk1, int unk2)
+{
+	MESSAGE_CLASS_CREATED(PoolSubAllocator);
 
-		if (obj < (AllocatorsList + 0x20 + (TotalAllocators * 8) - 1))
-			while (obj < (AllocatorsList + 0x20 + (TotalAllocators-- * 8)));
+	field_34 = unk1;
+	field_30 = (unk2 + 7) & 0xFFFFFFF8;
+	field_2C = NULL;
+}
 
-		if (aligned)
-			_A3AFEC[TotalAllocators - 1 * 2]->lpVtbl->FreeAligned(obj);
-		else
-			_A3AFEC[TotalAllocators - 1 * 2]->lpVtbl->Free(obj);
+StackBasedSubAllocator::StackBasedSubAllocator()
+{
+	MESSAGE_CLASS_CREATED(StackBasedSubAllocator);
 
-		LeaveCriticalSection(&CriticalSection);
-	}
+	m_StackBeginPtr = nullptr;
+	field_28 = nullptr;
+	m_StackEndPtr = nullptr;
+	m_ElementsInStack = NULL;
+	field_34 = 8;
+}
 
-	void MemoryAllocators::DefragmentIfNecessary(void* unk)
-	{
-		(*(void(__thiscall*)(void*))0x47B780)(unk);
-	}
+Defragmentator::Defragmentator(BestFitAllocator* bestfitallocator, char unk1, int size)
+{
+	MESSAGE_CLASS_CREATED(Defragmentator);
 
-	SystemSubAllocator::SystemSubAllocator()
-	{
-		//	Since it's global static object, constructor for parent class will be called here.
-		m_nAllocationsTotal = 0;
-		memcpy(&lpVtbl, (const void*)0x9B7CD8, 4);	//	NOTE: this will be fixed automatically once proper inheritance model is ready.
-	}
+	m_Size = size;
+	m_DefragmentAllocator = bestfitallocator;
+	m_AllocatedSpace = malloc(12 * size);
+	field_20 = unk1;
+	bestfitallocator->field_1C = this;
+	m_DefragmentAllocator_1 = bestfitallocator;
+}
 
-	Allocators::SystemAllocator__vtable* Allocator::GetSystemAllocatorsVtable()
-	{
-		if (Allocator::ms_bSystemAllocatorsVtablePresent)
-			return Allocator::ms_pSystemAllocatorsVtable;
+void Allocators::CreateAllocators()
+{
+	ALLOCATOR_MAIN_ASSETS = FrameBasedSubAllocator();
+	ALLOCATOR_MISSION_ASSETS = FrameBasedSubAllocator();
+	ALLOCATOR_CUTSCENE_OR_REWIND = FrameBasedSubAllocator();
+	ALLOCATOR_PLAYER_DATA = FrameBasedSubAllocator();
+	ALLOCATOR_TEMP = FirstFitSubAllocator();
+	ALLOCATOR_RENDERLIST = BestFitAllocator();
+	ALLOCATOR_SCRATCHPAD = StackBasedSubAllocator();
+	ALLOCATOR_COLLISION_CACHE_ENTRIES = PoolSubAllocator(48, 4);
+	ALLOCATOR_DEFRAGMENTING = BestFitAllocator();
+	m_Defragmentator = Defragmentator(&ALLOCATOR_DEFRAGMENTING, 1, 10000);
+	ALLOCATOR_DEFRAGMENTING.field_20 = NULL;
+	m_Defragmentator.field_28 = NULL;
+	m_Defragmentator.field_2C = NULL;
 
-		Allocator::ms_bSystemAllocatorsVtablePresent = true;
-		Allocator::ms_pSystemAllocatorsVtable = (SystemAllocator__vtable*)0x9B750C;
+	InitAllocator(&ALLOCATOR_CUTSCENE_OR_REWIND, CUTSCENE_OR_REWIND, "ALLOCATOR_CUTSCENE_OR_REWIND", 0x200000);
+	InitAllocator(&ALLOCATOR_PLAYER_DATA, PLAYER_DATA, "ALLOCATOR_PLAYER_DATA", 0x300000);
+	InitAllocator(&ALLOCATOR_MISSION_ASSETS, MISSION_ASSETS, "ALLOCATOR_MISSION_ASSETS", 0x700000);
+	InitAllocator(&ALLOCATOR_MAIN_ASSETS, MAIN_ASSETS, "ALLOCATOR_MAIN_ASSETS", 0x5A00000);
+	InitAllocator(&ALLOCATOR_COLLISION_CACHE_ENTRIES, COLLISION_CACHE_ENTRIES, "ALLOCATOR_COLLISION_CACHE_ENTRIES", 0x3E800);
+	InitAllocator(&ALLOCATOR_DEFRAGMENTING, DEFRAGMENTING, "ALLOCATOR_DEFRAGMENTING", 0x96000);
+	InitAllocator(&ALLOCATOR_RENDERLIST, RENDERLIST, "ALLOCATOR_RENDERLIST", 0xA00000);
+	InitAllocator(&ALLOCATOR_TEMP, TEMP, "ALLOCATOR_TEMP", 0x40000);
+	InitAllocator(&ALLOCATOR_SCRATCHPAD, SCRATCHPAD, "ALLOCATOR_SCRATCHPAD", 0x3FC0);
 
-		return Allocator::ms_pSystemAllocatorsVtable;
-	}
+	_4776A0();
 
-	Allocator::Allocator()
-	{
-		lpVtbl = (Allocator__vtable*)0x9B75C8;
-		m_pAllocatedSpacePtr = nullptr;
-		m_nAllocatedSpaceSize = 0;
-		m_pSystemAllocators = (SystemAllocator__vtable*)GetSystemAllocatorsVtable();
-		field_1C = 0;
-		field_21 = 0;
-		field_20 = 1;
-	}
+	ALLOCATOR_RENDERLIST.field_20 = NULL;
+	ALLOCATOR_COLLISION_CACHE_ENTRIES.field_20 = NULL;
+	ALLOCATOR_SCRATCHPAD.field_20 = NULL;
+}
 
-	void Allocator::Init(Allocator* allocator, unsigned int index, const char* name, int size)
-	{
-		if (!allocator->m_pSystemAllocators)
-			allocator->m_pSystemAllocators = Allocator::GetSystemAllocatorsVtable();	//	NOTE: inline maybe?
+void Allocators::InitAllocator(Allocator* _alloc, int _allocindex, const char* _allocname, int _allocsize)
+{
+	if (!_alloc->m_SystemAllocators)
+		_alloc->RetrieveSystemAllocators();
 
-		AllocatorsList[index] = allocator;
-		AllocatorsList[index]->m_pSystemAllocators = allocator->m_pSystemAllocators;
-		allocator->m_nAllocatorIndex = index;
+	AllocatorsList[_allocindex] = _alloc;
+	_alloc->m_AllocatorIndex = _allocindex;
+	BuffersPtr[_allocindex] = _alloc->m_SystemAllocators->_malloc((_allocsize + 63) & 0xFFFFFFC0);
+	_alloc->SetNameAndAllocatedSpaceParams(BuffersPtr[_allocindex], _allocname, _allocsize);
 
-		void* allocatedSpace = AllocatorsList[index]->m_pSystemAllocators->malloc((size + 64) & 0xFFFFFFC0);
-		AllocatorBuffers[index] = allocatedSpace;
-
-		allocator->lpVtbl->_SetFields_4_8_20(allocator, allocatedSpace, name, size);	//	TODO: better name
-
-		if (allocator->field_1C)
-			(**(void (__stdcall*)(int))allocator->field_1C)(0);	//	TODO: this is ugly! what is 'field_1C'?
-	}
-
-	FrameBasedSubAllocator::FrameBasedSubAllocator()
-	{
-		//	field_64 = 0;
-	}
-
-	SequentialSubAllocator::SequentialSubAllocator()
-	{
-		field_24 = field_28 = field_2C = field_30 = field_34 = field_38 = field_3C = 0;
-	}
+	if (_alloc->field_1C)
+		((Allocator*)(_alloc->field_1C))->scalar_destructor(false);
 
 }
 
-inline void PATCH_ALLOCATORS()
-{}
+//	TODO: implementation!
+void Allocators::_4776A0()
+{
+	(*(void (*)())0x4776A0)();
+}
+
+Allocators::Allocators()
+{
+	MESSAGE_CLASS_CREATED(Allocators);
+
+	ALLOCATOR_DEFAULT = SystemSubAllocator();
+
+	ALLOCATOR_DEFAULT.m_AllocatorName = "ALLOCATOR_DEFAULT";
+	ALLOCATOR_DEFAULT.field_20 = NULL;
+	ALLOCATOR_DEFAULT.m_AllocatorIndex = ALLOCATOR_INDEX::DEFAULT;
+
+	AllocatorsList[DEFAULT] = &ALLOCATOR_DEFAULT;
+	AllocatorsList[MAIN_ASSETS] = nullptr;
+	AllocatorsList[MISSION_ASSETS] = nullptr;
+	AllocatorsList[CUTSCENE_OR_REWIND] = nullptr;
+	AllocatorsList[PLAYER_DATA] = nullptr;
+	AllocatorsList[TEMP] = nullptr;
+	AllocatorsList[RENDERLIST] = nullptr;
+	AllocatorsList[SCRATCHPAD] = nullptr;
+	AllocatorsList[COLLISION_CACHE_ENTRIES] = nullptr;
+	AllocatorsList[DEFRAGMENTING] = nullptr;
+
+	BuffersPtr[DEFAULT] = &ALLOCATOR_DEFAULT;
+	BuffersPtr[MAIN_ASSETS] = nullptr;
+	BuffersPtr[MISSION_ASSETS] = nullptr;
+	BuffersPtr[CUTSCENE_OR_REWIND] = nullptr;
+	BuffersPtr[PLAYER_DATA] = nullptr;
+	BuffersPtr[TEMP] = nullptr;
+	BuffersPtr[RENDERLIST] = nullptr;
+	BuffersPtr[SCRATCHPAD] = nullptr;
+	BuffersPtr[COLLISION_CACHE_ENTRIES] = nullptr;
+	BuffersPtr[DEFRAGMENTING] = nullptr;
+
+	BufferPtr = malloc(1024);
+
+	CreateAllocators();
+
+	_A3AFB8 = 0xABCDEF;
+
+	InitializeCriticalSection(&AllocatorsCriticalSection);
+}
+
+Allocators::~Allocators()
+{
+	MESSAGE_CLASS_DESTROYED(Allocators);
+
+	if (BufferPtr)
+		free(BufferPtr);
+
+	for (int ind = 0; ind < 9; ind++)
+		if (AllocatorsList[ind + 1])
+			AllocatorsList[ind]->m_SystemAllocators->_free(BuffersPtr[ind + 1]);
+
+	Released = true;
+}

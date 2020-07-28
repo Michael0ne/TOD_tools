@@ -94,4 +94,34 @@ namespace ScriptTypes
 
 		return ent;
 	}
+
+	ScriptType_List::ScriptType_List(const ScriptType& elementsType) : ScriptType(TYPE_LIST, szScriptTypeName[TYPE_LIST], TYPE_LIST_SIZE)
+	{
+		MESSAGE_CLASS_CREATED(ScriptType_List);
+
+		*m_ListElementsType = elementsType;
+		m_ListElementSize = elementsType.m_nSizeInBytes;
+
+		//	NOTE: is this correct?
+		char buffer[64];
+		sprintf(buffer, "list(%s)", elementsType.m_sTypeName.m_szString);
+		m_sTypeName.Set(buffer);
+
+		if (m_nTypeId == 3 || m_nTypeId == 8 || m_nTypeId == 9 || m_nTypeId == 11)
+			m_IsTypeId3_8_9_11 = true;
+		else
+			m_IsTypeId3_8_9_11 = false;
+	}
+
+	ScriptType_Dict::ScriptType_Dict(const ScriptType& elementsType) : ScriptType(TYPE_DICT, szScriptTypeName[TYPE_DICT], TYPE_DICT_SIZE)
+	{
+		MESSAGE_CLASS_CREATED(ScriptType_Dict);
+
+		*m_ElementsType = elementsType;
+
+		//	NOTE: is this correct?
+		char buffer[64];
+		sprintf(buffer, "dict(%s)", elementsType.m_sTypeName.m_szString);
+		m_sTypeName.Set(buffer);
+	}
 }

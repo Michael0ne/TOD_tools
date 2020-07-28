@@ -336,6 +336,34 @@ namespace ScriptTypes
 
 	ScriptType_Entity*			tENTITY = (ScriptType_Entity*)0xA3CEE0;		//	@A3CEE0
 
+	class ScriptType_List : public ScriptType
+	{
+	protected:
+		ScriptType* m_ListElementsType;
+		int m_ListElementSize;
+		char m_IsTypeId3_8_9_11;
+
+	public:
+		ScriptType_List(const ScriptType& elementsType);	//	@870630
+		~ScriptType_List()
+		{
+			MESSAGE_CLASS_DESTROYED(ScriptType_List);
+		}
+	};
+
+	class ScriptType_Dict : public ScriptType
+	{
+	protected:
+		ScriptType* m_ElementsType;
+
+	public:
+		ScriptType_Dict(const ScriptType& elementsType);	//	@867B50
+		~ScriptType_Dict()
+		{
+			MESSAGE_CLASS_DESTROYED(ScriptType_Dict);
+		}
+	};
+
 	ScriptType_Nothing*			tNOTHING = (ScriptType_Nothing*)0xA3CE94;	//	@A3CE94
 	ScriptType_Number*			tNUMBER = (ScriptType_Number*)0xA3CEC0;		//	@A3CEC0
 	ScriptType_Integer*			tINTEGER = (ScriptType_Integer*)0xA3CEB8;	//	@A3CEB8
