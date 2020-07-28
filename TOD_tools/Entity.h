@@ -31,6 +31,11 @@ public:
 	{
 		MESSAGE_CLASS_DESTROYED(Entity);
 	}
+
+	ScriptTypes::ScriptType_Entity* GetScriptEntity()
+	{
+		return m_ScriptEntity;
+	}
 };
 
 static_assert(sizeof(Entity) == ENTITY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Entity));

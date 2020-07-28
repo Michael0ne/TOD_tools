@@ -68,44 +68,18 @@ namespace GameConfig {
 		int field_64;
 
 	public:
-		Session_Variables()
+		Session_Variables(int unk)
 		{
 			MESSAGE_CLASS_CREATED(Session_Variables);
 
-			field_0 = 0;
-			field_4 = 0;
-			field_8 = 0;
-			field_C = 0;
-
-			field_10 = 0;
-			field_14 = 0;
-			field_18 = 0;
-			field_1C = 0;
-
-			field_20 = 0;
-			field_24 = 0;
-			field_28 = 0;
-			field_2C = 0;
-
-			field_30 = 0;
-			field_34 = 0;
-			field_38 = 0;
-			field_3C = 0;
-
-			field_40 = 0;
-			field_44 = 0;
-			field_48 = 0;
-			field_4C = 0;
-
-			field_50 = 0;
-			field_54 = 0;
-			field_58 = 0;
-			field_5C = 0;
-
-			m_nTotalVariables = 0;
-			field_64 = 0;
+			(*(Session_Variables * (__thiscall*)(Session_Variables*, int))0x410680)(this, unk);
 		}
+		Session_Variables(const char* file, int unk)
+		{
+			MESSAGE_CLASS_CREATED(Session_Variables);
 
+			(*(Session_Variables * (__thiscall*)(Session_Variables*, const char*, int))0x4124D0)(this, file, unk);
+		}
 		~Session_Variables()
 		{
 			MESSAGE_CLASS_DESTROYED(Session_Variables);
@@ -117,15 +91,11 @@ namespace GameConfig {
 		{
 			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
 		}
-
 		void operator delete(void* ptr)
 		{
 			if (ptr)
 				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
 		}
-
-		Session_Variables* CreateBuffer(int unk);	//	@410680
-		Session_Variables* CreateBuffer(const char* szPath, bool unk);	//	@4124D0
 
 		bool IsVariableSet(const char* variableName);	//	@410080
 

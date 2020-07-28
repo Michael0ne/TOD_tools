@@ -76,35 +76,18 @@ namespace GameConfig {
 
 		//	Try and look for configuration variables file.
 		//	TODO: CreateBuffer implementation!
-		if (!Utils::FindFileEverywhere(m_sConfigFilePath.m_szString)) {
-			if (!Allocators::Released) {
-				m_pConfigurationVariables = new Session_Variables();
-
-				if (m_pConfigurationVariables)
-					m_pConfigurationVariables->CreateBuffer(0);
-			}
-		}else{
+		if (Utils::FindFileEverywhere(m_sConfigFilePath.m_szString)) {
 			debug("Initialising engine with '%s'\n", m_sConfigFilePath.m_szString);
 
-			if (!Allocators::Released) {
-				m_pConfigurationVariables = new Session_Variables();
-
-				if (m_pConfigurationVariables)
-					m_pConfigurationVariables->CreateBuffer(m_sConfigFilePath.m_szString, 1);
-			}
-		}
+			m_pConfigurationVariables = new Session_Variables(m_sConfigFilePath.m_szString, 1);;
+		}else
+			m_pConfigurationVariables = new Session_Variables(0);
 
 		Session_Variables* pProfileVariables = nullptr;
 
 		//	Try and look for profile variables file.
-		if (Utils::FindFileEverywhere("/profile.txt")) {
-			if (!Allocators::Released) {
-				pProfileVariables = new Session_Variables();
-
-				if (pProfileVariables)
-					pProfileVariables->CreateBuffer("/profile.txt", 0);
-			}
-		}
+		if (Utils::FindFileEverywhere("/profile.txt"))
+			pProfileVariables = new Session_Variables("/profile.txt", 0);
 
 		if (m_pConfigurationVariables->IsVariableSet("filecheck"))
 			Script::FileCheck = m_pConfigurationVariables->GetParamValueBool("filecheck") == 0;
@@ -575,7 +558,7 @@ namespace GameConfig {
 
 		if (!SceneSet)
 			if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-				g_Scene->m_ScriptEntity->CreateNode();
+				g_Scene->GetScriptEntity()->CreateNode();
 
 		//	TODO: implementation! Scene is not initialized here!
 		if (m_pConfigurationVariables->IsVariableSet("fixedframerate"))
@@ -782,20 +765,6 @@ namespace GameConfig {
 	bool Config::OpenScene(const char* scene)
 	{
 		return (*(bool(__thiscall*)(Config*, const char*))0x93CE00)(this, scene);
-	}
-
-	Session_Variables* Session_Variables::CreateBuffer(int unk)
-	{
-		Session_Variables* (__thiscall * _CreateBuffer)(Session_Variables * _this, int unk) = (Session_Variables * (__thiscall*)(Session_Variables*, int))0x410680;
-
-		return _CreateBuffer(this, unk);
-	}
-
-	Session_Variables* Session_Variables::CreateBuffer(const char* szPath, bool unk)
-	{
-		Session_Variables* (__thiscall * _CreateBuffer)(Session_Variables * _this, const char* _path, bool _unk) = (Session_Variables * (__thiscall*)(Session_Variables*, const char*, bool))0x4124D0;
-
-		return _CreateBuffer(this, szPath, unk);
 	}
 
 	bool Session_Variables::IsVariableSet(const char* variableName)
