@@ -314,7 +314,7 @@ namespace ScriptTypes
 		int field_2C;
 		int field_30;
 		int field_34;
-		int field_38;
+		int* field_38;
 		int field_3C;
 		int field_40;
 		int field_44;

@@ -196,6 +196,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Scratchpad.h" />
+    <ClInclude Include="ScriptDatabase.h" />
     <ClInclude Include="ScriptTypes.h" />
     <ClInclude Include="Shadow.h" />
     <ClInclude Include="SignPost.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="SavesDirectoriesInformation.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Scratchpad.cpp" />
+    <ClCompile Include="ScriptDatabase.cpp" />
     <ClCompile Include="ScriptTypes.cpp" />
     <ClCompile Include="Shadow.cpp" />
     <ClCompile Include="SignPost.cpp" />

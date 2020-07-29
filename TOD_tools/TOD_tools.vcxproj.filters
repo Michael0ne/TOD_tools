@@ -368,6 +368,9 @@
     <ClInclude Include="LoadScreenInfo.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptDatabase.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -668,6 +671,9 @@
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="LoadScreenInfo.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptDatabase.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
   </ItemGroup>
