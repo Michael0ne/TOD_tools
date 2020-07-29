@@ -1,16 +1,14 @@
-# Total Overdose researching project. (work in progress)
+# TOD Tools
 
-TOD Tools - project aims to deliver working game hook to ease modification abilities (custom scripts, textures, etc.)
+TOD Tools - (Total Overdose Tools) - project goal is to make game modifiable with ease.
 
-# TODO:
+# Current TODO list (important at top):
 
-* Make hook to work correctly (don't crash the game), since Window class is complete.
-* Further look into MemoryAllocatrs and it's subclasses.
-* Figure out how GlobalScripts works.
-* Further look into InputGameControllers class.
-* Complete class placeholders for all game Nodes.
-* Figure out how text values are stored, displayed and localised.
-* Further look into Blocks class and how blocks are loaded.
+* MemoryAllocators class needs to be implemented correctly.
+* Config class needs to be fixed.
+* How text values (localization) are loaded?
+* How resources are loaded?
+* Project has to compile successfully!
 
 # Information
 
