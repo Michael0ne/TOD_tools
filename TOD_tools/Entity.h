@@ -17,7 +17,7 @@ protected:
 	char* m_FragmentPath;
 	short field_10;
 	short m_Order;
-	int field_14;
+	int m_Id;
 	int field_18;
 	int field_1C;
 	int* field_20;

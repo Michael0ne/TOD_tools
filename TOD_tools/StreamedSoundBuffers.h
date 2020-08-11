@@ -46,7 +46,7 @@ namespace Audio {
 		int m_nCurrentlyPlaying;
 		int	field_8;
 		int	field_C;
-		BYTE m_nUnkByte1;
+		bool	m_Muted;
 		BYTE m_bGlobalPauseCalled;
 		BYTE m_bGlobalPause;
 		BYTE m_bSound;

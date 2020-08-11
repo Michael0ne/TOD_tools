@@ -31,7 +31,7 @@ public:
 
 
 public:
-	RewindBuffer(const unsigned int bufferSize);
+	RewindBuffer(const unsigned int bufferSize);	//	@8AADA0
 	~RewindBuffer()
 	{
 		MESSAGE_CLASS_DESTROYED(RewindBuffer);

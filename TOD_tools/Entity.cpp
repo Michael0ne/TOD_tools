@@ -6,10 +6,11 @@ Entity::Entity()
 	MESSAGE_CLASS_CREATED(Entity);
 
 	m_ScriptEntity = nullptr;
-	field_1C = field_18 = field_14 = 0;
+	field_1C = field_18 = 0;
 	field_20 = nullptr;
-	field_14 = field_14 | 255;
+	m_Id = 0;
+	m_Id = m_Id | 255;
 	m_FragmentPath = nullptr;
 
-	field_14 = (g_Blocks->AddEntity(this) << 8) | field_14 & 255;
+	m_Id = (g_Blocks->AddEntity(this) << 8) | m_Id & 255;
 }

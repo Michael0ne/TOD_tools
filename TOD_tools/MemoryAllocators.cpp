@@ -158,7 +158,7 @@ void Allocators::InitAllocator(Allocator* _alloc, int _allocindex, const char* _
 //	TODO: implementation!
 void Allocators::_4776A0()
 {
-	(*(void (*)())0x4776A0)();
+	TotalAllocators = NULL;
 }
 
 Allocators::Allocators()
@@ -214,4 +214,48 @@ Allocators::~Allocators()
 			AllocatorsList[ind]->m_SystemAllocators->_free(BuffersPtr[ind + 1]);
 
 	Released = true;
+}
+
+//	NOTE: this is an abstract function to free memory by pointer using according allocator method.
+void Allocators::ReleaseMemory(void* ptr, bool aligned)
+{
+	if (Released)
+		return;
+
+	EnterCriticalSection(&AllocatorsCriticalSection);
+
+	int allocInd = TotalAllocators - 1;
+	void* _alloc = nullptr;
+
+	if (ptr < AllocatorsList[TotalAllocators]->field_1C)
+	{
+		do {
+			_alloc = AllocatorsList[allocInd--]->field_1C;
+		} while (ptr < _alloc);
+	}
+
+	if (aligned)
+		_A3AFE8[allocInd].m_Allocator->FreeAligned(ptr);
+	else
+		_A3AFE8[allocInd].m_Allocator->Free(ptr);
+
+	LeaveCriticalSection(&AllocatorsCriticalSection);
+}
+
+Allocator* Allocators::GetAllocatorByMemoryPointer(void* ptr)
+{
+	int allocInd = TotalAllocators - 1;
+
+	if (ptr < AllocatorsList[TotalAllocators]->field_1C)
+		while (ptr < AllocatorsList[allocInd--]->field_1C);
+
+	return _A3AFE8[allocInd].m_Allocator;
+}
+
+SingletonSubAllocator::SingletonSubAllocator()
+{
+	MESSAGE_CLASS_CREATED(SingletonSubAllocator);
+
+	field_24 = NULL;
+	field_28 = NULL;
 }
