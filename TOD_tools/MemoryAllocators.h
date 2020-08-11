@@ -30,6 +30,11 @@ protected:
 public:
 	Allocator();	//	@47AB30
 
+	unsigned int				GetAllocatorIndex()
+	{
+		return m_AllocatorIndex;
+	}
+
 	virtual Allocator*			scalar_destructor(bool freeMemory);
 
 	virtual void*				Allocate(size_t size);
@@ -97,6 +102,8 @@ protected:
 public:
 	FirstFitSubAllocator();	//	@4797F0
 };
+
+#define SEQUENTIALSUBALLOCATOR_CLASS_SIZE 64
 
 class SequentialSubAllocator : public Allocator
 {
@@ -212,6 +219,19 @@ public:
 	Defragmentator(BestFitAllocator* bestfitallocator, char unk1, int size);	//	@47BBD0
 };
 
+#define SINGLETONSUBALLOCATOR_CLASS_SIZE 44
+
+class SingletonSubAllocator : public Allocator
+{
+protected:
+	char	field_24;
+	int		field_28;
+
+public:
+	SingletonSubAllocator();	//	@47A690
+	~SingletonSubAllocator();
+};
+
 #define ALLOCATORS_CLASS_SIZE 1160
 
 enum ALLOCATOR_INDEX
@@ -228,6 +248,12 @@ enum ALLOCATOR_INDEX
 	DEFRAGMENTING = 9,
 
 	TOTAL = 10
+};
+
+struct Allocator_Struct2
+{
+	void*					m_AllocatedSpacePtr;
+	Allocator*				m_Allocator;
 };
 
 class Allocators
@@ -267,11 +293,14 @@ public:
 	Allocators();	//	@478040
 	~Allocators();	//	@9B1AF0
 
+	static void				ReleaseMemory(void* ptr, bool aligned);	//	@4778D0
+	static Allocator*		GetAllocatorByMemoryPointer(void* ptr);	//	@4777B0
+
 	static	RTL_CRITICAL_SECTION	AllocatorsCriticalSection;	//	@A3AFA0
 	static	int				_A3AFB8;	//	@A3AFB8
 	static	bool			Released;	//	@A3AFBC
 	static	Allocator*		AllocatorsList[ALLOCATOR_INDEX::TOTAL];	//	@A3AFC0
-	static	int				_A3AFE8;	//	@A3AFE8
+	static	Allocator_Struct2	_A3AFE8[22];	//	@A3AFE8
 	static	Allocator*		_A3AFEC[ALLOCATOR_INDEX::TOTAL];	//	@A3AFEC
 	static	int				TotalAllocators;	//	@A3B098
 	static	void*			BufferPtr;	//	@A3B09C
@@ -284,6 +313,7 @@ static Allocators g_Allocators;	//	@A3B0CC
 static_assert(sizeof(Allocator) == ALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Allocator));
 static_assert(sizeof(SystemSubAllocator) == SYSTEMSUBALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SystemSubAllocator));
 static_assert(sizeof(FirstFitSubAllocator) == FIRSTFITSUBALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(FirstFitSubAllocator));
+static_assert(sizeof(SequentialSubAllocator) == SEQUENTIALSUBALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SequentialSubAllocator));
 static_assert(sizeof(FrameBasedSubAllocator) == FRAMEBASEDSUBALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(FrameBasedSubAllocator));
 static_assert(sizeof(BestFitAllocator) == BESTFITALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(BestFitAllocator));
 static_assert(sizeof(PoolSubAllocator) == POOLSUBALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(PoolSubAllocator));
