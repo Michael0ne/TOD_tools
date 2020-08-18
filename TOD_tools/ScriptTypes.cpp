@@ -75,13 +75,14 @@ namespace ScriptTypes
 	{
 		MESSAGE_CLASS_CREATED(ScriptType_Entity);
 
-		field_2C = field_34 = field_38 = field_3C = field_44 = field_48 = field_6C = field_74 = 0;
+		field_2C = field_3C = field_44 = field_48 = field_6C = field_74 = 0;
 		field_30 = 0x00000032 | 0x10000;
 		field_40 = 0x00000032 | 0x10000;
 		field_70 = 1;
 		m_Creator = nullptr;
 		m_Parent = nullptr;
 		m_ParentNode = nullptr;
+		field_38 = nullptr;
 
 		m_PropertiesList_1 = List<EntityProperties>(0x19300);
 		m_PropertiesList_2 = List<EntityProperties>(0x19300);

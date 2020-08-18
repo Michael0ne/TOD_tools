@@ -81,7 +81,6 @@ namespace Audio {
 		{
 			MESSAGE_CLASS_CREATED(DieselPower);
 		}
-
 		~DieselPower()
 		{
 			MESSAGE_CLASS_DESTROYED(DieselPower);
@@ -89,12 +88,12 @@ namespace Audio {
 
 		void* operator new (size_t size)
 		{
-			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+			return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 		}
 		void operator delete(void* ptr)
 		{
 			if (ptr)
-				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+				Allocators::ReleaseMemory(ptr, 0);
 		}
 
 		static DieselPower* CallFactory(unsigned int versionMajor, unsigned int versionMinor, unsigned int versionBuild, float unk, HWND windowHandle, int unk1, int unk2, int unk3);	//	@940A70

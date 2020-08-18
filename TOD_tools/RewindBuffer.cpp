@@ -8,7 +8,7 @@ RewindBuffer::RewindBuffer(const unsigned int bufferSize)
 	m_UnknownList.field_8 = 0;
 	field_1C = 0;
 	m_nChunks = bufferSize / 4;
-	m_pBuffer = Allocators::AllocatorsList[Allocators::GetAllocatorByMemoryPointer(this)->GetAllocatorIndex()]->Allocate_A(4 * m_nChunks);
+	m_pBuffer = Allocators::AllocatorsList[Allocators::GetAllocatorByMemoryPointer(this)->GetAllocatorIndex()]->Allocate_A(4 * m_nChunks, NULL, NULL);
 	field_C = 0;
 	m_UnknownList._8751D0();
 	m_nSize = 0;

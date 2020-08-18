@@ -18,13 +18,13 @@ String* String::Substring(String* outStr, int posStart, int length)
 		outStr->m_nLength = length;
 		outStr->m_nBitMask = (0x80000000 ^ (length + (length >> 2))) & 0x7FFFFFFF ^ 0x80000000;
 		outStr->m_pEmpty = NULL;
-		outStr->m_szString = (char*)Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(outStr->m_nBitMask & 0x7FFFFFFF);
+		outStr->m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(outStr->m_nBitMask & 0x7FFFFFFF, NULL, NULL);
 		strncpy(outStr->m_szString, &m_szString[posStart], length);
 	}else{
 		outStr->m_nLength = m_nLength - posStart;
 		outStr->m_nBitMask = (0x80000000 ^ ((m_nLength - posStart) + ((m_nLength - posStart) >> 2))) & 0x7FFFFFFF ^ 0x80000000;
 		outStr->m_pEmpty = NULL;
-		outStr->m_szString = (char*)Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(outStr->m_nBitMask & 0x7FFFFFFF);
+		outStr->m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(outStr->m_nBitMask & 0x7FFFFFFF, NULL, NULL);
 		strncpy(outStr->m_szString, &m_szString[posStart], m_nLength - posStart);
 	}
 
@@ -34,12 +34,12 @@ String* String::Substring(String* outStr, int posStart, int length)
 void String::Set(const char* str)
 {
 	if (m_szString != &m_pEmpty && m_nBitMask < 0)
-		Allocators::MemoryAllocators::ReleaseMemory(m_szString, 0);
+		Allocators::ReleaseMemory(m_szString, 0);
 
 	m_nLength = strlen(str);
 	m_nBitMask = 0x80000000 ^ (0x80000000 ^ (m_nLength + (m_nLength >> 1))) & 0x7FFFFFFF;
 
-	m_szString = (char*)Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(m_nBitMask & 0x7FFFFFFF);
+	m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & 0x7FFFFFFF, NULL, NULL);
 	m_nBitMask |= 0x80000000;
 
 	m_pEmpty = '\0';

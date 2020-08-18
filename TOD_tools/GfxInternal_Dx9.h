@@ -9631,7 +9631,6 @@ public:
 	{
 		MESSAGE_CLASS_CREATED(GfxInternal_Dx9);
 	}
-
 	~GfxInternal_Dx9()
 	{
 		MESSAGE_CLASS_DESTROYED(GfxInternal_Dx9);
@@ -9639,13 +9638,12 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
-
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+			Allocators::ReleaseMemory(ptr, 0);
 	}
 
 	void	Init(void* resolution, int unk1, int unk2, int fsaa, int unk3);	//	@45E620

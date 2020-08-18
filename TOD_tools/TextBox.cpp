@@ -18,7 +18,7 @@ TextBox::TextBox() : Sprite()
 	m_TextSlot = nullptr;
 	field_B8 = field_B0 = 0;
 	m_VerticalScroll = 0.0f;
-	field_14 = field_14 | 8;
+	m_Id = m_Id | 8;
 
 	m_QuadTree->m_nUserType = m_QuadTree->m_nUserType & 0xFFFFFF | m_QuadTree->m_nUserType & 0xFF000000 | 0x8000000;
 }
