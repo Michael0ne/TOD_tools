@@ -65,18 +65,18 @@ private:
 	String m_sSaveSlotDir;
 
 public:
+	SavePoint(SavesDirectoriesInformation* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize);	//	@86C160
+	~SavePoint();	//	@86BF20
+
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::MemoryAllocators::ReleaseMemory(ptr, false);
+			Allocators::ReleaseMemory(ptr, false);
 	}
-
-	SavePoint(SavesDirectoriesInformation* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize);	//	@86C160
-	~SavePoint();	//	@86BF20
 
 	static bool		WriteSavePointFileData(const SavePoint& savepoint, const struct RewindBuffer& rewbuff);	//	@873DA0
 	static bool		VerifyFileChecksum(SavePoint*);	//	@874230

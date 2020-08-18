@@ -42,7 +42,6 @@ namespace Input {
 
 			m_nBufferSize = 0;
 		}
-
 		~Keyboard()
 		{
 			MESSAGE_CLASS_DESTROYED(Keyboard);
@@ -50,13 +49,12 @@ namespace Input {
 
 		void* operator new(size_t size)
 		{
-			return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+			return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 		}
-
 		void operator delete(void* ptr)
 		{
 			if (ptr)
-				Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+				Allocators::ReleaseMemory(ptr, 0);
 		}
 
 		void Init();	//	@43AD80

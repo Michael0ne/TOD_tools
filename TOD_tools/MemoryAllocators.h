@@ -35,17 +35,17 @@ public:
 		return m_AllocatorIndex;
 	}
 
-	virtual Allocator*			scalar_destructor(bool freeMemory);
+	virtual void				scalar_destructor(bool freeMemory);
 
-	virtual void*				Allocate(size_t size);
-	virtual void*				Allocate_A(size_t size) = 0;
-	virtual void*				AllocateAligned(size_t size, size_t alignment) = 0;
+	virtual void*				Allocate(size_t size, int filler, int unk);
+	virtual void*				Allocate_A(size_t size, int filler, int unk) = 0;
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) = 0;
 
 	virtual void				Free(void* ptr) = 0;
 	virtual void				FreeAligned(void* ptr) = 0;
 
-	virtual void*				Realloc(void* oldptr, size_t newsize) = 0;
-	virtual void				stub8() = 0;
+	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) = 0;
+	virtual int					stub8(int unk) = 0;
 	virtual void				stub9() = 0;
 	virtual void				CallMethodAtOffset20();
 	virtual void				SetField21(char unk);
@@ -55,8 +55,8 @@ public:
 	virtual int					GetTotalAllocations();
 	virtual int					stub16();
 	virtual const char*			GetAllocatorName();
-	virtual void				SetFieldC();
-	virtual void				stub19();
+	virtual void				SetFieldC(char unk);
+	virtual int					stub19();
 	virtual int					stub20();
 	virtual int					stub21();
 	virtual int					GetAvailableMemory();
@@ -85,6 +85,14 @@ protected:
 
 public:
 	SystemSubAllocator();	//	@47AB90
+
+	virtual void*				Allocate_A(size_t size, int filler, int unk) override;
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;
+	virtual void				Free(void* ptr) override;
+	virtual void				FreeAligned(void* ptr) override;
+	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) override;
+	virtual int					stub8(int unk) override;
+	virtual void				stub9() override;
 };
 
 #define FIRSTFITSUBALLOCATOR_CLASS_SIZE 60
@@ -97,10 +105,18 @@ protected:
 	int							field_2C;
 	int							field_30;
 	int							field_34;
-	int							field_38;
+	int*						field_38;
 
 public:
 	FirstFitSubAllocator();	//	@4797F0
+
+	virtual void*				Allocate_A(size_t size, int filler, int unk) override;
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;
+	virtual void				Free(void* ptr) override;
+	virtual void				FreeAligned(void* ptr) override;
+	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) override;
+	virtual int					stub8(int unk) override;
+	virtual void				stub9() override;
 };
 
 #define SEQUENTIALSUBALLOCATOR_CLASS_SIZE 64
@@ -129,6 +145,15 @@ protected:
 
 public:
 	FrameBasedSubAllocator();	//	@479EE0
+
+	virtual void*				Allocate(size_t size, int filler, int unk) override;
+	virtual void*				Allocate_A(size_t size, int filler, int unk) override;
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;
+	virtual void				Free(void* ptr) override;
+	virtual void				FreeAligned(void* ptr) override;
+	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) override;
+	virtual int					stub8(int unk) override;
+	virtual void				stub9() override;
 };
 
 #define BESTFITALLOCATOR_CLASS_SIZE 292
@@ -153,6 +178,14 @@ protected:
 
 public:
 	BestFitAllocator();
+
+	virtual void*				Allocate_A(size_t size, int filler, int unk) override;
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;
+	virtual void				Free(void* ptr) override;
+	virtual void				FreeAligned(void* ptr) override;
+	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) override;
+	virtual int					stub8(int unk) override;
+	virtual void				stub9() override;
 };
 
 #define POOLSUBALLOCATOR_CLASS_SIZE 64
@@ -169,7 +202,16 @@ protected:
 	int field_3C;
 
 public:
+	PoolSubAllocator();
 	PoolSubAllocator(int unk1, int unk2);	//	@47A1B0
+
+	virtual void*				Allocate_A(size_t size, int filler, int unk) override;
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;
+	virtual void				Free(void* ptr) override;
+	virtual void				FreeAligned(void* ptr) override;
+	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) override;
+	virtual int					stub8(int unk) override;
+	virtual void				stub9() override;
 };
 
 #define STACKBASEDSUBALLOCATOR_CLASS_SIZE 56
@@ -185,6 +227,14 @@ protected:
 
 public:
 	StackBasedSubAllocator();	//	@47A820
+
+	virtual void*				Allocate_A(size_t size, int filler, int unk) override;
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;
+	virtual void				Free(void* ptr) override;
+	virtual void				FreeAligned(void* ptr) override;
+	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) override;
+	virtual int					stub8(int unk) override;
+	virtual void				stub9() override;
 };
 
 #define DEFRAGMENTATOR_CLASS_SIZE 52
@@ -216,6 +266,7 @@ protected:
 	virtual void	nullsub_2();
 
 public:
+	Defragmentator();
 	Defragmentator(BestFitAllocator* bestfitallocator, char unk1, int size);	//	@47BBD0
 };
 
@@ -258,6 +309,7 @@ struct Allocator_Struct2
 
 class Allocators
 {
+	friend class BestFitAllocator;
 protected:
 	int						field_0;	//	NOTE: never used.
 	SystemSubAllocator		ALLOCATOR_DEFAULT;
@@ -296,16 +348,16 @@ public:
 	static void				ReleaseMemory(void* ptr, bool aligned);	//	@4778D0
 	static Allocator*		GetAllocatorByMemoryPointer(void* ptr);	//	@4777B0
 
-	static	RTL_CRITICAL_SECTION	AllocatorsCriticalSection;	//	@A3AFA0
-	static	int				_A3AFB8;	//	@A3AFB8
-	static	bool			Released;	//	@A3AFBC
-	static	Allocator*		AllocatorsList[ALLOCATOR_INDEX::TOTAL];	//	@A3AFC0
+	static	RTL_CRITICAL_SECTION&	AllocatorsCriticalSection;	//	@A3AFA0
+	static	int&			_A3AFB8;	//	@A3AFB8
+	static	bool&			Released;	//	@A3AFBC
+	static	Allocator*		AllocatorsList[TOTAL];	//	@A3AFC0
 	static	Allocator_Struct2	_A3AFE8[22];	//	@A3AFE8
-	static	Allocator*		_A3AFEC[ALLOCATOR_INDEX::TOTAL];	//	@A3AFEC
-	static	int				TotalAllocators;	//	@A3B098
+	static	Allocator*		_A3AFEC[TOTAL];	//	@A3AFEC
+	static	int&			TotalAllocators;	//	@A3B098
 	static	void*			BufferPtr;	//	@A3B09C
-	static	void*			BuffersPtr[ALLOCATOR_INDEX::TOTAL];	//	@A3B0A0
-	static	float			_A3B0C8;	//	@A3B0C8
+	static	void*			BuffersPtr[TOTAL];	//	@A3B0A0
+	static	float&			_A3B0C8;	//	@A3B0C8
 };
 
 static Allocators g_Allocators;	//	@A3B0CC

@@ -38,7 +38,6 @@ public:
 	{
 		MESSAGE_CLASS_CREATED(Scene_Buffer276);
 	}
-
 	~Scene_Buffer276()
 	{
 		MESSAGE_CLASS_DESTROYED(Scene_Buffer276);
@@ -46,13 +45,12 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
-
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+			Allocators::ReleaseMemory(ptr, 0);
 	}
 
 	void	Init(const Vector3<float>& vDimensions);	//	@41FE80
@@ -101,25 +99,23 @@ private:
 	int	field_68;
 
 public:
-	void* operator new(size_t size)
-	{
-		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
-	}
-
-	void operator delete(void* ptr)
-	{
-		if (ptr)
-			Allocators::MemoryAllocators::ReleaseMemory(ptr, true);
-	}
-
 	Scene_Buffer108()
 	{
 		MESSAGE_CLASS_CREATED(Scene_Buffer108);
 	}
-
 	~Scene_Buffer108()
 	{
 		MESSAGE_CLASS_DESTROYED(Scene_Buffer108);
+	}
+
+	void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, true);
 	}
 
 	void	Init(unsigned int unk1, unsigned char unk2, unsigned int unk3);	//	@422330
@@ -147,25 +143,23 @@ private:
 	int	field_40;
 
 public:
-	void* operator new(size_t size)
-	{
-		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
-	}
-
-	void operator delete(void* ptr)
-	{
-		if (ptr)
-			Allocators::MemoryAllocators::ReleaseMemory(ptr, true);
-	}
-
 	Scene_Buffer68()
 	{
 		MESSAGE_CLASS_CREATED(Scene_Buffer68);
 	}
-
 	~Scene_Buffer68()
 	{
 		MESSAGE_CLASS_DESTROYED(Scene_Buffer68);
+	}
+
+	void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, true);
 	}
 
 	void	Init(const Scene_Buffer108& buf, unsigned int unk);	//	@4617D0
@@ -218,12 +212,10 @@ private:
 	__int64 m_nUnkTime_2;
 
 public:
-
 	Renderer()
 	{
 		MESSAGE_CLASS_CREATED(Renderer);
 	}
-
 	~Renderer()
 	{
 		MESSAGE_CLASS_DESTROYED(Renderer);
@@ -238,13 +230,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
-
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+			Allocators::ReleaseMemory(ptr, 0);
 	}
 
 	void	CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, Vector3<float>* buffers);	//	@421320

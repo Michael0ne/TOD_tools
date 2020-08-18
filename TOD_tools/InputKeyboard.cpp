@@ -35,9 +35,8 @@ namespace Input
 		else
 			debug("Input::Keyboard SetCooperativeLevel returned: %i\n", result);
 
-		if (!Allocators::Released)
-			if (m_pBuffer = (DIDEVICEOBJECTDATA*)Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(INPUT_KEYBOARD_BUFFER_SIZE))
-				memset(m_pBuffer, 0, INPUT_KEYBOARD_BUFFER_SIZE);
+		if (m_pBuffer = (DIDEVICEOBJECTDATA*)Allocators::AllocatorsList[DEFAULT]->Allocate(INPUT_KEYBOARD_BUFFER_SIZE, NULL, NULL))
+			memset(m_pBuffer, 0, INPUT_KEYBOARD_BUFFER_SIZE);
 
 		DIPROPDWORD dipdw;
 

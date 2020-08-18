@@ -4,7 +4,7 @@
 
 void Node::_484CC0(int)
 {
-	field_14 |= 10;
+	m_Id |= 10;
 }
 
 Entity* Node::FindNode(const char* nodeName)
@@ -22,12 +22,12 @@ void Node::RefreshQuadTree()
 	if (m_CollisionIgnoreList)
 		*(int*)((int*)m_CollisionIgnoreList + 0x78) |= 0x80000000;
 
-	field_14 &= 0xFE;
+	m_Id &= 0xFE;
 
 	if (m_QuadTree)
 		m_QuadTree->Refresh();
 
-	field_14 |= 0x40;
+	m_Id |= 0x40;
 }
 
 void Node::Update()

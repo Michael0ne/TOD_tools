@@ -52,12 +52,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[Allocators::ALLOCATOR_DEFAULT]->allocate(size);
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::MemoryAllocators::ReleaseMemory(ptr, 0);
+			Allocators::ReleaseMemory(ptr, 0);
 	}
 };
 
