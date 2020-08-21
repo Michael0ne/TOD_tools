@@ -1,7 +1,5 @@
 #include "Progress.h"
 
-Progress* g_Progress = nullptr;
-
 Progress::Progress()
 {
 	MESSAGE_CLASS_CREATED(Progress);

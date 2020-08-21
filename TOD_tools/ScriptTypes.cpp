@@ -3,6 +3,73 @@
 
 namespace ScriptTypes
 {
+	void ScriptType::scalar_destructor(bool freeMemory)
+	{
+		if (freeMemory)
+			Allocators::ReleaseMemory(this, freeMemory);
+	}
+
+	int ScriptType::_489370(int* unk1, int* unk2)
+	{
+		if (unk2)
+			unk2[m_nTypeId] += 4 * m_nSizeInBytes;
+
+		return 4 * m_nSizeInBytes;
+	}
+
+	//	TODO: implementation!
+	void ScriptType::GetDefaultValue(void* unk1)
+	{
+		*(int*)unk1 = NULL;
+	}
+
+	//	TODO: implementation!
+	void ScriptType::nullsub_2(String* unk2)
+	{
+		*(int*)unk2 = NULL;
+	}
+
+	//	TODO: implementation!
+	void ScriptType::_4893A0(int* unk1, int* unk2)
+	{
+		(*(void (*)(int*, int*, int))0x4893C0)(unk2, unk1, m_nSizeInBytes);
+	}
+
+	String* ScriptType::PrintFormatted(String* outStr, void* value, int precision)
+	{
+		outStr->Set("");
+		return outStr;
+	}
+
+	int ScriptType::DoOperation(char* unk1, void* unk2)
+	{
+		return -1;
+	}
+
+	//	TODO: implementation!
+	int ScriptType::_489410(int* unk1)
+	{
+		return (*(int(__thiscall*)(ScriptType*, int*))0x489410)(this, unk1);
+	}
+
+	//	TODO: implementation!
+	int ScriptType::_863760_1(int* unk1, int* unk2)
+	{
+		return (*(int(__thiscall*)(ScriptType*, int*, int*))0x863760)(this, unk1, unk2);
+	}
+
+	//	TODO: implementation!
+	int ScriptType::_863760_2(int* unk1, int* unk2)
+	{
+		return (*(int(__thiscall*)(ScriptType*, int*, int*))0x863760)(this, unk1, unk2);
+	}
+
+	//	TODO: implementation!
+	int ScriptType::_8637F0(int* unk1, String* unk2, int unk3)
+	{
+		return (*(int(__thiscall*)(ScriptType*, int*, String*, int))0x8637F0)(this, unk1, unk2, unk3);
+	}
+
 	ScriptType::ScriptType(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize)
 	{
 		MESSAGE_CLASS_CREATED(ScriptType);
@@ -14,6 +81,54 @@ namespace ScriptTypes
 		TypesList.AddElement(this);
 		m_nId = TypesList.m_nCurrIndex - 1;
 		TypesListCRCCalculated = false;
+	}
+
+	//	TODO: implementation!
+	int ScriptType::_862A50(int unk1, int* unk2, int* unk3)
+	{
+		return (*(int(__thiscall*)(ScriptType*, int, int*, int*))0x862A50)(this, unk1, unk2, unk3);
+	}
+
+	//	TODO: implementation!
+	void ScriptType::nullsub_3(int unk1, void* unk2, int unk3, int unk4, int unk5, void* outop)
+	{
+		return;
+	}
+
+	//	TODO: implementation!
+	void ScriptType::nullsub_4(int* unk1, int unk2, int unk3, int unk4, int unk5, int unk6)
+	{
+		return;
+	}
+
+	bool ScriptType::AreParamsEqual(int unk1, int unk2)
+	{
+		return AreParamsNotEqual(unk1, unk2) == false;
+	}
+
+	bool ScriptType::AreParamsNotEqual(int unk1, int unk2)
+	{
+		return true;
+	}
+
+	void ScriptType::GetOperationType(const char* operationStr, int* outOperationId, ScriptType** outResultType, char* unk4)
+	{
+		*outOperationId = -1;
+	}
+
+	void ScriptType::PerformOperation(int operationId, void* params)
+	{
+		return;
+	}
+
+	char ScriptType::_8637E0(int unk1, int unk2)
+	{
+		return 1;
+	}
+
+	bool ScriptType::IsInfinite(void* unk1)
+	{
+		return true;
 	}
 
 	int GetTypeSize(ScriptType* type)

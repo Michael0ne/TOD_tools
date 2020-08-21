@@ -371,6 +371,9 @@
     <ClInclude Include="ScriptDatabase.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -674,6 +677,9 @@
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
     <ClCompile Include="ScriptDatabase.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
   </ItemGroup>

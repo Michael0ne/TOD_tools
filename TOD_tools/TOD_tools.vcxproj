@@ -179,6 +179,7 @@
     <ClInclude Include="Position.h" />
     <ClInclude Include="ProfilerInput.h" />
     <ClInclude Include="radbase.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="RealtimeFolder.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourcesTypes.h" />
@@ -282,6 +283,7 @@
     <ClCompile Include="ProfilerInput.cpp" />
     <ClCompile Include="Progress.cpp" />
     <ClCompile Include="Progress.h" />
+    <ClCompile Include="Random.cpp" />
     <ClCompile Include="RealtimeFolder.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourcesTypes.cpp" />

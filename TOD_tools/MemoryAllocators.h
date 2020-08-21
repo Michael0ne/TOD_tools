@@ -29,6 +29,7 @@ protected:
 
 public:
 	Allocator();	//	@47AB30
+	~Allocator();
 
 	unsigned int				GetAllocatorIndex()
 	{
@@ -256,12 +257,12 @@ protected:
 	char field_2C;
 	int field_30;
 
-	virtual void	_47BDD0(int);	//	@47BDD0
-	virtual void	_47BE60(int, int, int, int, int, char, int);	//	@47BE60
-	virtual int		_47BF20(int, int, const char*, int, int);	//	@47BF20
-	virtual bool	_47BD20(int, int);	//	@47BD20
-	virtual void	_47BDB0(int);	//	@47BDB0
-	virtual int		_4783F0(int);	//	@4783F0
+	virtual void	_47BDD0(int unk);	//	@47BDD0
+	virtual void	_47BE60(int unk1, int unk2, int unk3, int unk4, int unk5, char unk6, int unk7);	//	@47BE60
+	virtual int		_47BF20(int unk1, int unk2, const char* unk3, int unk4, int unk5);	//	@47BF20
+	virtual bool	_47BD20(int unk1, int unk2);	//	@47BD20
+	virtual void	_47BDB0(int unk1);	//	@47BDB0
+	virtual int		_4783F0(int unk1);	//	@4783F0
 	virtual void	nullsub_1();
 	virtual void	nullsub_2();
 
@@ -352,7 +353,7 @@ public:
 	static	int&			_A3AFB8;	//	@A3AFB8
 	static	bool&			Released;	//	@A3AFBC
 	static	Allocator*		AllocatorsList[TOTAL];	//	@A3AFC0
-	static	Allocator_Struct2	_A3AFE8[22];	//	@A3AFE8
+	static	Allocator_Struct2*	_A3AFE8[22];	//	@A3AFE8
 	static	Allocator*		_A3AFEC[TOTAL];	//	@A3AFEC
 	static	int&			TotalAllocators;	//	@A3B098
 	static	void*			BufferPtr;	//	@A3B09C

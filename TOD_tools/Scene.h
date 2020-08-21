@@ -156,11 +156,11 @@ private:
 public:
 	Scene();	//	@896D40
 
-	inline void		SetFixedFramerate(float framerate);
+	void			SetFixedFramerate(float framerate);
 	void			Start();	//	@89A100
 	static bool		GameUpdate();	//	@93CEB0
 };
 
-extern Scene* g_Scene;
+static Scene* tScene;
 
 static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Scene));

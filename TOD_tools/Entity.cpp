@@ -1,6 +1,12 @@
 #include "Entity.h"
 #include "Blocks.h"
 
+void Entity::scalar_destructor(bool freeMemory)
+{
+	if (freeMemory)
+		Allocators::ReleaseMemory(this, false);
+}
+
 Entity::Entity()
 {
 	MESSAGE_CLASS_CREATED(Entity);

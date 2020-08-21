@@ -10,26 +10,26 @@ class FileInternal
 {
 	friend class SavePoint;
 protected:
-	String			m_sFileName;
-	File*			m_pFileHandle;
+	String			m_FileName;
+	File*			m_FileHandle;
 	char			m_FileReadAttribute;
-	char			m_bReadFromZip;
+	char			m_ReadFromZip;
 	short			field_1A;
-	int				m_nSeekPosition;
-	int				m_nFilenameStrLen;
-	char*			m_szFilenameStr;
-	int				m_nZipSlotIndex;
+	int				m_SeekPosition;
+	int				m_FilenameStrLen;
+	char*			m_FilenameStr;
+	int				m_ZipSlotIndex;
 	char			m_ExecuteAttribute;
-	File*			m_pFile;
+	File*			m_File;
 
-	virtual void	scalar_destructor(bool);	//	@41A030
+	virtual void	scalar_destructor(bool freememory);	//	@41A030
 	virtual bool	WriteBuffers();	//	@417D20
-	virtual int		_vsnprintf(const char*, ...);	//	@42EFC0
-	virtual int		_CheckFormattingSymbolsList(const char*, ...);	//	@417960
-	virtual int		WriteFormattedVarlistDataToBuffer(char* str, va_list arguments);	//	@42F040
-	virtual signed int _CheckFormattingSymbol(char* str, int* unk);	//	@42F0A0
+	virtual int		_vsnprintf(const char* format, ...);	//	@42EFC0
+	virtual void*	_CheckFormattingSymbolsList(FileInternal* file, const char* format, ...);	//	@417960
+	virtual int		WriteFormattedVarlistDataToBuffer(const char* str, va_list arguments);	//	@42F040
+	virtual signed int _CheckFormattingSymbol(const char* str, ...);	//	@42F0A0
 	virtual bool	ReadBlock();	//	@417980
-	virtual void	ReadBlockAndGetPosition(int);	//	@419BD0
+	virtual int		ReadBlockAndGetPosition(int);	//	@419BD0
 	virtual bool	WriteBufferBlockAndInsertNewLine(char newlinesym);	//	@419BF0
 	virtual int		Read(void* buffer, int bytestoread);	//	@417A30
 	virtual signed int WriteBuffer(const char* buffer);	//	@419C10
@@ -40,7 +40,7 @@ protected:
 	virtual int		GetPosition();	//	@417BF0
 	virtual void	ReadBlockDecreasePosition();	//	@417C50
 	virtual char	ReadBlockIfFailed();	//	@417850
-	virtual const char* GetFilename();	//	@419C40
+	virtual File*	GetFileHandle();	//	@419C40
 
 public:
 	FileInternal(const char* fileName, unsigned int dwDesiredAccess, bool createIfNotFound);	//	@418E30

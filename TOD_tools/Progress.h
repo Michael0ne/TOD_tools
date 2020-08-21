@@ -61,6 +61,6 @@ public:
 	}
 };
 
-extern Progress* g_Progress;	//	@A3D7D0
+static Progress* g_Progress;	//	@A3D7D0
 
 static_assert(sizeof(Progress) == PROGRESS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Progress));

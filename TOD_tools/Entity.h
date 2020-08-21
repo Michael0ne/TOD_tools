@@ -22,8 +22,7 @@ protected:
 	int field_1C;
 	int* field_20;
 
-	virtual Entity* scalar_destructor(bool freeMemory);	//	@86C6D0
-	virtual void	destructor();						//	@86C010
+	virtual void	scalar_destructor(bool freeMemory);	//	@86C6D0
 
 public:
 	Entity();	//	@86A1D0
