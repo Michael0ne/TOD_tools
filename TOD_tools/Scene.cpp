@@ -31,12 +31,13 @@ Scene::Scene() : Folder_()
 	//	TODO: initialize lots more stuff here...
 }
 
-inline void Scene::SetFixedFramerate(float framerate)
+void Scene::SetFixedFramerate(float framerate)
 {
 	m_FixedFramerate = true;
 	m_FixedFramerateVal = 1.0f / framerate;
 }
 
+//	TODO: implementation!
 void Scene::Start()
 {
 	(*(void(__thiscall*)(Scene*))0x89A100)(this);

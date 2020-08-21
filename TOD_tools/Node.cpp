@@ -2,6 +2,12 @@
 #include "Position.h"
 #include "Fragment.h"
 
+void Node::scalar_destructor(bool freeMemory)
+{
+	if (freeMemory)
+		Allocators::ReleaseMemory(this, false);
+}
+
 void Node::_484CC0(int)
 {
 	m_Id |= 10;

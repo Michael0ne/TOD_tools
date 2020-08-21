@@ -2,6 +2,8 @@
 
 void Allocator::RetrieveSystemAllocators()
 {
+	m_SystemAllocators = (SystemAllocators*)malloc(8);
+
 	m_SystemAllocators->_malloc	= malloc;
 	m_SystemAllocators->_free	= free;
 }
@@ -17,6 +19,12 @@ Allocator::Allocator()
 	field_1C = nullptr;
 	field_20 = NULL;
 	field_21 = NULL;
+}
+
+Allocator::~Allocator()
+{
+	if (m_SystemAllocators)
+		free(m_SystemAllocators);
 }
 
 void Allocator::scalar_destructor(bool freeMemory)
@@ -550,6 +558,52 @@ void StackBasedSubAllocator::stub9()
 	(*(void(__thiscall*)(StackBasedSubAllocator*))0x47AAC0)(this);
 }
 
+//	TODO: implementation!
+void Defragmentator::_47BDD0(int unk)
+{
+	(*(void(__thiscall*)(Defragmentator*, int))0x47BDD0)(this, unk);
+}
+
+//	TODO: implementation!
+void Defragmentator::_47BE60(int unk1, int unk2, int unk3, int unk4, int unk5, char unk6, int unk7)
+{
+	(*(void(__thiscall*)(Defragmentator*, int, int, int, int, int, char, int))0x47BE60)(this, unk1, unk2, unk3, unk4, unk5, unk6, unk7);
+}
+
+//	TODO: implementation!
+int Defragmentator::_47BF20(int unk1, int unk2, const char* unk3, int unk4, int unk5)
+{
+	return (*(int(__thiscall*)(Defragmentator*, int, int, const char*, int, int))0x47BF20)(this, unk1, unk2, unk3, unk4, unk5);
+}
+
+//	TODO: implementation!
+bool Defragmentator::_47BD20(int unk1, int unk2)
+{
+	return (*(bool(__thiscall*)(Defragmentator*, int, int))0x47BD20)(this, unk1, unk2);
+}
+
+//	TODO: implementation!
+void Defragmentator::_47BDB0(int unk1)
+{
+	(*(void(__thiscall*)(Defragmentator*, int))0x47BDB0)(this, unk1);
+}
+
+//	TODO: implementation!
+int Defragmentator::_4783F0(int unk1)
+{
+	return (*(int(__thiscall*)(Defragmentator*, int))0x4783F0)(this, unk1);
+}
+
+void Defragmentator::nullsub_1()
+{
+	return;
+}
+
+void Defragmentator::nullsub_2()
+{
+	return;
+}
+
 Defragmentator::Defragmentator(BestFitAllocator* bestfitallocator, char unk1, int size)
 {
 	MESSAGE_CLASS_CREATED(Defragmentator);
@@ -703,9 +757,9 @@ void Allocators::ReleaseMemory(void* ptr, bool aligned)
 	}
 
 	if (aligned)
-		_A3AFE8[allocInd].m_Allocator->FreeAligned(ptr);
+		_A3AFE8[allocInd]->m_Allocator->FreeAligned(ptr);
 	else
-		_A3AFE8[allocInd].m_Allocator->Free(ptr);
+		_A3AFE8[allocInd]->m_Allocator->Free(ptr);
 
 	LeaveCriticalSection(&AllocatorsCriticalSection);
 }
@@ -717,7 +771,7 @@ Allocator* Allocators::GetAllocatorByMemoryPointer(void* ptr)
 	if (ptr < AllocatorsList[TotalAllocators]->field_1C)
 		while (ptr < AllocatorsList[allocInd--]->field_1C);
 
-	return _A3AFE8[allocInd].m_Allocator;
+	return _A3AFE8[allocInd]->m_Allocator;
 }
 
 Allocator* Allocators::AllocatorsList[TOTAL] = {
@@ -733,9 +787,51 @@ Allocator* Allocators::AllocatorsList[TOTAL] = {
 	(Allocator*)0xA3AFE4
 };
 
+Allocator_Struct2* Allocators::_A3AFE8[22] = {
+	(Allocator_Struct2*)0xA3AFE8,
+	(Allocator_Struct2*)0xA3AFEC,
+	(Allocator_Struct2*)0xA3AFF0,
+	(Allocator_Struct2*)0xA3AFF4,
+	(Allocator_Struct2*)0xA3AFF8,
+	(Allocator_Struct2*)0xA3AFFC,
+	(Allocator_Struct2*)0xA3B000,
+	(Allocator_Struct2*)0xA3B004,
+	(Allocator_Struct2*)0xA3B008,
+	(Allocator_Struct2*)0xA3B00C,
+	(Allocator_Struct2*)0xA3B010,
+	(Allocator_Struct2*)0xA3B014,
+	(Allocator_Struct2*)0xA3B018,
+	(Allocator_Struct2*)0xA3B01C,
+	(Allocator_Struct2*)0xA3B020,
+	(Allocator_Struct2*)0xA3B024,
+	(Allocator_Struct2*)0xA3B028,
+	(Allocator_Struct2*)0xA3B02C,
+	(Allocator_Struct2*)0xA3B030,
+	(Allocator_Struct2*)0xA3B034,
+	(Allocator_Struct2*)0xA3B038,
+	(Allocator_Struct2*)0xA3B03C
+};
+
 int& Allocators::TotalAllocators = *(int*)0xA3B098;
 void* Allocators::BufferPtr = (void*)0xA3B09C;
+
+void* Allocators::BuffersPtr[TOTAL] = {
+	(void*)0xA3B0A0,
+	(void*)0xA3B0A4,
+	(void*)0xA3B0A8,
+	(void*)0xA3B0AC,
+	(void*)0xA3B0B0,
+	(void*)0xA3B0B4,
+	(void*)0xA3B0B8,
+	(void*)0xA3B0BC,
+	(void*)0xA3B0C0,
+	(void*)0xA3B0C4
+};
+
 float& Allocators::_A3B0C8 = *(float*)0xA3B0C8;
 RTL_CRITICAL_SECTION& Allocators::AllocatorsCriticalSection = *(RTL_CRITICAL_SECTION*)0xA3AFA0;
 int& Allocators::_A3AFB8 = *(int*)0xA3AFB8;
 bool& Allocators::Released = *(bool*)0xA3AFBC;
+
+void PATCH_ALLOCATORS()
+{}

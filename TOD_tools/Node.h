@@ -28,8 +28,7 @@ protected:
 	class Fragment* m_Fragment;
 	char* m_Name;
 
-	virtual Node*	scalar_destructor(bool freeMemory);		//	@86C6D0
-	virtual void	destructor();							//	@88F770
+	virtual void	scalar_destructor(bool freeMemory);		//	@86C6D0
 	virtual void	_484CC0(int);							//	@484CC0
 	virtual Entity* FindNode(const char* nodeName);			//	@88EED0
 	virtual void	_88EC20(int unk);							//	@88EC20

@@ -1,5 +1,7 @@
 #include "DynamicSurroundGeometry.h"
 
+int& DynamicSurroundGeometry::TotalCreated = *(int*)0xA3E0E0;
+
 DynamicSurroundGeometry::DynamicSurroundGeometry() : Node(NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(DynamicSurroundGeometry);

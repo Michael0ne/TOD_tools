@@ -21,6 +21,7 @@
 #include "LoadScreen.h"
 #include "ZipArch.h"
 #include "LoadScreenInfo.h"
+#include "Random.h"
 
 GameConfig::Config* g_Config = NULL;
 String Script::Filesystem = String();
@@ -517,10 +518,9 @@ namespace GameConfig {
 		EnumFaceColMaterials();
 
 		//	Init random numbers generator.
-		(*(void(__cdecl*)(__int64))0x46C420)(__rdtsc());
+		Random::Init((int)__rdtsc());
 
 		//	Load screen and progress class.
-
 		g_LoadScreenInfo = new LoadScreenInfo("");
 		g_Progress = new Progress();
 
@@ -558,11 +558,11 @@ namespace GameConfig {
 
 		if (!SceneSet)
 			if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-				g_Scene->GetScriptEntity()->CreateNode();
+				tScene->GetScriptEntity()->CreateNode();
 
 		//	TODO: implementation! Scene is not initialized here!
 		if (m_pConfigurationVariables->IsVariableSet("fixedframerate"))
-			g_Scene->SetFixedFramerate(m_pConfigurationVariables->GetParamValueFloat("fixedframerate"));
+			tScene->SetFixedFramerate(m_pConfigurationVariables->GetParamValueFloat("fixedframerate"));
 
 		//	NOTE: Adjust cameras matricies if not in full screen?
 		//	Also, needs correct implementation.
@@ -595,7 +595,7 @@ namespace GameConfig {
 			field_50 = 0;
 
 		if (field_50)
-			g_Scene->Start();
+			tScene->Start();
 
 		if (m_pConfigurationVariables->IsVariableSet("ps2_play_ctrl") &&
 			m_pConfigurationVariables->GetParamValueBool("ps2_play_ctrl"))

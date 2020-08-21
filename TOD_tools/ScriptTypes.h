@@ -66,7 +66,7 @@ namespace ScriptTypes
 		int m_nSizeInBytes;
 		int m_nId;
 
-		virtual ScriptType* scalar_destructor(bool freeMemory);	//	@867A70
+		virtual void scalar_destructor(bool freeMemory);	//	@867A70
 		virtual int _489370(int* unk1, int* unk2);	//	@489370
 		virtual void GetDefaultValue(void* unk1);	//	NOTE: this pointer type is actually class-dependent. Returns zero (default value?).
 		virtual void nullsub_2(String* unk2);
@@ -102,7 +102,7 @@ namespace ScriptTypes
 	};
 
 	static int GetTypeSize(ScriptType* type);	//	@862AC0
-	static class Entity* GetScriptEntityByName(const char* name);	//	@862C70
+	static class ScriptType_Entity* GetScriptEntityByName(const char* name);	//	@862C70
 
 	class ScriptType_Nothing : public ScriptType
 	{
@@ -125,7 +125,7 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_Nothing*			tyNothing = (ScriptType_Nothing*)0xA3CE88;	//	@A3CE88
+	static ScriptType_Nothing*			tyNothing = (ScriptType_Nothing*)0xA3CE88;	//	@A3CE88
 
 	class ScriptType_Number : public ScriptType
 	{
@@ -148,7 +148,7 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_Number*			tyNumber = (ScriptType_Number*)0xA3CEA8;	//	@A3CEA8
+	static ScriptType_Number*			tyNumber = (ScriptType_Number*)0xA3CEA8;	//	@A3CEA8
 
 	class ScriptType_Integer : public ScriptType
 	{
@@ -171,7 +171,7 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_Integer*			tyInteger = (ScriptType_Integer*)0xA3CE8C;	//	@A3CE8C
+	static ScriptType_Integer*			tyInteger = (ScriptType_Integer*)0xA3CE8C;	//	@A3CE8C
 
 	class ScriptType_Boolean : public ScriptType
 	{
@@ -194,7 +194,7 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_Boolean*			tyBoolean = (ScriptType_Boolean*)0xA3CEBC;	//	@A3CEBC
+	static ScriptType_Boolean*			tyBoolean = (ScriptType_Boolean*)0xA3CEBC;	//	@A3CEBC
 
 	class ScriptType_Vector : public ScriptType
 	{
@@ -217,7 +217,7 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_Vector*			tyVector = (ScriptType_Vector*)0xA3CEAC;	//	@A3CEAC
+	static ScriptType_Vector*			tyVector = (ScriptType_Vector*)0xA3CEAC;	//	@A3CEAC
 
 	class ScriptType_Quaternion : public ScriptType
 	{
@@ -240,7 +240,7 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_Quaternion*		tyQuaternion = (ScriptType_Quaternion*)0xA3CE90;	//	@A3CE90
+	static ScriptType_Quaternion*		tyQuaternion = (ScriptType_Quaternion*)0xA3CE90;	//	@A3CE90
 
 	class ScriptType_Color : public ScriptType
 	{
@@ -263,7 +263,7 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_Color*			tyColor = (ScriptType_Color*)0xA3CE9C;		//	@A3CE9C
+	static ScriptType_Color*			tyColor = (ScriptType_Color*)0xA3CE9C;		//	@A3CE9C
 
 	class ScriptType_String : public ScriptType
 	{
@@ -286,7 +286,7 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_String*			tyString = (ScriptType_String*)0xA3CEA0;	//	@A3CEA0
+	static ScriptType_String*			tyString = (ScriptType_String*)0xA3CEA0;	//	@A3CEA0
 
 	struct EntityProperties
 	{
@@ -334,7 +334,7 @@ namespace ScriptTypes
 		void*	CreateNode();	//	@86C770
 	};
 
-	ScriptType_Entity*			tENTITY = (ScriptType_Entity*)0xA3CEE0;		//	@A3CEE0
+	static ScriptType_Entity*			tENTITY = (ScriptType_Entity*)0xA3CEE0;		//	@A3CEE0
 
 	class ScriptType_List : public ScriptType
 	{
@@ -364,14 +364,14 @@ namespace ScriptTypes
 		}
 	};
 
-	ScriptType_Nothing*			tNOTHING = (ScriptType_Nothing*)0xA3CE94;	//	@A3CE94
-	ScriptType_Number*			tNUMBER = (ScriptType_Number*)0xA3CEC0;		//	@A3CEC0
-	ScriptType_Integer*			tINTEGER = (ScriptType_Integer*)0xA3CEB8;	//	@A3CEB8
-	ScriptType_Boolean*			tBOOLEAN = (ScriptType_Boolean*)0xA3CEC4;	//	@A3CEC4
-	ScriptType_Vector*			tVECTOR = (ScriptType_Vector*)0xA3CEB4;		//	@A3CEB4
-	ScriptType_Quaternion*		tQUATERNION = (ScriptType_Quaternion*)0xA3CE98;	//	@A3CE98
-	ScriptType_Color*			tCOLOR = (ScriptType_Color*)0xA3CEA4;		//	@A3CEA4
-	ScriptType_String*			tSTRING = (ScriptType_String*)0xA3CEB0;		//	@A3CEB0
+	static ScriptType_Nothing*			tNOTHING = (ScriptType_Nothing*)0xA3CE94;	//	@A3CE94
+	static ScriptType_Number*			tNUMBER = (ScriptType_Number*)0xA3CEC0;		//	@A3CEC0
+	static ScriptType_Integer*			tINTEGER = (ScriptType_Integer*)0xA3CEB8;	//	@A3CEB8
+	static ScriptType_Boolean*			tBOOLEAN = (ScriptType_Boolean*)0xA3CEC4;	//	@A3CEC4
+	static ScriptType_Vector*			tVECTOR = (ScriptType_Vector*)0xA3CEB4;		//	@A3CEB4
+	static ScriptType_Quaternion*		tQUATERNION = (ScriptType_Quaternion*)0xA3CE98;	//	@A3CE98
+	static ScriptType_Color*			tCOLOR = (ScriptType_Color*)0xA3CEA4;		//	@A3CEA4
+	static ScriptType_String*			tSTRING = (ScriptType_String*)0xA3CEB0;		//	@A3CEB0
 
 	void						Init();	//	@8634E0
 

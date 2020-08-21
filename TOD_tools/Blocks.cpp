@@ -52,3 +52,9 @@ int Blocks::GetFreeResourceTypeListItem(int index)	//	@875540
 
 	return freeind;
 }
+
+//	TODO: implementation!
+unsigned int Blocks::AddEntity(Entity* ent)
+{
+	return (*(unsigned int(__thiscall*)(Blocks*, Entity*))0x875FA0)(this, ent);
+}
