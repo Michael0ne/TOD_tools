@@ -57,8 +57,10 @@ public:
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
 	}
+
+	void		_874940();	//	@874940
 };
 
-extern SceneNode* g_SceneNode;
+extern SceneNode* tSceneNode;
 
 static_assert(sizeof(SceneNode) == SCENENODE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SceneNode));

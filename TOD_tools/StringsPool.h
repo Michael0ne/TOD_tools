@@ -5,6 +5,9 @@
 
 class String {
 public:
+#define STRING_BITMASK_DEFAULT	0x80000000
+#define STRING_BITMASK_SHORT	0x80000004
+
 	int		m_nLength;		//	String length, including null terminator.
 	char*	m_szString;		//	Actual string ptr.
 	unsigned int	m_nBitMask;		//	Bit mask, also contains string's length.

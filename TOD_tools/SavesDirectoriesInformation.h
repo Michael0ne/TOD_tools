@@ -7,6 +7,7 @@
 
 #define SAVESDIRINF_CLASS_SIZE 28
 
+//	TODO: move this to 'MemoryCards' class.
 class SavesDirectoriesInformation
 {
 private:
