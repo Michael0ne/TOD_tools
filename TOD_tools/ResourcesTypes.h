@@ -1,16 +1,14 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "StringsPool.h"
 #include "List.h"
-#include "MemoryAllocators.h"
 
 namespace Types {
 
 	namespace Resources {
 
-#define TYPEINFO_CLASS_SIZE 60
+#define TYPEINFO_CLASS_SIZE 44
+#define TYPEINFO_TEXTURE_CLASS_SIZE 48
+#define TYPEINFO_FONT_CLASS_SIZE 40
 
 #define TYPERES_TEXTURE_NAME "texture"
 #define TYPERES_FONT_NAME "font"
@@ -24,427 +22,80 @@ namespace Types {
 #define TYPERES_ANIMATION_NAME "animation"
 #define TYPERES_MESHCOLOR_NAME "meshcolor"
 
-		class TypeInfo;
-		class Texture;
-		class Font;
-		class Text;
-		class Model;
-		class Fragment;
-		class Movie;
-		class Cutscene;
-		class Sound;
-		class StreamedSoundInfo;
-		class Animation;
-		class MeshColor;
-
-		struct TypeInfo__vtable
+		enum ePlatform
 		{
-			void(__thiscall* Release)(TypeInfo* _this, bool freememory);	//	@851F90
-			TypeInfo* (__thiscall* GetThisPtr)(TypeInfo* _this);	//	pure virtual
-			void(__thiscall* SetUnkFlag)(TypeInfo* _this, unsigned char unk1, int unk2, int unk3);	//	@851400
-			unsigned int(__thiscall* GetUnkFlag)(TypeInfo* _this);	//	@851E80
-			void(__cdecl* nullsub)();	//	@883EC0
-			void (__stdcall* GetResourcesDir)(String* str, int platform);	//	@851EC0
-			void(__cdecl* nullsub_1)();	//	@851420
-			char(__cdecl* ReturnZero)();	//	@42F4F0
-			int(__thiscall* _851EA0)(TypeInfo* _this);	//	@851EA0
-			void(__thiscall* stub10)(TypeInfo* _this, String* str, int unk);	//	@851DB0
-			void(__cdecl* nullsub_2)();	//	@883EC0
-			void(__thiscall* _851E90)(TypeInfo* _this);	//	@851E90
+			PLATFORM_PC = 0,
+			PLATFORM_PS2 = 1,
+			PLATFORM_XBOX = 2
 		};
 
 		class TypeInfo
 		{
 		protected:
-			void* lpVtbl;	//	Actually, is this a creator?
-			String m_sTypename;
-			TypeInfo__vtable* lpTypeVtbl;
-			int m_nId;
-			List<String> m_sExtensionList;
-			byte field_2C;
-			byte field_2D;
-			byte field_2E;
-			byte field_2F;
-			int m_UnkBufferArray[3];
+			const char*		m_TypeName;
+			int				m_GlobalListIndex;
+			int				field_C;
+			int				field_10;
+			int*			field_14;	//	NOTE: result of scalar destructor call is written here. Why?
+			int				m_Id;
+			List<String>	m_ExtensionList;
 
 		public:
-			TypeInfo()
-			{
-				MESSAGE_CLASS_CREATED(TypeInfo);
-
-				lpVtbl = nullptr;
-				m_sTypename = String();
-				lpTypeVtbl = nullptr;
-				m_nId = 0;
-				m_sExtensionList = List<String>();
-				field_2C = 0;
-				field_2D = 0;
-				field_2E = 0;
-				field_2F = 0;
-				m_UnkBufferArray[0] = 0;
-				m_UnkBufferArray[1] = 0;
-				m_UnkBufferArray[2] = 0;
-			}
-
-			~TypeInfo()
+			TypeInfo(const char* _typename, void* (*creator)());	//	@852440
+			virtual ~TypeInfo()
 			{
 				MESSAGE_CLASS_DESTROYED(TypeInfo);
 
-				m_sExtensionList.Erase();
+				m_ExtensionList.Erase();
 			}
 
-			void* operator new(size_t size)
-			{
-				return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-			}
-			void operator delete(void* ptr)
-			{
-				if (ptr)
-					Allocators::ReleaseMemory(ptr, 0);
-			}
-
-			void	RegisterBase(const char* szTypeName, void* (__cdecl* pCreator)());	//	@852440
-			void	InitUnkBuffer(unsigned int size, unsigned int index);	//	@852160
+			virtual void*	GetInstancePtr() = 0;
+			virtual char	_851400(char unk1, int unk2, int unk3);	//	@851400
+			virtual int		_851E80();	//	@851E80
+			virtual void	_853720(int unk1);	//	@853720
+			virtual String* GetResourceDirectory(String* outDir, ePlatform platform);	//	@851EC0
+			virtual void	stub7(int unk);
+			virtual char	stub8();
+			virtual int		_851EA0();	//	@851EA0
+			virtual String* stub10(String* outStr, int unk1);	//	@851DB0
+			virtual int		stub11(int unk1);	//	@883EC0
+			virtual void	ResetFields10_14();	//	@851E90
 		};
-
-		static unsigned int* g_UnkTypeBufferSizes[] = {
-			(unsigned int*)0xA3BE1C,
-			(unsigned int*)0xA3BE20,
-			(unsigned int*)0xA3BE24,
-		};
-
-		static List<TypeInfo>& g_TypesList = *(List<TypeInfo>*)0xA10F80;
-
-		static Texture** g_Texture = (Texture**)0xA3BE28;
 
 		class Texture : public TypeInfo
 		{
-		public:
-			Texture()
-			{
-				RegisterBase(TYPERES_TEXTURE_NAME, (void * (__cdecl*)())0x853830);
+		protected:
+			int				field_30;
 
+		public:
+			Texture() : TypeInfo(TYPERES_TEXTURE_NAME, CreateTextureResourceType)
+			{
 				MESSAGE_CLASS_CREATED(Texture);
 			}
+			~Texture();
 
-			~Texture()
-			{
-				MESSAGE_CLASS_DESTROYED(Texture);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Texture) = new Texture();
-
-					if (*g_Texture)
-						(*g_Texture)->Register();
-				}
-			}
-
-			void	Register();	//	@853870
+			static void* CreateTextureResourceType();
 		};
-
-		static Font** g_Font = (Font**)0xA3BE48;
 
 		class Font : public TypeInfo
 		{
-		public:
-			Font()
-			{
-				RegisterBase(TYPERES_FONT_NAME, (void* (__cdecl*)())0x85B350);
+		protected:
 
+		public:
+			Font() : TypeInfo(TYPERES_FONT_NAME, CreateFontResourceType)
+			{
 				MESSAGE_CLASS_CREATED(Font);
 			}
+			~Font();
 
-			~Font()
-			{
-				MESSAGE_CLASS_DESTROYED(Font);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Font) = new Font();
-
-					if (*g_Font)
-						(*g_Font)->Register();
-				}
-			}
-
-			void	Register();	//	@85B460
+			static void* CreateFontResourceType();
 		};
 
-		static Text** g_Text = (Text**)0xA3CE7C;
+		static Texture& Instance = *(Texture*)0xA3BE28;	//	@A3BE28
+		static Font& Instance = *(Font*)0xA3BE48;	//	@A3BE48
 
-		class Text : public TypeInfo
-		{
-		public:
-			Text()
-			{
-				RegisterBase(TYPERES_TEXT_NAME, (void* (__cdecl*)())0x861BD0);
-
-				MESSAGE_CLASS_CREATED(Text);
-			}
-
-			~Text()
-			{
-				MESSAGE_CLASS_DESTROYED(Text);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Text) = new Text();
-
-					if (*g_Text)
-						(*g_Text)->Register();
-				}
-			}
-
-			void	Register();	//	@861CE0
-		};
-
-		static Model** g_Model = (Model**)0xA3BE30;
-
-		class Model : public TypeInfo
-		{
-		public:
-			Model()
-			{
-				RegisterBase(TYPERES_MODEL_NAME, (void* (__cdecl*)())0x8581F0);
-
-				MESSAGE_CLASS_CREATED(Model);
-			}
-
-			~Model()
-			{
-				MESSAGE_CLASS_DESTROYED(Model);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Model) = new Model();
-
-					if (*g_Model)
-						(*g_Model)->Register();
-				}
-			}
-
-			void	Register();	//	@858210
-		};
-
-		static Fragment** g_Fragment = (Fragment**)0xA3BE58;
-
-		class Fragment : public TypeInfo
-		{
-		public:
-			Fragment()
-			{
-				RegisterBase(TYPERES_FRAGMENT_NAME, (void* (__cdecl*)())0x85DE30);
-
-				MESSAGE_CLASS_CREATED(Fragment);
-			}
-
-			~Fragment()
-			{
-				MESSAGE_CLASS_DESTROYED(Fragment);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Fragment) = new Fragment();
-
-					if (*g_Fragment)
-						(*g_Fragment)->Register();
-				}
-			}
-
-			void	Register();	//	@85DFA0
-		};
-
-		static Movie** g_Movie = (Movie**)0xA3BE4C;
-
-		class Movie : public TypeInfo
-		{
-		public:
-			Movie()
-			{
-				RegisterBase(TYPERES_MOVIE_NAME, (void* (__cdecl*)())0x85BC40);
-
-				MESSAGE_CLASS_CREATED(Movie);
-			}
-
-			~Movie()
-			{
-				MESSAGE_CLASS_DESTROYED(Movie);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Movie) = new Movie();
-
-					if (*g_Movie)
-						(*g_Movie)->Register();
-				}
-			}
-
-			void	Register();	//	@85BC70
-		};
-
-		static Cutscene** g_Cutscene = (Cutscene**)0xA3E12C;
-
-		class Cutscene : public TypeInfo
-		{
-		public:
-			Cutscene()
-			{
-				RegisterBase(TYPERES_CUTSCENE_NAME, (void* (__cdecl*)())0x916100);
-
-				MESSAGE_CLASS_CREATED(Cutscene);
-			}
-
-			~Cutscene()
-			{
-				MESSAGE_CLASS_DESTROYED(Cutscene);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Cutscene) = new Cutscene();
-
-					if (*g_Cutscene)
-						(*g_Cutscene)->Register();
-				}
-			}
-
-			void	Register();	//	@9164C0
-		};
-
-		static Sound** g_Sound = (Sound**)0xA3BE50;
-
-		class Sound : public TypeInfo
-		{
-		public:
-			Sound()
-			{
-				RegisterBase(TYPERES_SOUND_NAME, (void* (__cdecl*)())0x85C430);
-
-				MESSAGE_CLASS_CREATED(Sound);
-			}
-
-			~Sound()
-			{
-				MESSAGE_CLASS_DESTROYED(Sound);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Sound) = new Sound();
-
-					if (*g_Sound)
-						(*g_Sound)->Register();
-				}
-			}
-
-			void	Register();	//	@85C010
-		};
-
-		static StreamedSoundInfo** g_StreamedSoundInfo = (StreamedSoundInfo**)0xA3BE54;
-
-		class StreamedSoundInfo : public TypeInfo
-		{
-		public:
-			StreamedSoundInfo()
-			{
-				RegisterBase(TYPERES_STREAMEDSOUNDINFO_NAME, (void* (__cdecl*)())0x85CDA0);
-
-				MESSAGE_CLASS_CREATED(StreamedSoundInfo);
-			}
-
-			~StreamedSoundInfo()
-			{
-				MESSAGE_CLASS_DESTROYED(StreamedSoundInfo);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_StreamedSoundInfo) = new StreamedSoundInfo();
-
-					if (*g_StreamedSoundInfo)
-						(*g_StreamedSoundInfo)->Register();
-				}
-			}
-
-			void	Register();	//	@85C8D0
-		};
-
-		static Animation** g_Animation = (Animation**)0xA3E0FC;
-
-		class Animation : public TypeInfo
-		{
-		public:
-			Animation()
-			{
-				RegisterBase(TYPERES_ANIMATION_NAME, (void* (__cdecl*)())0x900EF0);
-
-				MESSAGE_CLASS_CREATED(Animation);
-			}
-
-			~Animation()
-			{
-				MESSAGE_CLASS_DESTROYED(Animation);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_Animation) = new Animation();
-
-					if (*g_Animation)
-						(*g_Animation)->Register();
-				}
-			}
-
-			void	Register();	//	@900980
-		};
-
-		static MeshColor** g_MeshColor = (MeshColor**)0xA3CE78;
-
-		class MeshColor : public TypeInfo
-		{
-		public:
-			MeshColor()
-			{
-				RegisterBase(TYPERES_MESHCOLOR_NAME, (void* (__cdecl*)())0x85E950);
-
-				MESSAGE_CLASS_CREATED(MeshColor);
-			}
-
-			~MeshColor()
-			{
-				MESSAGE_CLASS_DESTROYED(MeshColor);
-			}
-
-			static void Init()
-			{
-				if (!Allocators::Released) {
-					(*g_MeshColor) = new MeshColor();
-
-					if (*g_MeshColor)
-						(*g_MeshColor)->Register();
-				}
-			}
-
-			void	Register();	//	@85E970
-		};
+		static_assert(sizeof(TypeInfo) == TYPEINFO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TypeInfo));
+		static_assert(sizeof(Texture) == TYPEINFO_TEXTURE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Texture));
+		static_assert(sizeof(Font) == TYPEINFO_FONT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Font));
 	}
 }
-
-static_assert(sizeof(Types::Resources::TypeInfo) == TYPEINFO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TypeInfo));

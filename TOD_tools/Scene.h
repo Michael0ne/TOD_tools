@@ -48,10 +48,10 @@ class Scene : public Folder_
 private:
 	int field_58;
 	int m_PlayMode;
-	class Camera* m_pCamera;
-	int* field_64;
-	char m_bQuadTreesAllocated;
-	class ScriptTypes::ScriptType_Entity* m_CameraEntity;
+	class Camera* m_GameCamera;
+	class EditorCamera* m_EditorCamera;
+	char m_QuadTreesAllocated;
+	class Camera* m_ActiveCamera;
 	int field_70;
 	int field_74;
 	int field_78;
@@ -156,9 +156,24 @@ private:
 public:
 	Scene();	//	@896D40
 
+	static int&		_A3DCCC;	//	@A3DCCC
+	static int&		GameTime;	//	@A3DCD4
+	static int&		_A3DCD0;	//	@A3DCD0
+	static int&		_A3DCE4;	//	@A3DCE4
+	static int&		NewFrameNumber;	//	@A3DCE0
+	static bool&	IsRewindBufferInUse;	//	@A1207C
+
 	void			SetFixedFramerate(float framerate);
 	void			Start();	//	@89A100
 	static bool		GameUpdate();	//	@93CEB0
+	void			UpdateActiveCameraPosition();	//	@893480
+	void			EnumSceneCamerasAndUpdate();	//	@893870
+	void			UpdateLoadedBlocks(int unk1, Node* unk2);	//	@8986E0
+	void			_896810();	//	@896810
+	void			AllocateRewindBuffer();	//	@894C50
+	void			FreeRewindBuffer(char unk);	//	@894A80
+
+	static void		TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk);	//	@892F10
 };
 
 static Scene* tScene;

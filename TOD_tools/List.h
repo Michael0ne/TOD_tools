@@ -45,9 +45,15 @@ public:
 
 	void	Erase()	//	@4054C0
 	{
-		void(__thiscall * _Erase)(List * _this) = (void(__thiscall*)(List*))0x405E80;
+		if (!m_pElements)
+			return;
 
-		_Erase(this);
+		if (m_nFlags & 0x200)
+			for (T* _currel = m_pElements[m_nCurrIndex]; m_pElements != _currel; ++m_pElements)
+				delete _currel;
+
+		if (m_nFlags & 0x100)
+			delete m_pElements;
 	}
 
 	void	AdjustCapacity()	//	@405E80

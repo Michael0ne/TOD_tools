@@ -29,6 +29,7 @@ protected:
 	char* m_Name;
 
 	virtual void	scalar_destructor(bool freeMemory);		//	@86C6D0
+	virtual void	destructor();							//	@88F770
 	virtual void	_484CC0(int);							//	@484CC0
 	virtual Entity* FindNode(const char* nodeName);			//	@88EED0
 	virtual void	_88EC20(int unk);							//	@88EC20
@@ -43,8 +44,8 @@ protected:
 	virtual void	nullsub_4(int);							//	@883EC0
 	virtual void	nullsub_5();							//	@8CB190
 	virtual void	nullsub_6(int);							//	@883EC0	//	NOTE: this could be 'GetBoundsRectangle'.
-	virtual String* _484E80(String* unk);						//	@484E80
-	virtual Vector4f* _484DC0(Vector4f* unk);					//	@484DC0
+	virtual String* _484E80(String* unk);					//	@484E80
+	virtual Vector4f* _484DC0(Vector4f* unk);				//	@484DC0
 
 public:
 	Node(unsigned char allocationBitmask);	//	@88D4B0

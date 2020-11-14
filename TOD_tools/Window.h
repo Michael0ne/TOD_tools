@@ -117,6 +117,8 @@ public:
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
 	}
+
+	static Window*	ms_Instance;
 };
 
 extern Window* g_Window;

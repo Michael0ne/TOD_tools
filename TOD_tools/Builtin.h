@@ -39,6 +39,8 @@ public:
 	void	RegisterHandler(const char* handlerProto, void* handler, const char* handlerName);	//	@486430
 	void	RegisterMember(ScriptTypes::ScriptType* returnType, const char* memberName, void* memberProc, int unk1, const char* memberProto, const char* unk2);	//	@486D90
 
+	int		GetMessageId(const char* msg);
+
 	void* operator new(size_t size)
 	{
 		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
@@ -59,5 +61,7 @@ public:
 	static const Vector4f& OutVector;
 	static const Vector4f& UnkColor;
 };
+
+static Builtin* tBuiltin;
 
 static_assert(sizeof(Builtin) == BUILTIN_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Builtin));

@@ -8,6 +8,25 @@ void Node::scalar_destructor(bool freeMemory)
 		Allocators::ReleaseMemory(this, false);
 }
 
+void Node::destructor()
+{
+	Node* first_child = m_FirstChild;
+	Node* next_sibling = nullptr;
+	if (first_child)
+	{
+		do 
+		{
+			next_sibling = first_child->m_NextSibling;
+			delete first_child;
+			first_child = next_sibling;
+		} while (next_sibling);
+	}
+	m_FirstChild = nullptr;
+	SetParent(nullptr);
+
+	//	TODO: implementation!
+}
+
 void Node::_484CC0(int)
 {
 	m_Id |= 10;

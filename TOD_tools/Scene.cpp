@@ -1,4 +1,13 @@
 #include "Scene.h"
+#include "SceneNode.h"
+#include "Builtin.h"
+
+int& Scene::_A3DCCC = *(int*)0xA3DCCC;
+int& Scene::GameTime = *(int*)0xA3DCD4;
+int& Scene::_A3DCD0 = *(int*)0xA3DCD0;
+int& Scene::_A3DCE4 = *(int*)0xA3DCE4;
+int& Scene::NewFrameNumber = *(int*)0xA3DCE0;
+bool& Scene::IsRewindBufferInUse = *(bool*)0xA1207C;
 
 Scene::Scene() : Folder_()
 {
@@ -24,9 +33,9 @@ Scene::Scene() : Folder_()
 
 	patch(0xA3DCBC, this, 4);
 
-	m_pCamera = nullptr;
-	field_64 = 0;
-	m_bQuadTreesAllocated = 0;
+	m_EditorCamera = nullptr;
+	m_GameCamera = nullptr;
+	m_QuadTreesAllocated = 0;
 
 	//	TODO: initialize lots more stuff here...
 }
@@ -40,7 +49,34 @@ void Scene::SetFixedFramerate(float framerate)
 //	TODO: implementation!
 void Scene::Start()
 {
-	(*(void(__thiscall*)(Scene*))0x89A100)(this);
+	if (m_PlayMode != 1)
+		return;
+
+	m_PlayMode = 0;
+	UpdateLoadedBlocks(1, 0);
+	EnumSceneCamerasAndUpdate();
+	_A3DCCC = NULL;
+	GameTime = NULL;
+	_A3DCD0 = NULL;
+	_A3DCE4 = NULL;
+	NewFrameNumber = NULL;
+
+	int startScriptId = tBuiltin->GetMessageId("start");
+	if (startScriptId >= 0)
+		TriggerScriptForAllChildren(startScriptId, this, nullptr);
+
+	_896810();
+	tSceneNode->_874940();
+
+	if (IsRewindBufferInUse)
+	{
+		AllocateRewindBuffer();
+		FreeRewindBuffer(1);
+	}
+
+	m_RewindResumeTimeMs = NULL;
+	_A3DCE4 = NULL;
+	NewFrameNumber = NULL;
 }
 
 //	TODO: implementation!
