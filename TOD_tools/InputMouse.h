@@ -8,10 +8,11 @@
 namespace Input {
 
 #define INPUT_MOUSE_CLASS_SIZE 96
-#define INPUT_MOUSE_BUFFER_SIZE 600
+#define INPUT_MOUSE_BUFFERS_COUNT 30
+#define INPUT_MOUSE_MAX_BUTTONS 10
 
 	enum eMouseButtons {
-		MOUSE_BUTTON_0,
+		MOUSE_BUTTON_0 = 0,
 		MOUSE_BUTTON_1,
 		MOUSE_BUTTON_2,
 		MOUSE_BUTTON_3,
@@ -34,56 +35,22 @@ namespace Input {
 	{
 	private:
 		unsigned int			m_nMouseButtons[10];
-		int						field_44;
+		int						m_Position_Z;
 		tagPOINT				m_NewLocalPosition;
 		tagPOINT				m_OldLocalPosition;
-		DIMOUSESTATE* m_MouseState;
-		int						field_a;
-		int						field_b;
+		int						m_Position_X;
+		int						m_Position_Y;
+		int						field_44;
 		BYTE					m_bShouldBeProcessed;
-		BYTE					field_c[3];
-		IDirectInput8* m_pDeviceObject;
-		IDirectInputDevice8* m_pDInputDevice;
+		IDirectInput8*			m_pDeviceObject;
+		IDirectInputDevice8*	m_pDInputDevice;
 		BYTE					m_bAcquired;
-		BYTE					field_d[3];
-		DIDEVICEOBJECTDATA* m_pBuffer;
+		DIDEVICEOBJECTDATA**	m_pBuffer;
 		int						m_nBufferSize;
 
-		void CreateDevice();
-
 	public:
-		Mouse()
-		{
-			MESSAGE_CLASS_CREATED(Mouse);
-
-			for (int ind = 0; ind < 10; ind++)
-				m_nMouseButtons[ind] = 0;
-
-			field_44 = 0;
-			m_NewLocalPosition = {};
-			m_OldLocalPosition = {};
-			m_MouseState = nullptr;
-			field_a = 0;
-			field_b = 0;
-			m_bShouldBeProcessed = false;
-			field_c[0] = 0;
-			field_c[1] = 0;
-			field_c[2] = 0;
-
-			m_pDeviceObject = nullptr;
-			m_pDInputDevice = nullptr;
-
-			m_bAcquired = false;
-			field_d[0] = 0;
-			field_d[1] = 0;
-			field_d[2] = 0;
-			m_pBuffer = nullptr;
-			m_nBufferSize = 0;
-		}
-		~Mouse()
-		{
-			MESSAGE_CLASS_DESTROYED(Mouse);
-		}
+		Mouse();	//	@43B4E0
+		~Mouse();
 
 		void* operator new(size_t size)
 		{
@@ -95,12 +62,18 @@ namespace Input {
 				Allocators::ReleaseMemory(ptr, 0);
 		}
 
-		void Init();	//	@43B4E0
-		void Process();	//	@43B670
-		void Reset();	//	@43B410
+		void					_Acquire();	//	@43B370
+		void					UnacquireAndReset();	//	@43B390
+		void					SetWindowCapture(HWND window);	//	@43B3C0
+		void					ReleaseWindowCapture();	//	@43B3F0
+		void					ResetButtonsState();	//	@43B410
+		const char*				MouseButtonToStr(unsigned int button);	//	@43B440
+		const char*				MousePositionTostr(unsigned int axis);	//	@43B4C0
+		void					Process();	//	@43B670
 	};
 }
 
-extern Input::Mouse* g_InputMouse;
+extern Input::Mouse*			g_InputMouse;
+extern const char*				g_MouseButtons[];
 
 static_assert(sizeof(Input::Mouse) == INPUT_MOUSE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Input::Mouse));

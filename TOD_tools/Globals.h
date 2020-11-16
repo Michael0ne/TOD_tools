@@ -43,11 +43,6 @@ namespace Utils
 	}
 }
 
-namespace Control
-{
-	static void* (__cdecl* GetGamepadByIndex)(signed int index) = (void* (__cdecl*)(signed int))0x439660;
-}
-
 namespace Script
 {
 	static String& LanguageMode = *(String*)0xA086A8;
