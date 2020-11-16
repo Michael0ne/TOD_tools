@@ -250,31 +250,16 @@ namespace GameConfig {
 		Script::LanguageMode = String(*Script::CountryCodes[Script::LanguageStringsOffset]);
 
 		//	Create required devices - window, mouse, keyboard, gamepad.
-		if (!Allocators::Released) {
-			g_Window = new Window();
+		g_Window = new Window();
 
-			if (g_Window)
-				g_Window->Init(m_sGameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
+		if (g_Window)
+			g_Window->Init(m_sGameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
 
-			g_InputMouse = new Input::Mouse();
+		g_InputMouse = new Input::Mouse();
+		g_InputKeyboard = new Input::Keyboard();
+		g_InputGamepad[0] = new Input::Gamepad(0, 1);
 
-			if (g_InputMouse)
-				g_InputMouse->Init();
-
-			g_InputKeyboard = new Input::Keyboard();
-
-			if (g_InputKeyboard)
-				g_InputKeyboard->Init();
-
-			//	TODO: implementation for Gamepad class!
-			g_InputGamepad[0] = new Input::Gamepad();
-
-			if (g_InputGamepad[0])
-				g_InputGamepad[0]->Init();
-		}
-
-		//	TODO: implementation!
-		Control::GetGamepadByIndex(0);
+		Input::Gamepad::GetGameControllerByIndex(0);
 
 		//	Init saves directories information (ps2 emulation and pc).
 		if (!Allocators::Released) {
@@ -738,7 +723,7 @@ namespace GameConfig {
 			//	g_InputKeyboard->Release();	//	@43AF20
 			delete g_InputKeyboard;
 
-		if (Control::GetGamepadByIndex(0))
+		if (Input::Gamepad::GetGameControllerByIndex(0))
 			//	g_InputGamepad->Release();	//	@439D60
 			delete g_InputGamepad[0];
 

@@ -91,11 +91,11 @@ namespace Types {
 			static void* CreateFontResourceType();
 		};
 
-		static Texture& Instance = *(Texture*)0xA3BE28;	//	@A3BE28
-		static Font& Instance = *(Font*)0xA3BE48;	//	@A3BE48
+		//static Texture& Instance = *(Texture*)0xA3BE28;	//	@A3BE28
+		//static Font& Instance = *(Font*)0xA3BE48;	//	@A3BE48
 
 		static_assert(sizeof(TypeInfo) == TYPEINFO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TypeInfo));
-		static_assert(sizeof(Texture) == TYPEINFO_TEXTURE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Texture));
-		static_assert(sizeof(Font) == TYPEINFO_FONT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Font));
+		//static_assert(sizeof(Texture) == TYPEINFO_TEXTURE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Texture));
+		//static_assert(sizeof(Font) == TYPEINFO_FONT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Font));
 	}
 }

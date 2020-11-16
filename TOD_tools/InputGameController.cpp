@@ -35,7 +35,7 @@ namespace Input
 		m_sModelName = String();
 		field_B4 = unk1;
 		m_bForceFeedbackAvailable = false;
-		field_E0 = NULL;
+		m_bIsVibrating = false;
 		field_E1 = NULL;
 		m_pDirectInputEffect = nullptr;
 		field_D4 = NULL;
@@ -315,11 +315,11 @@ namespace Input
 				pvRef[1]->m_pDirectInputDevice = nullptr;
 
 				return DIENUM_STOP;
-			}else{
-				GamepadsArray++;
-
-				return DIENUM_STOP;
 			}
+
+		GamepadsArray++;
+
+		return DIENUM_STOP;
 	}
 
 	String* Gamepad::AllocateGamepadNameStringBuffer(String* outString, char* inGamepadName, signed int length)

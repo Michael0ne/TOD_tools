@@ -49,8 +49,9 @@ public:
 			return;
 
 		if (m_nFlags & 0x200)
-			for (T* _currel = m_pElements[m_nCurrIndex]; m_pElements != _currel; ++m_pElements)
-				delete _currel;
+			for (int ind = 0; ind < m_nCapacity; ind++)
+				if (m_pElements[ind] != nullptr)
+					delete m_pElements[ind];
 
 		if (m_nFlags & 0x100)
 			delete m_pElements;
