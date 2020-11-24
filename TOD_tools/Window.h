@@ -128,7 +128,7 @@ void				FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int
 void				IncompatibleMachineParameterError(int messageID, char bWarningIcon);	//	@43C040
 void				SetAccessibilityFeatures(bool bCollect);	//	@43C140
 LRESULT CALLBACK	WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);	//	@43C320
-int	CALLBACK		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);	//	@43CB40
+int	CALLBACK		WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd);	//	@43CB40
 void				GetUserDocumentsDir(String& outString);	//	@43CAE0
 void				FindIdFile();	//	@439230
 
