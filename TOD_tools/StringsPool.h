@@ -20,7 +20,7 @@ public:
 	String(const char* str)
 	{
 		m_nLength = strlen(str);
-		m_nBitMask = (m_nBitMask ^ (m_nLength + (m_nLength >> 2))) & 0x7FFFFFFF ^ m_nBitMask;
+		m_nBitMask = (STRING_BITMASK_DEFAULT ^ (m_nLength + (m_nLength >> 2))) & 0x7FFFFFFF ^ STRING_BITMASK_DEFAULT;
 
 		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & 0x7FFFFFFF, NULL, NULL);
 

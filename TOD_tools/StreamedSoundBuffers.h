@@ -1,210 +1,136 @@
 #pragma once
 
-#include "stdafx.h"
-
 #include "Types.h"
 #include "Globals.h"
-
-#include "MemoryAllocators.h"
 
 namespace Audio {
 
 #define STREAMEDSOUNDBUFFERS_CLASS_SIZE 300
+#define STREAMEDSOUNDBUFFERS_MAX_CONCURRENT_SOUNDS 100
 
-	enum E_SOUND_SYSTEM_TYPE : unsigned int
+	enum SoundSystemType
 	{
-		UNKNOWN = 1,
-		DIRECT_SOUND = 2,
-		DIESELPOWER = 3
+		SOUND_SYSTEM_AUTOSELECT = 1,	//	NOTE: when this is selected, it gets re-selected with directsound or dieselpower based on speaker configuration.
+		SOUND_SYSTEM_DSOUND = 2,
+		SOUND_SYSTEM_DIESELPOWER = 3
 	};
 
-	class DieselPower;
-
-	//	TODO: better name.
-	struct SoundBufferInstance
-	{
-		int* m_nUnkInt1;
-		int m_nUnkInt2;
-		int m_nUnkInt3;
-		int m_nUnkInt4;
+	const int SoundPriorityLevels[] = {
+		0x3F000000,
+		DSSCL_NORMAL,
+		DSSCL_PRIORITY,
+		DSSCL_EXCLUSIVE,
+		DSSCL_WRITEPRIMARY
 	};
 
 	/*
 	 *------------------------------------------------------------
-	 *------------------------------------------------------------
-	 *----------------- Handles streamed sounds-------------------
-	 *------------------------------------------------------------
-	 *--------- Game's alias is 'StreamedSoundBuffers' -----------
-	 *------------------------------------------------------------
+	 *-------------- Handles streamed game sounds ----------------
 	 * -----------------------------------------------------------
 	*/
-	//	FIXME: alignment is probably fucked up here, because lack of 'lpVtbl' member.
 	class StreamedSoundBuffers
 	{
 	private:
 		int m_nMaxConcurrentSounds;
 		int m_nCurrentlyPlaying;
-		int	field_8;
-		int	field_C;
-		bool	m_Muted;
-		BYTE m_bGlobalPauseCalled;
-		BYTE m_bGlobalPause;
-		BYTE m_bSound;
-		int	field_14;
-		E_SOUND_SYSTEM_TYPE m_nSoundSystem;
-		int m_nSpeakerConfig;
-		int	field_20;
-		int	field_24;
-		int	field_28;
+		float m_f8;
+		int field_C;
+		bool m_Muted;
+		bool m_GlobalPauseCalled;
+		bool m_GlobalPause;
+		bool m_Sound;
+		char field_14;
+		SoundSystemType m_nSoundSystem;
+		enum {
+			SPEAKER_CONFIG_DIRECT_OUT = 0,
+			SPEAKER_CONFIG_HEADPHONES,
+			SPEAKER_CONFIG_MONO,
+			SPEAKER_CONFIG_QUAD,
+			SPEAKER_CONFIG_SURROUND,
+			SPEAKER_CONFIG_51,
+			SPEAKER_CONFIG_71,
+			SPEAKER_CONFIG_STEREO = -1
+		} m_nSpeakerConfig;
+		LPDIRECTSOUNDBUFFER m_pDirectSoundBuffer;
+		int* field_24;	//	NOTE: this and one below are something related to Diesel Power sound buffers. The 3D and 2D ones.
+		int* field_28;
 		int m_nDirectSoundChannels;
 		int m_nDirectSoundSampleRate;
 		int m_nDirectSoundBits;
-		int	field_38;
+		int field_38;
 		int m_nMonoStreamsTotal;
-		int	field_40;
-		LPDIRECTSOUND3DBUFFER m_pDirectSound3DBuffer;
-		LPDIRECTSOUNDBUFFER m_pDirectSoundBuffer;
-		DieselPower* m_pDieselPower;
-		int	field_50;
-		int	field_54;
-		LPDIRECTSOUND m_pDirectSound;
-		int* m_pSoundBuffers;
-		int m_nUnkDieselPowerSoundsCount;
-		int	field_64;
-		int	field_68;
-		int* m_pSoundBuffers_1;
-		int m_nAllocatedTotal;
-		int	field_74;
-		int	field_78;
-		int	field_7C;	//	NOTE: Below are 8 lists of 'StreamBuffers'.
-		int	field_80;
-		int	field_84;
-		int	field_88;
-		int	field_8C;
-		int	field_90;
-		int	field_94;
-		int	field_98;
-		int	field_9C;
-		int	field_A0;
-		int	field_A4;
-		int	field_A8;
-		int	field_AC;
-		int	field_B0;
-		int	field_B4;
-		int	field_B8;
-		int	field_BC;
-		int	field_C0;
-		int	field_C4;
-		int	field_C8;
-		int	field_CC;
-		int	field_D0;
-		int	field_D4;
-		int	field_D8;
-		int	field_DC;
-		int	field_E0;
-		int	field_E4;
-		int	field_E8;
-		int	field_EC;
-		int	field_F0;
-		int	field_F4;
-		SoundBufferInstance* m_pInstances;
-		int	field_FC;
-		int	field_100;
-		int	field_104;
-		int	field_108;
-		int	field_10C;
-		int	field_110;
-		int	field_114;
-		int	field_118;
-		int	field_11C;
-		int	field_120;
-		int	field_124;
-		int	field_128;
-
+		int field_40;
+		IDirectSound3DBuffer* m_pDirectSound3DBuffer;
+		LPDIRECTSOUNDBUFFER m_pDirectSoundBuffer_1;
+		class DieselPower* m_pDieselPower;
+		int* field_50;
+		int* field_54;
+		IDirectSound* m_pDirectSound;
+		List<int> m_DieselPowerSoundBuffers;
+		List<int> m_DieselPowerSoundBuffers_1;
+		List<int> m_SoundList_1;
+		List<int> m_SoundList_2;
+		List<int> m_SoundList_3;
+		List<int> m_SoundList_4;
+		List<int> m_SoundList_5;
+		List<int> m_SoundList_6;
+		List<int> m_SoundList_7;
+		List<int> m_SoundList_8;
+		List<int>* m_SoundList_1_Ptr;
+		List<int>* m_SoundList_2_Ptr;
+		List<int>* m_SoundList_3_Ptr;
+		List<int>* m_SoundList_4_Ptr;
+		List<int>* m_SoundList_5_Ptr;
+		List<int>* m_SoundList_6_Ptr;
+		List<int>* m_SoundList_7_Ptr;
+		List<int>* m_SoundList_8_Ptr;
+		String m_Str_1;
 	public:
-		StreamedSoundBuffers()
-		{
-			MESSAGE_CLASS_CREATED(StreamedSoundBuffers);
-		}
-		~StreamedSoundBuffers()
-		{
-			MESSAGE_CLASS_DESTROYED(StreamedSoundBuffers);
-		}
+		StreamedSoundBuffers(char channels, int sampleRate);	//	@43E080
+		~StreamedSoundBuffers();	//	@43E450
 
-		void* operator new (size_t size)
-		{
-			return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-		}
-		void operator delete (void* ptr)
-		{
-			if (ptr)
-				Allocators::ReleaseMemory(ptr, 0);
-		}
-
-		void					Dump() const;	//	@43EAD0
-
-		static inline void		SetDefaultFxVolumeVar(float fVol)	//	@43CDA0
-		{
-			DefaultFxVolume = fVol;
-		}
-		static inline void		SetDefaultAmbienceVolumeVar(float fVol)	//	@43CDB0
-		{
-			DefaultAmbienceVolume = fVol;
-		}
-		static inline void		SetDefaultMusicVolumeVar(float fVol)	//	@43CDC0
-		{
-			DefaultMusicVolume = fVol;
-		}
-		static inline void		SetDefaultSpeaksVolumeVar(float fVol)	//	@43CDD0
-		{
-			DefaultSpeaksVolume = fVol;
-		}
-		//static float			GetDefaultFxVolumeVar() { return g_fDefaultFxVolume; }	//	@43CDE0
-		//static float			GetDefaultAmbienceVolumeVar() { return g_fDefaultAmbienceVolume; }	//	@43CDF0
-		//	>> 43CE00
-		//static float			GetDefaultMusicVolumeVar() { return g_fDefaultMusicVolume; }
-		//	>> 43CE10
-		//static float			GetDefaultSpeaksVolumeVar() { return g_fDefaultSpeaksVolume; }
-		void					_unkVolumeSet();	//	@43CE20
-		void					InitDieselPower();	//	@43CE90
-		void					_43CFD0(int* pOut);	//	@43CFD0
-		int						_43D060(int nUnk);	//	@43D060
-		void					SetDirectSoundBufferFormat(int nChannels, int nSampleRate, int nBits);	//	@43D0D0
-		float					GetDefaultVolumeForType(int nWhat);	//	@43D180
-		void					SetGlobalPause(bool bPause);	//	@43D1D0
-		void					nullsub_35();	//	@43D200
-		static int				GetSoundRenderer();	//	@43D280
-		void					InitiDirectSound(char nChannels, int nSampleRate);	//	@43D310
-		void					SetListener3DPos(const Vector3<float>& vPos);	//	@43D560
-		void					SetListener3DOrient(const Quaternion<float>& orient);	//	@43D6F0
-		void					GetListener3DOrientation(Quaternion<float>& pOutOrient);	//	@43DFD0
-		void					SelectAudioRenderer(int nChannels, int nSampleRate);	//	@43E080
-		void					_unkDestroyBuffers();	//	@43E450
-		void					WaitForSoftPause();	//	@43E640
-		int						_43E7B0();	//	@43E7B0
-		void					MeasureWaitForSoftPause();	//	@43E800
-
-		void					SetMaxConcurrentSounds(int maxsounds)
-		{
-			m_nMaxConcurrentSounds = maxsounds;
-		}
-
-		void					SetSoundEnabled(bool enabled)
-		{
-			m_bSound = enabled;
-		}
-
-		static	int& SoundRendererId;
-		static	HANDLE& SemaphoreObject;
-		static	float& DefaultFxVolume;
-		static	float& DefaultAmbienceVolume;
-		static	float& DefaultMusicVolume;
-		static	float& DefaultSpeaksVolume;
-
-		static void		RememberSoundRenderer(signed int id);	//	@43D210
+		inline void	SetDefaultVolumeLevels();	//	@43CE20
+		void		InitDieselPower();	//	@43CE90
+		void		GetMaxDistance(Vector4f& outVec) const;	//	@43CFD0
+		HRESULT		CreateSoundBuffer(DSBUFFERDESC* bufferDesc);	//	@43D060
+		void		SetPrimarySoundFormat(int channels, int sampleRate, int bits);	//	@43D0D0
+		float		GetDefaultVolumeForType(int type);	//	@43D180
+		void		SetGlobalPause(bool pause);	//	@43D1D0
+		void		_43D200(int unk1, int unk2, int unk3, int unk4, int unk5);	//	@43D200
+		void		InitDirectSound(char channels, int sampleRate);	//	@43D310
+		void		SetListener3DPos(const Vector4f& pos);	//	@43D560
+		void		SetListener3DOrientation(const Orientation& orient);	//	@43D6F0
+		void		GetListener3DOrientation(Orientation& outOrient);	//	@43DFD0
+		void		WaitForSoftPause();	//	@43E640
+		int			_43E7B0();	//	@43E7B0	//	NOTE: unused
+		void		MeasureWaitForSoftPause();	//	@43E800
+		void		_43E850();	//	@43E850	//	NOTE: unused
+		void		_43E880();	//	@43E880	//	NOTE: unused
 	};
 
 	extern StreamedSoundBuffers* g_StreamedSoundBuffers;
+
+	static float	DefaultFxVolume;	//	@A09230
+	static float	DefaultAmbienceVolume;	//	@A09234
+	static float	DefaultMusicVolume;	//	@A09238
+	static float	DefaultSpeaksVolume;	//	@A0923C
+
+	static SoundSystemType		SoundRendererId;	//	@A35ECC
+
+	static HANDLE	SemaphoreObject;	//	@A35EC8
+
+	static void		SetDefaultFxVolume(float vol);	//	@43CDA0
+	static void		SetDefaultAmbienceVolume(float vol);	//	@43CDB0
+	static void		SetDefaultMusicVolume(float vol);	//	@43CDC0
+	static void		SetDefaultSpeaksVolume(float vol);	//	@43CDD0
+
+	static float	GetDefaultFxVolume();	//	@43CDE0
+	static float	GetDefaultAmbienceVolume();	//	@43CDF0
+	static float	GetDefaultMusicVolume();	//	@43CE00
+	static float	GetDefaultSpeaksVolume();	//	@43CE10
+
+	static void		RememberSoundRenderer(SoundSystemType soundRendererId);	//	@43D210
+	static SoundSystemType		GetSoundRenderer();	//	@43D280
 }
 
 static_assert(sizeof(Audio::StreamedSoundBuffers) == STREAMEDSOUNDBUFFERS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(StreamedSoundBuffers));

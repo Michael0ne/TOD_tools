@@ -1,9 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "Types.h"
-#include "MemoryAllocators.h"
+#include "Globals.h"
 
 namespace Audio {
 
@@ -11,61 +8,9 @@ namespace Audio {
 
 	typedef int (*DIESELPOWERCREATEPROC)(int, int, int, int, int, int, int, int, int);
 
-	class DieselPower;
-
-	struct DieselPower__vtable
-	{
-		int field_0;
-		int field_4;
-		int field_8;
-		int field_C;
-		int field_10;
-		int field_14;
-		int field_18;
-		int field_1C;
-		int field_20;
-		int field_24;
-		int field_28;
-		int field_2C;
-		int field_30;
-		int field_34;
-		int field_38;
-		int field_3C;
-		int field_40;
-		int field_44;
-		int field_48;
-		int field_4C;
-		int field_50;
-		int field_54;
-		int (*field_58)(void);
-		int* (*field_5C)(void);
-		void(__thiscall* field_60)(DieselPower* _this, signed int);
-		void(__stdcall* field_64)(signed int);
-		int field_68;
-		int field_6C;
-		int field_70;
-		int field_74;
-		int field_78;
-		int field_7C;
-		int field_80;
-		int field_84;
-		int field_88;
-		char* (*GetName)(void);
-		IDirectSound* (*GetDirectSoundPtr)(void);
-		int field_94;
-		int field_98;
-		int field_9C;
-		int field_A0;
-		int field_A4;
-		int field_A8;
-		int field_AC;
-		int field_B0;
-	};
-
 	class DieselPower
 	{
 	private:
-		DieselPower__vtable* lpVtbl;
 		int field_4;
 		int field_8;
 		int field_C;
@@ -77,6 +22,52 @@ namespace Audio {
 		int field_24;
 
 	public:
+		virtual int stub1();
+		virtual int stub2();
+		virtual int stub3();
+		virtual int stub4();
+		virtual int stub5();
+		virtual int stub6();
+		virtual int stub7();
+		virtual int stub8();
+		virtual int stub9();
+		virtual int stub10();
+		virtual int stub11();
+		virtual int stub12();
+		virtual int stub13();
+		virtual int stub14();
+		virtual int stub15();
+		virtual int* stub16(DWORD, signed int, LPWAVEFORMATEX*);
+		virtual int stub17();
+		virtual int stub18();
+		virtual int stub19();
+		virtual int stub20();
+		virtual int* stub21(DWORD, LPWAVEFORMATEX);
+		virtual int stub22();
+		virtual int* stub23();
+		virtual int* stub24();
+		virtual void stub25(signed int);
+		virtual void stub26(signed int);
+		virtual int stub27();
+		virtual int stub28();
+		virtual int stub29();
+		virtual int stub30();
+		virtual int stub31();
+		virtual int stub32();
+		virtual int stub33();
+		virtual int stub34();
+		virtual int stub35();
+		virtual const char* GetSystemName();
+		virtual IDirectSound* GetDirectSound();
+		virtual int stub38();
+		virtual int Release();
+		virtual int stub40();
+		virtual int stub41();
+		virtual int stub42();
+		virtual int stub43();
+		virtual int stub44();
+		virtual int stub45();
+
 		DieselPower()
 		{
 			MESSAGE_CLASS_CREATED(DieselPower);
