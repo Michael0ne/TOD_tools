@@ -115,6 +115,7 @@ namespace GameConfig {
 
 	class Config
 	{
+	private:
 		char field_0;
 		String m_sGameName;
 		String m_sConfigFilePath;
@@ -170,6 +171,7 @@ namespace GameConfig {
 		void InitEntitiesDatabase();	//	@93C950
 		void UninitialiseGame();	//	@93CBC0
 		bool OpenScene(const char* scene);	//	@93CE00
+		void CreateUnknownMatricies();	//	@93D360
 	};
 
 	static void ReadZipDirectories(const char* szFileSystem);	//	@419550
