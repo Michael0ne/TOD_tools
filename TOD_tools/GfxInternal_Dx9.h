@@ -1,7 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
-
 #include "Types.h"
 #include "List.h"
 #include "MemoryAllocators.h"
@@ -9,6 +7,7 @@
 #include "GfxInternal_Dx9_Texture.h"
 
 #define GFXINTERNALDX9_CLASS_SIZE 38816
+#define GFXINTERNALDX9_VERTEX_CLASS_SIZE 40
 
 struct DisplayModeInfo {
 	int width;
@@ -19,16 +18,32 @@ struct DisplayModeInfo {
 };
 
 struct GfxInternal_Dx9_Vertex {
-	int field_0;
+	int m_Verticies;
 	int field_4;
 	int m_FVF;
-	int field_C;
+	int m_Length;
 	int field_10;
-	signed int m_nStride;
+	unsigned int m_Stride;
 	int field_18;
 	int field_1C;
 	int field_20;
-	IDirect3DVertexBuffer9* m_pVertexBuffer;
+	IDirect3DVertexBuffer9* m_Direct3DVertexBuffer;
+
+public:
+	GfxInternal_Dx9_Vertex(int unk1, int size, int unk2);	//	@464E70
+	~GfxInternal_Dx9_Vertex();	//	@465070
+};
+
+struct GfxInternal_Dx9_IndexBuffer
+{
+	int m_TotalIndicies;
+	int m_IsTriangle;
+	D3DPRIMITIVETYPE m_PrimitiveType;
+	int field_10;
+	int field_14;
+	int field_18;
+	int field_1C;
+	IDirect3DIndexBuffer9* m_Direct3DIndexBuffer;
 };
 
 struct GfxInternal_Dx9_Struc10 {
@@ -42,6 +57,15 @@ struct GfxInternal_Dx9_Struc10 {
 	int	field_1C;
 	int	field_20;
 	int	field_24;
+};
+
+struct GfxInternal_Dx9_Sampler
+{
+	int m_nSampler;
+	int m_AddressModeU;
+	int m_AddressModeV;
+	char field_C;
+	char field_D;
 };
 
 /*
@@ -61,9 +85,9 @@ protected:
 		IDirect3DQuery9* m_pFramesyncQuery;
 		char m_bDeviceResetIssued;
 		char field_9[3];
-		int field_C;
-		int field_10;	//	NOTE: could be value of how much primitives were drawn this frame.
-		int field_14;	//	NOTE: could be value of how many triangles were drawn this frame.
+		int field_C;	//	This is increased with each DrawIndexedPrimitive call.
+		int m_TotalPrimitivesDrawn;
+		int m_TotalVerticiesDrawn;
 		List<DisplayModeInfo> m_DisplayModesList;
 		union {
 			unsigned char m_bVertexShader11 : 1;
@@ -108,14 +132,7 @@ protected:
 		int field_1F8;
 		int field_1FC;
 		int field_200;
-		int *m_nSamplerType;
-		int field_208;
-		int field_20C;
-		byte field_210[4];
-		int m_nSamplerType_2;
-		int field_218;
-		int field_21C;
-		byte field_220[4];
+		GfxInternal_Dx9_Sampler m_Sampler[2];
 		byte field_224[4];
 		int field_228;
 		int field_22C;
@@ -158,7 +175,7 @@ protected:
 		int field_2C0;
 		int field_2C4;
 		int field_2C8;
-		int field_2CC;
+		bool m_FlushDirectly;
 		IDirect3DTexture9** m_pTexturesArray;		//	Array of god-knows-how-many textures.
 		int field_2D4;
 		int field_2D8;
@@ -9567,7 +9584,7 @@ protected:
 		float m_fUnkColorAlpha;
 		float m_fUnkColor;
 		ColorRGB m_ColorUnk;
-		int field_9690;
+		char field_9690[4];
 		int m_nBlendMode;
 		float field_9698;
 		int field_969C;
@@ -9577,11 +9594,12 @@ protected:
 		int field_96AC;
 		int field_96B0;
 		float field_96B4;
-		char gap96B8[4];
+		bool m_FogEnabled;
+		char field_96B9[3];
 		float field_96BC;
 		int field_96C0;
 		int m_FVF;
-		int field_96C8;
+		IDirect3DVertexDeclaration9* m_Direct3DVertexDeclaration;
 		int field_96CC;
 		int m_nRenderStateRop2Type;
 		float m_fFogStart;
@@ -9589,18 +9607,15 @@ protected:
 		float m_fFogDensity;
 		ColorRGB m_FogColor;
 		IDirect3DIndexBuffer9* m_pIndexBuffer;
-		GfxInternal_Dx9_Vertex* m_pVertexBuffer;
+		GfxInternal_Dx9_Vertex* m_CurrentVertexBuffer;
 		GfxInternal_Dx9_Texture* m_pTexturesArray_2[2];
 		int field_9700;
 		int field_9704;
 		byte m_nUnkTexturesStage[4];
-		int field_970C;
+		IDirect3DSurface9* m_ViewportSurface;
 		int field_9710;
 		int m_nViewportSurfaceIndex;
-		IDirect3DSurface9* m_pViewportSurfacesArray;
-		int field_971C;
-		int field_9720;
-		int field_9724;
+		GfxInternal_Dx9_Texture* m_ViewportTextures[4];
 		IDirect3DSurface9* m_pDepthStencilSurface;
 		int field_972C;
 		int field_9730;
@@ -9674,3 +9689,4 @@ public:
 extern GfxInternal_Dx9* g_RendererDx;
 
 static_assert(sizeof(GfxInternal_Dx9) == GFXINTERNALDX9_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(GfxInternal_Dx9));
+static_assert(sizeof(GfxInternal_Dx9_Vertex) == GFXINTERNALDX9_VERTEX_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(GfxInternal_Dx9_Vertex));

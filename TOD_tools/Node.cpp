@@ -22,7 +22,7 @@ void Node::destructor()
 		} while (next_sibling);
 	}
 	m_FirstChild = nullptr;
-	SetParent(nullptr);
+	//SetParent(nullptr);
 
 	//	TODO: implementation!
 }

@@ -12,7 +12,8 @@ namespace Audio {
 	{
 		SOUND_SYSTEM_AUTOSELECT = 1,	//	NOTE: when this is selected, it gets re-selected with directsound or dieselpower based on speaker configuration.
 		SOUND_SYSTEM_DSOUND = 2,
-		SOUND_SYSTEM_DIESELPOWER = 3
+		SOUND_SYSTEM_DIESELPOWER = 3,
+		SOUND_SYSTEM_UNDEFINED = -1
 	};
 
 	const int SoundPriorityLevels[] = {
@@ -30,7 +31,7 @@ namespace Audio {
 	*/
 	class StreamedSoundBuffers
 	{
-	private:
+	public:
 		int m_nMaxConcurrentSounds;
 		int m_nCurrentlyPlaying;
 		float m_f8;

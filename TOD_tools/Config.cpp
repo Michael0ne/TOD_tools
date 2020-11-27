@@ -130,9 +130,8 @@ namespace GameConfig {
 		Types::Resources::Animation::Init();
 		Types::Resources::MeshColor::Init();
 
-		//	Init unknown vectors.
-		//	TODO: implementation!
-		(*(void(__cdecl*)())0x93D360)();
+		//	Init unknown matricies.
+		CreateUnknownMatricies();
 
 		//	Register script entities.
 		//	TODO: implementation!
@@ -341,47 +340,46 @@ namespace GameConfig {
 		//	Figure out sound renderer.
 		if (m_pConfigurationVariables->IsVariableSet("soundrenderer")) {
 			String soundrenderer = m_pConfigurationVariables->GetParamValueString("soundrenderer");
-			int rendererid = 0;
+			Audio::SoundSystemType rendererid = Audio::SOUND_SYSTEM_UNDEFINED;
 
 			soundrenderer.ToLowerCase();
 
 			if (soundrenderer.Equal("directsound"))
-				rendererid = 2;
+				rendererid = Audio::SOUND_SYSTEM_DSOUND;
 			if (soundrenderer.Equal("dieselpower"))
-				rendererid = 3;
+				rendererid = Audio::SOUND_SYSTEM_DIESELPOWER;
 			if (soundrenderer.Equal("auto"))
-				rendererid = 1;
+				rendererid = Audio::SOUND_SYSTEM_AUTOSELECT;
 
 			if (rendererid != 0)
-				Audio::StreamedSoundBuffers::RememberSoundRenderer(rendererid);
+				Audio::RememberSoundRenderer(rendererid);
 		}
 
 		//	Init sound renderer.
 		//	TODO: implementation for StreamedSoundBuffers class!
-		if (!Allocators::Released)
-			if (Audio::g_StreamedSoundBuffers = new Audio::StreamedSoundBuffers())
-				Audio::g_StreamedSoundBuffers->SelectAudioRenderer(1, 44100);
+		Audio::g_StreamedSoundBuffers = new Audio::StreamedSoundBuffers(1, 44100);
 
 		if (m_pConfigurationVariables->IsVariableSet("sound_max_concurrent_sounds"))
-			Audio::g_StreamedSoundBuffers->SetMaxConcurrentSounds(m_pConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds"));
+			Audio::g_StreamedSoundBuffers->m_nMaxConcurrentSounds = m_pConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
 
 		//	Override default volume values.
 		if (m_pConfigurationVariables->IsVariableSet("change_sound_group_volume_scaling") && m_pConfigurationVariables->GetParamValueBool("change_sound_group_volume_scaling")) {
 			if (m_pConfigurationVariables->IsVariableSet("default_fx_volume_var"))
-				Audio::g_StreamedSoundBuffers->SetDefaultFxVolumeVar(m_pConfigurationVariables->GetParamValueFloat("default_fx_volume_var"));
+				Audio::SetDefaultFxVolume(m_pConfigurationVariables->GetParamValueFloat("default_fx_volume_var"));
 
 			if (m_pConfigurationVariables->IsVariableSet("default_ambience_volume_var"))
-				Audio::g_StreamedSoundBuffers->SetDefaultAmbienceVolumeVar(m_pConfigurationVariables->GetParamValueFloat("default_ambience_volume_var"));
+				Audio::SetDefaultAmbienceVolume(m_pConfigurationVariables->GetParamValueFloat("default_ambience_volume_var"));
 
 			if (m_pConfigurationVariables->IsVariableSet("default_music_volume_var"))
-				Audio::g_StreamedSoundBuffers->SetDefaultMusicVolumeVar(m_pConfigurationVariables->GetParamValueFloat("default_music_volume_var"));
+				Audio::SetDefaultMusicVolume(m_pConfigurationVariables->GetParamValueFloat("default_music_volume_var"));
 
 			if (m_pConfigurationVariables->IsVariableSet("default_speaks_volume_var"))
-				Audio::g_StreamedSoundBuffers->SetDefaultSpeaksVolumeVar(m_pConfigurationVariables->GetParamValueFloat("default_speaks_volume_var"));
+				Audio::SetDefaultSpeaksVolume(m_pConfigurationVariables->GetParamValueFloat("default_speaks_volume_var"));
 		}
 
 		//	Sound is enabled if not overridden.
-		Audio::g_StreamedSoundBuffers->SetSoundEnabled(!m_pConfigurationVariables->IsVariableSet("sound") || m_pConfigurationVariables->GetParamValueBool("sound"));
+		Audio::g_StreamedSoundBuffers->m_Sound = !m_pConfigurationVariables->IsVariableSet("sound") ||
+													m_pConfigurationVariables->GetParamValueBool("sound");
 
 		//	NOTE: what is this parameter?
 		Vector3<float> vBackground = Vector3<float>();
@@ -750,6 +748,12 @@ namespace GameConfig {
 	bool Config::OpenScene(const char* scene)
 	{
 		return (*(bool(__thiscall*)(Config*, const char*))0x93CE00)(this, scene);
+	}
+
+	//	TODO: implementation!
+	void Config::CreateUnknownMatricies()
+	{
+		
 	}
 
 	bool Session_Variables::IsVariableSet(const char* variableName)
