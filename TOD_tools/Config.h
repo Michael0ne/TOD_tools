@@ -1,15 +1,8 @@
 #pragma once
 
-#include "stdafx.h"
-#include "time.h"
-
-#include "Globals.h"
 #include "Types.h"
-#include "List.h"
-#include "MemoryAllocators.h"
+#include "Globals.h"
 #include "FileInternal.h"
-#include "StringsPool.h"
-#include "Progress.h"
 
 namespace GameConfig {
 
@@ -186,8 +179,8 @@ namespace GameConfig {
 
 	static List<String>& FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
 	static FileInternal& ColMatFilePtr = *(FileInternal*)0xA3D7E8;	//	@A3D7E8
-}
 
-extern GameConfig::Config* g_Config;
+	extern Config* g_Config;
+}
 
 static_assert(sizeof(GameConfig::Config) == CONFIG_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Config));

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
 #include "StringsPool.h"
-#include "MemoryAllocators.h"
 
 #define FILE_CLASS_SIZE 92
 

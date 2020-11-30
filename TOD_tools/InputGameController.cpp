@@ -30,7 +30,7 @@ namespace Input
 {
 	Gamepad::Gamepad(int controllerIndex, int unk1)
 	{
-		debug("Gamepad::Gamepad created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Gamepad);
 
 		m_sModelName = String();
 		field_B4 = unk1;
@@ -125,13 +125,13 @@ namespace Input
 			diPeriodic.dwMagnitude = DI_FFNOMINALMAX;
 			diPeriodic.lOffset = 0;
 			diPeriodic.dwPhase = 0;
-			diPeriodic.dwPeriod = (0.05f * DI_SECONDS);
+			diPeriodic.dwPeriod = (DWORD)(0.05f * DI_SECONDS);
 
 			diEnvelope.dwSize = sizeof(DIENVELOPE);
 			diEnvelope.dwAttackLevel = 0;
-			diEnvelope.dwAttackTime = (0.5f * DI_SECONDS);
+			diEnvelope.dwAttackTime = (DWORD)(0.5f * DI_SECONDS);
 			diEnvelope.dwFadeLevel = 0;
-			diEnvelope.dwFadeTime = (1.0f * DI_SECONDS);
+			diEnvelope.dwFadeTime = (DWORD)(1.0f * DI_SECONDS);
 
 			diEffect.dwSize = sizeof(DIEFFECT);
 			diEffect.dwFlags = DIEFF_POLAR | DIEFF_OBJECTOFFSETS;
@@ -294,7 +294,7 @@ namespace Input
 
 		if (FAILED(pvRef[1]->m_pDirectInputDevice->SetDataFormat((LPCDIDATAFORMAT)&GUID_CONTROLLER_DATA_FORMAT)))
 		{
-			MessageBox(Window::ms_Instance->m_hWindow, "Unable to set game controller data format", "Error", MB_OK);
+			MessageBox(g_Window->m_hWindow, "Unable to set game controller data format", "Error", MB_OK);
 
 			if (!pvRef[1]->m_pDirectInputDevice)
 				return DIENUM_STOP;
@@ -305,9 +305,9 @@ namespace Input
 		}
 
 		if (Script::ForceFeedback)
-			if (FAILED(pvRef[1]->m_pDirectInputDevice->SetCooperativeLevel(Window::ms_Instance->m_hWindow, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
+			if (FAILED(pvRef[1]->m_pDirectInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
 			{
-				MessageBox(Window::ms_Instance->m_hWindow, "Unable to set game controller cooperative level", "Error", MB_OK);
+				MessageBox(g_Window->m_hWindow, "Unable to set game controller cooperative level", "Error", MB_OK);
 
 				if (!pvRef[1]->m_pDirectInputDevice)
 					return DIENUM_STOP;
@@ -357,7 +357,7 @@ namespace Input
 
 	Window* Gamepad::GetWindow()
 	{
-		return Window::ms_Instance;
+		return g_Window;
 	}
 
 	void Gamepad::_Acquire()
@@ -664,7 +664,7 @@ namespace Input
 
 		if (FAILED(m_pDirectInputDevice->SetDataFormat((LPCDIDATAFORMAT)&GUID_CONTROLLER_DATA_FORMAT)))
 		{
-			MessageBox(Window::ms_Instance->m_hWindow, "Unable to set game controller data format", "Error", MB_OK);
+			MessageBox(g_Window->m_hWindow, "Unable to set game controller data format", "Error", MB_OK);
 			if (m_pDirectInputDevice)
 			{
 				m_pDirectInputDevice->Release();
@@ -672,9 +672,9 @@ namespace Input
 			}
 		}
 
-		if (FAILED(m_pDirectInputDevice->SetCooperativeLevel(Window::ms_Instance->m_hWindow, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
+		if (FAILED(m_pDirectInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
 		{
-			MessageBox(Window::ms_Instance->m_hWindow, "Unable to set game controller cooperative level", "Error", MB_OK);
+			MessageBox(g_Window->m_hWindow, "Unable to set game controller cooperative level", "Error", MB_OK);
 			if (m_pDirectInputDevice)
 			{
 				m_pDirectInputDevice->Release();

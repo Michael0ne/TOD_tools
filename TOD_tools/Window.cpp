@@ -524,7 +524,7 @@ void Window::Process(bool(*GameLoop)(void))
 				return;
 
 			if (g_InputMouse)
-				g_InputMouse->Reset();
+				g_InputMouse->ResetButtonsState();
 
 			if (g_InputKeyboard)
 				g_InputKeyboard->Reset();
@@ -578,8 +578,10 @@ int CALLBACK MenuClickCallback(WPARAM wParam)
 #endif
 
 //	NOTE: szFileSystem is passed in, but never used.
-void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId)
+Window::Window(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId)
 {
+	MESSAGE_CLASS_CREATED(Window);
+
 	HKEY				phkResult;
 	char				szDesktopPath[MAX_PATH];
 	MEMORYSTATUSEX		memoryStatus;
@@ -630,6 +632,11 @@ void Window::Init(const char* wndClassName, int unkParam1, UINT16 nMenuResourceI
 	}
 }
 
+Window::~Window()
+{
+	MESSAGE_CLASS_DESTROYED(Window);
+}
+
 BOOL Window::_SetTitle(LPCSTR lpString)
 {
 	m_sWindowTitle = String(lpString);
@@ -664,16 +671,16 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	FindIdFile();
 
 	//	NOTE: InitialiseGame has been inlined! Originally at 93F680.
-	g_Config = new GameConfig::Config();
+	GameConfig::g_Config = new GameConfig::Config();
 
-	g_Config->Process(lpCmdLine, 0, "", 0);
+	GameConfig::g_Config->Process(lpCmdLine, 0, "", 0);
 
 	//	This is main game loop proc. Process function has standard while loop.
 	g_Window->Process(Scene::GameUpdate);
 
 	//	When deleting config class, rest of game objects are deleted as well.
-	if (g_Config)
-		delete g_Config;
+	if (GameConfig::g_Config)
+		delete GameConfig::g_Config;
 
 	return 0;
 }
@@ -861,11 +868,6 @@ inline void PATCH_WINDOW()
 	_asm	mov		dwFunc, eax
 	//	Override ProcessInputDevices function.
 	hook(0x93D0BB, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::Init
-	_asm	mov		dwFunc, eax
-	//	Override InitEnvironment function.
-	hook(0x93E008, dwFunc, PATCH_NOTHING);
 
 	_asm	mov		eax, offset Window::_SetTitle
 	_asm	mov		dwFunc, eax

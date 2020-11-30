@@ -86,6 +86,7 @@
       <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -181,6 +182,7 @@
     <ClInclude Include="radbase.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="RealtimeFolder.h" />
+    <ClInclude Include="RenderBuffer.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourcesTypes.h" />
     <ClInclude Include="Fragment.h" />
@@ -285,6 +287,7 @@
     <ClCompile Include="Progress.h" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="RealtimeFolder.cpp" />
+    <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourcesTypes.cpp" />
     <ClCompile Include="Fragment.cpp" />

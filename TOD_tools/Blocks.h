@@ -1,9 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
-
 #include "List.h"
-#include "MemoryAllocators.h"
 
 #define BLOCKS_CLASS_SIZE 500
 

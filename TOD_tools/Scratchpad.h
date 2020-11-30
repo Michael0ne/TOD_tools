@@ -1,7 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
-
 #include "MemoryAllocators.h"
 
 #define SCRATCHPAD_CLASS_SIZE 1076

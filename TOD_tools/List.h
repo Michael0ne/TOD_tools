@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
 #include "StringsPool.h"
 
 #define LIST_CLASS_SIZE 16

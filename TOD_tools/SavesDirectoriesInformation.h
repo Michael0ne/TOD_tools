@@ -1,41 +1,39 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "StringsPool.h"
-#include "MemoryAllocators.h"
+#include "Globals.h"
 
 #define SAVESDIRINF_CLASS_SIZE 28
+
+enum SaveSlotIndex
+{
+	SAVE_SLOT_0 = 0,
+	SAVE_SLOT_1,
+	SAVE_SLOT_2,
+	SAVE_SLOT_3,
+	SAVE_SLOT_4,
+	SAVE_SLOT_5,
+	SAVE_SLOT_6,
+	SAVE_SLOT_7,
+	SAVE_SLOT_8
+};
 
 //	TODO: move this to 'MemoryCards' class.
 class SavesDirectoriesInformation
 {
 private:
-	struct __vtable {
-		void(__thiscall* Release)(SavesDirectoriesInformation* _this, bool releasememory);	//	@93F480
-	} *lpVtbl;
-	int field_4;
+	SaveSlotIndex m_MemoryCardIndex;	//	NOTE: for PC save directory information, this is set to 8.
+public:
 	String m_sSaveFolderPath;
-	byte m_bFormatted;
-	byte field_16;
-	byte field_17;
+private:
+	bool m_bFormatted;
+	unsigned char field_16;
+	unsigned char field_17;
 
 public:
-	SavesDirectoriesInformation()
-	{
-		MESSAGE_CLASS_CREATED(SavesDirectoriesInformation);
+	virtual void scalar_destructor(bool) {};	//	@93F480
 
-		lpVtbl = nullptr;
-		field_4 = 0;
-		m_sSaveFolderPath = String();
-		m_bFormatted = false;
-		field_16 = 0;
-		field_17 = 0;
-	}
-	~SavesDirectoriesInformation()
-	{
-		MESSAGE_CLASS_DESTROYED(SavesDirectoriesInformation);
-	}
+	SavesDirectoriesInformation(SaveSlotIndex index);
+	~SavesDirectoriesInformation();
 
 	void* operator new (size_t size)
 	{
@@ -47,17 +45,12 @@ public:
 			Allocators::ReleaseMemory(ptr, 0);
 	}
 
-	void	Init(unsigned int index);
-
-	void	SetSaveFolderPath(const char* szPath)
-	{
-		m_sSaveFolderPath = String(szPath);
-	}
-
 	bool	IsFormatted();	//	@43B0B0
 	bool	FormatCard();	//	@928840
 };
 
-extern SavesDirectoriesInformation* g_SavesDirsInfo[3];
+static SavesDirectoriesInformation* g_SavesDirsInfo[SAVE_SLOT_8] = {
+   nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
+};	//	@A35E84
 
-static_assert(sizeof(SavesDirectoriesInformation) == SAVESDIRINF_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE("SavesDirectoriesInformation"));
+static_assert(sizeof(SavesDirectoriesInformation) == SAVESDIRINF_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SavesDirectoriesInformation));

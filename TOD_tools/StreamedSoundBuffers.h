@@ -107,6 +107,8 @@ namespace Audio {
 		void		MeasureWaitForSoftPause();	//	@43E800
 		void		_43E850();	//	@43E850	//	NOTE: unused
 		void		_43E880();	//	@43E880	//	NOTE: unused
+		void		PreallocateStreamBuffersPool();	//	@
+		void		CreateStaticStreamBuffer();	//	@
 	};
 
 	extern StreamedSoundBuffers* g_StreamedSoundBuffers;
@@ -120,18 +122,18 @@ namespace Audio {
 
 	static HANDLE	SemaphoreObject;	//	@A35EC8
 
-	static void		SetDefaultFxVolume(float vol);	//	@43CDA0
-	static void		SetDefaultAmbienceVolume(float vol);	//	@43CDB0
-	static void		SetDefaultMusicVolume(float vol);	//	@43CDC0
-	static void		SetDefaultSpeaksVolume(float vol);	//	@43CDD0
+	void		SetDefaultFxVolume(float vol);	//	@43CDA0
+	void		SetDefaultAmbienceVolume(float vol);	//	@43CDB0
+	void		SetDefaultMusicVolume(float vol);	//	@43CDC0
+	void		SetDefaultSpeaksVolume(float vol);	//	@43CDD0
 
-	static float	GetDefaultFxVolume();	//	@43CDE0
-	static float	GetDefaultAmbienceVolume();	//	@43CDF0
-	static float	GetDefaultMusicVolume();	//	@43CE00
-	static float	GetDefaultSpeaksVolume();	//	@43CE10
+	float	GetDefaultFxVolume();	//	@43CDE0
+	float	GetDefaultAmbienceVolume();	//	@43CDF0
+	float	GetDefaultMusicVolume();	//	@43CE00
+	float	GetDefaultSpeaksVolume();	//	@43CE10
 
-	static void		RememberSoundRenderer(SoundSystemType soundRendererId);	//	@43D210
-	static SoundSystemType		GetSoundRenderer();	//	@43D280
+	void		RememberSoundRenderer(SoundSystemType soundRendererId);	//	@43D210
+	SoundSystemType		GetSoundRenderer();	//	@43D280
 }
 
 static_assert(sizeof(Audio::StreamedSoundBuffers) == STREAMEDSOUNDBUFFERS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(StreamedSoundBuffers));

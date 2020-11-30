@@ -5,6 +5,7 @@
 
 namespace Audio
 {
+	StreamedSoundBuffers* g_StreamedSoundBuffers = nullptr;
 
 	void SetDefaultFxVolume(float vol)
 	{
@@ -256,7 +257,7 @@ namespace Audio
 
 		SetDefaultVolumeLevels();
 
-		m_pDieselPower = DieselPower::CallFactory(1, 2, 1, 3.0f, Window::ms_Instance->m_hWindow, 1, 0, 0);
+		m_pDieselPower = DieselPower::CallFactory(1, 2, 1, 3.0f, g_Window->m_hWindow, 1, 0, 0);
 
 		if (!m_pDieselPower)
 			return;
@@ -395,10 +396,10 @@ namespace Audio
 		debug("%d HW mixing buffers (%d free)\n", dsCaps.dwMaxHwMixingStaticBuffers, dsCaps.dwFreeHwMixingStaticBuffers);
 
 		int soundPriorityLevel = 1;
-		if (FAILED(m_pDirectSound->SetCooperativeLevel(Window::ms_Instance->m_hWindow, SoundPriorityLevels[2])))
+		if (FAILED(m_pDirectSound->SetCooperativeLevel(g_Window->m_hWindow, SoundPriorityLevels[2])))
 		{
 			for (; soundPriorityLevel < 5; soundPriorityLevel++)
-				if (SUCCEEDED(m_pDirectSound->SetCooperativeLevel(Window::ms_Instance->m_hWindow, SoundPriorityLevels[soundPriorityLevel])))
+				if (SUCCEEDED(m_pDirectSound->SetCooperativeLevel(g_Window->m_hWindow, SoundPriorityLevels[soundPriorityLevel])))
 					break;
 
 			if (soundPriorityLevel == 5)
@@ -520,4 +521,15 @@ namespace Audio
 			(*(void(__stdcall*)())(m_DieselPowerSoundBuffers_1.m_pElements[ind] + 152))();
 	}
 
+	//	TODO: implementation!
+	void StreamedSoundBuffers::PreallocateStreamBuffersPool()
+	{
+
+	}
+
+	//	TODO: implementation!
+	void StreamedSoundBuffers::CreateStaticStreamBuffer()
+	{
+
+	}
 }

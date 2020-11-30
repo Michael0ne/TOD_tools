@@ -1,9 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
 #include "Globals.h"
-
-#include "MemoryAllocators.h"
 
 namespace Input {
 
@@ -46,7 +43,7 @@ namespace Input {
 		IDirectInputDevice8*	m_pDInputDevice;
 		BYTE					m_bAcquired;
 		DIDEVICEOBJECTDATA**	m_pBuffer;
-		int						m_nBufferSize;
+		unsigned int			m_nBufferSize;
 
 	public:
 		Mouse();	//	@43B4E0

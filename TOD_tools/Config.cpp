@@ -1,36 +1,31 @@
 #include "Config.h"
 
-#include "Globals.h"
 #include "Blocks.h"
 #include "ScriptTypes.h"
 #include "Scratchpad.h"
 #include "SceneNode.h"
-#include "Scene.h"
-#include "ResourcesTypes.h"
 #include "Light.h"
 #include "Window.h"
 #include "InputMouse.h"
 #include "InputKeyboard.h"
 #include "InputGameController.h"
-#include "SavesDirectoriesInformation.h"
-#include "MemoryCards.h"
 #include "StreamedSoundBuffers.h"
 #include "Renderer.h"
 #include "Font.h"
-#include "File.h"
-#include "LoadScreen.h"
-#include "ZipArch.h"
-#include "LoadScreenInfo.h"
 #include "Random.h"
+#include "LoadScreenInfo.h"
+#include "Scene.h"
+#include "Progress.h"
+#include "RenderBuffer.h"
+#include "SavesDirectoriesInformation.h"
 
-GameConfig::Config* g_Config = NULL;
 String Script::Filesystem = String();
 String Script::ControlType = String();
 String Script::Region = String();
 
-//	var & 0x7FFFFF -- quick modulus operation - invert number if it's negative.
-
-namespace GameConfig {
+namespace GameConfig
+{
+	Config* g_Config = nullptr;
 
 	Config::Config()
 	{
@@ -114,10 +109,11 @@ namespace GameConfig {
 		g_Scratchpad = new Scratchpad();
 
 		//	Init SceneNode (contains rewind buffer).
-		g_SceneNode = new SceneNode();
+		tSceneNode = new SceneNode();
 
 		//	Init resources types.
 		//	TODO: implementation for Register class!
+		/*
 		Types::Resources::Texture::Init();
 		Types::Resources::Font::Init();
 		Types::Resources::Text::Init();
@@ -129,6 +125,7 @@ namespace GameConfig {
 		Types::Resources::StreamedSoundInfo::Init();
 		Types::Resources::Animation::Init();
 		Types::Resources::MeshColor::Init();
+		*/
 
 		//	Init unknown matricies.
 		CreateUnknownMatricies();
@@ -147,8 +144,7 @@ namespace GameConfig {
 		(*(void(__cdecl*)())0x464120)();
 
 		//	Init renderer commands buffer.
-		//	TODO: implementation!
-		(*(void(__cdecl*)())0x436070)();
+		RenderBuffer::CreateRenderBuffer();
 
 		//	Init lights.
 		//	TODO: implementation!
@@ -249,10 +245,7 @@ namespace GameConfig {
 		Script::LanguageMode = String(*Script::CountryCodes[Script::LanguageStringsOffset]);
 
 		//	Create required devices - window, mouse, keyboard, gamepad.
-		g_Window = new Window();
-
-		if (g_Window)
-			g_Window->Init(m_sGameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
+		g_Window = new Window(m_sGameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
 
 		g_InputMouse = new Input::Mouse();
 		g_InputKeyboard = new Input::Keyboard();
@@ -261,19 +254,9 @@ namespace GameConfig {
 		Input::Gamepad::GetGameControllerByIndex(0);
 
 		//	Init saves directories information (ps2 emulation and pc).
-		if (!Allocators::Released) {
-			//	PS2 memcard0
-			if (g_SavesDirsInfo[0] = new SavesDirectoriesInformation())
-				g_SavesDirsInfo[0]->Init(0);
-
-			//	PS2 memcard1
-			if (g_SavesDirsInfo[1] = new SavesDirectoriesInformation())
-				g_SavesDirsInfo[1]->Init(1);
-
-			//	PS2 harddisk OR PC savedir
-			if (g_SavesDirsInfo[2] = new SavesDirectoriesInformation())
-				g_SavesDirsInfo[2]->Init(8);
-		}
+		g_SavesDirsInfo[SAVE_SLOT_0] = new SavesDirectoriesInformation(SAVE_SLOT_0);
+		g_SavesDirsInfo[SAVE_SLOT_1] = new SavesDirectoriesInformation(SAVE_SLOT_1);
+		g_SavesDirsInfo[SAVE_SLOT_8] = new SavesDirectoriesInformation(SAVE_SLOT_8);
 
 		Script::SavePlatformPS2 = true;
 
@@ -293,7 +276,7 @@ namespace GameConfig {
 				do {
 					//	TODO: implementation for utility function!
 					Utils::CreateDirectoriesRecursive(szMemcard0[memcardindex]);
-					g_SavesDirsInfo[memcardindex]->SetSaveFolderPath(szMemcard0[memcardindex]);
+					g_SavesDirsInfo[memcardindex]->m_sSaveFolderPath.Set(szMemcard0[memcardindex]);
 
 					if (!g_SavesDirsInfo[memcardindex]->IsFormatted())
 						g_SavesDirsInfo[memcardindex]->FormatCard();
@@ -304,11 +287,11 @@ namespace GameConfig {
 
 			const char szHarddisk[] = "/savegames/harddisk/";
 			Utils::CreateDirectoriesRecursive(szHarddisk);
-			g_SavesDirsInfo[2]->SetSaveFolderPath(szHarddisk);
+			g_SavesDirsInfo[SAVE_SLOT_8]->m_sSaveFolderPath.Set(szHarddisk);
 
 			//	TODO: implementation for memorycards class methods!
-			if (!g_SavesDirsInfo[2]->IsFormatted())
-				g_SavesDirsInfo[2]->FormatCard();
+			if (!g_SavesDirsInfo[SAVE_SLOT_8]->IsFormatted())
+				g_SavesDirsInfo[SAVE_SLOT_8]->FormatCard();
 		}else{
 			//	For PC, just figure out system user data directory.
 			Script::SavePlatformPS2 = false;
@@ -320,7 +303,7 @@ namespace GameConfig {
 
 			Script::FileCheck = true;
 
-			g_SavesDirsInfo[2]->SetSaveFolderPath(sUserDocDir.m_szString);
+			g_SavesDirsInfo[SAVE_SLOT_8]->m_sSaveFolderPath.Set(sUserDocDir.m_szString);
 		}
 
 		Script::CutsceneDisableAware = false;
@@ -525,7 +508,7 @@ namespace GameConfig {
 		(*(void(__cdecl*)())0x7A1F60)();
 
 		//	Since scripts loaded and ready, calculate CRC and remember it.
-		//	NOTE: implementation!
+		//	TODO: implementation!
 		m_nCRCForScriptsListUnk = (*(int(__cdecl*)())0x873440)();
 		m_nCRCForScriptsGlobalList = (*(int (__cdecl*)())0x871DD0)();
 		m_nCRCForTypesList = (*(int(__cdecl*)())0x862CF0)();
@@ -987,17 +970,4 @@ namespace GameConfig {
 			outStr->m_nBitMask |= 0x80000000;
 		}
 	}
-}
-
-inline void PATCH_CONFIG()
-{
-	void* dwFunc;
-
-	//	Override ReadZipDirectories function.
-	hook(0x93EE5A, &GameConfig::ReadZipDirectories, PATCH_CALL);
-
-	_asm	mov		eax, offset GameConfig::Config::Process
-	_asm	mov		dwFunc, eax
-	//	Override Config::Process function.
-	hook(0x93F6C0, dwFunc, PATCH_NOTHING);
 }

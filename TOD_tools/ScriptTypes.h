@@ -1,9 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
 #include "Types.h"
-#include "StringsPool.h"
-#include "MemoryAllocators.h"
 #include "List.h"
 
 #define SCRIPT_TYPE_CLASS_SIZE 32
