@@ -29,6 +29,7 @@
 #include <psapi.h>			//	For processes.
 #include <ShlObj.h>			//	For registry operations.
 #include <timeapi.h>		//	For timeGetTime.
+#include "time.h"			//	For time stuff.
 
 #include <WinUser.h>		//	For Windows-specific objects.
 #include <d3d9.h>			//	For all directX related stuff.
@@ -97,12 +98,5 @@ extern void debug (char * message, ...);
 
 //	Each class applies it's patches in .cpp file, to be called in dllmain.cpp.
 extern inline void PATCH_WINDOW();
-extern inline void PATCH_SOUND_MANAGER();
-extern inline void PATCH_ALLOCATORS();
 extern inline void PATCH_STRING_BUFFER();
-extern inline void PATCH_PERF();
 extern inline void PATCH_RENDERER();
-extern inline void PATCH_CONFIG();
-extern inline void PATCH_INPUT_MOUSE();
-extern inline void PATCH_INPUT_KEYBOARD();
-extern inline void PATCH_INPUT_GAMEPAD();

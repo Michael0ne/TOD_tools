@@ -4,14 +4,11 @@
 
 #define SCENENODE_CLASS_SIZE 120
 
-class RewindBuffer;
-class Entity;
-
 class SceneNode
 {
 private:
 	int field_0;
-	RewindBuffer* m_RewindBuffer_1;
+	class RewindBuffer* m_RewindBuffer_1;
 	int field_8;
 	int field_C;
 	int field_10;
@@ -29,7 +26,7 @@ private:
 	int field_40;
 	int field_44;
 	int* field_48;
-	RewindBuffer* m_pSavePointSummary;
+	class RewindBuffer* m_pSavePointSummary;
 	int field_50;
 	int field_54;
 	int field_58;
@@ -37,7 +34,7 @@ private:
 	int field_60;
 	int field_64;
 	int field_68;
-	Entity* field_6C;
+	class Entity* field_6C;
 	int m_nGameTime;
 	int m_nNewFrameNumber;
 

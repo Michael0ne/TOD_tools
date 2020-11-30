@@ -361,7 +361,7 @@ public:
 	static	float&			_A3B0C8;	//	@A3B0C8
 };
 
-static Allocators g_Allocators;	//	@A3B0CC
+extern Allocators g_Allocators;	//	@A3B0CC
 
 static_assert(sizeof(Allocator) == ALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Allocator));
 static_assert(sizeof(SystemSubAllocator) == SYSTEMSUBALLOCATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SystemSubAllocator));

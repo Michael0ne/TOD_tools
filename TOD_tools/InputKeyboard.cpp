@@ -145,11 +145,11 @@ namespace Input
 			if (m_nBufferSize <= buffSize)
 				m_nBufferSize = buffSize;
 
-			for (int ind = 0; ind < buffSize; ind++)
+			for (unsigned int ind = 0; ind < buffSize; ind++)
 				m_nButtonStates[m_pBuffer[ind]->dwOfs] = ((m_pBuffer[ind]->dwData >> 7) & 1) == 0 ? m_nButtonStates[m_pBuffer[ind]->dwOfs] | 2 : m_nButtonStates[m_pBuffer[ind]->dwOfs] | 1;
 		}
 
-		if (m_pDInputDevice->GetDeviceState(sizeof(m_nButtonStates1), m_nButtonStates1))
+		if (SUCCEEDED(m_pDInputDevice->GetDeviceState(sizeof(m_nButtonStates1), m_nButtonStates1)))
 			UnacquireAndResetKeyboard();
 
 		if (m_bAcquired &&
@@ -202,7 +202,7 @@ namespace Input
 
 	Keyboard::Keyboard()
 	{
-		debug("Input::Keyboard created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Keyboard);
 
 		g_InputKeyboard = this;
 
@@ -220,7 +220,7 @@ namespace Input
 			IncompatibleMachineParameterError(1, false);
 		if (FAILED(m_pDInputDevice->SetDataFormat(&c_dfDIKeyboard)))
 			IncompatibleMachineParameterError(1, false);
-		if (FAILED(m_pDInputDevice->SetCooperativeLevel(Window::ms_Instance->m_hWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
+		if (FAILED(m_pDInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
 			IncompatibleMachineParameterError(1, false);
 
 		*(unsigned char*)&m_pBuffer = (unsigned char)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT, NULL, NULL);
@@ -248,7 +248,7 @@ namespace Input
 
 	Keyboard::~Keyboard()
 	{
-		debug("Input::Keyboard destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Keyboard);
 
 		UnacquireAndResetKeyboard();
 

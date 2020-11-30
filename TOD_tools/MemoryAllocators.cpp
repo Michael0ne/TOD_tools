@@ -1,11 +1,13 @@
 #include "MemoryAllocators.h"
 
+Allocators g_Allocators;
+
 void Allocator::RetrieveSystemAllocators()
 {
-	m_SystemAllocators = (SystemAllocators*)malloc(8);
+	m_SystemAllocators = (SystemAllocators*)malloc(sizeof(SystemAllocators));
 
-	m_SystemAllocators->_malloc	= malloc;
-	m_SystemAllocators->_free	= free;
+	m_SystemAllocators->_malloc = malloc;
+	m_SystemAllocators->_free = free;
 }
 
 Allocator::Allocator()
@@ -369,7 +371,7 @@ BestFitAllocator::BestFitAllocator()
 		field_28[ind].field_4 = NULL;
 		field_28[ind].field_8 = NULL;
 
-		_f0 = _f0 * (float)1.5f;
+		_f0 = _f0 * (int)((float)1.5f);	//	NOTE: this is stupid.
 	}
 
 	field_10C = 0x7FFFFFFF;
@@ -680,7 +682,7 @@ void Allocators::InitAllocator(Allocator* _alloc, int _allocindex, const char* _
 //	TODO: implementation!
 void Allocators::_4776A0()
 {
-	(*(void(__cdecl*)())0x4776A0)();
+	TotalAllocators = 0;
 }
 
 Allocators::Allocators()
@@ -832,6 +834,3 @@ float& Allocators::_A3B0C8 = *(float*)0xA3B0C8;
 RTL_CRITICAL_SECTION& Allocators::AllocatorsCriticalSection = *(RTL_CRITICAL_SECTION*)0xA3AFA0;
 int& Allocators::_A3AFB8 = *(int*)0xA3AFB8;
 bool& Allocators::Released = *(bool*)0xA3AFBC;
-
-void PATCH_ALLOCATORS()
-{}

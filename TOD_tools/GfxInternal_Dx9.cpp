@@ -77,12 +77,12 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	m_nUnkTexturesStage[1] = 0;
 	m_nUnkTexturesStage[2] = 0;
 	m_nUnkTexturesStage[3] = 0;
-	m_pIndexBuffer = 0;
-	m_pVertexBuffer = 0;
-	field_970C = 0;
+	m_pIndexBuffer = nullptr;
+	m_CurrentVertexBuffer = nullptr;
+	m_ViewportSurface = nullptr;
 	field_9670 = -1;
 	field_9674 = 0;
-	field_96C8 = 0;
+	m_Direct3DVertexDeclaration = nullptr;
 	field_9750 = 0;
 	field_9664 = 0;
 	
@@ -202,7 +202,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	m_nViewportSurfaceIndex = 0;
 	field_5538 = 0;
 	field_553C = 0;
-	field_2CC = 0;
+	m_FlushDirectly = false;
 }
 
 const DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(int width, int height, bool dontIgnoreUnavailable)

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
 #include "File.h"
-#include "StringsPool.h"
 
 #define FILEINTERNAL_CLASS_SIZE 52
 

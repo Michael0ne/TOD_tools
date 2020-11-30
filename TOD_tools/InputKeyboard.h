@@ -1,7 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
-
 #include "MemoryAllocators.h"
 
 namespace Input {
@@ -19,7 +17,7 @@ namespace Input {
 		IDirectInputDevice8*	m_pDInputDevice;
 		IDirectInput8*			m_pDeviceObject;
 		DIDEVICEOBJECTDATA**	m_pBuffer;	//	NOTE: judging by the code in exe, this is initialized with exact size, but because actual structure is much less, this more looks like an array of structures.
-		int						m_nBufferSize;
+		unsigned int			m_nBufferSize;
 
 	public:
 		Keyboard();		//	@43AD80

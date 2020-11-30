@@ -6,9 +6,7 @@ namespace Types {
 
 	namespace Resources {
 
-#define TYPEINFO_CLASS_SIZE 44
-#define TYPEINFO_TEXTURE_CLASS_SIZE 48
-#define TYPEINFO_FONT_CLASS_SIZE 40
+#define BASE_CLASS_SIZE 60
 
 #define TYPERES_TEXTURE_NAME "texture"
 #define TYPERES_FONT_NAME "font"
@@ -29,73 +27,26 @@ namespace Types {
 			PLATFORM_XBOX = 2
 		};
 
-		class TypeInfo
+		class Base
 		{
-		protected:
-			const char*		m_TypeName;
-			int				m_GlobalListIndex;
-			int				field_C;
-			int				field_10;
-			int*			field_14;	//	NOTE: result of scalar destructor call is written here. Why?
-			int				m_Id;
-			List<String>	m_ExtensionList;
+		private:
+			class TypeInfo* (__cdecl* m_Creator)();
+			String			m_ResourceTypeName;
+			class TypeInfo*		m_ActualResourceType;
+			int				field_18;
+			List<String>	m_ResourceExtensionsList;
+			char			field_2C;
+			char			field_2D;
+			unsigned int	m_Alignment[3];
 
 		public:
-			TypeInfo(const char* _typename, void* (*creator)());	//	@852440
-			virtual ~TypeInfo()
-			{
-				MESSAGE_CLASS_DESTROYED(TypeInfo);
+			Base(const char* type, void* (* creator)());	//	@852440
 
-				m_ExtensionList.Erase();
-			}
+			void			SetResourceAlignment(unsigned int size, unsigned int index);	//	@852160
 
-			virtual void*	GetInstancePtr() = 0;
-			virtual char	_851400(char unk1, int unk2, int unk3);	//	@851400
-			virtual int		_851E80();	//	@851E80
-			virtual void	_853720(int unk1);	//	@853720
-			virtual String* GetResourceDirectory(String* outDir, ePlatform platform);	//	@851EC0
-			virtual void	stub7(int unk);
-			virtual char	stub8();
-			virtual int		_851EA0();	//	@851EA0
-			virtual String* stub10(String* outStr, int unk1);	//	@851DB0
-			virtual int		stub11(int unk1);	//	@883EC0
-			virtual void	ResetFields10_14();	//	@851E90
+			static unsigned int	ResourceAlignment[3];	//	@A3BE1C
 		};
 
-		class Texture : public TypeInfo
-		{
-		protected:
-			int				field_30;
-
-		public:
-			Texture() : TypeInfo(TYPERES_TEXTURE_NAME, CreateTextureResourceType)
-			{
-				MESSAGE_CLASS_CREATED(Texture);
-			}
-			~Texture();
-
-			static void* CreateTextureResourceType();
-		};
-
-		class Font : public TypeInfo
-		{
-		protected:
-
-		public:
-			Font() : TypeInfo(TYPERES_FONT_NAME, CreateFontResourceType)
-			{
-				MESSAGE_CLASS_CREATED(Font);
-			}
-			~Font();
-
-			static void* CreateFontResourceType();
-		};
-
-		//static Texture& Instance = *(Texture*)0xA3BE28;	//	@A3BE28
-		//static Font& Instance = *(Font*)0xA3BE48;	//	@A3BE48
-
-		static_assert(sizeof(TypeInfo) == TYPEINFO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TypeInfo));
-		//static_assert(sizeof(Texture) == TYPEINFO_TEXTURE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Texture));
-		//static_assert(sizeof(Font) == TYPEINFO_FONT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Font));
+		static_assert(sizeof(Base) == BASE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Base));
 	}
 }

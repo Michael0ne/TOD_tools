@@ -8,6 +8,7 @@ int& Scene::_A3DCD0 = *(int*)0xA3DCD0;
 int& Scene::_A3DCE4 = *(int*)0xA3DCE4;
 int& Scene::NewFrameNumber = *(int*)0xA3DCE0;
 bool& Scene::IsRewindBufferInUse = *(bool*)0xA1207C;
+Scene* tScene = nullptr;
 
 Scene::Scene() : Folder_()
 {
@@ -61,9 +62,11 @@ void Scene::Start()
 	_A3DCE4 = NULL;
 	NewFrameNumber = NULL;
 
-	int startScriptId = tBuiltin->GetMessageId("start");
-	if (startScriptId >= 0)
-		TriggerScriptForAllChildren(startScriptId, this, nullptr);
+	//	FIXME: this is stupid! Make something about it, like templated structure for passing parameters...
+	const char* params[] = { NULL, "start" };
+	tBuiltin->GetMessageId(params);
+	if ((int)params[0] >= 0)
+		TriggerScriptForAllChildren((int)params[0], this, nullptr);
 
 	_896810();
 	tSceneNode->_874940();
@@ -83,6 +86,50 @@ void Scene::Start()
 bool Scene::GameUpdate()
 {
 	return (*(bool (*)())0x93CEB0)();
+}
+
+//	TODO: implementation!
+void Scene::UpdateActiveCameraPosition()
+{
+
+}
+
+//	TODO: implementation!
+void Scene::EnumSceneCamerasAndUpdate()
+{
+
+}
+
+//	TODO: implementation!
+void Scene::UpdateLoadedBlocks(int unk1, Node* unk2)
+{
+	//	NOTE: this is potentially a method that updates current scenery objects.
+}
+
+//	TODO: implementation!
+void Scene::_896810()
+{
+
+}
+
+//	TODO: implementation!
+void Scene::AllocateRewindBuffer()
+{
+
+}
+
+//	TODO: implementation!
+void Scene::FreeRewindBuffer(char unk)
+{
+
+}
+
+//	TODO: implementation!
+void Scene::TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk)
+{
+	//TriggerGlobalScript(scriptId, unk);
+	//for (Node* children = sceneNode->m_FirstChild; children; children = children->m_NextSibling)
+		//TriggerScriptForAllChildren(scriptId, children, unk);
 }
 
 //	TODO: implementation!

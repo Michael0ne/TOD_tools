@@ -20,7 +20,7 @@ namespace Input {
 
 	Mouse::Mouse()
 	{
-		debug("Input::Mouse created at %X\n", this);
+		MESSAGE_CLASS_CREATED(Mouse);
 
 		m_nMouseButtons[MOUSE_BUTTON_0] = NULL;
 		m_nMouseButtons[MOUSE_BUTTON_1] = NULL;
@@ -42,7 +42,7 @@ namespace Input {
 		if (FAILED(m_pDInputDevice->SetDataFormat(&c_dfDIMouse)))
 			IncompatibleMachineParameterError(0, false);
 
-		if (FAILED(m_pDInputDevice->SetCooperativeLevel(Window::ms_Instance->m_hWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
+		if (FAILED(m_pDInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
 			IncompatibleMachineParameterError(0, false);
 
 		*(unsigned char*)&m_pBuffer = (unsigned char)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT, NULL, NULL);
@@ -66,14 +66,14 @@ namespace Input {
 
 		tagPOINT clientPos;
 		GetCursorPos(&clientPos);
-		ScreenToClient(Window::ms_Instance->m_hWindow, &clientPos);
+		ScreenToClient(g_Window->m_hWindow, &clientPos);
 
 		m_OldLocalPosition = clientPos;
 	}
 
 	Mouse::~Mouse()
 	{
-		debug("Input::Mouse destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Mouse);
 	}
 
 	void Mouse::_Acquire()
@@ -103,7 +103,7 @@ namespace Input {
 	void Mouse::SetWindowCapture(HWND window)
 	{
 		if (++field_44 == 1)
-			SetCapture(window ? window : Window::ms_Instance->m_hWindow);
+			SetCapture(window ? window : g_Window->m_hWindow);
 	}
 
 	void Mouse::ReleaseWindowCapture()
@@ -151,11 +151,11 @@ namespace Input {
 
 	void Mouse::Process()
 	{
-		m_bShouldBeProcessed = Window::ms_Instance->m_bVisible;
+		m_bShouldBeProcessed = g_Window->m_bVisible;
 
 		tagPOINT clientPos;
 		GetCursorPos(&clientPos);
-		ScreenToClient(Window::ms_Instance->m_hWindow, &clientPos);
+		ScreenToClient(g_Window->m_hWindow, &clientPos);
 		m_NewLocalPosition = clientPos;
 
 		if (m_bAcquired)
@@ -225,7 +225,7 @@ namespace Input {
 		if (buffSize <= 0)
 			return;
 
-		for (int ind = 0; ind < buffSize; ind++)
+		for (unsigned int ind = 0; ind < buffSize; ind++)
 			switch (m_pBuffer[ind]->dwOfs)
 			{
 			case 0:

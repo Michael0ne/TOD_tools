@@ -72,7 +72,7 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 		if (GetAsyncKeyState(VK_TAB) && g_Renderer->GetTime() > nLastKeyPress + nInterval) {
 
 			//	Do something!
-			Audio::g_StreamedSoundBuffers->Dump();
+			debug("Key pressed!\n");
 			
 			nLastKeyPress = (int)g_Renderer->GetTime() - nInterval;
 		}
@@ -92,16 +92,10 @@ void MemoryHook()
 	hook(0x40C9D0, &debug, PATCH_JUMP);
 
 	//	Apply reversed and implemented classes.
-	PATCH_ALLOCATORS();
 	PATCH_WINDOW();
-	PATCH_CONFIG();
-	PATCH_SOUND_MANAGER();
 	PATCH_STRING_BUFFER();
 	//PATCH_PERF();
 	PATCH_RENDERER();
-	PATCH_INPUT_MOUSE();
-	PATCH_INPUT_KEYBOARD();
-	PATCH_INPUT_GAMEPAD();
 }
 
 void MemoryUnHook()

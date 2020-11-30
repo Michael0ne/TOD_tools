@@ -176,6 +176,6 @@ public:
 	static void		TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk);	//	@892F10
 };
 
-static Scene* tScene;
+extern Scene* tScene;
 
 static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Scene));

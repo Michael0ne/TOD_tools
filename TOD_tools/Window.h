@@ -81,32 +81,12 @@ public:
 	void						_CreateWindow(UINT16 nIconResourceId);	//	@43C2C0
 	void						Process(bool (*GameLoop)(void));	//	@43C4A0
 	ATOM						RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId);	//	@43C570
-	void						Init(const char* wndClassName, int unkFlags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId);	//	@43C630
 	BOOL						_SetTitle(LPCSTR lpString);	//	@43C850
 	void						SetDesktopDirectory(const char* szDesktopPath);	//	@43C8B0
 
 public:
-	Window() {
-		MESSAGE_CLASS_CREATED(Window);
-
-		m_sWindowTitle = String();
-		m_sUserDesktopPath = String();
-		m_pMenuItemClickedCallback = nullptr;
-		m_hWindow = NULL;
-		m_unkFlags = 0;						//	Some unknown flags. TODO: Needs to be union {}.
-		m_bVisible = false;
-		m_bCursorReleased = false;
-		m_bQuitRequested = false;
-		m_hCursor = NULL;
-		m_unkInt9 = 0;
-		m_unkInt10 = 0;
-		m_nWindowLeft = 0;
-		m_nWindowTop = 0;
-	}
-	~Window()
-	{
-		MESSAGE_CLASS_DESTROYED(Window);
-	}
+	Window(const char* wndClassName, int unkFlags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId);	//	@43C630
+	~Window();
 
 	void* operator new(size_t size)
 	{
@@ -117,8 +97,6 @@ public:
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
 	}
-
-	static Window*	ms_Instance;
 };
 
 extern Window* g_Window;

@@ -26,20 +26,17 @@ protected:
 	List<Builtin_Handler> m_HandlersList;
 	int field_88;
 	int field_8C;
-	int field_90;
+	int* field_90;
 	int field_94;
 
 public:
 	Builtin();	//	@486D00
-	~Builtin()
-	{
-		MESSAGE_CLASS_DESTROYED(Builtin);
-	}
+	~Builtin();
 
 	void	RegisterHandler(const char* handlerProto, void* handler, const char* handlerName);	//	@486430
 	void	RegisterMember(ScriptTypes::ScriptType* returnType, const char* memberName, void* memberProc, int unk1, const char* memberProto, const char* unk2);	//	@486D90
 
-	int		GetMessageId(const char* msg);
+	void	GetMessageId(void* params);	//	@488040
 
 	void* operator new(size_t size)
 	{
@@ -50,6 +47,8 @@ public:
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
 	}
+
+	static int GetMessageId_Impl(const char* msg);	//	@872410
 
 	static const Vector4f& ZeroVector;
 	static const Vector4f& RightVector;
@@ -62,6 +61,6 @@ public:
 	static const Vector4f& UnkColor;
 };
 
-static Builtin* tBuiltin;
+extern Builtin* tBuiltin;
 
 static_assert(sizeof(Builtin) == BUILTIN_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Builtin));
