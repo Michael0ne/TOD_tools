@@ -156,8 +156,8 @@ private:
 public:
 	Scene();	//	@896D40
 
-	static int&		_A3DCCC;	//	@A3DCCC
-	static int&		GameTime;	//	@A3DCD4
+	static int&		RealTimeMs;	//	@A3DCCC
+	static int&		GameTimeMs;	//	@A3DCD4
 	static int&		_A3DCD0;	//	@A3DCD0
 	static int&		_A3DCE4;	//	@A3DCE4
 	static int&		NewFrameNumber;	//	@A3DCE0

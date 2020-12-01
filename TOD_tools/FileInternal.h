@@ -20,6 +20,7 @@ protected:
 	char			m_ExecuteAttribute;
 	File*			m_File;
 
+public:
 	virtual void	scalar_destructor(bool freememory);	//	@41A030
 	virtual bool	WriteBuffers();	//	@417D20
 	virtual int		_vsnprintf(const char* format, ...);	//	@42EFC0
@@ -40,7 +41,6 @@ protected:
 	virtual char	ReadBlockIfFailed();	//	@417850
 	virtual File*	GetFileHandle();	//	@419C40
 
-public:
 	FileInternal(const char* fileName, unsigned int dwDesiredAccess, bool createIfNotFound);	//	@418E30
 	~FileInternal();	//	@417E20
 

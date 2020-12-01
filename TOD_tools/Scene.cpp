@@ -2,8 +2,8 @@
 #include "SceneNode.h"
 #include "Builtin.h"
 
-int& Scene::_A3DCCC = *(int*)0xA3DCCC;
-int& Scene::GameTime = *(int*)0xA3DCD4;
+int& Scene::RealTimeMs = *(int*)0xA3DCCC;
+int& Scene::GameTimeMs = *(int*)0xA3DCD4;
 int& Scene::_A3DCD0 = *(int*)0xA3DCD0;
 int& Scene::_A3DCE4 = *(int*)0xA3DCE4;
 int& Scene::NewFrameNumber = *(int*)0xA3DCE0;
@@ -56,8 +56,8 @@ void Scene::Start()
 	m_PlayMode = 0;
 	UpdateLoadedBlocks(1, 0);
 	EnumSceneCamerasAndUpdate();
-	_A3DCCC = NULL;
-	GameTime = NULL;
+	RealTimeMs = NULL;
+	GameTimeMs = NULL;
 	_A3DCD0 = NULL;
 	_A3DCE4 = NULL;
 	NewFrameNumber = NULL;

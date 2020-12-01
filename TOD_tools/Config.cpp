@@ -18,6 +18,7 @@
 #include "Progress.h"
 #include "RenderBuffer.h"
 #include "SavesDirectoriesInformation.h"
+#include "LogDump.h"
 
 String Script::Filesystem = String();
 String Script::ControlType = String();
@@ -168,11 +169,8 @@ namespace GameConfig
 		field_54 = 0;
 
 		//	If log dump file is here - open it.
-		//	TODO: implementation!
 		if (m_pConfigurationVariables->IsVariableSet("logdumpfile")) {
-			void(__cdecl* _OpenLogDumpFile)(const char* szLogFilename) = (void(__cdecl*)(const char*))0x40CA80;
-
-			_OpenLogDumpFile(m_pConfigurationVariables->GetParamValueString("logdumpfile").m_szString);
+			LogDump::OpenLogDump(m_pConfigurationVariables->GetParamValueString("logdumpfile").m_szString);
 		}
 
 		//	If we have 'profile.txt' available, check directory mappings and other stuff.

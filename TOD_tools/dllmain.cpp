@@ -1,8 +1,6 @@
-#include "stdafx.h"
-
 #include "Renderer.h"
 #include "StreamedSoundBuffers.h"
-#include "MemoryAllocators.h"
+#include "LogDump.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -88,8 +86,8 @@ void MemoryHook()
 	//	Insert all hooks here.
 
 	//	Redirect all logs into our file.
-	//	TODO: this replaces calls to 'log' function. Calls to 'PrintNewFrameInfo' and 'OutputDebugString' should also be hooked.
-	hook(0x40C9D0, &debug, PATCH_JUMP);
+	hook(0x40C9D0, &LogDump::LogA, PATCH_JUMP);
+	hook(0x40C9F0, &LogDump::Print_Impl, PATCH_JUMP);
 
 	//	Apply reversed and implemented classes.
 	PATCH_WINDOW();
