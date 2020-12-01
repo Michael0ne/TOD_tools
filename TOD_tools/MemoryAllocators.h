@@ -6,6 +6,7 @@
 
 class Allocator
 {
+	friend class DefragmentatorBase;
 	friend class Defragmentator;
 	friend class Allocators;
 protected:
@@ -240,35 +241,54 @@ public:
 
 #define DEFRAGMENTATOR_CLASS_SIZE 52
 
-class Defragmentator
+class DefragmentatorBase
 {
 	friend class Allocators;
 protected:
 	BestFitAllocator* m_DefragmentAllocator;
 	BestFitAllocator* m_DefragmentAllocator_1;;
 	int m_Size;
-	void* m_AllocatedSpace;
+	struct Defragmentator_Space {
+		unsigned int m_Flags;
+		void* m_SpacePtr;
+		int field_8;
+	} *m_AllocatedSpace;
 	int field_14;
 	int field_18;
 	int field_1C;
 	char field_20;
-	int field_24;
+	int m_DefragmentBeginTimeMs;
 	int field_28;
 	char field_2C;
 	int field_30;
 
-	virtual void	_47BDD0(int unk);	//	@47BDD0
-	virtual void	_47BE60(int unk1, int unk2, int unk3, int unk4, int unk5, char unk6, int unk7);	//	@47BE60
-	virtual int		_47BF20(int unk1, int unk2, const char* unk3, int unk4, int unk5);	//	@47BF20
-	virtual bool	_47BD20(int unk1, int unk2);	//	@47BD20
-	virtual void	_47BDB0(int unk1);	//	@47BDB0
+	//	NOTE: base class VMT at 0x9B7E84.
+	virtual void	_47BE60(int unk1, int allocsize, int unk3, int unk4, int unk5, int allocalign, int unk7) {};	//	@47BE60
+	virtual int		_47BF20(int unk1, int ind, const char* unk3, int unk4, int size) { return NULL; };	//	@47BF20
+	virtual bool	_47BD20(int unk1, int unk2) { return false; };	//	@47BD20
+	virtual void	_47BDB0(int unk1) {};	//	@47BDB0
 	virtual int		_4783F0(int unk1);	//	@4783F0
-	virtual void	nullsub_1();
-	virtual void	nullsub_2();
+	virtual void	nullsub_1() {};
+	virtual void	nullsub_2() {};
 
 public:
-	Defragmentator();
-	Defragmentator(BestFitAllocator* bestfitallocator, char unk1, int size);	//	@47BBD0
+	DefragmentatorBase(BestFitAllocator* bestfitallocator, char unk1, int size);	//	@47BBD0
+	DefragmentatorBase() {};	//	NOTE: only needed for correct compilation.
+	~DefragmentatorBase();	//	@47BDD0
+};
+
+class Defragmentator : public DefragmentatorBase
+{
+public:
+	//	NOTE: this class VMT is at 0x9B7650.
+	virtual void	_47BE60(int unk1, int unk2, int unk3, int unk4, int unk5, char unk6, int unk7) {};	//	@47AE80
+	virtual int		_47BF20(int unk1, int unk2, const char* unk3, int unk4, int unk5) { return NULL; };	//	@47AEF0
+	virtual bool	_47BD20(int unk1, int unk2) { return false; };	//	@47BD20
+	virtual void	_47BDB0(int unk1) {};	//	@47AFE0
+	virtual void	nullsub_2() {};	//	@47AE70	//	NOTE: this one is defined, but empty still.
+
+	inline Defragmentator(BestFitAllocator* bestfitallocator, char unk1, int size);
+	Defragmentator() {};	//	NOTE: only needed for correct compilation.
 };
 
 #define SINGLETONSUBALLOCATOR_CLASS_SIZE 44
@@ -349,16 +369,16 @@ public:
 	static void				ReleaseMemory(void* ptr, bool aligned);	//	@4778D0
 	static Allocator*		GetAllocatorByMemoryPointer(void* ptr);	//	@4777B0
 
-	static	RTL_CRITICAL_SECTION&	AllocatorsCriticalSection;	//	@A3AFA0
-	static	int&			_A3AFB8;	//	@A3AFB8
-	static	bool&			Released;	//	@A3AFBC
+	static	RTL_CRITICAL_SECTION	AllocatorsCriticalSection;	//	@A3AFA0
+	static	int				_A3AFB8;	//	@A3AFB8
+	static	bool			Released;	//	@A3AFBC
 	static	Allocator*		AllocatorsList[TOTAL];	//	@A3AFC0
-	static	Allocator_Struct2*	_A3AFE8[22];	//	@A3AFE8
+	static	Allocator_Struct2	_A3AFE8[22];	//	@A3AFE8
 	static	Allocator*		_A3AFEC[TOTAL];	//	@A3AFEC
-	static	int&			TotalAllocators;	//	@A3B098
+	static	int				TotalAllocators;	//	@A3B098
 	static	void*			BufferPtr;	//	@A3B09C
 	static	void*			BuffersPtr[TOTAL];	//	@A3B0A0
-	static	float&			_A3B0C8;	//	@A3B0C8
+	static	float			_A3B0C8;	//	@A3B0C8
 };
 
 extern Allocators g_Allocators;	//	@A3B0CC

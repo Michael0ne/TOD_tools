@@ -1,5 +1,8 @@
 #include "Progress.h"
 
+Progress* g_Progress = nullptr;
+ProgressBase* g_ProgressBase = nullptr;
+
 //	TODO: implementation!
 void Progress::UpdateProgress(float time, bool)
 {

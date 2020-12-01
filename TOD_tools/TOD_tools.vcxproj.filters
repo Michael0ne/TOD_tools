@@ -478,9 +478,6 @@
     <ClCompile Include="Progress.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="Progress.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="GfxInternal_Dx9_Texture.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
@@ -687,6 +684,9 @@
     </ClCompile>
     <ClCompile Include="RenderBuffer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Progress.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
