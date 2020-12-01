@@ -45,7 +45,7 @@ namespace Input {
 		if (FAILED(m_pDInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
 			IncompatibleMachineParameterError(0, false);
 
-		*(unsigned char*)&m_pBuffer = (unsigned char)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT, NULL, NULL);
+		*(int*)&m_pBuffer = (int)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT, NULL, NULL);
 		memset(m_pBuffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT);
 
 		m_nBufferSize = NULL;

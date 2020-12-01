@@ -25,7 +25,8 @@ public:
 
 		m_pEmpty = NULL;
 
-		strcpy_s(m_szString, m_nLength, str);
+		//strcpy_s(m_szString, m_nLength, str);
+		strcpy(m_szString, str);
 	}
 
 	String(const String* rhs)

@@ -63,8 +63,8 @@ public:
 	}
 };
 
-static Progress* g_Progress = nullptr;	//	@A3D7D0
-static ProgressBase* g_ProgressBase = nullptr;	//	@A35B88
+extern Progress* g_Progress;	//	@A3D7D0
+extern ProgressBase* g_ProgressBase;	//	@A35B88
 
 static_assert(sizeof(ProgressBase) == PROGRESS_BASE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ProgressBase));
 static_assert(sizeof(Progress) == PROGRESS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Progress));
