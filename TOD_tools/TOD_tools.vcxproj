@@ -164,6 +164,7 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="LoadScreenInfo.h" />
+    <ClInclude Include="LogDump.h" />
     <ClInclude Include="MemoryCards.h" />
     <ClInclude Include="MockupBox.h" />
     <ClInclude Include="Model.h" />
@@ -179,7 +180,7 @@
     <ClInclude Include="Placeholder.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="ProfilerInput.h" />
-	<ClInclude Include="Progress.h" />
+    <ClInclude Include="Progress.h" />
     <ClInclude Include="radbase.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="RealtimeFolder.h" />
@@ -271,6 +272,7 @@
     <ClCompile Include="List.cpp" />
     <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="LoadScreenInfo.cpp" />
+    <ClCompile Include="LogDump.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
     <ClCompile Include="MockupBox.cpp" />
     <ClCompile Include="Model.cpp" />

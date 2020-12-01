@@ -1,10 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
-#include "Types.h"
-
-#include "MemoryAllocators.h"
-#include "StringsPool.h"
 #include "ScriptTypes.h"
 
 #define ENTITY_CLASS_SIZE 36

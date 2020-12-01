@@ -377,6 +377,12 @@
     <ClInclude Include="RenderBuffer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Progress.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogDump.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -474,9 +480,6 @@
     </ClCompile>
     <ClCompile Include="FileInternal.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Progress.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="GfxInternal_Dx9_Texture.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
@@ -687,6 +690,9 @@
     </ClCompile>
     <ClCompile Include="Progress.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="LogDump.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
