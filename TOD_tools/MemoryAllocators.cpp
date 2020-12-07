@@ -16,6 +16,9 @@ void Allocator::RetrieveSystemAllocators()
 {
 	m_SystemAllocators = (SystemAllocators*)malloc(sizeof(SystemAllocators));
 
+	if (!m_SystemAllocators)
+		return;
+
 	m_SystemAllocators->_malloc = malloc;
 	m_SystemAllocators->_free = free;
 }
@@ -626,44 +629,42 @@ void Allocators::InitAllocator(Allocator* _alloc, int _allocindex, const char* _
 void Allocators::_4776A0()
 {
 	TotalAllocators = 0;
-	unsigned int v1;
-	int v2;
 	unsigned char v19[12];
 	memset(v19, NULL, sizeof(v19));
 	void* v0 = nullptr;
 
 	for (int ind = DEFRAGMENTING; ind != 1; ind--)
 	{
-		v1 = -1;
-		v2 = -1;
+		void* v1 = (void*)-1;
+		int v2 = -1;
 		for (int currallocator = 1; currallocator < TOTAL; currallocator++)
 		{
 			void* v4 = AllocatorsList[currallocator]->GetAllocatedSpacePtr();
-			if (!v19[currallocator] && (unsigned int)v4 < v1)
+			if (!v19[currallocator] && v4 < v1)
 			{
-				v1 = (int)v4;
+				v1 = v4;
 				v2 = currallocator;
 			}
 		}
 
-		if ((v1 > (((int)v0 + 7) & 0xFFFFFFF8)) && (v1 != (((int)v0 + 7) & 0xFFFFFFF8)))
+		if (!(((unsigned int)v1 < (((unsigned int)v0 + 7) & 0xFFFFFFF8))) && ((unsigned int)v1 != (((unsigned int)v0 + 7) & 0xFFFFFFF8)))
 		{
-			_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
-			_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
+			_A3AFE8[TotalAllocators + 1].m_AllocatedSpacePtr = v0;
+			_A3AFE8[TotalAllocators + 1].m_Allocator = AllocatorsList[DEFAULT];
 			TotalAllocators++;
 		}
 
-		_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = AllocatorsList[v2]->GetAllocatedSpacePtr();
-		_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[v2];
+		_A3AFE8[TotalAllocators + 1].m_AllocatedSpacePtr = AllocatorsList[v2]->GetAllocatedSpacePtr();
+		_A3AFE8[TotalAllocators + 1].m_Allocator = AllocatorsList[v2];
 		TotalAllocators++;
 
-		v0 = (void*)((int)AllocatorsList[v2]->GetAllocatedSpacePtr() + AllocatorsList[v2]->GetAllocatedSpaceSize());
+		v0 = (void*)((unsigned int)AllocatorsList[v2]->GetAllocatedSpacePtr() + AllocatorsList[v2]->GetAllocatedSpaceSize());
 
 		v19[v2] = 1;
 	}
 
-	_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
-	_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
+	_A3AFE8[TotalAllocators + 1].m_AllocatedSpacePtr = v0;
+	_A3AFE8[TotalAllocators + 1].m_Allocator = AllocatorsList[DEFAULT];
 	TotalAllocators++;
 }
 
@@ -675,7 +676,7 @@ Allocators::Allocators()
 
 	ALLOCATOR_DEFAULT.m_AllocatorName = "ALLOCATOR_DEFAULT";
 	ALLOCATOR_DEFAULT.field_20 = NULL;
-	ALLOCATOR_DEFAULT.m_AllocatorIndex = ALLOCATOR_INDEX::DEFAULT;
+	ALLOCATOR_DEFAULT.m_AllocatorIndex = DEFAULT;
 
 	AllocatorsList[DEFAULT] = &ALLOCATOR_DEFAULT;
 	AllocatorsList[MAIN_ASSETS] = nullptr;
@@ -688,7 +689,6 @@ Allocators::Allocators()
 	AllocatorsList[COLLISION_CACHE_ENTRIES] = nullptr;
 	AllocatorsList[DEFRAGMENTING] = nullptr;
 
-	BuffersPtr[DEFAULT] = &ALLOCATOR_DEFAULT;
 	BuffersPtr[MAIN_ASSETS] = nullptr;
 	BuffersPtr[MISSION_ASSETS] = nullptr;
 	BuffersPtr[CUTSCENE_OR_REWIND] = nullptr;
@@ -699,13 +699,17 @@ Allocators::Allocators()
 	BuffersPtr[COLLISION_CACHE_ENTRIES] = nullptr;
 	BuffersPtr[DEFRAGMENTING] = nullptr;
 
-	BufferPtr = malloc(1024);
+	BufferPtr = malloc(ALLOCATORS_BUFFER_SIZE);
 
 	CreateAllocators();
 
 	_A3AFB8 = 0xABCDEF;
 
 	InitializeCriticalSection(&AllocatorsCriticalSection);
+
+	memcpy((void*)0xA3B0CC, &g_Allocators, sizeof(Allocators));
+	memcpy((void*)0xA3AFC0, &AllocatorsList, sizeof(int) * TOTAL);
+	memcpy((void*)0xA3AFE8, &_A3AFE8, sizeof(Allocator_Struct2) * 22);
 }
 
 Allocators::~Allocators()
@@ -722,7 +726,6 @@ Allocators::~Allocators()
 	Released = true;
 }
 
-//	NOTE: this is an abstract function to free memory by pointer using according allocator method.
 void Allocators::ReleaseMemory(void* ptr, bool aligned)
 {
 	if (Released)
@@ -730,20 +733,21 @@ void Allocators::ReleaseMemory(void* ptr, bool aligned)
 
 	EnterCriticalSection(&AllocatorsCriticalSection);
 
-	int allocInd = TotalAllocators - 1;
-	void* _alloc = nullptr;
-
-	if (ptr < AllocatorsList[TotalAllocators]->field_1C)
+	//	NOTE: figure out which allocator has allocated this memory and use it's method to free memory.
+	int ind = TotalAllocators - 1;
+	void* _allocspace = nullptr;
+	if (ptr < _A3AFE8[TotalAllocators].m_AllocatedSpacePtr)
 	{
-		do {
-			_alloc = AllocatorsList[allocInd--]->field_1C;
-		} while (ptr < _alloc);
+		do 
+		{
+			_allocspace = _A3AFE8[ind--].m_AllocatedSpacePtr;
+		} while (ptr < _allocspace);
 	}
 
 	if (aligned)
-		_A3AFE8[allocInd].m_Allocator->FreeAligned(ptr);
+		_A3AFE8[ind + 1].m_Allocator->FreeAligned(ptr);
 	else
-		_A3AFE8[allocInd].m_Allocator->Free(ptr);
+		_A3AFE8[ind + 1].m_Allocator->Free(ptr);
 
 	LeaveCriticalSection(&AllocatorsCriticalSection);
 }
@@ -751,11 +755,17 @@ void Allocators::ReleaseMemory(void* ptr, bool aligned)
 Allocator* Allocators::GetAllocatorByMemoryPointer(void* ptr)
 {
 	int allocInd = TotalAllocators - 1;
+	void* _spaceptr = nullptr;
 
-	if (ptr < AllocatorsList[TotalAllocators]->field_1C)
-		while (ptr < AllocatorsList[allocInd--]->field_1C);
+	if (ptr < _A3AFE8[TotalAllocators].m_AllocatedSpacePtr)
+	{
+		do
+		{
+			_spaceptr = _A3AFE8[allocInd--].m_AllocatedSpacePtr;
+		} while (ptr < _spaceptr);
+	}
 
-	return _A3AFE8[allocInd].m_Allocator;
+	return _A3AFE8[allocInd + 1].m_Allocator;
 }
 
 int DefragmentatorBase::_4783F0(int unk1)

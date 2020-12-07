@@ -98,5 +98,4 @@ extern void debug (char * message, ...);
 
 //	Each class applies it's patches in .cpp file, to be called in dllmain.cpp.
 extern inline void PATCH_WINDOW();
-extern inline void PATCH_STRING_BUFFER();
 extern inline void PATCH_RENDERER();

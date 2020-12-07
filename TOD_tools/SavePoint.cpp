@@ -20,7 +20,7 @@ SavePoint::~SavePoint()
 
 	if (m_pSaveFileHandle) {
 		--ms_FilesOpen;
-		m_pSaveFileHandle->scalar_destructor(true);
+		delete m_pSaveFileHandle;
 		m_pSaveFileHandle = nullptr;
 	}
 

@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Globals.h"
 
-FileInternal* LogDumpFile = nullptr;
+File* LogDumpFile = nullptr;
 int LogDump::OldFrameNumber = -1;
 
 void LogDump::OpenLogDump(const char* path)
@@ -10,7 +10,7 @@ void LogDump::OpenLogDump(const char* path)
 	if (LogDumpFile)
 		delete LogDumpFile;
 
-	LogDumpFile = new FileInternal(path, 66, true);
+	LogDumpFile = new File(path, 66, true);
 
 	if (LogDumpFile->IsFileOpen())
 		return;

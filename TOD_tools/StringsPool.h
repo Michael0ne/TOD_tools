@@ -2,112 +2,64 @@
 
 #include "MemoryAllocators.h"
 
-class String {
-public:
 #define STRING_BITMASK_DEFAULT	0x80000000
 #define STRING_BITMASK_SHORT	0x80000004
+#define STRING_BITMASK_ONLY_SIZE 0x7FFFFFFF
 
-	int		m_nLength;		//	String length, including null terminator.
-	char*	m_szString;		//	Actual string ptr.
-	unsigned int	m_nBitMask;		//	Bit mask, also contains string's length.
-	char	m_pEmpty;		//	Default empty string.
+class String
+{
+public:
+	int				m_nLength;
+	char*			m_szString;
+	unsigned int	m_nBitMask;
+	char			m_pEmpty;
 
 	inline String() :
-		m_nLength(0), m_szString(&m_pEmpty), m_nBitMask(0x80000000), m_pEmpty(NULL)
+		m_nLength(0), m_szString(&m_pEmpty), m_nBitMask(STRING_BITMASK_DEFAULT), m_pEmpty(NULL)
 	{}
 
-	String(const char* str)
-	{
-		m_nLength = strlen(str);
-		m_nBitMask = (STRING_BITMASK_DEFAULT ^ (m_nLength + (m_nLength >> 2))) & 0x7FFFFFFF ^ STRING_BITMASK_DEFAULT;
-
-		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & 0x7FFFFFFF, NULL, NULL);
-
-		m_pEmpty = NULL;
-
-		//strcpy_s(m_szString, m_nLength, str);
-		strcpy(m_szString, str);
-	}
-
-	String(const String* rhs)
-	{
-		m_nLength = rhs->m_nLength;
-		m_nBitMask = rhs->m_nBitMask;
-		m_pEmpty = NULL;
-		m_szString = &m_pEmpty;
-
-		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & 0x7FFFFFFF, NULL, NULL);
-
-		strcpy_s(m_szString, m_nLength, rhs->m_szString);
-	}
-
-	//	Override assignment operator, when rvalue is String object.
-	void operator=(const String& _r)
-	{
-		if (m_szString != &m_pEmpty && m_nBitMask < 0)
-			Allocators::ReleaseMemory(m_szString, 0);
-
-		m_nLength = _r.m_nLength;
-		m_nBitMask = _r.m_nBitMask;
-		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & 0x7FFFFFFF, NULL, NULL);
-		m_pEmpty = NULL;
-
-		strcpy(m_szString, _r.m_szString);
-	}
-
+	String(const char* str);
+	String(const String& rhs);
 	inline ~String()
 	{
-		if (m_szString != &m_pEmpty && m_nBitMask & 0x80000000)
+		if (m_szString != &m_pEmpty && (m_nBitMask & STRING_BITMASK_DEFAULT) != NULL)
 			Allocators::ReleaseMemory(m_szString, 0);
 
 		m_szString = &m_pEmpty;
 		m_nLength = 0;
-		m_nBitMask &= 0x80000000;
+		m_nBitMask &= STRING_BITMASK_DEFAULT;
 		m_pEmpty = NULL;
 	}
 
-	//	NOTE: used when String object passed by reference.
-	void Set(const char* str);
+	void operator=(const String& _r);
 
-	void Append(const char* str);
-
-	inline void ToLowerCase()
+	void			Set(const char* str);
+	void			Append(const char* str);
+	void			Format(const char* format, ...);	//	@415300	NOTE: adapted to be String's class method.
+	bool			Equal(const char* _str);	//	@40FE30
+	String*			Substring(String* outStr, int posStart, int length);	//	@409E90
+	inline void		ConvertBackslashes()
+	{
+		Replace('\\', '/');
+	}
+	inline void		ToLowerCase()
 	{
 		char* s_ = m_szString;
 		while (*(s_++))
 			if (*s_ >= 65 && *s_ <= 90)
 				*s_ += 32;
 	}
-
-	bool Equal(const char* _str);	//	@40FE30
-
-	static bool EqualIgnoreCase(const char* str1, const char* str2, unsigned int len);	//	@4177C0
-
-	String* Substring(String* outStr, int posStart, int length);	//	@409E90
-
-	inline void	ConvertBackslashes()	//	Always used as inlined function.
+	inline void		Replace(char oldChar, char newChar)
 	{
-		char* strPtr = m_szString;
-		while (*(strPtr++))
-			if (*strPtr == '\\')
-				*strPtr = '/';
+		for (int ind = NULL; ind != m_nLength; ind++)
+			if (m_szString[ind] == oldChar)
+				m_szString[ind] = newChar;
 	}
 
-	void Format(const char* format, ...);	//	@415300	NOTE: adapted to be String's class method.
+	static bool		EqualIgnoreCase(const char* str1, const char* str2, unsigned int len);	//	@4177C0
 
 private:
-
-	void _AllocateSpaceForString()
-	{
-		void(__thiscall * _AllocString)(String * _this) = (void(__thiscall*)(String*))0x4056E0;
-
-		_AllocString(this);
-	}
-
-	void _AdjustBufferSize()
-	{
-		void(__thiscall * _AdjBufSize)(String * _this) = (void(__thiscall*)(String*))0x405610;
-
-		_AdjBufSize(this);
-	}
+	void			AllocateSpaceForString();	//	@4056E0
+	void			AdjustBufferSize();	//	@405610
+	void			AllocateSpaceIfLong();	//	@405590
 };

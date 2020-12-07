@@ -1,5 +1,7 @@
 #include "EditorCamera.h"
 
+EditorCamera* tEditorCamera = nullptr;
+
 EditorCamera::EditorCamera()
 {
 	MESSAGE_CLASS_CREATED(EditorCamera);

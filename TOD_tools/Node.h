@@ -15,7 +15,7 @@
 //	NOTE: this is actual base class for game 'entities'.
 class Node : public Entity
 {
-protected:
+public:
 	void* lpPositionVtable;	//	NOTE: is Position class virtual methods only?
 	unsigned int m_Flags;
 	int field_2C;	//	NOTE: it looks like short[2].

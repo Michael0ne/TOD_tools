@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "SceneNode.h"
 #include "Builtin.h"
+#include "LogDump.h"
+#include "Performance.h"
 
 int& Scene::RealTimeMs = *(int*)0xA3DCCC;
 int& Scene::GameTimeMs = *(int*)0xA3DCD4;
@@ -80,6 +82,26 @@ void Scene::Start()
 	m_RewindResumeTimeMs = NULL;
 	_A3DCE4 = NULL;
 	NewFrameNumber = NULL;
+}
+
+//	TODO: implementation!
+void Scene::Load(const char* sceneName)
+{
+	(*(void(__thiscall*)(Scene*, const char*))0x8980C0)(this, sceneName);
+}
+
+void Scene::RefreshChildNodes()
+{
+	RefreshQuadTree();
+	//	TODO: is type cast correct?
+	for (Scene* child = (Scene*)m_FirstChild; child; child = (Scene*)child->m_NextSibling)
+		child->RefreshChildNodes();
+}
+
+void Scene::FinishCreation(const char* logTitle)
+{
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", logTitle, Performance::GetMilliseconds() - m_TimeMs, Performance::GetMilliseconds() - m_nLoadTime[1]);
+	m_TimeMs = Performance::GetMilliseconds();
 }
 
 //	TODO: implementation!

@@ -30,7 +30,7 @@ public:
 class ZipArch
 {
 public:
-	static bool			FindFile(const char* inPathStr, String* outPath, int* outZipSlot);		//	@41A500
+	static bool FindFile(const char* inPathStr, int* outPath, int* outZipSlot);		//	@41A500
 	
 	static String*		ZipNames[8];		//	@A085A8
 	static ZipSlotInfo* _A08628[8];			//	@A08628

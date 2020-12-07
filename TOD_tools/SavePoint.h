@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FileInternal.h"
+#include "File.h"
 #include "SavesDirectoriesInformation.h"
 
 #define SAVEPOINT_CLASS_SIZE 64
@@ -33,7 +33,7 @@ private:
 	SavesDirectoriesInformation* m_pSavesDirInfo;
 	String m_sSaveDir;
 	String m_sSlotId;
-	FileInternal* m_pSaveFileHandle;
+	File* m_pSaveFileHandle;
 	int m_nLastError;
 	String m_sSaveSlotDir;
 

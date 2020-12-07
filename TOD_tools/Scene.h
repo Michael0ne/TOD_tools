@@ -45,11 +45,13 @@ enum ePlayModes
 
 class Scene : public Folder_
 {
-private:
+protected:
 	int field_58;
 	int m_PlayMode;
+public:
 	class Camera* m_GameCamera;
 	class EditorCamera* m_EditorCamera;
+protected:
 	char m_QuadTreesAllocated;
 	class Camera* m_ActiveCamera;
 	int field_70;
@@ -84,9 +86,10 @@ private:
 	float m_TimeMultiplier;
 	float m_f118;
 	float m_RewindTimeMultiplier;
+public:
 	bool m_FixedFramerate;
-	char field_121[3];
 	float m_FixedFramerateVal;
+protected:
 	int field_128;
 	List<int> m_List_5;
 	List<int> m_List_6;
@@ -150,7 +153,9 @@ private:
 	Scene_Buffer* m_Buffer_1;
 	Scene_Buffer* m_Buffer_2;
 	int m_nLoadTime[2];
-	int m_nTimeMilliseconds;
+public:
+	int m_TimeMs;
+protected:
 	int field_268;
 
 public:
@@ -165,6 +170,9 @@ public:
 
 	void			SetFixedFramerate(float framerate);
 	void			Start();	//	@89A100
+	void			Load(const char* sceneName);	//	@8980C0
+	void			RefreshChildNodes();	//	@88C2B0
+	void			FinishCreation(const char* logTitle);	//	@8935F0
 	static bool		GameUpdate();	//	@93CEB0
 	void			UpdateActiveCameraPosition();	//	@893480
 	void			EnumSceneCamerasAndUpdate();	//	@893870

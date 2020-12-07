@@ -28,10 +28,10 @@ int& ZipArch::SlotId = *(int*)0xA35DDC;
  *	@outPath - Pass NULL pointer if this info is not needed.
  *	@result - if found anything, function returns true.
 */
-bool ZipArch::FindFile(const char* inPathStr, String* outPath, int* outZipSlot)
+bool ZipArch::FindFile(const char* inPathStr, int* outPath, int* outZipSlot)
 {
 	//	TODO: implementation!
-	return (*(bool (*)(const char*, String*, int*))0x41A500)(inPathStr, outPath, outZipSlot);
+	return (*(bool (*)(const char*, int*, int*))0x41A500)(inPathStr, outPath, outZipSlot);
 }
 
 String* ZipSlotInfo::_4198F0(const char* hashStr)

@@ -15,6 +15,10 @@ static FILTERKEYS* sFILTERKEYS = (FILTERKEYS*)0xA0918C;
 
 static LPCSTR& RegistryKey = *(LPCSTR*)0xA09178;
 
+static bool& GameDiscFound = *(bool*)0xA35E68;
+static String& WorkingDirectory = *(String*)0xA08FA0;
+static String& GameWorkingDirectory = *(String*)0xA08FB0;
+
 namespace Utils
 {
 	static bool(__cdecl* FindFileEverywhere)(const char* szPath) = (bool(__cdecl*)(const char*))0x4182A0;
