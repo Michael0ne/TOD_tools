@@ -91,8 +91,6 @@ void MemoryHook()
 
 	//	Apply reversed and implemented classes.
 	PATCH_WINDOW();
-	PATCH_STRING_BUFFER();
-	//PATCH_PERF();
 	PATCH_RENDERER();
 }
 

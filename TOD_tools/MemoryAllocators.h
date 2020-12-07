@@ -21,7 +21,9 @@ protected:
 	} *m_SystemAllocators;
 
 	const char*					m_AllocatorName;
+public:
 	unsigned int				m_AllocatorIndex;
+protected:
 	void*						field_1C;
 	char						field_20;
 	char						field_21;
@@ -31,11 +33,6 @@ protected:
 public:
 	Allocator();	//	@47AB30
 	~Allocator();
-
-	unsigned int				GetAllocatorIndex()
-	{
-		return m_AllocatorIndex;
-	}
 
 	virtual void				scalar_destructor(bool freeMemory);
 
@@ -305,8 +302,9 @@ public:
 };
 
 #define ALLOCATORS_CLASS_SIZE 1160
+#define ALLOCATORS_BUFFER_SIZE 1024
 
-enum ALLOCATOR_INDEX
+enum AllocatorIndex
 {
 	DEFAULT = 0,
 	MAIN_ASSETS = 1,
@@ -374,7 +372,6 @@ public:
 	static	bool			Released;	//	@A3AFBC
 	static	Allocator*		AllocatorsList[TOTAL];	//	@A3AFC0
 	static	Allocator_Struct2	_A3AFE8[22];	//	@A3AFE8
-	static	Allocator*		_A3AFEC[TOTAL];	//	@A3AFEC
 	static	int				TotalAllocators;	//	@A3B098
 	static	void*			BufferPtr;	//	@A3B09C
 	static	void*			BuffersPtr[TOTAL];	//	@A3B0A0

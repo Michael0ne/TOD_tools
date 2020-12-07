@@ -33,4 +33,6 @@ public:
 	EditorCamera();	//	@484B20
 };
 
+extern EditorCamera* tEditorCamera;	//	@A3B55C
+
 static_assert(sizeof(EditorCamera) == EDITORCAMERA_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(EditorCamera));

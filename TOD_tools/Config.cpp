@@ -19,6 +19,7 @@
 #include "RenderBuffer.h"
 #include "SavesDirectoriesInformation.h"
 #include "LogDump.h"
+#include "EditorCamera.h"
 
 String Script::Filesystem = String();
 String Script::ControlType = String();
@@ -526,13 +527,33 @@ namespace GameConfig
 
 		//	TODO: implementation! Scene is not initialized here!
 		if (m_pConfigurationVariables->IsVariableSet("fixedframerate"))
-			tScene->SetFixedFramerate(m_pConfigurationVariables->GetParamValueFloat("fixedframerate"));
+		{
+			tScene->m_FixedFramerate = true;
+			tScene->m_FixedFramerateVal = 1.0f / m_pConfigurationVariables->GetParamValueFloat("fixedframerate");
+		}
 
-		//	NOTE: Adjust cameras matricies if not in full screen?
-		//	Also, needs correct implementation.
 		if (!Script::Fullscreen)
 		{
-			//	TODO: update cameras here.
+			Camera* sceneCamera = (Camera*)tScene->m_FirstChild;
+			if (sceneCamera)
+			{
+				do
+				{
+					EditorCamera* editorCamera = (EditorCamera*)sceneCamera;
+					if (editorCamera)
+					{
+						while (tEditorCamera != editorCamera)
+						{
+							editorCamera = (EditorCamera*)editorCamera->m_Parent;
+							if (!editorCamera)
+								break;
+						}
+						tScene->m_GameCamera = sceneCamera;
+						tScene->UpdateActiveCameraPosition();
+					}
+					sceneCamera = (Camera*)sceneCamera->m_NextSibling;
+				} while (sceneCamera);
+			}
 		}
 
 		if (m_pConfigurationVariables->IsVariableSet("frame_console_marker"))
@@ -699,11 +720,9 @@ namespace GameConfig
 			delete g_InputMouse;
 
 		if (g_InputKeyboard)
-			//	g_InputKeyboard->Release();	//	@43AF20
 			delete g_InputKeyboard;
 
 		if (Input::Gamepad::GetGameControllerByIndex(0))
-			//	g_InputGamepad->Release();	//	@439D60
 			delete g_InputGamepad[0];
 
 		if (g_Renderer)
@@ -711,7 +730,6 @@ namespace GameConfig
 			delete g_Renderer;
 
 		if (g_Window) {
-			g_Window->Release();	//	@43C230
 			delete g_Window;
 		}
 
@@ -728,13 +746,126 @@ namespace GameConfig
 	//	TODO: implementation!
 	bool Config::OpenScene(const char* scene)
 	{
-		return (*(bool(__thiscall*)(Config*, const char*))0x93CE00)(this, scene);
+		tScene->GetScriptEntity()->CreateNode();
+		g_Blocks->SetSceneName(scene);
+		tScene->Load(scene);
+		tScene->UpdateLoadedBlocks(0, 0);
+		tScene->m_TimeMs = Performance::GetMilliseconds();
+		tScene->RefreshChildNodes();
+		tScene->FinishCreation("Scene instantiate all completed.");
+
+		return true;
 	}
 
 	//	TODO: implementation!
 	void Config::CreateUnknownMatricies()
 	{
 		
+	}
+
+	void Session_Variables::LoadVariablesFile(const char* file, int unk)
+	{
+		LogDump::LogA("Loading variable file '%s'...\n", file);	//	NOTE: actual EXE code doesn't have call to LogA, only sprintf.
+
+		File file_(file, 1, true);
+		ParseVariablesFile(&file_, unk);
+	}
+
+	//	TODO: implementation!
+	void Session_Variables::ParseVariablesFile(File* file, char unk)
+	{
+		(*(void(__thiscall*)(Session_Variables*, File*, char))0x411A30)(this, file, unk);
+
+		//file->WriteFromBuffer();
+		//int filesize = file->GetPosition();
+		//file->WriteBufferAndSetToStart();
+
+		//char* buffer = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(filesize + 1, NULL, NULL);
+		//int bytesread = file->Read(buffer, filesize);
+		//buffer[bytesread] = NULL;
+	}
+
+	Session_Variables::Session_Variables(int)
+	{
+		MESSAGE_CLASS_CREATED(Session_Variables);
+
+		field_0 = 0 | 0x80000000;
+		field_4 = 17 & 0xFF800000 | 0x800000;
+		field_8 = nullptr;
+		field_C = NULL;
+
+		field_10 = 0 | 0x80000000;
+		field_14 = 17 & 0xFF800000 | 0x800000;
+		field_18 = nullptr;
+		field_1C = NULL;
+
+		field_20 = 0 | 0x80000000;
+		field_24 = 17 & 0xFF800000 | 0x800000;
+		field_28 = nullptr;
+		field_2C = NULL;
+
+		field_30 = 0 | 0x80000000;
+		field_34 = 17 & 0xFF800000 | 0x800000;
+		field_38 = nullptr;
+		field_3C = NULL;
+
+		field_40 = 0 | 0x80000000;
+		field_44 = 17 & 0xFF800000 | 0x800000;
+		field_48 = nullptr;
+		field_4C = NULL;
+
+		field_50 = 0 | 0x80000000;
+		field_54 = 17 & 0xFF800000 | 0x800000;
+		field_58 = nullptr;
+		field_5C = NULL;
+
+		m_TotalVariables = NULL;
+		field_64 = NULL;
+	}
+
+	Session_Variables::Session_Variables(const char* file, int unk)
+	{
+		MESSAGE_CLASS_CREATED(Session_Variables);
+
+		field_0 = 0 | 0x80000000;
+		field_4 = 17 & 0xFF800000 | 0x800000;
+		field_8 = nullptr;
+		field_C = NULL;
+
+		field_10 = 0 | 0x80000000;
+		field_14 = 17 & 0xFF800000 | 0x800000;
+		field_18 = nullptr;
+		field_1C = NULL;
+
+		field_20 = 0 | 0x80000000;
+		field_24 = 17 & 0xFF800000 | 0x800000;
+		field_28 = nullptr;
+		field_2C = NULL;
+
+		field_30 = 0 | 0x80000000;
+		field_34 = 17 & 0xFF800000 | 0x800000;
+		field_38 = nullptr;
+		field_3C = NULL;
+
+		field_40 = 0 | 0x80000000;
+		field_44 = 17 & 0xFF800000 | 0x800000;
+		field_48 = nullptr;
+		field_4C = NULL;
+
+		field_50 = 0 | 0x80000000;
+		field_54 = 17 & 0xFF800000 | 0x800000;
+		field_58 = nullptr;
+		field_5C = NULL;
+
+		LoadVariablesFile(file, unk);
+	}
+
+	//	TODO: implementation!
+	Session_Variables::~Session_Variables()
+	{
+		MESSAGE_CLASS_DESTROYED(Session_Variables);
+
+		(*(void (__thiscall*)(Session_Variables*))0x4107B0)(this);
 	}
 
 	bool Session_Variables::IsVariableSet(const char* variableName)
@@ -932,7 +1063,7 @@ namespace GameConfig
 		if (!Utils::FindFileEverywhere("/FaceColl.mat"))
 			return;
 
-		FileInternal faceColFile("/FaceColl.mat", 1, true);
+		File faceColFile("/FaceColl.mat", 1, true);
 
 		if (!faceColFile.IsFileOpen())
 			return;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FileInternal.h"
+#include "File.h"
 
 #define LOGDUMP_BUFFER_SIZE 1024
 
@@ -17,4 +17,4 @@ public:
 	static int		OldFrameNumber;	//	@A0833C
 };
 
-extern FileInternal*	LogDumpFile;	//	@A35B84
+extern File*		LogDumpFile;	//	@A35B84

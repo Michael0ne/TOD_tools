@@ -8,6 +8,7 @@
 #include "StreamedSoundBuffers.h"
 #include "Performance.h"
 #include "Scene.h"
+#include "LogDump.h"
 
 Window* g_Window = NULL;
 
@@ -428,16 +429,6 @@ void SetAccessibilityFeatures(bool bCollect)
 	}
 }
 
-void Window::Release()
-{
-	if (m_hWindow)
-		DestroyWindow(m_hWindow);
-
-	SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
-	SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
-	SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
-}
-
 void Window::_CreateWindow(UINT16 nIconResourceId)
 {
 	DWORD windowStyle = (m_unkFlags & 1) != 0 ? WS_CAPTION | WS_MAXIMIZE : WS_CAPTION | WS_MINIMIZE;
@@ -635,6 +626,13 @@ Window::Window(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, 
 Window::~Window()
 {
 	MESSAGE_CLASS_DESTROYED(Window);
+
+	if (m_hWindow)
+		DestroyWindow(m_hWindow);
+
+	SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
+	SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
+	SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
 }
 
 BOOL Window::_SetTitle(LPCSTR lpString)
@@ -660,15 +658,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	//	NOTE: all bullshit related to finding already running game is removed!
 
-#ifdef INCLUDE_FIXES
-	//	NOTE: Patch to make game look for 'game disc' where actual game directory is.
-	patch(0x4392B0, 0x03f883, 3);	//	cmp eax, 5 --> cmp eax, 3	//	5 - cd/dvd, 3 - fixed media.
-
-	//	NOTE: Patch to change default adapter when creating D3D device.
-	patch(0x4511CE, 0x006a, 2);	//	push 0 --> push 1
-#endif
-
-	FindIdFile();
+	FindGameDir();
 
 	//	NOTE: InitialiseGame has been inlined! Originally at 93F680.
 	GameConfig::g_Config = new GameConfig::Config();
@@ -693,11 +683,134 @@ void GetUserDocumentsDir(String& outString)
 		outString.Set(pszPath);
 }
 
-void FindIdFile()
+void FindGameDir()
 {
-	void(__cdecl * _FindIdFile)() = (void(__cdecl*)())0x439230;
+	char currdir[1024];
+	memset(currdir, NULL, sizeof(currdir));
 
-	_FindIdFile();
+	GetCurrentDirectory(sizeof(currdir), currdir);
+	SetWorkingDir(currdir);
+	SetGameWorkingDir(currdir);
+	GameDiscFound = false;
+	SetErrorMode(SEM_FAILCRITICALERRORS);
+	char driveLetter = NULL;
+	char RootPathName[] = "\\:";
+
+	for (int drive = GetLogicalDrives(); drive; ++driveLetter)
+	{
+		if (drive & 1)
+		{
+			*(unsigned char*)&RootPathName = 'A' + driveLetter;
+#ifdef INCLUDE_FIXES
+			if (GetDriveType(RootPathName) == DRIVE_CDROM || GetDriveType(RootPathName) == DRIVE_FIXED)
+#else
+			if (GetDriveType(RootPathName) == DRIVE_CDROM)
+#endif
+			{
+				char buffer[64];
+				strcpy(buffer, RootPathName);
+				strcat(buffer, "\\Program Files\\Eidos\\Total Overdose\\TotalOverdose.exe");
+
+				LogDump::LogA("Found cd/dvd drive %s - looking for ID file '%s'\n", RootPathName, buffer);
+
+				if (GetFileAttributes(buffer) != -1)
+				{
+					memset(buffer, NULL, sizeof(buffer));
+					strcpy(buffer, RootPathName);
+					strcat(buffer, "/Program Files/Eidos/Total Overdose/");
+
+					SetGameWorkingDir(buffer);
+					GameDiscFound = true;
+
+					LogDump::LogA("Found game disc.\n");
+
+					break;
+				}
+			}
+		}
+		drive = drive >> 1;
+	}
+
+	SetErrorMode(NULL);
+}
+
+void SetWorkingDir(const char* str)
+{
+	WorkingDirectory = String(str);
+	WorkingDirectory.ConvertBackslashes();
+
+	if (WorkingDirectory.m_szString[WorkingDirectory.m_nLength - 1] != '/')
+		WorkingDirectory.Append("/");
+}
+
+void SetGameWorkingDir(const char* str)
+{
+	GameWorkingDirectory = String(str);
+	GameWorkingDirectory.ConvertBackslashes();
+
+	if (GameWorkingDirectory.m_szString[GameWorkingDirectory.m_nLength - 1] != '/')
+		GameWorkingDirectory.Append("/");
+}
+
+void GetWorkingDirRelativePath(String* str)
+{
+	if (!str->m_nLength)
+	{
+		str = &WorkingDirectory;
+
+		return;
+	}
+
+	char buffer[1024];
+	memset(buffer, NULL, sizeof(buffer));
+
+	strcpy(buffer, WorkingDirectory.m_szString);
+	if (buffer[WorkingDirectory.m_nLength - 1] == '/' && str->m_szString[0] == '/')
+		strcat(buffer, (const char*)((int)str->m_szString + 1));
+	else
+		strcat(buffer, str->m_szString);
+
+	str->Set(buffer);
+}
+
+void GetGameWorkingDirRelativePath(String* str)
+{
+	if (!str->m_nLength)
+	{
+		str = &GameWorkingDirectory;
+
+		return;
+	}
+
+	char buffer[1024];
+	memset(buffer, NULL, sizeof(buffer));
+
+	strcpy(buffer, GameWorkingDirectory.m_szString);
+	if (buffer[GameWorkingDirectory.m_nLength - 1] == '/' && str->m_szString[0] == '/')
+		strcat(buffer, (const char*)((int)str->m_szString + 1));
+	else
+		strcat(buffer, str->m_szString);
+
+	str->Set(buffer);
+}
+
+bool IsFileExists(const char* file)
+{
+	String temp;
+	GetWorkingDirRelativePath(&temp);
+
+	if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
+	{
+		if (!GameDiscFound)
+			return false;
+
+		GetGameWorkingDirRelativePath(&temp);
+
+		if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
+			return false;
+	}
+
+	return true;
 }
 
 //	Apply patches specific to this class.
@@ -705,73 +818,12 @@ inline void PATCH_WINDOW()
 {
 	void * dwFunc;
 
-	_asm	mov		eax, offset Window::RegisterWindowClass
-	_asm	mov		dwFunc, eax
-	//	Override RegisterWindowClass function.
-	hook(0x43C767, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::_CreateWindow
-	_asm	mov		dwFunc, eax
-	//	Override CreateWindow function.
-	hook(0x43C76F, dwFunc, PATCH_NOTHING);
-
-	//	Override FindStringResource function.
-	hook(0x43C807, &FindStringResource, PATCH_CALL);
-	hook(0x43C81A, &FindStringResource, PATCH_CALL);
-	hook(0x43C0AC, &FindStringResource, PATCH_CALL);
-	hook(0x43C0BF, &FindStringResource, PATCH_CALL);
-
-	_asm	mov		eax, offset Window::Release
-	_asm	mov		dwFunc, eax
-	//	Override Release function.
-	hook(0x93CCBF, dwFunc, PATCH_NOTHING);
-
-	//	Override SetAccessibilityFeatures function.
-	hook(0x43C7B3, &SetAccessibilityFeatures, PATCH_CALL);
-
-	_asm	mov		eax, offset IncompatibleMachineParameterError
-	_asm	mov		dwFunc, eax
-	//	Override IncompatibleMachineParameterError function.
-	hook(0x43ADF0, dwFunc, PATCH_NOTHING);
-	hook(0x43AE11, dwFunc, PATCH_NOTHING);
-	hook(0x43AE31, dwFunc, PATCH_NOTHING);
-	hook(0x43AE57, dwFunc, PATCH_NOTHING);
-	hook(0x43AECC, dwFunc, PATCH_NOTHING);
-	hook(0x43B53B, dwFunc, PATCH_NOTHING);
-	hook(0x43B55E, dwFunc, PATCH_NOTHING);
-	hook(0x43B57D, dwFunc, PATCH_NOTHING);
-	hook(0x43B5A2, dwFunc, PATCH_NOTHING);
-	hook(0x43B616, dwFunc, PATCH_NOTHING);
-	hook(0x43D39E, dwFunc, PATCH_NOTHING);
-	hook(0x43D3E0, dwFunc, PATCH_NOTHING);
-	hook(0x43D4E9, dwFunc, PATCH_NOTHING);
-	hook(0x43D532, dwFunc, PATCH_NOTHING);
-	hook(0x43E309, dwFunc, PATCH_NOTHING);
-	hook(0x43E329, dwFunc, PATCH_NOTHING);
-	hook(0x45E7A2, dwFunc, PATCH_NOTHING);
-	hook(0x45E7FE, dwFunc, PATCH_NOTHING);
-
-	//_asm	mov		eax, offset GetSystemLanguageCode
-	//_asm	mov		dwFunc, eax
-	//	Override GetSystemLanguageCode function.
-	//hook(0x4855D6, dwFunc, PATCH_NOTHING);
 	hook(0x4855D6, &GetSystemLanguageCode, PATCH_CALL);
 
 	_asm	mov		eax, offset Window::GetMessageBoxResultButton
 	_asm	mov		dwFunc, eax
 	//	Override GetMessageBoxResultButton function.
 	hook(0x470AF5, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::SetCursorReleased
-	_asm	mov		dwFunc, eax
-	//	Override ClipCursorInsideWindow function.
-	hook(0x93CBE1, dwFunc, PATCH_NOTHING);
-	hook(0x93F2F0, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::UpdateVisibility
-	_asm	mov		dwFunc, eax
-	//	Override GlobalPause function.
-	hook(0x43C4E8, dwFunc, PATCH_NOTHING);
 
 	_asm	mov		eax, offset Window::SetWindowPosNoCopyBits
 	_asm	mov		dwFunc, eax
@@ -803,17 +855,10 @@ inline void PATCH_WINDOW()
 	//	TODO: find references to this function!
 	//hook(0x010000, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset Window::_GetWindowRect
-	_asm	mov		dwFunc, eax
-	//	Override _GetWindowRect function.
-	hook(0x43C398, dwFunc, PATCH_NOTHING);
-
 	_asm	mov		eax, offset Window::SetWindowResolutionDontMove
 	_asm	mov		dwFunc, eax
 	//	Override SetWindowResolutionDontMove function.
-	hook(0x45BF08, dwFunc, PATCH_NOTHING);
 	hook(0x45C02C, dwFunc, PATCH_NOTHING);
-	hook(0x45C17E, dwFunc, PATCH_NOTHING);
 
 	_asm	mov		eax, offset Window::SetWindowResolutionRaw
 	_asm	mov		dwFunc, eax
@@ -863,11 +908,6 @@ inline void PATCH_WINDOW()
 	_asm	mov		dwFunc, eax
 	//	Override GetCoverdemoGameplayTimeoutSec function.
 	hook(0x4856B6, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::Process
-	_asm	mov		dwFunc, eax
-	//	Override ProcessInputDevices function.
-	hook(0x93D0BB, dwFunc, PATCH_NOTHING);
 
 	_asm	mov		eax, offset Window::_SetTitle
 	_asm	mov		dwFunc, eax

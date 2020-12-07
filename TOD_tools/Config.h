@@ -2,7 +2,7 @@
 
 #include "Types.h"
 #include "Globals.h"
-#include "FileInternal.h"
+#include "File.h"
 
 namespace GameConfig {
 
@@ -27,27 +27,28 @@ namespace GameConfig {
 
 	struct Session_Variables
 	{
+	protected:
 		int field_0;
 		int field_4;
-		String* field_8;
+		int* field_8;
 		int field_C;
 
-		int* field_10;
+		int field_10;
 		int field_14;
-		int field_18;
+		int* field_18;
 		int field_1C;
 
 		int field_20;
 		int field_24;
-		int field_28;
+		int* field_28;
 		int field_2C;
 
-		int* field_30;
+		int field_30;
 		int field_34;
-		int field_38;
+		int* field_38;
 		int field_3C;
 
-		int* field_40;
+		int field_40;
 		int field_44;
 		int* field_48;
 		int field_4C;
@@ -57,28 +58,15 @@ namespace GameConfig {
 		int* field_58;
 		int field_5C;
 
-		int m_nTotalVariables;
-		int field_64;
+		int m_TotalVariables;
+		char field_64;
 
+		void	LoadVariablesFile(const char* file, int unk);	//	@412110
+		void	ParseVariablesFile(File* file, char unk);	//	@411A30
 	public:
-		Session_Variables(int unk)
-		{
-			MESSAGE_CLASS_CREATED(Session_Variables);
-
-			(*(Session_Variables * (__thiscall*)(Session_Variables*, int))0x410680)(this, unk);
-		}
-		Session_Variables(const char* file, int unk)
-		{
-			MESSAGE_CLASS_CREATED(Session_Variables);
-
-			(*(Session_Variables * (__thiscall*)(Session_Variables*, const char*, int))0x4124D0)(this, file, unk);
-		}
-		~Session_Variables()
-		{
-			MESSAGE_CLASS_DESTROYED(Session_Variables);
-
-			(*(void(__thiscall*)(Session_Variables*))0x4107B0)(this);
-		}
+		Session_Variables(int);	//	@410680
+		Session_Variables(const char* file, int unk);	//	@4124D0
+		~Session_Variables();	//	@4107B0
 
 		void* operator new(size_t size)
 		{
@@ -178,7 +166,7 @@ namespace GameConfig {
 	static void _GetDeveloperPath(String* outStr);	//	@4098D0
 
 	static List<String>& FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
-	static FileInternal& ColMatFilePtr = *(FileInternal*)0xA3D7E8;	//	@A3D7E8
+	static File& ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8
 
 	extern Config* g_Config;
 }

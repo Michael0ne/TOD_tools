@@ -1,5 +1,5 @@
 #include "SavesDirectoriesInformation.h"
-#include "FileInternal.h"
+#include "File.h"
 
 SavesDirectoriesInformation::SavesDirectoriesInformation(SaveSlotIndex index)
 {
@@ -64,7 +64,7 @@ bool SavesDirectoriesInformation::FormatCard()
 	strcpy(temp, m_sSaveFolderPath.m_szString);
 	strcat(temp, "Formatted.txt");
 
-	FileInternal formattedFile(temp, 2, true);
+	File formattedFile(temp, 2, true);
 
 	return true;
 }
