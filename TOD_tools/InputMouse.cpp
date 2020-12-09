@@ -30,10 +30,12 @@ namespace Input {
 		m_OldLocalPosition.x = m_OldLocalPosition.y = NULL;
 		field_44 = NULL;
 		m_bShouldBeProcessed = true;
+		m_pDeviceObject = nullptr;
+		m_pDInputDevice = nullptr;
 
 		g_InputMouse = this;
 
-		if (FAILED(DirectInput8Create(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&m_pDeviceObject, NULL)))
+		if (FAILED(DirectInput8Create_Hooked(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDeviceObject, NULL)))
 			IncompatibleMachineParameterError(0, false);
 
 		if (FAILED(m_pDeviceObject->CreateDevice(GUID_SysMouse, &m_pDInputDevice, NULL)))

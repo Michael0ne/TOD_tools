@@ -45,7 +45,7 @@ namespace Input
 
 		if (!ControllersCreated)
 		{
-			DirectInput8Create(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
+			DirectInput8Create_Hooked(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
 			EnumGameControllers();
 		}
 
@@ -161,7 +161,7 @@ namespace Input
 
 	Gamepad::~Gamepad()
 	{
-		debug("Gamepad::Gamepad destroyed!\n");
+		MESSAGE_CLASS_DESTROYED(Gamepad);
 
 		--ControllersCreated;
 
@@ -324,33 +324,7 @@ namespace Input
 
 	String* Gamepad::AllocateGamepadNameStringBuffer(String* outString, char* inGamepadName, signed int length)
 	{
-		int len = 0;
-
-		//	NOTE: let's re-invent the wheel...
-		outString->m_nBitMask |= STRING_BITMASK_DEFAULT;
-
-		if (length > 0)
-		{
-			do
-			{
-				if (!inGamepadName[len])
-					break;
-				++len;
-			} while (len < length);
-		}
-
-		outString->m_nLength = len;
-
-		if (len < 4)
-		{
-			outString->m_nBitMask = outString->m_nBitMask & STRING_BITMASK_SHORT | 4;
-			outString->m_szString = &(outString->m_pEmpty);
-		}else{
-			outString->m_nBitMask = ((outString->m_nBitMask ^ (len + (len >> 2))) & 0x7FFFFFFF ^ outString->m_nBitMask);
-			outString->m_szString = (char*)(Allocators::AllocatorsList[DEFAULT]->Allocate(outString->m_nBitMask, NULL, NULL));
-		}
-		memcpy_s(outString->m_szString, outString->m_nLength, inGamepadName, length);
-		outString->m_szString[outString->m_nLength] = NULL;
+		outString->Set(inGamepadName);
 
 		return outString;
 	}

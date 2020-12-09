@@ -24,11 +24,13 @@ AuxQuadTree::AuxQuadTree(const Entity* owner)
 	field_18 = 0;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void AuxQuadTree::_8A3810(void* ptr)
 {
 	(*(void(__thiscall*)(AuxQuadTree*, void*))0x8A3810)(this, ptr);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void AuxQuadTree::Refresh()
 {
 	(*(void(__thiscall*)(AuxQuadTree*))0x8A2EE0)(this);

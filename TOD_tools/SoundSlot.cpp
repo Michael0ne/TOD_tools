@@ -1,5 +1,6 @@
 #include "SoundSlot.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 SoundSlot::SoundSlot() : Node(NODE_MASK_EMPTY)
 {
 	MESSAGE_CLASS_CREATED(SoundSlot);

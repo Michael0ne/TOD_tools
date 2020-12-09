@@ -61,7 +61,7 @@ namespace Audio {
 		int field_38;
 		int m_nMonoStreamsTotal;
 		int field_40;
-		IDirectSound3DBuffer* m_pDirectSound3DBuffer;
+		LPDIRECTSOUND3DBUFFER m_pDirectSound3DBuffer;
 		LPDIRECTSOUNDBUFFER m_pDirectSoundBuffer_1;
 		class DieselPower* m_pDieselPower;
 		int* field_50;

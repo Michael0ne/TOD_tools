@@ -289,13 +289,13 @@ void* FirstFitSubAllocator::Allocate_A(size_t size, int filler, int unk)
 	return AllocateAligned(size, 4, filler, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void* FirstFitSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
 {
 	return (*(void* (__thiscall*)(FirstFitSubAllocator*, size_t, size_t, int, int))0x479C40)(this, size, alignment, filler, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void FirstFitSubAllocator::Free(void* ptr)
 {
 	(*(void(__thiscall*)(FirstFitSubAllocator*, void*))0x479A10)(this, ptr);
@@ -306,13 +306,13 @@ void FirstFitSubAllocator::FreeAligned(void* ptr)
 	Free(ptr);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void* FirstFitSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
 {
 	return (*(void* (__thiscall*)(FirstFitSubAllocator*, void*, size_t, int, int))0x479DA0)(this, oldptr, newsize, filler, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 int FirstFitSubAllocator::stub8(int unk)
 {
 	return (*(int(__thiscall*)(FirstFitSubAllocator*, int))0x479AA0)(this, unk);
@@ -340,13 +340,13 @@ void* FrameBasedSubAllocator::Allocate_A(size_t size, int filler, int unk)
 	return AllocateAligned(size, 4, filler, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void* FrameBasedSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
 {
 	return (*(void* (__thiscall*)(FrameBasedSubAllocator*, size_t, size_t, int, int))0x479F60)(this, size, alignment, filler, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void FrameBasedSubAllocator::Free(void* ptr)
 {
 	(*(void(__thiscall*)(FrameBasedSubAllocator*, void*))0x479FF0)(this, ptr);
@@ -399,13 +399,13 @@ void* BestFitAllocator::Allocate_A(size_t size, int filler, int unk)
 	return AllocateAligned(size, 8, filler, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void* BestFitAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
 {
 	return (*(void* (__thiscall*)(BestFitAllocator*, size_t, size_t, int, int))0x478820)(this, size, alignment, filler, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void BestFitAllocator::Free(void* ptr)
 {
 	(*(void(__thiscall*)(BestFitAllocator*, void*))0x479210)(this, ptr);
@@ -416,7 +416,7 @@ void BestFitAllocator::FreeAligned(void* ptr)
 	Free(ptr);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void* BestFitAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
 {
 	return (*(void* (__thiscall*)(BestFitAllocator*, void*, size_t, int, int))0x4795C0)(this, oldptr, newsize, filler, unk);
@@ -466,7 +466,7 @@ PoolSubAllocator::PoolSubAllocator()
 	MESSAGE_CLASS_CREATED(PoolSubAllocator);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void* PoolSubAllocator::Allocate_A(size_t size, int filler, int unk)
 {
 	return (*(void* (__thiscall*)(PoolSubAllocator*, size_t, int, int))0x47A1F0)(this, size, filler, unk);
@@ -477,7 +477,7 @@ void* PoolSubAllocator::AllocateAligned(size_t size, size_t alignment, int fille
 	return alignment == field_30 ? Allocate_A(size, filler, unk) : nullptr;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void PoolSubAllocator::Free(void* ptr)
 {
 	(*(void(__thiscall*)(PoolSubAllocator*, void*))0x47A260)(this, ptr);
@@ -526,7 +526,7 @@ void* StackBasedSubAllocator::Allocate_A(size_t size, int filler, int unk)
 	return AllocateAligned(size, 8, filler, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void* StackBasedSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
 {
 	return (*(void* (__thiscall*)(StackBasedSubAllocator*, size_t, size_t, int, int))0x47A930)(this, size, alignment, filler, unk);
@@ -550,7 +550,7 @@ void StackBasedSubAllocator::FreeAligned(void* ptr)
 	Free(ptr);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void* StackBasedSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
 {
 	return (*(void* (__thiscall*)(StackBasedSubAllocator*, void*, size_t, int, int))0x47AA20)(this, oldptr, newsize, filler, unk);
@@ -567,7 +567,7 @@ int StackBasedSubAllocator::stub8(int unk)
 	return result;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void StackBasedSubAllocator::stub9()
 {
 	(*(void(__thiscall*)(StackBasedSubAllocator*))0x47AAC0)(this);
@@ -785,7 +785,7 @@ DefragmentatorBase::DefragmentatorBase(BestFitAllocator* bestfitallocator, char 
 	m_DefragmentAllocator_1 = bestfitallocator;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 DefragmentatorBase::~DefragmentatorBase()
 {
 	MESSAGE_CLASS_DESTROYED(DefragmentatorBase);

@@ -1,5 +1,7 @@
 #include "GFXEffect.h"
 
+int& GFXEffect::TotalCreated = *(int*)0xA3E050;
+
 GFXEffect::GFXEffect() : Node(NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(GFXEffect);
@@ -24,5 +26,3 @@ GFXEffect::GFXEffect() : Node(NODE_MASK_QUADTREE)
 
 	++TotalCreated;
 }
-
-int& GFXEffect::TotalCreated = *(int*)0xA3E050;

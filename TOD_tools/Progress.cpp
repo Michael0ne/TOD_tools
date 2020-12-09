@@ -3,19 +3,19 @@
 Progress* g_Progress = nullptr;
 ProgressBase* g_ProgressBase = nullptr;
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Progress::UpdateProgress(float time, bool)
 {
 
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 Progress::Progress() : ProgressBase(Performance::ClockGetCycles() / 5)
 {
 	MESSAGE_CLASS_CREATED(Progress);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 Progress::~Progress()
 {
 	MESSAGE_CLASS_DESTROYED(Progress);

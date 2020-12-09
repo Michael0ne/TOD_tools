@@ -42,6 +42,11 @@
 #define MESSAGE_CLASS_CREATED(x) debug(#x " created at %X\n", this)
 #define MESSAGE_CLASS_DESTROYED(x) debug(#x " destroyed!\n")
 
+#define	Stringify( L ) #L
+#define MakeString( M, L ) M(L)
+#define $Line MakeString( Stringify, __LINE__ )
+#define TODO_IMPLEMENTATION __FILE__ "(" $Line "): TODO: implementation!"
+
 extern HMODULE g_DirectInput;
 typedef HRESULT(__stdcall* DINPUT8CREATEORIGINAL)(HINSTANCE, DWORD, const IID&, LPVOID*, LPUNKNOWN);
 extern DINPUT8CREATEORIGINAL DirectInput8Create_Hooked;

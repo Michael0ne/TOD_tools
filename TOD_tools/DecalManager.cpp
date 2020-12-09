@@ -1,5 +1,6 @@
 #include "DecalManager.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 DecalManager::DecalManager() : Node(NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(DecalManager);

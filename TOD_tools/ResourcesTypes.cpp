@@ -5,6 +5,7 @@ namespace Types
 	namespace Resources
 	{
 
+#pragma message(TODO_IMPLEMENTATION)
 		Base::Base(const char* type, void* (*creator)())
 		{
 			MESSAGE_CLASS_CREATED(Base);

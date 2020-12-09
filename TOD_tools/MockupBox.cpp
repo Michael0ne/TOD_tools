@@ -2,6 +2,7 @@
 
 int& MockupBox::TotalCreated = *(int*)0xA3DFD8;	//	@A3DFD8
 
+#pragma message(TODO_IMPLEMENTATION)
 MockupBox::MockupBox() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(MockupBox);
@@ -25,6 +26,4 @@ MockupBox::MockupBox() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	m_Opacity = 1.0f;
 
 	++TotalCreated;
-
-	//	TODO: lots of stuff initialized here.
 }

@@ -25,8 +25,8 @@ CollisionProbe::CollisionProbe(int unk1, float unk2) : Node(NODE_MASK_POSITION)
 	Reset();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void CollisionProbe::Reset()
 {
-	//	TODO: implementation!
 	(*(void(__thiscall*)(CollisionProbe*))0x8B61D0)(this);
 }

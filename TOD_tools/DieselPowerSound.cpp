@@ -2,19 +2,19 @@
 
 namespace Audio
 {
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	DieselPower::DieselPower()
 	{
 		MESSAGE_CLASS_CREATED(DieselPower);
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	DieselPower::~DieselPower()
 	{
 		MESSAGE_CLASS_DESTROYED(DieselPower);
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	DieselPower* DieselPower::CallFactory(unsigned int versionMajor, unsigned int versionMinor, unsigned int versionBuild, float unk, HWND windowHandle, int unk1, int unk2, int unk3)
 	{
 		return nullptr;

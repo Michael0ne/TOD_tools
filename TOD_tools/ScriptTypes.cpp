@@ -17,19 +17,19 @@ namespace ScriptTypes
 		return 4 * m_nSizeInBytes;
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void ScriptType::GetDefaultValue(void* unk1)
 	{
 		*(int*)unk1 = NULL;
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void ScriptType::nullsub_2(String* unk2)
 	{
 		*(int*)unk2 = NULL;
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void ScriptType::_4893A0(int* unk1, int* unk2)
 	{
 		(*(void (*)(int*, int*, int))0x4893C0)(unk2, unk1, m_nSizeInBytes);
@@ -46,25 +46,25 @@ namespace ScriptTypes
 		return -1;
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	int ScriptType::_489410(int* unk1)
 	{
 		return (*(int(__thiscall*)(ScriptType*, int*))0x489410)(this, unk1);
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	int ScriptType::_863760_1(int* unk1, int* unk2)
 	{
 		return (*(int(__thiscall*)(ScriptType*, int*, int*))0x863760)(this, unk1, unk2);
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	int ScriptType::_863760_2(int* unk1, int* unk2)
 	{
 		return (*(int(__thiscall*)(ScriptType*, int*, int*))0x863760)(this, unk1, unk2);
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	int ScriptType::_8637F0(int* unk1, String* unk2, int unk3)
 	{
 		return (*(int(__thiscall*)(ScriptType*, int*, String*, int))0x8637F0)(this, unk1, unk2, unk3);
@@ -83,19 +83,19 @@ namespace ScriptTypes
 		TypesListCRCCalculated = false;
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	int ScriptType::_862A50(int unk1, int* unk2, int* unk3)
 	{
 		return (*(int(__thiscall*)(ScriptType*, int, int*, int*))0x862A50)(this, unk1, unk2, unk3);
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void ScriptType::nullsub_3(int unk1, void* unk2, int unk3, int unk4, int unk5, void* outop)
 	{
 		return;
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void ScriptType::nullsub_4(int* unk1, int unk2, int unk3, int unk4, int unk5, int unk6)
 	{
 		return;
@@ -203,6 +203,7 @@ namespace ScriptTypes
 		m_PropertiesList_2 = List<EntityProperties>(0x19300);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void* ScriptType_Entity::CreateNode()
 	{
 		void* ent = m_Creator(g_Blocks->GetAllocatorType());

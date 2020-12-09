@@ -1,5 +1,6 @@
 #include "LensFlare.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 LensFlare::LensFlare() : Node(NODE_MASK_EMPTY)
 {
 	MESSAGE_CLASS_CREATED(LensFlare);

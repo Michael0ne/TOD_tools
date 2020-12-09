@@ -25,6 +25,7 @@ RigidBody::RigidBody() : Node(NODE_MASK_EMPTY)
 	m_Grounded = false;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void RigidBody::SetBoxInertialMatrix(const Vector4f* vec)
 {
 	(*(void(__thiscall*)(RigidBody*, const Vector4f*))0x9332C0)(this, vec);

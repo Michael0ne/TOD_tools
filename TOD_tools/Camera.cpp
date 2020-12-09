@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 Camera::Camera() : Node(NODE_MASK_POSITION)
 {
 	MESSAGE_CLASS_CREATED(Camera);

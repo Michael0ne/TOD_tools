@@ -53,6 +53,7 @@ private:
 	void			ReadBlockFromOffset();	//	@436EE0
 	int				Read(void* _buf, int _numbytestoread);	//	@437230
 	char			WriteFromBufferAndSetToEnd();	//	@437690
+	void			SetExecuteAttrib(unsigned char);	//	@436E10
 };
 
 class File
@@ -69,8 +70,6 @@ protected:
 	int				m_ZipSlot;
 	bool			m_ExecuteAttribute;
 	FileWrapper*	m_ZipFileHandle;
-
-	void			SetExecuteAttrib(bool);	//	@436E10
 
 public:
 	virtual void	scalar_destructor(bool) {};

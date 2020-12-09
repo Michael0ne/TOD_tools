@@ -1,5 +1,6 @@
 #include "Bullet.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 Bullet::Bullet() : Model()
 {
 	MESSAGE_CLASS_CREATED(Bullet);

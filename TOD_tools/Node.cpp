@@ -8,6 +8,7 @@ void Node::scalar_destructor(bool freeMemory)
 		Allocators::ReleaseMemory(this, false);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Node::destructor()
 {
 	Node* first_child = m_FirstChild;
@@ -23,8 +24,6 @@ void Node::destructor()
 	}
 	m_FirstChild = nullptr;
 	//SetParent(nullptr);
-
-	//	TODO: implementation!
 }
 
 void Node::_484CC0(int)
@@ -32,11 +31,13 @@ void Node::_484CC0(int)
 	m_Id |= 10;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 Entity* Node::FindNode(const char* nodeName)
 {
 	return (*(Entity * (__thiscall*)(Node*, const char*))0x88EED0)(this, nodeName);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Node::_88EC20(int unk)
 {
 	(*(void(__thiscall*)(Node*, int))0x88EC20)(this, unk);
@@ -60,6 +61,7 @@ void Node::Update()
 	return;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Node::_88C300()
 {
 	*(char*)0xA3D890 = (char)1;
@@ -85,6 +87,7 @@ void Node::nullsub_3(int)
 	return;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Node::_88C610()
 {
 	(*(void(__thiscall*)(void*, Node*))0x86CFF0)(m_ScriptEntity, this);
@@ -144,7 +147,6 @@ Node::Node(unsigned char allocationBitmask)
 	if (allocationBitmask & NODE_MASK_FRAGMENT)
 		m_Fragment = new Fragment(this);
 
-	//	NOTE: this just changes sign?
 	if (m_Fragment)
 		m_Flags = m_Flags | 0x80000000;
 	else
@@ -154,13 +156,13 @@ Node::Node(unsigned char allocationBitmask)
 	m_Flags = m_Flags | 0xF000;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Node::SetParam(int index, void* param, ScriptTypes::ScriptType* type)
 {
 	(*(void(__thiscall*)(Node*, int, void*, ScriptTypes::ScriptType*))0x86A3C0)(this, index, param, type);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Node::SetOrient(const Orientation& orient)
 {
 	(*(void(__thiscall*)(Node*, const Orientation&))0x88DB20)(this, orient);

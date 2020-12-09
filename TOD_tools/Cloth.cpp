@@ -1,5 +1,6 @@
 #include "Cloth.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 Cloth::Cloth() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(Cloth);
@@ -13,6 +14,4 @@ Cloth::Cloth() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 
 	m_List_1 = List<int>(0x1FB00);
 	m_List_2 = List<int>(0x1FB00);
-
-	//	TODO: initialize more stuff!
 }

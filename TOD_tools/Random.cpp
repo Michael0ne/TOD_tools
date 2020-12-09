@@ -11,13 +11,13 @@ void Random::Init(int seed)
 	_A3AD6C = 1;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 unsigned int Random::Integer(int maxVal)
 {
 	return (*(unsigned int(__cdecl*)(int))0x473960)(maxVal);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 float Random::Float()
 {
 	return (*(float(__cdecl*)())0x46C640)();
