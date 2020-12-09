@@ -49,7 +49,7 @@ void Renderer::CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, in
 	field_0[2] = 0;
 	field_0[3] = 0;
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	//	Allocate textures list.
 	(*(void(__thiscall*)(Renderer*))0x4210E0)(this);
 	//	Allocate something
@@ -77,6 +77,7 @@ void Renderer::_41FDF0(Vector4<float>* size, int bufferIndex)
 		m_pBuffersArray[bufferIndex].m_vPos_1 = *size;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Renderer::_SetBufferStateByIndex(int state, int index)
 {
 	(*(void(__thiscall*)(Renderer*, int, int))0x41FD90)(this, state, index);
@@ -128,7 +129,7 @@ void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, f
 	AdjustWindowScalings();
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void ScreenProperties::AdjustWindowScalings()
 {
 	(*(void(__thiscall*)(ScreenProperties*))0x420190)(this);
@@ -154,11 +155,13 @@ void ScreenProperties::SetWindowProperties(float width, float height, float rati
 	AdjustWindowScalings();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Scene_Buffer108::Init(unsigned int unk1, unsigned char unk2, unsigned int unk3)
 {
 
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Scene_Buffer68::Init(const Scene_Buffer108& buf, unsigned int unk)
 {
 

@@ -14,13 +14,12 @@ const char* Blocks::g_szBlockTypes[7] = //	@A11B64
 	"",
 };
 
+#pragma message(TODO_IMPLEMENTATION)
 Blocks::Blocks(bool loadBlocks)
 {
 	MESSAGE_CLASS_CREATED(Blocks);
 
 	patch(0xA3D7C4, this, 4);
-
-	//	TODO: initialize lists
 }
 
 void Blocks::SetSceneName(const char* szSceneName)
@@ -34,7 +33,7 @@ void Blocks::SetSceneName(const char* szSceneName)
 	m_SceneNames.Add(&sceneDir);
 }
 
-int Blocks::GetFreeResourceTypeListItem(int index)	//	@875540
+int Blocks::GetFreeResourceTypeListItem(int index)
 {
 	if (index + 1 >= m_ResourceTypesList.m_nCurrIndex)
 		return 0;
@@ -53,7 +52,7 @@ int Blocks::GetFreeResourceTypeListItem(int index)	//	@875540
 	return freeind;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 unsigned int Blocks::AddEntity(Entity* ent)
 {
 	return (*(unsigned int(__thiscall*)(Blocks*, Entity*))0x875FA0)(this, ent);

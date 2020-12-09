@@ -3,7 +3,7 @@
 
 SceneNode* tSceneNode = nullptr;
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 SceneNode::SceneNode()
 {
 	MESSAGE_CLASS_CREATED(SceneNode);
@@ -15,7 +15,7 @@ SceneNode::SceneNode()
 	m_RewindBuffer_1 = new RewindBuffer(614400);	//	NOTE: move constant somewhere
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void SceneNode::_874940()
 {
 	//	NOTE: possible name is 'CurrentUndo'.

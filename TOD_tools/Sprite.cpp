@@ -1,5 +1,7 @@
 #include "Sprite.h"
 
+List<Sprite>& Sprite::SpritesList = *(List<Sprite>*)0xA3E0D0;	//	@A3E0D0
+
 Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(Sprite);
@@ -28,5 +30,3 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 
 	SpritesList.AddElement(this);
 }
-
-List<Sprite>& Sprite::SpritesList = *(List<Sprite>*)0xA3E0D0;	//	@A3E0D0

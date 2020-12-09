@@ -32,13 +32,13 @@ ParticleSystem::ParticleSystem() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	field_60._4250C0();
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 ParticleSystem_Struct96::ParticleSystem_Struct96()
 {
 	(*(ParticleSystem_Struct96 * (__thiscall*)(ParticleSystem_Struct96*))0x425470)(this);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void ParticleSystem_Struct96::_4250C0()
 {
 	(*(void(__thiscall*)(ParticleSystem_Struct96*))0x4250C0)(this);

@@ -12,6 +12,7 @@ int& Scene::NewFrameNumber = *(int*)0xA3DCE0;
 bool& Scene::IsRewindBufferInUse = *(bool*)0xA1207C;
 Scene* tScene = nullptr;
 
+#pragma message(TODO_IMPLEMENTATION)
 Scene::Scene() : Folder_()
 {
 	MESSAGE_CLASS_CREATED(Scene);
@@ -49,7 +50,7 @@ void Scene::SetFixedFramerate(float framerate)
 	m_FixedFramerateVal = 1.0f / framerate;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::Start()
 {
 	if (m_PlayMode != 1)
@@ -84,7 +85,7 @@ void Scene::Start()
 	NewFrameNumber = NULL;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::Load(const char* sceneName)
 {
 	(*(void(__thiscall*)(Scene*, const char*))0x8980C0)(this, sceneName);
@@ -104,49 +105,49 @@ void Scene::FinishCreation(const char* logTitle)
 	m_TimeMs = Performance::GetMilliseconds();
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 bool Scene::GameUpdate()
 {
 	return (*(bool (*)())0x93CEB0)();
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::UpdateActiveCameraPosition()
 {
 
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::EnumSceneCamerasAndUpdate()
 {
 
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::UpdateLoadedBlocks(int unk1, Node* unk2)
 {
 	//	NOTE: this is potentially a method that updates current scenery objects.
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::_896810()
 {
 
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::AllocateRewindBuffer()
 {
 
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::FreeRewindBuffer(char unk)
 {
 
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk)
 {
 	//TriggerGlobalScript(scriptId, unk);
@@ -154,7 +155,7 @@ void Scene::TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk
 		//TriggerScriptForAllChildren(scriptId, children, unk);
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 Scene_Buffer::Scene_Buffer(int unk1, char unk2, int unk3)
 {
 }

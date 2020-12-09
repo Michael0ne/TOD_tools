@@ -33,7 +33,7 @@ namespace GameConfig
 	{
 		MESSAGE_CLASS_CREATED(Config);
 
-		field_0 = 0;
+		m_Initialized = 0;
 		m_sGameName = String();
 		m_sConfigFilePath = String();
 		m_sUnkString_1 = String();
@@ -55,6 +55,15 @@ namespace GameConfig
 		m_nCRCForTypesList = 0;
 	}
 
+	Config::~Config()
+	{
+		MESSAGE_CLASS_DESTROYED(Config);
+
+		if (m_Initialized)
+			UninitialiseGame();
+	}
+
+#pragma message(TODO_IMPLEMENTATION)
 	void Config::Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId)
 	{
 #ifdef INCLUDE_FIXES
@@ -134,7 +143,7 @@ namespace GameConfig
 
 		//	Register script entities.
 		//	TODO: implementation!
-		InitEntitiesDatabase();
+		//InitEntitiesDatabase();
 
 		//	Init unknown maps (lists), somehow related to renderer.
 		//	TODO: implementation!
@@ -150,7 +159,7 @@ namespace GameConfig
 
 		//	Init lights.
 		//	TODO: implementation!
-		(*(void(__cdecl*)())0x881070)();
+		//(*(void(__cdecl*)())0x881070)();
 
 		if (m_pConfigurationVariables->IsVariableSet("ps2_max_texture_size"))
 			Script::Ps2MaxTextureSize = m_pConfigurationVariables->GetParamValueInt("ps2_max_texture_size");
@@ -203,7 +212,7 @@ namespace GameConfig
 		sTestingPath.Append("(");
 
 		//	Scripts search path if 'profile.txt' is available.
-		Script::ScriptsPath = String("/data/scripts/stable/");
+		Script::ScriptsPath.Set("/data/scripts/stable/");
 
 		if (pProfileVariables)
 			if (pProfileVariables->IsVariableSet("script_searchpath"))
@@ -338,7 +347,6 @@ namespace GameConfig
 		}
 
 		//	Init sound renderer.
-		//	TODO: implementation for StreamedSoundBuffers class!
 		Audio::g_StreamedSoundBuffers = new Audio::StreamedSoundBuffers(1, 44100);
 
 		if (m_pConfigurationVariables->IsVariableSet("sound_max_concurrent_sounds"))
@@ -609,7 +617,7 @@ namespace GameConfig
 
 		g_Window->SetCursorReleased(false);
 
-		field_0 = 1;
+		m_Initialized = 1;
 
 		if (pProfileVariables)
 			delete pProfileVariables;
@@ -620,6 +628,7 @@ namespace GameConfig
 #endif
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void Config::InitEntitiesDatabase()
 	{
 		/*
@@ -700,7 +709,7 @@ namespace GameConfig
 		m_nTotalTypes = (*(int (*)())0x862B30)();
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void Config::UninitialiseGame()
 	{
 		//	g_Scene->_895E40();
@@ -738,12 +747,11 @@ namespace GameConfig
 		if (field_54)
 			(*(void (__stdcall*)(int))field_54)(1);
 
-		field_0 = 0;
+		m_Initialized = 0;
 
 		debug("Game uninitialized!\n");
 	}
 
-	//	TODO: implementation!
 	bool Config::OpenScene(const char* scene)
 	{
 		tScene->GetScriptEntity()->CreateNode();
@@ -757,7 +765,7 @@ namespace GameConfig
 		return true;
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void Config::CreateUnknownMatricies()
 	{
 		
@@ -771,7 +779,7 @@ namespace GameConfig
 		ParseVariablesFile(&file_, unk);
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void Session_Variables::ParseVariablesFile(File* file, char unk)
 	{
 		(*(void(__thiscall*)(Session_Variables*, File*, char))0x411A30)(this, file, unk);
@@ -860,7 +868,7 @@ namespace GameConfig
 		LoadVariablesFile(file, unk);
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	Session_Variables::~Session_Variables()
 	{
 		MESSAGE_CLASS_DESTROYED(Session_Variables);
@@ -868,6 +876,7 @@ namespace GameConfig
 		(*(void (__thiscall*)(Session_Variables*))0x4107B0)(this);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	bool Session_Variables::IsVariableSet(const char* variableName)
 	{
 		bool(__thiscall * _IsVariableSet)(Session_Variables* _this, const char* _varname) = (bool (__thiscall*)(Session_Variables*, const char*))0x410080;
@@ -875,6 +884,7 @@ namespace GameConfig
 		return _IsVariableSet(this, variableName);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	bool Session_Variables::GetParamValueBool(const char* variableName)
 	{
 		bool(__thiscall * _GetParamValueBool)(Session_Variables * _this, const char* _varname) = (bool(__thiscall*)(Session_Variables*, const char*))0x410900;
@@ -882,6 +892,7 @@ namespace GameConfig
 		return _GetParamValueBool(this, variableName);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	int Session_Variables::GetParamValueInt(const char* variableName)
 	{
 		int(__thiscall * _GetParamInt)(Session_Variables * _this, const char* _varname) = (int(__thiscall*)(Session_Variables*, const char*))0x410A30;
@@ -889,6 +900,7 @@ namespace GameConfig
 		return _GetParamInt(this, variableName);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	float Session_Variables::GetParamValueFloat(const char* variableName)
 	{
 		float(__thiscall * _GetParamFloat)(Session_Variables * _this, const char* _varname) = (float(__thiscall*)(Session_Variables*, const char*))0x410AC0;
@@ -896,6 +908,7 @@ namespace GameConfig
 		return _GetParamFloat(this, variableName);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	const Vector2<int>& Session_Variables::GetParamValueVector2(const char* variableName, Vector2<int>& outVec, char delimiter)
 	{
 		const Vector2<int>& (__thiscall * _GetParamVec2i)(Session_Variables * _this, Vector2<int>* _outvec, const char* _varname, char _delim) = (const Vector2<int>&(__thiscall*)(Session_Variables*, Vector2<int>*, const char*, char))0x410B50;
@@ -903,6 +916,7 @@ namespace GameConfig
 		return _GetParamVec2i(this, &outVec, variableName, delimiter);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	const Vector2<float>& Session_Variables::GetParamValueVector2(const char* variableName, Vector2<float>& outVec, char delimiter)
 	{
 		const Vector2<float>&(__thiscall * _GetParamVec2)(Session_Variables * _this, Vector2<float>*, const char* _varname, char _delim) = (const Vector2<float>&(__thiscall*)(Session_Variables*, Vector2<float>*, const char*, char))0x410BE0;
@@ -910,6 +924,7 @@ namespace GameConfig
 		return _GetParamVec2(this, &outVec, variableName, delimiter);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	const Vector4f& Session_Variables::GetParamValueVector4(const char* variableName, Vector4f& outVec, char delimiter)
 	{
 		const Vector4f&(__thiscall * _GetParamVec4)(Session_Variables * _this, Vector4f* _outvec, const char* _varname, char _delim) = (const Vector4f&(__thiscall*)(Session_Variables*, Vector4f*, const char*, char))0x410C70;
@@ -917,6 +932,7 @@ namespace GameConfig
 		return _GetParamVec4(this, &outVec, variableName, delimiter);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	const Vector3<float>& Session_Variables::GetParamValueVector3(const char* variableName, Vector3<float>& outVec, char delimiter)
 	{
 		const Vector3<float>& (__thiscall * _GetParamVec3)(Session_Variables * _this, const char* _varname, float* _outX, float* _outY, float* _outZ, char _delim) = (const Vector3<float> & (__thiscall*)(Session_Variables*, const char*, float*, float*, float*, char))0x410D90;
@@ -924,6 +940,7 @@ namespace GameConfig
 		return _GetParamVec3(this, variableName, &outVec.x, &outVec.y, &outVec.z, delimiter);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void Session_Variables::GetParamValueString(const char* variableName, String& outStr)
 	{
 		void (__thiscall * _GetParamString)(Session_Variables * _this, String* _outstr, const char* _varname) = (void (__thiscall*)(Session_Variables*, String*, const char*))0x410E30;
@@ -931,6 +948,7 @@ namespace GameConfig
 		_GetParamString(this, &outStr, variableName);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	const String& Session_Variables::GetParamValueString(const char* variableName)
 	{
 		String* outStr = nullptr;
@@ -939,6 +957,7 @@ namespace GameConfig
 		return _GetParamString(this, outStr, variableName);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void Session_Variables::SetParamValue(const char* variableName, char* value)
 	{
 		void(__thiscall * _SetParamValue)(Session_Variables * _this, const char* _varname, char* _val) = (void(__thiscall*)(Session_Variables*, const char*, char*))0x4114E0;
@@ -946,6 +965,7 @@ namespace GameConfig
 		_SetParamValue(this, variableName, value);
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void Session_Variables::SetParamValueBool(const char* variableName, int value)
 	{
 		void(__thiscall * _SetParamValueBool)(Session_Variables * _this, const char* _varname, int _val) = (void(__thiscall*)(Session_Variables*, const char*, int))0x4116D0;
@@ -1004,9 +1024,9 @@ namespace GameConfig
 		}
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void OpenZip(const char* szZipPath)
 	{
-		//	TODO: implementation!
 		(*(void (*)(const char*))0x419100)(szZipPath);
 	}
 
@@ -1029,26 +1049,21 @@ namespace GameConfig
 		Script::LanguageStringsOffset = languageIndex;
 	}
 
-	signed int GetRegionId(String* regionStr)
+	CountryCodes GetRegionId(String* regionStr)
 	{
-		/*
-		 *	Europe - 0
-		 *	USA - 1
-		 *	Asia - 2
-		*/
-
 		if (regionStr->Equal("europe"))
-			return 0;
+			return COUNTRY_EUROPE;
 
 		if (regionStr->Equal("usa"))
-			return 1;
+			return COUNTRY_USA;
 
 		if (regionStr->Equal("asia"))
-			return 2;
+			return COUNTRY_ASIA;
 
-		return -1;
+		return COUNTRY_UNKNOWN;
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void EnumMaterialsInCollmat()
 	{
 		(*(void(*)())0x87D330)();

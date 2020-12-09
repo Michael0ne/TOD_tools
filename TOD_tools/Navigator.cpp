@@ -1,5 +1,6 @@
 #include "Navigator.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 Navigator::Navigator() : Node(NODE_MASK_EMPTY)
 {
 	MESSAGE_CLASS_CREATED(Navigator);

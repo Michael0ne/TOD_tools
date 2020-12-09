@@ -1,5 +1,6 @@
 #include "LensFlareManager.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 LensFlareManager::LensFlareManager() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(LensFlareManager);

@@ -395,7 +395,7 @@ void IncompatibleMachineParameterError(int messageID, char bWarningIcon)
 
 	MessageBoxW(g_Window->m_hWindow, &Text, &Caption, bWarningIcon ? MB_ICONWARNING : MB_ICONERROR);
 
-	//	TODO: this calls exit_0(1) which calls doexit(...) which does something other than just exit().
+	//	TODO: this calls all destructors for all global objects. Use with caution.
 	exit(1);
 }
 

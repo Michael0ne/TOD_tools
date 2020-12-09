@@ -11,7 +11,7 @@ extern void GetWorkingDirRelativePath(String* str);
 extern void GetGameWorkingDirRelativePath(String* str);
 extern bool IsFileExists(const char* file);
 
-void File::SetExecuteAttrib(bool _attr)
+void FileWrapper::SetExecuteAttrib(unsigned char _attr)
 {
 	EnterCriticalSection((LPCRITICAL_SECTION)this);
 	m_ExecuteAttribute = _attr;
@@ -80,7 +80,7 @@ int File::WriteFormattedVarlistDataToBuffer(char* _buf, va_list args)
 	return written;
 }
 
-//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 int File::_CheckFormattingSymbol_A(char* _buf, int* a1)
 {
 	//	NOTE: this checks input string for formatting symbol and does something with it. Why is it here?
@@ -97,7 +97,7 @@ char File::ReadBlock()
 
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
 	
-	FilesArray[m_ZipSlot]->SetExecuteAttrib(m_ExecuteAttribute);
+	FilesArray[m_ZipSlot]->m_FileHandle->SetExecuteAttrib(m_ExecuteAttribute);
 	FilesArray[m_ZipSlot]->Seek(m_ZipIndex + m_SeekPosition);
 	char bytesread = FilesArray[m_ZipSlot]->m_FileHandle->ReadBlock_A();
 	m_SeekPosition = FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
@@ -130,7 +130,7 @@ int File::Read(void* _buffer, int _numbytestoread)
 
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
 	FilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_ZipIndex);
-	FilesArray[m_ZipSlot]->SetExecuteAttrib(true);
+	FilesArray[m_ZipSlot]->m_FileHandle->SetExecuteAttrib(true);
 
 	if (m_ExecuteAttribute)
 	{
@@ -241,7 +241,7 @@ char File::ReadBlockDecreasePosition()
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
 
 	FilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_ZipIndex);
-	FilesArray[m_ZipSlot]->SetExecuteAttrib(m_ExecuteAttribute);
+	FilesArray[m_ZipSlot]->m_FileHandle->SetExecuteAttrib(m_ExecuteAttribute);
 	FilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
 	m_SeekPosition = FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
 
@@ -265,6 +265,7 @@ const char* File::GetFileName()
 	return m_FileName.m_szString;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
 {
 	int _zipfileinfo[2] = { NULL, NULL };

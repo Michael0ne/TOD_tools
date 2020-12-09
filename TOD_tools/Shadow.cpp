@@ -2,6 +2,7 @@
 
 int& Shadow::TotalShadows = *(int*)0xA3E094;	//	@A3E094
 
+#pragma message(TODO_IMPLEMENTATION)
 Shadow::Shadow() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(Shadow);

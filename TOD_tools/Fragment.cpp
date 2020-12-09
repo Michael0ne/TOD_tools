@@ -1,5 +1,6 @@
 #include "Fragment.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 Fragment::Fragment(const Entity* owner)
 {
 	MESSAGE_CLASS_CREATED(Fragment);
@@ -11,6 +12,7 @@ Fragment::Fragment(const Entity* owner)
 	m_szName = nullptr;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 const char* Fragment::_GetResourcePath()
 {
 	return (*(const char* (__thiscall*)(void*))0x851720)(m_ResourceInfo);

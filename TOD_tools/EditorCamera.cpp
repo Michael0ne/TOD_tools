@@ -2,6 +2,7 @@
 
 EditorCamera* tEditorCamera = nullptr;
 
+#pragma message(TODO_IMPLEMENTATION)
 EditorCamera::EditorCamera()
 {
 	MESSAGE_CLASS_CREATED(EditorCamera);

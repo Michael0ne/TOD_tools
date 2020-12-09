@@ -1,5 +1,6 @@
 #include "RewindBuffer.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 RewindBuffer::RewindBuffer(const unsigned int bufferSize)
 {
 	MESSAGE_CLASS_CREATED(RewindBuffer);
@@ -16,6 +17,7 @@ RewindBuffer::RewindBuffer(const unsigned int bufferSize)
 	field_1C = m_UnknownList.field_4;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void RewindBuffer_List::_8751D0()
 {
 	(*(void(__thiscall*)(RewindBuffer_List*))0x8751D0)(this);

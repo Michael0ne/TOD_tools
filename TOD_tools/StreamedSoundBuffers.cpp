@@ -181,14 +181,14 @@ namespace Audio
 			break;
 		}
 
-		if (m_nSoundSystem == SOUND_SYSTEM_DIESELPOWER)
-			InitDieselPower();
-		else
-			InitDirectSound(channels, sampleRate);
+		//if (m_nSoundSystem == SOUND_SYSTEM_DIESELPOWER)
+			//InitDieselPower();
+		//else
+			//InitDirectSound(channels, sampleRate);
 
-		PreallocateStreamBuffersPool();
-		CreateStaticStreamBuffer();
-		SetListener3DPos(Vector4f());
+		//PreallocateStreamBuffersPool();
+		//CreateStaticStreamBuffer();
+		//SetListener3DPos(Vector4f());
 
 		m_GlobalPauseCalled = false;
 		m_GlobalPause = false;
@@ -415,13 +415,13 @@ namespace Audio
 		debug("Sound priority level set to %d\n", soundPriorityLevel);
 
 		DSBUFFERDESC dsBuffer;
-
-		dsBuffer.dwSize = NULL;
-		dsBuffer.dwReserved = NULL;
-		dsBuffer.lpwfxFormat = NULL;
-		dsBuffer.guid3DAlgorithm = { NULL, NULL, NULL, NULL };
+		memset(&dsBuffer, NULL, sizeof(DSBUFFERDESC));
 
 		dsBuffer.dwSize = sizeof(DSBUFFERDESC);
+		dsBuffer.dwReserved = NULL;
+		dsBuffer.dwBufferBytes = 0;
+		dsBuffer.lpwfxFormat = NULL;
+		dsBuffer.guid3DAlgorithm = GUID_NULL;
 		dsBuffer.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRL3D;
 
 		if (SUCCEEDED(m_pDirectSound->CreateSoundBuffer(&dsBuffer, &m_pDirectSoundBuffer_1, NULL)))
@@ -431,11 +431,11 @@ namespace Audio
 
 		m_Muted = false;
 
-		if (FAILED(m_pDirectSoundBuffer_1->QueryInterface(IID_IDirectSound, (LPVOID*)&m_pDirectSound3DBuffer)))
+		if (FAILED(m_pDirectSoundBuffer_1->QueryInterface(IID_IDirectSound3DBuffer, (LPVOID*)&m_pDirectSound3DBuffer)))
 			IncompatibleMachineParameterError(2, false);
 
 		m_pDirectSound3DBuffer->SetConeOutsideVolume(0, 0);
-		m_pDirectSound3DBuffer->SetAllParameters(0, 0);
+		m_pDirectSound3DBuffer->SetAllParameters(nullptr, DS3D_IMMEDIATE);
 
 		debug("Sound Rendering System is 'DirectSound'\n");
 	}
@@ -464,6 +464,7 @@ namespace Audio
 		}
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void StreamedSoundBuffers::SetListener3DOrientation(const Orientation& orient)
 	{
 		//	TODO: hell no, too many calculations here. Will do later...
@@ -478,6 +479,7 @@ namespace Audio
 				debug("Failed to get 3D listener orientation\n");
 	}
 
+#pragma message(TODO_IMPLEMENTATION)
 	void StreamedSoundBuffers::WaitForSoftPause()
 	{
 		//	TODO:	SoundBuffer class is not fully researched yet, so no implementation for now...
@@ -521,13 +523,13 @@ namespace Audio
 			(*(void(__stdcall*)())(m_DieselPowerSoundBuffers_1.m_pElements[ind] + 152))();
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void StreamedSoundBuffers::PreallocateStreamBuffersPool()
 	{
 
 	}
 
-	//	TODO: implementation!
+#pragma message(TODO_IMPLEMENTATION)
 	void StreamedSoundBuffers::CreateStaticStreamBuffer()
 	{
 

@@ -16,6 +16,7 @@ MemoryCards::MemoryCards() : Node(NODE_MASK_EMPTY)
 	m_SaveFileSize = 0;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void UniqueId::Set()
 {
 	//	TODO: simplify this?

@@ -214,7 +214,7 @@ namespace Input
 		for (int ind = 255; ind != 0; ind--)
 			m_nButtonStates1[ind] = NULL;
 
-		if (FAILED(DirectInput8Create(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_pDeviceObject, NULL)))
+		if (FAILED(DirectInput8Create_Hooked(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_pDeviceObject, NULL)))
 			IncompatibleMachineParameterError(1, false);
 		if (FAILED(m_pDeviceObject->CreateDevice(GUID_SysKeyboard, &m_pDInputDevice, NULL)))
 			IncompatibleMachineParameterError(1, false);

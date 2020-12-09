@@ -94,10 +94,18 @@ namespace GameConfig {
 		void SetParamValueBool(const char* variableName, int value);	//	@4116D0
 	};
 
+	enum CountryCodes
+	{
+		COUNTRY_UNKNOWN = -1,
+		COUNTRY_EUROPE = 0,
+		COUNTRY_USA,
+		COUNTRY_ASIA
+	};
+
 	class Config
 	{
 	private:
-		char field_0;
+		bool m_Initialized;
 		String m_sGameName;
 		String m_sConfigFilePath;
 		Session_Variables* m_pConfigurationVariables;
@@ -124,19 +132,7 @@ namespace GameConfig {
 
 	public:
 		Config();	//	@93CB60
-		~Config()
-		{
-			MESSAGE_CLASS_DESTROYED(Config);
-
-			if (field_0)
-				UninitialiseGame();
-
-			delete &m_sUnkString_1;
-			delete &m_sUnkString_2;
-			delete &m_sSceneName;
-			delete &m_sConfigFilePath;
-			delete &m_sGameName;
-		}
+		~Config();	//	@93CCF0
 
 		void* operator new(size_t size)
 		{
@@ -159,7 +155,7 @@ namespace GameConfig {
 	static void OpenZip(const char* szZipPath);	//	@419100
 	static void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo); //	@418F90
 	static void SetCountryCode(const char* szCode);	//	@42E530
-	static signed int GetRegionId(String* regionStr);	//	@875450
+	static CountryCodes GetRegionId(String* regionStr);	//	@875450
 	static void EnumMaterialsInCollmat();	//	@87D330
 	static void EnumFaceColMaterials();	//	@87D100
 

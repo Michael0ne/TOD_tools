@@ -28,11 +28,13 @@ Light::Light() : Node(NODE_MASK_POSITION)
 	++TotalLights;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Light::AddLightToList(void* list, Light* light)
 {
 	(*(void(__thiscall*)(void*, Light*))0x8812A0)(list, light);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Light::OverrideLights(bool unk)
 {
 	(*(void(__thiscall*)(void*, bool))0x880DC0)(&LightsList, unk);
@@ -45,5 +47,5 @@ Light_Properties::Light_Properties()
 	field_0 = -1;
 	m_Range = 100.0f;
 	m_Brightness = 1.0f;
-	field_24 = field_24 & 0xFFFFFFE2 | 34;
+	field_24 = NULL & 0xFFFFFFE2 | 34;
 }
