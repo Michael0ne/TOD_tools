@@ -63,3 +63,13 @@ private:
 	void			AdjustBufferSize();	//	@405610
 	void			AllocateSpaceIfLong();	//	@405590
 };
+
+class StringTuple
+{
+protected:
+	String			m_String_1;
+	String			m_String_2;
+
+public:
+	StringTuple(const char* str1, const char* str2);
+};

@@ -1,10 +1,16 @@
 #include "Random.h"
 
+int Random::Values[] = {};
+int Random::_A0ADC8 = 1;
+int Random::_A3AD6C;
+
 void Random::Init(int seed)
 {
 	Values[0] = seed;
 
-	for (int ind = 1; ind < sizeof(Values); ind++)
+	constexpr unsigned int _size = sizeof(Values) / 4;
+
+	for (int ind = 1; ind < _size; ind++)
 		Values[ind] = ind + 0x6C078965 * (Values[ind - 1] ^ (Values[ind - 1] >> 30));
 
 	_A0ADC8 = 1;
@@ -22,7 +28,3 @@ float Random::Float()
 {
 	return (*(float(__cdecl*)())0x46C640)();
 }
-
-int Random::Values[623] = {};
-int& Random::_A0ADC8 = *(int*)0xA0ADC8;
-int& Random::_A3AD6C = *(int*)0xA3AD6C;

@@ -15,14 +15,15 @@ struct Folder_Unknown_Struct
 	int	field_14;
 };
 
-enum E_BLOCK_ID
+enum BlockTypeId
 {
-	ID_ALL = 0,
-	ID_MAP = 1,
-	ID_SUBMAP = 2,
-	ID_MISSION = 3,
-	ID_CUTSCENE = 4,
-	ID_PLAYERDATA = 5
+	NONE = 0,
+	MAP = 1,
+	SUBMAP = 2,
+	MISSION = 3,
+	CUTSCENE = 4,
+	PLAYERDATA = 5,
+	MAIN = 6
 };
 
 class Folder_ : public Node
@@ -30,6 +31,10 @@ class Folder_ : public Node
 private:
 	int	m_BlockId;
 	Folder_Unknown_Struct* field_54;
+
+	void GetResourcePathRelative(String& outPath, String resourceName, BlockTypeId blockType, const char* languageCode);	//	@882DF0
+
+	static const char*	BlockTypeExtension[];	//	@A11B64
 public:
 	Folder_() : Node(NODE_MASK_EMPTY)	//	NOTE: no actual constructor
 	{

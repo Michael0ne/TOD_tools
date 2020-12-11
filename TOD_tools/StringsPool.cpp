@@ -236,3 +236,11 @@ void String::Format(const char* format, ...)
 	//	Allocate enough space and strcpy.
 	Set(buffer);
 }
+
+StringTuple::StringTuple(const char* str1, const char* str2)
+{
+	MESSAGE_CLASS_CREATED(StringTuple);
+
+	m_String_1.Set(str1);
+	m_String_2.Set(str2);
+}

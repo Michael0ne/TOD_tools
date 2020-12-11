@@ -51,7 +51,7 @@ namespace Audio
 	{
 		SoundRendererId = soundRendererId;
 
-		if (RegCreateKeyEx(HKEY_CURRENT_USER, RegistryKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, (PHKEY)&soundRendererId, NULL) == ERROR_SUCCESS)
+		if (RegCreateKeyEx(HKEY_CURRENT_USER, Window::RegistryKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, (PHKEY)&soundRendererId, NULL) == ERROR_SUCCESS)
 		{
 			RegSetValueEx((HKEY)soundRendererId, "SoundRenderer", NULL, REG_DWORD, (const BYTE*)&SoundRendererId, sizeof(SoundRendererId));
 			RegCloseKey((HKEY)soundRendererId);
@@ -66,7 +66,7 @@ namespace Audio
 		SoundRendererId = SOUND_SYSTEM_AUTOSELECT;
 
 		HKEY phkResult;
-		if (RegOpenKeyEx(HKEY_CURRENT_USER, RegistryKey, NULL, KEY_QUERY_VALUE, &phkResult) == ERROR_SUCCESS)
+		if (RegOpenKeyEx(HKEY_CURRENT_USER, Window::RegistryKey, NULL, KEY_QUERY_VALUE, &phkResult) == ERROR_SUCCESS)
 		{
 			DWORD lpType;
 			BYTE Data[4];

@@ -35,7 +35,7 @@ namespace Input {
 
 		g_InputMouse = this;
 
-		if (FAILED(DirectInput8Create_Hooked(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDeviceObject, NULL)))
+		if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDeviceObject, NULL)))
 			IncompatibleMachineParameterError(0, false);
 
 		if (FAILED(m_pDeviceObject->CreateDevice(GUID_SysMouse, &m_pDInputDevice, NULL)))

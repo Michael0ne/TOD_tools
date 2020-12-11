@@ -20,6 +20,7 @@
 #include "SavesDirectoriesInformation.h"
 #include "LogDump.h"
 #include "EditorCamera.h"
+#include "ZipArch.h"
 
 String Script::Filesystem = String();
 String Script::ControlType = String();
@@ -110,7 +111,6 @@ namespace GameConfig
 			Script::LoadBlocks = m_pConfigurationVariables->GetParamValueBool("loadblocks");
 
 		//	Try and initialize Blocks class.
-		//	TODO: Blocks implementation!
 		g_Blocks = new Blocks(Script::LoadBlocks);
 
 		//	Init script types.
@@ -143,7 +143,7 @@ namespace GameConfig
 
 		//	Register script entities.
 		//	TODO: implementation!
-		//InitEntitiesDatabase();
+		InitEntitiesDatabase();
 
 		//	Init unknown maps (lists), somehow related to renderer.
 		//	TODO: implementation!
@@ -159,7 +159,7 @@ namespace GameConfig
 
 		//	Init lights.
 		//	TODO: implementation!
-		//(*(void(__cdecl*)())0x881070)();
+		(*(void(__cdecl*)())0x881070)();
 
 		if (m_pConfigurationVariables->IsVariableSet("ps2_max_texture_size"))
 			Script::Ps2MaxTextureSize = m_pConfigurationVariables->GetParamValueInt("ps2_max_texture_size");
@@ -250,7 +250,7 @@ namespace GameConfig
 		if (m_pConfigurationVariables->IsVariableSet("language_mode"))
 			SetCountryCode(m_pConfigurationVariables->GetParamValueString("language_mode").m_szString);
 
-		Script::LanguageMode = String(*Script::CountryCodes[Script::LanguageStringsOffset]);
+		Script::LanguageMode.Set(Script::CountryCodes[Script::LanguageStringsOffset]);
 
 		//	Create required devices - window, mouse, keyboard, gamepad.
 		g_Window = new Window(m_sGameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
@@ -427,12 +427,8 @@ namespace GameConfig
 
 		//	Create renderer, this also creates and initializes Direct3D device.
 		//	TODO: implementation!
-		if (!Allocators::Released)
-			if (g_Renderer = new Renderer())
-				if (Script::Fullscreen)
-					g_Renderer->CreateRenderer(&vScreensize, 32, 16, (Renderer::FSAA != 0 ? 0x200 : 0) | 0x80, 31, 20, &vBuff);
-				else
-					g_Renderer->CreateRenderer(&vScreensize, 32, 16, 130, 31, 20, &vBuff);
+		g_Renderer = new Renderer();
+		g_Renderer->CreateRenderer(&vScreensize, 32, 16, (Script::Fullscreen ? (Renderer::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, &vBuff);
 
 		//	Set region.
 		Script::Region = "europe";
@@ -483,7 +479,7 @@ namespace GameConfig
 
 		//	Load assets.
 		//	TODO: implementation for OpenZip.
-		ReadZipDirectories(Script::Filesystem.m_szString);
+		File::ReadZipDirectories(Script::Filesystem.m_szString);
 
 		//	Parse collmat file
 		EnumMaterialsInCollmat();
@@ -973,76 +969,12 @@ namespace GameConfig
 		_SetParamValueBool(this, variableName, value);
 	}
 
-	void ReadZipDirectories(const char* szFileSystem)
-	{
-		if (szFileSystem && *szFileSystem) {
-			int nCurrentArchiveIndex = 0;
-			char szZipName[255];
-
-			memset(&szZipName, 0, sizeof(szZipName));
-
-			while (true) {
-				int nCharIndex = 0;
-				do {
-					char cCurrentChar = szFileSystem[nCurrentArchiveIndex];
-
-					if (!cCurrentChar)
-						break;
-					if (cCurrentChar == ' ' || cCurrentChar == ',')
-						break;
-
-					++nCurrentArchiveIndex;
-					szZipName[nCharIndex++] = cCurrentChar;
-				} while (nCharIndex < 255);
-
-				szZipName[nCharIndex] = 0;
-
-				while (true) {
-					char cCurrentChar = szFileSystem[nCurrentArchiveIndex];
-
-					if (cCurrentChar != ' ' && cCurrentChar != ',')
-						break;
-
-					++nCurrentArchiveIndex;
-				}
-
-				OpenZip(szZipName);
-
-				String sZipNameLocalised;
-
-				sZipNameLocalised.Set(Script::LanguageMode.m_szString);
-				sZipNameLocalised.Append("_");
-				sZipNameLocalised.Append(szZipName);
-
-				OpenZip(sZipNameLocalised.m_szString);
-
-				if (!szFileSystem[nCurrentArchiveIndex])
-					break;
-
-				memset(&szZipName, 0, sizeof(szZipName));
-			}
-		}
-	}
-
-#pragma message(TODO_IMPLEMENTATION)
-	void OpenZip(const char* szZipPath)
-	{
-		(*(void (*)(const char*))0x419100)(szZipPath);
-	}
-
-	void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo)
-	{
-		void(__cdecl * _AddDirMappingList)(const char* _dir, const char* _dirto) = (void(__cdecl*)(const char*, const char*))0x418F90;
-
-		_AddDirMappingList(szDir, szDirTo);
-	}
-
 	void SetCountryCode(const char* szCode)
 	{
 		unsigned int languageIndex = 0;
 
 		while (languageIndex++ < CONFIG_LANGUAGES) {
-			if (Script::CountryCodes[languageIndex] && strncmp(szCode, *Script::CountryCodes[languageIndex], 2) == 0)
+			if (Script::CountryCodes[languageIndex] && strncmp(szCode, Script::CountryCodes[languageIndex], 2) == 0)
 				break;
 		}
 

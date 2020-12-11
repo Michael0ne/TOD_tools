@@ -1,21 +1,22 @@
 #include "File.h"
 #include "LogDump.h"
 #include "ZipArch.h"
-#include "Globals.h"
+#include "Window.h"
 
 unsigned int File::FilesOpen = 0;
 HANDLE	File::FilesSemaphoreArray[FILE_MAX_OPEN_FILES];
-File* File::FilesArray[FILE_MAX_OPEN_FILES];
+List<StringTuple> File::DirectoryMappingsList;
+FileWrapper* FileWrapper::FilesArray[FILE_MAX_OPEN_FILES];
 
 extern void GetWorkingDirRelativePath(String* str);
 extern void GetGameWorkingDirRelativePath(String* str);
 extern bool IsFileExists(const char* file);
 
-void FileWrapper::SetExecuteAttrib(unsigned char _attr)
+void FileWrapper::SetExecuteAttr(unsigned char _attr)
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 	m_ExecuteAttribute = _attr;
-	LeaveCriticalSection((LPCRITICAL_SECTION)this);
+	LeaveCriticalSection(&m_CriticalSection);
 }
 
 bool File::WriteBuffers()
@@ -23,7 +24,7 @@ bool File::WriteBuffers()
 	if (m_ReadFromZip)
 		return false;
 
-	EnterCriticalSection((LPCRITICAL_SECTION)m_FileHandle);
+	EnterCriticalSection(&m_FileHandle->m_CriticalSection);
 
 	if (!m_FileHandle->m_Read)
 	{
@@ -36,7 +37,7 @@ bool File::WriteBuffers()
 		FlushFileBuffers(m_FileHandle->m_File);
 	}
 
-	LeaveCriticalSection((LPCRITICAL_SECTION)m_FileHandle);
+	LeaveCriticalSection(&m_FileHandle->m_CriticalSection);
 
 	return true;
 }
@@ -90,19 +91,19 @@ int File::_CheckFormattingSymbol_A(char* _buf, int* a1)
 char File::ReadBlock()
 {
 	if (!m_ReadFromZip)
-		return m_FileHandle->ReadBlock_A();
+		return m_FileHandle->ReadBlock();
 
 	if (m_SeekPosition >= m_ZipPos)
 		return -1;
 
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
 	
-	FilesArray[m_ZipSlot]->m_FileHandle->SetExecuteAttrib(m_ExecuteAttribute);
-	FilesArray[m_ZipSlot]->Seek(m_ZipIndex + m_SeekPosition);
-	char bytesread = FilesArray[m_ZipSlot]->m_FileHandle->ReadBlock_A();
-	m_SeekPosition = FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
+	FileWrapper::FilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
+	FileWrapper::FilesArray[m_ZipSlot]->Seek(m_ZipIndex + m_SeekPosition);
+	char bytesread = FileWrapper::FilesArray[m_ZipSlot]->ReadBlock();
+	m_SeekPosition = FileWrapper::FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
 
-	ReleaseSemaphore(FilesArray[m_ZipSlot], 1, 0);
+	ReleaseSemaphore(FileWrapper::FilesArray[m_ZipSlot], 1, 0);
 
 	return bytesread;
 }
@@ -129,14 +130,14 @@ int File::Read(void* _buffer, int _numbytestoread)
 		return NULL;
 
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
-	FilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_ZipIndex);
-	FilesArray[m_ZipSlot]->m_FileHandle->SetExecuteAttrib(true);
+	FileWrapper::FilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_ZipIndex);
+	FileWrapper::FilesArray[m_ZipSlot]->SetExecuteAttr(true);
 
 	if (m_ExecuteAttribute)
 	{
-		int bytesread = FilesArray[m_ZipSlot]->Read(_buffer, ((m_SeekPosition + _numbytestoread) > m_ZipPos) ? m_ZipPos - m_SeekPosition : _numbytestoread);
+		int bytesread = FileWrapper::FilesArray[m_ZipSlot]->Read(_buffer, ((m_SeekPosition + _numbytestoread) > m_ZipPos) ? m_ZipPos - m_SeekPosition : _numbytestoread);
 
-		m_SeekPosition = FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
+		m_SeekPosition = FileWrapper::FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
 		ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
 		return bytesread;
@@ -145,21 +146,21 @@ int File::Read(void* _buffer, int _numbytestoread)
 
 		for (; bytesread < _numbytestoread; bytesread++)
 		{
-			if (FilesArray[m_ZipSlot]->GetPosition() >= m_ZipPos + m_ZipIndex)
+			if (FileWrapper::FilesArray[m_ZipSlot]->GetPosition() >= m_ZipPos + m_ZipIndex)
 				break;
-			char lastchar = FilesArray[m_ZipSlot]->ReadBlock();
+			char lastchar = FileWrapper::FilesArray[m_ZipSlot]->ReadBlock();
 			if (lastchar == '\n' ||
 				lastchar == '\r')
 			{
-				char lastchar_2 = FilesArray[m_ZipSlot]->ReadBlock();
+				char lastchar_2 = FileWrapper::FilesArray[m_ZipSlot]->ReadBlock();
 				if ((lastchar_2 == '\n' || lastchar_2 == '\r') && lastchar == lastchar_2)
-					FilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
+					FileWrapper::FilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
 				lastchar = '\n';
 			}
 			((char*)(_buffer))[bytesread] = lastchar;
 		}
 
-		m_SeekPosition = FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
+		m_SeekPosition = FileWrapper::FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
 		ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
 		return bytesread;
@@ -192,7 +193,7 @@ char File::_WriteBufferAndSetToStart()
 		return true;
 	}
 
-	EnterCriticalSection((LPCRITICAL_SECTION)m_FileHandle);
+	EnterCriticalSection(&m_FileHandle->m_CriticalSection);
 	
 	if (m_FileHandle->m_File)
 	{
@@ -214,7 +215,7 @@ char File::_WriteBufferAndSetToStart()
 		m_FileHandle->m_FilePosition = SetFilePointer(m_FileHandle->m_File, NULL, NULL, FILE_BEGIN);
 	}
 
-	LeaveCriticalSection((LPCRITICAL_SECTION)m_FileHandle);
+	LeaveCriticalSection(&m_FileHandle->m_CriticalSection);
 	return true;
 }
 
@@ -240,10 +241,10 @@ char File::ReadBlockDecreasePosition()
 
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
 
-	FilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_ZipIndex);
-	FilesArray[m_ZipSlot]->m_FileHandle->SetExecuteAttrib(m_ExecuteAttribute);
-	FilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
-	m_SeekPosition = FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
+	FileWrapper::FilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_ZipIndex);
+	FileWrapper::FilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
+	FileWrapper::FilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
+	m_SeekPosition = FileWrapper::FilesArray[m_ZipSlot]->GetPosition() - m_ZipIndex;
 
 	ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
@@ -275,6 +276,11 @@ File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
 	m_ReadFromZip = false;
 	m_ZipSlot = -1;
 	m_FileReadAttribute = (_desiredaccess >> 7) & 1;
+	m_ExecuteAttribute = NULL;
+	m_SeekPosition = NULL;
+	m_ZipFileHandle = nullptr;
+	m_ZipIndex = NULL;
+	m_ZipPos = NULL;
 
 	//	Try and read this file from open zip archive.
 	if (_desiredaccess & 1 &&
@@ -352,17 +358,32 @@ char File::ReadString(void* outStr)
 	return true;
 }
 
+void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
+{
+	StringTuple _tmp(str1, str2);
+
+	DirectoryMappingsList.AddElement(&_tmp);
+}
+
 FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _createifnotfound)
 {
-	InitializeCriticalSection((LPCRITICAL_SECTION)this);
-
-	m_File = nullptr;
+	m_File = NULL;
 	m_CreateIfNotFound = _createifnotfound;
 	m_DesiredAccess_1 = _desiredaccess;
+	m_Buffer = m_BufferBegin = m_BufferEnd = nullptr;
+	m_CreationDisposition = NULL;
+	m_DesiredAccess_2 = NULL;
+	m_ExecuteAttribute = NULL;
+	m_FilePosition = NULL;
+	m_Read = false;
+
+	InitializeCriticalSection(&m_CriticalSection);
 
 	if (!_filename)
 		return;
 
+	m_WorkingDir.Set(_filename);
+	m_GameWorkingDir.Set(_filename);
 	GetWorkingDirRelativePath(&m_WorkingDir);
 	GetGameWorkingDirRelativePath(&m_GameWorkingDir);
 
@@ -395,7 +416,7 @@ FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _create
 	m_Buffer = nullptr;
 
 	if (_createifnotfound)
-		Create();
+		CreateFile_();
 
 	MESSAGE_CLASS_CREATED(FileWrapper);
 }
@@ -422,9 +443,9 @@ FileWrapper::~FileWrapper()
 	MESSAGE_CLASS_DESTROYED(FileWrapper);
 }
 
-HANDLE FileWrapper::Create()
+HANDLE FileWrapper::CreateFile_()
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 
 	m_File = CreateFile(m_WorkingDir.m_szString, m_DesiredAccess_2, FILE_SHARE_READ, NULL, m_CreationDisposition, FILE_FLAG_WRITE_THROUGH, NULL);
 
@@ -439,11 +460,11 @@ HANDLE FileWrapper::Create()
 			LogDump::LogA("Could not open file for writing: %s\n", errbuf);
 
 			m_File = nullptr;
-			LeaveCriticalSection((LPCRITICAL_SECTION)this);
+			LeaveCriticalSection(&m_CriticalSection);
 			return m_File;
 		}
 
-		if (GameDiscFound)
+		if (Window::GameDiscFound)
 		{
 			m_WorkingDir = m_GameWorkingDir;
 			m_File = CreateFile(m_WorkingDir.m_szString, m_DesiredAccess_2, FILE_SHARE_READ, NULL, m_CreationDisposition, FILE_FLAG_WRITE_THROUGH, NULL);
@@ -451,7 +472,7 @@ HANDLE FileWrapper::Create()
 			if (m_File == INVALID_HANDLE_VALUE)
 			{
 				m_File = nullptr;
-				LeaveCriticalSection((LPCRITICAL_SECTION)this);
+				LeaveCriticalSection(&m_CriticalSection);
 				return m_File;
 			}
 		}
@@ -460,14 +481,14 @@ HANDLE FileWrapper::Create()
 	if (m_File)
 		m_Buffer = m_BufferBegin = m_BufferEnd = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(FILE_BUFFER_SIZE, NULL, NULL);
 
-	LeaveCriticalSection((LPCRITICAL_SECTION)this);
+	LeaveCriticalSection(&m_CriticalSection);
 
 	return m_File;
 }
 
-char FileWrapper::ReadBlock_A()
+char FileWrapper::ReadBlock()
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 	
 	if (m_BufferBegin == m_BufferEnd &&
 		m_Read)
@@ -480,7 +501,7 @@ char FileWrapper::ReadBlock_A()
 
 	if (m_BufferBegin = m_BufferEnd)
 	{
-		LeaveCriticalSection((LPCRITICAL_SECTION)this);
+		LeaveCriticalSection(&m_CriticalSection);
 
 		return -1;
 	}
@@ -491,17 +512,17 @@ char FileWrapper::ReadBlock_A()
 
 	if (m_ExecuteAttribute || endsym != '\r')
 	{
-		LeaveCriticalSection((LPCRITICAL_SECTION)this);
+		LeaveCriticalSection(&m_CriticalSection);
 
 		return endsym;
 	}else{
 		if (m_BufferBegin == m_BufferEnd)
-			ReadBlock();
+			ReadBlock_Internal();
 
 		m_BufferBegin++;
 		m_FilePosition++;
 
-		LeaveCriticalSection((LPCRITICAL_SECTION)this);
+		LeaveCriticalSection(&m_CriticalSection);
 
 		return '\n';
 	}
@@ -509,16 +530,16 @@ char FileWrapper::ReadBlock_A()
 
 int FileWrapper::GetPosition()
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 	int filepos = m_FilePosition;
-	LeaveCriticalSection((LPCRITICAL_SECTION)this);
+	LeaveCriticalSection(&m_CriticalSection);
 
 	return filepos;
 }
 
 int FileWrapper::Seek(int _pos)
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 
 	if (_pos != m_FilePosition)
 	{
@@ -540,7 +561,7 @@ int FileWrapper::Seek(int _pos)
 		m_FilePosition = SetFilePointer(m_File, _pos, NULL, FILE_BEGIN);
 	}
 
-	LeaveCriticalSection((LPCRITICAL_SECTION)this);
+	LeaveCriticalSection(&m_CriticalSection);
 
 	return m_FilePosition;
 }
@@ -550,7 +571,7 @@ void FileWrapper::GetLastErrorMessage(char* _buf)
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, GetLastError(), NULL, _buf, NULL, nullptr);
 }
 
-void FileWrapper::ReadBlock()
+void FileWrapper::ReadBlock_Internal()
 {
 	if (m_Read)
 	{
@@ -583,15 +604,42 @@ void FileWrapper::_436E70()
 
 void FileWrapper::SetFileHandle(HANDLE _hnd)
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 	if (!m_CreateIfNotFound)
 		m_File = _hnd;
-	LeaveCriticalSection((LPCRITICAL_SECTION)this);
+	LeaveCriticalSection(&m_CriticalSection);
+}
+
+void FileWrapper::ReleaseFileHandle()
+{
+	EnterCriticalSection(&m_CriticalSection);
+	if (!m_CreateIfNotFound)
+		m_File = nullptr;
+	LeaveCriticalSection(&m_CriticalSection);
+}
+
+void FileWrapper::_436FF0(int)
+{
+	EnterCriticalSection(&m_CriticalSection);
+
+	if (m_File && m_Buffer != m_BufferBegin)
+	{
+		DWORD numBytesWritten = NULL;
+		WriteFile(m_File, m_Buffer, m_BufferBegin - m_Buffer, &numBytesWritten, nullptr);
+		m_BufferEnd = m_BufferBegin = m_Buffer;
+	}
+
+	delete m_Buffer;
+
+	if (m_File)
+		CloseHandle(m_File);
+
+	LeaveCriticalSection(&m_CriticalSection);
 }
 
 char FileWrapper::_WriteBufferBlockAndInsertNewLine(char _sym)
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 
 	if (m_BufferBegin - m_Buffer == FILE_BUFFER_SIZE &&
 		m_Buffer != m_BufferBegin &&
@@ -609,7 +657,7 @@ char FileWrapper::_WriteBufferBlockAndInsertNewLine(char _sym)
 		++m_BufferBegin;
 		m_FilePosition++;
 
-		LeaveCriticalSection((LPCRITICAL_SECTION)this);
+		LeaveCriticalSection(&m_CriticalSection);
 
 		return true;
 	}else{
@@ -623,7 +671,7 @@ char FileWrapper::_WriteBufferBlockAndInsertNewLine(char _sym)
 		++m_BufferBegin;
 		m_FilePosition += 2;
 
-		LeaveCriticalSection((LPCRITICAL_SECTION)this);
+		LeaveCriticalSection(&m_CriticalSection);
 
 		return true;
 	}
@@ -631,7 +679,7 @@ char FileWrapper::_WriteBufferBlockAndInsertNewLine(char _sym)
 
 int FileWrapper::WriteBuffer(const char* _buf, int _len)
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 
 	if (_len <= FILE_BUFFER_SIZE)
 	{
@@ -641,7 +689,7 @@ int FileWrapper::WriteBuffer(const char* _buf, int _len)
 			for (int ind = _len; ind; ind--)
 				_WriteBufferBlockAndInsertNewLine(*_buf_tmp++);
 		}
-		LeaveCriticalSection((LPCRITICAL_SECTION)this);
+		LeaveCriticalSection(&m_CriticalSection);
 
 		return _len;
 	}else{
@@ -676,7 +724,7 @@ int FileWrapper::WriteBuffer(const char* _buf, int _len)
 		WriteFile(m_File, buf, ind, &numBytesWritten, nullptr);
 		m_FilePosition += numBytesWritten;
 
-		LeaveCriticalSection((LPCRITICAL_SECTION)this);
+		LeaveCriticalSection(&m_CriticalSection);
 
 		return numBytesWritten;
 	}
@@ -684,7 +732,7 @@ int FileWrapper::WriteBuffer(const char* _buf, int _len)
 
 char FileWrapper::ReadBlockDecreasePosition()
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 
 	if (m_BufferBegin == m_Buffer)
 		ReadBlockFromOffset();
@@ -701,7 +749,7 @@ char FileWrapper::ReadBlockDecreasePosition()
 			ReadBlockFromOffset();
 			--m_FilePosition;
 
-			LeaveCriticalSection((LPCRITICAL_SECTION)this);
+			LeaveCriticalSection(&m_CriticalSection);
 			return true;
 		}
 
@@ -709,8 +757,18 @@ char FileWrapper::ReadBlockDecreasePosition()
 		--m_FilePosition;
 	}
 
-	LeaveCriticalSection((LPCRITICAL_SECTION)this);
+	LeaveCriticalSection(&m_CriticalSection);
 	return true;
+}
+
+char FileWrapper::_437790()
+{
+	if (ReadBlock() == -1)
+		return 1;
+
+	ReadBlockDecreasePosition();
+
+	return 0;
 }
 
 void FileWrapper::ReadBlockFromOffset()
@@ -728,117 +786,15 @@ void FileWrapper::ReadBlockFromOffset()
 	m_BufferBegin = m_Buffer + 19;
 }
 
-int FileWrapper::Read(void* _buf, int _numbytestoread)
+#pragma message(TODO_IMPLEMENTATION)
+int FileWrapper::Read(LPVOID _buf, int _numbytestoread)
 {
-	//	NOTE: this is ridiculous.
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
-
-	if (_numbytestoread <= FILE_BUFFER_SIZE)
-	{
-		if (m_ExecuteAttribute)
-		{
-			if ((m_BufferEnd - m_BufferBegin) >= _numbytestoread)
-			{
-				memcpy(_buf, m_BufferBegin, _numbytestoread);
-				m_FilePosition += _numbytestoread;
-				m_BufferBegin = &m_BufferBegin[_numbytestoread];
-
-				LeaveCriticalSection((LPCRITICAL_SECTION)this);
-				return _numbytestoread;
-			}
-
-			memcpy(_buf, m_BufferBegin, m_BufferEnd - m_BufferBegin);
-			m_BufferBegin = m_BufferEnd;
-
-			ReadBlock();
-
-			if (m_BufferBegin == m_BufferEnd)
-			{
-				m_FilePosition += m_BufferEnd - m_BufferBegin;
-
-				LeaveCriticalSection((LPCRITICAL_SECTION)this);
-				return m_BufferEnd - m_BufferBegin;
-			}
-
-			int _len = (m_BufferEnd - m_BufferBegin);
-			if (_len >= (_numbytestoread - _len))
-				_len = _numbytestoread - _len;
-			memcpy((void*)((m_BufferEnd - m_BufferBegin) + (int)_buf), m_BufferBegin, _len);
-
-			m_BufferBegin = &m_BufferBegin[_len];
-			m_FilePosition += _len * 2;
-
-			LeaveCriticalSection((LPCRITICAL_SECTION)this);
-			return _len * 2;
-		}else{
-			if (_numbytestoread > 0)
-			{
-				int ind = 0;
-				while (true)
-				{
-					char _sym = ReadBlock_A();
-					if (_sym == -1)
-						break;
-
-					((char*)_buf)[ind] = _sym;
-					if (ind >= _numbytestoread)
-					{
-						LeaveCriticalSection((LPCRITICAL_SECTION)this);
-						return ind;
-					}
-				}
-			}else{
-				LeaveCriticalSection((LPCRITICAL_SECTION)this);
-				return NULL;
-			}
-		}
-	}
-
-	if (m_Read)
-	{
-		if (m_BufferBegin != m_BufferEnd)
-			SetFilePointer(m_File, m_BufferBegin - m_BufferEnd, NULL, FILE_CURRENT);
-		m_BufferEnd = m_BufferBegin = m_Buffer;
-	}
-
-	DWORD numBytesRead = NULL;
-	ReadFile(m_File, _buf, _numbytestoread, &numBytesRead, nullptr);
-	m_FilePosition += numBytesRead;
-
-	if (m_ExecuteAttribute)
-	{
-		LeaveCriticalSection((LPCRITICAL_SECTION)this);
-		return numBytesRead;
-	}
-
-	int bytesread = NULL, bytesread_ = NULL;
-	if (numBytesRead)
-	{
-		for (unsigned int ind = 0; ind < numBytesRead; ind++, bytesread_++)
-		{
-			if (!ind && *(char*)_buf == '\n')
-			{
-				ind = 1;
-				if (numBytesRead <= 1)
-					break;
-			}
-
-			if (((char*)_buf)[ind] == '\r')
-			{
-				((char*)_buf)[bytesread_] = '\n';
-				++ind;
-			}else
-				((char*)_buf)[bytesread_] = ((char*)_buf)[ind];
-		}
-	}
-
-	LeaveCriticalSection((LPCRITICAL_SECTION)this);
-	return bytesread;
+	return (*(int(__thiscall*)(FileWrapper*, LPVOID, int))0x437230)(this, _buf, _numbytestoread);
 }
 
 char FileWrapper::WriteFromBufferAndSetToEnd()
 {
-	EnterCriticalSection((LPCRITICAL_SECTION)this);
+	EnterCriticalSection(&m_CriticalSection);
 
 	if (m_File)
 	{
@@ -859,7 +815,121 @@ char FileWrapper::WriteFromBufferAndSetToEnd()
 		m_FilePosition = SetFilePointer(m_File, NULL, NULL, FILE_END);
 	}
 
-	LeaveCriticalSection((LPCRITICAL_SECTION)this);
+	LeaveCriticalSection(&m_CriticalSection);
 
 	return true;
+}
+
+void File::ReadZipDirectories(const char* szFileSystem)
+{
+	if (szFileSystem && *szFileSystem) {
+		int nCurrentArchiveIndex = 0;
+		char szZipName[255];
+
+		memset(&szZipName, 0, sizeof(szZipName));
+
+		while (true) {
+			int nCharIndex = 0;
+			do {
+				char cCurrentChar = szFileSystem[nCurrentArchiveIndex];
+
+				if (!cCurrentChar)
+					break;
+				if (cCurrentChar == ' ' || cCurrentChar == ',')
+					break;
+
+				++nCurrentArchiveIndex;
+				szZipName[nCharIndex++] = cCurrentChar;
+			} while (nCharIndex < 255);
+
+			szZipName[nCharIndex] = 0;
+
+			while (true) {
+				char cCurrentChar = szFileSystem[nCurrentArchiveIndex];
+
+				if (cCurrentChar != ' ' && cCurrentChar != ',')
+					break;
+
+				++nCurrentArchiveIndex;
+			}
+
+			OpenZip(szZipName);
+
+			char sZipNameLocalised[32];
+			memset(sZipNameLocalised, NULL, sizeof(sZipNameLocalised));
+
+			strcpy(sZipNameLocalised, Script::LanguageMode.m_szString);
+			strcat(sZipNameLocalised, "_");
+			strcat(sZipNameLocalised, szZipName);
+
+			OpenZip(sZipNameLocalised);
+
+			if (!szFileSystem[nCurrentArchiveIndex])
+				break;
+
+			memset(&szZipName, 0, sizeof(szZipName));
+		}
+	}
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void File::OpenZip(const char* szZipPath)
+{
+	if (!IsFileExists(szZipPath))
+		return;
+
+	int slotId = ZipArch::SlotId++;
+	LogDump::LogA("Opening zip <%s> into slot %i\n", szZipPath, ZipArch::SlotId);
+
+	*(unsigned char*)(&ZipArch::SlotInfo[slotId].field_4) = 15;	//	FIXME: this is stupid.
+	ZipArch::ZipNames[slotId].Set(szZipPath);
+
+	FileWrapper::FilesArray[slotId] = new FileWrapper(szZipPath, 33, true);
+	FileWrapper::FilesArray[slotId]->WriteFromBufferAndSetToEnd();
+
+	if (FileWrapper::FilesArray[slotId]->GetPosition())
+	{
+		FilesSemaphoreArray[slotId] = CreateSemaphore(NULL, 1, 1, nullptr);
+		FileWrapper::FilesArray[slotId]->Seek(FileWrapper::FilesArray[slotId]->GetPosition() - 22);
+
+		unsigned char	FileHeaderSignature[20];
+		bool			HeaderValid = false;
+		memset(&FileHeaderSignature, NULL, sizeof(FileHeaderSignature));
+
+		FileWrapper::FilesArray[slotId]->Read(FileHeaderSignature, sizeof(FileHeaderSignature));
+		if (FileHeaderSignature[0] +
+			((FileHeaderSignature[1] + ((FileHeaderSignature[2] + (FileHeaderSignature[3] << 8)) << 8)) << 8) == FILE_ZIP_MAGIC_HEADER)
+			HeaderValid = true;
+
+		unsigned int FilesInArchive = FileHeaderSignature[10] + (FileHeaderSignature[11] << 8);
+		unsigned int DataSize = FileHeaderSignature[12] + ((FileHeaderSignature[13] + ((FileHeaderSignature[14] + (FileHeaderSignature[15] << 8)) << 8)) << 8);
+		unsigned int DataStartOffset = FileHeaderSignature[16] + ((FileHeaderSignature[17] + ((FileHeaderSignature[18] + (FileHeaderSignature[19] << 8)) << 8)) << 8);
+
+		FileWrapper::FilesArray[slotId]->Seek(DataStartOffset);
+
+		unsigned char* DataInfo = new unsigned char[DataSize];
+		FileWrapper::FilesArray[slotId]->Read(DataInfo, sizeof(DataInfo));
+
+		unsigned int slotInfo[] = {
+			(NULL & 0xFFFFFF06 | 6) & 255,
+			(NULL & 0x800000) | 0xF800000,
+			NULL,
+			NULL
+		};
+
+		if (FilesInArchive > 0)
+		{
+			for (unsigned int ind = FilesInArchive; ind; ind--)
+			{
+				if (HeaderValid)
+					DataInfo -= 8;
+				//
+			}
+
+			ZipArch::SlotInfo[slotId]._41A5F0(slotInfo);
+			//
+		}
+
+		delete[] DataInfo;
+	}
 }

@@ -22,6 +22,9 @@ public:
 	LONG			m_nWindowLeft;
 	LONG			m_nWindowTop;
 
+private:
+	static unsigned int		MessageBoxType[];	//	@A091A8
+
 public:
 	void			QuitGame() { m_bQuitRequested = true; }	//	@43B930
 	bool			ProcessMessages();	//	@43B950
@@ -59,6 +62,13 @@ public:
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
 	}
+
+	static const char	RegistryKey[];	//	@A09178
+	static HINSTANCE	WindowInstanceHandle;	//	@A35EB0
+	static STICKYKEYS	StickyKeysFeature;	//	@A0917C
+	static TOGGLEKEYS	ToggleKeysFeature;	//	@A09184
+	static FILTERKEYS	FilterKeysFeature;	//	@A0918C
+	static bool			GameDiscFound;	//	@A35E68
 };
 
 extern Window* g_Window;
@@ -76,6 +86,10 @@ void				SetGameWorkingDir(const char* str);	//	@438560
 void				GetWorkingDirRelativePath(String* str);	//	@437A70
 void				GetGameWorkingDirRelativePath(String* str);	//	@437B80
 bool				IsFileExists(const char* file);	//	@437E90
+void				ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension);	//	@4088E0
+
+extern String		WorkingDirectory;	//	@A08FA0
+extern String		GameWorkingDirectory;	//	@A08FB0
 
 #ifdef INCLUDE_FIXES
 int CALLBACK		MenuClickCallback(WPARAM wParam);

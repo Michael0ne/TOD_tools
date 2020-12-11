@@ -151,9 +151,6 @@ namespace GameConfig {
 		void CreateUnknownMatricies();	//	@93D360
 	};
 
-	static void ReadZipDirectories(const char* szFileSystem);	//	@419550
-	static void OpenZip(const char* szZipPath);	//	@419100
-	static void AddDirectoryMappingsListEntry(const char* szDir, const char* szDirTo); //	@418F90
 	static void SetCountryCode(const char* szCode);	//	@42E530
 	static CountryCodes GetRegionId(String* regionStr);	//	@875450
 	static void EnumMaterialsInCollmat();	//	@87D330
