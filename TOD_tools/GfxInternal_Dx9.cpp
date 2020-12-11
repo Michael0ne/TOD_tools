@@ -282,7 +282,7 @@ bool GfxInternal_Dx9::GetRegistryResolution(DisplayModeInfo& mode)
 	DWORD cbdata;
 	unsigned int x, y;
 
-	if (RegOpenKeyExA(HKEY_CURRENT_USER, RegistryKey, 0, 1, &phkResult))
+	if (RegOpenKeyExA(HKEY_CURRENT_USER, Window::RegistryKey, 0, 1, &phkResult))
 		return false;
 
 	if (RegQueryValueExA(phkResult, "XRes", 0, &type, (LPBYTE)&x, &cbdata) < 0 ||
@@ -304,7 +304,7 @@ void GfxInternal_Dx9::RememberResolution()
 	HKEY phkResult;
 	LPDWORD disposition = 0;
 
-	if (!RegCreateKeyExA(HKEY_CURRENT_USER, RegistryKey, 0, 0, 0, 0xF003F, 0, &phkResult, disposition)) {
+	if (!RegCreateKeyExA(HKEY_CURRENT_USER, Window::RegistryKey, 0, 0, 0, 0xF003F, 0, &phkResult, disposition)) {
 		RegSetValueExA(phkResult, "XRes", 0, 4, (const BYTE*)&m_DisplayMode.Width, 4);
 		RegSetValueExA(phkResult, "YRes", 0, 4, (const BYTE*)&m_DisplayMode.Height, 4);
 		RegCloseKey(phkResult);
@@ -449,7 +449,7 @@ void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath
 	if (texturePath) {
 		char textureExtension[32];
 		char dummybuff[256];
-		Utils::ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
+		ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
 
 		if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) &&
 			GfxInternal_Dx9::_CreateD3DTextureFromFile(m_pDirect3DDevice9, (LPCWSTR)texturePath, m_pTexturesArray) < 0)

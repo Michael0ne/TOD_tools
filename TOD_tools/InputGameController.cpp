@@ -45,7 +45,7 @@ namespace Input
 
 		if (!ControllersCreated)
 		{
-			DirectInput8Create_Hooked(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
+			DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
 			EnumGameControllers();
 		}
 
@@ -243,7 +243,7 @@ namespace Input
 
 		if (!g_pDirectInput8Interface)
 		{
-			DirectInput8Create(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
+			DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
 			bInterfaceCreated = true;
 		}
 

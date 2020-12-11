@@ -10,7 +10,18 @@
 #include "Scene.h"
 #include "LogDump.h"
 
-Window* g_Window = NULL;
+Window* g_Window = nullptr;
+unsigned int Window::MessageBoxType[] = {
+	0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0
+};
+const char Window::RegistryKey[] = "Software\\Eidos\\Total Overdose";
+HINSTANCE Window::WindowInstanceHandle = nullptr;
+STICKYKEYS Window::StickyKeysFeature = { 8, 0 };
+TOGGLEKEYS Window::ToggleKeysFeature = { 8, 0 };
+FILTERKEYS Window::FilterKeysFeature = { 24, 0, 0, 0, 0, 0 };
+bool Window::GameDiscFound = false;
+String WorkingDirectory;
+String GameWorkingDirectory;
 
 bool Window::ProcessMessages()
 {
@@ -172,7 +183,7 @@ void Window::SetCursorReleased(bool bReleased)
 
 int	Window::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
 {
-	switch (MessageBox(m_hWindow, lpText, lpCaption, uType[type])) {
+	switch (MessageBox(m_hWindow, lpText, lpCaption, MessageBoxType[type])) {
 	case IDCANCEL:
 		return 2;
 		break;
@@ -390,8 +401,8 @@ void IncompatibleMachineParameterError(int messageID, char bWarningIcon)
 	}
 
 	WCHAR	Caption, Text;
-	FindStringResource(*StringResourceBaseAddr + 220, &Caption, 256);
-	FindStringResource(*StringResourceBaseAddr + nMessageId, &Text, 512);
+	FindStringResource(Script::LanguageStringsOffset + 220, &Caption, 256);
+	FindStringResource(Script::LanguageStringsOffset + nMessageId, &Text, 512);
 
 	MessageBoxW(g_Window->m_hWindow, &Text, &Caption, bWarningIcon ? MB_ICONWARNING : MB_ICONERROR);
 
@@ -402,30 +413,26 @@ void IncompatibleMachineParameterError(int messageID, char bWarningIcon)
 void SetAccessibilityFeatures(bool bCollect)
 {
 	if (bCollect) {
-		SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
-		SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
-		SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
+		SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
+		SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
+		SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
 
 		return;
 	}
 
-	STICKYKEYS sNewStickyKeys = *sSTICKYKEYS;
-	TOGGLEKEYS sNewToggleKeys = *sTOGGLEKEYS;
-	FILTERKEYS sNewFilterKeys = *sFILTERKEYS;
-
-	if (!(sSTICKYKEYS->dwFlags & 1)) {
-		sNewStickyKeys.dwFlags = sSTICKYKEYS->dwFlags & 0xFFFFFFF3;
-		SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sNewStickyKeys, 0);
+	if (!(Window::StickyKeysFeature.dwFlags & SKF_STICKYKEYSON)) {
+		Window::StickyKeysFeature.dwFlags &= 0xFFFFFFF3;
+		SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
 	}
 
-	if (!(sTOGGLEKEYS->dwFlags & 1)) {
-		sNewToggleKeys.dwFlags = sTOGGLEKEYS->dwFlags & 0xFFFFFFF3;
-		SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sNewToggleKeys, 0);
+	if (!(Window::ToggleKeysFeature.dwFlags & TKF_TOGGLEKEYSON)) {
+		Window::ToggleKeysFeature.dwFlags &= 0xFFFFFFF3;
+		SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
 	}
 
-	if (!(sFILTERKEYS->dwFlags & 1)) {
-		sNewFilterKeys.dwFlags = sFILTERKEYS->dwFlags & 0xFFFFFFF3;
-		SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sNewFilterKeys, 0);
+	if (!(Window::FilterKeysFeature.dwFlags & FKF_FILTERKEYSON)) {
+		Window::FilterKeysFeature.dwFlags &= 0xFFFFFFF3;
+		SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
 	}
 }
 
@@ -435,7 +442,7 @@ void Window::_CreateWindow(UINT16 nIconResourceId)
 	if (nIconResourceId)
 		windowStyle |= WS_SYSMENU;
 
-	m_hWindow = CreateWindowExA(WS_EX_APPWINDOW, m_sWindowTitle.m_szString, m_sWindowTitle.m_szString, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, g_hInstance, 0);
+	m_hWindow = CreateWindowExA(WS_EX_APPWINDOW, m_sWindowTitle.m_szString, m_sWindowTitle.m_szString, windowStyle, 0, 0, 0x80000000, 0x80000000, 0, 0, WindowInstanceHandle, 0);
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -532,15 +539,15 @@ ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
 	debug("Creating menu with resource ID: %d\n", nMenuResourceId);
 
 	WndClass.hCursor = 0;
-	WndClass.hIcon = LoadIconA(g_hInstance, MAKEINTRESOURCE(nIconResourceId));
+	WndClass.hIcon = LoadIcon(WindowInstanceHandle, MAKEINTRESOURCE(nIconResourceId));
 	WndClass.lpszMenuName = MAKEINTRESOURCE(nMenuResourceId);
 	WndClass.lpszClassName = m_sWindowTitle.m_szString;
 	WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	WndClass.hInstance = g_hInstance;
-	WndClass.style = 3;
+	WndClass.hInstance = WindowInstanceHandle;
+	WndClass.style = CS_VREDRAW | CS_HREDRAW;
 	WndClass.lpfnWndProc = WindowProc;
-	WndClass.cbClsExtra = 0;
-	WndClass.cbWndExtra = 0;
+	WndClass.cbClsExtra = NULL;
+	WndClass.cbWndExtra = NULL;
 
 	return RegisterClassA(&WndClass);
 }
@@ -555,7 +562,7 @@ int CALLBACK MenuClickCallback(WPARAM wParam)
 		return 0;
 	}
 
-	char szBuffer[8] = "";
+	char szBuffer[8];
 	memset(szBuffer, 0, sizeof(szBuffer));
 
 	int written = sprintf(szBuffer, "%i", wParam);
@@ -604,9 +611,9 @@ Window::Window(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, 
 
 	m_hCursor = LoadCursor(NULL, IDC_ARROW);
 
-	SystemParametersInfo(SPI_GETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
-	SystemParametersInfo(SPI_GETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
-	SystemParametersInfo(SPI_GETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
+	SystemParametersInfo(SPI_GETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
+	SystemParametersInfo(SPI_GETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
+	SystemParametersInfo(SPI_GETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
 
 	SetAccessibilityFeatures(false);
 
@@ -616,8 +623,8 @@ Window::Window(const char* wndClassName, int unkParam1, UINT16 nMenuResourceId, 
 	if (memoryStatus.ullTotalPhys < 0xFB00000) {
 		WCHAR	Caption, Text;
 
-		FindStringResource(*StringResourceBaseAddr + 220, &Caption, 256);
-		FindStringResource(*StringResourceBaseAddr + 290, &Text, 512);
+		FindStringResource(Script::LanguageStringsOffset + 220, &Caption, 256);
+		FindStringResource(Script::LanguageStringsOffset + 290, &Text, 512);
 
 		MessageBoxW(m_hWindow, &Text, &Caption, MB_ICONEXCLAMATION);
 	}
@@ -630,9 +637,9 @@ Window::~Window()
 	if (m_hWindow)
 		DestroyWindow(m_hWindow);
 
-	SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &sSTICKYKEYS, 0);
-	SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &sTOGGLEKEYS, 0);
-	SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &sFILTERKEYS, 0);
+	SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
+	SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
+	SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
 }
 
 BOOL Window::_SetTitle(LPCSTR lpString)
@@ -653,8 +660,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Sleep(10);
 	Performance::Calculate();
 
-	g_hInstance	= hInstance;
-	g_CmdLine	= lpCmdLine;
+	Window::WindowInstanceHandle = hInstance;
 
 	//	NOTE: all bullshit related to finding already running game is removed!
 
@@ -691,7 +697,7 @@ void FindGameDir()
 	GetCurrentDirectory(sizeof(currdir), currdir);
 	SetWorkingDir(currdir);
 	SetGameWorkingDir(currdir);
-	GameDiscFound = false;
+	Window::GameDiscFound = false;
 	SetErrorMode(SEM_FAILCRITICALERRORS);
 	char driveLetter = NULL;
 	char RootPathName[] = "\\:";
@@ -720,7 +726,7 @@ void FindGameDir()
 					strcat(buffer, "/Program Files/Eidos/Total Overdose/");
 
 					SetGameWorkingDir(buffer);
-					GameDiscFound = true;
+					Window::GameDiscFound = true;
 
 					LogDump::LogA("Found game disc.\n");
 
@@ -756,7 +762,7 @@ void GetWorkingDirRelativePath(String* str)
 {
 	if (!str->m_nLength)
 	{
-		str = &WorkingDirectory;
+		*str = WorkingDirectory;
 
 		return;
 	}
@@ -777,7 +783,7 @@ void GetGameWorkingDirRelativePath(String* str)
 {
 	if (!str->m_nLength)
 	{
-		str = &GameWorkingDirectory;
+		*str = GameWorkingDirectory;
 
 		return;
 	}
@@ -796,12 +802,12 @@ void GetGameWorkingDirRelativePath(String* str)
 
 bool IsFileExists(const char* file)
 {
-	String temp;
+	String temp(file);
 	GetWorkingDirRelativePath(&temp);
 
 	if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
 	{
-		if (!GameDiscFound)
+		if (!Window::GameDiscFound)
 			return false;
 
 		GetGameWorkingDirRelativePath(&temp);
@@ -811,6 +817,41 @@ bool IsFileExists(const char* file)
 	}
 
 	return true;
+}
+
+void ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension)
+{
+	char buff[256];
+	memset(&buff, NULL, sizeof(buff));
+
+	//	Figure out where dot lives.
+	char* dotPos = strchr(buff, '.');
+	if (dotPos)
+	{
+		*dotPos = NULL;
+		if (outFileExtension)
+			while (true)
+				if (*dotPos == NULL) break; else *(outFileExtension++) = *(dotPos++);
+		else
+			*outFileExtension = NULL;
+	}
+
+	char* slashPos = strrchr(buff, '/');
+	slashPos = slashPos == nullptr ? strrchr(buff, '\\') : slashPos;
+
+	if (slashPos)
+	{
+		if (outFileName)
+			strcpy(outFileName, slashPos + 1);
+		*(slashPos + 1) = NULL;
+		if (outDirectory)
+			strcpy(outDirectory, buff);
+	}else{
+		if (outDirectory)
+			*outDirectory = NULL;
+		if (outFileName)
+			strcpy(outFileName, buff);
+	}
 }
 
 //	Apply patches specific to this class.
