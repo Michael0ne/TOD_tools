@@ -9,23 +9,54 @@ class List
 {
 public:
 	T** m_pElements;
-	int m_nCurrIndex;
-	int m_nCapacity;
-	int m_nFlags;
+	unsigned int m_nCurrIndex;
+	unsigned int m_nCapacity;
+	unsigned int m_nFlags;
 
 public:
 	List()
-	{
-		m_pElements = nullptr;
-		m_nCurrIndex = m_nCapacity = m_nFlags = 0;
-	}
+		:m_pElements(nullptr), m_nCurrIndex(NULL), m_nCapacity(NULL), m_nFlags(NULL)
+	{}
 
 	explicit inline List(unsigned int flags)
 	{
 		m_pElements = nullptr;
-		m_nCurrIndex = m_nCapacity = 0;
-		*(unsigned char*)&m_nFlags = (unsigned char)0;
-		m_nFlags = m_nFlags & ((flags & 0x000FFF00) | flags);
+		m_nCurrIndex = m_nCapacity = NULL;
+		m_nFlags = NULL & ((flags & 0x000FFF00) | flags);
+	}
+
+	void	SetCapacity(unsigned int _size)	//	@851EE0
+	{
+		if (_size < m_nCurrIndex)
+		{
+			if (m_nFlags & 0x200)	//	LIST_FLAG_CLEAR_ELEMENTS
+			{
+				for (unsigned int ind = 0; ind < m_nCurrIndex; ind++)
+					if (m_pElements[ind])
+						delete m_pElements[ind];
+			}
+
+			m_nCurrIndex = _size;
+			return;
+		}
+
+		if (_size > m_nCapacity)
+		{
+			m_nCapacity = _size;
+			AdjustCapacity();
+		}
+
+		if (m_pElements[_size] == m_pElements[m_nCurrIndex])
+		{
+			m_nCurrIndex = _size;
+			return;
+		}
+
+		for (unsigned int ind = m_nCurrIndex; ind < _size; ind++)
+			if (m_pElements[ind])
+				m_pElements[ind] = new T();
+
+		m_nCurrIndex = _size;
 	}
 
 	void	AddElement(T* _el)
@@ -48,7 +79,7 @@ public:
 			return;
 
 		if (m_nFlags & 0x200)
-			for (int ind = 0; ind < m_nCapacity; ind++)
+			for (unsigned int ind = 0; ind < m_nCapacity; ind++)
 				if (m_pElements[ind] != nullptr)
 					delete m_pElements[ind];
 
@@ -77,11 +108,21 @@ public:
 		_AdjustCapacity(this);
 	}
 
-	signed int	Add(String* str)	//	@853B20
+	void	Add(String* str)	//	@853B20
 	{
-		signed int(__thiscall * _Add)(List* _this, String* _str) = (signed int(__thiscall*)(List*, String*))0x853B20;
+		if (m_nCurrIndex >= m_nCapacity)
+		{
+			if (m_nCurrIndex + 1 > m_nCapacity)
+			{
+				m_nCapacity = (m_nCurrIndex + 1) + ((m_nCurrIndex + 1) >> 1);
+				AdjustCapacity();
+			}
+		}
 
-		return _Add(this, str);
+		if (m_pElements[m_nCurrIndex])
+			m_pElements[m_nCurrIndex]->Set(str->m_szString);
+
+		m_nCurrIndex++;
 	}
 
 	void	Empty()	//	@4395E0
