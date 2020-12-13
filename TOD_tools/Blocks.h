@@ -4,14 +4,32 @@
 
 #define BLOCKS_CLASS_SIZE 500
 
-class TypeInfo;
-class Entity;
+enum ResourceBlockTypeNumber
+{
+	RESTYPE_NONE = 0,
+	RESTYPE_MAP = 1,
+	RESTYPE_SUBMAP = 1,
+	RESTYPE_MISSION = 2,
+	RESTYPE_CUTSCENE = 3,
+	RESTYPE_PLAYERDATA = 4
+};
+
+enum BlockTypeNumber
+{
+	NONE = 0,
+	MAP = 1,
+	SUBMAP = 2,
+	MISSION = 3,
+	CUTSCENE = 4,
+	PLAYERDATA = 5,
+	MAIN = 6
+};
 
 class Blocks
 {
-private:
+protected:
 	int field_0;
-	int m_nBlockType;
+	BlockTypeNumber m_nBlockType;
 	int field_8;
 	int field_C;
 	int field_10;
@@ -92,7 +110,9 @@ private:
 	List<int> m_UnkList_4;
 	List<int> m_UnkList_5;
 	List<int> m_UnkList_6;
-	List<TypeInfo> m_ResourceTypesList;
+public:
+	List<class Resource> m_ResourceTypesList;
+protected:
 	List<String>	m_SceneNames;
 	int field_1B0;
 	int field_1B4;
@@ -117,10 +137,7 @@ private:
 
 public:
 	Blocks(bool loadBlocks);	//	@876E20
-	~Blocks()
-	{
-		MESSAGE_CLASS_DESTROYED(Blocks);
-	}
+	~Blocks();	//	@877250
 
 	void* operator new (size_t size)
 	{
@@ -133,45 +150,16 @@ public:
 	}
 
 	void			SetSceneName(const char* szSceneName);	//	@877F40
-	int				GetFreeResourceTypeListItem( int index);	//	@875540
-	unsigned int	AddEntity(Entity* ent);	//	@875FA0	//	NOTE: returns index
+	int				GetFreeResourceTypeListItem(unsigned int index);	//	@875540
+	unsigned int	AddEntity(class Entity* ent);	//	@875FA0	//	NOTE: returns index
+	void			SetRegionId(signed int id);	//	@875434
+	signed int		GetAllocatorType();	//	@875360
+	int				InsertTypeListItem(void* res);	//	@877A90
+	void			GetInternalFileName(String& outName, const char* str);	//	@8773A0
 
-	void			SetRegionId(signed int id)	//	@875434
-	{
-		m_nRegionId = id;
-	}
+	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0
 
-	signed int		GetAllocatorType()	//	@875360
-	{
-		if (!m_bLoad)
-			return 0;
-
-		if (m_nBlockType >= 0)
-			return GetResourceBlockTypeNumber(m_nBlockType);
-
-		return 0;
-	}
-
-	static signed int GetResourceBlockTypeNumber(int resourceBlockId)	//	@851FE0
-	{
-		if (!resourceBlockId ||
-			memcmp(g_szBlockTypes[resourceBlockId], "map", 4) ||
-			memcmp(g_szBlockTypes[resourceBlockId], "submap", 7))
-			return 1;
-
-		if (!memcmp(g_szBlockTypes[resourceBlockId], "mission", 8))
-			return 2;
-
-		if (!memcmp(g_szBlockTypes[resourceBlockId], "cutscene", 9))
-			return 3;
-
-		if (!memcmp(g_szBlockTypes[resourceBlockId], "playerdata", 12))
-			return 4;
-
-		return 0;
-	}
-
-	static const char* g_szBlockTypes[7];	//	@A11B64
+	static const char* BlockTypeExtension[];	//	@A11B64
 };
 
 extern Blocks* g_Blocks;

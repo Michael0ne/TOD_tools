@@ -1,11 +1,7 @@
 #include "Folder.h"
 #include "Window.h"
 
-const char* Folder_::BlockTypeExtension[] = {
-	".", "map", "submap", "mission", "cutscene", "playerdata", "main"
-};
-
-void Folder_::GetResourcePathRelative(String& outPath, String resourceName, BlockTypeId blockType, const char* languageCode)
+void Folder_::GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode)
 {
 	char fileExt[8], fileDir[1024], fileName[128];
 	memset(&fileExt, NULL, sizeof(fileExt));
@@ -30,7 +26,7 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Bloc
 	}
 
 	strcat(fileDir, ".");
-	strcat(fileDir, blockType ? BlockTypeExtension[blockType] : BlockTypeExtension[MAIN]);
+	strcat(fileDir, blockType ? Blocks::BlockTypeExtension[blockType] : Blocks::BlockTypeExtension[MAIN]);
 
 	outPath.Set(fileDir);
 }

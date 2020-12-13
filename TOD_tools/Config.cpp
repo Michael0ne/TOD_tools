@@ -21,6 +21,7 @@
 #include "LogDump.h"
 #include "EditorCamera.h"
 #include "ZipArch.h"
+#include "ResourcesTypes.h"
 
 String Script::Filesystem = String();
 String Script::ControlType = String();
@@ -123,20 +124,17 @@ namespace GameConfig
 		tSceneNode = new SceneNode();
 
 		//	Init resources types.
-		//	TODO: implementation for Register class!
-		/*
-		Types::Resources::Texture::Init();
-		Types::Resources::Font::Init();
-		Types::Resources::Text::Init();
-		Types::Resources::Model::Init();
-		Types::Resources::Fragment::Init();
-		Types::Resources::Movie::Init();
-		Types::Resources::Cutscene::Init();
-		Types::Resources::Sound::Init();
-		Types::Resources::StreamedSoundInfo::Init();
-		Types::Resources::Animation::Init();
-		Types::Resources::MeshColor::Init();
-		*/
+		ResType::Texture::CreateInstance();
+		ResType::Font::CreateInstance();
+		ResType::Text::CreateInstance();
+		ResType::Model::CreateInstance();
+		ResType::Fragment::CreateInstance();
+		ResType::Movie::CreateInstance();
+		ResType::Cutscene::CreateInstance();
+		ResType::Sound::CreateInstance();
+		ResType::StreamedSoundInfo::CreateInstance();
+		ResType::Animation::CreateInstance();
+		ResType::MeshColor::CreateInstance();
 
 		//	Init unknown matricies.
 		CreateUnknownMatricies();
