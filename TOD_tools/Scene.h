@@ -54,16 +54,10 @@ public:
 protected:
 	char m_QuadTreesAllocated;
 	class Camera* m_ActiveCamera;
-	int field_70;
-	int field_74;
-	int field_78;
-	int field_7C;
-	int field_80;
-	int field_84;
-	int field_88;
-	int field_8C;
-	int field_90;
-	int field_94;
+	Node* m_ClosestNode;
+	float m_CollisionProbeMinDistance;
+	Vector4f m_CollisionPos_1;
+	Vector4f m_CollisionResolvedPos_1;
 	int field_98;
 	int field_9C;
 	int field_A0;
@@ -78,9 +72,9 @@ protected:
 	int m_RewindResumeTimeMs;
 	int field_C8;
 	List<int> m_List_1;
-	List<int> m_List_2;
-	List<int> m_List_3;
-	List<int> m_List_4;
+	List<AuxQuadTree> m_QuadTreesList;
+	List<ParticleSystem> m_ParticleSystemsList;
+	List<CollisionList> m_CollisionListList;
 	int m_NodesWithUpdateOrBlockingScripts;
 	char m_InitMode;
 	float m_TimeMultiplier;
@@ -109,7 +103,7 @@ protected:
 	char field_1AA;
 	char m_WindPause;
 	char m_FlushRewindRequested;
-	Node* m_LoadedBlocks;
+	Node* m_LoadedBlocks;	//	NOTE: this could be an array of 6 or 8 pointers.
 	int field_1B4;
 	int field_1B8;
 	int field_1BC;

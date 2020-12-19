@@ -366,6 +366,8 @@ public:
 
 	static void				ReleaseMemory(void* ptr, bool aligned);	//	@4778D0
 	static Allocator*		GetAllocatorByMemoryPointer(void* ptr);	//	@4777B0
+	static void*			Realloc(void* oldptr, size_t newsize, bool);	//	@477940
+	static void*			AllocateByType(unsigned char allocIndex, size_t size);	//	@478180
 
 	static	RTL_CRITICAL_SECTION	AllocatorsCriticalSection;	//	@A3AFA0
 	static	int				_A3AFB8;	//	@A3AFB8

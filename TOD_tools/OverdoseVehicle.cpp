@@ -41,12 +41,12 @@ OverdoseVehicle::OverdoseVehicle() : RigidBody()
 	m_RollAngleT = 0.0f;
 	m_TiltAngleSpeed = 0.0f;
 
-	m_List_8.m_nCurrIndex = 0;
-	m_LastNormalList.m_nCurrIndex = 0;
-	m_NormalList.m_nCurrIndex = 0;
-	m_List_3.m_nCurrIndex = 0;
-	m_List_2.m_nCurrIndex = 0;
-	m_List_1.m_nCurrIndex = 0;
+	m_List_8.m_CurrIndex = 0;
+	m_LastNormalList.m_CurrIndex = 0;
+	m_NormalList.m_CurrIndex = 0;
+	m_List_3.m_CurrIndex = 0;
+	m_List_2.m_CurrIndex = 0;
+	m_List_1.m_CurrIndex = 0;
 
 	m_WheelRadius = 0.0f;
 

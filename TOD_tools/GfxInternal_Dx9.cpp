@@ -115,24 +115,24 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 		m_pDirect3D->EnumAdapterModes(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8, adapterMode, &adapterModes);
 		int ind = 0;
 
-		if (m_DisplayModesList.m_nCurrIndex > 0) {
-			DisplayModeInfo** mode = m_DisplayModesList.m_pElements;
+		if (m_DisplayModesList.m_CurrIndex > 0) {
+			DisplayModeInfo** mode = m_DisplayModesList.m_Elements;
 
 			while ((*mode)->width != adapterModes.Width ||
 				(*mode)->height != adapterModes.Height) {
 				++ind;
 				++mode;
-				if (ind >= m_DisplayModesList.m_nCurrIndex)
+				if (ind >= m_DisplayModesList.m_CurrIndex)
 					break;
 			}
 
-			if (ind >= m_DisplayModesList.m_nCurrIndex) {
+			if (ind >= m_DisplayModesList.m_CurrIndex) {
 				adapterMode = adapterIndex + 1;
 
 				continue;
 			}
 
-			DisplayModeInfo* mode_sel = m_DisplayModesList.m_pElements[ind];
+			DisplayModeInfo* mode_sel = m_DisplayModesList.m_Elements[ind];
 
 			if (mode_sel->refreshrate <= 85 && adapterModes.RefreshRate > mode_sel->refreshrate) {
 				mode_sel->available = true;
@@ -146,13 +146,13 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 
 	debug("Kapow will use these modes when in full-screen:\n");
 
-	for (int i = 0; i < m_DisplayModesList.m_nCurrIndex; ++i)
+	for (int i = 0; i < m_DisplayModesList.m_CurrIndex; ++i)
 		debug("%ix%i @ %iHz - format=%i, available=%i\n", 
-			m_DisplayModesList.m_pElements[i]->width,
-			m_DisplayModesList.m_pElements[i]->height,
-			m_DisplayModesList.m_pElements[i]->refreshrate,
-			m_DisplayModesList.m_pElements[i]->format,
-			m_DisplayModesList.m_pElements[i]->available);
+			m_DisplayModesList.m_Elements[i]->width,
+			m_DisplayModesList.m_Elements[i]->height,
+			m_DisplayModesList.m_Elements[i]->refreshrate,
+			m_DisplayModesList.m_Elements[i]->format,
+			m_DisplayModesList.m_Elements[i]->available);
 
 	//	NOTE: EnumDisplayModes inlined --ends
 
@@ -166,8 +166,8 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 		DisplayModeInfo mode;
 
 		if (GetRegistryResolution(mode)) {
-			if (m_DisplayModesList.m_nCurrIndex > 0) {
-				DisplayModeInfo** _modes = m_DisplayModesList.m_pElements;
+			if (m_DisplayModesList.m_CurrIndex > 0) {
+				DisplayModeInfo** _modes = m_DisplayModesList.m_Elements;
 				int index = 0;
 
 				while (true) {
@@ -176,7 +176,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 					++index;
 					++_modes;
 
-					if (index >= m_DisplayModesList.m_nCurrIndex)
+					if (index >= m_DisplayModesList.m_CurrIndex)
 						break;
 				}
 
@@ -207,10 +207,10 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 
 const DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(int width, int height, bool dontIgnoreUnavailable)
 {
-	if (m_DisplayModesList.m_nCurrIndex <= 0)
+	if (m_DisplayModesList.m_CurrIndex <= 0)
 		return nullptr;
 
-	DisplayModeInfo** mode = m_DisplayModesList.m_pElements;
+	DisplayModeInfo** mode = m_DisplayModesList.m_Elements;
 	int index = 0;
 
 	while (true) {
@@ -221,11 +221,11 @@ const DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(int width, i
 		++index;
 		++mode;
 
-		if (index >= m_DisplayModesList.m_nCurrIndex)
+		if (index >= m_DisplayModesList.m_CurrIndex)
 			return nullptr;
 	}
 
-	return m_DisplayModesList.m_pElements[index];
+	return m_DisplayModesList.m_Elements[index];
 }
 
 void GfxInternal_Dx9::SetupWindowParams(int width, int height)

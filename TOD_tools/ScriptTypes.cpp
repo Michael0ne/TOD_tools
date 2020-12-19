@@ -79,7 +79,7 @@ namespace ScriptTypes
 		m_nSizeInBytes = typeSize;
 
 		TypesList.AddElement(this);
-		m_nId = TypesList.m_nCurrIndex - 1;
+		m_nId = TypesList.m_CurrIndex - 1;
 		TypesListCRCCalculated = false;
 	}
 

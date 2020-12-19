@@ -557,109 +557,109 @@ typedef struct BINKBUFFER {
 typedef void PTR4* (RADLINK PTR4* BINKMEMALLOC) (U32 bytes);
 typedef void       (RADLINK PTR4* BINKMEMFREE)  (void PTR4* ptr);
 
-void PTR4* (WINAPI* BinkLogoAddress)(void);
+void PTR4* (__stdcall* BinkLogoAddress)(void);
 
-void (WINAPI* BinkSetError)(const char PTR4* err);
-char PTR4* (WINAPI* BinkGetError)(void);
+void (__stdcall* BinkSetError)(const char PTR4* err);
+char PTR4* (__stdcall* BinkGetError)(void);
 
-HBINK(WINAPI* BinkOpen)(const char PTR4* name, U32 flags);
+HBINK(__stdcall* BinkOpen)(const char PTR4* name, U32 flags);
 
-void (WINAPI* BinkGetFrameBuffersInfo)(HBINK bink, BINKFRAMEBUFFERS* fbset);
-void (WINAPI* BinkRegisterFrameBuffers)(HBINK bink, BINKFRAMEBUFFERS* fbset);
-S32(WINAPI* BinkDoFrame)(HBINK bnk);
-void (WINAPI* BinkNextFrame)(HBINK bnk);
-S32(WINAPI* BinkWait)(HBINK bnk);
-void (WINAPI* BinkClose)(HBINK bnk);
-S32(WINAPI* BinkPause)(HBINK bnk, S32 pause);
-S32(WINAPI* BinkCopyToBuffer)(HBINK bnk, void* dest, S32 destpitch, U32 destheight, U32 destx, U32 desty, U32 flags);
-S32(WINAPI* BinkCopyToBufferRect)(HBINK bnk, void* dest, S32 destpitch, U32 destheight, U32 destx, U32 desty, U32 srcx, U32 srcy, U32 srcw, U32 srch, U32 flags);
-S32(WINAPI* BinkGetRects)(HBINK bnk, U32 flags);
-void (WINAPI* BinkGoto)(HBINK bnk, U32 frame, S32 flags);  // use 1 for the first frame
-U32(WINAPI* BinkGetKeyFrame)(HBINK bnk, U32 frame, S32 flags);
+void (__stdcall* BinkGetFrameBuffersInfo)(HBINK bink, BINKFRAMEBUFFERS* fbset);
+void (__stdcall* BinkRegisterFrameBuffers)(HBINK bink, BINKFRAMEBUFFERS* fbset);
+S32(__stdcall* BinkDoFrame)(HBINK bnk);
+void (__stdcall* BinkNextFrame)(HBINK bnk);
+S32(__stdcall* BinkWait)(HBINK bnk);
+void (__stdcall* BinkClose)(HBINK bnk);
+S32(__stdcall* BinkPause)(HBINK bnk, S32 pause);
+S32(__stdcall* BinkCopyToBuffer)(HBINK bnk, void* dest, S32 destpitch, U32 destheight, U32 destx, U32 desty, U32 flags);
+S32(__stdcall* BinkCopyToBufferRect)(HBINK bnk, void* dest, S32 destpitch, U32 destheight, U32 destx, U32 desty, U32 srcx, U32 srcy, U32 srcw, U32 srch, U32 flags);
+S32(__stdcall* BinkGetRects)(HBINK bnk, U32 flags);
+void (__stdcall* BinkGoto)(HBINK bnk, U32 frame, S32 flags);  // use 1 for the first frame
+U32(__stdcall* BinkGetKeyFrame)(HBINK bnk, U32 frame, S32 flags);
 
-S32(WINAPI* BinkSetVideoOnOff)(HBINK bnk, S32 onoff);
-S32(WINAPI* BinkSetSoundOnOff)(HBINK bnk, S32 onoff);
-void (WINAPI* BinkSetVolume)(HBINK bnk, U32 trackid, S32 volume);
-void (WINAPI* BinkSetPan)(HBINK bnk, U32 trackid, S32 pan);
-void (WINAPI* BinkSetMixBins)(HBINK bnk, U32 trackid, U32 PTR4* mix_bins, U32 total);
-void (WINAPI* BinkSetMixBinVolumes)(HBINK bnk, U32 trackid, U32 PTR4* vol_mix_bins, S32 PTR4* volumes, U32 total);
-void (WINAPI* BinkService)(HBINK bink);
+S32(__stdcall* BinkSetVideoOnOff)(HBINK bnk, S32 onoff);
+S32(__stdcall* BinkSetSoundOnOff)(HBINK bnk, S32 onoff);
+void (__stdcall* BinkSetVolume)(HBINK bnk, U32 trackid, S32 volume);
+void (__stdcall* BinkSetPan)(HBINK bnk, U32 trackid, S32 pan);
+void (__stdcall* BinkSetMixBins)(HBINK bnk, U32 trackid, U32 PTR4* mix_bins, U32 total);
+void (__stdcall* BinkSetMixBinVolumes)(HBINK bnk, U32 trackid, U32 PTR4* vol_mix_bins, S32 PTR4* volumes, U32 total);
+void (__stdcall* BinkService)(HBINK bink);
 
-S32(WINAPI* BinkShouldSkip)(HBINK bink);
+S32(__stdcall* BinkShouldSkip)(HBINK bink);
 
-void (WINAPI* BinkGetPalette)(void* out_pal);
+void (__stdcall* BinkGetPalette)(void* out_pal);
 
-S32(WINAPI* BinkControlBackgroundIO)(HBINK bink, U32 control);
+S32(__stdcall* BinkControlBackgroundIO)(HBINK bink, U32 control);
 
-S32(WINAPI* BinkStartAsyncThread)(S32 thread_num, void const* param);
-S32(WINAPI* BinkDoFrameAsync)(HBINK bink, U32 yplane_thread_num, U32 other_work_thread_num);
-S32(WINAPI* BinkDoFrameAsyncWait)(HBINK bink, S32 us);
-S32(WINAPI* BinkRequestStopAsyncThread)(S32 thread_num);
-S32(WINAPI* BinkWaitStopAsyncThread)(S32 thread_num);
+S32(__stdcall* BinkStartAsyncThread)(S32 thread_num, void const* param);
+S32(__stdcall* BinkDoFrameAsync)(HBINK bink, U32 yplane_thread_num, U32 other_work_thread_num);
+S32(__stdcall* BinkDoFrameAsyncWait)(HBINK bink, S32 us);
+S32(__stdcall* BinkRequestStopAsyncThread)(S32 thread_num);
+S32(__stdcall* BinkWaitStopAsyncThread)(S32 thread_num);
 
-HBINKTRACK(WINAPI* BinkOpenTrack)(HBINK bnk, U32 trackindex);
-void (WINAPI* BinkCloseTrack)(HBINKTRACK bnkt);
-U32(WINAPI* BinkGetTrackData)(HBINKTRACK bnkt, void PTR4* dest);
+HBINKTRACK(__stdcall* BinkOpenTrack)(HBINK bnk, U32 trackindex);
+void (__stdcall* BinkCloseTrack)(HBINKTRACK bnkt);
+U32(__stdcall* BinkGetTrackData)(HBINKTRACK bnkt, void PTR4* dest);
 
-U32(WINAPI* BinkGetTrackType)(HBINK bnk, U32 trackindex);
-U32(WINAPI* BinkGetTrackMaxSize)(HBINK bnk, U32 trackindex);
-U32(WINAPI* BinkGetTrackID)(HBINK bnk, U32 trackindex);
+U32(__stdcall* BinkGetTrackType)(HBINK bnk, U32 trackindex);
+U32(__stdcall* BinkGetTrackMaxSize)(HBINK bnk, U32 trackindex);
+U32(__stdcall* BinkGetTrackID)(HBINK bnk, U32 trackindex);
 
-void (WINAPI* BinkGetSummary)(HBINK bnk, BINKSUMMARY PTR4* sum);
-void (WINAPI* BinkGetRealtime)(HBINK bink, BINKREALTIME PTR4* run, U32 frames);
+void (__stdcall* BinkGetSummary)(HBINK bnk, BINKSUMMARY PTR4* sum);
+void (__stdcall* BinkGetRealtime)(HBINK bink, BINKREALTIME PTR4* run, U32 frames);
 
-void (WINAPI* BinkSetSoundTrack)(U32 total_tracks, U32 PTR4* tracks);
-void (WINAPI* BinkSetIO)(BINKIOOPEN io);
-void (WINAPI* BinkSetFrameRate)(U32 forcerate, U32 forceratediv);
-void (WINAPI* BinkSetSimulate)(U32 sim);
-void (WINAPI* BinkSetIOSize)(U32 iosize);
+void (__stdcall* BinkSetSoundTrack)(U32 total_tracks, U32 PTR4* tracks);
+void (__stdcall* BinkSetIO)(BINKIOOPEN io);
+void (__stdcall* BinkSetFrameRate)(U32 forcerate, U32 forceratediv);
+void (__stdcall* BinkSetSimulate)(U32 sim);
+void (__stdcall* BinkSetIOSize)(U32 iosize);
 
-S32(WINAPI* BinkSetSoundSystem)(BINKSNDSYSOPEN open, UINTa param);
+S32(__stdcall* BinkSetSoundSystem)(BINKSNDSYSOPEN open, UINTa param);
 
-S32(WINAPI* BinkControlPlatformFeatures)(S32 use, S32 dont_use);
+S32(__stdcall* BinkControlPlatformFeatures)(S32 use, S32 dont_use);
 
-BINKSNDOPEN(WINAPI* BinkOpenDirectSound)(UINTa param); // don't call directly
+BINKSNDOPEN(__stdcall* BinkOpenDirectSound)(UINTa param); // don't call directly
 #define BinkSoundUseDirectSound(lpDS) BinkSetSoundSystem(BinkOpenDirectSound,(UINTa)lpDS)
 
-BINKSNDOPEN(WINAPI* BinkOpenWaveOut)(UINTa param); // don't call directly
+BINKSNDOPEN(__stdcall* BinkOpenWaveOut)(UINTa param); // don't call directly
 #define BinkSoundUseWaveOut() BinkSetSoundSystem(BinkOpenWaveOut,0)
 
-BINKSNDOPEN(WINAPI* BinkOpenMiles)(UINTa param); // don't call directly
+BINKSNDOPEN(__stdcall* BinkOpenMiles)(UINTa param); // don't call directly
 #define BinkSoundUseMiles(hdigdriver) BinkSetSoundSystem(BinkOpenMiles,(UINTa)hdigdriver)
 
 #if defined(__RADXBOX__) || defined(__RADWIN__)
 
-S32(WINAPI* BinkDX8SurfaceType)(void* lpD3Ds);
+S32(__stdcall* BinkDX8SurfaceType)(void* lpD3Ds);
 
 #endif
 
 #if defined(__RADXENON__) || defined(__RADWIN__)
 
-S32(WINAPI* BinkDX9SurfaceType)(void* lpD3Ds);
+S32(__stdcall* BinkDX9SurfaceType)(void* lpD3Ds);
 
 #endif
 
-HBINKBUFFER(WINAPI* BinkBufferOpen)(void* /*HWND*/ wnd, U32 width, U32 height, U32 bufferflags);
-S32(WINAPI* BinkBufferSetHWND)(HBINKBUFFER buf, void* /*HWND*/ newwnd);
-S32(WINAPI* BinkDDSurfaceType)(void PTR4* lpDDS);
-S32(WINAPI* BinkIsSoftwareCursor)(void PTR4* lpDDSP, void* /*HCURSOR*/ cur);
-S32(WINAPI* BinkCheckCursor)(void* /*HWND*/ wnd, S32 x, S32 y, S32 w, S32 h);
-S32(WINAPI* BinkBufferSetDirectDraw)(void PTR4* lpDirectDraw, void PTR4* lpPrimary);
+HBINKBUFFER(__stdcall* BinkBufferOpen)(void* /*HWND*/ wnd, U32 width, U32 height, U32 bufferflags);
+S32(__stdcall* BinkBufferSetHWND)(HBINKBUFFER buf, void* /*HWND*/ newwnd);
+S32(__stdcall* BinkDDSurfaceType)(void PTR4* lpDDS);
+S32(__stdcall* BinkIsSoftwareCursor)(void PTR4* lpDDSP, void* /*HCURSOR*/ cur);
+S32(__stdcall* BinkCheckCursor)(void* /*HWND*/ wnd, S32 x, S32 y, S32 w, S32 h);
+S32(__stdcall* BinkBufferSetDirectDraw)(void PTR4* lpDirectDraw, void PTR4* lpPrimary);
 
-void (WINAPI* BinkBufferClose)(HBINKBUFFER buf);
-S32(WINAPI* BinkBufferLock)(HBINKBUFFER buf);
-S32(WINAPI* BinkBufferUnlock)(HBINKBUFFER buf);
-void (WINAPI* BinkBufferSetResolution)(S32 w, S32 h, S32 bits);
-void (WINAPI* BinkBufferCheckWinPos)(HBINKBUFFER buf, S32 PTR4* NewWindowX, S32 PTR4* NewWindowY);
-S32(WINAPI* BinkBufferSetOffset)(HBINKBUFFER buf, S32 destx, S32 desty);
-void (WINAPI* BinkBufferBlit)(HBINKBUFFER buf, BINKRECT PTR4* rects, U32 numrects);
-S32(WINAPI* BinkBufferSetScale)(HBINKBUFFER buf, U32 w, U32 h);
-char PTR4* (WINAPI* BinkBufferGetDescription)(HBINKBUFFER buf);
-char PTR4* (WINAPI* BinkBufferGetError)();
-void (WINAPI* BinkRestoreCursor)(S32 checkcount);
-S32(WINAPI* BinkBufferClear)(HBINKBUFFER buf, U32 RGB);
+void (__stdcall* BinkBufferClose)(HBINKBUFFER buf);
+S32(__stdcall* BinkBufferLock)(HBINKBUFFER buf);
+S32(__stdcall* BinkBufferUnlock)(HBINKBUFFER buf);
+void (__stdcall* BinkBufferSetResolution)(S32 w, S32 h, S32 bits);
+void (__stdcall* BinkBufferCheckWinPos)(HBINKBUFFER buf, S32 PTR4* NewWindowX, S32 PTR4* NewWindowY);
+S32(__stdcall* BinkBufferSetOffset)(HBINKBUFFER buf, S32 destx, S32 desty);
+void (__stdcall* BinkBufferBlit)(HBINKBUFFER buf, BINKRECT PTR4* rects, U32 numrects);
+S32(__stdcall* BinkBufferSetScale)(HBINKBUFFER buf, U32 w, U32 h);
+char PTR4* (__stdcall* BinkBufferGetDescription)(HBINKBUFFER buf);
+char PTR4* (__stdcall* BinkBufferGetError)();
+void (__stdcall* BinkRestoreCursor)(S32 checkcount);
+S32(__stdcall* BinkBufferClear)(HBINKBUFFER buf, U32 RGB);
 
-void (WINAPI* BinkSetMemory)(BINKMEMALLOC a, BINKMEMFREE f);
+void (__stdcall* BinkSetMemory)(BINKMEMALLOC a, BINKMEMFREE f);
 
 RADDEFEND
 
