@@ -768,6 +768,36 @@ Allocator* Allocators::GetAllocatorByMemoryPointer(void* ptr)
 	return _A3AFE8[allocInd + 1].m_Allocator;
 }
 
+void* Allocators::Realloc(void* oldptr, size_t newsize, bool a3)
+{
+	if (Released)
+		return nullptr;
+
+	EnterCriticalSection(&AllocatorsCriticalSection);
+
+	Allocator* _allocator = GetAllocatorByMemoryPointer(oldptr);
+
+	void* newptr = _allocator->Realloc(oldptr, newsize, NULL, NULL);
+	if (!newptr && newsize && (_allocator->field_20 || !a3))
+		if (BufferPtr)
+		{
+			delete BufferPtr;
+			BufferPtr = nullptr;
+		}
+
+	LeaveCriticalSection(&AllocatorsCriticalSection);
+
+	return newptr;
+}
+
+void* Allocators::AllocateByType(unsigned char allocIndex, size_t size)
+{
+	if (Released)
+		return nullptr;
+
+	return AllocatorsList[allocIndex]->Allocate_A(size, NULL, NULL);
+}
+
 int DefragmentatorBase::_4783F0(int unk1)
 {
 	return (m_AllocatedSpace[unk1].m_Flags >> 1) & 1;

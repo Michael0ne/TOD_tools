@@ -52,10 +52,13 @@
       <UniqueIdentifier>{0fc35c56-f67b-4152-b5e8-af51a2e268e2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header files\ThirdParty">
-      <UniqueIdentifier>{8f8e6b23-de7e-497d-8dd8-451ef0b786f0}</UniqueIdentifier>
+      <UniqueIdentifier>{504d8b40-d93a-4147-8881-1b5a84a26ac8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header files\ThirdParty\Bink">
-      <UniqueIdentifier>{c018d629-d05c-4e52-bdd8-5ec8fd8d8176}</UniqueIdentifier>
+      <UniqueIdentifier>{fe960532-7bcd-4fa9-9b9e-981e29e2d6e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ThirdParty\libpng">
+      <UniqueIdentifier>{acf199cd-d85f-4fc0-b677-d22097c2706d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -196,12 +199,6 @@
     </ClInclude>
     <ClInclude Include="MoviePlayer.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="bink.h">
-      <Filter>Header files\ThirdParty\Bink</Filter>
-    </ClInclude>
-    <ClInclude Include="radbase.h">
-      <Filter>Header files\ThirdParty\Bink</Filter>
     </ClInclude>
     <ClInclude Include="ZipArch.h">
       <Filter>Header files\KapowSystems\System</Filter>
@@ -380,6 +377,21 @@
     <ClInclude Include="Progress.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="ThirdParty\bink\bink.h">
+      <Filter>Header files\ThirdParty\Bink</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\bink\radbase.h">
+      <Filter>Header files\ThirdParty\Bink</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\libpng-1.0.5\png.h">
+      <Filter>Header files\ThirdParty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\libpng-1.0.5\pngasmrd.h">
+      <Filter>Header files\ThirdParty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\libpng-1.0.5\pngconf.h">
+      <Filter>Header files\ThirdParty\libpng</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -429,9 +441,6 @@
     </ClCompile>
     <ClCompile Include="Builtin.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="List.cpp">
-      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Source files\KapowSystems\System</Filter>

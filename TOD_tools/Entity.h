@@ -21,15 +21,10 @@ protected:
 
 public:
 	Entity();	//	@86A1D0
-	~Entity()
-	{
-		MESSAGE_CLASS_DESTROYED(Entity);
-	}
+	~Entity();	//	@86C010
 
-	ScriptTypes::ScriptType_Entity* GetScriptEntity()
-	{
-		return m_ScriptEntity;
-	}
+	static int		GetPropertyId(const char* prop);	//	@8732C0
+	static int*		GetMessageId_A(int*, int*, const char*);	//	@8729F0
 };
 
 static_assert(sizeof(Entity) == ENTITY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Entity));

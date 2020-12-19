@@ -11,7 +11,7 @@ namespace ResType
 		MESSAGE_CLASS_CREATED(Base);
 
 		m_ResourceTypeName.Set(type);
-		m_ResourceIndex = ResTypeList.m_nCurrIndex;
+		m_ResourceIndex = ResTypeList.m_CurrIndex;
 		ResTypeList.AddElement(this);
 		//m_Creator = creator;
 		field_2C = NULL;
@@ -93,7 +93,7 @@ namespace ResType
 		MESSAGE_CLASS_DESTROYED(Resource);
 
 		if (m_GlobalResourceId > 0)
-			g_Blocks->m_ResourceTypesList.m_pElements[m_GlobalResourceId] = nullptr;
+			g_Blocks->m_ResourceTypesList.m_Elements[m_GlobalResourceId] = nullptr;
 
 		--TotalResourcesCreated;
 
@@ -108,9 +108,9 @@ namespace ResType
 		String resPath;
 		g_Blocks->GetInternalFileName(resPath, m_ResourcePath);
 
-		OpenResourcesList.m_pElements[_currresind] = &resPath;
+		OpenResourcesList.m_Elements[_currresind] = &resPath;
 
-		return OpenResourcesList.m_pElements[_currresind]->m_szString;
+		return OpenResourcesList.m_Elements[_currresind]->m_szString;
 	}
 
 	void Resource::_8513E0(unsigned char a1)
@@ -138,7 +138,7 @@ namespace ResType
 		rtTexture = new Base(RESTYPE_TEXTURE_NAME, (void*)new Texture());
 		String ext(RESTYPE_TEXTURE_EXT);
 
-		rtTexture->m_ResourceExtensionsList.Add(&ext);
+		rtTexture->m_ResourceExtensionsList.AddString(&ext);
 
 		rtTexture->SetResourceAlignment(16, 1);
 		rtTexture->SetResourceAlignment(128, 2);
@@ -166,8 +166,8 @@ namespace ResType
 		String ext(RESTYPE_FONT_EXT_1);
 		String ext_2(RESTYPE_FONT_EXT_2);
 
-		rtFont->m_ResourceExtensionsList.Add(&ext);
-		rtFont->m_ResourceExtensionsList.Add(&ext_2);
+		rtFont->m_ResourceExtensionsList.AddString(&ext);
+		rtFont->m_ResourceExtensionsList.AddString(&ext_2);
 
 		rtFont->SetResourceAlignment(16, 1);
 		rtFont->SetResourceAlignment(128, 2);
@@ -197,7 +197,7 @@ namespace ResType
 		rtText = new Base(RESTYPE_TEXT_NAME, (void*)new Text());
 		String ext(RESTYPE_TEXT_EXT);
 
-		rtText->m_ResourceExtensionsList.Add(&ext);
+		rtText->m_ResourceExtensionsList.AddString(&ext);
 
 		rtText->SetResourceAlignment(16, 1);
 		rtText->SetResourceAlignment(16, 2);
@@ -235,7 +235,7 @@ namespace ResType
 		rtModel = new Base(RESTYPE_MODEL_NAME, (void*)new Model());
 		String ext(RESTYPE_MODEL_EXT);
 
-		rtModel->m_ResourceExtensionsList.Add(&ext);
+		rtModel->m_ResourceExtensionsList.AddString(&ext);
 
 		rtModel->SetResourceAlignment(16, 1);
 		rtModel->SetResourceAlignment(16, 2);
@@ -269,8 +269,8 @@ namespace ResType
 		String ext(RESTYPE_FRAGMENT_EXT_1);
 		String ext_1(RESTYPE_FRAGMENT_EXT_2);
 
-		rtFragment->m_ResourceExtensionsList.Add(&ext);
-		rtFragment->m_ResourceExtensionsList.Add(&ext_1);
+		rtFragment->m_ResourceExtensionsList.AddString(&ext);
+		rtFragment->m_ResourceExtensionsList.AddString(&ext_1);
 
 		rtFragment->SetResourceAlignment(16, 1);
 		rtFragment->SetResourceAlignment(16, 2);
@@ -295,8 +295,8 @@ namespace ResType
 		String ext(RESTYPE_MOVIE_EXT_1);
 		String ext_2(RESTYPE_MOVIE_EXT_2);
 
-		rtMovie->m_ResourceExtensionsList.Add(&ext);
-		rtMovie->m_ResourceExtensionsList.Add(&ext_2);
+		rtMovie->m_ResourceExtensionsList.AddString(&ext);
+		rtMovie->m_ResourceExtensionsList.AddString(&ext_2);
 
 		rtMovie->SetResourceAlignment(16, 1);
 		rtMovie->SetResourceAlignment(16, 2);
@@ -327,7 +327,7 @@ namespace ResType
 		rtCutscene = new Base(RESTYPE_CUTSCENE_NAME, (void*)new Cutscene());
 		String ext(RESTYPE_CUTSCENE_EXT);
 
-		rtCutscene->m_ResourceExtensionsList.Add(&ext);
+		rtCutscene->m_ResourceExtensionsList.AddString(&ext);
 
 		rtCutscene->SetResourceAlignment(16, 1);
 		rtCutscene->SetResourceAlignment(16, 2);
@@ -351,7 +351,7 @@ namespace ResType
 		rtSound = new Base(RESTYPE_SOUND_NAME, (void*)new Sound());
 		String ext(RESTYPE_SOUND_EXT);
 
-		rtSound->m_ResourceExtensionsList.Add(&ext);
+		rtSound->m_ResourceExtensionsList.AddString(&ext);
 
 		rtSound->SetResourceAlignment(16, 1);
 		rtSound->SetResourceAlignment(16, 2);
@@ -379,8 +379,8 @@ namespace ResType
 		String ext(RESTYPE_STREAMEDSOUNDINFO_EXT_1);
 		String ext_2(RESTYPE_STREAMEDSOUNDINFO_EXT_2);
 
-		rtStreamedSoundInfo->m_ResourceExtensionsList.Add(&ext);
-		rtStreamedSoundInfo->m_ResourceExtensionsList.Add(&ext_2);
+		rtStreamedSoundInfo->m_ResourceExtensionsList.AddString(&ext);
+		rtStreamedSoundInfo->m_ResourceExtensionsList.AddString(&ext_2);
 
 		rtStreamedSoundInfo->SetResourceAlignment(16, 1);
 		rtStreamedSoundInfo->SetResourceAlignment(16, 2);
@@ -414,7 +414,7 @@ namespace ResType
 		rtAnimation = new Base(RESTYPE_ANIMATION_NAME, (void*)new Animation());
 		String ext(RESTYPE_ANIMATION_EXT);
 
-		rtAnimation->m_ResourceExtensionsList.Add(&ext);
+		rtAnimation->m_ResourceExtensionsList.AddString(&ext);
 
 		rtAnimation->SetResourceAlignment(16, 1);
 		rtAnimation->SetResourceAlignment(16, 2);
@@ -447,7 +447,7 @@ namespace ResType
 		String ext(RESTYPE_MESHCOLOR_EXT_1);
 		String ext_1(RESTYPE_MESHCOLOR_EXT_2);
 
-		rtMeshColor->m_ResourceExtensionsList.Add(&ext);
-		rtMeshColor->m_ResourceExtensionsList.Add(&ext_1);
+		rtMeshColor->m_ResourceExtensionsList.AddString(&ext);
+		rtMeshColor->m_ResourceExtensionsList.AddString(&ext_1);
 	}
 }

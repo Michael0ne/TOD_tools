@@ -21,7 +21,7 @@ ParticleSystem::ParticleSystem() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	field_E8 = 1;
 	field_EC = -1;
 	field_C0 = 0;
-	field_F0 = -1;
+	m_IndexInSceneList = -1;
 
 	LodAndFade = Script::LodAndFade;
 

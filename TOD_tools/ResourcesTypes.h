@@ -96,7 +96,7 @@ namespace ResType
 		virtual char	SetResourcePlaceholder() { return NULL; };
 		virtual int		stub9();	//	NOTE: retrieves some unknown flag.
 		virtual void	GetResourceName(String& outName, int);
-		virtual void	stub11(int) {};
+		virtual void	LoadResource(const char* resPath) {};
 		virtual void	DestroyResource();
 		virtual int		stub13() { return NULL; };
 

@@ -1001,7 +1001,7 @@ namespace GameConfig
 
 	void EnumFaceColMaterials()
 	{
-		if (FaceColList.m_nCurrIndex > 0)
+		if (FaceColList.m_CurrIndex > 0)
 			//	Already loaded.
 			return;
 
@@ -1017,7 +1017,7 @@ namespace GameConfig
 
 		while (faceColFile.ReadString(&buffer)) {
 			buffer.ToLowerCase();
-			FaceColList.Add(&buffer);
+			FaceColList.AddString(&buffer);
 		}
 	}
 

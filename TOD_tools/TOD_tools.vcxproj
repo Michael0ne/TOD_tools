@@ -124,7 +124,6 @@
     <ClInclude Include="AnimLayer.h" />
     <ClInclude Include="AnimSlot.h" />
     <ClInclude Include="AuxQuadTree.h" />
-    <ClInclude Include="bink.h" />
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Builtin.h" />
@@ -180,7 +179,6 @@
     <ClInclude Include="Position.h" />
     <ClInclude Include="ProfilerInput.h" />
     <ClInclude Include="Progress.h" />
-    <ClInclude Include="radbase.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="RealtimeFolder.h" />
     <ClInclude Include="RenderBuffer.h" />
@@ -214,6 +212,11 @@
     <ClInclude Include="SurroundGeometry.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="TextSlot.h" />
+    <ClInclude Include="ThirdParty\bink\bink.h" />
+    <ClInclude Include="ThirdParty\bink\radbase.h" />
+    <ClInclude Include="ThirdParty\libpng-1.0.5\png.h" />
+    <ClInclude Include="ThirdParty\libpng-1.0.5\pngasmrd.h" />
+    <ClInclude Include="ThirdParty\libpng-1.0.5\pngconf.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPoint.h" />
     <ClInclude Include="Types.h" />
@@ -267,7 +270,6 @@
     <ClCompile Include="HavocPlaceHolder.cpp" />
     <ClCompile Include="LensFlare.cpp" />
     <ClCompile Include="LensFlareManager.cpp" />
-    <ClCompile Include="List.cpp" />
     <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="LoadScreenInfo.cpp" />
     <ClCompile Include="LogDump.cpp" />

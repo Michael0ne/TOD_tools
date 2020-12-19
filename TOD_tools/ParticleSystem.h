@@ -77,7 +77,7 @@ protected:
 	int field_E4;
 	int field_E8;
 	int field_EC;
-	int field_F0;
+	int m_IndexInSceneList;
 
 public:
 	ParticleSystem();	//	@8EB650

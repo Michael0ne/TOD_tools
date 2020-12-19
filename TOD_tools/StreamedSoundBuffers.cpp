@@ -216,12 +216,12 @@ namespace Audio
 		}else
 			if (m_nSoundSystem == SOUND_SYSTEM_DIESELPOWER)
 			{
-				for (int ind = 0; ind < m_DieselPowerSoundBuffers.m_nCurrIndex; ++ind)
-					if (m_DieselPowerSoundBuffers.m_pElements[ind])
-						(*(void (__stdcall *)(signed int))m_DieselPowerSoundBuffers.m_pElements[ind])(1);
-				for (int ind = 0; ind < m_DieselPowerSoundBuffers_1.m_nCurrIndex; ++ind)
-					if (m_DieselPowerSoundBuffers_1.m_pElements[ind])
-						(*(void (__stdcall*)(signed int))m_DieselPowerSoundBuffers_1.m_pElements[ind])(1);
+				for (int ind = 0; ind < m_DieselPowerSoundBuffers.m_CurrIndex; ++ind)
+					if (m_DieselPowerSoundBuffers.m_Elements[ind])
+						(*(void (__stdcall *)(signed int))m_DieselPowerSoundBuffers.m_Elements[ind])(1);
+				for (int ind = 0; ind < m_DieselPowerSoundBuffers_1.m_CurrIndex; ++ind)
+					if (m_DieselPowerSoundBuffers_1.m_Elements[ind])
+						(*(void (__stdcall*)(signed int))m_DieselPowerSoundBuffers_1.m_Elements[ind])(1);
 				m_pDieselPower->stub33();
 				Sleep(2000);
 
@@ -488,9 +488,9 @@ namespace Audio
 	int StreamedSoundBuffers::_43E7B0()
 	{
 		int res = 0;
-		for (int ind = 0; ind < m_DieselPowerSoundBuffers_1.m_nCurrIndex; ++ind)
-			if ((*(bool(__stdcall*)(int))(m_DieselPowerSoundBuffers_1.m_pElements[ind] + 32))(0) &&
-				!(*(bool(__stdcall*)(int))(m_DieselPowerSoundBuffers_1.m_pElements[ind] + 56))(0))
+		for (int ind = 0; ind < m_DieselPowerSoundBuffers_1.m_CurrIndex; ++ind)
+			if ((*(bool(__stdcall*)(int))(m_DieselPowerSoundBuffers_1.m_Elements[ind] + 32))(0) &&
+				!(*(bool(__stdcall*)(int))(m_DieselPowerSoundBuffers_1.m_Elements[ind] + 56))(0))
 				++res;
 		return res;
 	}
@@ -513,14 +513,14 @@ namespace Audio
 
 	void StreamedSoundBuffers::_43E850()
 	{
-		for (int ind = 0; ind < m_DieselPowerSoundBuffers.m_nCurrIndex; ++ind)
-			(*(void(__stdcall*)(int))(m_DieselPowerSoundBuffers.m_pElements[ind] + 40))(0);
+		for (int ind = 0; ind < m_DieselPowerSoundBuffers.m_CurrIndex; ++ind)
+			(*(void(__stdcall*)(int))(m_DieselPowerSoundBuffers.m_Elements[ind] + 40))(0);
 	}
 
 	void StreamedSoundBuffers::_43E880()
 	{
-		for (int ind = 0; ind < m_DieselPowerSoundBuffers_1.m_nCurrIndex; ++ind)
-			(*(void(__stdcall*)())(m_DieselPowerSoundBuffers_1.m_pElements[ind] + 152))();
+		for (int ind = 0; ind < m_DieselPowerSoundBuffers_1.m_CurrIndex; ++ind)
+			(*(void(__stdcall*)())(m_DieselPowerSoundBuffers_1.m_Elements[ind] + 152))();
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
