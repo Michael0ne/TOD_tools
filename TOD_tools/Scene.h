@@ -73,7 +73,7 @@ protected:
 	int field_C8;
 	List<int> m_List_1;
 	List<AuxQuadTree> m_QuadTreesList;
-	List<ParticleSystem> m_ParticleSystemsList;
+	List<class ParticleSystem> m_ParticleSystemsList;
 	List<CollisionList> m_CollisionListList;
 	int m_NodesWithUpdateOrBlockingScripts;
 	char m_InitMode;

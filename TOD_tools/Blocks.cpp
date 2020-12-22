@@ -45,7 +45,51 @@ int Blocks::InsertTypeListItem(void* res)
 #pragma message(TODO_IMPLEMENTATION)
 void Blocks::GetInternalFileName(String& outName, const char* str)
 {
-	(*(void* (__thiscall*)(Blocks*, String*, const char*))0x8773A0)(this, &outName, str);
+	char* _scenename = NULL;
+
+	if (m_SceneNames.m_CurrIndex)
+		_scenename = m_SceneNames.m_Elements[m_SceneNames.m_CurrIndex - 1]->m_szString;
+
+	if (String::EqualIgnoreCase(str, _scenename, strlen(_scenename)))
+	{
+		String _str(str);
+		_str.Substring(&outName, strlen(_scenename), _str.m_nLength - strlen(_scenename));
+
+		return;
+	}
+
+	const char* dataPath = "/data/";
+	unsigned char readBytes = NULL;
+	while (true)
+	{
+		if (!dataPath[str - "/data/"])
+			break;
+		if (!*dataPath ||
+			((dataPath[str - "/data/"] ^ *dataPath) & 223) != NULL)
+		{
+			outName.Set(str);
+
+			return;
+		}
+		if (readBytes++ == 6)
+		{
+			String _str(str);
+			_str.Substring(&outName, 5, 0x7FFFFFFE);
+
+			return;
+		}
+		dataPath++;
+	}
+	if (!*dataPath)
+	{
+		String _str(str);
+		_str.Substring(&outName, 5, 0x7FFFFFFE);
+
+		return;
+	}
+	outName.Set(str);
+
+	return;
 }
 
 ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId)

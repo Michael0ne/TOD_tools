@@ -1,30 +1,28 @@
 #include "SavePoint.h"
 
-int SavePoint::ms_FilesOpen = *(int*)0xA35EA8;	//	@A35EA8
+int SavePoint::OpenFilesCount = *(int*)0xA35EA8;	//	@A35EA8
 
-SavePoint::SavePoint(SavesDirectoriesInformation* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize)
+SavePoint::SavePoint(SaveSlot* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize)
 {
 	MESSAGE_CLASS_CREATED(SavePoint);
 
-	m_sSaveDir = String(saveDir);
-	m_sSlotId = String(saveSlotId);
-	m_sSaveSlotDir = String();
-	m_pSavesDirInfo = dirInfo;
-	m_nLastError = eSavePointStatus::E_UNKNOWN_3;
-	m_pSaveFileHandle = nullptr;
+	m_SaveDir = String(saveDir);
+	m_SlotIdStr = String(saveSlotId);
+	m_SlotDir = String();
+	m_SaveSlot = dirInfo;
+	m_LastError = eSavePointStatus::E_UNKNOWN_3;
+	m_SaveFile = nullptr;
 }
 
 SavePoint::~SavePoint()
 {
 	MESSAGE_CLASS_DESTROYED(SavePoint);
 
-	if (m_pSaveFileHandle) {
-		--ms_FilesOpen;
-		delete m_pSaveFileHandle;
-		m_pSaveFileHandle = nullptr;
+	if (m_SaveFile) {
+		--OpenFilesCount;
+		delete m_SaveFile;
+		m_SaveFile = nullptr;
 	}
 
-	m_nLastError = eSavePointStatus::E_UNKNOWN_3;
-
-	//	NOTE: implicit calls to destructors for string objects are here.
+	m_LastError = eSavePointStatus::E_UNKNOWN_3;
 }

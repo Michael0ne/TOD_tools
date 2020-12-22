@@ -5,8 +5,42 @@
 namespace Audio {
 
 #define AUDIO_DIESELPO_CLASS_SIZE 40
+#define AUDIO_DIESELPO_DLL_NAME "DieselPowerImplementation.dll"
+//#define AUDIO_DIESELPO_DLL_SUPPORTED_VERSION "DieselPower Level One, v.1.2.10."
+#define AUDIO_DIESELPO_DLL_SUPPORTED_VERSION "v.1.2.10."	//	NOTE: this has been altered to use new detection method.
 
-	typedef int (*DIESELPOWERCREATEPROC)(int, int, int, int, int, int, int, int, int);
+	enum DieselPowerErrorCode
+	{
+		ERROR_CANT_ACQUIRE_FACTORY = -8,
+		ERROR_DLL_CANT_BE_FOUND = -11,
+		ERROR_SUCCESSFULLY_ACQUIRED = 0,
+		ERROR_VERSIONS_MISMATCH = -14,
+		ERROR_VERSIONS_HIGHER = -12,
+		ERROR_VERSION_LOWER = -13,
+		ERROR_DLL_NOT_LOADED = -3,
+		ERROR_RELEASE_POINTERS_MISMATCH = -9,
+		ERROR_PROBLEM_RELEASING_DLL = -8,
+		ERROR_PROBLEM_RELEASING_INSTANCE = -1
+	};
+
+	const char* DieselPowerErrorStrings[] =
+	{
+		"Error loading DieselPowerImplementation.dll - file not found.",
+		"DieselPower succesfully loaded, created and initialized.",
+		"The DieselPower Level One DLL has a LOWER INTERFACE version!",
+		"The DieselPower Level One DLL has a HIGHER INTERFACE version!",
+		"The found DieselPower DLL has a different LEVEL version!",
+		"DieselPower DLL version successfully acquired.",
+		"Error getting the factory function from DieselPowerImplementation.dll",
+
+		"Invalid pointer specified: Mismatch between the given pointer and the DieselPower mother object pointer.",
+		"NULL pointer specified!",
+		"Unloaded the DieselPower Level One DLL succesfully.",
+		"Problem releasing the DieselPower Level One DLL",
+		"DieselPower Level One DLL is not loaded."
+	};
+
+	typedef int (CALLBACK *DIESELPOWERCREATEPROC)(int, int, int, float, HWND, int, int, int, char*);
 
 	class DieselPower
 	{
@@ -20,6 +54,8 @@ namespace Audio {
 		int field_1C;
 		int field_20;
 		int field_24;
+
+		static bool	CheckDllVersion();	//	@940F30
 
 	public:
 		//	TODO: this is done so the linker doesn't complain about undefined functions.
@@ -85,15 +121,21 @@ namespace Audio {
 		static DieselPower* CallFactory(unsigned int versionMajor, unsigned int versionMinor, unsigned int versionBuild, float unk, HWND windowHandle, int unk1, int unk2, int unk3);	//	@940A70
 
 		static const char* RequiredVersion;	//	@A1BA50
-		static char* DetectedVersion;	//	@A5E800
-		static HMODULE& LibraryHandle;	//	@A5E840
-		static int& ErrorCode;	//	@A5E844
-		static DIESELPOWERCREATEPROC FactoryFunction;	//	@A5E868
+		static char DetectedVersion[7];	//	@A5E800
+		static HMODULE LibraryHandle;	//	@A5E840
+		static int ErrorCode;	//	@A5E844
 		static char* ErrorMessageBuffer;	//	@A5E700
-		static bool& Created;	//	@A5E84C
+		static bool InstanceAcquired;	//	@A5E84C
+		static unsigned int VersionNumberMajor;	//	@A5E850
+		static unsigned int VersionNumberMinor;	//	@A5E854
+		static unsigned int VersionNumberBuild;	//	@A5E858
+		static unsigned int VersionNumberRequiredMajor;	//	@A5E85C
+		static unsigned int VersionNumberRequiredMinor;	//	@A5E860
+		static unsigned int VersionNumberRequiredBuild;	//	@A5E864
+		static DIESELPOWERCREATEPROC FactoryFunction;	//	@A5E868
 	};
 
-	extern DieselPower* g_DieselPower;
+	extern DieselPower* g_DieselPower;	//	@A5E848
 }
 
 static_assert(sizeof(Audio::DieselPower) == AUDIO_DIESELPO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(DieselPower));

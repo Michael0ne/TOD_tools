@@ -60,6 +60,18 @@
     <Filter Include="Header files\ThirdParty\libpng">
       <UniqueIdentifier>{acf199cd-d85f-4fc0-b677-d22097c2706d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header files\ThirdParty\libogg">
+      <UniqueIdentifier>{20e68c6b-dc2d-436a-9079-7c7b1716aa59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\ThirdParty\libvorbis">
+      <UniqueIdentifier>{70c3c361-b9a6-4931-b6b0-d1d318e6c6fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ThirdParty">
+      <UniqueIdentifier>{61536c81-37a9-4a91-8dad-11a99ae33e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\ThirdParty\libvorbis">
+      <UniqueIdentifier>{608b4264-b837-4da7-b6a7-5b3e3a4da137}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -127,9 +139,6 @@
     </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="SavesDirectoriesInformation.h">
-      <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
     <ClInclude Include="MemoryCards.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
@@ -392,6 +401,27 @@
     <ClInclude Include="ThirdParty\libpng-1.0.5\pngconf.h">
       <Filter>Header files\ThirdParty\libpng</Filter>
     </ClInclude>
+    <ClInclude Include="SaveSlot.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
+    <ClInclude Include="AuxMonoStream.h">
+      <Filter>Header files\KapowSystems\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\libogg-1.1.2\include\ogg.h">
+      <Filter>Header files\ThirdParty\libogg</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\libogg-1.1.2\include\os_types.h">
+      <Filter>Header files\ThirdParty\libogg</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\libvorbis-1.1.0\include\codec.h">
+      <Filter>Header files\ThirdParty\libvorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\libvorbis-1.1.0\include\vorbisenc.h">
+      <Filter>Header files\ThirdParty\libvorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\libvorbis-1.1.0\include\vorbisfile.h">
+      <Filter>Header files\ThirdParty\libvorbis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -456,9 +486,6 @@
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="SavesDirectoriesInformation.cpp">
-      <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
     <ClCompile Include="MemoryCards.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
@@ -696,6 +723,18 @@
     </ClCompile>
     <ClCompile Include="LogDump.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveSlot.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\libvorbis-1.1.0\lib\vorbisenc.c">
+      <Filter>Source files\ThirdParty\libvorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\libvorbis-1.1.0\lib\vorbisfile.c">
+      <Filter>Source files\ThirdParty\libvorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="AuxMonoStream.cpp">
+      <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

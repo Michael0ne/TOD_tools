@@ -1,11 +1,20 @@
 #include "Entity.h"
 #include "Blocks.h"
 #include "Globals.h"
+#include "MemoryCards.h"
 
 void Entity::scalar_destructor(bool freeMemory)
 {
+	delete this;
+
 	if (freeMemory)
 		Allocators::ReleaseMemory(this, false);
+}
+
+void Entity::Destroy()
+{
+	if (this)
+		scalar_destructor(true);
 }
 
 Entity::Entity()
@@ -27,8 +36,82 @@ Entity::~Entity()
 {
 	MESSAGE_CLASS_DESTROYED(Entity);
 
-	if (this)
-		scalar_destructor(true);
+	if ((int*)field_20 && ((int*)field_20)[1])
+	{
+		(*(void(__stdcall**)(int))(*(int*)field_1C + 16))((int)field_20 - *(int*)(field_1C + 16) / 12);
+		field_20 = NULL;
+	}
+
+	if (field_18)
+		m_ScriptEntity->m_ParentNode->_489C90();
+
+	*(int*)(*((int*)&g_Blocks->m_UnkList_3.m_Elements + 4 * ((m_Id >> 28) & 7) - 1) + 4 * ((m_Id >> 8) & 0xFF8FFFFF)) = NULL;
+
+	if (g_Blocks->field_1B0[((m_Id >> 28) & 7) - 1] > ((m_Id >> 8) & 0xFF8FFFFF))
+		g_Blocks->field_1B0[((m_Id >> 28) & 7) - 1] = ((m_Id >> 8) & 0xFF8FFFFF);
+}
+
+int Entity::GetId()
+{
+	return m_Id >> 8;
+}
+
+int Entity::GetScriptPriority()
+{
+	if (field_20 &&
+		field_20->m_ScriptEntity)
+		return NULL;
+	else
+		return NULL;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Entity::SetScriptPriority()
+{
+}
+
+void Entity::SaveScriptDataToFile(int* params)
+{
+	if (!params[1] || ((MemoryCards*)params[1])->m_ScriptEntity == nullptr)
+	{
+		*params = NULL;
+		return;
+	}
+
+	ScriptTypes::ScriptType_Entity* memcard = (ScriptTypes::ScriptType_Entity*)(((MemoryCards*)params[1])->m_ScriptEntity);
+
+	while (tMemoryCards != memcard)
+	{
+		if (!(memcard = memcard->m_Parent))
+		{
+			*params = NULL;
+			return;
+		}
+	}
+
+	*params = SaveScriptDataToFile_Impl(memcard, params[2], params[3], (const char*)params[4]) >= NULL;
+}
+
+void Entity::LoadScriptDataFromFile(int* params)
+{
+	if (!params[1] || ((MemoryCards*)params[1])->m_ScriptEntity == nullptr)
+	{
+		*params = NULL;
+		return;
+	}
+
+	ScriptTypes::ScriptType_Entity* memcard = (ScriptTypes::ScriptType_Entity*)(((MemoryCards*)params[1])->m_ScriptEntity);
+
+	while (tMemoryCards != memcard)
+	{
+		if (!(memcard = memcard->m_Parent))
+		{
+			*params = NULL;
+			return;
+		}
+	}
+
+	*params = LoadScriptDataFromFile_Impl(memcard, params[2], params[3]);
 }
 
 int Entity::GetPropertyId(const char* prop)

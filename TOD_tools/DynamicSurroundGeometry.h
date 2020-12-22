@@ -6,7 +6,7 @@
 
 class DynamicSurroundGeometry : public Node
 {
-protected:
+public:
 	int* m_Texture_1;
 	int field_54;
 	int* m_Texture_2;
@@ -30,13 +30,16 @@ protected:
 	float m_RotResistanceXZ;
 	float m_ForceOffset;
 	float m_ForceRotate;
+protected:
 	float m_fAC;
 	float m_fB0;
 	float m_fB4;
 	float m_fB8;
+public:
 	int m_Category;
 	int m_MaxCount;
-	float m_Radius;
+	float m_Radius;	//	NOTE: range is from 0.f to 250.f
+protected:
 	float m_fC8;
 	int field_CC;
 	List<int> m_List_1;

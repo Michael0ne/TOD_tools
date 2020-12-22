@@ -34,7 +34,7 @@ protected:
 public:
 	void			SetFileHandle(HANDLE _hnd);	//	@436D90
 	void			ReleaseFileHandle();	//	@436DC0
-	void			_436FF0(int);	//	@436FF0
+	void			_436FF0(HANDLE);	//	@436FF0
 	HANDLE			CreateFile_();	//	@4378D0
 
 protected:
@@ -62,7 +62,9 @@ class File
 	friend class FileWrapper;
 protected:
 	String			m_FileName;
+public:
 	FileWrapper*	m_FileHandle;
+protected:
 	unsigned char	m_FileReadAttribute;
 	unsigned char	m_ReadFromZip;
 	int				m_SeekPosition;
@@ -91,12 +93,12 @@ public:
 	virtual int		GetPosition();	//	@417BF0
 	virtual char	ReadBlockDecreasePosition();	//	@417C50
 	virtual char	ReadIfNotEOF();	//	@417850
-	virtual const char* GetFileName();	//	@419C40
+	virtual const char* GetFileName() const;	//	@419C40
 
 	File(const char* _filename, int _desiredaccess, bool _createifnotfound);	//	@418E30
 	~File();	//	@417E20
 
-	bool			IsFileOpen();	//	@417CF0
+	bool			IsFileOpen() const;	//	@417CF0
 	char			ReadString(void* outStr);	//	@4180C0
 
 	static void		AddDirectoryMappingsListEntry(const char* str1, const char* str2);	//	@418F90

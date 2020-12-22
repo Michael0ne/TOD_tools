@@ -9,21 +9,9 @@ void Node::scalar_destructor(bool freeMemory)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Node::destructor()
+void Node::Destroy()
 {
-	Node* first_child = m_FirstChild;
-	Node* next_sibling = nullptr;
-	if (first_child)
-	{
-		do 
-		{
-			next_sibling = first_child->m_NextSibling;
-			delete first_child;
-			first_child = next_sibling;
-		} while (next_sibling);
-	}
-	m_FirstChild = nullptr;
-	//SetParent(nullptr);
+	
 }
 
 void Node::_484CC0(int)
@@ -154,6 +142,24 @@ Node::Node(unsigned char allocationBitmask)
 
 	field_2C = field_2C | 0xFFFFFFFF;
 	m_Flags = m_Flags | 0xF000;
+}
+
+Node::~Node()
+{
+	MESSAGE_CLASS_DESTROYED(Node);
+}
+
+const char* Node::GetTypename() const
+{
+	return m_ScriptEntity->m_sTypeName.m_szString;
+}
+
+const char* Node::GetScript() const
+{
+	if (m_ScriptEntity->m_ParentNode)
+		return m_ScriptEntity->m_ParentNode->m_NodeName.m_szString;
+	else
+		return NULL;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

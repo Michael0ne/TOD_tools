@@ -6,15 +6,12 @@
 
 class RealtimeFolder : public Folder_
 {
+	friend class Scene;
 protected:
 
+	static RealtimeFolder*	RealtimeFolderInstance;	//	@A3D8D4
 public:
-	RealtimeFolder() : Folder_()	//	NOTE: no constructor.
-	{
-		MESSAGE_CLASS_CREATED(RealtimeFolder);
-
-		*Instance = this;
-	}
-
-	static RealtimeFolder** Instance;
+	RealtimeFolder();
 };
+
+extern RealtimeFolder* tRealtimeFolder;

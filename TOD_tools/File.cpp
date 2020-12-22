@@ -261,7 +261,7 @@ char File::ReadIfNotEOF()
 	return false;
 }
 
-const char* File::GetFileName()
+const char* File::GetFileName() const
 {
 	return m_FileName.m_szString;
 }
@@ -305,6 +305,8 @@ File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
 
 File::~File()
 {
+	MESSAGE_CLASS_DESTROYED(File);
+
 	if (m_ReadFromZip)
 		if (m_ZipFileHandle)
 			delete m_ZipFileHandle;
@@ -316,7 +318,7 @@ File::~File()
 		delete m_FileHandle;
 }
 
-bool File::IsFileOpen()
+bool File::IsFileOpen() const
 {
 	return (m_ReadFromZip && m_ZipIndex >= 0) || m_FileHandle->m_File != nullptr;
 }
@@ -618,7 +620,7 @@ void FileWrapper::ReleaseFileHandle()
 	LeaveCriticalSection(&m_CriticalSection);
 }
 
-void FileWrapper::_436FF0(int)
+void FileWrapper::_436FF0(HANDLE)
 {
 	EnterCriticalSection(&m_CriticalSection);
 

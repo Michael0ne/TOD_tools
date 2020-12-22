@@ -18,22 +18,22 @@ enum SaveSlotIndex
 };
 
 //	TODO: move this to 'MemoryCards' class.
-class SavesDirectoriesInformation
+class SaveSlot
 {
 private:
-	SaveSlotIndex m_MemoryCardIndex;	//	NOTE: for PC save directory information, this is set to 8.
+	SaveSlotIndex	m_MemoryCardIndex;	//	NOTE: for PC save directory information, this is set to 8.
 public:
-	String m_sSaveFolderPath;
+	String			m_SaveFolderPath;
 private:
-	bool m_bFormatted;
-	unsigned char field_16;
-	unsigned char field_17;
+	bool			m_Formatted;
+	unsigned char	field_16;
+	unsigned char	field_17;
 
 public:
 	virtual void scalar_destructor(bool) {};	//	@93F480
 
-	SavesDirectoriesInformation(SaveSlotIndex index);
-	~SavesDirectoriesInformation();
+	SaveSlot(SaveSlotIndex index);
+	~SaveSlot();
 
 	void* operator new (size_t size)
 	{
@@ -49,8 +49,8 @@ public:
 	bool	FormatCard();	//	@928840
 };
 
-static SavesDirectoriesInformation* g_SavesDirsInfo[SAVE_SLOT_8] = {
+static SaveSlot* SaveSlots[SAVE_SLOT_8] = {
    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 };	//	@A35E84
 
-static_assert(sizeof(SavesDirectoriesInformation) == SAVESDIRINF_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SavesDirectoriesInformation));
+static_assert(sizeof(SaveSlot) == SAVESDIRINF_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SaveSlot));
