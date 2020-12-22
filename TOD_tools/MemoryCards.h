@@ -28,4 +28,6 @@ public:
 	MemoryCards();	//	@9263B0
 };
 
+extern ScriptTypes::ScriptType_Entity* tMemoryCards;	//	@A3E178
+
 static_assert(sizeof(MemoryCards) == MEMORYCARDS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(MemoryCards));

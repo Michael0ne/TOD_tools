@@ -21,6 +21,18 @@ Progress::~Progress()
 	MESSAGE_CLASS_DESTROYED(Progress);
 }
 
+void Progress::AddLoadbarPhase(const char* phaseName, LARGE_INTEGER timeToLoad, bool)
+{
+	String phasename(phaseName);
+	m_StatesStringsList.AddString(&phasename);
+	memcpy(m_TotalTimeToLoad, (const void*)&timeToLoad, sizeof(LARGE_INTEGER));	//	FIXME: this is bullshit.
+}
+
+void Progress::SetLoadScreenSprite(class Entity* sprite)
+{
+	m_LoadScreenSprite = sprite;
+}
+
 ProgressBase::ProgressBase(INT64 timeStart)
 {
 	MESSAGE_CLASS_CREATED(ProgressBase);
@@ -31,8 +43,7 @@ ProgressBase::ProgressBase(INT64 timeStart)
 
 	debug("PROGRESS RESET.\n");
 
-	field_18 = NULL;
-	field_1C = NULL;
+	m_TotalTimeToLoad[0] = m_TotalTimeToLoad[1] = NULL;
 	field_20 = -1;
 	field_30 = NULL;
 

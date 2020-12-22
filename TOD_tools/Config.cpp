@@ -17,7 +17,7 @@
 #include "Scene.h"
 #include "Progress.h"
 #include "RenderBuffer.h"
-#include "SavesDirectoriesInformation.h"
+#include "SaveSlot.h"
 #include "LogDump.h"
 #include "EditorCamera.h"
 #include "ZipArch.h"
@@ -260,9 +260,9 @@ namespace GameConfig
 		Input::Gamepad::GetGameControllerByIndex(0);
 
 		//	Init saves directories information (ps2 emulation and pc).
-		g_SavesDirsInfo[SAVE_SLOT_0] = new SavesDirectoriesInformation(SAVE_SLOT_0);
-		g_SavesDirsInfo[SAVE_SLOT_1] = new SavesDirectoriesInformation(SAVE_SLOT_1);
-		g_SavesDirsInfo[SAVE_SLOT_8] = new SavesDirectoriesInformation(SAVE_SLOT_8);
+		SaveSlots[SAVE_SLOT_0] = new SaveSlot(SAVE_SLOT_0);
+		SaveSlots[SAVE_SLOT_1] = new SaveSlot(SAVE_SLOT_1);
+		SaveSlots[SAVE_SLOT_8] = new SaveSlot(SAVE_SLOT_8);
 
 		Script::SavePlatformPS2 = true;
 
@@ -282,10 +282,10 @@ namespace GameConfig
 				do {
 					//	TODO: implementation for utility function!
 					Utils::CreateDirectoriesRecursive(szMemcard0[memcardindex]);
-					g_SavesDirsInfo[memcardindex]->m_sSaveFolderPath.Set(szMemcard0[memcardindex]);
+					SaveSlots[memcardindex]->m_SaveFolderPath.Set(szMemcard0[memcardindex]);
 
-					if (!g_SavesDirsInfo[memcardindex]->IsFormatted())
-						g_SavesDirsInfo[memcardindex]->FormatCard();
+					if (!SaveSlots[memcardindex]->IsFormatted())
+						SaveSlots[memcardindex]->FormatCard();
 
 					memcardindex++;
 				} while (memcardindex < 2);
@@ -293,11 +293,11 @@ namespace GameConfig
 
 			const char szHarddisk[] = "/savegames/harddisk/";
 			Utils::CreateDirectoriesRecursive(szHarddisk);
-			g_SavesDirsInfo[SAVE_SLOT_8]->m_sSaveFolderPath.Set(szHarddisk);
+			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath.Set(szHarddisk);
 
 			//	TODO: implementation for memorycards class methods!
-			if (!g_SavesDirsInfo[SAVE_SLOT_8]->IsFormatted())
-				g_SavesDirsInfo[SAVE_SLOT_8]->FormatCard();
+			if (!SaveSlots[SAVE_SLOT_8]->IsFormatted())
+				SaveSlots[SAVE_SLOT_8]->FormatCard();
 		}else{
 			//	For PC, just figure out system user data directory.
 			Script::SavePlatformPS2 = false;
@@ -309,7 +309,7 @@ namespace GameConfig
 
 			Script::FileCheck = true;
 
-			g_SavesDirsInfo[SAVE_SLOT_8]->m_sSaveFolderPath.Set(sUserDocDir.m_szString);
+			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath.Set(sUserDocDir.m_szString);
 		}
 
 		Script::CutsceneDisableAware = false;

@@ -8,11 +8,10 @@
 
 class ProgressBase
 {
-private:
+protected:
 	int field_4;
 	List<String> m_StatesStringsList;
-	int field_18;
-	int field_1C;
+	int m_TotalTimeToLoad[2];	//	FIXME: this is int64 (LARGE_INTEGER) but MSVC compiler thinks it's more than 8 bytes.
 	int field_20;
 	int field_24;
 	int field_28;
@@ -32,9 +31,9 @@ public:
 	~ProgressBase();
 };
 
-class Progress : public ProgressBase
+class Progress : ProgressBase
 {
-private:
+protected:
 	int field_48;
 	int field_4C;
 	int field_50;
@@ -51,6 +50,9 @@ public:
 
 	Progress();		//	@87B720
 	~Progress();
+
+	void			AddLoadbarPhase(const char* phaseName, LARGE_INTEGER timeToLoad, bool);	//	@40E970
+	void			SetLoadScreenSprite(class Entity*);	//	@87B710
 
 	void* operator new (size_t size)
 	{

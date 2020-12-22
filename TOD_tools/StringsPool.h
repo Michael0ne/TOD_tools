@@ -3,7 +3,7 @@
 #include "MemoryAllocators.h"
 
 #define STRING_BITMASK_DEFAULT	0x80000000
-#define STRING_BITMASK_SHORT	0x80000004
+#define STRING_BITMASK_SHORT	0x80000004	//	TODO: right now, this is not used as it should be - wether string is short or long - the memory always gets allocated from the heap. Change that.
 #define STRING_BITMASK_ONLY_SIZE 0x7FFFFFFF
 
 class String
@@ -38,6 +38,7 @@ public:
 	void			Format(const char* format, ...);	//	@415300	NOTE: adapted to be String's class method.
 	bool			Equal(const char* _str);	//	@40FE30
 	String*			Substring(String* outStr, int posStart, int length);	//	@409E90
+	inline bool		Empty();
 	inline void		ConvertBackslashes()
 	{
 		Replace('\\', '/');

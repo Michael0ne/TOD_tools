@@ -1,7 +1,7 @@
 #pragma once
 
 #include "File.h"
-#include "SavesDirectoriesInformation.h"
+#include "SaveSlot.h"
 
 #define SAVEPOINT_CLASS_SIZE 64
 #define SAVEPOINT_FILE_VERSION 9
@@ -30,12 +30,12 @@ enum eSavePointStatus {
 class SavePoint
 {
 private:
-	SavesDirectoriesInformation* m_pSavesDirInfo;
-	String m_sSaveDir;
-	String m_sSlotId;
-	File* m_pSaveFileHandle;
-	int m_nLastError;
-	String m_sSaveSlotDir;
+	SaveSlot*	m_SaveSlot;
+	String		m_SaveDir;
+	String		m_SlotIdStr;
+	File*		m_SaveFile;
+	int			m_LastError;	//	NOTE: once savepointstatus is finished change this to enum type.
+	String		m_SlotDir;
 
 public:
 	virtual bool SaveBuffersDataToFile() { return false; };	//	@86C3D0
@@ -57,7 +57,7 @@ public:
 	virtual bool ReadBlockIfFailed() { return false; };	//	@86C680
 	virtual const char* GetSaveSlotDir() { return nullptr; };	//	@86C250
 
-	SavePoint(SavesDirectoriesInformation* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize);	//	@86C160
+	SavePoint(SaveSlot* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize);	//	@86C160
 	~SavePoint();	//	@86BF20
 
 	void* operator new(size_t size)
@@ -73,7 +73,7 @@ public:
 	static bool		WriteSavePointFileData(const SavePoint& savepoint, const struct RewindBuffer& rewbuff);	//	@873DA0
 	static bool		VerifyFileChecksum(SavePoint*);	//	@874230
 
-	static int		ms_FilesOpen;	//	@A35EA8
+	static int		OpenFilesCount;	//	@A35EA8
 };
 
 static_assert(sizeof(SavePoint) == SAVEPOINT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SavePoint));

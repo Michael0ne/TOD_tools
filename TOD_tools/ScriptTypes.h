@@ -302,16 +302,23 @@ namespace ScriptTypes
 		int field_2C;
 	};
 
+	struct ScriptType_Entity_fld2C
+	{
+		int field_0;
+		int field_4;
+		int m_Priority;
+		int field_C;
+	};
+
 	class ScriptType_Entity : public ScriptType
 	{
 	protected:
 		void* (*m_Creator)(unsigned int allocatorIndex);
+	public:
 		ScriptType_Entity* m_Parent;
 		class GlobalNode* m_ParentNode;
-		int field_2C;
-		int field_30;
-		int m_Priority;
-		int* field_38;
+	protected:
+		ScriptType_Entity_fld2C m_Properties;
 		int field_3C;
 		int field_40;
 		int field_44;
@@ -329,6 +336,7 @@ namespace ScriptTypes
 		}
 
 		void*	CreateNode();	//	@86C770
+		void	InheritFrom(ScriptType_Entity* from);	//	@86CB40
 	};
 
 	static ScriptType_Entity*			tENTITY = (ScriptType_Entity*)0xA3CEE0;		//	@A3CEE0

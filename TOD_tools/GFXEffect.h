@@ -4,6 +4,12 @@
 
 #define GFXEFFECT_CLASS_SIZE 160
 
+enum GfxNoiseBlendMode
+{
+	BLEND_NORMAL = 0,
+	BLEND_ADD = 1
+};
+
 class GFXEffect : public Node
 {
 protected:
@@ -14,15 +20,15 @@ protected:
 	float m_Brightness;
 	float m_Saturation;
 	float m_LightBleeding;
-	float m_VignetteIntensity;
+	float m_VignetteIntensity;	//	NOTE: range from 0.f to 1.f
 	ColorRGB m_VignetteColor;
-	float m_VignetteShape;
+	float m_VignetteShape;	//	NOTE: range from 0.1f to 10.f
 	float m_VignetteSize;
-	int* m_ResourceInfo;
+	ResType::Texture* m_VignetteTexture;
 	int field_8C;
 	float m_NoiseIntensity;
-	int m_NoiseBlendMode;
-	int* m_NoiseTexture;
+	GfxNoiseBlendMode m_NoiseBlendMode;
+	ResType::Texture* m_NoiseTexture;
 	int field_9C;
 
 public:

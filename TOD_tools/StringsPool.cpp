@@ -62,6 +62,11 @@ String* String::Substring(String* outStr, int posStart, int length)
 	return outStr;
 }
 
+bool String::Empty()
+{
+	return (m_szString != &m_pEmpty ? (*m_szString != NULL && m_szString != nullptr) : (m_pEmpty != NULL));
+}
+
 void String::Set(const char* str)
 {
 	if (m_szString != &m_pEmpty && (m_nBitMask & STRING_BITMASK_DEFAULT) != NULL)

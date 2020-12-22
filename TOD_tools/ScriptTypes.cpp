@@ -212,6 +212,14 @@ namespace ScriptTypes
 		return ent;
 	}
 
+	void ScriptType_Entity::InheritFrom(ScriptType_Entity* from)
+	{
+		field_6C = from->field_74 ? from->m_Parent->m_PropertiesList_1.m_CurrIndex + from->m_Parent->field_6C : from->m_PropertiesList_1.m_CurrIndex + from->field_6C;
+		field_70 = from->field_74 ? from->m_Parent->m_PropertiesList_2.m_CurrIndex + from->m_Parent->field_70 : from->m_PropertiesList_2.m_CurrIndex + from->field_70;
+		m_Creator = from->m_Creator;
+		m_Parent = from;
+	}
+
 	ScriptType_List::ScriptType_List(const ScriptType& elementsType) : ScriptType(TYPE_LIST, szScriptTypeName[TYPE_LIST], TYPE_LIST_SIZE)
 	{
 		MESSAGE_CLASS_CREATED(ScriptType_List);

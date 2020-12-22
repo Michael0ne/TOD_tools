@@ -1,7 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
-
 struct Property_Script {
 	int	field_0;
 	int	field_4;
