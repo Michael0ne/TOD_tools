@@ -800,58 +800,17 @@ void GetGameWorkingDirRelativePath(String* str)
 	str->Set(buffer);
 }
 
-bool IsFileExists(const char* file)
+void SetWarningString(const char* (*ptr)())
 {
-	String temp(file);
-	GetWorkingDirRelativePath(&temp);
-
-	if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
-	{
-		if (!Window::GameDiscFound)
-			return false;
-
-		GetGameWorkingDirRelativePath(&temp);
-
-		if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
-			return false;
-	}
-
-	return true;
+	WarningStringProc = ptr;
 }
 
-void ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension)
+const char* GetWarningString()
 {
-	char buff[256];
-	memset(&buff, NULL, sizeof(buff));
-
-	//	Figure out where dot lives.
-	char* dotPos = strchr(buff, '.');
-	if (dotPos)
-	{
-		*dotPos = NULL;
-		if (outFileExtension)
-			while (true)
-				if (*dotPos == NULL) break; else *(outFileExtension++) = *(dotPos++);
-		else
-			*outFileExtension = NULL;
-	}
-
-	char* slashPos = strrchr(buff, '/');
-	slashPos = slashPos == nullptr ? strrchr(buff, '\\') : slashPos;
-
-	if (slashPos)
-	{
-		if (outFileName)
-			strcpy(outFileName, slashPos + 1);
-		*(slashPos + 1) = NULL;
-		if (outDirectory)
-			strcpy(outDirectory, buff);
-	}else{
-		if (outDirectory)
-			*outDirectory = NULL;
-		if (outFileName)
-			strcpy(outFileName, buff);
-	}
+	if (WarningStringProc)
+		return WarningStringProc();
+	else
+		return NULL;
 }
 
 //	Apply patches specific to this class.

@@ -3,23 +3,24 @@
 #include "MemoryAllocators.h"
 
 #define RENDERBUFFER_CLASS_SIZE 20
-#define RENDERBUFFER_DEFAULT_COMMANDS 128
+#define RENDERBUFFER_DEFAULT_BUFFER_SIZE 128
+#define RENDERBUFFER_MAX_PARAMS_SIZE 250
 
 class RenderBuffer
 {
 private:
-	int		m_MaxCommands;
-	void*	m_BufferPtr;
-	int		field_8;
-	int		field_C;
-	int		m_AllocatorId;
+	int m_MaxParams;
+	int* m_ParamsArray;
+	int m_CurrentParamIndex;
+	int m_PrevParamIndex;
+	int m_AllocatorId;
 
 public:
-	RenderBuffer(int maxCommands, int allocatorType);	//	@415400
+	RenderBuffer(int maxParams, AllocatorIndex allocatorType);	//	@415400
 
 	static void	CreateRenderBuffer();	//	@436070
 
-	static int	Buffer;	//	@A35B98	//	NOTE: don't really know what type this is.
+	static int	Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE];	//	@A35B98
 };
 
 extern RenderBuffer* g_RenderBuffer;	//	@A35E60

@@ -83,9 +83,9 @@ void Renderer::_SetBufferStateByIndex(int state, int index)
 	(*(void(__thiscall*)(Renderer*, int, int))0x41FD90)(this, state, index);
 }
 
-void Renderer::_420170(int unk)
+void Renderer::SetRenderBufferIsEmpty(bool _empty)
 {
-	field_0[0] = unk;
+	m_RenderBufferEmpty = _empty;
 }
 
 void Scene_Buffer276::Init(const Vector3<float>& vDimensions)

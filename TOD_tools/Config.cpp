@@ -26,6 +26,11 @@
 String Script::Filesystem = String();
 String Script::ControlType = String();
 String Script::Region = String();
+String Script::VersionName = String();
+String Script::StreamedSoundExt = String();
+String Script::LanguageMode = String();
+String Script::ScriptsPath = String();
+List<StringTuple> Script::DirectoryMappings = List<StringTuple>();
 
 namespace GameConfig
 {
@@ -85,7 +90,7 @@ namespace GameConfig
 
 		//	Try and look for configuration variables file.
 		//	TODO: CreateBuffer implementation!
-		if (Utils::FindFileEverywhere(m_sConfigFilePath.m_szString)) {
+		if (File::FindFileEverywhere(m_sConfigFilePath.m_szString)) {
 			debug("Initialising engine with '%s'\n", m_sConfigFilePath.m_szString);
 
 			m_pConfigurationVariables = new Session_Variables(m_sConfigFilePath.m_szString, 1);;
@@ -95,7 +100,7 @@ namespace GameConfig
 		Session_Variables* pProfileVariables = nullptr;
 
 		//	Try and look for profile variables file.
-		if (Utils::FindFileEverywhere("/profile.txt"))
+		if (File::FindFileEverywhere("/profile.txt"))
 			pProfileVariables = new Session_Variables("/profile.txt", 0);
 
 		if (m_pConfigurationVariables->IsVariableSet("filecheck"))
@@ -601,8 +606,8 @@ namespace GameConfig
 			Script::FixDanglingRefs = m_pConfigurationVariables->GetParamValueBool("fix_dangling_refs");
 
 		//	NOTE: this is unused. Keep it here?
-		String* _str = (String*)0xA0B4C4;
-		Utils::SetWarningString(_str->m_szString);
+		//String* _str = (String*)0xA0B4C4;
+		//SetWarningString(_str->m_szString);
 
 		if (m_pConfigurationVariables->IsVariableSet("simulate_release_build")) {
 			Script::SimulateReleaseBuild = m_pConfigurationVariables->GetParamValueBool("simulate_release_build");
@@ -1005,7 +1010,7 @@ namespace GameConfig
 			//	Already loaded.
 			return;
 
-		if (!Utils::FindFileEverywhere("/FaceColl.mat"))
+		if (!File::FindFileEverywhere("/FaceColl.mat"))
 			return;
 
 		File faceColFile("/FaceColl.mat", 1, true);

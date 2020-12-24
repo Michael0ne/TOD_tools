@@ -367,6 +367,115 @@ void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
 	DirectoryMappingsList.AddElement(&_tmp);
 }
 
+String* File::GetPathFromDirectoryMappings(String* outStr, const char* path)
+{
+	if (DirectoryMappingsList.m_CurrIndex <= NULL)
+		return outStr;
+
+	for (int ind = 0; ind < DirectoryMappingsList.m_CurrIndex; ind++)
+		if (String::EqualIgnoreCase(path, DirectoryMappingsList.m_Elements[ind]->m_String_1.m_szString, DirectoryMappingsList.m_Elements[ind]->m_String_1.m_nLength))
+		{
+			outStr->Set(DirectoryMappingsList.m_Elements[ind]->m_String_2.m_szString);
+			outStr->Append(&path[DirectoryMappingsList.m_Elements[ind]->m_String_1.m_nLength]);
+
+			return outStr;
+		}
+
+	return outStr;
+}
+
+const char* File::ExtractFileDir(const char* path)
+{
+	char buf[1024] = {};
+	char buf_[1024] = {};
+	ExtractFilePath(path, buf, buf_, buf_);
+
+	return buf;
+}
+
+const char* File::ExtractFileName(const char* path)
+{
+	char buf[1024] = {};
+	char buf_[1024] = {};
+
+	if (path && *path)
+	{
+		ExtractFilePath(path, buf_, buf, buf_);
+		return buf;
+	}else
+		return NULL;
+}
+
+bool File::FindFileEverywhere(const char* path)
+{
+	if (!path && *path == NULL)
+		return false;
+
+	String _tmp;
+	int zipSlot;
+
+	if (ZipArch::SlotId > NULL)
+		if (ZipArch::FindFile(GetPathFromDirectoryMappings(&_tmp, path)->m_szString, nullptr, &zipSlot))
+			return true;
+
+	return IsFileExists(GetPathFromDirectoryMappings(&_tmp, path)->m_szString);
+}
+
+bool File::IsFileExists(const char* file)
+{
+	String temp(file);
+	GetWorkingDirRelativePath(&temp);
+
+	if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
+	{
+		if (!Window::GameDiscFound)
+			return false;
+
+		GetGameWorkingDirRelativePath(&temp);
+
+		if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
+			return false;
+	}
+
+	return true;
+}
+
+void File::ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension)
+{
+	char buff[256];
+	memset(&buff, NULL, sizeof(buff));
+
+	//	Figure out where dot lives.
+	char* dotPos = strchr(buff, '.');
+	if (dotPos)
+	{
+		*dotPos = NULL;
+		if (outFileExtension)
+			while (true)
+				if (*dotPos == NULL) break; else *(outFileExtension++) = *(dotPos++);
+		else
+			*outFileExtension = NULL;
+	}
+
+	char* slashPos = strrchr(buff, '/');
+	slashPos = slashPos == nullptr ? strrchr(buff, '\\') : slashPos;
+
+	if (slashPos)
+	{
+		if (outFileName)
+			strcpy(outFileName, slashPos + 1);
+		*(slashPos + 1) = NULL;
+		if (outDirectory)
+			strcpy(outDirectory, buff);
+	}
+	else {
+		if (outDirectory)
+			*outDirectory = NULL;
+		if (outFileName)
+			strcpy(outFileName, buff);
+	}
+}
+
 FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _createifnotfound)
 {
 	m_File = NULL;
