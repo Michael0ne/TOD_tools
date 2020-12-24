@@ -2,37 +2,37 @@
 #include "Renderer.h"
 
 RenderBuffer* g_RenderBuffer = nullptr;
-int RenderBuffer::Buffer = NULL;
+int RenderBuffer::Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE];
 
-RenderBuffer::RenderBuffer(int maxCommands, int allocatorType)
+RenderBuffer::RenderBuffer(int maxParams, AllocatorIndex allocatorType)
 {
 	MESSAGE_CLASS_CREATED(RenderBuffer);
 
 	m_AllocatorId = allocatorType;
-	m_MaxCommands = maxCommands;
+	m_MaxParams = maxParams;
 
-	if (maxCommands)
+	if (maxParams)
 	{
-		m_BufferPtr = Allocators::AllocatorsList[DEFAULT]->Allocate_A(4 * maxCommands, NULL, NULL);
+		m_ParamsArray = (int*)Allocators::AllocatorsList[allocatorType]->Allocate_A(4 * maxParams, NULL, NULL);
 
-		if (!m_BufferPtr)
+		if (!m_ParamsArray)
 		{
-			m_BufferPtr = &Buffer;
-			m_MaxCommands = RENDERBUFFER_DEFAULT_COMMANDS;
-			g_Renderer->_420170(1);
-			field_8 = NULL;
-			field_C = NULL;
+			m_ParamsArray = Buffer;
+			m_MaxParams = RENDERBUFFER_DEFAULT_BUFFER_SIZE;
+			g_Renderer->SetRenderBufferIsEmpty(true);
+			m_CurrentParamIndex = NULL;
+			m_PrevParamIndex = NULL;
 
 			return;
 		}
 	}else
-		m_BufferPtr = nullptr;
+		m_ParamsArray = nullptr;
 
-	field_8 = NULL;
-	field_C = NULL;
+	m_CurrentParamIndex = NULL;
+	m_PrevParamIndex = NULL;
 }
 
 void RenderBuffer::CreateRenderBuffer()
 {
-	g_RenderBuffer = new RenderBuffer(250, 0);
+	g_RenderBuffer = new RenderBuffer(RENDERBUFFER_MAX_PARAMS_SIZE, DEFAULT);
 }

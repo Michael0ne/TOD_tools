@@ -58,6 +58,13 @@ public:
 	}
 
 	static bool		EqualIgnoreCase(const char* str1, const char* str2, unsigned int len);	//	@4177C0
+	static inline void ToLowerCase(char* str)
+	{
+		char* s_ = str;
+		while (*(s_++))
+			if (*s_ >= 65 && *s_ <= 90)
+				*s_ += 32;
+	}
 
 private:
 	void			AllocateSpaceForString();	//	@4056E0
@@ -67,7 +74,7 @@ private:
 
 class StringTuple
 {
-protected:
+public:
 	String			m_String_1;
 	String			m_String_2;
 
