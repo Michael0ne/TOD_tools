@@ -1,5 +1,6 @@
 #include "SaveSlot.h"
 #include "File.h"
+#include "ScriptDatabase.h"
 
 SaveSlot::SaveSlot(SaveSlotIndex index)
 {
@@ -29,7 +30,7 @@ bool SaveSlot::IsFormatted()
 				strcpy(temp, m_SaveFolderPath.m_szString);
 				strcat(temp, "/Formatted.txt");
 
-				if (Utils::FindFileEverywhere(temp))
+				if (File::FindFileEverywhere(temp))
 					return true;
 			}
 		}

@@ -24,7 +24,7 @@ Progress::~Progress()
 void Progress::AddLoadbarPhase(const char* phaseName, LARGE_INTEGER timeToLoad, bool)
 {
 	String phasename(phaseName);
-	m_StatesStringsList.AddString(&phasename);
+	m_StatesStringsList.AddElement(&phasename);
 	memcpy(m_TotalTimeToLoad, (const void*)&timeToLoad, sizeof(LARGE_INTEGER));	//	FIXME: this is bullshit.
 }
 

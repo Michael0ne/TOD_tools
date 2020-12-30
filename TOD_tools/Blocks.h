@@ -1,6 +1,6 @@
 #pragma once
 
-#include "List.h"
+#include "ResourcesTypes.h"
 
 #define BLOCKS_CLASS_SIZE 500
 
@@ -29,21 +29,78 @@ enum BlockTypeNumber
 class Blocks
 {
 protected:
-	unsigned char	field_0;
+	unsigned char	field_0;	//	TODO: this is 'vEntity' an array of vectors? Don't really understand what it is now...
 	BlockTypeNumber m_BlockType;
-	unsigned char	field_8[255];
+	int	field_8;
+	int	field_C;
+	int	field_10;
+	int	field_14;
+	int	field_18;
+	int	field_1C;
+	int	field_20;
+	int	field_24;
+	int	field_28;
+	int	field_2C;
+	int	field_30;
+	int	field_34;
+	int	field_38;
+	int	field_3C;
+	int	field_40;
+	int	field_44;
+	int	field_48;
+	int	field_4C;
+	int	field_50;
+	int	field_54;
+	int	field_58;
+	int	field_5C;
+	int	field_60;
+	int	field_64;
+	int	field_68;
+	int	field_6C;
+	int	field_70;
+	int	field_74;
+	int	field_78;
+	int	field_7C;
+	int	field_80;
+	int	field_84;
+	int	field_88;
+	int	field_8C;
+	int	field_90;
+	int	field_94;
+	int	field_98;
+	int	field_9C;
+	int	field_A0;
+	int	field_A4;
+	int	field_A8;
+	int	field_AC;
+	int	field_B0;
+	int	field_B4;
+	int	field_B8;
+	int	field_BC;
+	int	field_C0;
+	int	field_C4;
+	int	field_C8;
+	int	field_CC;
+	int	field_D0;
+	int	field_D4;
+	int	field_D8;
+	int	field_DC;
+	int	field_E0;
+	int	field_E4;
+	int	field_E8;
+	int	field_EC;
+	int	field_F0;
+	int	field_F4;
+	int	field_F8;
+	int	field_FC;
+	int	field_100;
+	int	field_104;
 	int				field_108;
 	Allocator*		field_10C;
 	List<int>		m_UnkList_1;
 	List<int>		m_UnkList_2;
-	List<int>		m_UnkList_3;
-	List<int>		m_UnkList_4;
-	List<int>		m_UnkList_5;
-	List<int>		m_UnkList_6;
-	List<int>		m_UnkList_7;
-	List<int>		m_UnkList_8;
 public:
-	List<class Resource> m_ResourceTypesList;
+	List<ResType::Resource> m_ResourceTypesList[7];
 protected:
 	List<String>	m_SceneNames;
 	int				field_1B0[6];
@@ -57,7 +114,7 @@ protected:
 	bool			m_LoadBlocks;
 
 private:
-	void			AddTypesListItemAtPos(Resource* element, unsigned int index);	//	@8760C0
+	void			AddTypesListItemAtPos(ResType::Resource* element, unsigned int index);	//	@8760C0
 
 public:
 	Blocks(bool loadBlocks);	//	@876E20
@@ -77,9 +134,10 @@ public:
 	int				GetFreeResourceTypeListItem(unsigned int index);	//	@875540
 	unsigned int	AddEntity(class Entity* ent);	//	@875FA0	//	NOTE: returns index
 	void			SetRegionId(signed int id);	//	@875434
-	signed int		GetAllocatorType();	//	@875360
+	AllocatorIndex	GetAllocatorType() const;	//	@875360
 	int				InsertTypeListItem(void* res);	//	@877A90
 	void			GetInternalFileName(String& outName, const char* str);	//	@8773A0
+	const char*		GetResourcePath(const char* path);	//	@875770
 
 	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0
 

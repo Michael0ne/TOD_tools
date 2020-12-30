@@ -18,9 +18,9 @@ Scene::Scene() : Folder_()
 	MESSAGE_CLASS_CREATED(Scene);
 
 	m_List_1 = List<int>(0x13B00);
-	m_List_2 = List<int>(0x1A300);
-	m_List_3 = List<int>(0x25B00);
-	m_List_4 = List<int>(0x1A300);
+	m_QuadTreesList = List<AuxQuadTree>(0x1A300);
+	m_ParticleSystemsList = List<ParticleSystem>(0x25B00);
+	m_CollisionListList = List<CollisionList>(0x1A300);
 	m_List_5 = List<int>(0x1CB00);
 	m_List_6 = List<int>(0x27B00);	//	NOTE: 3 lists below are initialized using while loop and pointers, why?
 	m_List_7 = List<int>(0x27B00);

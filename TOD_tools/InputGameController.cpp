@@ -1,4 +1,5 @@
 #include "InputGameController.h"
+#include "ScriptDatabase.h"
 
 Input::Gamepad* g_InputGamepad[INPUT_GAMEPAD_MAX_GAMEPADS] = {
 	nullptr,

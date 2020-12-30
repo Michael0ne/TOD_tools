@@ -5,7 +5,8 @@
 
 namespace Audio
 {
-	Audio::SoundBufferInfo AuxMonoStream::EmptySoundBufferInfo = { false, nullptr };
+	Audio::SoundBufferInfo AuxMonoStream::EmptySoundBufferInfo;
+	List<Audio::SoundBufferInfo> AuxMonoStream::SoundBuffersList;
 
 	Audio::SoundBufferInfo* AuxMonoStream::CheckIfSoundBufferIsUsed(char* ptr)
 	{
@@ -47,7 +48,7 @@ namespace Audio
 
 		m_SoundBufferPtr = new char[sampleRate];
 
-		SoundBufferInfo _sndBufInf = { true, m_SoundBufferPtr };
+		SoundBufferInfo _sndBufInf(true, m_SoundBufferPtr);
 		SoundBuffersList.AddElement(&_sndBufInf);
 	}
 
@@ -68,7 +69,7 @@ namespace Audio
 
 		SoundBuffersList.SetCapacity(12);
 
-		Utils::ToLowercase((char*)soundFile);
+		String::ToLowerCase((char*)soundFile);
 		m_FileName = soundFile;
 
 		if (m_FileName.Equal("ogg"))
@@ -144,12 +145,16 @@ namespace Audio
 	{
 		if (!Allocators::Released)
 			return Allocators::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
+		else
+			return nullptr;
 	}
 
 	void* AuxMonoStream::operator new[](size_t size)
 	{
 		if (!Allocators::Released)
 			return Allocators::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
+		else
+			return nullptr;
 	}
 
 	void AuxMonoStream::operator delete(void* ptr)

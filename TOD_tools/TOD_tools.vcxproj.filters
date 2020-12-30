@@ -69,9 +69,6 @@
     <Filter Include="Source files\ThirdParty">
       <UniqueIdentifier>{61536c81-37a9-4a91-8dad-11a99ae33e2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source files\ThirdParty\libvorbis">
-      <UniqueIdentifier>{608b4264-b837-4da7-b6a7-5b3e3a4da137}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -234,9 +231,6 @@
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Position.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="NodeLogical.h">
@@ -577,9 +571,6 @@
     <ClCompile Include="Node.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="Position.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
@@ -726,12 +717,6 @@
     </ClCompile>
     <ClCompile Include="SaveSlot.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\libvorbis-1.1.0\lib\vorbisenc.c">
-      <Filter>Source files\ThirdParty\libvorbis</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\libvorbis-1.1.0\lib\vorbisfile.c">
-      <Filter>Source files\ThirdParty\libvorbis</Filter>
     </ClCompile>
     <ClCompile Include="AuxMonoStream.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>

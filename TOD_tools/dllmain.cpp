@@ -1,6 +1,5 @@
-#include "Renderer.h"
-#include "StreamedSoundBuffers.h"
 #include "LogDump.h"
+#include "Scene.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -64,15 +63,15 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 	const int nInterval = 100;
 
 	while (true) {
-		if (!g_Renderer || !Audio::g_StreamedSoundBuffers)
+		if (Scene::RealTimeMs <= NULL)
 			continue;
 
-		if (GetAsyncKeyState(VK_TAB) && g_Renderer->GetTime() > nLastKeyPress + nInterval) {
+		if (GetAsyncKeyState(VK_TAB) && Scene::RealTimeMs > nLastKeyPress + nInterval) {
 
 			//	Do something!
 			debug("Key pressed!\n");
 			
-			nLastKeyPress = (int)g_Renderer->GetTime() - nInterval;
+			nLastKeyPress = Scene::RealTimeMs - nInterval;
 		}
 	}
 

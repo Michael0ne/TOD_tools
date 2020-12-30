@@ -9,6 +9,7 @@
 #include "Performance.h"
 #include "Scene.h"
 #include "LogDump.h"
+#include "ScriptDatabase.h"
 
 Window* g_Window = nullptr;
 unsigned int Window::MessageBoxType[] = {
@@ -742,7 +743,7 @@ void FindGameDir()
 
 void SetWorkingDir(const char* str)
 {
-	WorkingDirectory = String(str);
+	WorkingDirectory = str;
 	WorkingDirectory.ConvertBackslashes();
 
 	if (WorkingDirectory.m_szString[WorkingDirectory.m_nLength - 1] != '/')

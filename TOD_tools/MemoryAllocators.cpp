@@ -95,7 +95,7 @@ int Allocator::stub16()
 	return 0;
 }
 
-const char* Allocator::GetAllocatorName()
+const char* Allocator::GetAllocatorName() const
 {
 	return "Unknown";
 }

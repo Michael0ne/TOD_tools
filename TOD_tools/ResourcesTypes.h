@@ -66,13 +66,14 @@ namespace ResType
 		unsigned int	m_Alignment[3];
 
 	public:
+		Base();
 		Base(const char* type, void* typePtr);	//	@852440
 
 		inline void		SetResourceAlignment(unsigned int size, unsigned int index);	//	@852160
 	};
 
 	static unsigned int	ResourceAlignment[3];	//	@A3BE1C
-	static List<Base>	ResTypeList;	//	@A10F80
+	static List<Base>	ResTypeList = List<Base>(0x19300);	//	@A10F80
 
 	//	NOTE: this class is actually inherited from another class, but parent doesn't seem to do anything important, so skipping it now.
 	class Resource
@@ -86,8 +87,8 @@ namespace ResType
 		int				field_18;
 
 	public:
-		virtual void	scalar_destructor(void*) {};
-		virtual void*	GetInstancePtr() const = 0;
+		virtual			~Resource();	//	@851F90 scalar, actual dtor @8516C0
+		virtual void*	GetInstancePtr() const { return nullptr; };	//	FIXME: this is pure virtual, but List class needs this class to be non-abstract, so this is it for now.
 		virtual void	SetUnkFlag(unsigned char, int, int);
 		virtual int		GetUnkFlag();
 		virtual void	stub5(int) {};
@@ -100,8 +101,8 @@ namespace ResType
 		virtual void	DestroyResource();
 		virtual int		stub13() { return NULL; };
 
+		Resource();	//	NOTE: this is not in EXE, but necessary for List class.
 		Resource(bool);	//	@851D00
-		~Resource();	//	@8516C0
 
 		const char*		AddResToOpenListAndReturnName();	//	@851720
 		void			_8513E0(unsigned char);	//	@8513E0
@@ -109,8 +110,8 @@ namespace ResType
 		static unsigned int	LastOpenResourceIndex;	//	@A3BE14
 	};
 
-	static unsigned int TotalResourcesCreated;	//	@A3BE10
-	static List<String>	OpenResourcesList;	//	@A10F00
+	static unsigned int TotalResourcesCreated = NULL;	//	@A3BE10
+	static List<String>	OpenResourcesList = List<String>(0xC300);	//	@A10F00
 
 	class Texture : Resource
 	{

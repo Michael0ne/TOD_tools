@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Node.h"
+#include "ResourcesTypes.h"
 
 #define GFXEFFECT_CLASS_SIZE 160
 

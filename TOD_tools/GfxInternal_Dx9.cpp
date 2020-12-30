@@ -1,9 +1,14 @@
 #include "GfxInternal_Dx9.h"
 #include "Window.h"
 #include "Renderer.h"
+#include "File.h"
 
 GfxInternal_Dx9* g_RendererDx = NULL;
 const D3DMATRIX& GfxInternal_Dx9::g_IdentityMatrix = *(D3DMATRIX*)0xA0AD38;
+Map<int, int>& GfxInternal_Dx9::g_UnkMap_1 = *(Map<int, int>*)0xA39F58;
+Map<int, int>& GfxInternal_Dx9::g_UnkMap_2 = *(Map<int, int>*)0xA39F38;
+Map<int, int>& GfxInternal_Dx9::g_RenderedTexturesMap = *(Map<int, int>*)0xA39F50;
+void* GfxInternal_Dx9::g_RenderBuffer = (void*)0xA35E60;
 
 void GfxInternal_Dx9::GetScreenResolution(Vector2<int>& outRes)
 {
@@ -11,16 +16,9 @@ void GfxInternal_Dx9::GetScreenResolution(Vector2<int>& outRes)
 	outRes.y = g_RendererDx->m_DisplayMode.Height;
 }
 
-Map<int, int>& GfxInternal_Dx9::g_UnkMap_1 = *(Map<int, int>*)0xA39F58;
-Map<int, int>& GfxInternal_Dx9::g_UnkMap_2 = *(Map<int, int>*)0xA39F38;
-Map<int, int>& GfxInternal_Dx9::g_RenderedTexturesMap = *(Map<int, int>*)0xA39F50;
-void* GfxInternal_Dx9::g_RenderBuffer = (void*)0xA35E60;
-
-void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int unk3)
+GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1)
 {
-	patch(0xA39F14, this, 4);
-
-	//(*(void(__thiscall*)(GfxInternal_Dx9*, void*, int, int, int, int))0x45E620)(this, resolution, unk1, unk2, fsaa, unk3);
+	MESSAGE_CLASS_CREATED(GfxInternal_Dx9);
 
 	m_DisplayModesList = List<DisplayModeInfo>();
 	m_UnkList_1 = List<int>();
@@ -38,7 +36,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	field_1B1[0] = 1;
 	field_1B1[1] = 1;
 	field_1B1[2] = 0;
-	m_pDisplayMode = (D3DDISPLAYMODE*)resolution;
+	m_ScreenSize = (Vector2<int>*)resolution;
 	field_975C = -1;
 	m_pFramesyncQuery = nullptr;
 	m_bDeviceResetIssued = false;
@@ -65,10 +63,6 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	field_308 = 0;
 	field_30C = 0;
 	m_pDirect3DDevice9 = 0;
-	field_5554 = 0;
-	field_5558 = 0;
-	m_pVertexBuffer_1 = 0;
-	field_555C = 0;
 	m_pTexturesArray_2[0] = 0;
 	m_pTexturesArray_2[1] = 0;
 	field_9700 = 0;
@@ -79,7 +73,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	m_nUnkTexturesStage[3] = 0;
 	m_pIndexBuffer = nullptr;
 	m_CurrentVertexBuffer = nullptr;
-	m_ViewportSurface = nullptr;
+	m_RenderTarget = nullptr;
 	field_9670 = -1;
 	field_9674 = 0;
 	m_Direct3DVertexDeclaration = nullptr;
@@ -113,7 +107,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	for (int adapterIndex = 0; adapterIndex < adapterModesTotal; ++adapterIndex) {
 		memset(&adapterModes, 0, sizeof(adapterModes));
 		m_pDirect3D->EnumAdapterModes(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8, adapterMode, &adapterModes);
-		int ind = 0;
+		unsigned int ind = 0;
 
 		if (m_DisplayModesList.m_CurrIndex > 0) {
 			DisplayModeInfo** mode = m_DisplayModesList.m_Elements;
@@ -146,7 +140,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 
 	debug("Kapow will use these modes when in full-screen:\n");
 
-	for (int i = 0; i < m_DisplayModesList.m_CurrIndex; ++i)
+	for (unsigned int i = 0; i < m_DisplayModesList.m_CurrIndex; ++i)
 		debug("%ix%i @ %iHz - format=%i, available=%i\n", 
 			m_DisplayModesList.m_Elements[i]->width,
 			m_DisplayModesList.m_Elements[i]->height,
@@ -168,7 +162,7 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 		if (GetRegistryResolution(mode)) {
 			if (m_DisplayModesList.m_CurrIndex > 0) {
 				DisplayModeInfo** _modes = m_DisplayModesList.m_Elements;
-				int index = 0;
+				unsigned int index = 0;
 
 				while (true) {
 					if ((*_modes)->width == mode.width && (*_modes)->height == mode.height && (*_modes)->available)
@@ -196,11 +190,8 @@ void GfxInternal_Dx9::Init(void* resolution, int unk1, int unk2, int fsaa, int u
 	else
 		SetupWindowParams(m_DisplayMode);
 
-	field_318 = 0;
-	field_31C = 0;
 	m_f9758 = 0.0;
 	m_nViewportSurfaceIndex = 0;
-	field_5538 = 0;
 	field_553C = 0;
 	m_FlushDirectly = false;
 }
@@ -211,7 +202,7 @@ const DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(int width, i
 		return nullptr;
 
 	DisplayModeInfo** mode = m_DisplayModesList.m_Elements;
-	int index = 0;
+	unsigned int index = 0;
 
 	while (true) {
 		if ((*mode)->width == width &&
@@ -401,7 +392,7 @@ void GfxInternal_Dx9::SetupProjectionMatrix(float unk1, float aspectratio, float
 	field_5544 = unk1;
 
 	double fov = atan2(tan(0.017453292 * unk1 * 0.5 * 0.75), 1.0) * 2;
-	double nearPlane = ((field_96B4 * 0.001) + 1.0) * unk3;
+	double nearPlane = ((m_ZBias * 0.001) + 1.0) * unk3;
 
 	if (Renderer::WideScreen)
 		TransformProjection(m_ProjectionMatrix, fov, 1.7777778, nearPlane, farPlane);
@@ -449,7 +440,7 @@ void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath
 	if (texturePath) {
 		char textureExtension[32];
 		char dummybuff[256];
-		ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
+		File::ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
 
 		if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) &&
 			GfxInternal_Dx9::_CreateD3DTextureFromFile(m_pDirect3DDevice9, (LPCWSTR)texturePath, m_pTexturesArray) < 0)

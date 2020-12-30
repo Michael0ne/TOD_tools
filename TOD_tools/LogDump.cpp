@@ -1,6 +1,6 @@
 #include "LogDump.h"
 #include "Scene.h"
-#include "Globals.h"
+#include "ScriptDatabase.h"
 
 File* LogDumpFile = nullptr;
 int LogDump::OldFrameNumber = -1;

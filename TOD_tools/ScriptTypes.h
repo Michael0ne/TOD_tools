@@ -3,12 +3,10 @@
 #include "Types.h"
 #include "List.h"
 
-#define SCRIPT_TYPE_CLASS_SIZE 32
-#define SCRIPT_TYPE_ENTITY_CLASS_SIZE 120
-
 namespace ScriptTypes
 {
-	enum E_SCRIPT_TYPE_ID {
+	enum ScriptTypeId
+	{
 		TYPE_NOTHING = 0,		//	NOTHING! Really!
 		TYPE_NUMBER = 1,		//	FLOAT
 		TYPE_INTEGER = 2,		//	INTEGER! Really!
@@ -20,11 +18,12 @@ namespace ScriptTypes
 		TYPE_LIST = 8,			//	SIMPLE LIST
 		TYPE_DICT = 9,			//	DICTIONARY. (HASHMAP)
 		TYPE_ENTITY = 10,		//	SCRIPT ENTITY
-		TYPE_SCRIPT = 11,		//	SCRIPT WITH PARAMETERS
+		TYPE_SCRIPT = 11,		//	SCRIPT WITH PARAMETERS (Struct essentially)
 		TYPE_LAST_DONTUSE
 	};
 
-	enum E_SCRIPT_TYPE_SIZE {
+	enum ScriptTypeSize
+	{
 		TYPE_NOTHING_SIZE = 0,
 		TYPE_NUMBER_SIZE = 1,
 		TYPE_INTEGER_SIZE = 1,
@@ -50,42 +49,49 @@ namespace ScriptTypes
 		"color",
 		"list",
 		"dict",
-		NULL,
+		NULL,	//	NOTE: no name because each structure being created provides it's own name.
 		NULL
 	};
+
+	#define SCRIPT_TYPE_CLASS_SIZE 32
 
 	//	NOTE: THIS is base class for all script entities.
 	class ScriptType
 	{
 	public:
-		String m_sTypeName;
-		int m_nTypeId;
-		int m_nSizeInBytes;
-		int m_nId;
+		String			m_TypeName;
+		ScriptTypeId	m_TypeId;
+		unsigned int	m_Size;
+		unsigned int	m_GlobalId;
 
-		virtual void scalar_destructor(bool freeMemory);	//	@867A70
-		virtual int _489370(int* unk1, int* unk2);	//	@489370
-		virtual void GetDefaultValue(void* unk1);	//	NOTE: this pointer type is actually class-dependent. Returns zero (default value?).
-		virtual void nullsub_2(String* unk2);
-		virtual void _4893A0(int* unk1, int* unk2);	//	@4893A0
-		virtual String* PrintFormatted(String* outStr, void* value, int precision);	//	@862F50	//	NOTE: lowest word is number of digits after dot, highest - total number of digits.
-		virtual int DoOperation(char* unk1, void* unk2);	//	@862AA0
-		virtual int _489410(int* unk1);	//	@489410
-		virtual int _863760_1(int* unk1, int* unk2);	//	@863760
-		virtual int _863760_2(int* unk1, int* unk2);	//	@863760
-		virtual int _8637F0(int* unk1, String* unk2, int unk3);	//	@8637F0
-		virtual int _862A50(int unk1, int* unk2, int* unk3);	//	@862A50
-		virtual void nullsub_3(int unk1, void* unk2, int unk3, int unk4, int unk5, void* outop);
-		virtual void nullsub_4(int* unk1, int unk2, int unk3, int unk4, int unk5, int unk6);
-		virtual bool AreParamsEqual(int unk1, int unk2);	//	@7A1F00
-		virtual bool AreParamsNotEqual(int unk1, int unk2);	//	@862AB0
-		virtual void GetOperationType(const char* operationStr, int* outOperationId, ScriptType** outResultType, char* unk4);	//	@8637D0
-		virtual void PerformOperation(int operationId, void* params);	//	@8C4D60	//	NOTE: get operation id by calling 'GetOperationType'. Params is of type of the class, zero element stores result of operation.
-		virtual char _8637E0(int unk1, int unk2);	//	@8637E0
-		virtual bool IsInfinite(void* unk1);	//	@489440
+		virtual			~ScriptType();	//	@867A70
+		virtual int		_489370(int* unk1, int* unk2);	//	@489370
+		virtual void	GetDefaultValue(void* unk1);	//	NOTE: this pointer type is actually class-dependent. Returns zero (default value?).
+		virtual void	nullsub_2(String* unk2);
+		virtual void	_4893A0(int* unk1, int* unk2);	//	@4893A0
+		virtual String*	PrintFormatted(String* outStr, void* value, int precision);	//	@862F50	//	NOTE: lowest word is number of digits after dot, highest - total number of digits.
+		virtual int		DoOperation(char* unk1, void* unk2);	//	@862AA0
+		virtual int		_489410(int* unk1);	//	@489410
+		virtual int		_863760_1(int* unk1, int* unk2);	//	@863760
+		virtual int		_863760_2(int* unk1, int* unk2);	//	@863760
+		virtual int		_8637F0(int* unk1, String* unk2, int unk3);	//	@8637F0
+		virtual int		_862A50(int unk1, int* unk2, int* unk3);	//	@862A50
+		virtual void	nullsub_3(int unk1, void* unk2, int unk3, int unk4, int unk5, void* outop);
+		virtual void	nullsub_4(int* unk1, int unk2, int unk3, int unk4, int unk5, int unk6);
+		virtual bool	AreParamsEqual(int unk1, int unk2);	//	@7A1F00
+		virtual bool	AreParamsNotEqual(int unk1, int unk2);	//	@862AB0
+		virtual void	GetOperationType(const char* operationStr, int* outOperationId, ScriptType** outResultType, char* unk4);	//	@8637D0
+		virtual void	PerformOperation(int operationId, void* params);	//	@8C4D60	//	NOTE: get operation id by calling 'GetOperationType'. Params is of type of the class, zero element stores result of operation.
+		virtual char	_8637E0(int unk1, int unk2);	//	@8637E0
+		virtual bool	IsInfinite(void* unk1);	//	@489440
+
+	private:
+		void			RemoveTypeFromList(const char* name);	//	@862B50
 
 	public:
-		ScriptType(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize);	//	@862E90
+		ScriptType();
+		ScriptType(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize);	//	@862E90
+		ScriptType(const ScriptType&);
 
 		void* operator new (size_t size)
 		{
@@ -106,7 +112,7 @@ namespace ScriptTypes
 	private:
 
 	public:
-		ScriptType_Nothing(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		ScriptType_Nothing(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
 		{
 			MESSAGE_CLASS_CREATED(ScriptType_Nothing);
 		}
@@ -129,7 +135,7 @@ namespace ScriptTypes
 	private:
 
 	public:
-		ScriptType_Number(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		ScriptType_Number(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
 		{
 			MESSAGE_CLASS_CREATED(ScriptType_Number);
 		}
@@ -152,7 +158,7 @@ namespace ScriptTypes
 	private:
 
 	public:
-		ScriptType_Integer(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		ScriptType_Integer(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
 		{
 			MESSAGE_CLASS_CREATED(ScriptType_Integer);
 		}
@@ -175,7 +181,7 @@ namespace ScriptTypes
 	private:
 
 	public:
-		ScriptType_Boolean(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		ScriptType_Boolean(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
 		{
 			MESSAGE_CLASS_CREATED(ScriptType_Boolean);
 		}
@@ -198,7 +204,7 @@ namespace ScriptTypes
 	private:
 
 	public:
-		ScriptType_Vector(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		ScriptType_Vector(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
 		{
 			MESSAGE_CLASS_CREATED(ScriptType_Vector);
 		}
@@ -221,7 +227,7 @@ namespace ScriptTypes
 	private:
 
 	public:
-		ScriptType_Quaternion(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		ScriptType_Quaternion(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
 		{
 			MESSAGE_CLASS_CREATED(ScriptType_Quaternion);
 		}
@@ -244,7 +250,7 @@ namespace ScriptTypes
 	private:
 
 	public:
-		ScriptType_Color(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		ScriptType_Color(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
 		{
 			MESSAGE_CLASS_CREATED(ScriptType_Color);
 		}
@@ -267,7 +273,7 @@ namespace ScriptTypes
 	private:
 
 	public:
-		ScriptType_String(E_SCRIPT_TYPE_ID typeId, const char* typeName, E_SCRIPT_TYPE_SIZE typeSize) : ScriptType(typeId, typeName, typeSize)
+		ScriptType_String(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
 		{
 			MESSAGE_CLASS_CREATED(ScriptType_String);
 		}
@@ -310,10 +316,12 @@ namespace ScriptTypes
 		int field_C;
 	};
 
+	#define SCRIPT_TYPE_ENTITY_CLASS_SIZE 120
+
 	class ScriptType_Entity : public ScriptType
 	{
 	protected:
-		void* (*m_Creator)(unsigned int allocatorIndex);
+		void* (*m_Creator)(AllocatorIndex allocatorIndex);
 	public:
 		ScriptType_Entity* m_Parent;
 		class GlobalNode* m_ParentNode;
@@ -337,6 +345,60 @@ namespace ScriptTypes
 
 		void*	CreateNode();	//	@86C770
 		void	InheritFrom(ScriptType_Entity* from);	//	@86CB40
+	};
+
+	struct ScriptField
+	{
+		friend struct ScriptFieldsList;
+		friend class ScriptType_Script;
+	protected:
+		String			m_Name;
+		ScriptType*		m_Type;
+		unsigned int	m_FieldOffset;
+
+	public:
+		ScriptField()
+			: m_Name({}), m_Type(nullptr), m_FieldOffset(NULL)
+		{};
+
+		ScriptField(const char* name, ScriptType* stype, unsigned int);
+		ScriptField(const ScriptField& rhs);	//	@7A1D40
+	};
+
+	struct ScriptFieldsList
+	{
+		friend class ScriptType_Script;
+	protected:
+		ScriptField*	m_Elements;
+		unsigned int	m_CurrentIndex;
+		unsigned int	m_Capacity;
+		unsigned int	m_Flags;
+
+		unsigned int	m_TotalSizeBytes;
+		unsigned int	m_TotalSize;
+
+	public:
+		ScriptFieldsList()
+			: m_Elements(nullptr), m_CurrentIndex(NULL), m_Capacity(NULL), m_Flags(NULL), m_TotalSizeBytes(NULL), m_TotalSize(NULL)
+		{};
+
+		ScriptFieldsList(unsigned int flags);	//	NOTE: inlined in code.
+		ScriptFieldsList(const ScriptFieldsList& rhs);	//	@7A1D90
+
+		void			Add(const ScriptField&);	//	@862550
+
+		void			Clear();	//	@7A1CE0
+	};
+
+	//	NOTE: this is essentially a struct.
+	class ScriptType_Script : public ScriptType
+	{
+	protected:
+		String			m_Name;
+		ScriptFieldsList m_Fields;
+
+	public:
+		ScriptType_Script(const char* name, const ScriptFieldsList& fields);	//	@7A1E90
 	};
 
 	static ScriptType_Entity*			tENTITY = (ScriptType_Entity*)0xA3CEE0;		//	@A3CEE0

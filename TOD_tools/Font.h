@@ -34,14 +34,8 @@ private:
 	float field_60;
 
 public:
-	Font()
-	{
-		MESSAGE_CLASS_CREATED(Font);
-	}
-	~Font()
-	{
-		MESSAGE_CLASS_DESTROYED(Font);
-	}
+	Font(const void* GlyphsInfo);	//	@41EA80
+	~Font();
 
 	void* operator new (size_t size)
 	{
@@ -55,8 +49,7 @@ public:
 
 	static void* _A1B698;
 
-	static void	MakeCharactersMap();	//	@938E10
-	void	Init();	//	@41EA80
+	static void	MakeCharactersMap(void* GlyphsInfo);	//	@938E10
 	void	CreateBakedFont(void* unkStruc);	//	@41E6D0
 };
 
