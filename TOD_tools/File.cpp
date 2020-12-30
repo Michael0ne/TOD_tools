@@ -2,6 +2,7 @@
 #include "LogDump.h"
 #include "ZipArch.h"
 #include "Window.h"
+#include "ScriptDatabase.h"
 
 unsigned int File::FilesOpen = 0;
 HANDLE	File::FilesSemaphoreArray[FILE_MAX_OPEN_FILES];
@@ -10,7 +11,6 @@ FileWrapper* FileWrapper::FilesArray[FILE_MAX_OPEN_FILES];
 
 extern void GetWorkingDirRelativePath(String* str);
 extern void GetGameWorkingDirRelativePath(String* str);
-extern bool IsFileExists(const char* file);
 
 void FileWrapper::SetExecuteAttr(unsigned char _attr)
 {
@@ -372,7 +372,7 @@ String* File::GetPathFromDirectoryMappings(String* outStr, const char* path)
 	if (DirectoryMappingsList.m_CurrIndex <= NULL)
 		return outStr;
 
-	for (int ind = 0; ind < DirectoryMappingsList.m_CurrIndex; ind++)
+	for (unsigned int ind = 0; ind < DirectoryMappingsList.m_CurrIndex; ind++)
 		if (String::EqualIgnoreCase(path, DirectoryMappingsList.m_Elements[ind]->m_String_1.m_szString, DirectoryMappingsList.m_Elements[ind]->m_String_1.m_nLength))
 		{
 			outStr->Set(DirectoryMappingsList.m_Elements[ind]->m_String_2.m_szString);
@@ -384,16 +384,17 @@ String* File::GetPathFromDirectoryMappings(String* outStr, const char* path)
 	return outStr;
 }
 
-const char* File::ExtractFileDir(const char* path)
+String* File::ExtractFileDir(String& outStr, const char* path)
 {
 	char buf[1024] = {};
 	char buf_[1024] = {};
 	ExtractFilePath(path, buf, buf_, buf_);
 
-	return buf;
+	outStr = buf;
+	return &outStr;
 }
 
-const char* File::ExtractFileName(const char* path)
+String* File::ExtractFileName(String& outStr, const char* path)
 {
 	char buf[1024] = {};
 	char buf_[1024] = {};
@@ -401,14 +402,15 @@ const char* File::ExtractFileName(const char* path)
 	if (path && *path)
 	{
 		ExtractFilePath(path, buf_, buf, buf_);
-		return buf;
+		outStr = buf;
+		return &outStr;
 	}else
 		return NULL;
 }
 
 bool File::FindFileEverywhere(const char* path)
 {
-	if (!path && *path == NULL)
+	if (!path || *path == NULL)
 		return false;
 
 	String _tmp;
@@ -499,7 +501,7 @@ FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _create
 	GetGameWorkingDirRelativePath(&m_GameWorkingDir);
 
 	if (_desiredaccess & FILE_READ_EA)
-		IsFileExists(m_GameWorkingDir.m_szString);
+		File::IsFileExists(m_GameWorkingDir.m_szString);
 
 	m_DesiredAccess_2 = NULL;
 

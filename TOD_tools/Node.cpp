@@ -1,17 +1,51 @@
 #include "Node.h"
-#include "Position.h"
 #include "Fragment.h"
 
-void Node::scalar_destructor(bool freeMemory)
+Position::Position(Node* owner)
 {
-	if (freeMemory)
-		Allocators::ReleaseMemory(this, false);
+	MESSAGE_CLASS_CREATED(Position);
+
+	m_Orientation = Orientation();
+	m_Position = Vector4f();
+	m_Owner = owner;
+}
+
+Position::~Position()
+{
+	MESSAGE_CLASS_DESTROYED(Position);
+}
+
+void Position::GetMatrixForNode(D3DMATRIX& outMat)
+{
+	if (m_Owner->m_Id & NODE_MASK_QUADTREE)
+		ApplyMatrixFromQuadTree();
+	GetMatrix(outMat);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Position::ApplyMatrixFromQuadTree()
+{
+}
+
+void Position::GetMatrix(D3DMATRIX& outMat) const
+{
+	*(Vector4f*)&(outMat._11) = m_RightVector;
+	*(Vector4f*)&(outMat._21) = m_UpVector;
+	*(Vector4f*)&(outMat._31) = m_ForwardVector;
+	*(Vector4f*)&(outMat._41) = m_PositionVector;
+}
+
+void Position::SetTransformationFromMatrix(const D3DMATRIX* mat)
+{
+	m_RightVector = *(Vector4f*)&(mat->_11);
+	m_UpVector = *(Vector4f*)&(mat->_21);
+	m_ForwardVector = *(Vector4f*)&(mat->_31);
+	m_PositionVector = *(Vector4f*)&(mat->_41);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void Node::Destroy()
 {
-	
 }
 
 void Node::_484CC0(int)
@@ -126,6 +160,8 @@ Node::Node(unsigned char allocationBitmask)
 	m_Fragment = nullptr;
 	m_Name = nullptr;
 
+	m_NodePosition = new NodePosition();
+
 	if (allocationBitmask & NODE_MASK_POSITION)
 		m_Position = new Position(this);
 
@@ -144,20 +180,47 @@ Node::Node(unsigned char allocationBitmask)
 	m_Flags = m_Flags | 0xF000;
 }
 
+Node::Node()
+{
+	MESSAGE_CLASS_CREATED(Node);
+
+	m_Flags = NULL & 0xC000F000 | 0x40000000;
+	field_2C = 0;
+	field_10 = 0;
+	m_QuadTree = nullptr;
+	m_NextSibling = nullptr;
+	m_CollisionIgnoreList = nullptr;
+	m_Position = nullptr;
+	m_Parent = nullptr;
+	m_FirstChild = nullptr;
+	m_Fragment = nullptr;
+	m_Name = nullptr;
+	m_NodePosition = nullptr;
+
+	m_NodePosition = new NodePosition();
+
+	m_Flags = m_Flags & 0x7FFFFFFF;
+
+	field_2C = field_2C | 0xFFFFFFFF;
+	m_Flags = m_Flags | 0xF000;
+}
+
 Node::~Node()
 {
 	MESSAGE_CLASS_DESTROYED(Node);
+
 }
 
 const char* Node::GetTypename() const
 {
-	return m_ScriptEntity->m_sTypeName.m_szString;
+	return m_ScriptEntity->m_TypeName.m_szString;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 const char* Node::GetScript() const
 {
 	if (m_ScriptEntity->m_ParentNode)
-		return m_ScriptEntity->m_ParentNode->m_NodeName.m_szString;
+		return nullptr;//return m_ScriptEntity->m_ParentNode->m_NodeName.m_szString;
 	else
 		return NULL;
 }
@@ -172,4 +235,61 @@ void Node::SetParam(int index, void* param, ScriptTypes::ScriptType* type)
 void Node::SetOrient(const Orientation& orient)
 {
 	(*(void(__thiscall*)(Node*, const Orientation&))0x88DB20)(this, orient);
+}
+
+Vector4f* Node::GetPos(Vector4f& outVec)
+{
+	if (m_Position)
+	{
+		outVec = Vector4f(m_Position->m_Position.x, m_Position->m_Position.y, m_Position->m_Position.z, m_Position->m_Position.a);
+		return &outVec;
+	}
+	else
+	{
+		outVec = Vector4f();
+		return &outVec;
+	}
+}
+
+void Node::GetWorldMatrix(D3DMATRIX& outMat)
+{
+	if (m_Position)
+		m_Position->GetMatrixForNode(outMat);
+	else
+		outMat = IdentityMatrix;
+}
+
+Vector4f* NodePosition::GetPosition(Vector4f* outPos)
+{
+	((Node*)(this - 9))->GetPos(*outPos);
+	return outPos;
+}
+
+void NodePosition::GetOrientation(Orientation* outOrient)
+{
+	if (this + 6)
+		*outOrient = *(Orientation*)(this + 6);
+	else
+		*outOrient = Orientation();
+}
+
+void NodePosition::CopyPositionToMatrix(D3DMATRIX* outMat)
+{
+	D3DMATRIX tempMat;
+
+	((Node*)(this - 9))->GetWorldMatrix(tempMat);
+	outMat->_11 = tempMat._41;
+	outMat->_12 = tempMat._42;
+	outMat->_13 = tempMat._43;
+	outMat->_14 = tempMat._44;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Orientation* NodePosition::GetWorldRotation(Orientation* rot)
+{
+	D3DMATRIX tempMat;
+
+	((Node*)(this - 9))->GetWorldMatrix(tempMat);
+
+	return nullptr;
 }

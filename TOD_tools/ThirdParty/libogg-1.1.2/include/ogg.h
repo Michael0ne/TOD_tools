@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-#include <ogg/os_types.h>
+#include "../../../ThirdParty/libogg-1.1.2/include/os_types.h"
 
 typedef struct {
   long endbyte;

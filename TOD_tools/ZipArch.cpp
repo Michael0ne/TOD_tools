@@ -27,7 +27,7 @@ ZipSlotInfo::~ZipSlotInfo()
 bool ZipArch::FindFile(const char* inPathStr, int* outPath, int* outZipSlot)
 {
 	char* path = (char*)inPathStr;
-	Utils::ToLowercase(path);
+	String::ToLowerCase(path);
 	const unsigned int hash = Utils::CalcCRC32(path, strlen(path));
 
 	if (SlotId <= 0)

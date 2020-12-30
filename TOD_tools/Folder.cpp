@@ -1,5 +1,5 @@
 #include "Folder.h"
-#include "Window.h"
+#include "File.h"
 
 void Folder_::GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode)
 {
@@ -8,7 +8,7 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Bloc
 	memset(&fileDir, NULL, sizeof(fileDir));
 	memset(&fileName, NULL, sizeof(fileName));
 
-	ExtractFilePath(resourceName.m_szString, fileDir, fileName, fileExt);
+	File::ExtractFilePath(resourceName.m_szString, fileDir, fileName, fileExt);
 
 	if (languageCode)
 	{

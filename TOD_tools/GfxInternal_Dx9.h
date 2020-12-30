@@ -108,7 +108,7 @@ protected:
 	unsigned char m_bSeparateAlphaBlend;
 	IDirect3D9* m_pDirect3D;
 	D3DCAPS9 m_DeviceCaps;
-	D3DDISPLAYMODE* m_pDisplayMode;
+	Vector2<int>* m_ScreenSize;
 	D3DPRESENT_PARAMETERS m_PresentParameters;
 	char m_bDeviceLost;
 	char field_1B1[3];
@@ -9636,14 +9636,8 @@ protected:
 	int field_979C;
 
 public:
-	GfxInternal_Dx9()
-	{
-		MESSAGE_CLASS_CREATED(GfxInternal_Dx9);
-	}
-	~GfxInternal_Dx9()
-	{
-		MESSAGE_CLASS_DESTROYED(GfxInternal_Dx9);
-	}
+	GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1);	//	@45E620
+	~GfxInternal_Dx9();
 
 	void* operator new(size_t size)
 	{
@@ -9655,7 +9649,6 @@ public:
 			Allocators::ReleaseMemory(ptr, 0);
 	}
 
-	void	Init(void* resolution, int unk1, int unk2, int fsaa, int unk3);	//	@45E620
 	int		GetDeviceCaps();	//	@44EBC0
 	void	RememberResolution();	//	@44CFF0
 	bool	GetRegistryResolution(DisplayModeInfo& mode);	//	@44D080

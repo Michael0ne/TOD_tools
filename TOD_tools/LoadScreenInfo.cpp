@@ -5,6 +5,8 @@
 #include "Renderer.h"
 
 LoadScreenInfo* g_LoadScreenInfo = nullptr;
+unsigned int LoadScreenInfo::AllocatorIdForTextureResourceLoading;
+bool LoadScreenInfo::IsLoadingLoadScreenTexture;
 
 #pragma message(TODO_IMPLEMENTATION)
 void LoadScreenInfo::LoadTexture()
@@ -16,13 +18,13 @@ void LoadScreenInfo::LoadTexture()
 	IsLoadingLoadScreenTexture = true;
 
 	String respath;
-	_GetTextureResourcePath(resPath, m_TexturePath.m_szString, IsRegionEurope(), NULL);
+	//_GetTextureResourcePath(resPath, m_TexturePath.m_szString, IsRegionEurope(), NULL);
 
 	LogDump::LogA("LoadScreen:%s\n", respath.m_szString);
-	m_TextureResource = g_Blocks->LoadResourceFile(respath.m_szString);
+	//m_TextureResource = g_Blocks->LoadResourceFile(respath.m_szString);
 
-	if (*g_Renderer->m_TexturesList.m_Elements == m_TextureResource->m_Texture)	//	NOTE: 'm_TexturesList' is probably 'm_PlaceholderTextures'.
-		LogDump::LogA("TEXTURE NOT FOUND!!!!!\n");
+	//if (*g_Renderer->m_TexturesList.m_Elements == m_TextureResource->m_Texture)	//	NOTE: 'm_TexturesList' is probably 'm_PlaceholderTextures'.
+		//LogDump::LogA("TEXTURE NOT FOUND!!!!!\n");
 
 	IsLoadingLoadScreenTexture = false;
 	AllocatorIdForTextureResourceLoading = DEFAULT;
@@ -58,7 +60,7 @@ void LoadScreenInfo::Enable(void* topNode)
 void LoadScreenInfo::Show(void* topNode)
 {
 	DWORD startTime = Performance::GetMilliseconds();
-	_ResetSceneChildrenNodes(1);
+	//_ResetSceneChildrenNodes(1);
 	LoadTexture();
 }
 

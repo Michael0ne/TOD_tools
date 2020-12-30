@@ -88,7 +88,7 @@ void				GetGameWorkingDirRelativePath(String* str);	//	@437B80
 void				SetWarningString(const char* (*ptr)());	//	@406E00
 const char*			GetWarningString();	//	@406E10
 
-const char* (*WarningStringProc)() = nullptr;	//	@A35B80
+static const char*	(*WarningStringProc)() = nullptr;	//	@A35B80
 
 extern String		WorkingDirectory;	//	@A08FA0
 extern String		GameWorkingDirectory;	//	@A08FB0

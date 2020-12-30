@@ -1,5 +1,5 @@
 #include "ParticleSystem.h"
-#include "Globals.h"
+#include "ScriptDatabase.h"
 
 bool& ParticleSystem::LodAndFade = *(bool*)0xA08944;	//	@A08944
 

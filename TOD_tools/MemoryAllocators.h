@@ -53,7 +53,7 @@ public:
 	virtual int					GetAllocatedSpaceSize();
 	virtual int					GetTotalAllocations();
 	virtual int					stub16();
-	virtual const char*			GetAllocatorName();
+	virtual const char*			GetAllocatorName() const;
 	virtual void				SetFieldC(char unk);
 	virtual int					stub19();
 	virtual int					stub20();

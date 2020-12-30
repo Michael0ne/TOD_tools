@@ -212,21 +212,8 @@ private:
 	__int64 m_nUnkTime_2;
 
 public:
-	Renderer()
-	{
-		MESSAGE_CLASS_CREATED(Renderer);
-	}
-	~Renderer()
-	{
-		MESSAGE_CLASS_DESTROYED(Renderer);
-
-		if (m_BuffersCount > 0)
-			while (m_BuffersCount) {
-				if (&m_pBuffersArray[m_BuffersCount])
-					delete& m_pBuffersArray[m_BuffersCount];
-				m_BuffersCount--;
-			}
-	}
+	Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
+	~Renderer();
 
 	void* operator new (size_t size)
 	{
@@ -238,15 +225,9 @@ public:
 			Allocators::ReleaseMemory(ptr, 0);
 	}
 
-	void	CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, Vector3<float>* buffers);	//	@421320
 	void	_41FDF0(Vector4<float>* size, int bufferIndex);	//	@41FDF0	NOTE: maybe 'SetBackBufferSize'?
 	void	_SetBufferStateByIndex(int state, int index);	//	@41FD90
 	void	SetRenderBufferIsEmpty(bool);	//	@420170
-
-	__int64	GetTime()
-	{
-		return m_nUnkTime_1;
-	}
 
 	static bool& WideScreen;
 	static bool FSAA;

@@ -6,7 +6,7 @@ GFXEffect::GFXEffect() : Node(NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(GFXEffect);
 
-	m_ResourceInfo = nullptr;
+	m_VignetteTexture = nullptr;
 	m_NoiseTexture = nullptr;
 
 	field_8C = field_9C = 1;
@@ -16,7 +16,7 @@ GFXEffect::GFXEffect() : Node(NODE_MASK_QUADTREE)
 
 	m_Brightness = 1.0f;
 	m_Saturation = 1.0f;
-	m_NoiseBlendMode = 1;
+	m_NoiseBlendMode = BLEND_ADD;
 	m_VignetteShape = 2.0f;
 	m_MotionBlur = 0.0f;
 	m_LightBleeding = 0.0f;

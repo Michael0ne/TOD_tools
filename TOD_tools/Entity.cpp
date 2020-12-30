@@ -3,20 +3,13 @@
 #include "Globals.h"
 #include "MemoryCards.h"
 
-void Entity::scalar_destructor(bool freeMemory)
-{
-	delete this;
-
-	if (freeMemory)
-		Allocators::ReleaseMemory(this, false);
-}
-
 void Entity::Destroy()
 {
 	if (this)
-		scalar_destructor(true);
+		delete this;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 Entity::Entity()
 {
 	MESSAGE_CLASS_CREATED(Entity);
@@ -32,6 +25,19 @@ Entity::Entity()
 	m_Id = (g_Blocks->AddEntity(this) << 8) | m_Id & 255;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+unsigned char Entity::SaveScriptDataToFile_Impl(ScriptTypes::ScriptType_Entity*, int, int, const char*)
+{
+	return NULL;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+unsigned char Entity::LoadScriptDataFromFile_Impl(ScriptTypes::ScriptType_Entity*, int, int)
+{
+	return NULL;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 Entity::~Entity()
 {
 	MESSAGE_CLASS_DESTROYED(Entity);
@@ -42,13 +48,13 @@ Entity::~Entity()
 		field_20 = NULL;
 	}
 
-	if (field_18)
-		m_ScriptEntity->m_ParentNode->_489C90();
+	//if (field_18)
+		//m_ScriptEntity->m_ParentNode->_489C90();
 
-	*(int*)(*((int*)&g_Blocks->m_UnkList_3.m_Elements + 4 * ((m_Id >> 28) & 7) - 1) + 4 * ((m_Id >> 8) & 0xFF8FFFFF)) = NULL;
+	//*(int*)(*((int*)&g_Blocks->m_UnkList_3.m_Elements + 4 * ((m_Id >> 28) & 7) - 1) + 4 * ((m_Id >> 8) & 0xFF8FFFFF)) = NULL;
 
-	if (g_Blocks->field_1B0[((m_Id >> 28) & 7) - 1] > ((m_Id >> 8) & 0xFF8FFFFF))
-		g_Blocks->field_1B0[((m_Id >> 28) & 7) - 1] = ((m_Id >> 8) & 0xFF8FFFFF);
+	//if (g_Blocks->field_1B0[((m_Id >> 28) & 7) - 1] > ((m_Id >> 8) & 0xFF8FFFFF))
+		//g_Blocks->field_1B0[((m_Id >> 28) & 7) - 1] = ((m_Id >> 8) & 0xFF8FFFFF);
 }
 
 int Entity::GetId()
@@ -114,6 +120,22 @@ void Entity::LoadScriptDataFromFile(int* params)
 	*params = LoadScriptDataFromFile_Impl(memcard, params[2], params[3]);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void Entity::SetScript(ScriptTypes::ScriptType_Entity* script)
+{
+	if (field_18)
+		if (m_ScriptEntity)
+			//m_ScriptEntity->m_ParentNode->_489C90(this);
+			;
+
+	m_ScriptEntity = script;
+
+	if (script->m_ParentNode)
+		//script->m_ParentNode->_489BE0(this);
+		;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 int Entity::GetPropertyId(const char* prop)
 {
 	char _prop[64];
@@ -125,9 +147,9 @@ int Entity::GetPropertyId(const char* prop)
 	else
 		strncpy_s(_prop, prop, sizeof(_prop));
 
-	Utils::ToLowercase(_prop);
+	String::ToLowerCase(_prop);
 
-	int* msg = GetMessageId_A(PropertiesList, PropertiesList.field_8, _prop);
+	int* msg = nullptr;	//	GetMessageId_A(PropertiesList, PropertiesList.field_8, _prop);
 
 	if (msg && (msg + 4) != NULL)
 		return *(msg + 4);

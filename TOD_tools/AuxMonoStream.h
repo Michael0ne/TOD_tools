@@ -20,6 +20,14 @@ namespace Audio
 	{
 		bool			m_Used;
 		char*			m_BufferPtr;
+
+		SoundBufferInfo()
+			: m_Used(false), m_BufferPtr(nullptr)
+		{};
+
+		SoundBufferInfo(bool _used, char* _buffer)
+			: m_Used(_used), m_BufferPtr(_buffer)
+		{};
 	};
 
 	class AuxMonoStream

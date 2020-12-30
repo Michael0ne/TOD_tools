@@ -23,7 +23,7 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-#include <ogg/ogg.h>
+#include "../../../ThirdParty/libogg-1.1.2/include/ogg.h"
 
 typedef struct vorbis_info{
   int version;

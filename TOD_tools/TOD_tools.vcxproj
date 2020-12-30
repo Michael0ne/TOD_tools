@@ -51,7 +51,7 @@
     <LinkIncremental>false</LinkIncremental>
     <TargetName>dinput8</TargetName>
     <IncludePath>$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath);$(WindowsSDK_LibraryPath_x86);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <LibraryPath>$(LibraryPath);$(WindowsSDK_LibraryPath_x86);$(DXSDK_DIR)Lib\x86;$(ProjectDir)ThirdParty\libogg-1.1.2\lib;$(ProjectDir)ThirdParty\libvorbis-1.1.0\lib</LibraryPath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -87,14 +87,15 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>user32.lib;dxguid.lib;dinput8.lib;dsound.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;dxguid.lib;dinput8.lib;dsound.lib;d3d9.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <AssemblyDebug>true</AssemblyDebug>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
@@ -177,7 +178,6 @@
     <ClInclude Include="OverdoseVehicle.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Placeholder.h" />
-    <ClInclude Include="Position.h" />
     <ClInclude Include="ProfilerInput.h" />
     <ClInclude Include="Progress.h" />
     <ClInclude Include="Random.h" />
@@ -291,7 +291,6 @@
     <ClCompile Include="NodeSpatial.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Placeholder.cpp" />
-    <ClCompile Include="Position.cpp" />
     <ClCompile Include="ProfilerInput.cpp" />
     <ClCompile Include="Progress.cpp" />
     <ClCompile Include="Random.cpp" />
@@ -327,8 +326,6 @@
     <ClCompile Include="SurroundGeometry.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="TextSlot.cpp" />
-    <ClCompile Include="ThirdParty\libvorbis-1.1.0\lib\vorbisenc.c" />
-    <ClCompile Include="ThirdParty\libvorbis-1.1.0\lib\vorbisfile.c" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPoint.cpp" />
     <ClCompile Include="WayPoint.cpp" />

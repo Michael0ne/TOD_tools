@@ -1,0 +1,460 @@
+struct Take_a_hit_info
+{
+	Entity	RecievingEntity;
+	number	Damager;
+	Entity	Owner;
+	Entity	inflictor_node;
+	Entity	RecievingCollVolume;
+	vector	CollisionImpulse;
+	vector	Peercontactpoint;
+	integer	Damage_type
+};
+
+struct s_BlockLoad
+{
+	Entity	pBlock;
+	string	sTeleportName;
+};
+
+struct s_GenericRes
+{
+	Entity	pResource;
+	Entity	pPlaceholder;
+};
+
+struct s_PlaceholderPriority
+{
+	Entity	pPlaceholder;
+	number	RangeSqr;
+	truth	bInView;
+	truth	bIsVisible;
+};
+
+struct s_Inventory
+{
+	list(truth)	RightHandGunList;
+	list(truth)	LeftHandGunList;
+	list(integer)	AmmoList;
+	list(integer)	MaxAmmoList;
+	list(integer)	AmmoInPrimWeapon;
+	list(integer)	AmmoInSecWeapon;
+};
+
+struct s_AIPassenger
+{
+	Entity	pPlaceHolder;
+	vector	vLocalPosition;
+};
+
+struct s_PowerUpInventory
+{
+	list(integer)	PowerUpList;
+	list(integer)	MaxPowerUpList;
+};
+
+struct s_PowerUpSprite
+{
+	integer	Type;
+	Entity	Sprite;
+	Entity	BGSprite;
+	vector	OrgSize;
+	vector	NormalSize;
+	vector	NormalPos;
+	vector	SelectedSize;
+	vector	SelectedPos;
+	Entity	AmountTB;
+	Entity	AmountTB_BG;
+};
+
+struct s_RadarBlip
+{
+	Entity	BlipSprite;
+	Entity	LocationSprite;
+	Entity	WatchedEntity;
+	integer	EntityType;
+	integer	SubMapIndex;
+};
+
+struct s_MenuOption
+{
+	integer	OptionName;
+	Entity	TextField;
+	Entity	TextFieldBG;
+	integer	OptionAction;
+};
+
+struct s_TaxiZapOptions
+{
+	Entity	TaxiZapEntry;
+	Entity	EntryIcon;
+	truth	ShowIcon;
+	integer	EntryText;
+	integer	EntryType;
+	integer	EntryDetailTextType;
+	integer	EntryDetailTextIndex;
+	truth	EntrySpacing;
+	truth	IsActiveEntry;
+};
+
+struct s_ScoreBar
+{
+	truth	IsAchieved;
+	Entity	NameTextField;
+	Entity	NameTextFieldBG;
+	Entity	ScoreTextField;
+	Entity	Stroke3;
+	Entity	Stroke4;
+	Entity	FlashEffect;
+	integer	AwardType;
+	integer	AwardAP;
+	list(Entity)	AwardModelList;
+	list(Entity)	AwardModelListBg;
+	integer	NumOfAwards;
+};
+
+struct s_BounceText
+{
+	Entity	TextBox;
+	Entity	TextBoxBG;
+	number	BounceSpeed;
+	number	OrgScale;
+	number	MaxScale;
+	truth	Expand;
+};
+
+struct s_ped_resource
+{
+	Entity	Placeholder;
+	vector	StartPoint;
+	Entity	NewPoint;
+	Entity	LastPoint;
+	number	currenttime;
+	truth	at_pos;
+};
+
+struct s_CtrlBone
+{
+	Entity	pBone;
+	vector	vCurrentAngle;
+	vector	vTargetAngle;
+	number	Speed;
+	integer	eRotateSpace;
+	truth	bActive;
+};
+
+struct s_Mission_Objective
+{
+	Entity	Objective;
+	truth	Show;
+	integer	Status;
+};
+
+struct s_Mission_data
+{
+	truth	Mission_Valid;
+	integer	Mission;
+	integer	Mission_type;
+	integer	Award_achived;
+	Entity	Mission_Entity;
+	truth	Mission_complete;
+	truth	Mission_open;
+	integer	Mission_name;
+	integer	Mission_start_submap;
+	integer	Highest_Score;
+	integer	Current_Score;
+	number	L_Combo;
+	string	Best_Move_string;
+	integer	Best_Move;
+	integer	FollowUpMission;
+	list(Entity)	MissionConditions;
+	list(Entity)	ObjectiveList;
+};
+
+struct s_ComboAwardString
+{
+	Entity	TextBox;
+	Entity	TextBox_BG;
+	number	SlideUpTime;
+	number	StartSlideTime;
+	number	SlideX;
+	number	SlideY;
+	vector	FromPos;
+	vector	TargetPos;
+	number	FromOpacity;
+	number	TargetOpacity;
+	number	StrayTime;
+	truth	InUse;
+};
+
+struct s_UniqueComboMove
+{
+	integer	MoveName;
+	integer	Bonus;
+	integer	GoodieAward;
+	integer	MoveBitName;
+	integer	SoundIndex;
+	number	SoundFrequency;
+	integer	CCmove;
+};
+
+struct s_ComboAward
+{
+	integer	KillsNeeded;
+	integer	ComboBonus;
+	list(integer)	GoodieAwards;
+	integer	AwardString;
+};
+
+struct s_StatusPoint
+{
+	vector	Position;
+	number	CurrentHelath;
+	list(string)	CurrentWeapons;
+	number	AmmoActiveWeapon;
+};
+
+struct s_Statistics
+{
+	integer	ActionPoints;
+	integer	EnemyKills;
+	integer	NeutralKills;
+	integer	BarrelsKilled;
+	number	AverageHealth;
+	list(string)	UsedKillTypes;
+	list(integer)	MostOftenKill;
+	string	LargestCombo;
+	integer	DrivingCar;
+	integer	MenuOpened;
+	integer	MaxNumOfWeapon;
+	integer	MostUsedWeapon;
+	integer	Medals;
+};
+
+struct s_DelayedMessage
+{
+	Entity	pCallBack;
+	integer	eMessage;
+	number	nTimer;
+	truth	bRealTime;
+};
+
+struct s_CollisionInfo
+{
+	truth	HasCollided;
+	Entity	ColEntity;
+	Entity	ColVolume;
+	integer	ColMaterial;
+	integer	ColFaceProperty;
+	vector	ColNormal;
+	vector	ColPos;
+	truth	SetDecal;
+};
+
+struct s_VehicleCollision
+{
+	Entity	CollisionEntity;
+	Entity	RealNode;
+	vector	CollisionPos;
+	Entity	ColliderEntity;
+};
+
+struct Random_sound
+{
+	list(Entity)	Sound;
+	list(number)	Volume;
+	listnumber)		Min_Pause;
+	list(number)	Max_Pause;
+	list(integer)	Position_Type;
+	list(Entity)	Position_Entity;
+};
+
+struct s_Entity_pair
+{
+	Entity	ent_1;
+	Entity	ent_2;
+};
+
+struct s_HealthWatchedEntity
+{
+	Entity	Watched;
+	integer	WatchedName;
+	number	HealthPercentage;
+	truth	InFocus;
+	number	LocalShowTime;
+};
+
+struct s_pulse
+{
+	integer	GamePulse;
+	integer	UnderPulse;
+	integer	UberPulse;
+	number	StayTime;
+	integer	toHighPulses;
+};
+
+struct s_particel_dam
+{
+	Entity	at_entity;
+	vector	pos_offset;
+	Entity	ParticleOwner;
+	Entity	ParticleSys;
+	vector	at_pos;
+	number	LifeTime;
+};
+
+struct s_list_dict
+{
+	integer	list_index;
+	number	dist;
+};
+
+struct s_neighborhood_config
+{
+	integer	PedestrianGroup;
+	integer	Minimum;
+	integer	Maximum;
+};
+
+struct s_pedestrian_points
+{
+	Entity	PathPoint;
+	Entity	Neighborhood;
+};
+
+struct s_fadeEntity
+{
+	Entity	Object;
+	number	StartOpacity;
+	number	OpaPerSec;
+	number	DelayTimer;
+};
+
+struct s_target_cache_info
+{
+	truth	Valid;
+	integer	Type;
+	integer	Relation;
+};
+
+struct s_Overall_Award
+{
+	integer	TargetScore;
+	integer	OverallAwardType;
+	integer	AwardString;
+	integer	TutAwardString;
+};
+
+struct s_ScoreNotification
+{
+	Entity	NotifyThis;
+	integer	RequiredScore;
+};
+
+struct s_waiting_decal
+{
+	vector	position;
+	vector	normal;
+	integer	type;
+};
+
+struct s_waiting_particle
+{
+	Entity	particle;
+	Entity	target;
+	vector	impact_pos;
+	quaternion	impact_orient;
+};
+
+struct s_waiting_blood_decal
+{
+	vector	position;
+	vector	normal;
+	vector	impact_dir;
+	number	size;
+	integer	type;
+	Entity	probe;
+	Entity	ignore;
+};
+
+struct s_traffic_section
+{
+	number	dist;
+	Entity	FromPoint;
+	Entity	ToPoint;
+	number	OneOverLength;
+	integer	Status;
+	integer	EndStatus;
+	integer	Type;
+	list(Entity)	Queue;
+};
+
+struct s_TutorialMenu
+{
+	integer	CaptionIndex;
+	list(Entity)	Tutorials;
+};
+
+struct s_TutorialPopUp
+{
+	integer	obj_text;
+	integer	obj_text_alt;
+	truth	use_pause_mode;
+	number	delay;
+	truth	justify;
+};
+
+struct s_PendingLogicCondition
+{
+	integer	logic_condition;
+	Entity	actor;
+};
+
+struct s_TutorialIndex
+{
+	integer	TutorialText;
+	list(integer)	index_list;
+};
+
+struct s_Language
+{
+	string	LanguageName;
+	integer	Language;
+	Entity	Flag;
+	Entity	TextB;
+	string LanguageCode;
+};
+
+struct element
+{
+	Entity	unit;
+	vector	unit_pos;
+	quaternion	unit_orient;
+	vector	unit_velocity;
+};
+
+struct hinge_element
+{
+	Entity	unit;
+	vector	hinge;
+	quaternion unit_orient;
+	number	unit_angle_velocity;
+	number	unit_angle;
+	number	unit_max_angle;
+	integer	unit_zones;
+	integer	unit_in_use;
+	number	unit_rotation_inverse;
+	integer	unit_bent_step;
+	number	unit_grav_direction;
+};
+
+struct parameter
+{
+	string parameter_name;
+	number	parameter_value;
+};
+
+struct crossblend_override
+{
+	number	crossblend_speed;
+	Entity	anim_slot;
+};

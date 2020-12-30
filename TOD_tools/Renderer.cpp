@@ -12,9 +12,10 @@ int& Renderer::_A0872C = *(int*)0xA0872C;
 Scene_Buffer2& Renderer::Buffer_A08704 = *(Scene_Buffer2*)0xA08704;
 ScreenProperties& Renderer::g_ScreenProperties = *(ScreenProperties*)0xA08810;
 
-void Renderer::CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, int buffersCount, int unk4, Vector3<float>* buffers)
+#pragma message(TODO_IMPLEMENTATION)
+Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1,const Vector3<float>* buffersDimens)
 {
-	patch(0xA35E04, this, 4);
+	MESSAGE_CLASS_CREATED(Renderer);
 
 	m_TexturesList = List<GfxInternal_Dx9_Texture>();
 	m_fTimeDelta = 0.0f;
@@ -22,34 +23,27 @@ void Renderer::CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, in
 	m_nTimeMilliseconds = Performance::GetMilliseconds();
 	field_34 = 0;
 
-	g_RendererDx = new GfxInternal_Dx9();
-	g_RendererDx->Init(resolution, unk1, unk2, fsaa, 0);	//	No null pointer check intended.
+	g_RendererDx = new GfxInternal_Dx9(resolution, unused1, unused2, FSAA, NULL);
 
-	field_20 = unk4;
+	field_20 = unk1;
 	m_BuffersCount = buffersCount;
 
 	m_pBuffersArray = new Scene_Buffer276[buffersCount];
 
 	if (buffersCount > 0) {
-		Vector3<float>* buffers_ = buffers;
 		int index = 0;
 
 		do {
-			m_pBuffersArray[index].Init(*buffers_);
+			m_pBuffersArray[index].Init(*(buffersDimens++));
 			m_pBuffersArray[index].SetResolution(Vector2<float>{g_RendererDx->m_nViewportWidth, g_RendererDx->m_nViewportHeight});
 
-			++buffers_;
 			++index;
 			--buffersCount;
 		} while (buffersCount);
 	}
 
-	field_0[0] = 0;
-	field_0[1] = 0;
-	field_0[2] = 0;
-	field_0[3] = 0;
+	m_RenderBufferEmpty = false;
 
-#pragma message(TODO_IMPLEMENTATION)
 	//	Allocate textures list.
 	(*(void(__thiscall*)(Renderer*))0x4210E0)(this);
 	//	Allocate something
@@ -63,6 +57,18 @@ void Renderer::CreateRenderer(void* resolution, int unk1, int unk2, int fsaa, in
 	//	For testing purposes - hide cursor.
 	ShowCursor(0);
 #endif
+}
+
+Renderer::~Renderer()
+{
+	MESSAGE_CLASS_DESTROYED(Renderer);
+
+	if (m_BuffersCount > 0)
+		while (m_BuffersCount) {
+			if (&m_pBuffersArray[m_BuffersCount])
+				delete &m_pBuffersArray[m_BuffersCount];
+			m_BuffersCount--;
+		}
 }
 
 void Renderer::_41FDF0(Vector4<float>* size, int bufferIndex)

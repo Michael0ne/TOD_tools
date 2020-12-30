@@ -1,5 +1,7 @@
 #include "MemoryCards.h"
 
+ScriptTypes::ScriptType_Entity* tMemoryCards = nullptr;
+
 MemoryCards::MemoryCards() : Node(NODE_MASK_EMPTY)
 {
 	MESSAGE_CLASS_CREATED(MemoryCards);

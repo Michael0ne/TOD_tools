@@ -9,7 +9,7 @@
 class String
 {
 public:
-	int				m_nLength;
+	unsigned int	m_nLength;
 	char*			m_szString;
 	unsigned int	m_nBitMask;
 	char			m_pEmpty;
@@ -37,8 +37,11 @@ public:
 	void			Append(const char* str);
 	void			Format(const char* format, ...);	//	@415300	NOTE: adapted to be String's class method.
 	bool			Equal(const char* _str);	//	@40FE30
-	String*			Substring(String* outStr, int posStart, int length);	//	@409E90
-	inline bool		Empty();
+	String*			Substring(String* outStr, unsigned int posStart, unsigned int length);	//	@409E90
+	inline bool		Empty()
+	{
+		return (m_szString != &m_pEmpty ? (*m_szString != NULL && m_szString != nullptr) : (m_pEmpty != NULL));
+	}
 	inline void		ConvertBackslashes()
 	{
 		Replace('\\', '/');
@@ -69,7 +72,6 @@ public:
 private:
 	void			AllocateSpaceForString();	//	@4056E0
 	void			AdjustBufferSize();	//	@405610
-	void			AllocateSpaceIfLong();	//	@405590
 };
 
 class StringTuple
@@ -79,5 +81,9 @@ public:
 	String			m_String_2;
 
 public:
+	StringTuple()
+		: m_String_1(), m_String_2()
+	{};
+
 	StringTuple(const char* str1, const char* str2);
 };

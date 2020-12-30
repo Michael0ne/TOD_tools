@@ -105,8 +105,8 @@ public:
 	static String*	GetPathFromDirectoryMappings(String* outStr, const char* path);	//	@41A360
 	static bool		IsFileExists(const char* file);	//	@437E90
 	static void		ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension);	//	@4088E0
-	static const char* ExtractFileDir(const char* path);	//	@409360
-	static const char* ExtractFileName(const char* path);	//	@4093B0
+	static String*	ExtractFileDir(String& outStr, const char* path);	//	@409360
+	static String*	ExtractFileName(String& outStr, const char* path);	//	@4093B0
 	static bool		FindFileEverywhere(const char* path);	//	@4182A0
 	static void		OpenZip(const char* szZipPath);	//	@419100
 	static void		ReadZipDirectories(const char* szFileSystem);	//	@419550

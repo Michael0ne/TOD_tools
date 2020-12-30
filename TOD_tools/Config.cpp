@@ -22,6 +22,7 @@
 #include "EditorCamera.h"
 #include "ZipArch.h"
 #include "ResourcesTypes.h"
+#include "ScriptDatabase.h"
 
 String Script::Filesystem = String();
 String Script::ControlType = String();
@@ -41,25 +42,25 @@ namespace GameConfig
 		MESSAGE_CLASS_CREATED(Config);
 
 		m_Initialized = 0;
-		m_sGameName = String();
-		m_sConfigFilePath = String();
+		m_GameName = String();
+		m_ConfigFilePath = String();
 		m_sUnkString_1 = String();
 		m_sUnkString_2 = String();
-		m_sSceneName = String();
-		m_pConfigurationVariables = nullptr;
-		m_pSessionVariables = nullptr;
+		m_SceneName = String();
+		m_ConfigurationVariables = nullptr;
+		m_SessionVariables = nullptr;
 		field_4C = 0;
-		field_50 = 0;
+		m_ShouldStartGame = 0;
 		m_vBackgroundSize = Vector4<float>();
 		m_nGlobalPropertiesListCRC = 0;
 		m_nGlobalCommandsListCRC = 0;
 		m_nTypesListCRC = 0;
-		m_nTotalGlobalProperties = 0;
-		m_nTotalGlobalCommands = 0;
-		m_nTotalTypes = 0;
-		m_nCRCForScriptsListUnk = 0;
-		m_nCRCForScriptsGlobalList = 0;
-		m_nCRCForTypesList = 0;
+		m_TotalGlobalProperties = 0;
+		m_TotalGlobalCommands = 0;
+		m_TotalTypes = 0;
+		m_GlobalPropertiesListCRC = 0;
+		m_GlobalCommandsListCRC = 0;
+		m_TypesListCRC = 0;
 	}
 
 	Config::~Config()
@@ -81,21 +82,21 @@ namespace GameConfig
 
 		//	Set filename for configuration file.
 		if (szConfigFilename && *szConfigFilename)
-			m_sConfigFilePath = String(szConfigFilename);
+			m_ConfigFilePath = String(szConfigFilename);
 		else
-			m_sConfigFilePath = String(CONFIG_CONFIGFILE);
+			m_ConfigFilePath = String(CONFIG_CONFIGFILE);
 
 		//	Set gamename.
-		m_sGameName = String(CONFIG_GAMENAME);
+		m_GameName = String(CONFIG_GAMENAME);
 
 		//	Try and look for configuration variables file.
 		//	TODO: CreateBuffer implementation!
-		if (File::FindFileEverywhere(m_sConfigFilePath.m_szString)) {
-			debug("Initialising engine with '%s'\n", m_sConfigFilePath.m_szString);
+		if (File::FindFileEverywhere(m_ConfigFilePath.m_szString)) {
+			debug("Initialising engine with '%s'\n", m_ConfigFilePath.m_szString);
 
-			m_pConfigurationVariables = new Session_Variables(m_sConfigFilePath.m_szString, 1);;
+			m_ConfigurationVariables = new Session_Variables(m_ConfigFilePath.m_szString, 1);;
 		}else
-			m_pConfigurationVariables = new Session_Variables(0);
+			m_ConfigurationVariables = new Session_Variables(0);
 
 		Session_Variables* pProfileVariables = nullptr;
 
@@ -103,18 +104,18 @@ namespace GameConfig
 		if (File::FindFileEverywhere("/profile.txt"))
 			pProfileVariables = new Session_Variables("/profile.txt", 0);
 
-		if (m_pConfigurationVariables->IsVariableSet("filecheck"))
-			Script::FileCheck = m_pConfigurationVariables->GetParamValueBool("filecheck") == 0;
+		if (m_ConfigurationVariables->IsVariableSet("filecheck"))
+			Script::FileCheck = m_ConfigurationVariables->GetParamValueBool("filecheck") == 0;
 
-		if (m_pConfigurationVariables->IsVariableSet("control_type"))
-			Script::ControlType = m_pConfigurationVariables->GetParamValueString("control_type");
+		if (m_ConfigurationVariables->IsVariableSet("control_type"))
+			Script::ControlType = m_ConfigurationVariables->GetParamValueString("control_type");
 
-		if (m_pConfigurationVariables->IsVariableSet("forcefeedback"))
-			Script::ForceFeedback = m_pConfigurationVariables->GetParamValueBool("forcefeedback");
+		if (m_ConfigurationVariables->IsVariableSet("forcefeedback"))
+			Script::ForceFeedback = m_ConfigurationVariables->GetParamValueBool("forcefeedback");
 
 		Script::LoadBlocks = true;
-		if (m_pConfigurationVariables->IsVariableSet("loadblocks"))
-			Script::LoadBlocks = m_pConfigurationVariables->GetParamValueBool("loadblocks");
+		if (m_ConfigurationVariables->IsVariableSet("loadblocks"))
+			Script::LoadBlocks = m_ConfigurationVariables->GetParamValueBool("loadblocks");
 
 		//	Try and initialize Blocks class.
 		g_Blocks = new Blocks(Script::LoadBlocks);
@@ -164,26 +165,29 @@ namespace GameConfig
 		//	TODO: implementation!
 		(*(void(__cdecl*)())0x881070)();
 
-		if (m_pConfigurationVariables->IsVariableSet("ps2_max_texture_size"))
-			Script::Ps2MaxTextureSize = m_pConfigurationVariables->GetParamValueInt("ps2_max_texture_size");
+		if (m_ConfigurationVariables->IsVariableSet("ps2_max_texture_size"))
+			Script::Ps2MaxTextureSize = m_ConfigurationVariables->GetParamValueInt("ps2_max_texture_size");
 
-		if (m_pConfigurationVariables->IsVariableSet("overridelights"))
-			Light::OverrideLights(m_pConfigurationVariables->GetParamValueBool("overridelights"));
+		if (m_ConfigurationVariables->IsVariableSet("overridelights"))
+			Light::OverrideLights(m_ConfigurationVariables->GetParamValueBool("overridelights"));
 
 		Script::Fullscreen = true;
-		if (m_pConfigurationVariables->IsVariableSet("fullscreen"))
-			Script::Fullscreen = m_pConfigurationVariables->GetParamValueBool("fullscreen");
+		if (m_ConfigurationVariables->IsVariableSet("fullscreen"))
+			Script::Fullscreen = m_ConfigurationVariables->GetParamValueBool("fullscreen");
 
 		Script::Filesystem = String("blocks.naz, sounds.naz, videos00.naz, videos01.naz");
-		if (m_pConfigurationVariables->IsVariableSet("filesystem"))
-			Script::Filesystem = m_pConfigurationVariables->GetParamValueString("filesystem");
+		if (m_ConfigurationVariables->IsVariableSet("filesystem"))
+			Script::Filesystem = m_ConfigurationVariables->GetParamValueString("filesystem");
 
-		//	TODO: what does this do?
-		field_54 = 0;
+#ifdef INCLUDE_FIXES
+		m_UninitialiseCallback = new ConfigCallback();
+#else
+		m_UninitialiseCallback = nullptr;
+#endif
 
 		//	If log dump file is here - open it.
-		if (m_pConfigurationVariables->IsVariableSet("logdumpfile")) {
-			LogDump::OpenLogDump(m_pConfigurationVariables->GetParamValueString("logdumpfile").m_szString);
+		if (m_ConfigurationVariables->IsVariableSet("logdumpfile")) {
+			LogDump::OpenLogDump(m_ConfigurationVariables->GetParamValueString("logdumpfile").m_szString);
 		}
 
 		//	If we have 'profile.txt' available, check directory mappings and other stuff.
@@ -225,8 +229,8 @@ namespace GameConfig
 		sTestingPath.Append(" scripts: baked)");
 		sTestingPath.Append(CONFIG_GAMENAME);
 
-		if (m_pConfigurationVariables->IsVariableSet("relax_build_version_check"))
-			Script::RelaxBuildVersionCheck = m_pConfigurationVariables->GetParamValueBool("relax_build_version_check");
+		if (m_ConfigurationVariables->IsVariableSet("relax_build_version_check"))
+			Script::RelaxBuildVersionCheck = m_ConfigurationVariables->GetParamValueBool("relax_build_version_check");
 
 		//	What icon should we use?
 		if (_stricmp(sTestingPath.m_szString, "stable"))
@@ -250,13 +254,13 @@ namespace GameConfig
 			Script::LanguageStringsOffset = 0;
 
 		//	TODO: implementation for SetCountryCode!
-		if (m_pConfigurationVariables->IsVariableSet("language_mode"))
-			SetCountryCode(m_pConfigurationVariables->GetParamValueString("language_mode").m_szString);
+		if (m_ConfigurationVariables->IsVariableSet("language_mode"))
+			SetCountryCode(m_ConfigurationVariables->GetParamValueString("language_mode").m_szString);
 
 		Script::LanguageMode.Set(Script::CountryCodes[Script::LanguageStringsOffset]);
 
 		//	Create required devices - window, mouse, keyboard, gamepad.
-		g_Window = new Window(m_sGameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
+		g_Window = new Window(m_GameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
 
 		g_InputMouse = new Input::Mouse();
 		g_InputKeyboard = new Input::Keyboard();
@@ -272,8 +276,8 @@ namespace GameConfig
 		Script::SavePlatformPS2 = true;
 
 		//	Detect platform.
-		if (m_pConfigurationVariables->IsVariableSet("save_platform")) {
-			String platform = m_pConfigurationVariables->GetParamValueString("save_platform");
+		if (m_ConfigurationVariables->IsVariableSet("save_platform")) {
+			String platform = m_ConfigurationVariables->GetParamValueString("save_platform");
 
 			//	For PS2 we want 2 memory cards and harddisk available.
 			if (platform.Equal("PS2")) {
@@ -318,22 +322,22 @@ namespace GameConfig
 		}
 
 		Script::CutsceneDisableAware = false;
-		if (m_pConfigurationVariables->IsVariableSet("cutscene_disable_aware"))
-			Script::CutsceneDisableAware = m_pConfigurationVariables->GetParamValueBool("cutscene_disable_aware");
+		if (m_ConfigurationVariables->IsVariableSet("cutscene_disable_aware"))
+			Script::CutsceneDisableAware = m_ConfigurationVariables->GetParamValueBool("cutscene_disable_aware");
 
 		Script::CutsceneForceCompleteLodUpdates = false;
-		if (m_pConfigurationVariables->IsVariableSet("cutscene_force_complete_lod_updates"))
-			Script::CutsceneForceCompleteLodUpdates = m_pConfigurationVariables->GetParamValueBool("cutscene_force_complete_lod_updates");
+		if (m_ConfigurationVariables->IsVariableSet("cutscene_force_complete_lod_updates"))
+			Script::CutsceneForceCompleteLodUpdates = m_ConfigurationVariables->GetParamValueBool("cutscene_force_complete_lod_updates");
 
 		//	Default streamed sound files extension.
-		if (m_pConfigurationVariables->IsVariableSet("streamed_sound_ext"))
-			Script::StreamedSoundExt = m_pConfigurationVariables->GetParamValueString("streamed_sound_ext");
+		if (m_ConfigurationVariables->IsVariableSet("streamed_sound_ext"))
+			Script::StreamedSoundExt = m_ConfigurationVariables->GetParamValueString("streamed_sound_ext");
 		else
 			Script::StreamedSoundExt = String("ogg");
 
 		//	Figure out sound renderer.
-		if (m_pConfigurationVariables->IsVariableSet("soundrenderer")) {
-			String soundrenderer = m_pConfigurationVariables->GetParamValueString("soundrenderer");
+		if (m_ConfigurationVariables->IsVariableSet("soundrenderer")) {
+			String soundrenderer = m_ConfigurationVariables->GetParamValueString("soundrenderer");
 			Audio::SoundSystemType rendererid = Audio::SOUND_SYSTEM_UNDEFINED;
 
 			soundrenderer.ToLowerCase();
@@ -352,109 +356,107 @@ namespace GameConfig
 		//	Init sound renderer.
 		Audio::g_StreamedSoundBuffers = new Audio::StreamedSoundBuffers(1, 44100);
 
-		if (m_pConfigurationVariables->IsVariableSet("sound_max_concurrent_sounds"))
-			Audio::g_StreamedSoundBuffers->m_nMaxConcurrentSounds = m_pConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
+		if (m_ConfigurationVariables->IsVariableSet("sound_max_concurrent_sounds"))
+			Audio::g_StreamedSoundBuffers->m_nMaxConcurrentSounds = m_ConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
 
 		//	Override default volume values.
-		if (m_pConfigurationVariables->IsVariableSet("change_sound_group_volume_scaling") && m_pConfigurationVariables->GetParamValueBool("change_sound_group_volume_scaling")) {
-			if (m_pConfigurationVariables->IsVariableSet("default_fx_volume_var"))
-				Audio::SetDefaultFxVolume(m_pConfigurationVariables->GetParamValueFloat("default_fx_volume_var"));
+		if (m_ConfigurationVariables->IsVariableSet("change_sound_group_volume_scaling") && m_ConfigurationVariables->GetParamValueBool("change_sound_group_volume_scaling")) {
+			if (m_ConfigurationVariables->IsVariableSet("default_fx_volume_var"))
+				Audio::SetDefaultFxVolume(m_ConfigurationVariables->GetParamValueFloat("default_fx_volume_var"));
 
-			if (m_pConfigurationVariables->IsVariableSet("default_ambience_volume_var"))
-				Audio::SetDefaultAmbienceVolume(m_pConfigurationVariables->GetParamValueFloat("default_ambience_volume_var"));
+			if (m_ConfigurationVariables->IsVariableSet("default_ambience_volume_var"))
+				Audio::SetDefaultAmbienceVolume(m_ConfigurationVariables->GetParamValueFloat("default_ambience_volume_var"));
 
-			if (m_pConfigurationVariables->IsVariableSet("default_music_volume_var"))
-				Audio::SetDefaultMusicVolume(m_pConfigurationVariables->GetParamValueFloat("default_music_volume_var"));
+			if (m_ConfigurationVariables->IsVariableSet("default_music_volume_var"))
+				Audio::SetDefaultMusicVolume(m_ConfigurationVariables->GetParamValueFloat("default_music_volume_var"));
 
-			if (m_pConfigurationVariables->IsVariableSet("default_speaks_volume_var"))
-				Audio::SetDefaultSpeaksVolume(m_pConfigurationVariables->GetParamValueFloat("default_speaks_volume_var"));
+			if (m_ConfigurationVariables->IsVariableSet("default_speaks_volume_var"))
+				Audio::SetDefaultSpeaksVolume(m_ConfigurationVariables->GetParamValueFloat("default_speaks_volume_var"));
 		}
 
 		//	Sound is enabled if not overridden.
-		Audio::g_StreamedSoundBuffers->m_Sound = !m_pConfigurationVariables->IsVariableSet("sound") ||
-													m_pConfigurationVariables->GetParamValueBool("sound");
+		Audio::g_StreamedSoundBuffers->m_Sound = !m_ConfigurationVariables->IsVariableSet("sound") ||
+													m_ConfigurationVariables->GetParamValueBool("sound");
 
 		//	NOTE: what is this parameter?
 		Vector3<float> vBackground = Vector3<float>();
-		if (m_pConfigurationVariables->IsVariableSet("background"))
-			m_pConfigurationVariables->GetParamValueVector3("background", vBackground, ',');
+		if (m_ConfigurationVariables->IsVariableSet("background"))
+			m_ConfigurationVariables->GetParamValueVector3("background", vBackground, ',');
 
-		m_vBackgroundSize.x = vBackground.x * (float)0.0039215689;
-		m_vBackgroundSize.y = vBackground.y * (float)0.0039215689;
-		m_vBackgroundSize.z = vBackground.z * (float)0.0039215689;
+		m_vBackgroundSize.x = vBackground.x * (float)(1/255);
+		m_vBackgroundSize.y = vBackground.y * (float)(1/255);
+		m_vBackgroundSize.z = vBackground.z * (float)(1/255);
 
 		//	Override screen size.
-		Vector2<float> vScreensize = Vector2<float>();
-		if (m_pConfigurationVariables->IsVariableSet("screensize"))
-			m_pConfigurationVariables->GetParamValueVector2("screensize", vScreensize, ',');
+		Vector2<int> ScreenSize = Vector2<int>();
+		if (m_ConfigurationVariables->IsVariableSet("screensize"))
+			m_ConfigurationVariables->GetParamValueVector2("screensize", ScreenSize, ',');
 
 		//	Widescreen emulation
-		if (m_pConfigurationVariables->IsVariableSet("widescreen_emulation")) {
-			String sWidescreenType = m_pConfigurationVariables->GetParamValueString("widescreen_emulation");
+		if (m_ConfigurationVariables->IsVariableSet("widescreen_emulation")) {
+			String sWidescreenType = m_ConfigurationVariables->GetParamValueString("widescreen_emulation");
 
 			if (sWidescreenType.Equal("pal")) {
 				Renderer::WideScreen = true;
-				vScreensize.x = 720;
-				vScreensize.y = 576;
+				ScreenSize.x = 720;
+				ScreenSize.y = 576;
 
 				debug("EMULATING Pal-Wide\n");
 			}
 
 			if (sWidescreenType.Equal("ntsc")) {
 				Renderer::WideScreen = true;
-				vScreensize.x = 720;
-				vScreensize.y = 480;
+				ScreenSize.x = 720;
+				ScreenSize.y = 480;
 
 				debug("EMULATING Ntsc-Wide\n");
 			}
 
 			if (sWidescreenType.Equal("hdtv")) {
 				Renderer::WideScreen = true;
-				vScreensize.x = 1280;
-				vScreensize.y = 720;
+				ScreenSize.x = 1280;
+				ScreenSize.y = 720;
 
 				debug("EMULATING HDTV-Wide\n");
 			}
 		}
 
-		if (m_pConfigurationVariables->IsVariableSet("FSAA"))
-			Renderer::FSAA = m_pConfigurationVariables->GetParamValueBool("FSAA");
+		if (m_ConfigurationVariables->IsVariableSet("FSAA"))
+			Renderer::FSAA = m_ConfigurationVariables->GetParamValueBool("FSAA");
 
-		if (m_pConfigurationVariables->IsVariableSet("ratioxy"))
-			Renderer::RatioXY = m_pConfigurationVariables->GetParamValueFloat("ratioxy");
+		if (m_ConfigurationVariables->IsVariableSet("ratioxy"))
+			Renderer::RatioXY = m_ConfigurationVariables->GetParamValueFloat("ratioxy");
 
-		//	NOTE: is this backbuffer size?
-		Vector3<float> vBuff;
-		//void* buff = (void*)malloc(31 * 4);
-		//memset(buff, 0, 31 * 4);
+		Vector3<float> ScreenBuffers[31];
 
-		//	Create renderer, this also creates and initializes Direct3D device.
-		//	TODO: implementation!
-		g_Renderer = new Renderer();
-		g_Renderer->CreateRenderer(&vScreensize, 32, 16, (Script::Fullscreen ? (Renderer::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, &vBuff);
+		for (unsigned int i = 0; i < 31; i++)
+			ScreenBuffers[i];
+
+		ScreenBuffers[11].x = ScreenBuffers[12].x = 2.f;
+
+		g_Renderer = new Renderer(&ScreenSize, 32, 16, (Script::Fullscreen ? (Renderer::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
 
 		//	Set region.
-		Script::Region = "europe";
-
-		//	NOTE: this is set to return 0 (false) always, so maybe get rid of it?
-		if (!(*(int(__cdecl*)())0x420160)())
+		if (!Script::IsRegionEurope())
 			Script::Region.Set("usa");
+		else
+			Script::Region.Set("europe");
 
-		if (m_pConfigurationVariables->IsVariableSet("region"))
-			Script::Region.Set(m_pConfigurationVariables->GetParamValueString("region").m_szString);
+		if (m_ConfigurationVariables->IsVariableSet("region"))
+			Script::Region.Set(m_ConfigurationVariables->GetParamValueString("region").m_szString);
 
 		g_Blocks->SetRegionId(GetRegionId(&Script::Region));
-		debug("Using region: %s\n", Script::Region.m_szString);
+		LogDump::LogA("Using region: %s\n", Script::Region.m_szString);
 
-		if (m_pConfigurationVariables->IsVariableSet("virtual_hud_screensize")) {
-			Vector2<float> vHudSize;
-			m_pConfigurationVariables->GetParamValueVector2("virtual_hud_screensize", vHudSize, ',');
+		if (m_ConfigurationVariables->IsVariableSet("virtual_hud_screensize")) {
+			Vector2<float> VirtualHudSize;
+			m_ConfigurationVariables->GetParamValueVector2("virtual_hud_screensize", VirtualHudSize, ',');
 
-			Renderer::g_ScreenProperties.SetHudScreenSize(vHudSize.x, vHudSize.y, 1.0, 1.0);
+			Renderer::g_ScreenProperties.SetHudScreenSize(VirtualHudSize.x, VirtualHudSize.y, 1.0, 1.0);
 		}
 
-		if (m_pConfigurationVariables->IsVariableSet("screen_safe_area"))
-			Renderer::g_ScreenProperties.SetSafeArea(m_pConfigurationVariables->GetParamValueFloat("screen_safe_area"));
+		if (m_ConfigurationVariables->IsVariableSet("screen_safe_area"))
+			Renderer::g_ScreenProperties.SetSafeArea(m_ConfigurationVariables->GetParamValueFloat("screen_safe_area"));
 
 		//	NOTE: maybe this is 'SetBackBufferSize'?
 		//	TODO: implementation!
@@ -465,23 +467,18 @@ namespace GameConfig
 		Renderer::_A0870C = 0;
 		Renderer::_A0872C = 0;
 
-		if (m_pConfigurationVariables->IsVariableSet("version_name"))
-			Script::VersionName = m_pConfigurationVariables->GetParamValueString("version_name");
+		if (m_ConfigurationVariables->IsVariableSet("version_name"))
+			Script::VersionName.Set(m_ConfigurationVariables->GetParamValueString("version_name").m_szString);
 
-		//	TODO: what is this?
+		//	NOTE: this is unused.
 		Script::_A1B98D = 0;
 
 		//	Initialize baked font.
 		//	TODO: implementation!
-		Font::MakeCharactersMap();
+		Font::MakeCharactersMap((void*)0xA1B698);
+		g_Font = new Font((const void*)0xA1B698);
 
-		//	TODO: implementation!
-		if (!Allocators::Released)
-			if (g_Font = new Font())
-				g_Font->Init();
-
-		//	Load assets.
-		//	TODO: implementation for OpenZip.
+		//	Load NAZ archives into memory.
 		File::ReadZipDirectories(Script::Filesystem.m_szString);
 
 		//	Parse collmat file
@@ -493,50 +490,49 @@ namespace GameConfig
 		Random::Init((int)__rdtsc());
 
 		//	Load screen and progress class.
-		g_LoadScreenInfo = new LoadScreenInfo("");
+		g_LoadScreenInfo = new LoadScreenInfo(NULL);
 		g_Progress = new Progress();
 
-		if (m_pConfigurationVariables->IsVariableSet("show_hud") &&
-			m_pConfigurationVariables->GetParamValueBool("show_hud"))
+		if (m_ConfigurationVariables->IsVariableSet("show_hud") &&
+			m_ConfigurationVariables->GetParamValueBool("show_hud"))
 			Script::ShowHud = true;
 
-		if (m_pConfigurationVariables->IsVariableSet("check_original_asset") &&
-			!m_pConfigurationVariables->GetParamValueBool("check_original_asset"))
+		if (m_ConfigurationVariables->IsVariableSet("check_original_asset") &&
+			!m_ConfigurationVariables->GetParamValueBool("check_original_asset"))
 			Script::CheckOriginalAsset = false;
 
-		if (m_pConfigurationVariables->IsVariableSet("warning_window"))
-			Script::WarningShow = m_pConfigurationVariables->GetParamValueBool("warning_window");
+		if (m_ConfigurationVariables->IsVariableSet("warning_window"))
+			Script::WarningShow = m_ConfigurationVariables->GetParamValueBool("warning_window");
 
-		//	NOTE: Something related to scripts?
+		//	NOTE: this adjusts size for global entities lists.
 		(*(void(__cdecl*)(int, int))0x8C66E0)(8192, 512);
 
-		//	NOTE: Init global entities? Really large function.
-		(*(void(__cdecl*)())0x7A1F60)();
+		Script::LoadScripts();
 
 		//	Since scripts loaded and ready, calculate CRC and remember it.
 		//	TODO: implementation!
-		m_nCRCForScriptsListUnk = (*(int(__cdecl*)())0x873440)();
-		m_nCRCForScriptsGlobalList = (*(int (__cdecl*)())0x871DD0)();
-		m_nCRCForTypesList = (*(int(__cdecl*)())0x862CF0)();
+		m_GlobalPropertiesListCRC = (*(int(__cdecl*)())0x873440)();
+		m_GlobalCommandsListCRC = (*(int (__cdecl*)())0x871DD0)();
+		m_TypesListCRC = (*(int(__cdecl*)())0x862CF0)();
 
 		//	Instantiate scene.
 		bool SceneSet = false;
-		if (m_pConfigurationVariables->IsVariableSet("scenefile")) {
-			const char* sceneFile = m_pConfigurationVariables->GetParamValueString("scenefile").m_szString;
-			debug("Opening scene %s\n", sceneFile);
+		if (m_ConfigurationVariables->IsVariableSet("scenefile")) {
+			const char* sceneFile = m_ConfigurationVariables->GetParamValueString("scenefile").m_szString;
+			LogDump::LogA("Opening scene %s\n", sceneFile);
 
 			SceneSet = OpenScene(sceneFile);
 		}
 
 		if (!SceneSet)
 			if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-				tScene->GetScriptEntity()->CreateNode();
+				((ScriptTypes::ScriptType_Entity*)tScene)->CreateNode();
 
 		//	TODO: implementation! Scene is not initialized here!
-		if (m_pConfigurationVariables->IsVariableSet("fixedframerate"))
+		if (m_ConfigurationVariables->IsVariableSet("fixedframerate"))
 		{
 			tScene->m_FixedFramerate = true;
-			tScene->m_FixedFramerateVal = 1.0f / m_pConfigurationVariables->GetParamValueFloat("fixedframerate");
+			tScene->m_FixedFramerateVal = 1.0f / m_ConfigurationVariables->GetParamValueFloat("fixedframerate");
 		}
 
 		if (!Script::Fullscreen)
@@ -563,8 +559,8 @@ namespace GameConfig
 			}
 		}
 
-		if (m_pConfigurationVariables->IsVariableSet("frame_console_marker"))
-			Script::FrameConsoleMarker = m_pConfigurationVariables->GetParamValueBool("frame_console_marker");
+		if (m_ConfigurationVariables->IsVariableSet("frame_console_marker"))
+			Script::FrameConsoleMarker = m_ConfigurationVariables->GetParamValueBool("frame_console_marker");
 
 		Script::CheckDataSanity = false;
 		Script::CheckDivisionByZero = false;
@@ -578,45 +574,41 @@ namespace GameConfig
 		}
 
 		//	Start editor or game.
-		field_50 = 0;
+		m_ShouldStartGame = false;
 		if (SceneSet)
-			field_50 = 1;
+			m_ShouldStartGame = true;
 
-		if (m_pConfigurationVariables->IsVariableSet("starteditor") &&
-			m_pConfigurationVariables->GetParamValueBool("starteditor"))
-			field_50 = 0;
+		if (m_ConfigurationVariables->IsVariableSet("starteditor") &&
+			m_ConfigurationVariables->GetParamValueBool("starteditor"))
+			m_ShouldStartGame = false;
 
-		if (field_50)
+		if (m_ShouldStartGame)
 			tScene->Start();
 
-		if (m_pConfigurationVariables->IsVariableSet("ps2_play_ctrl") &&
-			m_pConfigurationVariables->GetParamValueBool("ps2_play_ctrl"))
+		if (m_ConfigurationVariables->IsVariableSet("ps2_play_ctrl") &&
+			m_ConfigurationVariables->GetParamValueBool("ps2_play_ctrl"))
 			Script::Ps2PlayCtrl = true;
 
-		if (m_pConfigurationVariables->IsVariableSet("min_fade_dist"))
-			Script::MinFadeDist = m_pConfigurationVariables->GetParamValueFloat("min_fade_dist");
+		m_Initialized = 1;
 
-		if (m_pConfigurationVariables->IsVariableSet("lod_and_fade"))
-			Script::LodAndFade = m_pConfigurationVariables->GetParamValueBool("lod_and_fade");
+		if (m_ConfigurationVariables->IsVariableSet("min_fade_dist"))
+			Script::MinFadeDist = m_ConfigurationVariables->GetParamValueFloat("min_fade_dist");
 
-		if (m_pConfigurationVariables->IsVariableSet("check_dangling_refs"))
-			Script::CheckDanglingRefs = m_pConfigurationVariables->GetParamValueBool("check_dangling_refs");
+		if (m_ConfigurationVariables->IsVariableSet("lod_and_fade"))
+			Script::LodAndFade = m_ConfigurationVariables->GetParamValueBool("lod_and_fade");
 
-		if (m_pConfigurationVariables->IsVariableSet("fix_dangling_refs"))
-			Script::FixDanglingRefs = m_pConfigurationVariables->GetParamValueBool("fix_dangling_refs");
+		if (m_ConfigurationVariables->IsVariableSet("check_dangling_refs"))
+			Script::CheckDanglingRefs = m_ConfigurationVariables->GetParamValueBool("check_dangling_refs");
 
-		//	NOTE: this is unused. Keep it here?
-		//String* _str = (String*)0xA0B4C4;
-		//SetWarningString(_str->m_szString);
+		if (m_ConfigurationVariables->IsVariableSet("fix_dangling_refs"))
+			Script::FixDanglingRefs = m_ConfigurationVariables->GetParamValueBool("fix_dangling_refs");
 
-		if (m_pConfigurationVariables->IsVariableSet("simulate_release_build")) {
-			Script::SimulateReleaseBuild = m_pConfigurationVariables->GetParamValueBool("simulate_release_build");
-			debug("Script::SimulateReleaseBuild == %i\n", Script::SimulateReleaseBuild);
+		if (m_ConfigurationVariables->IsVariableSet("simulate_release_build")) {
+			Script::SimulateReleaseBuild = m_ConfigurationVariables->GetParamValueBool("simulate_release_build");
+			LogDump::LogA("Script::SimulateReleaseBuild == %i\n", Script::SimulateReleaseBuild);
 		}
 
 		g_Window->SetCursorReleased(false);
-
-		m_Initialized = 1;
 
 		if (pProfileVariables)
 			delete pProfileVariables;
@@ -703,9 +695,9 @@ namespace GameConfig
 		m_nGlobalCommandsListCRC = (*(int (*)())0x871DD0)();
 		m_nTypesListCRC = (*(int (*)())0x862CF0)();
 
-		m_nTotalGlobalProperties = (*(int (*)())0x872FB0)();
-		m_nTotalGlobalCommands = (*(int (*)())0x871A20)();
-		m_nTotalTypes = (*(int (*)())0x862B30)();
+		m_TotalGlobalProperties = (*(int (*)())0x872FB0)();
+		m_TotalGlobalCommands = (*(int (*)())0x871A20)();
+		m_TotalTypes = (*(int (*)())0x862B30)();
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -716,9 +708,9 @@ namespace GameConfig
 		//	g_Light->ClearList();
 		g_Window->SetCursorReleased(true);
 
-		if (m_pConfigurationVariables)
+		if (m_ConfigurationVariables)
 			//	m_pConfigurationVariables->Release();	//	@107B0
-			delete m_pConfigurationVariables;
+			delete m_ConfigurationVariables;
 
 		if (g_Blocks)
 			//	g_Blocks->Release();	//	@877250
@@ -743,17 +735,17 @@ namespace GameConfig
 
 		CoUninitialize();
 
-		if (field_54)
-			(*(void (__stdcall*)(int))field_54)(1);
+		if (m_UninitialiseCallback)
+			m_UninitialiseCallback->UninitialiseGameCallback(1);
 
 		m_Initialized = 0;
 
-		debug("Game uninitialized!\n");
+		LogDump::LogA("Game uninitialized!\n");
 	}
 
 	bool Config::OpenScene(const char* scene)
 	{
-		tScene->GetScriptEntity()->CreateNode();
+		((ScriptTypes::ScriptType_Entity*)tScene)->CreateNode();
 		g_Blocks->SetSceneName(scene);
 		tScene->Load(scene);
 		tScene->UpdateLoadedBlocks(0, 0);
@@ -766,8 +758,7 @@ namespace GameConfig
 
 #pragma message(TODO_IMPLEMENTATION)
 	void Config::CreateUnknownMatricies()
-	{
-		
+	{	
 	}
 
 	void Session_Variables::LoadVariablesFile(const char* file, int unk)
@@ -1007,7 +998,6 @@ namespace GameConfig
 	void EnumFaceColMaterials()
 	{
 		if (FaceColList.m_CurrIndex > 0)
-			//	Already loaded.
 			return;
 
 		if (!File::FindFileEverywhere("/FaceColl.mat"))
@@ -1022,11 +1012,11 @@ namespace GameConfig
 
 		while (faceColFile.ReadString(&buffer)) {
 			buffer.ToLowerCase();
-			FaceColList.AddString(&buffer);
+			FaceColList.AddElement(&buffer);
 		}
 	}
 
-	//	NOTE:	what does this do?
+	//	NOTE: what does this do?
 	void _GetDeveloperPath(String* outStr)
 	{
 		String sDevPath = "E:\\Develop\\KapowSystems\\TOD1\\Libs\\Toolbox\\Functions.cpp";
@@ -1049,4 +1039,12 @@ namespace GameConfig
 			outStr->m_nBitMask |= 0x80000000;
 		}
 	}
+
+	void ConfigCallback::UninitialiseGameCallback(int)
+	{
+#ifdef INCLUDE_FIXES
+		LogDump::LogA("Uninitialise game callback called!\n");
+#endif
+	}
+
 }

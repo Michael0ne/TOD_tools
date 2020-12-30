@@ -2,7 +2,8 @@
 
 int Random::Values[] = {};
 int Random::_A0ADC8 = 1;
-int Random::_A3AD6C;
+int Random::SeedSet = false;
+int* Random::_A3AD68 = nullptr;
 
 void Random::Init(int seed)
 {
@@ -14,17 +15,61 @@ void Random::Init(int seed)
 		Values[ind] = ind + 0x6C078965 * (Values[ind - 1] ^ (Values[ind - 1] >> 30));
 
 	_A0ADC8 = 1;
-	_A3AD6C = 1;
+	SeedSet = 1;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 unsigned int Random::Integer(int maxVal)
 {
-	return (*(unsigned int(__cdecl*)(int))0x473960)(maxVal);
+	unsigned int genval = NULL;
+
+	do 
+	{
+		if (!--_A0ADC8)
+			_46C470();
+
+		genval = ((((((((*_A3AD68 >> 11) ^ *_A3AD68) & 0xFF3A58AD) << 7) ^
+			(*_A3AD68 >> 11) ^ *_A3AD68 & 0xFFFFDF8C) << 15) ^
+			((((*_A3AD68 >> 11) ^ *_A3AD68) & 0xFF3A58AD) << 7) ^
+			(*_A3AD68 >> 11) ^ *_A3AD68) >> 18) ^ ((((((*_A3AD68 >> 11) ^ *_A3AD68) & 0xFF3A58AD) << 7) ^
+				(*_A3AD68 >> 11) ^ *_A3AD68 & 0xFFFFDF8C) << 15) ^
+			((((*_A3AD68 >> 11) ^ *_A3AD68) & 0xFF3A58AD) << 7) ^
+			(*_A3AD68 >> 11) ^ *_A3AD68;
+		_A3AD68++;
+	} while (genval >= (maxVal + 1) * (0xFFFFFFFF / (maxVal + 1)));
+
+	return genval % maxVal;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 float Random::Float()
 {
-	return (*(float(__cdecl*)())0x46C640)();
+	if (!--_A0ADC8)
+		_46C470();
+
+	return ((((((((*_A3AD68 >> 11) ^ *_A3AD68) & 0xFF3A58AD) << 7) ^ (*_A3AD68 >> 11) ^ *_A3AD68 & 0xFFFFDF8C) << 15) ^
+		((((*_A3AD68 >> 11) ^ *_A3AD68) & 0xFF3A58AD) << 7) ^ (*_A3AD68 >> 11) ^ *_A3AD68 ^ ((((((((*_A3AD68 >> 11) ^ *_A3AD68) & 0xFF3A58AD) << 7) ^
+			(*_A3AD68 >> 11) ^ *_A3AD68 & 0xFFFFDF8C) << 15) ^ ((((*_A3AD68 >> 11) ^ *_A3AD68) & 0xFF3A58AD) << 7) ^ (*_A3AD68 >> 11) ^ *_A3AD68) >> 18)) * 2.32f);
+}
+
+void Random::_46C470()
+{
+	if (!SeedSet)
+		Init(RANDOM_DEFAULT_SEED);
+
+	int* values = Values;
+	_A0ADC8 = 624;
+	_A3AD68 = Values;
+
+	for (unsigned int i = 227; i != NULL; i--)
+	{
+		*values = values[397] ^ ((values[1] & 1) != NULL ? 0x9908B0DF : NULL) ^ ((*values ^ (values[1] ^ *values) & 0x7FFFFFFE) >> 1);
+		values++;
+	}
+
+	for (unsigned int i = 396; i != NULL; i--)
+	{
+		*values = *(values - 227) ^ ((values[1] & 1) != NULL ? 0x9908B0DF : NULL) ^ ((*values ^ (values[1] ^ *values) & 0x7FFFFFFE) >> 1);
+		values++;
+	}
+
+	*values = *(values - 227) ^ ((Values[0] & 1) != NULL ? 0x9908B0DF : NULL) ^ ((*values ^ (Values[0] ^ *values) & 0x7FFFFFFE) >> 1);
 }

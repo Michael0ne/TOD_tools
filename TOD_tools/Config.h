@@ -19,12 +19,6 @@ namespace GameConfig {
 	#define CONFIG_MENU_RESOURCEID 0
 #endif // INCLUDE_FIXES
 
-	struct Session_Variables_Entry
-	{
-		String	m_sVariableName;
-		String	m_sVariableValue;
-	};
-
 	struct Session_Variables
 	{
 	protected:
@@ -102,33 +96,39 @@ namespace GameConfig {
 		COUNTRY_ASIA
 	};
 
+	struct ConfigCallback
+	{
+	public:
+		virtual void		UninitialiseGameCallback(int);	//	NOTE: not actually in EXE.
+	};
+
 	class Config
 	{
 	private:
-		bool m_Initialized;
-		String m_sGameName;
-		String m_sConfigFilePath;
-		Session_Variables* m_pConfigurationVariables;
-		Session_Variables* m_pSessionVariables;
-		String m_sUnkString_1;
-		String m_sUnkString_2;
-		int field_4C;
-		int field_50;
-		void* field_54;
-		String m_sSceneName;
-		Vector4f m_vBackgroundSize;	//	TODO: better name?
+		bool				m_Initialized;
+		String				m_GameName;
+		String				m_ConfigFilePath;
+		Session_Variables*	m_ConfigurationVariables;
+		Session_Variables*	m_SessionVariables;
+		String				m_sUnkString_1;
+		String				m_sUnkString_2;
+		int					field_4C;
+		bool				m_ShouldStartGame;
+		ConfigCallback*		m_UninitialiseCallback;
+		String				m_SceneName;
+		Vector4f			m_vBackgroundSize;	//	TODO: better name?
 
-		int m_nGlobalPropertiesListCRC;
-		int m_nGlobalCommandsListCRC;
-		int m_nTypesListCRC;
+		int					m_nGlobalPropertiesListCRC;
+		int					m_nGlobalCommandsListCRC;
+		int					m_nTypesListCRC;
 
-		int m_nTotalGlobalProperties;
-		int m_nTotalGlobalCommands;
-		int m_nTotalTypes;
+		int					m_TotalGlobalProperties;
+		int					m_TotalGlobalCommands;
+		int					m_TotalTypes;
 
-		int m_nCRCForScriptsListUnk;
-		int m_nCRCForScriptsGlobalList;
-		int m_nCRCForTypesList;
+		int					m_GlobalPropertiesListCRC;
+		int					m_GlobalCommandsListCRC;
+		int					m_TypesListCRC;
 
 	public:
 		Config();	//	@93CB60
@@ -144,22 +144,22 @@ namespace GameConfig {
 				Allocators::ReleaseMemory(ptr, 0);
 		}
 
-		void Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId);	//	@93D480
-		void InitEntitiesDatabase();	//	@93C950
-		void UninitialiseGame();	//	@93CBC0
-		bool OpenScene(const char* scene);	//	@93CE00
-		void CreateUnknownMatricies();	//	@93D360
+		void				Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId);	//	@93D480
+		void				InitEntitiesDatabase();	//	@93C950
+		void				UninitialiseGame();	//	@93CBC0
+		bool				OpenScene(const char* scene);	//	@93CE00
+		void				CreateUnknownMatricies();	//	@93D360
 	};
 
-	static void SetCountryCode(const char* szCode);	//	@42E530
-	static CountryCodes GetRegionId(String* regionStr);	//	@875450
-	static void EnumMaterialsInCollmat();	//	@87D330
-	static void EnumFaceColMaterials();	//	@87D100
+	static void				SetCountryCode(const char* szCode);	//	@42E530
+	static CountryCodes		GetRegionId(String* regionStr);	//	@875450
+	static void				EnumMaterialsInCollmat();	//	@87D330
+	static void				EnumFaceColMaterials();	//	@87D100
 
-	static void _GetDeveloperPath(String* outStr);	//	@4098D0
+	static void				_GetDeveloperPath(String* outStr);	//	@4098D0
 
-	static List<String>& FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
-	static File& ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8
+	static List<String>&	FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
+	static File&			ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8
 
 	extern Config* g_Config;
 }

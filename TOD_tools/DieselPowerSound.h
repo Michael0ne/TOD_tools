@@ -23,7 +23,7 @@ namespace Audio {
 		ERROR_PROBLEM_RELEASING_INSTANCE = -1
 	};
 
-	const char* DieselPowerErrorStrings[] =
+	static const char* DieselPowerErrorStrings[] =
 	{
 		"Error loading DieselPowerImplementation.dll - file not found.",
 		"DieselPower succesfully loaded, created and initialized.",
