@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include "SceneNode.h"
+#include "SceneSaveLoad.h"
 #include "Builtin.h"
 #include "LogDump.h"
 #include "Performance.h"
@@ -72,7 +72,7 @@ void Scene::Start()
 		TriggerScriptForAllChildren((int)params[0], this, nullptr);
 
 	_896810();
-	tSceneNode->_874940();
+	g_SceneSaveLoad->_874940();
 
 	if (IsRewindBufferInUse)
 	{

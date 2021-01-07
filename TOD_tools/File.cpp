@@ -57,7 +57,7 @@ int File::_vsnprintf(File* _f, const char* _format, ...)
 	return written;
 }
 
-int File::_CheckFormattingSymbol(File* _f, const char* _format, ...)
+int File::_scanf(File* _f, const char* _format, ...)
 {
 	va_list va;
 	va_start(va, _format);
@@ -65,7 +65,7 @@ int File::_CheckFormattingSymbol(File* _f, const char* _format, ...)
 	if (m_ReadFromZip)
 		return (int)_f;	//	FIXME: wtf?
 	else
-		return _f->_CheckFormattingSymbol_A((char*)_format, (int*)&va);	//	FIXME: wtf?
+		return _f->_scanf_impl((char*)_format, (int*)&va);	//	FIXME: wtf?
 }
 
 int File::WriteFormattedVarlistDataToBuffer(char* _buf, va_list args)
@@ -82,10 +82,10 @@ int File::WriteFormattedVarlistDataToBuffer(char* _buf, va_list args)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int File::_CheckFormattingSymbol_A(char* _buf, int* a1)
+int File::_scanf_impl(char* format, int* outArgs)
 {
 	//	NOTE: this checks input string for formatting symbol and does something with it. Why is it here?
-	return (*(int(__thiscall*)(File*, char*, int*))0x42F0A0)(this, _buf, a1);
+	return (*(int(__thiscall*)(File*, const char*, int*))0x42F0A0)(this, format, outArgs);
 }
 
 char File::ReadBlock()

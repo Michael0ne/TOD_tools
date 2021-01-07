@@ -75,6 +75,12 @@ namespace ResType
 	static unsigned int	ResourceAlignment[3];	//	@A3BE1C
 	static List<Base>	ResTypeList = List<Base>(0x19300);	//	@A10F80
 
+	struct ResourceHolder
+	{
+		class Resource* m_Resource;
+		unsigned int	m_Status;	//	NOTE: 1 - loaded, to be loaded; 0 - 
+	};
+
 	//	NOTE: this class is actually inherited from another class, but parent doesn't seem to do anything important, so skipping it now.
 	class Resource
 	{
@@ -84,7 +90,8 @@ namespace ResType
 		int				field_C;
 		int				field_10;
 		int				field_14;
-		int				field_18;
+	public:
+		short			m_ReferenceCount;
 
 	public:
 		virtual			~Resource();	//	@851F90 scalar, actual dtor @8516C0
@@ -170,14 +177,11 @@ namespace ResType
 	protected:
 		int				field_1C;
 		List<int>		m_List_1;
-		List<int>		m_List_2;
-		int				field_40;
-		int				field_44;
-		int				field_48;
-		int				field_4C;
-		int				field_50;
-		int				field_54;
-		int				field_58;
+		List<ModelPivot> m_PivotList;
+		int*			field_40;
+		Vector4f		m_BoundingRadius;
+		int*			field_54;
+		int*			field_58;
 		int				field_5C;
 
 	public:

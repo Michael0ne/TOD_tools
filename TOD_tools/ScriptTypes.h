@@ -2,6 +2,7 @@
 
 #include "Types.h"
 #include "List.h"
+#include "Dictionary.h"
 
 namespace ScriptTypes
 {
@@ -308,14 +309,6 @@ namespace ScriptTypes
 		int field_2C;
 	};
 
-	struct ScriptType_Entity_fld2C
-	{
-		int field_0;
-		int field_4;
-		int m_Priority;
-		int field_C;
-	};
-
 	#define SCRIPT_TYPE_ENTITY_CLASS_SIZE 120
 
 	class ScriptType_Entity : public ScriptType
@@ -324,18 +317,16 @@ namespace ScriptTypes
 		void* (*m_Creator)(AllocatorIndex allocatorIndex);
 	public:
 		ScriptType_Entity* m_Parent;
-		class GlobalNode* m_ParentNode;
+		int* m_Script;
 	protected:
-		ScriptType_Entity_fld2C m_Properties;
-		int field_3C;
-		int field_40;
-		int field_44;
-		int field_48;
-		List<EntityProperties> m_PropertiesList_1;
-		List<EntityProperties> m_PropertiesList_2;
+		//	NOTE: it looks like 2 members below are Map's with key being the name of the script/property, value being index to lists with actual information for script/property.
+		int m_Properties[4];
+		int m_Properties_1[4];
+		List<EntityProperties> m_ScriptsList;
+		List<EntityProperties> m_PropertiesList;
 		int field_6C;
 		int field_70;
-		char field_74;
+		bool	m_HasParent;
 	public:
 		ScriptType_Entity(const char* szEntityName);	//	@86CC00
 		~ScriptType_Entity()
@@ -429,6 +420,37 @@ namespace ScriptTypes
 		{
 			MESSAGE_CLASS_DESTROYED(ScriptType_Dict);
 		}
+	};
+
+	struct BuiltinMember
+	{
+	protected:
+		ScriptType* m_ReturnType;
+		void*		(*m_GetProcPtr)();
+		void		(*m_SetProcPtr)();
+		String		m_MemberProto;
+		String		m_String_1;
+	};
+
+	struct BuiltinHandler
+	{
+	protected:
+		String		m_Prototype;
+		void*		(*m_Handler)(void*);
+		String		m_Name;
+
+	public:
+		inline BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const char* _name);
+	};
+
+	class ScriptType_Builtin : public ScriptType
+	{
+	protected:
+		List<BuiltinHandler>	m_HandlersList;
+		Dictionary<String, BuiltinMember>	m_MembersMap;
+
+		void	RegisterMember(ScriptType* _rettype, const char* _membname, void* (*_getproc)(), void (*_setproc)(int), const char* _membproto, const char* _unk);	//	@486D90
+		void	RegisterHandler(const char* _hsignature, void* (*_hndlr)(void*), const char* _hmsg);	//	@486430
 	};
 
 	static ScriptType_Nothing*			tNOTHING = (ScriptType_Nothing*)0xA3CE94;	//	@A3CE94

@@ -35,11 +35,11 @@ public:
 	Scene_Buffer(int unk1, char unk2, int unk3);	//	@436B00
 };
 
-enum ePlayModes
+enum PlayMode
 {
-	MODE_UNKNOWN = 0,
+	MODE_PLAY = 0,
 	MODE_UNKNOWN_1 = 1,
-	MODE_UNKNOWN_2 = 2,
+	MODE_PAUSE = 2,
 	MODE_UNKNOWN_3 = 3
 };
 
@@ -106,8 +106,7 @@ protected:
 	Node* m_LoadedBlocks[6];
 	int field_1C8;
 	int field_1CC;
-	int field_1D0;
-	int field_1D4;
+	char field_1D0[8];
 	Scene_Buffer* m_SceneBufferArray[31];
 	Scene_Buffer* m_Buffer_1;
 	Scene_Buffer* m_Buffer_2;
@@ -139,6 +138,16 @@ public:
 	void			_896810();	//	@896810
 	void			AllocateRewindBuffer();	//	@894C50
 	void			FreeRewindBuffer(char unk);	//	@894A80
+
+	void* operator new (size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, 0);
+	}
 
 	static void		TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk);	//	@892F10
 };

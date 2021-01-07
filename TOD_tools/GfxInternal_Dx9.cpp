@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "Renderer.h"
 #include "File.h"
+#include "LogDump.h"
 
 GfxInternal_Dx9* g_RendererDx = NULL;
 const D3DMATRIX& GfxInternal_Dx9::g_IdentityMatrix = *(D3DMATRIX*)0xA0AD38;
@@ -28,20 +29,20 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 
 	m_IdentityMatrix = g_IdentityMatrix;
 
-	if (!(m_pDirect3D = Direct3DCreate9(DIRECT3D_VERSION)))
+	if (!(m_Direct3DInterface = Direct3DCreate9(DIRECT3D_VERSION)))
 		IncompatibleMachineParameterError(4, 0);
 
-	m_bSceneBegan = false;
-	m_bDeviceLost = false;
+	m_SceneBegan = false;
+	m_DeviceLost = false;
 	field_1B1[0] = 1;
 	field_1B1[1] = 1;
 	field_1B1[2] = 0;
 	m_ScreenSize = (Vector2<int>*)resolution;
 	field_975C = -1;
-	m_pFramesyncQuery = nullptr;
-	m_bDeviceResetIssued = false;
+	m_FramesyncQuery = nullptr;
+	m_DeviceResetIssued = false;
 
-	if (m_pDirect3D->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &m_DeviceCaps) != D3D_OK)
+	if (m_Direct3DInterface->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &m_DeviceCaps) != D3D_OK)
 		IncompatibleMachineParameterError(3, 0);
 
 	GetDeviceCaps();
@@ -62,7 +63,7 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 	field_304 = 0;
 	field_308 = 0;
 	field_30C = 0;
-	m_pDirect3DDevice9 = 0;
+	m_Direct3DDevice = 0;
 	m_pTexturesArray_2[0] = 0;
 	m_pTexturesArray_2[1] = 0;
 	field_9700 = 0;
@@ -80,8 +81,8 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 	field_9750 = 0;
 	field_9664 = 0;
 	
-	m_nViewportWidth = *(float*)resolution;
-	m_nViewportHeight = *((float*)resolution + 4);
+	m_ViewportWidth = *(float*)resolution;
+	m_ViewportHeight = *((float*)resolution + 4);
 	m_DisplayMode.Width = *(unsigned int*)resolution;
 	m_DisplayMode.Height = *((unsigned int*)resolution + 4);
 
@@ -92,7 +93,11 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 		{800, 600, false, 0, 0},
 		{1024, 768, false, 0, 0},
 		{1280, 1024, false, 0, 0},
+#ifdef INCLUDE_FIXES
+		{1920, 1080, false, 0, 0}
+#else
 		{1600, 1200, false, 0, 0}
+#endif
 	};
 
 	for (int i = 0; i < modesTotal; i++)
@@ -100,13 +105,13 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 
 	//	NOTE: EnumDisplayModes inlined!
 	//	NOTE: Modes are now hard coded, maybe add option to change it?
-	int adapterModesTotal = m_pDirect3D->GetAdapterModeCount(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8);
+	int adapterModesTotal = m_Direct3DInterface->GetAdapterModeCount(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8);
 	int adapterMode = 0;
 	D3DDISPLAYMODE adapterModes;
 
 	for (int adapterIndex = 0; adapterIndex < adapterModesTotal; ++adapterIndex) {
 		memset(&adapterModes, 0, sizeof(adapterModes));
-		m_pDirect3D->EnumAdapterModes(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8, adapterMode, &adapterModes);
+		m_Direct3DInterface->EnumAdapterModes(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8, adapterMode, &adapterModes);
 		unsigned int ind = 0;
 
 		if (m_DisplayModesList.m_CurrIndex > 0) {
@@ -154,8 +159,8 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 	if (m_DisplayMode.Width == 0 || m_DisplayMode.Height) {
 		m_DisplayMode.Width = 800;
 		m_DisplayMode.Height = 600;
-		m_nViewportWidth = 800;
-		m_nViewportHeight = 600;
+		m_ViewportWidth = 800;
+		m_ViewportHeight = 600;
 
 		DisplayModeInfo mode;
 
@@ -176,8 +181,8 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 
 				m_DisplayMode.Width = mode.width;
 				m_DisplayMode.Height = mode.height;
-				m_nViewportWidth = (float)mode.width;
-				m_nViewportHeight = (float)mode.height;
+				m_ViewportWidth = (float)mode.width;
+				m_ViewportHeight = (float)mode.height;
 			}
 		}
 
@@ -224,7 +229,7 @@ void GfxInternal_Dx9::SetupWindowParams(int width, int height)
 	const DisplayModeInfo* mode = IsScreenResolutionAvailable(width, height, true);
 
 	if (mode || (mode = IsScreenResolutionAvailable(640, 480, true)) != 0) {
-		m_bResolutionDetected = true;
+		m_Windowed = true;
 		m_nDisplayModeFormat = (D3DFORMAT)mode->format;	//	D3DFORMAT is just a enum
 		m_DisplayMode.Width = mode->width;
 		m_DisplayMode.Height = mode->height;
@@ -247,11 +252,11 @@ void GfxInternal_Dx9::SetupWindowParams(D3DDISPLAYMODE mode)
 {
 	D3DDISPLAYMODE _mode;
 
-	m_bResolutionDetected = false;
+	m_Windowed = false;
 
 	g_Window->SetWindowResolutionDontMove(mode);
 
-	HRESULT result = m_pDirect3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &_mode);
+	HRESULT result = m_Direct3DInterface->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &_mode);
 	if (result >= 0) {
 		memset(&m_PresentParameters, 0, sizeof(m_PresentParameters));
 
@@ -304,35 +309,35 @@ void GfxInternal_Dx9::RememberResolution()
 
 int GfxInternal_Dx9::GetDeviceCaps()
 {
-	m_bShaderCapabilities.m_bVertexShader11 = m_DeviceCaps.VertexShaderVersion >= 0xFFFE0101;
-	m_bShaderCapabilities.m_bVertexShader20 = m_DeviceCaps.VertexShaderVersion >= 0xFFFE0200;
-	m_bShaderCapabilities.m_bPixelShader13 = m_DeviceCaps.PixelShaderVersion >= 0xFFFF0103;
-	m_bShaderCapabilities.m_bPixelShader20 = m_DeviceCaps.PixelShaderVersion >= 0xFFFF0200;
+	m_ShaderCapabilities.m_VertexShader11 = m_DeviceCaps.VertexShaderVersion >= 0xFFFE0101;
+	m_ShaderCapabilities.m_VertexShader20 = m_DeviceCaps.VertexShaderVersion >= 0xFFFE0200;
+	m_ShaderCapabilities.m_PixelShader13 = m_DeviceCaps.PixelShaderVersion >= 0xFFFF0103;
+	m_ShaderCapabilities.m_PixelShader20 = m_DeviceCaps.PixelShaderVersion >= 0xFFFF0200;
 
-	m_nMaxVertexShaderConst = m_DeviceCaps.MaxVertexShaderConst;
+	m_MaxVertexShaderConst = m_DeviceCaps.MaxVertexShaderConst;
 
-	m_bMipmapLodBias = (m_DeviceCaps.RasterCaps >> 13) & 1;
-	m_bTextureRequiresPow2 = (m_DeviceCaps.TextureCaps >> 1) & 1;
-	m_bAnisotropy = (m_DeviceCaps.RasterCaps >> 17) & 1;
-	m_bMinAnisotropy = (m_DeviceCaps.TextureFilterCaps >> 10) & 1;
-	m_nMagAnisotropy = (m_DeviceCaps.TextureFilterCaps >> 26) & 1;
-	m_nMaxAnisotropy = m_DeviceCaps.MaxAnisotropy;
-	m_bBlendOP = (m_DeviceCaps.PrimitiveMiscCaps >> 1) & 1;
-	m_bFogAndSpecularAlpha = (char)(m_DeviceCaps.PrimitiveMiscCaps) & 1;
-	m_bSeparateAlphaBlend = (char)(m_DeviceCaps.RasterCaps) & 1;
-	m_bRangeFog = (m_DeviceCaps.PrimitiveMiscCaps >> 17) & 1;
+	m_MipmapLodBias = (m_DeviceCaps.RasterCaps >> 13) & 1;
+	m_TextureRequiresPow2 = (m_DeviceCaps.TextureCaps >> 1) & 1;
+	m_Anisotropy = (m_DeviceCaps.RasterCaps >> 17) & 1;
+	m_MinAnisotropy = (m_DeviceCaps.TextureFilterCaps >> 10) & 1;
+	m_MagAnisotropy = (m_DeviceCaps.TextureFilterCaps >> 26) & 1;
+	m_MaxAnisotropy = m_DeviceCaps.MaxAnisotropy;
+	m_BlendOP = (m_DeviceCaps.PrimitiveMiscCaps >> 1) & 1;
+	m_FogAndSpecularAlpha = (char)(m_DeviceCaps.PrimitiveMiscCaps) & 1;
+	m_SeparateAlphaBlend = (char)(m_DeviceCaps.RasterCaps) & 1;
+	m_RangeFog = (m_DeviceCaps.PrimitiveMiscCaps >> 17) & 1;
 
-	debug("CAPS: VS11=%i, VS20=%i, PS13=%i, PS20=%i\n", m_bShaderCapabilities.m_bVertexShader11, m_bShaderCapabilities.m_bVertexShader20, m_bShaderCapabilities.m_bPixelShader13, m_bShaderCapabilities.m_bPixelShader20);
-	debug("CAPS: Max vertex shader constants = %i\n", m_nMaxVertexShaderConst);
-	debug("CAPS: Mipmap LOD bias = %i\n", m_bMipmapLodBias);
-	debug("CAPS: Texture requires pow2 = %i\n", m_bTextureRequiresPow2);
-	debug("CAPS: Anisotropic filtering=%i (min=%i, mag=%i), Max anisotropy=%i\n", m_bAnisotropy, m_bMinAnisotropy, m_nMagAnisotropy, m_nMaxAnisotropy);
-	debug("CAPS: BlendOP = %i\n", m_bBlendOP);
-	debug("CAPS: FogAndSpecularAlpha = %i\n", m_bFogAndSpecularAlpha);
-	debug("CAPS: RangeFog = %i\n", m_bSeparateAlphaBlend);;
-	debug("CAPS: SeparateAlphaBlend = %i\n", m_bRangeFog);
+	LogDump::LogA("CAPS: VS11=%i, VS20=%i, PS13=%i, PS20=%i\n", m_ShaderCapabilities.m_VertexShader11, m_ShaderCapabilities.m_VertexShader20, m_ShaderCapabilities.m_PixelShader13, m_ShaderCapabilities.m_PixelShader20);
+	LogDump::LogA("CAPS: Max vertex shader constants = %i\n", m_MaxVertexShaderConst);
+	LogDump::LogA("CAPS: Mipmap LOD bias = %i\n", m_MipmapLodBias);
+	LogDump::LogA("CAPS: Texture requires pow2 = %i\n", m_TextureRequiresPow2);
+	LogDump::LogA("CAPS: Anisotropic filtering=%i (min=%i, mag=%i), Max anisotropy=%i\n", m_Anisotropy, m_MinAnisotropy, m_MagAnisotropy, m_MaxAnisotropy);
+	LogDump::LogA("CAPS: BlendOP = %i\n", m_BlendOP);
+	LogDump::LogA("CAPS: FogAndSpecularAlpha = %i\n", m_FogAndSpecularAlpha);
+	LogDump::LogA("CAPS: RangeFog = %i\n", m_SeparateAlphaBlend);;
+	LogDump::LogA("CAPS: SeparateAlphaBlend = %i\n", m_RangeFog);
 
-	return m_pDirect3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, NULL, D3DRTYPE_TEXTURE, D3DFMT_DXT1);
+	return m_Direct3DInterface->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, NULL, D3DRTYPE_TEXTURE, D3DFMT_DXT1);
 }
 
 void GfxInternal_Dx9::CreateRenderDevice()
@@ -344,16 +349,16 @@ void GfxInternal_Dx9::CreateRenderDevice()
 	m_PresentParameters.BackBufferCount = 1;
 	m_PresentParameters.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
-	if (m_bResolutionDetected)
+	if (m_Windowed)
 		m_PresentParameters.PresentationInterval = field_1B1[1] != 0 ? 1 : 0x80000000;
 	else{
 		m_PresentParameters.PresentationInterval = 0x80000000;
 		field_1B1[1] = 0;
 	}
 
-	if (m_pDirect3DDevice9) {
-		m_pDirect3DDevice9->Release();
-		m_pDirect3DDevice9 = nullptr;
+	if (m_Direct3DDevice) {
+		m_Direct3DDevice->Release();
+		m_Direct3DDevice = nullptr;
 	}
 
 	if (m_DeviceCaps.DevCaps & 0x10000) {
@@ -364,13 +369,13 @@ void GfxInternal_Dx9::CreateRenderDevice()
 		behaviourFlags = 32;
 	}
 
-	m_pDirect3D->CreateDevice(
+	m_Direct3DInterface->CreateDevice(
 		D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
 		g_Window->m_hWindow,
 		behaviourFlags,
 		&m_PresentParameters,
-		&m_pDirect3DDevice9);
+		&m_Direct3DDevice);
 
 	field_1B1[0] = 1;
 	
@@ -379,9 +384,9 @@ void GfxInternal_Dx9::CreateRenderDevice()
 	//	::450DB0()
 
 	if (g_Renderer->WideScreen)
-		g_Renderer->g_ScreenProperties.SetWindowProperties(m_nViewportWidth, m_nViewportHeight, (float)((m_nViewportWidth * 0.0625) / (m_nViewportHeight * 0.1111)), 1.0f);
+		g_ScreenProperties.SetWindowProperties(m_ViewportWidth, m_ViewportHeight, (float)((m_ViewportWidth * 0.0625) / (m_ViewportHeight * 0.1111)), 1.0f);
 	else
-		g_Renderer->g_ScreenProperties.SetWindowProperties(m_nViewportWidth, m_nViewportHeight, m_fAspectRatio, 1.0f);
+		g_ScreenProperties.SetWindowProperties(m_ViewportWidth, m_ViewportHeight, m_fAspectRatio, 1.0f);
 }
 
 void GfxInternal_Dx9::SetupProjectionMatrix(float unk1, float aspectratio, float unk3, float farPlane)
@@ -397,9 +402,9 @@ void GfxInternal_Dx9::SetupProjectionMatrix(float unk1, float aspectratio, float
 	if (Renderer::WideScreen)
 		TransformProjection(m_ProjectionMatrix, fov, 1.7777778, nearPlane, farPlane);
 	else
-		TransformProjection(m_ProjectionMatrix, fov, (m_nViewportWidth / m_nViewportHeight) / aspectratio, nearPlane, farPlane);
+		TransformProjection(m_ProjectionMatrix, fov, (m_ViewportWidth / m_ViewportHeight) / aspectratio, nearPlane, farPlane);
 
-	m_pDirect3DDevice9->SetTransform(D3DTRANSFORMSTATETYPE::D3DTS_PROJECTION, &m_ProjectionMatrix);
+	m_Direct3DDevice->SetTransform(D3DTRANSFORMSTATETYPE::D3DTS_PROJECTION, &m_ProjectionMatrix);
 }
 
 void GfxInternal_Dx9::TransformProjection(D3DMATRIX& projMatrix, double fov, double aspectratio, double nearplane, double farplane)
@@ -443,11 +448,12 @@ void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath
 		File::ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
 
 		if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) &&
-			GfxInternal_Dx9::_CreateD3DTextureFromFile(m_pDirect3DDevice9, (LPCWSTR)texturePath, m_pTexturesArray) < 0)
+			GfxInternal_Dx9::_CreateD3DTextureFromFile(m_Direct3DDevice, (LPCWSTR)texturePath, m_pTexturesArray) < 0)
 			*m_pTexturesArray = nullptr;
 	}
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 HRESULT CALLBACK GfxInternal_Dx9::_CreateD3DTextureFromFile(IDirect3DDevice9* d3ddev, LPCWSTR texturePath, IDirect3DTexture9** outTexture)
 {
 	return (*(HRESULT(CALLBACK*)(IDirect3DDevice9*, LPCWSTR, IDirect3DTexture9**))0x964E47)(d3ddev, texturePath, outTexture);

@@ -78,9 +78,9 @@ public:
 	virtual File*	scalar_destructor(bool) { return nullptr; };
 	virtual bool	WriteBuffers();	//	@417D20
 	virtual int		_vsnprintf(File*, const char* _format, ...);	//	@42EFC0
-	virtual int		_CheckFormattingSymbol(File*, const char* _format, ...);	//	@417960
+	virtual int		_scanf(File*, const char* _format, ...);	//	@417960
 	virtual int		WriteFormattedVarlistDataToBuffer(char* _buf, va_list args);	//	@42F040
-	virtual int		_CheckFormattingSymbol_A(char* _buf, int* a1);	//	@42F0A0
+	virtual int		_scanf_impl(char* format, int* outArgs);	//	@42F0A0
 	virtual char	ReadBlock();	//	@417980
 	virtual int		ReadBlockAndGetPosition();	//	@419BD0
 	virtual char	_WriteBufferBlockAndInsertNewLine(char _newlinesym);	//	@419BF0	//	NOTE: this is a thunk function.

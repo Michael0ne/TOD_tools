@@ -399,4 +399,22 @@ namespace ScriptTypes
 		m_Name = name;
 		m_Type = stype;
 	}
+
+	#pragma message(TODO_IMPLEMENTATION)
+	void ScriptType_Builtin::RegisterMember(ScriptType* _rettype, const char* _membname, void* (*_getproc)(), void (*_setproc)(int), const char* _membproto, const char* _unk)
+	{
+	}
+
+	void ScriptType_Builtin::RegisterHandler(const char* _hsignature, void* (*_hndlr)(void*), const char* _hmsg)
+	{
+		BuiltinHandler _hndlrtmp(_hsignature, _hndlr, _hmsg);
+		m_HandlersList.AddElement(&_hndlrtmp);
+	}
+
+	BuiltinHandler::BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const char* _name)
+	{
+		m_Prototype = _prot;
+		m_Handler = _hndlr;
+		m_Name = _name;
+	}
 }

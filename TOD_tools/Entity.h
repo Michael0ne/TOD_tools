@@ -4,25 +4,18 @@
 
 #define ENTITY_CLASS_SIZE 36
 
-struct Entity_fld20
-{
-	int				field_0;
-	ScriptTypes::ScriptType_Entity* m_ScriptEntity;
-};
-
 class Entity
 {
 	friend class Position;
 protected:
 	ScriptTypes::ScriptType_Entity* m_ScriptEntity;
-	int				field_8;
-	char*			m_FragmentPath;
-	short			field_10;
+	unsigned char	field_8[10];
 	short			m_Order;
+	//	NOTE: m_Id's highest bit contains block number associated with this entity (0-6).
 	int				m_Id;		//	NOTE: actual id is m_Id >> 8 - lower 3 bytes.
 	int*			field_18;
 	int				field_1C;
-	Entity_fld20*	field_20;
+	int*			field_20;
 
 	unsigned char	SaveScriptDataToFile_Impl(ScriptTypes::ScriptType_Entity*, int, int, const char*);	//	@86B650
 	unsigned char	LoadScriptDataFromFile_Impl(ScriptTypes::ScriptType_Entity*, int, int);	//	@86B8B0
@@ -33,9 +26,19 @@ public:
 
 	Entity();	//	@86A1D0
 
-	int				GetId();	//	@489770
+	void* operator new (size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, 0);
+	}
 
-	int				GetScriptPriority();	//	@86C100
+	int				GetId() const;	//	@489770
+
+	int				GetScriptPriority() const;	//	@86C100
 	void			SetScriptPriority();	//	@4A0C40
 
 	void			SaveScriptDataToFile(int* params);	//	@86BBC0

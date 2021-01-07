@@ -41,12 +41,12 @@ namespace ResType
 
 	void Resource::SetUnkFlag(unsigned char a1, int, int)
 	{
-		field_18 ^= (field_18 ^ (a1 << 18)) & 0x40000;
+		m_ReferenceCount ^= (m_ReferenceCount ^ (a1 << 18)) & 0x40000;
 	}
 
 	int Resource::GetUnkFlag()
 	{
-		return (field_18 >> 18) & 1;
+		return (m_ReferenceCount >> 18) & 1;
 	}
 
 	void Resource::GetResourcesDir(String& outDir, PlatformId platformId)
@@ -56,7 +56,7 @@ namespace ResType
 
 	int Resource::stub9()
 	{
-		return (((field_18 >> 19) & 1) != NULL) + 1;
+		return (((m_ReferenceCount >> 19) & 1) != NULL) + 1;
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -83,13 +83,13 @@ namespace ResType
 
 		field_10 = NULL;
 		field_14 = NULL;
-		field_18 = NULL;
+		m_ReferenceCount = NULL;
 
 		//	NOTE: field_4 is somehow initialized here. Haven't figured it out yet...
 
 		m_GlobalResourceId = a1 ? NULL : g_Blocks->InsertTypeListItem(this);
 
-		field_18 = field_18 & 0xFFF1FFFF | 0x10000;
+		m_ReferenceCount = m_ReferenceCount & 0xFFF1FFFF | 0x10000;
 	}
 
 	Resource::Resource()
@@ -123,7 +123,7 @@ namespace ResType
 
 	void Resource::_8513E0(unsigned char a1)
 	{
-		field_18 ^= (field_18 ^ (a1 << 19)) & 0x80000;
+		m_ReferenceCount ^= (m_ReferenceCount ^ (a1 << 19)) & 0x80000;
 	}
 
 	void* Texture::GetInstancePtr() const

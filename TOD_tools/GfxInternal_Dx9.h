@@ -3,8 +3,8 @@
 #include "Types.h"
 #include "List.h"
 #include "MemoryAllocators.h"
-
 #include "GfxInternal_Dx9_Texture.h"
+#include <d3dx9math.h>
 
 #define GFXINTERNALDX9_CLASS_SIZE 38816
 #define GFXINTERNALDX9_VERTEX_CLASS_SIZE 40
@@ -81,36 +81,36 @@ class GfxInternal_Dx9
 {
 friend class Renderer;
 protected:
-	IDirect3DDevice9* m_pDirect3DDevice9;
-	IDirect3DQuery9* m_pFramesyncQuery;
-	char m_bDeviceResetIssued;
+	IDirect3DDevice9* m_Direct3DDevice;
+	IDirect3DQuery9* m_FramesyncQuery;
+	char m_DeviceResetIssued;
 	char field_9[3];
 	int field_C;	//	This is increased with each DrawIndexedPrimitive call.
 	int m_TotalPrimitivesDrawn;
 	int m_TotalVerticiesDrawn;
 	List<DisplayModeInfo> m_DisplayModesList;
 	union {
-		unsigned char m_bVertexShader11 : 1;
-		unsigned char m_bVertexShader20 : 1;
-		unsigned char m_bPixelShader13 : 1;
-		unsigned char m_bPixelShader20 : 1;
-	} m_bShaderCapabilities;
-	int m_nMaxVertexShaderConst;
-	unsigned char m_bTextureRequiresPow2;
-	unsigned char m_bMipmapLodBias;
-	unsigned char m_bAnisotropy;
-	unsigned char m_bMinAnisotropy;
-	int m_nMagAnisotropy;
-	int m_nMaxAnisotropy;
-	unsigned char m_bBlendOP;
-	unsigned char m_bFogAndSpecularAlpha;
-	unsigned char m_bRangeFog;
-	unsigned char m_bSeparateAlphaBlend;
-	IDirect3D9* m_pDirect3D;
+		unsigned char m_VertexShader11 : 1;
+		unsigned char m_VertexShader20 : 1;
+		unsigned char m_PixelShader13 : 1;
+		unsigned char m_PixelShader20 : 1;
+	} m_ShaderCapabilities;
+	int m_MaxVertexShaderConst;
+	unsigned char m_TextureRequiresPow2;
+	unsigned char m_MipmapLodBias;
+	unsigned char m_Anisotropy;
+	unsigned char m_MinAnisotropy;
+	int m_MagAnisotropy;
+	int m_MaxAnisotropy;
+	unsigned char m_BlendOP;
+	unsigned char m_FogAndSpecularAlpha;
+	unsigned char m_RangeFog;
+	unsigned char m_SeparateAlphaBlend;
+	IDirect3D9* m_Direct3DInterface;
 	D3DCAPS9 m_DeviceCaps;
 	Vector2<int>* m_ScreenSize;
 	D3DPRESENT_PARAMETERS m_PresentParameters;
-	char m_bDeviceLost;
+	char m_DeviceLost;
 	char field_1B1[3];
 	int field_1B4;
 	int field_1B8;
@@ -195,15 +195,15 @@ protected:
 	int field_304;
 	int field_308;
 	int field_30C;
-	byte m_bResolutionDetected;
-	byte m_bSceneBegan;
+	bool m_Windowed;
+	bool m_SceneBegan;
 	byte field_30F;
 	byte field_310;
 	D3DFORMAT m_nDisplayModeFormat;
-	int m_ViewportWidth_1;
+	int m_ViewportWidth_1;	//	NOTE: backbuffer dimensions?
 	int m_ViewportHeight_1;
-	float m_nViewportWidth;
-	float m_nViewportHeight;
+	float m_ViewportWidth;
+	float m_ViewportHeight;
 	D3DDISPLAYMODE m_DisplayMode;
 	int field_338;
 	int field_33C;
@@ -5468,22 +5468,7 @@ protected:
 	D3DMATRIX m_ViewMatrix;
 	D3DMATRIX m_IdentityMatrix;
 	D3DMATRIX m_ModelMatrix;
-	int field_5664;
-	int field_5668;
-	int field_566C;
-	int field_5670;
-	int field_5674;
-	int field_5678;
-	int field_567C;
-	int field_5680;
-	int field_5684;
-	int field_5688;
-	int field_568C;
-	int field_5690;
-	int field_5694;
-	int field_5698;
-	int field_569C;
-	int field_56A0;
+	D3DMATRIX m_BoneMatrix;	//	NOTE: this is an array of D3DMATRIX 'm_BoneMatrix', referenced @44F640.
 	int field_56A4;
 	int field_56A8;
 	int field_56AC;
@@ -9594,7 +9579,7 @@ protected:
 	int m_EnvironmentMap;
 	int m_FVF;
 	IDirect3DVertexDeclaration9* m_Direct3DVertexDeclaration;
-	int field_96CC;
+	Vector4f* m_CameraPos_1;
 	int m_nRenderStateRop2Type;
 	float m_FogStart;
 	float m_FogEnd;
@@ -9660,7 +9645,7 @@ public:
 	void	TransformProjection(D3DMATRIX& projMatrix, double fov, double aspectratio, double nearplane, double farplane);	//	@9676B4
 	void	LoadDDSTexture(unsigned int index, const char* texturePath);	//	@44D920
 
-	inline bool IsResolutionDetected() { return m_bResolutionDetected; };
+	inline bool IsResolutionDetected() { return m_Windowed; };
 
 	static Map<int, int>& g_UnkMap_1;
 	static Map<int, int>& g_UnkMap_2;

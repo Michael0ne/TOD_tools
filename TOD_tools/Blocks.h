@@ -98,9 +98,9 @@ protected:
 	int				field_108;
 	Allocator*		field_10C;
 	List<int>		m_UnkList_1;
-	List<int>		m_UnkList_2;
+	List<int>		m_UnkList_2[7];
 public:
-	List<ResType::Resource> m_ResourceTypesList[7];
+	List<ResType::Resource> m_ResourceTypesList;
 protected:
 	List<String>	m_SceneNames;
 	int				field_1B0[6];
@@ -137,7 +137,10 @@ public:
 	AllocatorIndex	GetAllocatorType() const;	//	@875360
 	int				InsertTypeListItem(void* res);	//	@877A90
 	void			GetInternalFileName(String& outName, const char* str);	//	@8773A0
-	const char*		GetResourcePath(const char* path);	//	@875770
+	void			GetResourcePath(String& outStr, const char* path) const;	//	@875770
+	void			IncreaseResourceReferenceCount(ResType::Resource*);	//	@875320
+	void			DecreaseResourceReferenceCount(ResType::Resource*);	//	@875330
+	const char*		GetCurrentSceneName() const;
 
 	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0
 

@@ -149,8 +149,7 @@ Node::Node(unsigned char allocationBitmask)
 	MESSAGE_CLASS_CREATED(Node);
 
 	m_Flags = m_Flags & 0xC000F000 | 0x40000000;
-	field_2C = 0;
-	field_10 = 0;
+	m_GlobalIdInSceneList = NULL;
 	m_QuadTree = nullptr;
 	m_NextSibling = nullptr;
 	m_CollisionIgnoreList = nullptr;
@@ -176,7 +175,7 @@ Node::Node(unsigned char allocationBitmask)
 	else
 		m_Flags = m_Flags & 0x7FFFFFFF;
 
-	field_2C = field_2C | 0xFFFFFFFF;
+	m_GlobalIdInSceneList = m_GlobalIdInSceneList | 0xFFFFFFFF;
 	m_Flags = m_Flags | 0xF000;
 }
 
@@ -185,8 +184,7 @@ Node::Node()
 	MESSAGE_CLASS_CREATED(Node);
 
 	m_Flags = NULL & 0xC000F000 | 0x40000000;
-	field_2C = 0;
-	field_10 = 0;
+	m_GlobalIdInSceneList = NULL;
 	m_QuadTree = nullptr;
 	m_NextSibling = nullptr;
 	m_CollisionIgnoreList = nullptr;
@@ -201,7 +199,7 @@ Node::Node()
 
 	m_Flags = m_Flags & 0x7FFFFFFF;
 
-	field_2C = field_2C | 0xFFFFFFFF;
+	m_GlobalIdInSceneList = m_GlobalIdInSceneList | 0xFFFFFFFF;
 	m_Flags = m_Flags | 0xF000;
 }
 

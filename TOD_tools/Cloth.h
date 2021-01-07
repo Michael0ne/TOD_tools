@@ -8,7 +8,7 @@ class Cloth : public Node
 {
 protected:
 	Vector4f m_BoundingRadius;
-	int field_60;
+	class Scene_Buffer* m_SceneBuffer;
 	int* m_ResourceInfo;
 	int field_68;
 	int* field_6C;
@@ -26,6 +26,16 @@ protected:
 
 public:
 	Cloth();	//	@92A7E0
+
+	void* operator new (size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, 0);
+	}
 };
 
 static_assert(sizeof(Cloth) == CLOTH_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Cloth));

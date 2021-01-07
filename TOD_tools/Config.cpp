@@ -3,7 +3,7 @@
 #include "Blocks.h"
 #include "ScriptTypes.h"
 #include "Scratchpad.h"
-#include "SceneNode.h"
+#include "SceneSaveLoad.h"
 #include "Light.h"
 #include "Window.h"
 #include "InputMouse.h"
@@ -92,7 +92,7 @@ namespace GameConfig
 		//	Try and look for configuration variables file.
 		//	TODO: CreateBuffer implementation!
 		if (File::FindFileEverywhere(m_ConfigFilePath.m_szString)) {
-			debug("Initialising engine with '%s'\n", m_ConfigFilePath.m_szString);
+			LogDump::LogA("Initialising engine with '%s'\n", m_ConfigFilePath.m_szString);
 
 			m_ConfigurationVariables = new Session_Variables(m_ConfigFilePath.m_szString, 1);;
 		}else
@@ -127,7 +127,7 @@ namespace GameConfig
 		g_Scratchpad = new Scratchpad();
 
 		//	Init SceneNode (contains rewind buffer).
-		tSceneNode = new SceneNode();
+		g_SceneSaveLoad = new SceneSaveLoad();
 
 		//	Init resources types.
 		ResType::Texture::CreateInstance();
@@ -191,19 +191,26 @@ namespace GameConfig
 		}
 
 		//	If we have 'profile.txt' available, check directory mappings and other stuff.
-		//	TODO: implementation!
 		if (pProfileVariables) {
-			char szDirectorymapping[24];
+			char szDirectorymapping[22];
 			int index = 0;
 
 			memset(&szDirectorymapping, 0, sizeof(szDirectorymapping));
 
-			sprintf(szDirectorymapping, "directorymapping%d", index);
+			sprintf(szDirectorymapping, "directorymapping%d", index++);
 
 			while (pProfileVariables->IsVariableSet(szDirectorymapping)) {
 				String dirmapping = pProfileVariables->GetParamValueString(szDirectorymapping);
 
-				//AddDirectoryMappingsListEntry(dirmapping);
+				if (strchr(dirmapping.m_szString, '>') != nullptr)
+				{
+					char direntry[128] = {};
+					strncpy_s(direntry, sizeof(direntry), dirmapping.m_szString, strchr(dirmapping.m_szString, '>') - dirmapping.m_szString);
+
+					File::AddDirectoryMappingsListEntry(direntry, strchr(dirmapping.m_szString, '>') + 1);
+				}
+
+				sprintf(szDirectorymapping, "directorymapping%d", index++);
 			}
 		}
 
@@ -253,7 +260,6 @@ namespace GameConfig
 		if (Utils::IsFileAvailable("/uk_sounds.zip") || Utils::IsFileAvailable("/uk_sounds.naz"))
 			Script::LanguageStringsOffset = 0;
 
-		//	TODO: implementation for SetCountryCode!
 		if (m_ConfigurationVariables->IsVariableSet("language_mode"))
 			SetCountryCode(m_ConfigurationVariables->GetParamValueString("language_mode").m_szString);
 
@@ -304,7 +310,6 @@ namespace GameConfig
 			Utils::CreateDirectoriesRecursive(szHarddisk);
 			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath.Set(szHarddisk);
 
-			//	TODO: implementation for memorycards class methods!
 			if (!SaveSlots[SAVE_SLOT_8]->IsFormatted())
 				SaveSlots[SAVE_SLOT_8]->FormatCard();
 		}else{
@@ -401,7 +406,7 @@ namespace GameConfig
 				ScreenSize.x = 720;
 				ScreenSize.y = 576;
 
-				debug("EMULATING Pal-Wide\n");
+				LogDump::LogA("EMULATING Pal-Wide\n");
 			}
 
 			if (sWidescreenType.Equal("ntsc")) {
@@ -409,7 +414,7 @@ namespace GameConfig
 				ScreenSize.x = 720;
 				ScreenSize.y = 480;
 
-				debug("EMULATING Ntsc-Wide\n");
+				LogDump::LogA("EMULATING Ntsc-Wide\n");
 			}
 
 			if (sWidescreenType.Equal("hdtv")) {
@@ -417,7 +422,7 @@ namespace GameConfig
 				ScreenSize.x = 1280;
 				ScreenSize.y = 720;
 
-				debug("EMULATING HDTV-Wide\n");
+				LogDump::LogA("EMULATING HDTV-Wide\n");
 			}
 		}
 
@@ -452,20 +457,18 @@ namespace GameConfig
 			Vector2<float> VirtualHudSize;
 			m_ConfigurationVariables->GetParamValueVector2("virtual_hud_screensize", VirtualHudSize, ',');
 
-			Renderer::g_ScreenProperties.SetHudScreenSize(VirtualHudSize.x, VirtualHudSize.y, 1.0, 1.0);
+			g_ScreenProperties.SetHudScreenSize(VirtualHudSize.x, VirtualHudSize.y, 1.0, 1.0);
 		}
 
 		if (m_ConfigurationVariables->IsVariableSet("screen_safe_area"))
-			Renderer::g_ScreenProperties.SetSafeArea(m_ConfigurationVariables->GetParamValueFloat("screen_safe_area"));
+			g_ScreenProperties.SetSafeArea(m_ConfigurationVariables->GetParamValueFloat("screen_safe_area"));
 
-		//	NOTE: maybe this is 'SetBackBufferSize'?
-		//	TODO: implementation!
-		g_Renderer->_41FDF0(&m_vBackgroundSize, -1);
+		g_Renderer->SetClearColorForBufferIndex(*((ColorRGB*)&m_vBackgroundSize), -1);
 
 		//	TODO: what is this?
-		Renderer::_A08704 = 0;
-		Renderer::_A0870C = 0;
-		Renderer::_A0872C = 0;
+		Renderer::_A08704[0].field_0 = 0;
+		Renderer::_A08704[1].field_0 = 0;
+		Renderer::_A08704[5].field_0 = 0;
 
 		if (m_ConfigurationVariables->IsVariableSet("version_name"))
 			Script::VersionName.Set(m_ConfigurationVariables->GetParamValueString("version_name").m_szString);

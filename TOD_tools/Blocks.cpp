@@ -7,14 +7,50 @@ const char* Blocks::BlockTypeExtension[] = {
 	".", "map", "submap", "mission", "cutscene", "playerdata", "main"
 };
 
-#pragma message(TODO_IMPLEMENTATION)
-const char* Blocks::GetResourcePath(const char* path)
+void Blocks::GetResourcePath(String& outStr, const char* path) const
 {
-	if (!path || !*path)
-		return NULL;
+	if (strstr(path, "/data") == nullptr)
+	{
+		if (strstr(path, "data/") == nullptr)
+		{
+			if (*path == '/')
+			{
+				outStr = "/data";
+				outStr.Append(path);
 
-	char buf[1024];
-	strcpy(buf, m_SceneNames.m_CurrIndex ? m_SceneNames.m_Elements[m_SceneNames.m_CurrIndex]->m_szString : NULL);
+				return;
+			}
+			else
+			{
+				outStr = GetCurrentSceneName();
+				outStr.Append(path);
+
+				return;
+			}
+		}
+		else
+		{
+			outStr = "data/";
+			outStr.Append(path);
+
+			return;
+		}
+	}
+}
+
+void Blocks::IncreaseResourceReferenceCount(ResType::Resource* _res)
+{
+	++_res->m_ReferenceCount;
+}
+
+void Blocks::DecreaseResourceReferenceCount(ResType::Resource* _res)
+{
+	--_res->m_ReferenceCount;
+}
+
+const char* Blocks::GetCurrentSceneName() const
+{
+	return m_SceneNames.m_CurrIndex ? m_SceneNames.m_Elements[m_SceneNames.m_CurrIndex]->m_szString : nullptr;
 }
 
 AllocatorIndex Blocks::GetAllocatorType() const
@@ -32,21 +68,21 @@ int Blocks::InsertTypeListItem(void* res)
 {
 	field_0 = 1;
 
-	if (m_ResourceTypesList[6].m_CurrIndex <= 1)
+	if (m_ResourceTypesList.m_CurrIndex <= 1)
 	{
-		unsigned int _ind = m_ResourceTypesList[6].m_CurrIndex;
+		unsigned int _ind = m_ResourceTypesList.m_CurrIndex;
 		AddTypesListItemAtPos((ResType::Resource*)res, _ind);
 
 		return _ind;
 	}
 
 	unsigned int ind = 0;
-	for (unsigned int i = 1; i < m_ResourceTypesList[6].m_CurrIndex; i++)
-		if (!m_ResourceTypesList[6].m_Elements[i])
+	for (unsigned int i = 1; i < m_ResourceTypesList.m_CurrIndex; i++)
+		if (!m_ResourceTypesList.m_Elements[i])
 			ind = i;
 
 	if (!ind)
-		ind = m_ResourceTypesList[6].m_CurrIndex;
+		ind = m_ResourceTypesList.m_CurrIndex;
 
 	AddTypesListItemAtPos((ResType::Resource*)res, ind);
 
@@ -124,13 +160,13 @@ ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resou
 
 void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
 {
-	if (m_ResourceTypesList[6].m_CurrIndex < index + 1)
+	if (m_ResourceTypesList.m_CurrIndex < index + 1)
 	{
-		for (int ind = m_ResourceTypesList[6].m_CurrIndex; m_ResourceTypesList[6].m_CurrIndex < index + 1; ind++)
-			m_ResourceTypesList[6].AddElement(nullptr);
+		for (int ind = m_ResourceTypesList.m_CurrIndex; m_ResourceTypesList.m_CurrIndex < index + 1; ind++)
+			m_ResourceTypesList.AddElement(nullptr);
 	}
 
-	m_ResourceTypesList[6].m_Elements[index] = element;
+	m_ResourceTypesList.m_Elements[index] = element;
 	field_0 = 1;
 }
 
@@ -139,28 +175,25 @@ Blocks::Blocks(bool loadBlocks)
 {
 	MESSAGE_CLASS_CREATED(Blocks);
 
-//	patch(0xA3D7C4, this, 4);
-
 	field_10C = (*(Allocator * (*)(AllocatorIndex))0x4777F0)(DEFRAGMENTING);
 
 	m_UnkList_1 = List<int>(0x18B00, 9);
-	m_UnkList_2 = List<int>(0x18B00, 6);
 
 	const unsigned int listCapacity[] =
 	{
-		11200, 4100, 6000, 2800, 100
+		NULL, 11200, 4100, 6000, 2800, NULL, 100
 	};
 
-	for (unsigned int i = NULL; i < 6; i++)
+	for (unsigned int i = 1; i < 6; i++)
 	{
-		m_ResourceTypesList[i] = List<ResType::Resource>(0x27B00);
-		m_ResourceTypesList[i].m_Flags |= 0x1A000;
+		m_UnkList_2[i] = List<int>(0x27B00);
+		m_UnkList_2[i].m_Flags |= 0x1A000;
 		
 		if (listCapacity[i])
-			m_ResourceTypesList[i].SetCapacityAndErase(listCapacity[i]);
+			m_UnkList_2[i].SetCapacityAndErase(listCapacity[i]);
 	}
 
-	m_ResourceTypesList[6] = List<ResType::Resource>(0x18B00);
+	m_ResourceTypesList = List<ResType::Resource>(0x18B00);
 	m_SceneNames = List<String>(0x18B00);
 	m_UnkList_9 = List<int>(0x18B00);
 
@@ -173,7 +206,7 @@ Blocks::Blocks(bool loadBlocks)
 
 	field_1B0[0] = field_1B0[1] = field_1B0[2] = field_1B0[3] = field_1B0[4] = field_1B0[5] = 1;
 
-	m_ResourceTypesList[6].AddElement(nullptr);
+	m_ResourceTypesList.AddElement(nullptr);
 
 	field_1C8 = field_1CC = field_1D0 = field_1DC = field_1D4 = NULL;
 	m_BlockType = UNKNOWN;
@@ -199,17 +232,17 @@ void Blocks::SetSceneName(const char* szSceneName)
 
 int Blocks::GetFreeResourceTypeListItem(unsigned int index)
 {
-	if (index + 1 >= m_ResourceTypesList[6].m_CurrIndex)
+	if (index + 1 >= m_ResourceTypesList.m_CurrIndex)
 		return 0;
 
-	ResType::Resource** restype = &m_ResourceTypesList[6].m_Elements[index + 1];
+	ResType::Resource** restype = &m_ResourceTypesList.m_Elements[index + 1];
 	unsigned int freeind = index + 1;
 
 	while (!*restype) {
 		restype++;
 		freeind++;
 
-		if (freeind >= m_ResourceTypesList[6].m_CurrIndex)
+		if (freeind >= m_ResourceTypesList.m_CurrIndex)
 			return 0;
 	}
 

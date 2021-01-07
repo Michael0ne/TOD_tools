@@ -1,45 +1,75 @@
 #include "Renderer.h"
 #include "Performance.h"
-#include "Builtin.h"
 
-Renderer* g_Renderer = NULL;
-bool& Renderer::WideScreen = *(bool*)0xA39F12;
-bool Renderer::FSAA = 0;
-float& Renderer::RatioXY = *(float*)0xA119F4;
-int& Renderer::_A08704 = *(int*)0xA08704;
-int& Renderer::_A0870C = *(int*)0xA0870C;
-int& Renderer::_A0872C = *(int*)0xA0872C;
-Scene_Buffer2& Renderer::Buffer_A08704 = *(Scene_Buffer2*)0xA08704;
-ScreenProperties& Renderer::g_ScreenProperties = *(ScreenProperties*)0xA08810;
+Renderer*	g_Renderer = nullptr;
+bool		Renderer::WideScreen;	//	@A39F12
+bool		Renderer::FSAA;
+float		Renderer::RatioXY = 1.0f;	//	@A119F4
+Renderer::Renderer_Buffer2	Renderer::_A08704[28] =
+{
+	{0, 1},
+	{0, 2},
+	{1, 3},
+	{1, 4},
+	{1, 5},
+	{0, 6},
+	{2, 7},
+	{0, 8},
+	{1, 9},
+	{1, 10},
+	{1, 11},
+	{1, 12},
+	{1, 13},
+	{2, 14},
+	{1, 15},
+	{1, 16},
+	{1, 17},
+	{1, 18},
+	{1, 19},
+	{2, 20},
+	{2, 21},
+	{1, 22},
+	{1, 23},
+	{2, 24},
+	{2, 25},
+	{1, 26},
+	{1, 27},
+	{1, 0}
+};	//	@A08704
+ScreenProperties	g_ScreenProperties;	//	@A08810
 
 #pragma message(TODO_IMPLEMENTATION)
-Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1,const Vector3<float>* buffersDimens)
+Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
 {
 	MESSAGE_CLASS_CREATED(Renderer);
 
+	g_Renderer = this;
+
 	m_TexturesList = List<GfxInternal_Dx9_Texture>();
-	m_fTimeDelta = 0.0f;
+	m_TimeDelta = 0.0f;
 	field_30 = 0;
-	m_nTimeMilliseconds = Performance::GetMilliseconds();
+	m_TimeMilliseconds = Performance::GetMilliseconds();
 	field_34 = 0;
 
 	g_RendererDx = new GfxInternal_Dx9(resolution, unused1, unused2, FSAA, NULL);
 
 	field_20 = unk1;
-	m_BuffersCount = buffersCount;
+	m_RenderBufferTotal = buffersCount;
 
-	m_pBuffersArray = new Scene_Buffer276[buffersCount];
+	m_RenderBufferArray = (Buffer276*)new Buffer276[buffersCount];
 
-	if (buffersCount > 0) {
-		int index = 0;
+	if (buffersCount > 0)
+	{
+		for (; buffersCount; buffersCount--)
+		{
+			//	NOTE: since when calling 'new' can't really call constructor with parameters as needed, do this.
+			m_RenderBufferArray[buffersCount] = Buffer276(*buffersDimens);
 
-		do {
-			m_pBuffersArray[index].Init(*(buffersDimens++));
-			m_pBuffersArray[index].SetResolution(Vector2<float>{g_RendererDx->m_nViewportWidth, g_RendererDx->m_nViewportHeight});
+			m_RenderBufferArray[buffersCount].m_ViewportDimensions_1 = { 0.f, 0.f };
+			m_RenderBufferArray[buffersCount].m_ViewportDimensions_2 = { g_RendererDx->m_ViewportWidth, g_RendererDx->m_ViewportHeight };
 
-			++index;
-			--buffersCount;
-		} while (buffersCount);
+			buffersDimens++;
+		}
 	}
 
 	m_RenderBufferEmpty = false;
@@ -49,9 +79,10 @@ Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigne
 	//	Allocate something
 	(*(void(__thiscall*)(Renderer*))0x420390)(this);
 
-	field_34 = 1;
-	m_nUnkTime_1 = 0;
-	m_nUnkTime_2 = __rdtsc();
+	field_35 = 1;
+	m_Time_1 = 0.f;
+	m_CallbackUnknown = nullptr;
+	m_RenderEndTime = __rdtsc();
 
 #ifndef INCLUDE_FIXES
 	//	For testing purposes - hide cursor.
@@ -63,66 +94,40 @@ Renderer::~Renderer()
 {
 	MESSAGE_CLASS_DESTROYED(Renderer);
 
-	if (m_BuffersCount > 0)
-		while (m_BuffersCount) {
-			if (&m_pBuffersArray[m_BuffersCount])
-				delete &m_pBuffersArray[m_BuffersCount];
-			m_BuffersCount--;
-		}
+	delete m_TexturesList.m_Elements[0];
+	delete m_TexturesList.m_Elements[1];
+
+	delete m_Buffer68;
+	delete m_Buffer108;
+
+	delete g_RendererDx;
+
+	delete m_RenderBufferArray;
 }
 
-void Renderer::_41FDF0(Vector4<float>* size, int bufferIndex)
+void Renderer::SetClearColorForBufferIndex(const ColorRGB& color, int index)
 {
-	if (bufferIndex == -1)
-		if (m_BuffersCount > 0) {
-			unsigned char ind_ = 0;
-			while (++ind_ < m_BuffersCount)
-				m_pBuffersArray[ind_].m_vPos_1 = *size;
-		}
+	if (index != -1)
+		m_RenderBufferArray[index].m_ClearColor = color;
 	else
-		m_pBuffersArray[bufferIndex].m_vPos_1 = *size;
+		if (m_RenderBufferTotal > NULL)
+			for (unsigned int i = NULL; i < m_RenderBufferTotal; i++)
+				m_RenderBufferArray[i].m_ClearColor = color;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Renderer::_SetBufferStateByIndex(int state, int index)
+void Renderer::SetClearFlagsForBufferIndex(const unsigned int flags, const int index)
 {
-	(*(void(__thiscall*)(Renderer*, int, int))0x41FD90)(this, state, index);
+	if (index != -1)
+		m_RenderBufferArray[index].m_ClearFlags = flags;
+	else
+		if (m_RenderBufferTotal > NULL)
+			for (unsigned int i = NULL; i < m_RenderBufferTotal; i++)
+				m_RenderBufferArray[i].m_ClearFlags = flags;
 }
 
 void Renderer::SetRenderBufferIsEmpty(bool _empty)
 {
 	m_RenderBufferEmpty = _empty;
-}
-
-void Scene_Buffer276::Init(const Vector3<float>& vDimensions)
-{
-	m_vRes_1 = vDimensions;
-
-	field_10 = 0;
-	field_14 = 1;
-	field_C = 0;
-	field_DC = 0;
-	field_100 = 0;
-
-	m_vDimens_1 = { 70.0f, 1.0f, 1.0f, 1000.0f };
-
-	m_vRightVec_1 = Builtin::RightVector;
-	m_vUpVec_1 = Builtin::UpVector;
-	m_vInVec_1 = Builtin::InVector;
-	m_vOrient_1 = Builtin::Orientation;
-
-	m_vRightVec_2 = Builtin::RightVector;
-	m_vUpVec_2 = Builtin::UpVector;
-	m_vInVec_2 = Builtin::InVector;
-	m_vOrient_2 = Builtin::Orientation;
-
-	m_vRightVec_3 = Builtin::RightVector;
-	m_vUpVec_3 = Builtin::UpVector;
-	m_vInVec_3 = Builtin::InVector;
-	m_vOrient_3 = Builtin::Orientation;
-
-	m_vPos_1 = Builtin::UnkColor;
-	memset(&m_vRes_2, 0, sizeof(m_vRes_2));
 }
 
 void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, float unk2)
@@ -161,14 +166,19 @@ void ScreenProperties::SetWindowProperties(float width, float height, float rati
 	AdjustWindowScalings();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Scene_Buffer108::Init(unsigned int unk1, unsigned char unk2, unsigned int unk3)
+Buffer276::Buffer276(const Vector3f& bufferSize)
 {
+	m_BufferSize = bufferSize;
+	field_14 = 1;
+	field_10 = NULL;
+	m_RenderBuffer = NULL;
+	field_DC = NULL;
+	m_ClearFlags = NULL;
+	
+	D3DXMatrixIdentity(&m_ViewMatrix);
+	D3DXMatrixIdentity(&m_MatrixUnknown_1);
+	D3DXMatrixIdentity(&m_MatrixUnknown_2);
 
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-void Scene_Buffer68::Init(const Scene_Buffer108& buf, unsigned int unk)
-{
-
+	m_ProjectionMatrixParams = { 70.f, 1.f, 1.f, 1000.f };
+	m_ClearColor = { 0.f, 0.f, 0.f, 1.f };
 }
