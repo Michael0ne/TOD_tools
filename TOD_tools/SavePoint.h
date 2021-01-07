@@ -19,25 +19,27 @@ struct SavePoint_File {
 	//	NOTE: next thing is unknown RewindBuffer Entity's script properties written to a file.
 };
 
-enum eSavePointStatus {
-	E_SUCCESS = 0,
-	E_UNKNOWN_1 = 1,
-	E_UNKNOWN_2 = 2,
-	E_UNKNOWN_3 = 3
+enum SavePointStatus {
+	STATUS_SUCCESS = 0,
+	STATUS_1 = 1,
+	STATUS_2 = 2,
+	STATUS_CLOSED = 3,
+	STATUS_FAILED = 4
 };
 
 //	NOTE: this is actually derived from FileInternal class, so methods are same.
 class SavePoint
 {
 private:
-	SaveSlot*	m_SaveSlot;
-	String		m_SaveDir;
-	String		m_SlotIdStr;
-	File*		m_SaveFile;
-	int			m_LastError;	//	NOTE: once savepointstatus is finished change this to enum type.
-	String		m_SlotDir;
+	SaveSlot*		m_SaveSlot;
+	String			m_SaveDir;
+	String			m_SlotIdStr;
+	File*			m_SaveFile;
+	SavePointStatus	m_Status;
+	String			m_SlotDir;
 
 public:
+	virtual ~SavePoint();	//	@86BFE0, @86BF20
 	virtual bool SaveBuffersDataToFile() { return false; };	//	@86C3D0
 	virtual int vsnprintf(const char*, ...) { return NULL; };	//	@42EFC0
 	virtual int _42F020(const char*, ...) { return NULL; };	//	@42F020
@@ -58,7 +60,6 @@ public:
 	virtual const char* GetSaveSlotDir() { return nullptr; };	//	@86C250
 
 	SavePoint(SaveSlot* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize);	//	@86C160
-	~SavePoint();	//	@86BF20
 
 	void* operator new(size_t size)
 	{

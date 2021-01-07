@@ -61,7 +61,8 @@ class Node : public Entity
 public:
 	NodePosition*		m_NodePosition;	//	NOTE: is Position class virtual methods only?
 	unsigned int		m_Flags;
-	int					field_2C;	//	NOTE: it looks like short[2].
+	short				m_GlobalIdInBlockigList;
+	short				m_GlobalIdInSceneList;
 	AuxQuadTree*		m_QuadTree;
 	Node*				m_NextSibling;
 	class CollisionList* m_CollisionIgnoreList;
@@ -75,11 +76,11 @@ public:
 	virtual void		Destroy();								//	@88F770
 	virtual void		_484CC0(int);							//	@484CC0
 	virtual Entity*		FindNode(const char* nodeName);			//	@88EED0
-	virtual void		_88EC20(int unk);						//	@88EC20
-	virtual void		RefreshQuadTree();						//	@88DE70
+	virtual void		_88EC20(int unk);						//	@88EC20	//	NOTE: this could be 'SetFlagsForChildren'.
+	virtual void		RefreshQuadTree();						//	@88DE70	//	NOTE: this could be 'Instantiate'.
 	virtual void		Update();								//	@8CB190
 	virtual void		_88C300();								//	@88C300	//	NOTE: void _88C300() { *(unsigned char*)0xA3D890 = 1; };
-	virtual void		nullsub_2();							//	@8CB190
+	virtual void		nullsub_2();							//	@8CB190	//	NOTE: could be 'Render' method.
 	virtual char		_484DB0(int, int);						//	@484DB0	//	NOTE: char _484DB0(int, int) { return 0; }
 	virtual float		_8F8650(int, int);						//	@8F8650	//	NOTE: float _8F8650(int, int) { return -1.0f; }
 	virtual void		nullsub_3(int);							//	@88C600
@@ -88,11 +89,21 @@ public:
 	virtual void		nullsub_5();							//	@8CB190
 	virtual void		nullsub_6(int);							//	@883EC0	//	NOTE: this could be 'GetBoundsRectangle'.
 	virtual String*		_484E80(String* unk);					//	@484E80
-	virtual Vector4f*	_484DC0(Vector4f* unk);					//	@484DC0
+	virtual Vector4f*	GetBounds(Vector4f& unk);				//	@484DC0
 
 public:
 	Node();	//	NOTE: this is not in EXE, but required for List class.
 	Node(unsigned char allocationBitmask);	//	@88D4B0
+
+	void* operator new (size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, 0);
+	}
 
 	const char*			GetTypename() const;	//	@891160
 	const char*			GetScript() const;	//	@86A230

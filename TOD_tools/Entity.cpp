@@ -10,19 +10,25 @@ void Entity::Destroy()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
+Entity::~Entity()
+{
+	MESSAGE_CLASS_DESTROYED(Entity);
+}
+
 Entity::Entity()
 {
 	MESSAGE_CLASS_CREATED(Entity);
 
-	m_ScriptEntity = nullptr;
 	field_1C = NULL;
+	field_20 = nullptr;
+	m_Id = m_Id | 255;
+	m_ScriptEntity = nullptr;
 	field_18 = nullptr;
 	field_20 = nullptr;
-	m_Id = 0;
-	m_Id = m_Id | 255;
-	m_FragmentPath = nullptr;
 
-	m_Id = (g_Blocks->AddEntity(this) << 8) | m_Id & 255;
+	memset(field_8, NULL, sizeof(field_8));
+
+	m_Id = (g_Blocks->AddEntity(this) << 8) | m_Id;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -37,38 +43,14 @@ unsigned char Entity::LoadScriptDataFromFile_Impl(ScriptTypes::ScriptType_Entity
 	return NULL;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-Entity::~Entity()
-{
-	MESSAGE_CLASS_DESTROYED(Entity);
-
-	if ((int*)field_20 && ((int*)field_20)[1])
-	{
-		(*(void(__stdcall**)(int))(*(int*)field_1C + 16))((int)field_20 - *(int*)(field_1C + 16) / 12);
-		field_20 = NULL;
-	}
-
-	//if (field_18)
-		//m_ScriptEntity->m_ParentNode->_489C90();
-
-	//*(int*)(*((int*)&g_Blocks->m_UnkList_3.m_Elements + 4 * ((m_Id >> 28) & 7) - 1) + 4 * ((m_Id >> 8) & 0xFF8FFFFF)) = NULL;
-
-	//if (g_Blocks->field_1B0[((m_Id >> 28) & 7) - 1] > ((m_Id >> 8) & 0xFF8FFFFF))
-		//g_Blocks->field_1B0[((m_Id >> 28) & 7) - 1] = ((m_Id >> 8) & 0xFF8FFFFF);
-}
-
-int Entity::GetId()
+int Entity::GetId() const
 {
 	return m_Id >> 8;
 }
 
-int Entity::GetScriptPriority()
+#pragma message(TODO_IMPLEMENTATION)
+int Entity::GetScriptPriority() const
 {
-	if (field_20 &&
-		field_20->m_ScriptEntity)
-		return NULL;
-	else
-		return NULL;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -149,7 +131,7 @@ int Entity::GetPropertyId(const char* prop)
 
 	String::ToLowerCase(_prop);
 
-	int* msg = nullptr;	//	GetMessageId_A(PropertiesList, PropertiesList.field_8, _prop);
+	int* msg = nullptr;	//	PropertiesList.FindValueByKey(_prop);
 
 	if (msg && (msg + 4) != NULL)
 		return *(msg + 4);

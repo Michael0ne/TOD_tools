@@ -128,7 +128,6 @@
     <ClInclude Include="AuxQuadTree.h" />
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="Bone.h" />
-    <ClInclude Include="Builtin.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
@@ -158,6 +157,7 @@
     <ClInclude Include="GoodiePlaceHolder.h" />
     <ClInclude Include="Group.h" />
     <ClInclude Include="GuideBox.h" />
+    <ClInclude Include="Dictionary.h" />
     <ClInclude Include="HavocPlaceHolder.h" />
     <ClInclude Include="LensFlare.h" />
     <ClInclude Include="LensFlareManager.h" />
@@ -177,6 +177,7 @@
     <ClInclude Include="NodeSpatial.h" />
     <ClInclude Include="OverdoseVehicle.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="PhysSystem.h" />
     <ClInclude Include="Placeholder.h" />
     <ClInclude Include="ProfilerInput.h" />
     <ClInclude Include="Progress.h" />
@@ -197,7 +198,7 @@
     <ClInclude Include="SavePoint.h" />
     <ClInclude Include="SaveSlot.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneNode.h" />
+    <ClInclude Include="SceneSaveLoad.h" />
     <ClInclude Include="Scratchpad.h" />
     <ClInclude Include="ScriptDatabase.h" />
     <ClInclude Include="ScriptTypes.h" />
@@ -245,7 +246,6 @@
     <ClCompile Include="AuxQuadTree.cpp" />
     <ClCompile Include="Blocks.cpp" />
     <ClCompile Include="Bone.cpp" />
-    <ClCompile Include="Builtin.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Character.cpp" />
@@ -309,7 +309,7 @@
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SavePoint.cpp" />
     <ClCompile Include="SaveSlot.cpp" />
-    <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="SceneSaveLoad.cpp" />
     <ClCompile Include="Scratchpad.cpp" />
     <ClCompile Include="ScriptDatabase.cpp" />
     <ClCompile Include="ScriptTypes.cpp" />

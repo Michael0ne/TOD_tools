@@ -121,7 +121,7 @@ namespace Audio {
 		static DieselPower* CallFactory(unsigned int versionMajor, unsigned int versionMinor, unsigned int versionBuild, float unk, HWND windowHandle, int unk1, int unk2, int unk3);	//	@940A70
 
 		static const char* RequiredVersion;	//	@A1BA50
-		static char DetectedVersion[7];	//	@A5E800
+		static char DetectedVersion[64];	//	@A5E800
 		static HMODULE LibraryHandle;	//	@A5E840
 		static int ErrorCode;	//	@A5E844
 		static char* ErrorMessageBuffer;	//	@A5E700

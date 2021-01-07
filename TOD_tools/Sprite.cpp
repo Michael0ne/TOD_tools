@@ -30,3 +30,8 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 
 	SpritesList.AddElement(this);
 }
+
+#pragma message(TODO_IMPLEMENTATION)
+void Sprite::TriggerMouseCallbacks()
+{
+}

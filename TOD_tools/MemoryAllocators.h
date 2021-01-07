@@ -12,7 +12,7 @@ class Allocator
 protected:
 	void*						m_AllocatedSpacePtr;
 	int							m_AllocatedSpaceSize;
-	char						field_C;
+	bool						m_ProfilerEnabled;
 
 	struct SystemAllocators
 	{
@@ -243,7 +243,7 @@ class DefragmentatorBase
 	friend class Allocators;
 protected:
 	BestFitAllocator* m_DefragmentAllocator;
-	BestFitAllocator* m_DefragmentAllocator_1;;
+	BestFitAllocator* m_DefragmentAllocator_1;
 	int m_Size;
 	struct Defragmentator_Space {
 		unsigned int m_Flags;
@@ -254,7 +254,7 @@ protected:
 	int field_18;
 	int field_1C;
 	char field_20;
-	int m_DefragmentBeginTimeMs;
+	int m_LastDefragmentationTime;
 	int field_28;
 	char field_2C;
 	int field_30;
@@ -293,8 +293,8 @@ public:
 class SingletonSubAllocator : public Allocator
 {
 protected:
-	char	field_24;
-	int		field_28;
+	bool	m_Instantiated;
+	void* m_InstancePtr;
 
 public:
 	SingletonSubAllocator();	//	@47A690

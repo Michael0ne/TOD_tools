@@ -30,10 +30,18 @@ protected:
 	char m_ConstSizeFar;
 	char m_ConstSizeFarShrink;
 	unsigned int m_Flags;
-	int m_EnableMouseInput;
+	union
+	{
+		unsigned char	a;
+		unsigned char	b;
+		unsigned char	c;
+		unsigned char	State;	//	bit 2 set - mouseenter, bit 2 not set - mouseexit, anything else - mouseover.
+	} m_EnableMouseInput;
 
 public:
 	Sprite();	//	@8F6AA0
+
+	static void	TriggerMouseCallbacks();	//	@8F4A00
 
 	static List<Sprite>&	SpritesList;	//	@A3E0D0
 };

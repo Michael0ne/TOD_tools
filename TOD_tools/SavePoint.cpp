@@ -10,7 +10,7 @@ SavePoint::SavePoint(SaveSlot* dirInfo, const char* saveDir, const char* saveSlo
 	m_SlotIdStr = String(saveSlotId);
 	m_SlotDir = String();
 	m_SaveSlot = dirInfo;
-	m_LastError = eSavePointStatus::E_UNKNOWN_3;
+	m_Status = STATUS_SUCCESS;
 	m_SaveFile = nullptr;
 }
 
@@ -24,5 +24,5 @@ SavePoint::~SavePoint()
 		m_SaveFile = nullptr;
 	}
 
-	m_LastError = eSavePointStatus::E_UNKNOWN_3;
+	m_Status = STATUS_CLOSED;
 }

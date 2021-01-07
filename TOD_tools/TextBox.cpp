@@ -1,10 +1,32 @@
 #include "TextBox.h"
+#include "Blocks.h"
+#include "LogDump.h"
+
+TextBox::~TextBox()
+{
+	MESSAGE_CLASS_DESTROYED(TextBox);
+
+	delete m_Text;
+}
+
+Vector4f* TextBox::GetBounds(Vector4f& outBounds) const
+{
+	if (!(m_Flags & 0x10))
+		return (outBounds = Vector4f(0.f, 0.f, 0.f, 10000.f), &outBounds);
+
+	Vector4f boxSize;
+
+	if (m_FontRes)
+		return (outBounds = Vector4f(0.f, 0.f, 0.f, (GetActualBoxSize(boxSize)->x + GetActualBoxSize(boxSize)->y) * 0.041666668), &outBounds);
+	else
+		return (outBounds = Vector4f(0.f, 0.f, 0.f, m_SpriteSize_Y + m_SpriteSize_X), &outBounds);
+}
 
 TextBox::TextBox() : Sprite()
 {
 	MESSAGE_CLASS_CREATED(TextBox);
 
-	m_Font = nullptr;
+	m_FontRes = nullptr;
 	field_A8 = 1;
 	m_TextColor = m_TextColor2 = -1;
 	m_ScaleX = 1.0f;
@@ -21,4 +43,51 @@ TextBox::TextBox() : Sprite()
 	m_Id = m_Id | 8;
 
 	m_QuadTree->m_nUserType = m_QuadTree->m_nUserType & 0xFFFFFF | m_QuadTree->m_nUserType & 0xFF000000 | 0x8000000;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
+{
+	if (!m_FontRes)
+		return (outSize = Vector4f(), &outSize);
+}
+
+void TextBox::SetFont(const char* fontName)
+{
+	String fontPath;
+	ResType::ResourceHolder res;
+
+	g_Blocks->GetResourcePath(fontPath, fontName);
+
+	if (!stricmp(fontPath.m_szString, "/data/fonts/screenfont_Headlines.font") ||
+		!stricmp(fontPath.m_szString, "/data/fonts/InnerSanctumCondensed_Screenfont.font"))
+	{
+		fontPath = "/data/fonts/screenfont_ODserif_64all.font";
+		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_szString);
+	}
+
+	if (!stricmp(fontPath.m_szString, "/data/fonts/screenfont_ODserif_64cond.font"))
+	{
+		fontPath = "/data/fonts/screenfont_ODserif_64all.font";
+		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_szString);
+	}
+
+	if (fontName)
+	{
+		res.LoadResourceFromBlock(fontPath.m_szString);
+		m_FontRes->ApplyLoadedResource(res);
+
+		if (res.m_Resource)
+			g_Blocks->DecreaseResourceReferenceCount(res.m_Resource);
+	}
+	else
+	{
+		res.m_Resource = nullptr;
+		m_FontRes->ApplyLoadedResource(res);
+	}
+
+	m_Id |= 8;
+
+	if (m_QuadTree)
+		m_QuadTree->Refresh();
 }

@@ -69,6 +69,16 @@ public:
 				*s_ += 32;
 	}
 
+	inline void		Concatenate(const String& baseStr, const String& appendStr)	//	@419C50
+	{
+		m_nBitMask |= STRING_BITMASK_DEFAULT;
+		m_nLength = baseStr.m_nLength + appendStr.m_nLength;
+		
+		AdjustBufferSize();
+		
+		strcpy(m_szString, baseStr.m_szString);
+		strcat(m_szString, appendStr.m_szString);
+	}
 private:
 	void			AllocateSpaceForString();	//	@4056E0
 	void			AdjustBufferSize();	//	@405610

@@ -1,47 +1,30 @@
 #pragma once
 
-#include "stdafx.h"
-
 #include "GfxInternal_Dx9.h"
 
 #define RENDERER_CLASS_SIZE 72
 
-class Scene_Buffer276
+class Buffer276
 {
 public:
-	Vector3<float> m_vRes_1;
-	int field_C;
-	int field_10;
-	int field_14;
-	Vector4f m_vRightVec_1;
-	Vector4f m_vUpVec_1;
-	Vector4f m_vInVec_1;
-	Orientation m_vOrient_1;
-	Vector4f m_vRightVec_2;
-	Vector4f m_vUpVec_2;
-	Vector4f m_vInVec_2;
-	Orientation m_vOrient_2;
-	int field_98;
-	Vector4f m_vRightVec_3;
-	Vector4f m_vUpVec_3;
-	Vector4f m_vInVec_3;
-	Orientation m_vOrient_3;
-	int field_DC;
-	Vector4f m_vDimens_1;
-	Vector2<float> m_vRes_2;
-	Vector2<float> m_vRes_3;
-	int field_100;
-	Vector4f m_vPos_1;
+	Vector3f	m_BufferSize;
+	class Scene_Buffer*	m_RenderBuffer;
+	int*		field_10;
+	char		field_14;
+	D3DXMATRIX	m_ViewMatrix;
+	D3DXMATRIX	m_MatrixUnknown_1;
+	int			field_98;
+	D3DXMATRIX	m_MatrixUnknown_2;
+	char		field_DC;
+	Vector4f	m_ProjectionMatrixParams;	//	NOTE: fov, xy_ratio, near_clip, far_clip.
+	Vector2f	m_ViewportDimensions_1;
+	Vector2f	m_ViewportDimensions_2;
+	int			m_ClearFlags;
+	ColorRGB	m_ClearColor;
 
 public:
-	Scene_Buffer276()
-	{
-		MESSAGE_CLASS_CREATED(Scene_Buffer276);
-	}
-	~Scene_Buffer276()
-	{
-		MESSAGE_CLASS_DESTROYED(Scene_Buffer276);
-	}
+	Buffer276() {};
+	Buffer276(const Vector3f& bufferSize);	//	@41FE80
 
 	void* operator new(size_t size)
 	{
@@ -52,19 +35,6 @@ public:
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
 	}
-
-	void	Init(const Vector3<float>& vDimensions);	//	@41FE80
-	inline void	SetResolution(const Vector2<float>& vResolution)
-	{
-		m_vRes_3 = vResolution;
-	}
-};
-
-struct Scene_Buffer2
-{
-public:
-	int		field_0;	//	Could be 0, 1 or 2. Maybe enum?
-	int		m_nIndex;	//	Always incremental from 0 to 27.
 };
 
 struct Scene_Buffer108
@@ -165,7 +135,7 @@ public:
 	void	Init(const Scene_Buffer108& buf, unsigned int unk);	//	@4617D0
 };
 
-struct ScreenProperties
+class ScreenProperties
 {
 private:
 	float m_fVirtualHudScreensizeWidth;
@@ -199,21 +169,23 @@ class Renderer
 private:
 	bool m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
 	List<GfxInternal_Dx9_Texture> m_TexturesList;
-	Scene_Buffer68* m_pBuffer68;
-	Scene_Buffer108* m_pBuffer108;
-	int m_BuffersCount;
+	Scene_Buffer68* m_Buffer68;
+	Scene_Buffer108* m_Buffer108;
+	int m_RenderBufferTotal;
 	int field_20;
-	Scene_Buffer276* m_pBuffersArray;
-	float m_fTimeDelta;
-	int m_nTimeMilliseconds;
+	Buffer276* m_RenderBufferArray;
+	float m_TimeDelta;
+	int m_TimeMilliseconds;
 	int field_30;
-	int field_34;
-	__int64 m_nUnkTime_1;
-	__int64 m_nUnkTime_2;
+	char field_34;
+	char field_35;
+	float m_Time_1;
+	char (* m_CallbackUnknown)(int);
+	__int64	m_RenderEndTime;
 
 public:
 	Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
-	~Renderer();
+	~Renderer();	//	@421470
 
 	void* operator new (size_t size)
 	{
@@ -225,19 +197,25 @@ public:
 			Allocators::ReleaseMemory(ptr, 0);
 	}
 
-	void	_41FDF0(Vector4<float>* size, int bufferIndex);	//	@41FDF0	NOTE: maybe 'SetBackBufferSize'?
-	void	_SetBufferStateByIndex(int state, int index);	//	@41FD90
+	void	SetClearColorForBufferIndex(const ColorRGB& color, int index);	//	@41FDF0
+	void	SetClearFlagsForBufferIndex(const unsigned int flags, const int index);	//	@41FD90
 	void	SetRenderBufferIsEmpty(bool);	//	@420170
 
-	static bool& WideScreen;
+	static bool WideScreen;	//	@A39F12
 	static bool FSAA;
-	static float& RatioXY;
-	static ScreenProperties& g_ScreenProperties;
-	static int& _A08704;
-	static int& _A0870C;
-	static int& _A0872C;
-	static Scene_Buffer2& Buffer_A08704;
+	static float RatioXY;	//	@A119F4
+	
+	struct Renderer_Buffer2
+	{
+		unsigned int	field_0;
+		unsigned int	field_4;
+	};
+
+	static Renderer_Buffer2 _A08704[28];	//	@A08704
 };
+
+extern ScreenProperties g_ScreenProperties;
+extern Renderer* g_Renderer;
 
 //	NOTE: this is used in 'ExecuteRenderCommand' @4342C0
 enum RendererCommandsList
@@ -373,7 +351,5 @@ enum RendererCommandsList
 	CMD_POP_ENABLEALPHATEST,
 	CMD_POP_PS2_SETGUARDBAND
 };	//	@A089D8
-
-extern Renderer* g_Renderer;
 
 static_assert(sizeof(Renderer) == RENDERER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Renderer));

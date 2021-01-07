@@ -116,9 +116,6 @@
     <ClInclude Include="Light.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="Builtin.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="List.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
@@ -181,9 +178,6 @@
     </ClInclude>
     <ClInclude Include="Scratchpad.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneNode.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="ResourcesTypes.h">
       <Filter>Header files\KapowSystems\System</Filter>
@@ -416,6 +410,15 @@
     <ClInclude Include="ThirdParty\libvorbis-1.1.0\include\vorbisfile.h">
       <Filter>Header files\ThirdParty\libvorbis</Filter>
     </ClInclude>
+    <ClInclude Include="SceneSaveLoad.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Dictionary.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysSystem.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -461,9 +464,6 @@
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Builtin.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
@@ -519,9 +519,6 @@
     </ClCompile>
     <ClCompile Include="Scratchpad.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneNode.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="ResourcesTypes.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
@@ -720,6 +717,9 @@
     </ClCompile>
     <ClCompile Include="AuxMonoStream.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSaveLoad.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
