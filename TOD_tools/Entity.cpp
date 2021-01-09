@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include "MemoryCards.h"
 
+ScriptTypes::ScriptType_Entity* tEntity = nullptr;
+
 void Entity::Destroy()
 {
 	if (this)

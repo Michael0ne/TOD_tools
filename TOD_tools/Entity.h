@@ -50,4 +50,6 @@ public:
 	static int*		GetMessageId_A(int*, int*, const char*);	//	@8729F0
 };
 
+extern ScriptTypes::ScriptType_Entity* tEntity;	//	@A3CEE0
+
 static_assert(sizeof(Entity) == ENTITY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Entity));
