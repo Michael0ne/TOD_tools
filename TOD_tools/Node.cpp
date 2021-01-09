@@ -1,5 +1,6 @@
 #include "Node.h"
 #include "Fragment.h"
+#include "Blocks.h"
 
 Position::Position(Node* owner)
 {
@@ -137,18 +138,22 @@ String* Node::_484E80(String* unk)
 	return unk;
 }
 
-Vector4f* Node::_484DC0(Vector4f* unk)
+Vector4f* Node::GetBounds(Vector4f& unk) const
 {
-	*unk = Vector4f();
-
-	return unk;
+	return (unk = Vector4f(), &unk);
 }
 
 Node::Node(unsigned char allocationBitmask)
 {
 	MESSAGE_CLASS_CREATED(Node);
 
-	m_Flags = m_Flags & 0xC000F000 | 0x40000000;
+	m_Flags.m_FlagBits.HasFragment = true;
+	m_Flags.m_FlagBits._29 = true;
+	m_Flags.m_FlagBits._15 = true;
+	m_Flags.m_FlagBits._14 = true;
+	m_Flags.m_FlagBits._13 = true;
+	m_Flags.m_FlagBits._12 = true;
+
 	m_GlobalIdInSceneList = NULL;
 	m_QuadTree = nullptr;
 	m_NextSibling = nullptr;
@@ -170,37 +175,14 @@ Node::Node(unsigned char allocationBitmask)
 	if (allocationBitmask & NODE_MASK_FRAGMENT)
 		m_Fragment = new Fragment(this);
 
-	if (m_Fragment)
-		m_Flags = m_Flags | 0x80000000;
-	else
-		m_Flags = m_Flags & 0x7FFFFFFF;
+	m_Flags.m_FlagBits.HasFragment = m_Fragment != nullptr;
 
 	m_GlobalIdInSceneList = m_GlobalIdInSceneList | 0xFFFFFFFF;
-	m_Flags = m_Flags | 0xF000;
-}
-
-Node::Node()
-{
-	MESSAGE_CLASS_CREATED(Node);
-
-	m_Flags = NULL & 0xC000F000 | 0x40000000;
-	m_GlobalIdInSceneList = NULL;
-	m_QuadTree = nullptr;
-	m_NextSibling = nullptr;
-	m_CollisionIgnoreList = nullptr;
-	m_Position = nullptr;
-	m_Parent = nullptr;
-	m_FirstChild = nullptr;
-	m_Fragment = nullptr;
-	m_Name = nullptr;
-	m_NodePosition = nullptr;
-
-	m_NodePosition = new NodePosition();
-
-	m_Flags = m_Flags & 0x7FFFFFFF;
-
-	m_GlobalIdInSceneList = m_GlobalIdInSceneList | 0xFFFFFFFF;
-	m_Flags = m_Flags | 0xF000;
+	
+	m_Flags.m_FlagBits._12 = true;
+	m_Flags.m_FlagBits._13 = true;
+	m_Flags.m_FlagBits._14 = true;
+	m_Flags.m_FlagBits._15 = true;
 }
 
 Node::~Node()
@@ -223,10 +205,27 @@ const char* Node::GetScript() const
 		return NULL;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Node::SetParam(int index, void* param, ScriptTypes::ScriptType* type)
+unsigned int Node::GetFlags() const
 {
-	(*(void(__thiscall*)(Node*, int, void*, ScriptTypes::ScriptType*))0x86A3C0)(this, index, param, type);
+	return m_Flags.m_Flags & 0xFFF;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::SetParam(const int index, const void* param, const ScriptTypes::ScriptType* type)
+{
+	if (!m_ScriptEntity)
+		return;
+
+	if (m_Flags.m_FlagBits._29 && m_Flags.m_FlagBits.Volatile)
+		return;
+
+	unsigned char paramInd = 1 << (index & 7);
+	char* paramsMap = (char*)this + index / 8;
+
+	if ((paramInd & paramsMap[8]) == NULL)
+		_869EC0(index, param, type);
+	if ((paramInd & paramsMap[13]) == NULL)
+		_869F80(index, param, type);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -238,15 +237,9 @@ void Node::SetOrient(const Orientation& orient)
 Vector4f* Node::GetPos(Vector4f& outVec)
 {
 	if (m_Position)
-	{
-		outVec = Vector4f(m_Position->m_Position.x, m_Position->m_Position.y, m_Position->m_Position.z, m_Position->m_Position.a);
-		return &outVec;
-	}
+		return (outVec = Vector4f(m_Position->m_Position.x, m_Position->m_Position.y, m_Position->m_Position.z, m_Position->m_Position.a), &outVec);
 	else
-	{
-		outVec = Vector4f();
-		return &outVec;
-	}
+		return (outVec = Vector4f(), &outVec);
 }
 
 void Node::GetWorldMatrix(D3DMATRIX& outMat)
@@ -255,6 +248,48 @@ void Node::GetWorldMatrix(D3DMATRIX& outMat)
 		m_Position->GetMatrixForNode(outMat);
 	else
 		outMat = IdentityMatrix;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::SetParent(const Node* parent)
+{
+	if (m_Parent == parent)
+		return;
+
+	SetParam(PARAM_PARENT, &m_Parent, tEntity);
+
+	if (parent)
+	{
+		Node* _pa = (Node*)parent;
+		while (true)
+		{
+			if (_pa->m_Parent == this)
+				break;
+			_pa = _pa->m_Parent;
+			if (!_pa)
+				break;
+		}
+
+		if (_pa)
+			_pa->SetParent(nullptr);
+	}
+
+	if (!m_QuadTree && m_Parent)
+		SetChildrenPositionToSame();	//	@88D1E0
+}
+
+void Node::SetName(const char* name)
+{
+	if (m_Name)
+		Allocators::ReleaseMemory(m_Name, false);
+
+	if (!name || *name == NULL)
+		m_Name = nullptr;
+	else
+	{
+		m_Name = (char*)Allocators::AllocatorsList[g_Blocks->GetAllocatorType()]->Allocate(strlen(name) + 1, NULL, NULL);
+		strcpy(m_Name, name);
+	}
 }
 
 Vector4f* NodePosition::GetPosition(Vector4f* outPos)
