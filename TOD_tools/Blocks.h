@@ -26,6 +26,13 @@ enum BlockTypeNumber
 	MAIN = 6
 };
 
+struct FastFindInfo
+{
+	unsigned int	m_NodeNameCRC;	//	NOTE: CRC for Node name OR model name (if it's a model).
+	unsigned int	m_Index;	//	NOTE: maybe?
+	class Node*		m_Node;
+};
+
 class Blocks
 {
 protected:
@@ -98,7 +105,8 @@ protected:
 	int				field_108;
 	Allocator*		field_10C;
 	List<int>		m_UnkList_1;
-	List<int>		m_UnkList_2[7];
+	List<FastFindInfo>	m_FastFindNodeVector;
+	List<int>		m_UnkList_2[6];
 public:
 	List<ResType::Resource> m_ResourceTypesList;
 protected:
@@ -107,7 +115,7 @@ protected:
 	int				field_1C8;
 	char			field_1CC;
 	int				field_1D0;
-	int				field_1D4;
+	int				m_EngineVersionTimestamp;
 	int				m_RegionId;
 	char			field_1DC;
 	List<int>		m_UnkList_9;
@@ -141,6 +149,9 @@ public:
 	void			IncreaseResourceReferenceCount(ResType::Resource*);	//	@875320
 	void			DecreaseResourceReferenceCount(ResType::Resource*);	//	@875330
 	const char*		GetCurrentSceneName() const;
+	void			BuildFastFindNodeVector();	//	@877DA0
+	void			FillFastFindNodeVector(Node* _baseNode, FastFindInfo* _ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
+	void*			LoadResourceFile(const char* _pathandname);	//	@878AB0
 
 	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0
 

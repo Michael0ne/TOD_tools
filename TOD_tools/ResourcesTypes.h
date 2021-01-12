@@ -53,6 +53,18 @@ namespace ResType
 		PLATFORM_XBOX = 2
 	};
 
+	//	NOTE: this is generic format for all generated source files (.model_pc, .texture_pc, etc.).
+	//		Files are little endian and crc check is not performed.
+	struct ResourceGenericHeader
+	{
+		unsigned int	m_EngineTimestamp;
+		unsigned int	m_ResourceInfoSize;	//	NOTE: this is used when parsing resource file to call Resource::Allocate.
+		unsigned int	m_ResourceDataSize;	//	NOTE: size for actual resource data. Both this and above are written to some structure that does other stuff.
+		unsigned int	m_CheckRegion;	//	NOTE: if it's set, then current region is compared to one written to the file.
+		unsigned int	m_RegionStringLength;
+		unsigned char	m_RegionString[4];	//	NOTE: this could be as well Pascal string... size is arbitrary and depends on field above.
+	};
+
 	class Base
 	{
 	public:
@@ -62,7 +74,7 @@ namespace ResType
 		int				m_ResourceIndex;
 		List<String>	m_ResourceExtensionsList;
 		char			field_2C;
-		char			field_2D;
+		bool			m_VerifyChecksum;
 		unsigned int	m_Alignment[3];
 
 	public:
@@ -78,7 +90,11 @@ namespace ResType
 	struct ResourceHolder
 	{
 		class Resource* m_Resource;
-		unsigned int	m_Status;	//	NOTE: 1 - loaded, to be loaded; 0 - 
+		unsigned int	m_Status;	//	NOTE: 1 - loaded, to be loaded; 0 - ?
+
+		~ResourceHolder();	//	NOTE: looks like always inlined.
+
+		void			LoadResourceFromBlock(const char* _pathname);	//	@8FFC10
 	};
 
 	//	NOTE: this class is actually inherited from another class, but parent doesn't seem to do anything important, so skipping it now.
@@ -120,7 +136,7 @@ namespace ResType
 	static unsigned int TotalResourcesCreated = NULL;	//	@A3BE10
 	static List<String>	OpenResourcesList = List<String>(0xC300);	//	@A10F00
 
-	class Texture : Resource
+	class Texture : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -139,7 +155,7 @@ namespace ResType
 		static void		CreateInstance();	//	@853870
 	};
 
-	class Font : Resource
+	class Font : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -154,7 +170,7 @@ namespace ResType
 		static void		CreateInstance();	//	@85B460
 	};
 
-	class Text : Resource
+	class Text : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -172,7 +188,7 @@ namespace ResType
 		static void		CreateInstance();	//	@861CE0
 	};
 
-	class Model : Resource
+	class Model : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -192,7 +208,7 @@ namespace ResType
 		static void		CreateInstance();	//	@858210
 	};
 
-	class Fragment : Resource
+	class Fragment : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -208,7 +224,7 @@ namespace ResType
 		static void		CreateInstance();	//	@85DFA0
 	};
 
-	class Movie : Resource
+	class Movie : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -223,7 +239,7 @@ namespace ResType
 		static void		CreateInstance();	//	@85BC70
 	};
 
-	class Cutscene : Resource
+	class Cutscene : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -243,11 +259,11 @@ namespace ResType
 		static void		CreateInstance();	//	@9164C0
 	};
 
-	class Sound : Resource
+	class Sound : public Resource
 	{
 	protected:
 		int				field_1C;
-		int*			field_20;
+		class StreamBuffer*	m_MonoStream;
 		int				field_24;
 
 	public:
@@ -258,7 +274,7 @@ namespace ResType
 		static void		CreateInstance();	//	@85C010
 	};
 
-	class StreamedSoundInfo : Resource
+	class StreamedSoundInfo : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -273,7 +289,7 @@ namespace ResType
 		static void		CreateInstance();	//	@85C8D0
 	};
 
-	class Animation : Resource
+	class Animation : public Resource
 	{
 	protected:
 		int				field_1C;
@@ -296,7 +312,7 @@ namespace ResType
 		static void		CreateInstance();	//	@900980
 	};
 
-	class MeshColor : Resource
+	class MeshColor : public Resource
 	{
 	protected:
 		int				field_1C;

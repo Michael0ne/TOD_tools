@@ -111,8 +111,6 @@ namespace Audio {
 		void		CreateStaticStreamBuffer();	//	@
 	};
 
-	extern StreamedSoundBuffers* g_StreamedSoundBuffers;
-
 	static float	DefaultFxVolume;	//	@A09230
 	static float	DefaultAmbienceVolume;	//	@A09234
 	static float	DefaultMusicVolume;	//	@A09238
@@ -135,5 +133,7 @@ namespace Audio {
 	void		RememberSoundRenderer(SoundSystemType soundRendererId);	//	@43D210
 	SoundSystemType		GetSoundRenderer();	//	@43D280
 }
+
+extern Audio::StreamedSoundBuffers* g_StreamedSoundBuffers;
 
 static_assert(sizeof(Audio::StreamedSoundBuffers) == STREAMEDSOUNDBUFFERS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(StreamedSoundBuffers));

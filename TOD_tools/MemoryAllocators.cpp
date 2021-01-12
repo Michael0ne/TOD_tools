@@ -42,12 +42,6 @@ Allocator::~Allocator()
 		free(m_SystemAllocators);
 }
 
-void Allocator::scalar_destructor(bool freeMemory)
-{
-	if (freeMemory)
-		Allocators::ReleaseMemory(this, false);
-}
-
 void* Allocator::Allocate(size_t size, int filler, int unk)
 {
 	return Allocate_A(size, filler, unk);
@@ -100,9 +94,9 @@ const char* Allocator::GetAllocatorName() const
 	return "Unknown";
 }
 
-void Allocator::SetFieldC(char unk)
+void Allocator::SetProfilerEnabled(bool enabled)
 {
-	field_C = unk;
+	m_ProfilerEnabled = enabled;
 }
 
 int Allocator::stub19()
@@ -201,7 +195,7 @@ void* SystemSubAllocator::Allocate_A(size_t size, int filler, int unk)
 {
 	++m_AllocationsTotal;
 
-	if (field_C)
+	if (m_ProfilerEnabled)
 		stub9();
 
 	return malloc(size);
@@ -211,7 +205,7 @@ void* SystemSubAllocator::AllocateAligned(size_t size, size_t alignment, int fil
 {
 	++m_AllocationsTotal;
 
-	if (field_C)
+	if (m_ProfilerEnabled)
 		stub9();
 
 	if (alignment > 1)
@@ -242,7 +236,7 @@ void* SystemSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int 
 {
 	if (oldptr)
 	{
-		if (field_C)
+		if (m_ProfilerEnabled)
 			stub9();
 
 		if (newsize)
@@ -255,7 +249,7 @@ void* SystemSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int 
 	}else{
 		++m_AllocationsTotal;
 
-		if (field_C)
+		if (m_ProfilerEnabled)
 			stub9();
 
 		return malloc(newsize);
@@ -577,8 +571,8 @@ SingletonSubAllocator::SingletonSubAllocator()
 {
 	MESSAGE_CLASS_CREATED(SingletonSubAllocator);
 
-	field_24 = NULL;
-	field_28 = NULL;
+	m_Instantiated = false;
+	m_InstancePtr = nullptr;
 }
 
 void Allocators::CreateAllocators()
@@ -622,7 +616,7 @@ void Allocators::InitAllocator(Allocator* _alloc, int _allocindex, const char* _
 	_alloc->SetNameAndAllocatedSpaceParams(BuffersPtr[_allocindex], _allocname, _allocsize);
 
 	if (_alloc->field_1C)
-		((Allocator*)(_alloc->field_1C))->scalar_destructor(false);
+		delete _alloc->field_1C;
 
 }
 
@@ -647,15 +641,15 @@ void Allocators::_4776A0()
 			}
 		}
 
-		if (!(((unsigned int)v1 < (((unsigned int)v0 + 7) & 0xFFFFFFF8))) && ((unsigned int)v1 != (((unsigned int)v0 + 7) & 0xFFFFFFF8)))
+		if (v1 > (void*)(((unsigned int)v0 + 7) & 0xFFFFFFF8))
 		{
-			_A3AFE8[TotalAllocators + 1].m_AllocatedSpacePtr = v0;
-			_A3AFE8[TotalAllocators + 1].m_Allocator = AllocatorsList[DEFAULT];
+			_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
+			_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
 			TotalAllocators++;
 		}
 
-		_A3AFE8[TotalAllocators + 1].m_AllocatedSpacePtr = AllocatorsList[v2]->GetAllocatedSpacePtr();
-		_A3AFE8[TotalAllocators + 1].m_Allocator = AllocatorsList[v2];
+		_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = AllocatorsList[v2]->GetAllocatedSpacePtr();
+		_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[v2];
 		TotalAllocators++;
 
 		v0 = (void*)((unsigned int)AllocatorsList[v2]->GetAllocatedSpacePtr() + AllocatorsList[v2]->GetAllocatedSpaceSize());
@@ -663,8 +657,8 @@ void Allocators::_4776A0()
 		v19[v2] = 1;
 	}
 
-	_A3AFE8[TotalAllocators + 1].m_AllocatedSpacePtr = v0;
-	_A3AFE8[TotalAllocators + 1].m_Allocator = AllocatorsList[DEFAULT];
+	_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
+	_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
 	TotalAllocators++;
 }
 

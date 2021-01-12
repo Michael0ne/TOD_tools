@@ -1,6 +1,5 @@
 #include "Scene.h"
 #include "SceneSaveLoad.h"
-#include "Builtin.h"
 #include "LogDump.h"
 #include "Performance.h"
 
@@ -10,7 +9,7 @@ int& Scene::_A3DCD0 = *(int*)0xA3DCD0;
 int& Scene::_A3DCE4 = *(int*)0xA3DCE4;
 int& Scene::NewFrameNumber = *(int*)0xA3DCE0;
 bool& Scene::IsRewindBufferInUse = *(bool*)0xA1207C;
-Scene* tScene = nullptr;
+ScriptType_Entity* tScene = nullptr;
 
 #pragma message(TODO_IMPLEMENTATION)
 Scene::Scene() : Folder_()
@@ -26,7 +25,9 @@ Scene::Scene() : Folder_()
 	m_List_7 = List<int>(0x27B00);
 	m_List_8 = List<int>(0x27B00);
 
-	m_sSaveDir = String();
+	m_sSaveDir;
+
+	SceneInstance = this;
 
 	m_PlayMode = MODE_UNKNOWN_1;
 	m_NodesWithUpdateOrBlockingScripts = 0;
@@ -34,8 +35,6 @@ Scene::Scene() : Folder_()
 	m_Buffer_1 = new Scene_Buffer(0, 36, 2);
 	m_Buffer_2 = new Scene_Buffer(0, 36, 2);
 	//	m_pSharedProbe = tCollisionProbe->CreateNode();
-
-	patch(0xA3DCBC, this, 4);
 
 	m_EditorCamera = nullptr;
 	m_GameCamera = nullptr;

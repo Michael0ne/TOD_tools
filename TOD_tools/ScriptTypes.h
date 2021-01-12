@@ -311,6 +311,7 @@ namespace ScriptTypes
 
 	#define SCRIPT_TYPE_ENTITY_CLASS_SIZE 120
 
+	//	TODO: rename to 'EntityType' as in original code, remove from namespace.
 	class ScriptType_Entity : public ScriptType
 	{
 	protected:

@@ -32,9 +32,7 @@ protected:
 
 public:
 	Allocator();	//	@47AB30
-	~Allocator();
-
-	virtual void				scalar_destructor(bool freeMemory);
+	virtual						~Allocator();	//	@478410
 
 	virtual void*				Allocate(size_t size, int filler, int unk);
 	virtual void*				Allocate_A(size_t size, int filler, int unk) = 0;
@@ -54,7 +52,7 @@ public:
 	virtual int					GetTotalAllocations();
 	virtual int					stub16();
 	virtual const char*			GetAllocatorName() const;
-	virtual void				SetFieldC(char unk);
+	virtual void				SetProfilerEnabled(bool);
 	virtual int					stub19();
 	virtual int					stub20();
 	virtual int					stub21();
@@ -294,11 +292,11 @@ class SingletonSubAllocator : public Allocator
 {
 protected:
 	bool	m_Instantiated;
-	void* m_InstancePtr;
+	void*	m_InstancePtr;
 
 public:
 	SingletonSubAllocator();	//	@47A690
-	~SingletonSubAllocator();
+	~SingletonSubAllocator() {};	//	NOTE: no destructor present.
 };
 
 #define ALLOCATORS_CLASS_SIZE 1160

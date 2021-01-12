@@ -208,7 +208,7 @@ Blocks::Blocks(bool loadBlocks)
 
 	m_ResourceTypesList.AddElement(nullptr);
 
-	field_1C8 = field_1CC = field_1D0 = field_1DC = field_1D4 = NULL;
+	field_1C8 = field_1CC = field_1D0 = field_1DC = m_EngineVersionTimestamp = NULL;
 	m_BlockType = UNKNOWN;
 	field_108 = 2;
 }
