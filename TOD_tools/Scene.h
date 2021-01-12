@@ -89,7 +89,7 @@ protected:
 	List<int> m_List_6;
 	List<int> m_List_7;
 	List<int> m_List_8;
-	int field_16C;
+	int m_SaveLoadState;	//	NOTE: 1 - saving game, 2 - loading game.
 	int m_nSavePointOperationError;
 	String m_sSaveDir;
 	int m_nMemoryCardIndex;
@@ -149,9 +149,11 @@ public:
 			Allocators::ReleaseMemory(ptr, 0);
 	}
 
+	static Scene*	SceneInstance;	//	@A3DCBC
+
 	static void		TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk);	//	@892F10
 };
 
-extern Scene* tScene;
+extern ScriptType_Entity* tScene;	//	@A3DCB8
 
 static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Scene));

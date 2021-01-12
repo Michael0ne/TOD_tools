@@ -1,28 +1,35 @@
 #include "GFXEffect.h"
+#include "Blocks.h"
 
-int& GFXEffect::TotalCreated = *(int*)0xA3E050;
+int GFXEffect::TotalCreated;	//	@A3E050;
+
+GFXEffect::~GFXEffect()
+{
+	delete field_50;
+	delete field_54;
+	delete field_58;
+	
+	m_EffectProperties.ClearEffectProperties();
+
+	TotalCreated--;
+}
+
+void GFXEffectProperties::ClearEffectProperties()
+{
+	g_Blocks->DecreaseResourceReferenceCount(m_VignetteTexture);
+	delete m_VignetteTexture;
+
+	g_Blocks->DecreaseResourceReferenceCount(m_NoiseTexture);
+	delete m_NoiseTexture;
+}
 
 GFXEffect::GFXEffect() : Node(NODE_MASK_QUADTREE)
 {
 	MESSAGE_CLASS_CREATED(GFXEffect);
 
-	m_VignetteTexture = nullptr;
-	m_NoiseTexture = nullptr;
+	m_EffectProperties;
 
-	field_8C = field_9C = 1;
-	field_50 = field_54 = field_58 = 0;
-
-	m_VignetteColor = ColorRGB();
-
-	m_Brightness = 1.0f;
-	m_Saturation = 1.0f;
-	m_NoiseBlendMode = BLEND_ADD;
-	m_VignetteShape = 2.0f;
-	m_MotionBlur = 0.0f;
-	m_LightBleeding = 0.0f;
-	m_VignetteIntensity = 0.0f;
-	m_VignetteSize = 0.0f;
-	m_NoiseIntensity = 0.0f;
+	field_50 = field_54 = field_58 = nullptr;
 
 	++TotalCreated;
 }

@@ -41,17 +41,17 @@ namespace GameConfig
 	{
 		MESSAGE_CLASS_CREATED(Config);
 
-		m_Initialized = 0;
-		m_GameName = String();
-		m_ConfigFilePath = String();
-		m_sUnkString_1 = String();
-		m_sUnkString_2 = String();
-		m_SceneName = String();
+		m_Initialized = false;
+		m_GameName;
+		m_ConfigFilePath;
+		m_sUnkString_1;
+		m_sUnkString_2;
+		m_SceneName;
 		m_ConfigurationVariables = nullptr;
 		m_SessionVariables = nullptr;
 		field_4C = 0;
-		m_ShouldStartGame = 0;
-		m_vBackgroundSize = Vector4<float>();
+		m_ShouldStartGame = false;
+		m_vBackgroundSize;
 		m_nGlobalPropertiesListCRC = 0;
 		m_nGlobalCommandsListCRC = 0;
 		m_nTypesListCRC = 0;
@@ -359,10 +359,10 @@ namespace GameConfig
 		}
 
 		//	Init sound renderer.
-		Audio::g_StreamedSoundBuffers = new Audio::StreamedSoundBuffers(1, 44100);
+		g_StreamedSoundBuffers = new Audio::StreamedSoundBuffers(1, 44100);
 
 		if (m_ConfigurationVariables->IsVariableSet("sound_max_concurrent_sounds"))
-			Audio::g_StreamedSoundBuffers->m_nMaxConcurrentSounds = m_ConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
+			g_StreamedSoundBuffers->m_nMaxConcurrentSounds = m_ConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
 
 		//	Override default volume values.
 		if (m_ConfigurationVariables->IsVariableSet("change_sound_group_volume_scaling") && m_ConfigurationVariables->GetParamValueBool("change_sound_group_volume_scaling")) {
@@ -380,7 +380,7 @@ namespace GameConfig
 		}
 
 		//	Sound is enabled if not overridden.
-		Audio::g_StreamedSoundBuffers->m_Sound = !m_ConfigurationVariables->IsVariableSet("sound") ||
+		g_StreamedSoundBuffers->m_Sound = !m_ConfigurationVariables->IsVariableSet("sound") ||
 													m_ConfigurationVariables->GetParamValueBool("sound");
 
 		//	NOTE: what is this parameter?
@@ -529,18 +529,18 @@ namespace GameConfig
 
 		if (!SceneSet)
 			if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-				((ScriptTypes::ScriptType_Entity*)tScene)->CreateNode();
+				tScene->CreateNode();
 
 		//	TODO: implementation! Scene is not initialized here!
 		if (m_ConfigurationVariables->IsVariableSet("fixedframerate"))
 		{
-			tScene->m_FixedFramerate = true;
-			tScene->m_FixedFramerateVal = 1.0f / m_ConfigurationVariables->GetParamValueFloat("fixedframerate");
+			Scene::SceneInstance->m_FixedFramerate = true;
+			Scene::SceneInstance->m_FixedFramerateVal = 1.0f / m_ConfigurationVariables->GetParamValueFloat("fixedframerate");
 		}
 
 		if (!Script::Fullscreen)
 		{
-			Camera* sceneCamera = (Camera*)tScene->m_FirstChild;
+			Camera* sceneCamera = (Camera*)Scene::SceneInstance->m_FirstChild;
 			if (sceneCamera)
 			{
 				do
@@ -554,8 +554,8 @@ namespace GameConfig
 							if (!editorCamera)
 								break;
 						}
-						tScene->m_GameCamera = sceneCamera;
-						tScene->UpdateActiveCameraPosition();
+						Scene::SceneInstance->m_GameCamera = sceneCamera;
+						Scene::SceneInstance->UpdateActiveCameraPosition();
 					}
 					sceneCamera = (Camera*)sceneCamera->m_NextSibling;
 				} while (sceneCamera);
@@ -586,7 +586,7 @@ namespace GameConfig
 			m_ShouldStartGame = false;
 
 		if (m_ShouldStartGame)
-			tScene->Start();
+			Scene::SceneInstance->Start();
 
 		if (m_ConfigurationVariables->IsVariableSet("ps2_play_ctrl") &&
 			m_ConfigurationVariables->GetParamValueBool("ps2_play_ctrl"))
@@ -706,35 +706,20 @@ namespace GameConfig
 #pragma message(TODO_IMPLEMENTATION)
 	void Config::UninitialiseGame()
 	{
-		//	g_Scene->_895E40();
-		//	ScriptTypes::Release();
-		//	g_Light->ClearList();
+		Scene::SceneInstance->Destroy();
+		ClearScriptLists();	//	@863380
+		ClearLightsList();	//	@881260	//	NOTE: only referenced from here, possible candidate for inline.
+
 		g_Window->SetCursorReleased(true);
 
-		if (m_ConfigurationVariables)
-			//	m_pConfigurationVariables->Release();	//	@107B0
-			delete m_ConfigurationVariables;
-
-		if (g_Blocks)
-			//	g_Blocks->Release();	//	@877250
-			delete g_Blocks;
-
-		if (g_InputMouse)
-			delete g_InputMouse;
-
-		if (g_InputKeyboard)
-			delete g_InputKeyboard;
-
-		if (Input::Gamepad::GetGameControllerByIndex(0))
-			delete g_InputGamepad[0];
-
-		if (g_Renderer)
-			//	g_Renderer->Release();	//	@421470
-			delete g_Renderer;
-
-		if (g_Window) {
-			delete g_Window;
-		}
+		delete m_ConfigurationVariables;
+		delete g_Blocks;
+		delete g_InputMouse;
+		delete g_InputKeyboard;
+		delete Input::Gamepad::GetGameControllerByIndex(0);
+		delete g_Renderer;
+		delete g_StreamedSoundBuffers;
+		delete g_Window;
 
 		CoUninitialize();
 
@@ -742,19 +727,17 @@ namespace GameConfig
 			m_UninitialiseCallback->UninitialiseGameCallback(1);
 
 		m_Initialized = 0;
-
-		LogDump::LogA("Game uninitialized!\n");
 	}
 
 	bool Config::OpenScene(const char* scene)
 	{
-		((ScriptTypes::ScriptType_Entity*)tScene)->CreateNode();
+		tScene->CreateNode();
 		g_Blocks->SetSceneName(scene);
-		tScene->Load(scene);
-		tScene->UpdateLoadedBlocks(0, 0);
-		tScene->m_TimeMs = Performance::GetMilliseconds();
-		tScene->RefreshChildNodes();
-		tScene->FinishCreation("Scene instantiate all completed.");
+		Scene::SceneInstance->Load(scene);
+		Scene::SceneInstance->UpdateLoadedBlocks(0, 0);
+		Scene::SceneInstance->m_TimeMs = Performance::GetMilliseconds();
+		Scene::SceneInstance->RefreshChildNodes();
+		Scene::SceneInstance->FinishCreation("Scene instantiate all completed.");
 
 		return true;
 	}

@@ -131,7 +131,7 @@ void Node::nullsub_6(int)
 	return;
 }
 
-String* Node::_484E80(String* unk)
+String* Node::GetResourceName(String* unk)
 {
 	*unk = String();
 

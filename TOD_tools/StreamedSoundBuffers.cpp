@@ -3,10 +3,10 @@
 #include "Window.h"
 #include "Performance.h"
 
+Audio::StreamedSoundBuffers* g_StreamedSoundBuffers = nullptr;
+
 namespace Audio
 {
-	StreamedSoundBuffers* g_StreamedSoundBuffers = nullptr;
-
 	void SetDefaultFxVolume(float vol)
 	{
 		DefaultFxVolume = vol;

@@ -15,7 +15,7 @@ namespace ResType
 		ResTypeList.AddElement(this);
 		//m_Creator = creator;
 		field_2C = NULL;
-		field_2D = NULL;
+		m_VerifyChecksum = NULL;
 		
 		SetResourceAlignment(16, 0);
 		SetResourceAlignment(16, 1);
@@ -284,7 +284,7 @@ namespace ResType
 		rtFragment->SetResourceAlignment(16, 2);
 		rtFragment->SetResourceAlignment(16, 0);
 
-		rtFragment->field_2D = true;
+		rtFragment->m_VerifyChecksum = true;
 	}
 
 	void* Movie::GetInstancePtr() const
@@ -351,7 +351,7 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(Sound);
 
-		field_20 = nullptr;	//	NOTE: this object pointer has VMT. Maybe it's StreamBuffer?
+		m_MonoStream = nullptr;	//	NOTE: this object pointer has VMT. Maybe it's StreamBuffer?
 	}
 
 	void Sound::CreateInstance()
@@ -428,7 +428,7 @@ namespace ResType
 		rtAnimation->SetResourceAlignment(16, 2);
 		rtAnimation->SetResourceAlignment(16, 0);
 
-		rtAnimation->field_2D = true;
+		rtAnimation->m_VerifyChecksum = true;
 	}
 
 	void* MeshColor::GetInstancePtr() const
