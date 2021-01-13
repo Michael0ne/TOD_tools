@@ -103,12 +103,3 @@ extern void debug (char * message, ...);
 
 //	Each class applies it's patches in .cpp file, to be called in dllmain.cpp.
 extern inline void PATCH_WINDOW();
-extern inline void PATCH_RENDERER();
-
-const D3DMATRIX	IdentityMatrix =
-{
-	{1.f, 0.f, 0.f, 0.f,
-	0.f, 1.f, 0.f, 0.f,
-	0.f, 0.f, 1.f, 0.f,
-	0.f, 0.f, 0.f, 1.f}
-};

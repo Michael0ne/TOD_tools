@@ -171,7 +171,7 @@ private:
 	List<GfxInternal_Dx9_Texture> m_TexturesList;
 	Scene_Buffer68* m_Buffer68;
 	Scene_Buffer108* m_Buffer108;
-	int m_RenderBufferTotal;
+	unsigned int m_RenderBufferTotal;
 	int field_20;
 	Buffer276* m_RenderBufferArray;
 	float m_TimeDelta;

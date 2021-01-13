@@ -11,7 +11,7 @@ protected:
 	int*			m_Unknown;
 };
 
-template <typename T>
+template <typename T, typename K>
 class Dictionary
 {
 protected:

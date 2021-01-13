@@ -1,5 +1,6 @@
 #include "SoundSlot.h"
 #include "Scene.h"
+#include "StreamedSoundBuffers.h"
 
 #pragma message(TODO_IMPLEMENTATION)
 
@@ -20,20 +21,23 @@ const char* SoundSlot::GetStreamingSound()
 	return m_StreamingSoundName;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void SoundSlot::DeallocateStream()
 {
 	if (!m_StreamBuffer)
 		return;
 
-	for (; m_SoundEmittersList.m_Elements;)
-		*(m_SoundEmittersList.m_Elements++).field_24 = NULL;
+	//for (; m_SoundEmittersList.m_Elements;)
+		//*(m_SoundEmittersList.m_Elements++).field_24 = NULL;
 	m_SoundEmittersList.m_CurrIndex = NULL;
 
-	delete m_StreamBuffer;
+	//delete m_StreamBuffer;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void SoundSlot::StopSound()
 {
+	/*
 	if (!m_SoundResource ||
 		!m_StreamBuffer ||
 		!g_StreamedSoundBuffers ||
@@ -48,6 +52,7 @@ void SoundSlot::StopSound()
 
 	if (Scene::SceneInstance->m_PlayMode == 1)
 		DeallocateStream();
+	*/
 }
 
 #pragma message(TODO_IMPLEMENTATION)

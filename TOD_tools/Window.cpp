@@ -47,9 +47,9 @@ void Window::SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution)
 	SetWindowPos(m_hWindow, 0, 0, 0, resolution.Width, resolution.Height, SWP_NOMOVE);
 }
 
-void Window::SetWindowResolutionDontMove(const D3DDISPLAYMODE& resolution)
+void Window::SetWindowResolutionDontMove(const Vector2<float>& resolution)
 {
-	tagRECT		Rect = { 0, 0, (LONG)resolution.Width, (LONG)resolution.Height };
+	tagRECT		Rect = { 0, 0, (LONG)resolution.x, (LONG)resolution.y };
 	DWORD		dwMenuName = GetClassLongA(m_hWindow, GCL_MENUNAME);
 	DWORD		dwStyle = GetWindowLongA(m_hWindow, GWL_STYLE);
 
@@ -146,10 +146,10 @@ void Window::UpdateVisibility()
 		m_bVisible = bWindowVisible;
 
 		if (bWindowVisible) {
-			Audio::g_StreamedSoundBuffers->SetGlobalPause(false);
+			g_StreamedSoundBuffers->SetGlobalPause(false);
 		}else{
-			Audio::g_StreamedSoundBuffers->SetGlobalPause(true);
-			Audio::g_StreamedSoundBuffers->MeasureWaitForSoftPause();
+			g_StreamedSoundBuffers->SetGlobalPause(true);
+			g_StreamedSoundBuffers->MeasureWaitForSoftPause();
 		}
 	}
 }
@@ -464,7 +464,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 			}
 			if (Msg != WM_ERASEBKGND) {
 				if (Msg == WM_ACTIVATEAPP && !wParam && g_RendererDx)
-					if (g_RendererDx->IsResolutionDetected())
+					if (g_RendererDx->m_Windowed)
 						ShowWindow(hWnd, SW_MINIMIZE);
 				return DefWindowProc(hWnd, Msg, wParam, lParam);
 			}
@@ -485,13 +485,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 				g_Window->m_pMenuItemClickedCallback(wParam);
 			return DefWindowProc(hWnd, Msg, wParam, lParam);
 		}
-		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && g_RendererDx->IsResolutionDetected())
+		if (Msg == WM_SYSCOMMAND && (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) && g_RendererDx->m_Windowed)
 			return 1;
 		
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
 
-	if (!g_RendererDx->IsResolutionDetected())
+	if (!g_RendererDx->m_Windowed)
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 
 	return 1;

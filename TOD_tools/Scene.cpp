@@ -9,7 +9,8 @@ int& Scene::_A3DCD0 = *(int*)0xA3DCD0;
 int& Scene::_A3DCE4 = *(int*)0xA3DCE4;
 int& Scene::NewFrameNumber = *(int*)0xA3DCE0;
 bool& Scene::IsRewindBufferInUse = *(bool*)0xA1207C;
-ScriptType_Entity* tScene = nullptr;
+ScriptTypes::ScriptType_Entity* tScene = nullptr;
+Scene* Scene::SceneInstance = nullptr;
 
 #pragma message(TODO_IMPLEMENTATION)
 Scene::Scene() : Folder_()
@@ -65,10 +66,10 @@ void Scene::Start()
 	NewFrameNumber = NULL;
 
 	//	FIXME: this is stupid! Make something about it, like templated structure for passing parameters...
-	const char* params[] = { NULL, "start" };
-	tBuiltin->GetMessageId(params);
-	if ((int)params[0] >= 0)
-		TriggerScriptForAllChildren((int)params[0], this, nullptr);
+	//const char* params[] = { NULL, "start" };
+	//tBuiltin->GetMessageId(params);
+	//if ((int)params[0] >= 0)
+		//TriggerScriptForAllChildren((int)params[0], this, nullptr);
 
 	_896810();
 	g_SceneSaveLoad->_874940();

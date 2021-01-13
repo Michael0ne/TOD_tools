@@ -101,7 +101,7 @@ namespace ResType
 		MESSAGE_CLASS_DESTROYED(Resource);
 
 		if (m_GlobalResourceId > 0)
-			g_Blocks->m_ResourceTypesList[6].m_Elements[m_GlobalResourceId] = nullptr;
+			g_Blocks->m_ResourceTypesList.m_Elements[m_GlobalResourceId] = nullptr;
 
 		--TotalResourcesCreated;
 
@@ -124,6 +124,11 @@ namespace ResType
 	void Resource::_8513E0(unsigned char a1)
 	{
 		m_ReferenceCount ^= (m_ReferenceCount ^ (a1 << 19)) & 0x80000;
+	}
+
+	#pragma message(TODO_IMPLEMENTATION)
+	void Resource::ApplyLoadedResource(ResourceHolder&)
+	{
 	}
 
 	void* Texture::GetInstancePtr() const
@@ -224,16 +229,10 @@ namespace ResType
 		MESSAGE_CLASS_CREATED(Model);
 
 		m_List_1 = List<int>(0x18B00);
-		m_List_2 = List<int>(0x18B00);
 
 		field_40 = NULL;
 		field_54 = NULL;
-		field_58 = 1;
 		field_5C = 0xFFFFFFF0 & 0xFFFFFF2F | 0x20;
-		field_44 = NULL;
-		field_48 = NULL;
-		field_4C = NULL;
-		field_50 = NULL;
 
 		_8513E0(1);
 	}

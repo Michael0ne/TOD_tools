@@ -225,15 +225,9 @@ namespace ScriptTypes
 	{
 		MESSAGE_CLASS_CREATED(ScriptType_Entity);
 
-		m_Properties = {};
-		field_40 = 0x00000032 | 0x10000;
 		field_70 = 1;
 		m_Creator = nullptr;
 		m_Parent = nullptr;
-		m_ParentNode = nullptr;
-
-		m_PropertiesList_1 = List<EntityProperties>(0x19300);
-		m_PropertiesList_2 = List<EntityProperties>(0x19300);
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -247,8 +241,8 @@ namespace ScriptTypes
 
 	void ScriptType_Entity::InheritFrom(ScriptType_Entity* from)
 	{
-		field_6C = from->field_74 ? from->m_Parent->m_PropertiesList_1.m_CurrIndex + from->m_Parent->field_6C : from->m_PropertiesList_1.m_CurrIndex + from->field_6C;
-		field_70 = from->field_74 ? from->m_Parent->m_PropertiesList_2.m_CurrIndex + from->m_Parent->field_70 : from->m_PropertiesList_2.m_CurrIndex + from->field_70;
+		//field_6C = from->m_HasParent ? from->m_Parent->m_PropertiesList_1.m_CurrIndex + from->m_Parent->field_6C : from->m_PropertiesList_1.m_CurrIndex + from->field_6C;
+		//field_70 = from->m_HasParent ? from->m_Parent->m_PropertiesList_2.m_CurrIndex + from->m_Parent->field_70 : from->m_PropertiesList_2.m_CurrIndex + from->field_70;
 		m_Creator = from->m_Creator;
 		m_Parent = from;
 	}

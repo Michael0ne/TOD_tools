@@ -95,7 +95,7 @@
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>user32.lib;dxguid.lib;dinput8.lib;dsound.lib;d3d9.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;dxguid.lib;dinput8.lib;dsound.lib;d3d9.lib;d3dx9.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <AssemblyDebug>true</AssemblyDebug>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>

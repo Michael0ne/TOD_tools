@@ -707,8 +707,8 @@ namespace GameConfig
 	void Config::UninitialiseGame()
 	{
 		Scene::SceneInstance->Destroy();
-		ClearScriptLists();	//	@863380
-		ClearLightsList();	//	@881260	//	NOTE: only referenced from here, possible candidate for inline.
+		//ClearScriptLists();	//	@863380
+		//ClearLightsList();	//	@881260	//	NOTE: only referenced from here, possible candidate for inline.
 
 		g_Window->SetCursorReleased(true);
 

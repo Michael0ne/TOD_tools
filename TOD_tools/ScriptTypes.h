@@ -441,6 +441,7 @@ namespace ScriptTypes
 		String		m_Name;
 
 	public:
+		inline BuiltinHandler() {};
 		inline BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const char* _name);
 	};
 
