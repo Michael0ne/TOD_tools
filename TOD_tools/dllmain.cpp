@@ -90,7 +90,6 @@ void MemoryHook()
 
 	//	Apply reversed and implemented classes.
 	PATCH_WINDOW();
-	PATCH_RENDERER();
 }
 
 void MemoryUnHook()

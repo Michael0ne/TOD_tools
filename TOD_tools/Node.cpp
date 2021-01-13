@@ -185,10 +185,10 @@ Node::Node(unsigned char allocationBitmask)
 	m_Flags.m_FlagBits._15 = true;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 Node::~Node()
 {
 	MESSAGE_CLASS_DESTROYED(Node);
-
 }
 
 const char* Node::GetTypename() const
@@ -199,10 +199,11 @@ const char* Node::GetTypename() const
 #pragma message(TODO_IMPLEMENTATION)
 const char* Node::GetScript() const
 {
-	if (m_ScriptEntity->m_ParentNode)
-		return nullptr;//return m_ScriptEntity->m_ParentNode->m_NodeName.m_szString;
-	else
-		return NULL;
+	//if (m_ScriptEntity->m_ParentNode)
+		//return nullptr;//return m_ScriptEntity->m_ParentNode->m_NodeName.m_szString;
+	//else
+		//return NULL;
+	return nullptr;
 }
 
 unsigned int Node::GetFlags() const
@@ -222,10 +223,10 @@ void Node::SetParam(const int index, const void* param, const ScriptTypes::Scrip
 	unsigned char paramInd = 1 << (index & 7);
 	char* paramsMap = (char*)this + index / 8;
 
-	if ((paramInd & paramsMap[8]) == NULL)
-		_869EC0(index, param, type);
-	if ((paramInd & paramsMap[13]) == NULL)
-		_869F80(index, param, type);
+	//if ((paramInd & paramsMap[8]) == NULL)
+		//_869EC0(index, param, type);
+	//if ((paramInd & paramsMap[13]) == NULL)
+		//_869F80(index, param, type);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -242,12 +243,12 @@ Vector4f* Node::GetPos(Vector4f& outVec)
 		return (outVec = Vector4f(), &outVec);
 }
 
-void Node::GetWorldMatrix(D3DMATRIX& outMat)
+void Node::GetWorldMatrix(D3DXMATRIX& outMat)
 {
 	if (m_Position)
 		m_Position->GetMatrixForNode(outMat);
 	else
-		outMat = IdentityMatrix;
+		D3DXMatrixIdentity(&outMat);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -275,7 +276,7 @@ void Node::SetParent(const Node* parent)
 	}
 
 	if (!m_QuadTree && m_Parent)
-		SetChildrenPositionToSame();	//	@88D1E0
+		;//SetChildrenPositionToSame();	//	@88D1E0
 }
 
 void Node::SetName(const char* name)
@@ -308,7 +309,7 @@ void NodePosition::GetOrientation(Orientation* outOrient)
 
 void NodePosition::CopyPositionToMatrix(D3DMATRIX* outMat)
 {
-	D3DMATRIX tempMat;
+	D3DXMATRIX tempMat;
 
 	((Node*)(this - 9))->GetWorldMatrix(tempMat);
 	outMat->_11 = tempMat._41;
@@ -320,7 +321,7 @@ void NodePosition::CopyPositionToMatrix(D3DMATRIX* outMat)
 #pragma message(TODO_IMPLEMENTATION)
 Orientation* NodePosition::GetWorldRotation(Orientation* rot)
 {
-	D3DMATRIX tempMat;
+	D3DXMATRIX tempMat;
 
 	((Node*)(this - 9))->GetWorldMatrix(tempMat);
 

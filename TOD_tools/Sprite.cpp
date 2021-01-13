@@ -20,7 +20,8 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	m_Flags = m_Flags & 0xFF81FFF0 | 0x800000;
 	m_Angle = 0.0f;
 	m_ConstSizeFarShrink = 25;
-	m_EnableMouseInput = m_EnableMouseInput & 0xFFFFFFFC;
+	m_EnableMouseInput.a = m_EnableMouseInput.b = m_EnableMouseInput.c = 0xFF;	//	TODO: not sure if this is correct.
+	m_EnableMouseInput.State = NULL;
 	m_v1u = m_v1v = 0.0f;
 	m_v2u = 0.0f; m_v2v = 1.0f;
 	m_v3u = m_v3v = 1.0f;

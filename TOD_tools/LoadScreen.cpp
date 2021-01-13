@@ -7,7 +7,8 @@ LoadScreenNode* tLoadScreenNode = nullptr;	//	@A3D7E4
 
 void LoadScreenNode::Activate_Impl()
 {
-	g_LoadScreenInfo->SetTexturePath(g_Blocks->GetResourcePath(m_ImageFile.m_szString));
+	g_Blocks->GetResourcePath(m_ImageFile, m_ImageFile.m_szString);
+	g_LoadScreenInfo->SetTexturePath(m_ImageFile.m_szString);
 	g_Progress->SetLoadScreenSprite(m_LoadBarSprite);
 	g_LoadScreenInfo->Enable(m_RenderOnTopNode);
 }

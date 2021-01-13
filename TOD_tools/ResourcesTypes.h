@@ -92,9 +92,10 @@ namespace ResType
 		class Resource* m_Resource;
 		unsigned int	m_Status;	//	NOTE: 1 - loaded, to be loaded; 0 - ?
 
-		~ResourceHolder();	//	NOTE: looks like always inlined.
+		ResourceHolder() {};
+		~ResourceHolder() {};	//	NOTE: looks like always inlined.
 
-		void			LoadResourceFromBlock(const char* _pathname);	//	@8FFC10
+		void			LoadResourceFromBlock(const char* _pathname) {};	//	@8FFC10
 	};
 
 	//	NOTE: this class is actually inherited from another class, but parent doesn't seem to do anything important, so skipping it now.
@@ -129,6 +130,7 @@ namespace ResType
 
 		const char*		AddResToOpenListAndReturnName();	//	@851720
 		void			_8513E0(unsigned char);	//	@8513E0
+		void			ApplyLoadedResource(ResourceHolder&);
 
 		static unsigned int	LastOpenResourceIndex;	//	@A3BE14
 	};
@@ -193,7 +195,7 @@ namespace ResType
 	protected:
 		int				field_1C;
 		List<int>		m_List_1;
-		List<ModelPivot> m_PivotList;
+		List<class ModelPivot> m_PivotList;
 		int*			field_40;
 		Vector4f		m_BoundingRadius;
 		int*			field_54;
@@ -261,6 +263,7 @@ namespace ResType
 
 	class Sound : public Resource
 	{
+		friend class SoundSlot;
 	protected:
 		int				field_1C;
 		class StreamBuffer*	m_MonoStream;

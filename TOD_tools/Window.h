@@ -30,7 +30,7 @@ public:
 	bool			ProcessMessages();	//	@43B950
 	void			SetMenuClickCallback(int (__stdcall* pCallback)(WPARAM)) {m_pMenuItemClickedCallback = pCallback;};	//	@43B9C0
 	void			SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution);	//	@43B9D0
-	void			SetWindowResolutionDontMove(const D3DDISPLAYMODE& resolution);	//	@43B9F0
+	void			SetWindowResolutionDontMove(const Vector2<float>& resolution);	//	@43B9F0
 	void			_GetWindowRect(Vector2<LONG>& outRect);	//	@43BA70
 	void			GetTopCorner(Vector2<LONG>& outRect);	//	@43BAD0
 	void			GetWindowCenterRelative(Vector2<LONG>& outRect);	//	@43BB00

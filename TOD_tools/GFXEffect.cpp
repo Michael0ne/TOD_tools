@@ -3,11 +3,12 @@
 
 int GFXEffect::TotalCreated;	//	@A3E050;
 
+#pragma message(TODO_IMPLEMENTATION)
 GFXEffect::~GFXEffect()
 {
-	delete field_50;
-	delete field_54;
-	delete field_58;
+	//delete field_50;
+	//delete field_54;
+	//delete field_58;
 	
 	m_EffectProperties.ClearEffectProperties();
 

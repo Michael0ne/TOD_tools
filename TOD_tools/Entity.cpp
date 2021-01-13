@@ -53,6 +53,7 @@ int Entity::GetId() const
 #pragma message(TODO_IMPLEMENTATION)
 int Entity::GetScriptPriority() const
 {
+	return NULL;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -107,16 +108,14 @@ void Entity::LoadScriptDataFromFile(int* params)
 #pragma message(TODO_IMPLEMENTATION)
 void Entity::SetScript(ScriptTypes::ScriptType_Entity* script)
 {
-	if (field_18)
-		if (m_ScriptEntity)
+	//if (field_18)
+		//if (m_ScriptEntity)
 			//m_ScriptEntity->m_ParentNode->_489C90(this);
-			;
 
-	m_ScriptEntity = script;
+	//m_ScriptEntity = script;
 
-	if (script->m_ParentNode)
+	//if (script->m_ParentNode)
 		//script->m_ParentNode->_489BE0(this);
-		;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

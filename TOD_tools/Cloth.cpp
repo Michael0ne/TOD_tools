@@ -7,7 +7,7 @@ Cloth::Cloth() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 
 	m_ResourceInfo = nullptr;
 	field_68 = 1;
-	field_A8 = field_60 = 0;
+	field_A8 = NULL;
 	field_6C = nullptr;
 	field_AC = 1;
 	field_B0 = -1;

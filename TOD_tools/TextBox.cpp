@@ -17,7 +17,7 @@ Vector4f* TextBox::GetBounds(Vector4f& outBounds) const
 	Vector4f boxSize;
 
 	if (m_FontRes)
-		return (outBounds = Vector4f(0.f, 0.f, 0.f, (GetActualBoxSize(boxSize)->x + GetActualBoxSize(boxSize)->y) * 0.041666668), &outBounds);
+		return (outBounds = Vector4f(0.f, 0.f, 0.f, (float)((GetActualBoxSize(boxSize)->x + GetActualBoxSize(boxSize)->y) * 0.041666668)), &outBounds);
 	else
 		return (outBounds = Vector4f(0.f, 0.f, 0.f, m_SpriteSize_Y + m_SpriteSize_X), &outBounds);
 }
@@ -50,6 +50,8 @@ Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
 {
 	if (!m_FontRes)
 		return (outSize = Vector4f(), &outSize);
+
+	return nullptr;
 }
 
 void TextBox::SetFont(const char* fontName)
@@ -59,14 +61,14 @@ void TextBox::SetFont(const char* fontName)
 
 	g_Blocks->GetResourcePath(fontPath, fontName);
 
-	if (!stricmp(fontPath.m_szString, "/data/fonts/screenfont_Headlines.font") ||
-		!stricmp(fontPath.m_szString, "/data/fonts/InnerSanctumCondensed_Screenfont.font"))
+	if (!_stricmp(fontPath.m_szString, "/data/fonts/screenfont_Headlines.font") ||
+		!_stricmp(fontPath.m_szString, "/data/fonts/InnerSanctumCondensed_Screenfont.font"))
 	{
 		fontPath = "/data/fonts/screenfont_ODserif_64all.font";
 		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_szString);
 	}
 
-	if (!stricmp(fontPath.m_szString, "/data/fonts/screenfont_ODserif_64cond.font"))
+	if (!_stricmp(fontPath.m_szString, "/data/fonts/screenfont_ODserif_64cond.font"))
 	{
 		fontPath = "/data/fonts/screenfont_ODserif_64all.font";
 		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_szString);

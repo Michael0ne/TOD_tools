@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include "AuxQuadTree.h"
+#include <d3dx9math.h>
 
 #define NODE_CLASS_SIZE 80
 
@@ -152,7 +153,7 @@ public:
 	void				SetParam(const int index, const void* param, const ScriptTypes::ScriptType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
 	void				SetOrient(const Orientation& orient);	//	@88DB20
 	Vector4f*			GetPos(Vector4f& outVec);	//	@483620
-	void				GetWorldMatrix(D3DMATRIX& outMat);	//	@4842C0
+	void				GetWorldMatrix(D3DXMATRIX& outMat);	//	@4842C0
 	void				SetParent(const Node* parent);	//	@88E9A0
 	void				SetName(const char*);	//	@88D610
 };

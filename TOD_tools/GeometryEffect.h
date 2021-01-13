@@ -53,7 +53,7 @@ protected:
 	GeometryEffect_120* field_148;
 	GeometryEffect_120* field_14C;
 	float m_EffectRadius;
-	Matrix6* m_ActiveCameraMatrix;
+	class Matrix6* m_ActiveCameraMatrix;
 	Vector4f m_CameraPos;
 	float m_EffectFadeThreshold;
 
