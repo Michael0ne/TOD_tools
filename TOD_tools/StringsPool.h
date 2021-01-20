@@ -33,9 +33,7 @@ public:
 
 	void operator=(const String& _r);
 
-	void			Set(const char* str);
 	void			Append(const char* str);
-	void			Format(const char* format, ...);	//	@415300	NOTE: adapted to be String's class method.
 	bool			Equal(const char* _str);	//	@40FE30
 	String*			Substring(String* outStr, unsigned int posStart, unsigned int length);	//	@409E90
 	inline bool		Empty()

@@ -66,7 +66,7 @@ namespace Script
 	static bool ForceFeedback = false;	//	@A35E70
 	static bool SavePlatformPS2 = true;	//	@A090C8
 	static unsigned int Ps2MaxTextureSize = 1024;	//	@A10FF0
-	static const char* CountryCodes[] = {
+	static const char* const CountryCodes[] = {
 		"uk", "fr", "it", "de", "es", "dk"
 	};	//	@A089BC
 	static bool _A1B98D = true;	//	@A1B98D

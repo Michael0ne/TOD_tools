@@ -28,5 +28,5 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Bloc
 	strcat(fileDir, ".");
 	strcat(fileDir, blockType ? Blocks::BlockTypeExtension[blockType] : Blocks::BlockTypeExtension[MAIN]);
 
-	outPath.Set(fileDir);
+	outPath = fileDir;
 }

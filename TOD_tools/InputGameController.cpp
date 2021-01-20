@@ -1,12 +1,8 @@
 #include "InputGameController.h"
 #include "ScriptDatabase.h"
+#include "LogDump.h"
 
-Input::Gamepad* g_InputGamepad[INPUT_GAMEPAD_MAX_GAMEPADS] = {
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr
-};
+Input::Gamepad** g_InputGamepad;
 
 const char* g_GamepadButtons[INPUT_GAMEPAD_MAX_BUTTONS] = {
 	"SELECT",
@@ -29,11 +25,25 @@ const char* g_GamepadButtons[INPUT_GAMEPAD_MAX_BUTTONS] = {
 
 namespace Input
 {
+	unsigned int Gamepad::ControllersCreated = NULL;
+	LPDIENUMDEVICESCALLBACK Gamepad::EnumCallback;
+	int Gamepad::DirectInputGamepadsFound = -1;
+	Gamepad** Gamepad::GamepadsArray = nullptr;
+	LPDIRECTINPUT8 Gamepad::g_pDirectInput8Interface = nullptr;
+	unsigned int Gamepad::_A08FD8[] =
+	{
+		8, 9, 10, 11
+	};
+	unsigned int Gamepad::_A09018[] =
+	{
+		9, 10, 11, 8
+	};
+
 	Gamepad::Gamepad(int controllerIndex, int unk1)
 	{
 		MESSAGE_CLASS_CREATED(Gamepad);
 
-		m_sModelName = String();
+		m_sModelName;
 		field_B4 = unk1;
 		m_bForceFeedbackAvailable = false;
 		m_bIsVibrating = false;
@@ -64,12 +74,12 @@ namespace Input
 			g_pDirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)&EnumControllersCallback, &_pvRef, DIEDFL_FORCEFEEDBACK | DIEDFL_ATTACHEDONLY) >= NULL &&
 			GamepadsArray)
 		{
-			debug("CONTROLLER: Found a force-feedback device!");
+			LogDump::LogA("CONTROLLER: Found a force-feedback device!");
 			m_bForceFeedbackAvailable = true;
 
 			if (!m_pDirectInputDevice)
 			{
-				debug("CONTROLLER: Error - could not create input device!");
+				LogDump::LogA("CONTROLLER: Error - could not create input device!");
 				return;
 			}
 		}
@@ -77,11 +87,11 @@ namespace Input
 		if (g_pDirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)&EnumControllersCallback, &_pvRef, DIEDFL_ALLDEVICES) >= NULL &&
 			GamepadsArray)
 		{
-			debug("CONTROLLER: Using standard game device");
+			LogDump::LogA("CONTROLLER: Using standard game device");
 
 			if (!m_pDirectInputDevice)
 			{
-				debug("CONTROLLER: Error - could not create input device!");
+				LogDump::LogA("CONTROLLER: Error - could not create input device!");
 				return;
 			}
 
@@ -89,7 +99,7 @@ namespace Input
 
 			memset(&m_ButtonsStates, NULL, sizeof(m_ButtonsStates));
 
-			debug("CONTROLLER: Model of game device = %s", m_sModelName.m_szString);
+			LogDump::LogA("CONTROLLER: Model of game device = %s", m_sModelName.m_szString);
 
 			String sModelName;
 			AllocateGamepadNameStringBuffer(&sModelName, m_sModelName.m_szString, 8);
@@ -112,7 +122,7 @@ namespace Input
 			DIPropAutoCenterDisable.dwData = DIPROPAUTOCENTER_OFF;
 
 			if (FAILED(m_pDirectInputDevice->SetProperty(DIPROP_AUTOCENTER, &DIPropAutoCenterDisable.diph)))
-				debug("CONTROLLER: Could not disable auto-center");
+				LogDump::LogA("CONTROLLER: Could not disable auto-center");
 
 			//	Create rumble effect.
 			//	TODO: these parameters are NOT what they are in exe.
@@ -152,12 +162,12 @@ namespace Input
 			LPDIRECTINPUTEFFECT lpdiRumbleEffect;
 
 			if (FAILED(m_pDirectInputDevice->CreateEffect(GUID_RUMBLE_EFFECT, &diEffect, &lpdiRumbleEffect, NULL)))
-				debug("CONTROLLER: Could not create rumble effect for some reason");
+				LogDump::LogA("CONTROLLER: Could not create rumble effect for some reason");
 
 			return;
 		}
 
-		debug("CONTROLLER: WARNING - Could not create an input device");
+		LogDump::LogA("CONTROLLER: WARNING - Could not create an input device");
 	}
 
 	Gamepad::~Gamepad()
@@ -204,7 +214,7 @@ namespace Input
 
 	signed int Gamepad::_439690(int* unk1, int* unk2)
 	{
-		debug("Found effect: %s\n", (const char*)(unk1 + 8));
+		LogDump::LogA("Found effect: %s\n", (const char*)(unk1 + 8));
 		*unk2 = unk1[1];
 		unk2[1] = unk1[2];
 		unk2[2] = unk1[3];
@@ -214,7 +224,7 @@ namespace Input
 
 	signed int Gamepad::_4396D0(int* unk1, int unk2)
 	{
-		debug("Found object: %s\n", (const char*)(unk1 + 8));
+		LogDump::LogA("Found object: %s\n", (const char*)(unk1 + 8));
 		return 1;
 	}
 
@@ -230,9 +240,9 @@ namespace Input
 	void Gamepad::EnumGameControllers()
 	{
 		DirectInputGamepadsFound = NULL;
-
 		g_pDirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)DIEnumDevicesCallback, NULL, NULL);
-		*(unsigned int*)g_InputGamepad = (unsigned int)NULL;
+
+		g_InputGamepad = (Gamepad**)(new unsigned int[DirectInputGamepadsFound]);
 	}
 
 	int Gamepad::NumberDirectInputDevices()
@@ -295,7 +305,7 @@ namespace Input
 
 		if (FAILED(pvRef[1]->m_pDirectInputDevice->SetDataFormat((LPCDIDATAFORMAT)&GUID_CONTROLLER_DATA_FORMAT)))
 		{
-			MessageBox(g_Window->m_hWindow, "Unable to set game controller data format", "Error", MB_OK);
+			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
 
 			if (!pvRef[1]->m_pDirectInputDevice)
 				return DIENUM_STOP;
@@ -306,9 +316,9 @@ namespace Input
 		}
 
 		if (Script::ForceFeedback)
-			if (FAILED(pvRef[1]->m_pDirectInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
+			if (FAILED(pvRef[1]->m_pDirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
 			{
-				MessageBox(g_Window->m_hWindow, "Unable to set game controller cooperative level", "Error", MB_OK);
+				MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
 
 				if (!pvRef[1]->m_pDirectInputDevice)
 					return DIENUM_STOP;
@@ -325,7 +335,7 @@ namespace Input
 
 	String* Gamepad::AllocateGamepadNameStringBuffer(String* outString, char* inGamepadName, signed int length)
 	{
-		outString->Set(inGamepadName);
+		*outString = inGamepadName;
 
 		return outString;
 	}
@@ -408,7 +418,7 @@ namespace Input
 
 	void Gamepad::_439840()
 	{
-		for (int ind = 32; ind != 0; ind--)
+		for (int ind = 31; ind != 0; ind--)
 			m_ButtonsStates[ind] &= 2;
 	}
 
@@ -418,10 +428,10 @@ namespace Input
 			return unk1;
 
 		if (!m_SmartJoyGamepad)
-			return *(int*)(&ms_A08FD8 + unk1);
+			return _A08FD8[unk1];
 
 		if (m_SmartJoyGamepad == 1)
-			return *(int*)(&ms_A09018 + unk1);
+			return _A09018[unk1];
 
 		return unk1;
 	}
@@ -435,12 +445,12 @@ namespace Input
 			return (m_ButtonsStates[unk1] & 2) && (m_ButtonsStates[unk1] & 1);
 
 		if (!m_SmartJoyGamepad)
-			return (m_ButtonsStates[*(int*)(&ms_A08FD8 + unk1)] & 2) && (m_ButtonsStates[*(int*)(&ms_A08FD8 + unk1)] & 1);
+			return (m_ButtonsStates[_A08FD8[unk1]] & 2) && (m_ButtonsStates[_A08FD8[unk1]] & 1);
 
 		if (m_SmartJoyGamepad != 1)
 			return (m_ButtonsStates[unk1] & 2) && (m_ButtonsStates[unk1] & 1);
 
-		return (m_ButtonsStates[*(int*)(&ms_A09018 + unk1)] & 2) && (m_ButtonsStates[*(int*)(&ms_A09018 + unk1)] & 1);
+		return (m_ButtonsStates[_A09018[unk1]] & 2) && (m_ButtonsStates[_A09018[unk1]] & 1);
 	}
 
 	bool Gamepad::_439910(int unk1)
@@ -452,12 +462,12 @@ namespace Input
 			return (~m_ButtonsStates[unk1] & 2) && (m_ButtonsStates[unk1] & 1);
 
 		if (!m_SmartJoyGamepad)
-			return (~m_ButtonsStates[*(int*)(&ms_A08FD8 + unk1)] & 2) && (m_ButtonsStates[*(int*)(&ms_A08FD8 + unk1)] & 1);
+			return (~m_ButtonsStates[_A08FD8[unk1]] & 2) && (m_ButtonsStates[_A08FD8[unk1]] & 1);
 
 		if (m_SmartJoyGamepad != 1)
 			return (~m_ButtonsStates[unk1] & 2) && (m_ButtonsStates[unk1] & 1);
 
-		return (~m_ButtonsStates[*(int*)(&ms_A09018 + unk1)] & 2) && (m_ButtonsStates[*(int*)(&ms_A09018 + unk1)] & 1);
+		return (~m_ButtonsStates[_A09018[unk1]] & 2) && (m_ButtonsStates[_A09018[unk1]] & 1);
 	}
 
 	char Gamepad::_439970(int unk1)
@@ -468,11 +478,11 @@ namespace Input
 		if (field_B4 != 1)
 			return (m_ButtonsStates[unk1] >> 1) & 1;
 		if (!m_SmartJoyGamepad)
-			return (m_ButtonsStates[*(int*)(&ms_A08FD8 + unk1)] >> 1) & 1;
+			return (m_ButtonsStates[_A08FD8[unk1]] >> 1) & 1;
 		if (m_SmartJoyGamepad != 1)
 			return (m_ButtonsStates[unk1] >> 1) & 1;
 
-		return (m_ButtonsStates[*(int*)(&ms_A09018 + unk1)] >> 1) & 1;
+		return (m_ButtonsStates[_A09018[unk1]] >> 1) & 1;
 	}
 
 	double Gamepad::_4399D0(int unk1)
@@ -600,7 +610,7 @@ namespace Input
 
 	void Gamepad::StartRumbleEffect()
 	{
-		debug("rumble, rumble, rumble...\n");
+		LogDump::LogA("rumble, rumble, rumble...\n");
 
 		if (m_pDirectInputEffect)
 			m_pDirectInputEffect->Start(1, DIES_NODOWNLOAD);
@@ -639,7 +649,7 @@ namespace Input
 
 		if (FAILED(m_pDirectInputDevice->SetDataFormat((LPCDIDATAFORMAT)&GUID_CONTROLLER_DATA_FORMAT)))
 		{
-			MessageBox(g_Window->m_hWindow, "Unable to set game controller data format", "Error", MB_OK);
+			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
 			if (m_pDirectInputDevice)
 			{
 				m_pDirectInputDevice->Release();
@@ -647,9 +657,9 @@ namespace Input
 			}
 		}
 
-		if (FAILED(m_pDirectInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
+		if (FAILED(m_pDirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
 		{
-			MessageBox(g_Window->m_hWindow, "Unable to set game controller cooperative level", "Error", MB_OK);
+			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
 			if (m_pDirectInputDevice)
 			{
 				m_pDirectInputDevice->Release();
@@ -657,13 +667,4 @@ namespace Input
 			}
 		}
 	}
-
-	int& Gamepad::ControllersCreated = *(int*)0xA35E74;
-	LPDIENUMDEVICESCALLBACK Gamepad::EnumCallback = (LPDIENUMDEVICESCALLBACK)0x43A1D0;
-	int& Gamepad::DirectInputGamepadsFound = *(int*)0xA08FD0;
-	Gamepad** Gamepad::GamepadsArray = (Gamepad**)0xA35E6C;
-	IDirectInput8* Gamepad::g_pDirectInput8Interface = (IDirectInput8*)0xA35E78;
-	int& Gamepad::ms_A08FD8 = *(int*)0xA08FD8;
-	int& Gamepad::ms_A09018 = *(int*)0xA09018;
-
 }

@@ -4,37 +4,57 @@
 
 #define WINDOW_CLASS_SIZE 68
 
+enum LanguageCode
+{
+	LANGCODE_ENGLISH = 0,
+	LANGCODE_FRENCH = 1,
+	LANGCODE_ITALIAN = 2,
+	LANGCODE_GERMAN = 3,
+	LANGCODE_SPANISH = 4
+};
+
+enum ErrorMessageId
+{
+	ERRMSG_INCOMPATIBLE_MOUSE = 0,
+	ERRMSG_INCOMPATIBLE_KEYBOARD = 1,
+	ERRMSG_INCOMPATIBLE_SOUNDCARD = 2,
+	ERRMSG_INCOMPATIBLE_VIDEOCARD = 3,
+	ERRMSG_DIRECTX9_NOT_FOUND = 4,
+	ERRMSG_DISC_NOT_FOUND = 5,
+	ERRMSG_INSUFFICIENT_RAM = 6
+};
+
 //	Game window wrapper.
 class Window
 {
 public:
-	String			m_sWindowTitle;
-	String			m_sUserDesktopPath;
-	int				(__stdcall *m_pMenuItemClickedCallback)(WPARAM);
-	HWND			m_hWindow;
-	int				m_unkFlags;						//	Some unknown flags. TODO: Needs to be union {}.
-	bool			m_bVisible;
-	bool			m_bCursorReleased;
-	bool			m_bQuitRequested;
-	HCURSOR			m_hCursor;
-	int				m_unkInt9;
-	int				m_unkInt10;
-	LONG			m_nWindowLeft;
-	LONG			m_nWindowTop;
+	String			m_WindowTitle;
+	String			m_UserDesktopPath;
+	int				(__stdcall *m_MenuItemClickedCallback)(WPARAM);
+	HWND			m_WindowHandle;
+	int				m_Flags;
+	bool			m_Visible;
+	bool			m_CursorReleased;
+	bool			m_QuitRequested;
+	HCURSOR			m_Cursor;
+	int				field_34;
+	int				field_38;
+	LONG			m_WindowLeft;
+	LONG			m_WindowTop;
 
 private:
 	static unsigned int		MessageBoxType[];	//	@A091A8
 
 public:
-	void			QuitGame() { m_bQuitRequested = true; }	//	@43B930
+	void			QuitGame() { m_QuitRequested = true; }	//	@43B930
 	bool			ProcessMessages();	//	@43B950
-	void			SetMenuClickCallback(int (__stdcall* pCallback)(WPARAM)) {m_pMenuItemClickedCallback = pCallback;};	//	@43B9C0
+	void			SetMenuClickCallback(int (__stdcall* callback)(WPARAM)) { m_MenuItemClickedCallback = callback; };	//	@43B9C0
 	void			SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution);	//	@43B9D0
 	void			SetWindowResolutionDontMove(const Vector2<float>& resolution);	//	@43B9F0
 	void			_GetWindowRect(Vector2<LONG>& outRect);	//	@43BA70
-	void			GetTopCorner(Vector2<LONG>& outRect);	//	@43BAD0
-	void			GetWindowCenterRelative(Vector2<LONG>& outRect);	//	@43BB00
-	void			GetClientCenterRelative(Vector2<LONG>& outRect);	//	@43BB40
+	void			GetTopCorner(Vector2<LONG>& outRect) const;	//	@43BAD0
+	void			GetWindowCenterRelative(Vector2<LONG>& outRect) const;	//	@43BB00
+	void			GetClientCenterRelative(Vector2<LONG>& outRect) const;	//	@43BB40
 	void			_SetWindowPos(Vector2<int>& pos);	//	@43BB80
 	void			SetWindowPosNoCopyBits(tagPOINT *newPos);	//	@43BBA0
 	void			UpdateVisibility();	//	@43BC30
@@ -50,7 +70,7 @@ public:
 	void			SetDesktopDirectory(const char* szDesktopPath);	//	@43C8B0
 
 public:
-	Window(const char* wndClassName, int unkFlags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId);	//	@43C630
+	Window(const char* wndClassName, int flags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId);	//	@43C630
 	~Window();	//	@43C230
 
 	void* operator new(size_t size)
@@ -65,6 +85,7 @@ public:
 
 	static const char	RegistryKey[];	//	@A09178
 	static HINSTANCE	WindowInstanceHandle;	//	@A35EB0
+	static LPSTR		CmdLine;	//	@A35EB4
 	static STICKYKEYS	StickyKeysFeature;	//	@A0917C
 	static TOGGLEKEYS	ToggleKeysFeature;	//	@A09184
 	static FILTERKEYS	FilterKeysFeature;	//	@A0918C
@@ -73,12 +94,15 @@ public:
 
 extern Window* g_Window;
 
-int	CALLBACK		GetSystemLanguageCode();	//	@43BDC0
+void				SetGlobalInstanceHandle(HINSTANCE);	//	@A35EB0
+void				SetGlobalCmdLinePtr(LPSTR);	//	@43BF60
+LanguageCode CALLBACK GetSystemLanguageCode();	//	@43BDC0
 void				FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize);	//	@43BFB0
-void				IncompatibleMachineParameterError(int messageID, char bWarningIcon);	//	@43C040
+void				IncompatibleMachineParameterError(ErrorMessageId messageID, char bWarningIcon);	//	@43C040
 void				SetAccessibilityFeatures(bool bCollect);	//	@43C140
 LRESULT CALLBACK	WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);	//	@43C320
 int	CALLBACK		WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd);	//	@43CB40
+bool				IsProcessAGameProcess(DWORD, LPCSTR);	//	@43C990
 void				GetUserDocumentsDir(String& outString);	//	@43CAE0
 void				FindGameDir();	//	@439230
 void				SetWorkingDir(const char* str);	//	@438460

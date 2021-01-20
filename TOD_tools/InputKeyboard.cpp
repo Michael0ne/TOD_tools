@@ -215,13 +215,13 @@ namespace Input
 			m_nButtonStates1[ind] = NULL;
 
 		if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_pDeviceObject, NULL)))
-			IncompatibleMachineParameterError(1, false);
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 		if (FAILED(m_pDeviceObject->CreateDevice(GUID_SysKeyboard, &m_pDInputDevice, NULL)))
-			IncompatibleMachineParameterError(1, false);
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 		if (FAILED(m_pDInputDevice->SetDataFormat(&c_dfDIKeyboard)))
-			IncompatibleMachineParameterError(1, false);
-		if (FAILED(m_pDInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
-			IncompatibleMachineParameterError(1, false);
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
+		if (FAILED(m_pDInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 
 		*(int*)&m_pBuffer = (int)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT, NULL, NULL);
 		memset(m_pBuffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT);
@@ -234,7 +234,7 @@ namespace Input
 		diProperty.dwData = 30;
 
 		if (FAILED(m_pDInputDevice->SetProperty(DIPROP_BUFFERSIZE, &diProperty.diph)))
-			IncompatibleMachineParameterError(1, false);
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 
 		if (m_bAcquired)
 			return;

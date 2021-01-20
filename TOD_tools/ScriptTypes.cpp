@@ -32,7 +32,6 @@ namespace ScriptTypes
 
 	String* ScriptType::PrintFormatted(String* outStr, void* value, int precision)
 	{
-		outStr->Set("");
 		return outStr;
 	}
 
@@ -257,7 +256,7 @@ namespace ScriptTypes
 		//	NOTE: is this correct?
 		char buffer[64];
 		sprintf(buffer, "list(%s)", elementsType.m_TypeName.m_szString);
-		m_TypeName.Set(buffer);
+		m_TypeName = buffer;
 
 		if (m_TypeId == 3 || m_TypeId == 8 || m_TypeId == 9 || m_TypeId == 11)
 			m_IsTypeId3_8_9_11 = true;
@@ -274,7 +273,7 @@ namespace ScriptTypes
 		//	NOTE: is this correct?
 		char buffer[64];
 		sprintf(buffer, "dict(%s)", elementsType.m_TypeName.m_szString);
-		m_TypeName.Set(buffer);
+		m_TypeName = buffer;
 	}
 
 	ScriptType_Script::ScriptType_Script(const char* name, const ScriptFieldsList& fields) : ScriptType(TYPE_SCRIPT, name, TYPE_SCRIPT_SIZE)

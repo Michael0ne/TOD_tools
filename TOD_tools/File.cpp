@@ -271,7 +271,7 @@ File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
 {
 	int _zipfileinfo[2] = { NULL, NULL };
 
-	m_FileName.Set(_filename);	//	TODO: call to 'GetPathFromDirectoryMappings' should be here instead.
+	m_FileName = _filename;	//	TODO: call to 'GetPathFromDirectoryMappings' should be here instead.
 	m_FileHandle = nullptr;
 	m_ReadFromZip = false;
 	m_ZipSlot = -1;
@@ -370,18 +370,18 @@ void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
 String* File::GetPathFromDirectoryMappings(String* outStr, const char* path)
 {
 	if (DirectoryMappingsList.m_CurrIndex <= NULL)
-		return outStr;
+		return (*outStr = path, outStr);
 
 	for (unsigned int ind = 0; ind < DirectoryMappingsList.m_CurrIndex; ind++)
 		if (String::EqualIgnoreCase(path, DirectoryMappingsList.m_Elements[ind]->m_String_1.m_szString, DirectoryMappingsList.m_Elements[ind]->m_String_1.m_nLength))
 		{
-			outStr->Set(DirectoryMappingsList.m_Elements[ind]->m_String_2.m_szString);
+			*outStr = DirectoryMappingsList.m_Elements[ind]->m_String_2.m_szString;
 			outStr->Append(&path[DirectoryMappingsList.m_Elements[ind]->m_String_1.m_nLength]);
 
 			return outStr;
 		}
 
-	return outStr;
+	return (*outStr = path, outStr);
 }
 
 String* File::ExtractFileDir(String& outStr, const char* path)
@@ -495,8 +495,8 @@ FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _create
 	if (!_filename)
 		return;
 
-	m_WorkingDir.Set(_filename);
-	m_GameWorkingDir.Set(_filename);
+	m_WorkingDir = _filename;
+	m_GameWorkingDir = _filename;
 	GetWorkingDirRelativePath(&m_WorkingDir);
 	GetGameWorkingDirRelativePath(&m_GameWorkingDir);
 
@@ -509,7 +509,8 @@ FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _create
 	{
 		m_DesiredAccess_2 = 0x80000000;
 		m_Read = true;
-	}else
+	}
+	else
 		if (_desiredaccess & FILE_WRITE_DATA)
 		{
 			m_DesiredAccess_2 = 0x40000000;
@@ -988,6 +989,9 @@ void File::ReadZipDirectories(const char* szFileSystem)
 #pragma message(TODO_IMPLEMENTATION)
 void File::OpenZip(const char* szZipPath)
 {
+	//	FIXME: for now, return instantly.
+	return;
+
 	if (!IsFileExists(szZipPath))
 		return;
 
@@ -995,7 +999,7 @@ void File::OpenZip(const char* szZipPath)
 	LogDump::LogA("Opening zip <%s> into slot %i\n", szZipPath, ZipArch::SlotId);
 
 	*(unsigned char*)(&ZipArch::SlotInfo[slotId].field_4) = 15;	//	FIXME: this is stupid.
-	ZipArch::ZipNames[slotId].Set(szZipPath);
+	ZipArch::ZipNames[slotId] = szZipPath;
 
 	FileWrapper::FilesArray[slotId] = new FileWrapper(szZipPath, 33, true);
 	FileWrapper::FilesArray[slotId]->WriteFromBufferAndSetToEnd();
@@ -1021,7 +1025,7 @@ void File::OpenZip(const char* szZipPath)
 		FileWrapper::FilesArray[slotId]->Seek(DataStartOffset);
 
 		unsigned char* DataInfo = new unsigned char[DataSize];
-		FileWrapper::FilesArray[slotId]->Read(DataInfo, sizeof(DataInfo));
+		FileWrapper::FilesArray[slotId]->Read(DataInfo, DataSize);
 
 		unsigned int slotInfo[] = {
 			(NULL & 0xFFFFFF06 | 6) & 255,

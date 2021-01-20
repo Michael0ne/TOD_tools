@@ -8,12 +8,12 @@
 
 struct AssetInfo
 {
-	int	field_0;	//	NOTE: could be ID.
-	int	field_4;
-	int	field_8;
-	int	field_C;
-	int	field_10;
-	int	field_14;
+	struct ActualAssetInfo
+	{
+		void*		m_ResourceDataBufferPtr;	//	NOTE: actual resource data read from file written here.
+		void*		m_ResourceAllocatedAlignedBufferPtr;	//	NOTE: pointer to buffer with resource data size written here.
+		int			m_ResourceDataBufferSize;
+	} m_AssetInfo[2];
 };
 
 //	NOTE: this is used on all .main files. And maybe another resource types, not sure now.
@@ -31,10 +31,10 @@ struct MainAssetBlock
 class Folder_ : public Node
 {
 private:
-	int	m_BlockId;
-	AssetInfo* m_AssetBlockInfo;
+	int				m_BlockId;
+	AssetInfo*		m_AssetBlockInfo;
 
-	void GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
+	void			GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
 public:
 	Folder_() : Node(NODE_MASK_EMPTY)	//	NOTE: no actual constructor
 	{

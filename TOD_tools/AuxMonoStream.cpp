@@ -67,7 +67,7 @@ namespace Audio
 		m_Flags = 0 | AUDIO_AUXMONOSTREAM_FLAG_FILE_SET;
 		m_SampleRate = sampleRate;
 
-		SoundBuffersList.SetCapacity(12);
+		SoundBuffersList.SetCapacityAndErase(12);
 
 		String::ToLowerCase((char*)soundFile);
 		m_FileName = soundFile;

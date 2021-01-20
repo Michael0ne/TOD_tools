@@ -4,6 +4,12 @@
 
 #define LIGHT_CLASS_SIZE 228
 
+enum LightType
+{
+	LIGHT_TYPE_1 = 1,
+	LIGHT_TYPE_2 = 2
+};
+
 struct Light_Properties
 {
 	friend class Light;
@@ -39,14 +45,23 @@ protected:
 	int field_E0;
 
 public:
+	virtual ~Light();	//	@880680
 	Light();	//	@87FDF0
 
 	void				AddLightToList(void* list, Light* light);	//	@8812A0
+	void				SetLightType(LightType);	//	@880170
+	void				SetLightColorRGB(const ColorRGB&);	//	@65AB20
 	
 	static void			OverrideLights(bool unk);	//	@880DC0
+	static void			InitLightsList();	//	@881070
+	static void			ClearLightsList();	//	@881260
 
-	static int&			TotalLights;	//	@A3D81C
-	static List<Light>&	LightsList;		//	@A3D820
+	static Light*		LightType1;		//	@A3D828
+	static Light*		LightType2;		//	@A3D82C
+	static unsigned int	TotalLights;	//	@A3D81C
+	static List<Light>*	LightsList;		//	@A3D820
 };
+
+extern ScriptTypes::ScriptType_Entity*	tLight;	//	@A3D818
 
 static_assert(sizeof(Light) == LIGHT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Light));

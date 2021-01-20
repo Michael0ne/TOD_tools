@@ -17,7 +17,7 @@ namespace GameConfig {
 	#define CONFIG_MENU_RESOURCEID 103
 #else
 	#define CONFIG_MENU_RESOURCEID 0
-#endif // INCLUDE_FIXES
+#endif
 
 	struct Session_Variables
 	{
@@ -151,12 +151,14 @@ namespace GameConfig {
 		void				CreateUnknownMatricies();	//	@93D360
 	};
 
+	void					InitialiseGame(LPSTR cmdline);	//	@93F680
+
 	static void				SetCountryCode(const char* szCode);	//	@42E530
 	static CountryCodes		GetRegionId(String* regionStr);	//	@875450
 	static void				EnumMaterialsInCollmat();	//	@87D330
 	static void				EnumFaceColMaterials();	//	@87D100
 
-	static void				_GetDeveloperPath(String* outStr);	//	@4098D0
+	static void				_GetDeveloperPath(String& outStr);	//	@4098D0
 
 	static List<String>&	FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
 	static File&			ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8

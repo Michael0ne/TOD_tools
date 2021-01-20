@@ -70,7 +70,7 @@ SoundSlot::~SoundSlot()
 
 String* SoundSlot::GetResourceName(String* strResName)
 {
-	return (strResName->Set(GetStreamingSound()), strResName);
+	return (*strResName = GetStreamingSound(), strResName);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

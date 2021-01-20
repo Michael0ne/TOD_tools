@@ -5,7 +5,6 @@
 #include "Scratchpad.h"
 #include "SceneSaveLoad.h"
 #include "Light.h"
-#include "Window.h"
 #include "InputMouse.h"
 #include "InputKeyboard.h"
 #include "InputGameController.h"
@@ -61,6 +60,7 @@ namespace GameConfig
 		m_GlobalPropertiesListCRC = 0;
 		m_GlobalCommandsListCRC = 0;
 		m_TypesListCRC = 0;
+		m_UninitialiseCallback = nullptr;
 	}
 
 	Config::~Config()
@@ -82,12 +82,12 @@ namespace GameConfig
 
 		//	Set filename for configuration file.
 		if (szConfigFilename && *szConfigFilename)
-			m_ConfigFilePath = String(szConfigFilename);
+			m_ConfigFilePath = szConfigFilename;
 		else
-			m_ConfigFilePath = String(CONFIG_CONFIGFILE);
+			m_ConfigFilePath = CONFIG_CONFIGFILE;
 
 		//	Set gamename.
-		m_GameName = String(CONFIG_GAMENAME);
+		m_GameName = CONFIG_GAMENAME;
 
 		//	Try and look for configuration variables file.
 		//	TODO: CreateBuffer implementation!
@@ -152,18 +152,16 @@ namespace GameConfig
 		//	Init unknown maps (lists), somehow related to renderer.
 		//	TODO: implementation!
 		(*(void(__cdecl*)())0x460AB0)();
-		(*(void(__cdecl*)())0x4651B0)();
+		(*(void(__cdecl*)())0x4651B0)();	//	NOTE: init some verticies map.
 
 		//	Init rendered textures map.
-		//	TODO: implementation!
-		(*(void(__cdecl*)())0x464120)();
+		GfxInternal_Dx9_Texture::InitTexturesMap();
 
 		//	Init renderer commands buffer.
 		RenderBuffer::CreateRenderBuffer();
 
 		//	Init lights.
-		//	TODO: implementation!
-		(*(void(__cdecl*)())0x881070)();
+		Light::InitLightsList();
 
 		if (m_ConfigurationVariables->IsVariableSet("ps2_max_texture_size"))
 			Script::Ps2MaxTextureSize = m_ConfigurationVariables->GetParamValueInt("ps2_max_texture_size");
@@ -175,7 +173,7 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("fullscreen"))
 			Script::Fullscreen = m_ConfigurationVariables->GetParamValueBool("fullscreen");
 
-		Script::Filesystem = String("blocks.naz, sounds.naz, videos00.naz, videos01.naz");
+		Script::Filesystem = "blocks.naz, sounds.naz, videos00.naz, videos01.naz";
 		if (m_ConfigurationVariables->IsVariableSet("filesystem"))
 			Script::Filesystem = m_ConfigurationVariables->GetParamValueString("filesystem");
 
@@ -192,55 +190,56 @@ namespace GameConfig
 
 		//	If we have 'profile.txt' available, check directory mappings and other stuff.
 		if (pProfileVariables) {
-			char szDirectorymapping[22];
-			int index = 0;
+			char DirectorymappingStr[22];
+			unsigned int index = 0;
 
-			memset(&szDirectorymapping, 0, sizeof(szDirectorymapping));
+			memset(&DirectorymappingStr, 0, sizeof(DirectorymappingStr));
 
-			sprintf(szDirectorymapping, "directorymapping%d", index++);
+			sprintf(DirectorymappingStr, "directorymapping%d", index++);
 
-			while (pProfileVariables->IsVariableSet(szDirectorymapping)) {
-				String dirmapping = pProfileVariables->GetParamValueString(szDirectorymapping);
+			while (pProfileVariables->IsVariableSet(DirectorymappingStr)) {
+				String dirmapping = pProfileVariables->GetParamValueString(DirectorymappingStr);
 
 				if (strchr(dirmapping.m_szString, '>') != nullptr)
 				{
+					//	NOTE: potential place for buffer overflow right here, original code uses heap allocation, but this is redundant here really, adjust buffer size if any errors happen.
 					char direntry[128] = {};
 					strncpy_s(direntry, sizeof(direntry), dirmapping.m_szString, strchr(dirmapping.m_szString, '>') - dirmapping.m_szString);
 
 					File::AddDirectoryMappingsListEntry(direntry, strchr(dirmapping.m_szString, '>') + 1);
 				}
 
-				sprintf(szDirectorymapping, "directorymapping%d", index++);
+				sprintf(DirectorymappingStr, "directorymapping%d", index++);
 			}
 		}
 
 		//	Is this the testing build?
-		String sTestingPath = String();
-		_GetDeveloperPath(&sTestingPath);
+		String TestingPath;
+		_GetDeveloperPath(TestingPath);
 
-		if (_stricmp(sTestingPath.m_szString, "testing")) {
+		if (_stricmp(TestingPath.m_szString, "testing")) {
 			//	NOTE: append ' **' to this string. Why?
-			sTestingPath.Append(" **");
+			TestingPath.Append(" **");
 		}
 
-		sTestingPath.Append("(");
+		TestingPath.Append("(");
 
 		//	Scripts search path if 'profile.txt' is available.
-		Script::ScriptsPath.Set("/data/scripts/stable/");
+		Script::ScriptsPath = "/data/scripts/stable/";
 
 		if (pProfileVariables)
 			if (pProfileVariables->IsVariableSet("script_searchpath"))
 				Script::ScriptsPath = pProfileVariables->GetParamValueString("script_searchpath");
 
 		//	NOTE: SetScriptsPath not necessary, since variable is already set above.
-		sTestingPath.Append(" scripts: baked)");
-		sTestingPath.Append(CONFIG_GAMENAME);
+		TestingPath.Append(" scripts: baked)");
+		TestingPath.Append(CONFIG_GAMENAME);
 
 		if (m_ConfigurationVariables->IsVariableSet("relax_build_version_check"))
 			Script::RelaxBuildVersionCheck = m_ConfigurationVariables->GetParamValueBool("relax_build_version_check");
 
 		//	What icon should we use?
-		if (_stricmp(sTestingPath.m_szString, "stable"))
+		if (_stricmp(TestingPath.m_szString, "stable"))
 			Script::IconResourceId = 103;
 		else
 			Script::IconResourceId = 101;
@@ -263,7 +262,7 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("language_mode"))
 			SetCountryCode(m_ConfigurationVariables->GetParamValueString("language_mode").m_szString);
 
-		Script::LanguageMode.Set(Script::CountryCodes[Script::LanguageStringsOffset]);
+		Script::LanguageMode = Script::CountryCodes[Script::LanguageStringsOffset];
 
 		//	Create required devices - window, mouse, keyboard, gamepad.
 		g_Window = new Window(m_GameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
@@ -282,7 +281,8 @@ namespace GameConfig
 		Script::SavePlatformPS2 = true;
 
 		//	Detect platform.
-		if (m_ConfigurationVariables->IsVariableSet("save_platform")) {
+		if (m_ConfigurationVariables->IsVariableSet("save_platform"))
+		{
 			String platform = m_ConfigurationVariables->GetParamValueString("save_platform");
 
 			//	For PS2 we want 2 memory cards and harddisk available.
@@ -297,7 +297,7 @@ namespace GameConfig
 				do {
 					//	TODO: implementation for utility function!
 					Utils::CreateDirectoriesRecursive(szMemcard0[memcardindex]);
-					SaveSlots[memcardindex]->m_SaveFolderPath.Set(szMemcard0[memcardindex]);
+					SaveSlots[memcardindex]->m_SaveFolderPath = szMemcard0[memcardindex];
 
 					if (!SaveSlots[memcardindex]->IsFormatted())
 						SaveSlots[memcardindex]->FormatCard();
@@ -308,22 +308,17 @@ namespace GameConfig
 
 			const char szHarddisk[] = "/savegames/harddisk/";
 			Utils::CreateDirectoriesRecursive(szHarddisk);
-			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath.Set(szHarddisk);
+			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath = szHarddisk;
 
 			if (!SaveSlots[SAVE_SLOT_8]->IsFormatted())
 				SaveSlots[SAVE_SLOT_8]->FormatCard();
 		}else{
 			//	For PC, just figure out system user data directory.
 			Script::SavePlatformPS2 = false;
-
-			String sUserDocDir;
-			GetUserDocumentsDir(sUserDocDir);
-
-			sUserDocDir.Append(CONFIG_SAVEDIR);
-
 			Script::FileCheck = true;
 
-			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath.Set(sUserDocDir.m_szString);
+			GetUserDocumentsDir(SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath);
+			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath.Append(CONFIG_SAVEDIR);
 		}
 
 		Script::CutsceneDisableAware = false;
@@ -338,7 +333,7 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("streamed_sound_ext"))
 			Script::StreamedSoundExt = m_ConfigurationVariables->GetParamValueString("streamed_sound_ext");
 		else
-			Script::StreamedSoundExt = String("ogg");
+			Script::StreamedSoundExt = "ogg";
 
 		//	Figure out sound renderer.
 		if (m_ConfigurationVariables->IsVariableSet("soundrenderer")) {
@@ -442,13 +437,10 @@ namespace GameConfig
 		g_Renderer = new Renderer(&ScreenSize, 32, 16, (Script::Fullscreen ? (Renderer::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
 
 		//	Set region.
-		if (!Script::IsRegionEurope())
-			Script::Region.Set("usa");
-		else
-			Script::Region.Set("europe");
+		Script::Region = Script::IsRegionEurope() ? "europe" : "usa";
 
 		if (m_ConfigurationVariables->IsVariableSet("region"))
-			Script::Region.Set(m_ConfigurationVariables->GetParamValueString("region").m_szString);
+			Script::Region = m_ConfigurationVariables->GetParamValueString("region").m_szString;
 
 		g_Blocks->SetRegionId(GetRegionId(&Script::Region));
 		LogDump::LogA("Using region: %s\n", Script::Region.m_szString);
@@ -471,7 +463,7 @@ namespace GameConfig
 		Renderer::_A08704[5].field_0 = 0;
 
 		if (m_ConfigurationVariables->IsVariableSet("version_name"))
-			Script::VersionName.Set(m_ConfigurationVariables->GetParamValueString("version_name").m_szString);
+			Script::VersionName = m_ConfigurationVariables->GetParamValueString("version_name").m_szString;
 
 		//	NOTE: this is unused.
 		Script::_A1B98D = 0;
@@ -493,7 +485,7 @@ namespace GameConfig
 		Random::Init((int)__rdtsc());
 
 		//	Load screen and progress class.
-		g_LoadScreenInfo = new LoadScreenInfo(NULL);
+		g_LoadScreenInfo = new LoadScreenInfo("");
 		g_Progress = new Progress();
 
 		if (m_ConfigurationVariables->IsVariableSet("show_hud") &&
@@ -508,28 +500,29 @@ namespace GameConfig
 			Script::WarningShow = m_ConfigurationVariables->GetParamValueBool("warning_window");
 
 		//	NOTE: this adjusts size for global entities lists.
-		(*(void(__cdecl*)(int, int))0x8C66E0)(8192, 512);
+		//(*(void(__cdecl*)(int, int))0x8C66E0)(8192, 512);
 
-		Script::LoadScripts();
+		//Script::LoadScripts();
 
 		//	Since scripts loaded and ready, calculate CRC and remember it.
 		//	TODO: implementation!
-		m_GlobalPropertiesListCRC = (*(int(__cdecl*)())0x873440)();
-		m_GlobalCommandsListCRC = (*(int (__cdecl*)())0x871DD0)();
-		m_TypesListCRC = (*(int(__cdecl*)())0x862CF0)();
+		//m_GlobalPropertiesListCRC = (*(int(__cdecl*)())0x873440)();
+		//m_GlobalCommandsListCRC = (*(int (__cdecl*)())0x871DD0)();
+		//m_TypesListCRC = (*(int(__cdecl*)())0x862CF0)();
 
 		//	Instantiate scene.
 		bool SceneSet = false;
-		if (m_ConfigurationVariables->IsVariableSet("scenefile")) {
+		if (m_ConfigurationVariables->IsVariableSet("scenefile"))
+		{
 			const char* sceneFile = m_ConfigurationVariables->GetParamValueString("scenefile").m_szString;
 			LogDump::LogA("Opening scene %s\n", sceneFile);
 
-			SceneSet = OpenScene(sceneFile);
+			//SceneSet = OpenScene(sceneFile);
 		}
 
-		if (!SceneSet)
-			if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-				tScene->CreateNode();
+		//if (!SceneSet)
+			//if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
+				//tScene->CreateNode();
 
 		//	TODO: implementation! Scene is not initialized here!
 		if (m_ConfigurationVariables->IsVariableSet("fixedframerate"))
@@ -611,7 +604,11 @@ namespace GameConfig
 			LogDump::LogA("Script::SimulateReleaseBuild == %i\n", Script::SimulateReleaseBuild);
 		}
 
+#ifdef INCLUDE_FIXES
+		g_Window->SetCursorReleased(true);
+#else
 		g_Window->SetCursorReleased(false);
+#endif
 
 		if (pProfileVariables)
 			delete pProfileVariables;
@@ -692,7 +689,6 @@ namespace GameConfig
 		WeaponPlaceHolder::Register();
 		MemoryCards::Register();
 		LoadScreenNode::Register();
-		*/
 
 		m_nGlobalPropertiesListCRC = (*(int (*)())0x873440)();
 		m_nGlobalCommandsListCRC = (*(int (*)())0x871DD0)();
@@ -701,14 +697,15 @@ namespace GameConfig
 		m_TotalGlobalProperties = (*(int (*)())0x872FB0)();
 		m_TotalGlobalCommands = (*(int (*)())0x871A20)();
 		m_TotalTypes = (*(int (*)())0x862B30)();
+		*/
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
 	void Config::UninitialiseGame()
 	{
-		Scene::SceneInstance->Destroy();
+		//Scene::SceneInstance->Destroy();
 		//ClearScriptLists();	//	@863380
-		//ClearLightsList();	//	@881260	//	NOTE: only referenced from here, possible candidate for inline.
+		Light::ClearLightsList();
 
 		g_Window->SetCursorReleased(true);
 
@@ -949,6 +946,16 @@ namespace GameConfig
 		_SetParamValueBool(this, variableName, value);
 	}
 
+	void InitialiseGame(LPSTR cmdline)
+	{
+		g_Config = new Config();
+
+		g_Config->Process(cmdline, NULL, nullptr, NULL);
+		g_Window->Process(Scene::GameUpdate);
+
+		delete g_Config;
+	}
+
 	void SetCountryCode(const char* szCode)
 	{
 		unsigned int languageIndex = 0;
@@ -1003,7 +1010,7 @@ namespace GameConfig
 	}
 
 	//	NOTE: what does this do?
-	void _GetDeveloperPath(String* outStr)
+	void _GetDeveloperPath(String& outStr)
 	{
 		String sDevPath = "E:\\Develop\\KapowSystems\\TOD1\\Libs\\Toolbox\\Functions.cpp";
 
@@ -1014,15 +1021,11 @@ namespace GameConfig
 
 		if (szKapSysStr) {
 			//	TODO: this is incomplete. Fix if necessary.
-			String tempstr = String();
+			String tempstr;
 			sDevPath.Substring(&tempstr, szKapSysStr - sDevPath.m_szString + 13, 0x7FFFFFFE);
 			sDevPath.m_nLength = tempstr.m_nLength;
 			
-			outStr->Append(sDevPath.m_szString);
-		}else{
-			outStr->m_nLength = 0;
-			outStr->m_szString = &outStr->m_pEmpty;
-			outStr->m_nBitMask |= 0x80000000;
+			outStr.Append(sDevPath.m_szString);
 		}
 	}
 
@@ -1032,5 +1035,4 @@ namespace GameConfig
 		LogDump::LogA("Uninitialise game callback called!\n");
 #endif
 	}
-
 }

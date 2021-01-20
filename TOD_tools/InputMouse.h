@@ -21,13 +21,7 @@ namespace Input {
 		MOUSE_BUTTON_WHEEL_DOWN
 	};
 
-	/*
-	 *------------------------------------------------------------
-	 *------------------------------------------------------------
-	 *---------- Wrapper around DirectInput Mouse ----------------
-	 *------------------------------------------------------------
-	 * -----------------------------------------------------------
-	*/
+	 //---------- Wrapper around DirectInput Mouse ----------------
 	class Mouse
 	{
 	private:
@@ -38,12 +32,12 @@ namespace Input {
 		int						m_Position_X;
 		int						m_Position_Y;
 		int						field_44;
-		BYTE					m_bShouldBeProcessed;
-		IDirectInput8*			m_pDeviceObject;
-		IDirectInputDevice8*	m_pDInputDevice;
-		BYTE					m_bAcquired;
-		DIDEVICEOBJECTDATA**	m_pBuffer;
-		unsigned int			m_nBufferSize;
+		BYTE					m_ShouldBeProcessed;
+		LPDIRECTINPUT8			m_DirectInputInterface;
+		LPDIRECTINPUTDEVICE8	m_DirectInputDevice;
+		bool					m_Acquired;
+		DIDEVICEOBJECTDATA**	m_Buffer;
+		unsigned int			m_BufferSize;
 
 	public:
 		Mouse();	//	@43B4E0

@@ -8,14 +8,29 @@
 #define LIST_FLAGS_NOT_ALLOCATED 0x400	//	NOTE: when allocation for elements have failed.
 #define LIST_FLAGS_DEFAULT 0x000FFF00
 
+//	TODO: probably replace it with stl vector.
 template <typename T>
 class List
 {
 public:
-	T**				m_Elements;
+	T** m_Elements;
 	unsigned int	m_CurrIndex;
 	unsigned int	m_Capacity;
 	unsigned int	m_Flags;	//	NOTE: looks like lower byte is used for allocator index when creating new elements.
+	/*union
+	{
+		struct FlagBits
+		{
+			unsigned int	m_AllocatorIndex : 8;
+			unsigned int	m_ClearAllElements : 1;
+			unsigned int	m_ClearEachElement : 1;
+			unsigned int	m_AllocationFailed : 1;
+			unsigned int	m_Unused : 1;
+			unsigned int	m_Unused_1 : 4;
+			unsigned int	m_Unused_2 : 4;
+		} m_FlagBits;
+		unsigned int m_Flags;
+	} m_Flags;*/
 
 public:
 	List<T>()
@@ -26,55 +41,23 @@ public:
 	{
 		m_Elements = nullptr;
 		m_CurrIndex = m_Capacity = NULL;
-		*(unsigned char*)&m_Flags = cap;
+		m_Flags = (unsigned int)cap;
 		m_Flags = m_Flags & (flags | LIST_FLAGS_DEFAULT) | flags;
 	}
 
-	void SetCapacity(unsigned int _size)	//	@851EE0
-	{
-		if (_size < m_CurrIndex)
-		{
-			if (m_Flags & LIST_FLAGS_CLEAR_ELEMENTS)
-			{
-				for (unsigned int ind = 0; ind < m_CurrIndex; ind++)
-					if (m_Elements[ind])
-						delete m_Elements[ind];
-			}
-
-			m_CurrIndex = _size;
-			return;
-		}
-
-		if (_size > m_Capacity)
-		{
-			m_Capacity = _size;
-			AdjustListCapacity();
-		}
-
-		if (m_Elements[_size] == m_Elements[m_CurrIndex])
-		{
-			m_CurrIndex = _size;
-			return;
-		}
-
-		for (unsigned int ind = m_CurrIndex; ind < _size; ind++)
-			if (m_Elements[ind])
-				m_Elements[ind] = new T();
-
-		m_CurrIndex = _size;
-	}
-
+	//	NOTE: erases all elements, only to be used when initializing list first time.
 	inline void SetCapacityAndErase(unsigned int capacity)
 	{
 		if (m_Capacity >= capacity)
 			return;
 
 		m_Capacity = capacity;
-		m_Elements = nullptr;
+		delete[] m_Elements;
 
 		AdjustListCapacity();
 	}
 
+	//	NOTE: always inlined.
 	inline void AddElement(T* element)
 	{
 		if (m_CurrIndex >= m_Capacity)
@@ -101,7 +84,7 @@ public:
 					delete m_Elements[ind];
 
 		if (m_Flags & LIST_FLAGS_CLEAR_ELEMENTS_ALL)
-			delete m_Elements;
+			delete[] m_Elements;
 	}
 
 	void Empty()	//	@4395E0
@@ -133,32 +116,46 @@ public:
 private:
 	void AdjustListCapacity()	//	@889F70
 	{
-		void** elements = (void**)Allocators::AllocateByType((unsigned char)m_Flags, sizeof(unsigned int) * m_Capacity);
-		if (!elements)
-		{
-			m_Flags |= LIST_FLAGS_NOT_ALLOCATED;
-			return;
-		}
-
-		if (m_Elements != &m_Elements[m_CurrIndex])
-		{
-			for (unsigned int i = NULL; i != m_Capacity; i++)
-				if (m_Elements[i])
-					elements[i] = new T(*m_Elements[i]);
-				else
-					elements[i] = new T();
-		}
-
-		if (m_Flags & LIST_FLAGS_CLEAR_ELEMENTS && m_Elements)
-			for (unsigned int i = NULL; i != m_Capacity; i++)
-				if (m_Elements[i])
-					delete m_Elements[i];
-
 		if (m_Flags & LIST_FLAGS_CLEAR_ELEMENTS_ALL)
-			delete m_Elements;
+		{
+			if (m_Elements)
+			{
+				void** elements = (void**)Allocators::Realloc(m_Elements, m_Capacity * sizeof(int), false);
+				m_Elements = (T**)elements;
 
-		m_Flags |= LIST_FLAGS_CLEAR_ELEMENTS_ALL;
-		m_Elements = (T**)elements;
+				if (m_Capacity)
+				{
+					for (unsigned int i = m_CurrIndex; i < m_Capacity; i++)
+						m_Elements[i] = new T();
+				}
+			}
+			else
+			{
+				m_Elements = (T**)new unsigned int[m_Capacity * sizeof(int)];
+
+				if (m_CurrIndex == NULL)
+					*m_Elements = new T();
+				else
+					for (unsigned int i = NULL; i < m_Capacity; i++)
+						m_Elements[i] = new T();
+			}
+		}
+		else
+		{
+			m_Flags |= LIST_FLAGS_CLEAR_ELEMENTS_ALL;
+			void** elements = (void**)new unsigned int[m_Capacity * sizeof(int)];
+
+			if (m_CurrIndex == NULL)
+				*elements = new T();
+			else
+				for (unsigned int i = NULL; i < m_CurrIndex; i++)
+					if (m_Elements[i])
+						elements[i] = new T(*m_Elements[i]);
+					else
+						elements[i] = new T();
+
+			m_Elements = (T**)elements;
+		}
 	}
 };
 
