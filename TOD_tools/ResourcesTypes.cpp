@@ -5,31 +5,30 @@ namespace ResType
 {
 	unsigned int Resource::LastOpenResourceIndex = NULL;
 
-#pragma message(TODO_IMPLEMENTATION)
-	Base::Base(const char* type, void* typePtr)
+	ResourceBase::ResourceBase(const char* type, Resource* (*creator)())
 	{
-		MESSAGE_CLASS_CREATED(Base);
+		MESSAGE_CLASS_CREATED(ResourceBase);
 
-		m_ResourceTypeName.Set(type);
+		m_ResourceTypeName = type;
 		m_ResourceIndex = ResTypeList.m_CurrIndex;
 		ResTypeList.AddElement(this);
-		//m_Creator = creator;
+		m_Creator = creator;
 		field_2C = NULL;
-		m_VerifyChecksum = NULL;
+		m_VerifyChecksum = false;
 		
 		SetResourceAlignment(16, 0);
 		SetResourceAlignment(16, 1);
 		SetResourceAlignment(16, 2);
 
-		m_ActualResourceType = typePtr;
-		//	_TypeInfo_Destroy(m_Creator);
+		Resource* res_ = m_Creator();
+		m_ResTypeMethods = (void*)(*((int*)res_));
+
+		res_->~Resource();
+		if (res_->field_18 & 0x10000)
+			delete res_;
 	}
 
-	Base::Base()
-	{
-	}
-
-	void Base::SetResourceAlignment(unsigned int size, unsigned int index)
+	void ResourceBase::SetResourceAlignment(unsigned int size, unsigned int index)
 	{
 		m_Alignment[index] = size;
 
@@ -37,16 +36,15 @@ namespace ResType
 			ResourceAlignment[index] = size;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-
+	#pragma message(TODO_IMPLEMENTATION)
 	void Resource::SetUnkFlag(unsigned char a1, int, int)
 	{
-		m_ReferenceCount ^= (m_ReferenceCount ^ (a1 << 18)) & 0x40000;
+		field_18 ^= (field_18 ^ (a1 << 18)) & 0x40000;
 	}
 
-	int Resource::GetUnkFlag()
-	{
-		return (m_ReferenceCount >> 18) & 1;
+	int Resource::GetUnkFlag() const
+{
+		return (field_18 >> 18) & 1;
 	}
 
 	void Resource::GetResourcesDir(String& outDir, PlatformId platformId)
@@ -56,21 +54,21 @@ namespace ResType
 
 	int Resource::stub9()
 	{
-		return (((m_ReferenceCount >> 19) & 1) != NULL) + 1;
+		return (((field_18 >> 19) & 1) != NULL) + 1;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
+	#pragma message(TODO_IMPLEMENTATION)
 	void Resource::GetResourceName(String& outName, int a2)
 	{
 		if (a2)
 			(*(void(__stdcall*)(String*, const char*, int, int))0x851800)(&outName, m_ResourcePath, NULL, NULL);
 		else
-			outName.Set(m_ResourcePath);
+			outName = m_ResourcePath;
 	}
 
 	void Resource::DestroyResource()
 	{
-		field_10 = NULL;
+		m_ResourceTimestamp = NULL;
 		field_14 = NULL;
 	}
 
@@ -79,21 +77,17 @@ namespace ResType
 		MESSAGE_CLASS_CREATED(Resource);
 
 		if (TotalResourcesCreated == NULL)
-			OpenResourcesList.SetCapacity(RESTYPE_MAX_OPEN_RESOURCES);
+			OpenResourcesList.SetCapacityAndErase(RESTYPE_MAX_OPEN_RESOURCES);
 
-		field_10 = NULL;
+		m_ResourceTimestamp = NULL;
 		field_14 = NULL;
-		m_ReferenceCount = NULL;
+		field_18 = NULL;
 
 		//	NOTE: field_4 is somehow initialized here. Haven't figured it out yet...
 
 		m_GlobalResourceId = a1 ? NULL : g_Blocks->InsertTypeListItem(this);
 
-		m_ReferenceCount = m_ReferenceCount & 0xFFF1FFFF | 0x10000;
-	}
-
-	Resource::Resource()
-	{
+		field_18 = field_18 & 0xFFF1FFFF | 0x10000;
 	}
 
 	Resource::~Resource()
@@ -123,7 +117,7 @@ namespace ResType
 
 	void Resource::_8513E0(unsigned char a1)
 	{
-		m_ReferenceCount ^= (m_ReferenceCount ^ (a1 << 19)) & 0x80000;
+		field_18 ^= (field_18^ (a1 << 19)) & 0x80000;
 	}
 
 	#pragma message(TODO_IMPLEMENTATION)
@@ -131,9 +125,9 @@ namespace ResType
 	{
 	}
 
-	void* Texture::GetInstancePtr() const
-	{
-		return (void*)rtTexture;
+	Resource* Texture::GetInstancePtr() const
+{
+		return (Resource*)rtTexture;
 	}
 
 	Texture::Texture() : Resource(false)
@@ -148,8 +142,8 @@ namespace ResType
 
 	void Texture::CreateInstance()
 	{
-		rtTexture = new Base(RESTYPE_TEXTURE_NAME, (void*)new Texture());
-		String ext(RESTYPE_TEXTURE_EXT);
+		rtTexture = new ResourceBase(RESTYPE_TEXTURE_NAME, (CREATOR)Create);
+		String ext = RESTYPE_TEXTURE_EXT;
 
 		rtTexture->m_ResourceExtensionsList.AddElement(&ext);
 
@@ -158,9 +152,14 @@ namespace ResType
 		rtTexture->SetResourceAlignment(16, 0);
 	}
 
-	void* Font::GetInstancePtr() const
+	Texture* Texture::Create()
 	{
-		return (void*)rtFont;
+		return new Texture();
+	}
+
+	Resource* Font::GetInstancePtr() const
+{
+		return (Resource*)rtFont;
 	}
 
 	Font::Font() : Resource(false)
@@ -175,9 +174,9 @@ namespace ResType
 
 	void Font::CreateInstance()
 	{
-		rtFont = new Base(RESTYPE_FONT_NAME, (void*)new Font());
-		String ext(RESTYPE_FONT_EXT_1);
-		String ext_2(RESTYPE_FONT_EXT_2);
+		rtFont = new ResourceBase(RESTYPE_FONT_NAME, (CREATOR)Create);
+		String ext = RESTYPE_FONT_EXT_1;
+		String ext_2 = RESTYPE_FONT_EXT_2;
 
 		rtFont->m_ResourceExtensionsList.AddElement(&ext);
 		rtFont->m_ResourceExtensionsList.AddElement(&ext_2);
@@ -189,9 +188,14 @@ namespace ResType
 		rtFont->field_2C = true;
 	}
 
-	void* Text::GetInstancePtr() const
+	Font* Font::Create()
 	{
-		return (void*)rtText;
+		return new Font();
+	}
+
+	Resource* Text::GetInstancePtr() const
+{
+		return (Resource*)rtText;
 	}
 
 	Text::Text() : Resource(false)
@@ -207,8 +211,8 @@ namespace ResType
 
 	void Text::CreateInstance()
 	{
-		rtText = new Base(RESTYPE_TEXT_NAME, (void*)new Text());
-		String ext(RESTYPE_TEXT_EXT);
+		rtText = new ResourceBase(RESTYPE_TEXT_NAME, (CREATOR)Create);
+		String ext = RESTYPE_TEXT_EXT;
 
 		rtText->m_ResourceExtensionsList.AddElement(&ext);
 
@@ -219,9 +223,14 @@ namespace ResType
 		rtText->field_2C = true;
 	}
 
-	void* Model::GetInstancePtr() const
+	Text* Text::Create()
 	{
-		return (void*)rtModel;
+		return new Text();
+	}
+
+	Resource* Model::GetInstancePtr() const
+{
+		return (Resource*)rtModel;
 	}
 
 	Model::Model() : Resource(false)
@@ -239,8 +248,8 @@ namespace ResType
 
 	void Model::CreateInstance()
 	{
-		rtModel = new Base(RESTYPE_MODEL_NAME, (void*)new Model());
-		String ext(RESTYPE_MODEL_EXT);
+		rtModel = new ResourceBase(RESTYPE_MODEL_NAME, (CREATOR)Create);
+		String ext = RESTYPE_MODEL_EXT;
 
 		rtModel->m_ResourceExtensionsList.AddElement(&ext);
 
@@ -249,9 +258,14 @@ namespace ResType
 		rtModel->SetResourceAlignment(16, 0);
 	}
 
-	void* Fragment::GetInstancePtr() const
+	Model* Model::Create()
 	{
-		return (void*)rtFragment;
+		return new Model();
+	}
+
+	Resource* Fragment::GetInstancePtr() const
+{
+		return (Resource*)rtFragment;
 	}
 
 	Fragment::Fragment() : Resource(false)
@@ -272,9 +286,9 @@ namespace ResType
 
 	void Fragment::CreateInstance()
 	{
-		rtFragment = new Base(RESTYPE_FRAGMENT_NAME, (void*)new Fragment());
-		String ext(RESTYPE_FRAGMENT_EXT_1);
-		String ext_1(RESTYPE_FRAGMENT_EXT_2);
+		rtFragment = new ResourceBase(RESTYPE_FRAGMENT_NAME, (CREATOR)Create);
+		String ext = RESTYPE_FRAGMENT_EXT_1;
+		String ext_1 = RESTYPE_FRAGMENT_EXT_2;
 
 		rtFragment->m_ResourceExtensionsList.AddElement(&ext);
 		rtFragment->m_ResourceExtensionsList.AddElement(&ext_1);
@@ -286,9 +300,14 @@ namespace ResType
 		rtFragment->m_VerifyChecksum = true;
 	}
 
-	void* Movie::GetInstancePtr() const
+	Fragment* Fragment::Create()
 	{
-		return (void*)rtMovie;
+		return new Fragment();
+	}
+
+	Resource* Movie::GetInstancePtr() const
+{
+		return (Resource*)rtMovie;
 	}
 
 	Movie::Movie() : Resource(false)
@@ -298,9 +317,9 @@ namespace ResType
 
 	void Movie::CreateInstance()
 	{
-		rtMovie = new Base(RESTYPE_MOVIE_NAME, (void*)new Movie());
-		String ext(RESTYPE_MOVIE_EXT_1);
-		String ext_2(RESTYPE_MOVIE_EXT_2);
+		rtMovie = new ResourceBase(RESTYPE_MOVIE_NAME, (CREATOR)Create);
+		String ext = RESTYPE_MOVIE_EXT_1;
+		String ext_2 = RESTYPE_MOVIE_EXT_2;
 
 		rtMovie->m_ResourceExtensionsList.AddElement(&ext);
 		rtMovie->m_ResourceExtensionsList.AddElement(&ext_2);
@@ -310,9 +329,14 @@ namespace ResType
 		rtMovie->SetResourceAlignment(16, 0);
 	}
 
-	void* Cutscene::GetInstancePtr() const
+	Movie* Movie::Create()
 	{
-		return (void*)rtCutscene;
+		return new Movie();
+	}
+
+	Resource* Cutscene::GetInstancePtr() const
+{
+		return (Resource*)rtCutscene;
 	}
 
 	Cutscene::Cutscene() : Resource(false)
@@ -326,13 +350,13 @@ namespace ResType
 		field_48 = 1;
 		field_44 = 30;
 
-		m_String_1 = String();
+		m_String_1;
 	}
 
 	void Cutscene::CreateInstance()
 	{
-		rtCutscene = new Base(RESTYPE_CUTSCENE_NAME, (void*)new Cutscene());
-		String ext(RESTYPE_CUTSCENE_EXT);
+		rtCutscene = new ResourceBase(RESTYPE_CUTSCENE_NAME, (CREATOR)Create);
+		String ext = RESTYPE_CUTSCENE_EXT;
 
 		rtCutscene->m_ResourceExtensionsList.AddElement(&ext);
 
@@ -341,22 +365,27 @@ namespace ResType
 		rtCutscene->SetResourceAlignment(16, 0);
 	}
 
-	void* Sound::GetInstancePtr() const
+	Cutscene* Cutscene::Create()
 	{
-		return (void*)rtSound;
+		return new Cutscene();
+	}
+
+	Resource* Sound::GetInstancePtr() const
+{
+		return (Resource*)rtSound;
 	}
 
 	Sound::Sound() : Resource(false)
 	{
 		MESSAGE_CLASS_CREATED(Sound);
 
-		m_MonoStream = nullptr;	//	NOTE: this object pointer has VMT. Maybe it's StreamBuffer?
+		m_MonoStream = nullptr;
 	}
 
 	void Sound::CreateInstance()
 	{
-		rtSound = new Base(RESTYPE_SOUND_NAME, (void*)new Sound());
-		String ext(RESTYPE_SOUND_EXT);
+		rtSound = new ResourceBase(RESTYPE_SOUND_NAME, (CREATOR)Create);
+		String ext = RESTYPE_SOUND_EXT;
 
 		rtSound->m_ResourceExtensionsList.AddElement(&ext);
 
@@ -367,11 +396,17 @@ namespace ResType
 		rtSound->field_2C = true;
 	}
 
-	void* StreamedSoundInfo::GetInstancePtr() const
+	Sound* Sound::Create()
 	{
-		return (void*)rtStreamedSoundInfo;
+		return new Sound();
 	}
 
+	Resource* StreamedSoundInfo::GetInstancePtr() const
+{
+		return (Resource*)rtStreamedSoundInfo;
+	}
+
+	#pragma message(TODO_IMPLEMENTATION)
 	StreamedSoundInfo::StreamedSoundInfo() : Resource(false)
 	{
 		MESSAGE_CLASS_CREATED(StreamedSoundInfo);
@@ -382,9 +417,9 @@ namespace ResType
 
 	void StreamedSoundInfo::CreateInstance()
 	{
-		rtStreamedSoundInfo = new Base(RESTYPE_STREAMEDSOUNDINFO_NAME, (void*)new StreamedSoundInfo());
-		String ext(RESTYPE_STREAMEDSOUNDINFO_EXT_1);
-		String ext_2(RESTYPE_STREAMEDSOUNDINFO_EXT_2);
+		rtStreamedSoundInfo = new ResourceBase(RESTYPE_STREAMEDSOUNDINFO_NAME, (CREATOR)Create);
+		String ext = RESTYPE_STREAMEDSOUNDINFO_EXT_1;
+		String ext_2 = RESTYPE_STREAMEDSOUNDINFO_EXT_2;
 
 		rtStreamedSoundInfo->m_ResourceExtensionsList.AddElement(&ext);
 		rtStreamedSoundInfo->m_ResourceExtensionsList.AddElement(&ext_2);
@@ -396,9 +431,14 @@ namespace ResType
 		rtStreamedSoundInfo->field_2C = true;
 	}
 
-	void* Animation::GetInstancePtr() const
+	StreamedSoundInfo* StreamedSoundInfo::Create()
 	{
-		return (void*)rtAnimation;
+		return new StreamedSoundInfo();
+	}
+
+	Resource* Animation::GetInstancePtr() const
+{
+		return (Resource*)rtAnimation;
 	}
 
 	Animation::Animation() : Resource(false)
@@ -418,8 +458,8 @@ namespace ResType
 
 	void Animation::CreateInstance()
 	{
-		rtAnimation = new Base(RESTYPE_ANIMATION_NAME, (void*)new Animation());
-		String ext(RESTYPE_ANIMATION_EXT);
+		rtAnimation = new ResourceBase(RESTYPE_ANIMATION_NAME, (CREATOR)Create);
+		String ext = RESTYPE_ANIMATION_EXT;
 
 		rtAnimation->m_ResourceExtensionsList.AddElement(&ext);
 
@@ -430,11 +470,17 @@ namespace ResType
 		rtAnimation->m_VerifyChecksum = true;
 	}
 
-	void* MeshColor::GetInstancePtr() const
+	Animation* Animation::Create()
 	{
-		return (void*)rtMeshColor;
+		return new Animation();
 	}
 
+	Resource* MeshColor::GetInstancePtr() const
+{
+		return (Resource*)rtMeshColor;
+	}
+
+	#pragma message(TODO_IMPLEMENTATION)
 	MeshColor::MeshColor() : Resource(false)
 	{
 		MESSAGE_CLASS_CREATED(MeshColor);
@@ -450,11 +496,16 @@ namespace ResType
 
 	void MeshColor::CreateInstance()
 	{
-		rtMeshColor = new Base(RESTYPE_MESHCOLOR_NAME, (void*)new MeshColor());
-		String ext(RESTYPE_MESHCOLOR_EXT_1);
-		String ext_1(RESTYPE_MESHCOLOR_EXT_2);
+		rtMeshColor = new ResourceBase(RESTYPE_MESHCOLOR_NAME, (CREATOR)Create);
+		String ext = RESTYPE_MESHCOLOR_EXT_1;
+		String ext_1 = RESTYPE_MESHCOLOR_EXT_2;
 
 		rtMeshColor->m_ResourceExtensionsList.AddElement(&ext);
 		rtMeshColor->m_ResourceExtensionsList.AddElement(&ext_1);
+	}
+
+	MeshColor* MeshColor::Create()
+	{
+		return new MeshColor();
 	}
 }

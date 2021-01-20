@@ -40,12 +40,12 @@ void Blocks::GetResourcePath(String& outStr, const char* path) const
 
 void Blocks::IncreaseResourceReferenceCount(ResType::Resource* _res)
 {
-	++_res->m_ReferenceCount;
+	++_res->field_18;
 }
 
 void Blocks::DecreaseResourceReferenceCount(ResType::Resource* _res)
 {
-	--_res->m_ReferenceCount;
+	--_res->field_18;
 }
 
 const char* Blocks::GetCurrentSceneName() const
@@ -114,7 +114,7 @@ void Blocks::GetInternalFileName(String& outName, const char* str)
 		if (!*dataPath ||
 			((dataPath[str - "/data/"] ^ *dataPath) & 223) != NULL)
 		{
-			outName.Set(str);
+			outName = str;
 
 			return;
 		}
@@ -134,7 +134,7 @@ void Blocks::GetInternalFileName(String& outName, const char* str)
 
 		return;
 	}
-	outName.Set(str);
+	outName = str;
 
 	return;
 }

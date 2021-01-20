@@ -14,7 +14,8 @@ enum SaveSlotIndex
 	SAVE_SLOT_5,
 	SAVE_SLOT_6,
 	SAVE_SLOT_7,
-	SAVE_SLOT_8
+	SAVE_SLOT_8,
+	SAVE_SLOT_LAST
 };
 
 //	TODO: move this to 'MemoryCards' class.
@@ -49,7 +50,7 @@ public:
 	bool	FormatCard();	//	@928840
 };
 
-static SaveSlot* SaveSlots[SAVE_SLOT_8] = {
+static SaveSlot* SaveSlots[SAVE_SLOT_LAST] = {
    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 };	//	@A35E84
 

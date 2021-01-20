@@ -2,6 +2,7 @@
 
 #include "Types.h"
 #include "Globals.h"
+#include <vector>
 
 namespace Audio {
 
@@ -24,11 +25,14 @@ namespace Audio {
 		DSSCL_WRITEPRIMARY
 	};
 
-	/*
-	 *------------------------------------------------------------
-	 *-------------- Handles streamed game sounds ----------------
-	 * -----------------------------------------------------------
-	*/
+	struct SoundBufferStatus
+	{
+		class StreamBuffer* m_StreamBufferPtr;
+		bool	m_InUse;
+	};
+
+	//-------------- Handles streamed game sounds ----------------
+	//	TODO: redo this class.
 	class StreamedSoundBuffers
 	{
 	public:
@@ -109,6 +113,8 @@ namespace Audio {
 		void		_43E880();	//	@43E880	//	NOTE: unused
 		void		PreallocateStreamBuffersPool();	//	@
 		void		CreateStaticStreamBuffer();	//	@
+
+		static std::vector<SoundBufferStatus>	vSoundBuffers;	//	@A09314
 	};
 
 	static float	DefaultFxVolume;	//	@A09230

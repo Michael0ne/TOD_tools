@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ResourcesTypes.h"
+#include "Config.h"
 
 #define BLOCKS_CLASS_SIZE 500
 
@@ -118,7 +119,7 @@ protected:
 	int				m_EngineVersionTimestamp;
 	int				m_RegionId;
 	char			field_1DC;
-	List<int>		m_UnkList_9;
+	List<int>		m_UnkList_9;	//	NOTE: this looks like list of actual resources (assets) this block uses?
 	bool			m_LoadBlocks;
 
 private:
@@ -151,8 +152,10 @@ public:
 	const char*		GetCurrentSceneName() const;
 	void			BuildFastFindNodeVector();	//	@877DA0
 	void			FillFastFindNodeVector(Node* _baseNode, FastFindInfo* _ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
-	void*			LoadResourceFile(const char* _pathandname);	//	@878AB0
-
+	ResType::ResourceBase*	LoadResourceFile(const char* _pathandname);	//	@878AB0
+	void*			LoadResourceBlock(class File*, void* resbufferptr, unsigned int* resdatasize, int resblockid);	//	@8759E0
+	
+	static void		GetPlatformSpecificResourcePath(String& outPath, const char* respath, GameConfig::CountryCodes region, ResType::PlatformId platform);	//	@876500
 	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0
 
 	static const char* BlockTypeExtension[];	//	@A11B64

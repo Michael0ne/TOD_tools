@@ -1,6 +1,7 @@
 #include "InputMouse.h"
 #include "Window.h"
 #include "GfxInternal_Dx9.h"
+#include "LogDump.h"
 
 Input::Mouse* g_InputMouse = NULL;
 const char* g_MouseButtons[] = {
@@ -29,28 +30,28 @@ namespace Input {
 		m_Position_X = m_Position_Y = m_Position_Z = NULL;
 		m_OldLocalPosition.x = m_OldLocalPosition.y = NULL;
 		field_44 = NULL;
-		m_bShouldBeProcessed = true;
-		m_pDeviceObject = nullptr;
-		m_pDInputDevice = nullptr;
+		m_ShouldBeProcessed = true;
+		m_DirectInputInterface = nullptr;
+		m_DirectInputDevice = nullptr;
 
 		g_InputMouse = this;
 
-		if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDeviceObject, NULL)))
-			IncompatibleMachineParameterError(0, false);
+		if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_DirectInputInterface, NULL)))
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
-		if (FAILED(m_pDeviceObject->CreateDevice(GUID_SysMouse, &m_pDInputDevice, NULL)))
-			IncompatibleMachineParameterError(0, false);
+		if (FAILED(m_DirectInputInterface->CreateDevice(GUID_SysMouse, &m_DirectInputDevice, NULL)))
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
-		if (FAILED(m_pDInputDevice->SetDataFormat(&c_dfDIMouse)))
-			IncompatibleMachineParameterError(0, false);
+		if (FAILED(m_DirectInputDevice->SetDataFormat(&c_dfDIMouse)))
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
-		if (FAILED(m_pDInputDevice->SetCooperativeLevel(g_Window->m_hWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
-			IncompatibleMachineParameterError(0, false);
+		if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
-		*(int*)&m_pBuffer = (int)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT, NULL, NULL);
-		memset(m_pBuffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT);
+		*(int*)&m_Buffer = (int)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT, NULL, NULL);
+		memset(m_Buffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT);
 
-		m_nBufferSize = NULL;
+		m_BufferSize = NULL;
 
 		DIPROPDWORD diProperty;
 		diProperty.diph.dwSize = 20;
@@ -59,16 +60,16 @@ namespace Input {
 		diProperty.diph.dwHow = 0;
 		diProperty.dwData = 30;
 
-		if (FAILED(m_pDInputDevice->SetProperty(DIPROP_BUFFERSIZE, &diProperty.diph)))
-			IncompatibleMachineParameterError(0, false);
+		if (FAILED(m_DirectInputDevice->SetProperty(DIPROP_BUFFERSIZE, &diProperty.diph)))
+			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
-		m_bAcquired = false;
-		if (SUCCEEDED(m_pDInputDevice->Acquire()))
-			m_bAcquired = true;
+		m_Acquired = false;
+		if (SUCCEEDED(m_DirectInputDevice->Acquire()))
+			m_Acquired = true;
 
 		tagPOINT clientPos;
 		GetCursorPos(&clientPos);
-		ScreenToClient(g_Window->m_hWindow, &clientPos);
+		ScreenToClient(g_Window->m_WindowHandle, &clientPos);
 
 		m_OldLocalPosition = clientPos;
 	}
@@ -80,15 +81,15 @@ namespace Input {
 
 	void Mouse::_Acquire()
 	{
-		if (!m_bAcquired &&
-			SUCCEEDED(m_pDInputDevice->Acquire()))
-			m_bAcquired = true;
+		if (!m_Acquired &&
+			SUCCEEDED(m_DirectInputDevice->Acquire()))
+			m_Acquired = true;
 	}
 
 	void Mouse::UnacquireAndReset()
 	{
-		m_pDInputDevice->Unacquire();
-		m_bAcquired = false;
+		m_DirectInputDevice->Unacquire();
+		m_Acquired = false;
 
 		m_nMouseButtons[MOUSE_BUTTON_0] = NULL;
 		m_nMouseButtons[MOUSE_BUTTON_1] = NULL;
@@ -105,7 +106,7 @@ namespace Input {
 	void Mouse::SetWindowCapture(HWND window)
 	{
 		if (++field_44 == 1)
-			SetCapture(window ? window : g_Window->m_hWindow);
+			SetCapture(window ? window : g_Window->m_WindowHandle);
 	}
 
 	void Mouse::ReleaseWindowCapture()
@@ -153,31 +154,32 @@ namespace Input {
 
 	void Mouse::Process()
 	{
-		m_bShouldBeProcessed = g_Window->m_bVisible;
+		m_ShouldBeProcessed = g_Window->m_Visible;
 
 		tagPOINT clientPos;
 		GetCursorPos(&clientPos);
-		ScreenToClient(g_Window->m_hWindow, &clientPos);
+		ScreenToClient(g_Window->m_WindowHandle, &clientPos);
 		m_NewLocalPosition = clientPos;
 
-		if (m_bAcquired)
+		if (m_Acquired)
 		{
-			if (SUCCEEDED(m_pDInputDevice->Acquire()))
-				m_bAcquired = true;
-			if (!m_bAcquired)
+			if (SUCCEEDED(m_DirectInputDevice->Acquire()))
+				m_Acquired = true;
+			if (!m_Acquired)
 			{
-				m_bShouldBeProcessed = false;
+				m_ShouldBeProcessed = false;
 				return;
 			}
 		}
 
 		DIMOUSESTATE* mouseState;
-		if (FAILED(m_pDInputDevice->GetDeviceState(sizeof(DIMOUSESTATE), &mouseState)))
+		if (FAILED(m_DirectInputDevice->GetDeviceState(sizeof(DIMOUSESTATE), &mouseState)))
 		{
-			debug("Failed GetDeviceState\n");
+			//	FIXME: removed to suppress 'failed' messages spam for now. Restore in future.
+			//LogDump::LogA("Failed GetDeviceState\n");
 
-			m_pDInputDevice->Unacquire();
-			m_bAcquired = false;
+			m_DirectInputDevice->Unacquire();
+			m_Acquired = false;
 
 			m_nMouseButtons[MOUSE_BUTTON_0] = NULL;
 			m_nMouseButtons[MOUSE_BUTTON_1] = NULL;
@@ -207,36 +209,36 @@ namespace Input {
 		m_OldLocalPosition.y = m_OldLocalPosition.y < 0 ? 0 : screenRes.y - m_OldLocalPosition.y;
 
 		DWORD buffSize = 30;
-		if (HRESULT msdevdatares = m_pDInputDevice->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), (LPDIDEVICEOBJECTDATA)&m_pBuffer, &buffSize, NULL))
+		if (HRESULT msdevdatares = m_DirectInputDevice->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), (LPDIDEVICEOBJECTDATA)&m_Buffer, &buffSize, NULL))
 		{
 			if (msdevdatares != 1)
 			{
-				debug("Failed GetDeviceData - %i\n", msdevdatares);
+				LogDump::LogA("Failed GetDeviceData - %i\n", msdevdatares);
 				return;
 			}
-			debug("WARNING: Mouse buffer overflowed! (size %i, count %i)", 30, buffSize);
+			LogDump::LogA("WARNING: Mouse buffer overflowed! (size %i, count %i)", 30, buffSize);
 		}
 
 		if (buffSize <= 0)
 			return;
 
-		if (m_nBufferSize <= buffSize)
-			m_nBufferSize = buffSize;
+		if (m_BufferSize <= buffSize)
+			m_BufferSize = buffSize;
 
 		//	NOTE: why?
 		if (buffSize <= 0)
 			return;
 
 		for (unsigned int ind = 0; ind < buffSize; ind++)
-			switch (m_pBuffer[ind]->dwOfs)
+			switch (m_Buffer[ind]->dwOfs)
 			{
 			case 0:
 			case 4:
 				break;
 			case 8:
-				if (m_pBuffer[ind]->dwData >= 0)
+				if (m_Buffer[ind]->dwData >= 0)
 				{
-					if (m_pBuffer[ind]->dwData > 0)
+					if (m_Buffer[ind]->dwData > 0)
 						m_nMouseButtons[MOUSE_BUTTON_WHEEL_UP] |= 6;
 				}else
 					m_nMouseButtons[MOUSE_BUTTON_WHEEL_DOWN] |= 6;
@@ -249,10 +251,10 @@ namespace Input {
 			case 17:
 			case 18:
 			case 19:
-				m_nMouseButtons[m_pBuffer[ind]->dwOfs - 12] |= (m_pBuffer[ind]->dwData >> 7) & 1 ? 3 : ((m_nMouseButtons[m_pBuffer[ind]->dwOfs - 12] & 0xFFFFFFFE) | 4);
+				m_nMouseButtons[m_Buffer[ind]->dwOfs - 12] |= (m_Buffer[ind]->dwData >> 7) & 1 ? 3 : ((m_nMouseButtons[m_Buffer[ind]->dwOfs - 12] & 0xFFFFFFFE) | 4);
 				break;
 			default:
-				debug("WARNING: Invalid mousebutton %i!", m_pBuffer[ind]->dwOfs);
+				LogDump::LogA("WARNING: Invalid mousebutton %i!", m_Buffer[ind]->dwOfs);
 				break;
 			}
 	}

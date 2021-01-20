@@ -275,8 +275,8 @@ void Node::SetParent(const Node* parent)
 			_pa->SetParent(nullptr);
 	}
 
-	if (!m_QuadTree && m_Parent)
-		;//SetChildrenPositionToSame();	//	@88D1E0
+	//if (!m_QuadTree && m_Parent)
+		//SetChildrenPositionToSame();	//	@88D1E0
 }
 
 void Node::SetName(const char* name)
@@ -291,6 +291,11 @@ void Node::SetName(const char* name)
 		m_Name = (char*)Allocators::AllocatorsList[g_Blocks->GetAllocatorType()]->Allocate(strlen(name) + 1, NULL, NULL);
 		strcpy(m_Name, name);
 	}
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::SetPos(const Vector4f&)
+{
 }
 
 Vector4f* NodePosition::GetPosition(Vector4f* outPos)

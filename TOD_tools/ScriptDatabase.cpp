@@ -26,14 +26,14 @@ namespace Script
 		unsigned int totalScripts = NULL;
 
 		dbfile.Read(&totalScripts, sizeof(totalScripts));
-		GlobalPropertiesList.SetCapacity(totalScripts);
+		GlobalPropertiesList.SetCapacityAndErase(totalScripts);
 
 		if (totalScripts <= NULL)
 		{
 			unsigned int totalCommands = NULL;
 			dbfile.Read(&totalCommands, sizeof(totalCommands));
 
-			GlobalCommandsList.SetCapacity(totalCommands);
+			GlobalCommandsList.SetCapacityAndErase(totalCommands);
 
 			if (totalCommands <= NULL)
 			{
@@ -83,7 +83,7 @@ namespace Script
 					unsigned int totalCommands = NULL;
 					dbfile.Read(&totalCommands, sizeof(totalCommands));
 
-					GlobalCommandsList.SetCapacity(totalCommands);
+					GlobalCommandsList.SetCapacityAndErase(totalCommands);
 
 					if (totalCommands <= NULL)
 					{
@@ -117,6 +117,7 @@ namespace Script
 		}
 	}
 
+	#pragma message(TODO_IMPLEMENTATION)
 	//	FIXME: right now, there are too much allocations going on here (for each field on array assignment, for each string allocation and copy).
 	void LoadScripts()
 	{

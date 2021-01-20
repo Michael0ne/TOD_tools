@@ -78,17 +78,17 @@ namespace Input {
 		const char*				GetModelNameString();	//	@439DF0	//	NOTE: unused.
 		void					ProcessController();	//	@439E00
 
-		static int&				ControllersCreated;	//	@A35E74
+		static unsigned int		ControllersCreated;	//	@A35E74
 		static LPDIENUMDEVICESCALLBACK EnumCallback;	//	@43A1D0
-		static int&				DirectInputGamepadsFound;	//	@A08FD0
+		static int				DirectInputGamepadsFound;	//	@A08FD0
 		static Gamepad**		GamepadsArray;	//	@A35E6C
-		static IDirectInput8*	g_pDirectInput8Interface;	//	@A35E78
-		static int&				ms_A08FD8;	//	@A08FD8
-		static int&				ms_A09018;	//	@A09018
+		static LPDIRECTINPUT8	g_pDirectInput8Interface;	//	@A35E78
+		static unsigned int		_A08FD8[];	//	@A08FD8
+		static unsigned int		_A09018[];	//	@A09018
 	};
 }
 
-extern Input::Gamepad*			g_InputGamepad[INPUT_GAMEPAD_MAX_GAMEPADS];	//	@A35E7C
+extern Input::Gamepad**			g_InputGamepad;	//	@A35E7C
 extern const char*				g_GamepadButtons[INPUT_GAMEPAD_MAX_BUTTONS];
 
 static_assert(sizeof(Input::Gamepad) == INPUT_GAMEPAD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Input::Gamepad));

@@ -209,7 +209,7 @@ void* SystemSubAllocator::AllocateAligned(size_t size, size_t alignment, int fil
 		stub9();
 
 	if (alignment > 1)
-		return (*(void* (__cdecl*)(size_t, size_t, size_t))0x952ED4)(size, alignment, NULL);	//	_aligned_offset_malloc
+		return _aligned_offset_malloc(size, alignment, NULL);
 	else
 		return malloc(size);
 }
@@ -372,7 +372,7 @@ BestFitAllocator::BestFitAllocator()
 
 	int _f0 = 32;
 
-	for (int ind = 0; ind < 20; ind++)
+	for (int ind = 0; ind < 19; ind++)
 	{
 		field_28[ind].field_0 = _f0;
 		field_28[ind].field_4 = NULL;
@@ -577,7 +577,7 @@ SingletonSubAllocator::SingletonSubAllocator()
 
 void Allocators::CreateAllocators()
 {
-	ALLOCATOR_MAIN_ASSETS = FrameBasedSubAllocator();
+	/*ALLOCATOR_MAIN_ASSETS = FrameBasedSubAllocator();
 	ALLOCATOR_MISSION_ASSETS = FrameBasedSubAllocator();
 	ALLOCATOR_CUTSCENE_OR_REWIND = FrameBasedSubAllocator();
 	ALLOCATOR_PLAYER_DATA = FrameBasedSubAllocator();
@@ -587,6 +587,17 @@ void Allocators::CreateAllocators()
 	ALLOCATOR_COLLISION_CACHE_ENTRIES = PoolSubAllocator(48, 4);
 	ALLOCATOR_DEFRAGMENTING = BestFitAllocator();
 	m_Defragmentator = Defragmentator(&ALLOCATOR_DEFRAGMENTING, 1, 10000);
+	*/
+	static FrameBasedSubAllocator ALLOCATOR_MAIN_ASSETS;
+	static FrameBasedSubAllocator ALLOCATOR_MISSION_ASSETS;
+	static FrameBasedSubAllocator ALLOCATOR_CUTSCENE_OR_REWIND;
+	static FrameBasedSubAllocator ALLOCATOR_PLAYER_DATA;
+	static FirstFitSubAllocator ALLOCATOR_TEMP;
+	static BestFitAllocator ALLOCATOR_RENDERLIST;
+	static StackBasedSubAllocator ALLOCATOR_SCRATCHPAD;
+	static PoolSubAllocator ALLOCATOR_COLLISION_CACHE_ENTRIES(48, 4);
+	static BestFitAllocator ALLOCATOR_DEFRAGMENTING;
+	static Defragmentator DEFRAGMENTATOR(&ALLOCATOR_DEFRAGMENTING, 1, 100000);
 
 	InitAllocator(&ALLOCATOR_CUTSCENE_OR_REWIND, CUTSCENE_OR_REWIND, "ALLOCATOR_CUTSCENE_OR_REWIND", 0x200000);
 	InitAllocator(&ALLOCATOR_PLAYER_DATA, PLAYER_DATA, "ALLOCATOR_PLAYER_DATA", 0x300000);
@@ -624,7 +635,7 @@ void Allocators::_4776A0()
 {
 	TotalAllocators = 0;
 	unsigned char v19[12];
-	memset(v19, NULL, sizeof(v19));
+	ZeroMemory(v19, sizeof(v19));
 	void* v0 = nullptr;
 
 	for (int ind = DEFRAGMENTING; ind != 1; ind--)
@@ -652,7 +663,7 @@ void Allocators::_4776A0()
 		_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[v2];
 		TotalAllocators++;
 
-		v0 = (void*)((unsigned int)AllocatorsList[v2]->GetAllocatedSpacePtr() + AllocatorsList[v2]->GetAllocatedSpaceSize());
+		v0 = (char*)AllocatorsList[v2]->GetAllocatedSpacePtr() + AllocatorsList[v2]->GetAllocatedSpaceSize();
 
 		v19[v2] = 1;
 	}
@@ -666,7 +677,7 @@ Allocators::Allocators()
 {
 	MESSAGE_CLASS_CREATED(Allocators);
 
-	ALLOCATOR_DEFAULT = SystemSubAllocator();
+	static SystemSubAllocator ALLOCATOR_DEFAULT;
 
 	ALLOCATOR_DEFAULT.m_AllocatorName = "ALLOCATOR_DEFAULT";
 	ALLOCATOR_DEFAULT.field_20 = NULL;
@@ -700,10 +711,6 @@ Allocators::Allocators()
 	_A3AFB8 = 0xABCDEF;
 
 	InitializeCriticalSection(&AllocatorsCriticalSection);
-
-	memcpy((void*)0xA3B0CC, &g_Allocators, sizeof(Allocators));
-	memcpy((void*)0xA3AFC0, &AllocatorsList, sizeof(int) * TOTAL);
-	memcpy((void*)0xA3AFE8, &_A3AFE8, sizeof(Allocator_Struct2) * 22);
 }
 
 Allocators::~Allocators()
@@ -713,7 +720,7 @@ Allocators::~Allocators()
 	if (BufferPtr)
 		free(BufferPtr);
 
-	for (int ind = 0; ind < 9; ind++)
+	for (unsigned int ind = 0; ind < 9; ind++)
 		if (AllocatorsList[ind + 1])
 			AllocatorsList[ind]->m_SystemAllocators->_free(BuffersPtr[ind + 1]);
 
@@ -739,9 +746,9 @@ void Allocators::ReleaseMemory(void* ptr, bool aligned)
 	}
 
 	if (aligned)
-		_A3AFE8[ind + 1].m_Allocator->FreeAligned(ptr);
+		_A3AFE8[ind].m_Allocator->FreeAligned(ptr);
 	else
-		_A3AFE8[ind + 1].m_Allocator->Free(ptr);
+		_A3AFE8[ind].m_Allocator->Free(ptr);
 
 	LeaveCriticalSection(&AllocatorsCriticalSection);
 }
@@ -759,7 +766,7 @@ Allocator* Allocators::GetAllocatorByMemoryPointer(void* ptr)
 		} while (ptr < _spaceptr);
 	}
 
-	return _A3AFE8[allocInd + 1].m_Allocator;
+	return _A3AFE8[allocInd].m_Allocator;
 }
 
 void* Allocators::Realloc(void* oldptr, size_t newsize, bool a3)

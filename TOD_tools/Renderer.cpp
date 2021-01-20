@@ -75,27 +75,25 @@ Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigne
 	m_RenderBufferEmpty = false;
 
 	//	Allocate textures list.
-	(*(void(__thiscall*)(Renderer*))0x4210E0)(this);
+	//(*(void(__thiscall*)(Renderer*))0x4210E0)(this);
 	//	Allocate something
-	(*(void(__thiscall*)(Renderer*))0x420390)(this);
+	//(*(void(__thiscall*)(Renderer*))0x420390)(this);
 
 	field_35 = 1;
 	m_Time_1 = 0.f;
 	m_CallbackUnknown = nullptr;
 	m_RenderEndTime = __rdtsc();
 
-#ifndef INCLUDE_FIXES
-	//	For testing purposes - hide cursor.
-	ShowCursor(0);
+#ifdef INCLUDE_FIXES
+	ShowCursor(TRUE);
+#else
+	ShowCursor(FALSE);
 #endif
 }
 
 Renderer::~Renderer()
 {
 	MESSAGE_CLASS_DESTROYED(Renderer);
-
-	delete m_TexturesList.m_Elements[0];
-	delete m_TexturesList.m_Elements[1];
 
 	delete m_Buffer68;
 	delete m_Buffer108;

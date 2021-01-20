@@ -268,7 +268,6 @@ protected:
 
 public:
 	DefragmentatorBase(BestFitAllocator* bestfitallocator, char unk1, int size);	//	@47BBD0
-	DefragmentatorBase() {};	//	NOTE: only needed for correct compilation.
 	~DefragmentatorBase();	//	@47BDD0
 };
 
@@ -283,7 +282,6 @@ public:
 	virtual void	nullsub_2() {};	//	@47AE70	//	NOTE: this one is defined, but empty still.
 
 	inline Defragmentator(BestFitAllocator* bestfitallocator, char unk1, int size);
-	Defragmentator() {};	//	NOTE: only needed for correct compilation.
 };
 
 #define SINGLETONSUBALLOCATOR_CLASS_SIZE 44
@@ -329,10 +327,11 @@ class Allocators
 	friend class BestFitAllocator;
 protected:
 	int						field_0;	//	NOTE: never used.
+	/*
 	SystemSubAllocator		ALLOCATOR_DEFAULT;
 	int						m_AllocatorDefaultInitialized;
 
-	Defragmentator			m_Defragmentator;
+	Defragmentator			DEFRAGMENTATOR;
 	BestFitAllocator		ALLOCATOR_DEFRAGMENTING;
 	int						_pad;
 
@@ -352,6 +351,7 @@ protected:
 	FrameBasedSubAllocator	ALLOCATOR_MAIN_ASSETS;
 
 	short					m_AllocatorsInitialized;
+	*/
 	int						m_BestFitAllocator_UnknownValue;
 
 	void					CreateAllocators();	//	@478440
@@ -370,8 +370,10 @@ public:
 	static	RTL_CRITICAL_SECTION	AllocatorsCriticalSection;	//	@A3AFA0
 	static	int				_A3AFB8;	//	@A3AFB8
 	static	bool			Released;	//	@A3AFBC
+
 	static	Allocator*		AllocatorsList[TOTAL];	//	@A3AFC0
 	static	Allocator_Struct2	_A3AFE8[22];	//	@A3AFE8
+
 	static	int				TotalAllocators;	//	@A3B098
 	static	void*			BufferPtr;	//	@A3B09C
 	static	void*			BuffersPtr[TOTAL];	//	@A3B0A0

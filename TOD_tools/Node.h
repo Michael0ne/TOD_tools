@@ -156,6 +156,7 @@ public:
 	void				GetWorldMatrix(D3DXMATRIX& outMat);	//	@4842C0
 	void				SetParent(const Node* parent);	//	@88E9A0
 	void				SetName(const char*);	//	@88D610
+	void				SetPos(const Vector4f&);	//	@88D6C0
 };
 
 extern ScriptTypes::ScriptType_Entity* tNode;	//	@A3D884

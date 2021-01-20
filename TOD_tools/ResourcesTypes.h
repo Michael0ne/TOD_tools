@@ -65,12 +65,14 @@ namespace ResType
 		unsigned char	m_RegionString[4];	//	NOTE: this could be as well Pascal string... size is arbitrary and depends on field above.
 	};
 
-	class Base
+	#define CREATOR Resource* (*)()
+
+	class ResourceBase
 	{
 	public:
-		void* (__cdecl* m_Creator)();
+		class Resource*		(__cdecl* m_Creator)();
 		String			m_ResourceTypeName;
-		void*			m_ActualResourceType;
+		void*			m_ResTypeMethods;
 		int				m_ResourceIndex;
 		List<String>	m_ResourceExtensionsList;
 		char			field_2C;
@@ -78,14 +80,14 @@ namespace ResType
 		unsigned int	m_Alignment[3];
 
 	public:
-		Base();
-		Base(const char* type, void* typePtr);	//	@852440
+		ResourceBase() {};
+		ResourceBase(const char*, Resource* (*)());	//	@852440
 
 		inline void		SetResourceAlignment(unsigned int size, unsigned int index);	//	@852160
 	};
 
 	static unsigned int	ResourceAlignment[3];	//	@A3BE1C
-	static List<Base>	ResTypeList = List<Base>(0x19300);	//	@A10F80
+	static List<ResourceBase>	ResTypeList = List<ResourceBase>(0x19300);	//	@A10F80
 
 	struct ResourceHolder
 	{
@@ -105,16 +107,16 @@ namespace ResType
 		const char*		m_ResourcePath;
 		int				m_GlobalResourceId;	//	NOTE: this is an index for Blocks global 'ResourceTypeList'.
 		int				field_C;
-		int				field_10;
-		int				field_14;
+		time_t			m_ResourceTimestamp;
+		int				field_14;	//	TODO: 31st bit of resourcetimestamp written here. Why?
 	public:
-		short			m_ReferenceCount;
+		int				field_18;
 
 	public:
 		virtual			~Resource();	//	@851F90 scalar, actual dtor @8516C0
-		virtual void*	GetInstancePtr() const { return nullptr; };	//	FIXME: this is pure virtual, but List class needs this class to be non-abstract, so this is it for now.
+		virtual Resource* GetInstancePtr() const { return nullptr; };	//	FIXME: this is pure virtual, but List class needs this class to be non-abstract, so this is it for now.
 		virtual void	SetUnkFlag(unsigned char, int, int);
-		virtual int		GetUnkFlag();
+		virtual int		GetUnkFlag() const;
 		virtual void	stub5(int) {};
 		virtual void	GetResourcesDir(String& outDir, PlatformId platformId);
 		virtual void	stub7(int) {};
@@ -125,7 +127,7 @@ namespace ResType
 		virtual void	DestroyResource();
 		virtual int		stub13() { return NULL; };
 
-		Resource();	//	NOTE: this is not in EXE, but necessary for List class.
+		Resource() {};
 		Resource(bool);	//	@851D00
 
 		const char*		AddResToOpenListAndReturnName();	//	@851720
@@ -147,14 +149,16 @@ namespace ResType
 		class GfxInternal_Dx9_Texture* m_Texture;
 		int				field_2C;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
+	private:
+		inline Texture();	//	NOTE: always inlined.
 
-		Texture();	//	@853830
+	public:
+		virtual Resource* GetInstancePtr() const override;
 
 		void			GetTextureResolution(Vector2<int>& outRes);	//	@853650
 
 		static void		CreateInstance();	//	@853870
+		static Texture* Create();	//	@853830
 	};
 
 	class Font : public Resource
@@ -164,12 +168,14 @@ namespace ResType
 		int				field_20;
 		int				field_24;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
+	private:
+		inline Font();	//	NOTE: always inlined.
 
-		Font();	//	@85B350
+	public:
+		virtual Resource* GetInstancePtr() const override;
 
 		static void		CreateInstance();	//	@85B460
+		static Font*	Create();	//	@85B350
 	};
 
 	class Text : public Resource
@@ -182,12 +188,14 @@ namespace ResType
 		int				field_50;
 		int				field_54;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
+	private:
+		inline Text();	//	NOTE: always inlined.
 
-		Text();	//	@861BD0
+	public:
+		virtual Resource* GetInstancePtr() const override;
 
 		static void		CreateInstance();	//	@861CE0
+		static Text*	Create();	//	@861BD0
 	};
 
 	class Model : public Resource
@@ -202,12 +210,14 @@ namespace ResType
 		int*			field_58;
 		int				field_5C;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
+	private:
+		inline Model();	//	NOTE: always inlined.
 
-		Model();	//	@8581F0
+	public:
+		virtual Resource* GetInstancePtr() const override;
 
 		static void		CreateInstance();	//	@858210
+		static Model*	Create();	//	@8581F0
 	};
 
 	class Fragment : public Resource
@@ -217,13 +227,15 @@ namespace ResType
 		int*			field_20;
 		int				field_24;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
-
-		Fragment();	//	@85DE30
+	private:
+		Fragment();	//	@85DD80
 		~Fragment();
 
+	public:
+		virtual Resource* GetInstancePtr() const override;
+
 		static void		CreateInstance();	//	@85DFA0
+		static Fragment* Create();	//	@85DE30
 	};
 
 	class Movie : public Resource
@@ -233,12 +245,14 @@ namespace ResType
 		int				field_20;
 		int				field_24;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
+	private:
+		inline Movie();	//	NOTE: no constructor.
 
-		Movie();	//	@85BC40
+	public:
+		virtual Resource* GetInstancePtr() const override;
 
 		static void		CreateInstance();	//	@85BC70
+		static Movie*	Create();	//	@85BC40
 	};
 
 	class Cutscene : public Resource
@@ -253,12 +267,14 @@ namespace ResType
 		String			m_String_1;
 		int				field_5C;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
-
+	private:
 		Cutscene();	//	@916080
 
+	public:
+		virtual Resource* GetInstancePtr() const override;
+
 		static void		CreateInstance();	//	@9164C0
+		static Cutscene* Create();	//	@916100
 	};
 
 	class Sound : public Resource
@@ -269,12 +285,14 @@ namespace ResType
 		class StreamBuffer*	m_MonoStream;
 		int				field_24;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
-
+	private:
 		Sound();	//	@85C3C0
 
+	public:
+		virtual Resource* GetInstancePtr() const override;
+
 		static void		CreateInstance();	//	@85C010
+		static Sound*	Create();	//	@85C430
 	};
 
 	class StreamedSoundInfo : public Resource
@@ -284,12 +302,14 @@ namespace ResType
 		int*			m_MonoStream;
 		int				field_24;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
-
+	private:
 		StreamedSoundInfo();	//	@85C7E0
 
+	public:
+		virtual Resource* GetInstancePtr() const override;
+
 		static void		CreateInstance();	//	@85C8D0
+		static StreamedSoundInfo* Create();	//	@85CDA0
 	};
 
 	class Animation : public Resource
@@ -307,12 +327,14 @@ namespace ResType
 		short			field_64;
 		short			field_66;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
-
+	private:
 		Animation();	//	@900080
 
+	public:
+		virtual Resource* GetInstancePtr() const override;
+
 		static void		CreateInstance();	//	@900980
+		static Animation* Create();	//	@900EF0
 	};
 
 	class MeshColor : public Resource
@@ -326,25 +348,27 @@ namespace ResType
 		int*			field_48;
 		int*			field_4C;
 
-	public:
-		virtual void*	GetInstancePtr() const override;
-
+	private:
 		MeshColor();	//	@85E7F0
 
+	public:
+		virtual Resource* GetInstancePtr() const override;
+
 		static void		CreateInstance();	//	@85E970
+		static MeshColor* Create();	//	@85E950
 	};
 
-	static Base*		rtTexture;
-	static Base*		rtFont;
-	static Base*		rtText;
-	static Base*		rtModel;
-	static Base*		rtFragment;
-	static Base*		rtMovie;
-	static Base*		rtCutscene;
-	static Base*		rtSound;
-	static Base*		rtStreamedSoundInfo;
-	static Base*		rtAnimation;
-	static Base*		rtMeshColor;
+	static ResourceBase*		rtTexture;
+	static ResourceBase*		rtFont;
+	static ResourceBase*		rtText;
+	static ResourceBase*		rtModel;
+	static ResourceBase*		rtFragment;
+	static ResourceBase*		rtMovie;
+	static ResourceBase*		rtCutscene;
+	static ResourceBase*		rtSound;
+	static ResourceBase*		rtStreamedSoundInfo;
+	static ResourceBase*		rtAnimation;
+	static ResourceBase*		rtMeshColor;
 
-	static_assert(sizeof(Base) == RESTYPE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Base));
+	static_assert(sizeof(ResourceBase) == RESTYPE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ResourceBase));
 }

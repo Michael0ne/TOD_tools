@@ -32,7 +32,7 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 	m_Direct3DInterface = Direct3DCreate9(DIRECT3D_VERSION);
 
 	if (FAILED(m_Direct3DInterface))
-		IncompatibleMachineParameterError(4, 0);
+		IncompatibleMachineParameterError(ERRMSG_DIRECTX9_NOT_FOUND, 0);
 
 	m_SceneBegan = false;
 	m_DeviceLost = false;
@@ -45,7 +45,7 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 	m_DeviceResetIssued = false;
 
 	if (m_Direct3DInterface->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &m_DeviceCaps) != D3D_OK)
-		IncompatibleMachineParameterError(3, 0);
+		IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_VIDEOCARD, 0);
 
 	GetDeviceCaps(m_Direct3DInterface, &m_DeviceCaps);
 
@@ -271,7 +271,7 @@ void GfxInternal_Dx9::SetupWindowParams_2(const Vector2<float> mode)
 		CreateRenderDevice();
 	}
 	else
-		MessageBoxA(g_Window->m_hWindow, Utils::GetErrorCodeDescription(result), "Couldn't get current display mode", NULL);
+		MessageBoxA(g_Window->m_WindowHandle, Utils::GetErrorCodeDescription(result), "Couldn't get current display mode", NULL);
 }
 
 bool GfxInternal_Dx9::GetRegistryResolution(DisplayModeInfo& mode)
@@ -376,7 +376,7 @@ void GfxInternal_Dx9::CreateRenderDevice()
 	m_Direct3DInterface->CreateDevice(
 		D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
-		g_Window->m_hWindow,
+		g_Window->m_WindowHandle,
 		behaviourFlags,
 		&m_PresentParameters,
 		&m_Direct3DDevice);

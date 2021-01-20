@@ -3,6 +3,7 @@
 #include "LogDump.h"
 #include "Blocks.h"
 #include "Renderer.h"
+#include "ScriptDatabase.h"
 
 LoadScreenInfo* g_LoadScreenInfo = nullptr;
 unsigned int LoadScreenInfo::AllocatorIdForTextureResourceLoading;
@@ -12,15 +13,15 @@ bool LoadScreenInfo::IsLoadingLoadScreenTexture;
 void LoadScreenInfo::LoadTexture()
 {
 	if (m_TexturePath.Empty())
-		m_TexturePath.Set(LOADSCREEN_DEFAULT_TEXTURE);
+		m_TexturePath = LOADSCREEN_DEFAULT_TEXTURE;
 
 	AllocatorIdForTextureResourceLoading = RENDERLIST;
 	IsLoadingLoadScreenTexture = true;
 
-	String respath;
-	//_GetTextureResourcePath(resPath, m_TexturePath.m_szString, IsRegionEurope(), NULL);
+	//String respath;
+	//Blocks::GetPlatformSpecificResourcePath(respath, m_TexturePath.m_szString, Script::IsRegionEurope() ? GameConfig::CountryCodes::COUNTRY_USA : GameConfig::CountryCodes::COUNTRY_EUROPE, ResType::PlatformId::PLATFORM_PC);
 
-	LogDump::LogA("LoadScreen:%s\n", respath.m_szString);
+	//LogDump::LogA("LoadScreen:%s\n", respath.m_szString);
 	//m_TextureResource = g_Blocks->LoadResourceFile(respath.m_szString);
 
 	//if (*g_Renderer->m_TexturesList.m_Elements == m_TextureResource->m_Texture)	//	NOTE: 'm_TexturesList' is probably 'm_PlaceholderTextures'.
@@ -34,13 +35,13 @@ LoadScreenInfo::LoadScreenInfo(const char* texturePath)
 {
 	MESSAGE_CLASS_CREATED(LoadScreenInfo);
 
-	m_TexturePath = String(texturePath);
+	m_TexturePath = texturePath;
 	m_Enabled = false;
 }
 
 void LoadScreenInfo::SetTexturePath(const char* _path)
 {
-	m_TexturePath.Set(_path);
+	m_TexturePath = _path;
 }
 
 void LoadScreenInfo::Enable(void* topNode)

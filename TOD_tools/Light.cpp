@@ -1,7 +1,16 @@
 #include "Light.h"
 
-int& Light::TotalLights = *(int*)0xA3D81C;	//	@A3D81C
-List<Light>& Light::LightsList = *(List<Light>*)0xA3D820;	//	@A3D820
+Light* Light::LightType1;
+Light* Light::LightType2;
+unsigned int Light::TotalLights;
+List<Light>* Light::LightsList;
+ScriptTypes::ScriptType_Entity* tLight;
+
+#pragma message(TODO_IMPLEMENTATION)
+Light::~Light()
+{
+	MESSAGE_CLASS_DESTROYED(Light);
+}
 
 Light::Light() : Node(NODE_MASK_POSITION)
 {
@@ -31,18 +40,51 @@ Light::Light() : Node(NODE_MASK_POSITION)
 #pragma message(TODO_IMPLEMENTATION)
 void Light::AddLightToList(void* list, Light* light)
 {
-	(*(void(__thiscall*)(void*, Light*))0x8812A0)(list, light);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Light::SetLightType(LightType)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Light::SetLightColorRGB(const ColorRGB&)
+{
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void Light::OverrideLights(bool unk)
 {
-	(*(void(__thiscall*)(void*, bool))0x880DC0)(&LightsList, unk);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Light::InitLightsList()
+{
+	/*
+	LightsList = new List<Light>;
+	LightType1 = (Light*)tLight->CreateNode();
+	LightType2 = (Light*)tLight->CreateNode();
+
+	LightType1->SetLightType(LIGHT_TYPE_1);
+	LightType1->SetLightColorRGB({ .6f, .6f, .6f, 1.f });
+	LightType2->SetLightType(LIGHT_TYPE_2);
+	LightType2->SetLightColorRGB({ 1.f, 1.f, 1.f, 1.f });
+	LightType2->SetOrient({ .85f, -0.13f, -0.37f, -0.32f });
+	LightType2->SetPos({ 0.f, 0.f, 0.f, 0.f });
+
+	LightsList->AddElement(LightType1);
+	LightsList->AddElement(LightType2);
+	*/
+}
+
+void Light::ClearLightsList()
+{
+	delete LightsList;
 }
 
 Light_Properties::Light_Properties()
 {
-	m_Vec_1 = Vector3f();
+	m_Vec_1;
 	m_Vec_2 = Vector3f(0.0f, 0.0f, 1.0f);
 	field_0 = -1;
 	m_Range = 100.0f;
