@@ -320,34 +320,6 @@ LanguageCode CALLBACK GetSystemLanguageCode()
 	return LANGCODE_SPANISH;
 }
 
-void FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize)
-{
-	*outString = 0;
-	LPVOID pStringResource = LockResource(LoadResource(NULL, FindResourceExA(NULL, RT_STRING, (LPCSTR)((nBaseStringResourcesAddr >> 4) + 1), 0)));
-
-	if (pStringResource) {
-		if (nBaseStringResourcesAddr & 15) {
-			int	unk1 = nBaseStringResourcesAddr & 15;
-			do {
-				unk1--;
-				pStringResource = (char*)pStringResource + 2 * *(UINT16*)pStringResource + 2;
-			} while (unk1);
-		}
-
-		signed int length = *(UINT16*)pStringResource;
-		if (nMaxsize - 1 < length)
-			length = nMaxsize - 1;
-
-		wcsncpy(outString, (const wchar_t*)pStringResource + 1, length);
-
-		length = *(UINT16*)pStringResource;
-		if (nMaxsize - 1 < length)
-			length = nMaxsize - 1;
-
-		outString[length] = 0;
-	}
-}
-
 void IncompatibleMachineParameterError(ErrorMessageId messageID, char bWarningIcon)
 {
 	signed int nMessageId = NULL;
@@ -376,16 +348,17 @@ void IncompatibleMachineParameterError(ErrorMessageId messageID, char bWarningIc
 		break;
 	}
 
-	WCHAR	Caption, Text;
-	FindStringResource(Script::LanguageStringsOffset + 220, &Caption, 256);
-	FindStringResource(Script::LanguageStringsOffset + nMessageId, &Text, 512);
+	char caption[16] = {};
+	char text[512] = {};
+	LoadString(Window::WindowInstanceHandle, Script::LanguageStringsOffset + 220, caption, sizeof(caption) / sizeof(char));
+	LoadString(Window::WindowInstanceHandle, Script::LanguageStringsOffset + nMessageId, text, sizeof(text) / sizeof(char));
 
 	if (!bWarningIcon)
 	{
-		MessageBoxW(g_Window->m_WindowHandle, &Text, &Caption, MB_ICONERROR);
+		MessageBox(g_Window->m_WindowHandle, text, caption, MB_ICONERROR);
 		exit(1);
 	}else
-		MessageBoxW(g_Window->m_WindowHandle, &Text, &Caption, MB_ICONWARNING);
+		MessageBox(g_Window->m_WindowHandle, text, caption, MB_ICONWARNING);
 }
 
 void SetAccessibilityFeatures(bool bCollect)
@@ -431,7 +404,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	{
 		if (Msg != WM_SETCURSOR)
 		{
-			if (Msg == WM_DESTROY)
+			if (Msg == WM_DESTROY
+#ifdef INCLUDE_FIXES
+				|| Msg == WM_CLOSE
+#endif
+				)
 			{
 				g_Window->_GetWindowRect(wndRect);
 				g_Window->m_CursorReleased = true;
@@ -552,17 +529,10 @@ int CALLBACK MenuClickCallback(WPARAM wParam)
 		//	ID_EXIT
 		g_Window->m_QuitRequested = true;
 
-		return 0;
+		return NULL;
 	}
 
-	char szBuffer[8];
-	memset(szBuffer, 0, sizeof(szBuffer));
-
-	int written = sprintf(szBuffer, "%i", wParam);
-
-	szBuffer[written] = NULL;
-
-	MessageBoxA(g_Window->m_WindowHandle, szBuffer, g_Window->m_WindowTitle.m_szString, MB_ICONEXCLAMATION | MB_OK);
+	ProcessDebugMenuOption(g_Window->m_WindowHandle, Window::WindowInstanceHandle, wParam);
 
 	return 1;
 }
@@ -613,14 +583,8 @@ Window::Window(const char* wndClassName, int flags, UINT16 nMenuResourceId, char
 	memoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memoryStatus);
 
-	if (memoryStatus.ullTotalPhys < 0xFB00000) {
-		WCHAR	Caption, Text;
-
-		FindStringResource(Script::LanguageStringsOffset + 220, &Caption, 256);
-		FindStringResource(Script::LanguageStringsOffset + 290, &Text, 512);
-
-		MessageBoxW(m_WindowHandle, &Text, &Caption, MB_ICONEXCLAMATION);
-	}
+	if (memoryStatus.ullTotalPhys < (251 * 1024 * 1024))
+		IncompatibleMachineParameterError(ERRMSG_INSUFFICIENT_RAM, true);
 }
 
 Window::~Window()

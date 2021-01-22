@@ -51,6 +51,31 @@
 #define TODO_IMPLEMENTATION 
 #endif
 
+#define DECLARE_SCRIPT_ENTITY_CLASS(className, baseClassName) \
+	class className : public baseClassName \
+	{ \
+	protected: \
+		virtual ~##className(); \
+		##className(); \
+
+#define DECLARE_SCRIPT_ENTITY_PROPERTY(propName, propType, propScriptType) \
+		private: \
+			propScriptType	propName; \
+		\
+		public: \
+			propType	Get_ ## propName(); \
+			void		Set_ ## propName(propType); \
+
+#define DECLARE_SCRIPT_ENTITY_CLASS_END(className) \
+	public: \
+		static void Register(); \
+		static className* Create(AllocatorIndex); \
+	}; \
+	\
+	extern ScriptType_Entity* t##className; \
+	\
+	static_assert(sizeof(className) == ##className ## _CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(className));
+
 extern HMODULE g_DirectInput;
 typedef HRESULT(__stdcall* DINPUT8CREATEORIGINAL)(HINSTANCE, DWORD, const IID&, LPVOID*, LPUNKNOWN);
 extern DINPUT8CREATEORIGINAL DirectInput8Create_Hooked;

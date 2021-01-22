@@ -59,6 +59,12 @@ public:
 	}
 
 	static bool		EqualIgnoreCase(const char* str1, const char* str2, unsigned int len);	//	@4177C0
+	static inline void ConvertBackslashes(char* str)
+	{
+		for (int ind = NULL; ind != strlen(str); ind++)
+			if (str[ind] == '\\')
+				str[ind] = '/';
+	}
 	static inline void ToLowerCase(char* str)
 	{
 		char* s_ = str;

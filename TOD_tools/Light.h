@@ -62,6 +62,6 @@ public:
 	static List<Light>*	LightsList;		//	@A3D820
 };
 
-extern ScriptTypes::ScriptType_Entity*	tLight;	//	@A3D818
+extern ScriptType_Entity*	tLight;	//	@A3D818
 
 static_assert(sizeof(Light) == LIGHT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Light));

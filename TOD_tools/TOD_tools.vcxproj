@@ -94,8 +94,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>user32.lib;dxguid.lib;dinput8.lib;dsound.lib;d3d9.lib;d3dx9.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(TargetDir)debugmenu\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;dxguid.lib;dinput8.lib;dsound.lib;d3d9.lib;d3dx9.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;debugmenu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <AssemblyDebug>true</AssemblyDebug>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
@@ -152,6 +152,7 @@
     <ClInclude Include="GEKeyFrame.h" />
     <ClInclude Include="GeometryEffect.h" />
     <ClInclude Include="GFXEffect.h" />
+    <ClInclude Include="GfxInternal_Dx9_Surface.h" />
     <ClInclude Include="GfxInternal_Dx9_Texture.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="GoodiePlaceHolder.h" />
@@ -270,6 +271,7 @@
     <ClCompile Include="GEKeyFrame.cpp" />
     <ClCompile Include="GeometryEffect.cpp" />
     <ClCompile Include="GFXEffect.cpp" />
+    <ClCompile Include="GfxInternal_Dx9_Surface.cpp" />
     <ClCompile Include="GfxInternal_Dx9_Texture.cpp" />
     <ClCompile Include="GoodiePlaceHolder.cpp" />
     <ClCompile Include="Group.cpp" />

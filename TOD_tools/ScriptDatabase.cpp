@@ -5,7 +5,8 @@
 namespace Script
 {
 
-	ScriptTypes::ScriptType* GetScriptType(const char* _scripttype)
+	#pragma message(TODO_IMPLEMENTATION)
+	ScriptType* GetScriptType(const char* _scripttype)
 	{
 		if (!_scripttype || !*_scripttype)
 			return nullptr;
@@ -13,6 +14,7 @@ namespace Script
 		return nullptr;
 	}
 
+	#pragma message(TODO_IMPLEMENTATION)
 	//	NOTE: this is unoptimized version.
 	void ReadDatabaseFile(const char* path)
 	{
@@ -121,7 +123,7 @@ namespace Script
 	//	FIXME: right now, there are too much allocations going on here (for each field on array assignment, for each string allocation and copy).
 	void LoadScripts()
 	{
-		ScriptTypes::ScriptFieldsList params;
+		ScriptFieldsList params;
 
 		//	NOTE: initialize all builtin scripts (structures) here.
 		//	TODO: once finished, implement it using macro like this: DECLARE_SCRIPT("s_GenericRes", { {"pResource", GetScriptType("Entity")}, {"pPlaceholder", GetScripTtype("Entity")} }).
@@ -134,19 +136,19 @@ namespace Script
 		params.Add({ "Peercontactpoint", GetScriptType("vector"), NULL });
 		params.Add({ "Damage_type", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("Take_a_hit_info", params);
+		new ScriptType_Script("Take_a_hit_info", params);
 		params.Clear();
 
 		params.Add({ "pBlock", GetScriptType("Entity"), NULL });
 		params.Add({ "sTeleportName", GetScriptType("string"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_BlockLoad", params);
+		new ScriptType_Script("s_BlockLoad", params);
 		params.Clear();
 
 		params.Add({ "pResource", GetScriptType("Entity"), NULL });
 		params.Add({ "pPlaceholder", GetScriptType("Entity"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_GenericRes", params);
+		new ScriptType_Script("s_GenericRes", params);
 		params.Clear();
 
 		params.Add({ "pPlaceholder", GetScriptType("Entity"), NULL });
@@ -154,7 +156,7 @@ namespace Script
 		params.Add({ "bInView", GetScriptType("truth"), NULL });
 		params.Add({ "bIsVisible", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_PlaceholderPriority", params);
+		new ScriptType_Script("s_PlaceholderPriority", params);
 		params.Clear();
 
 		params.Add({ "RightHandGunList", GetScriptType("list(truth)"), NULL });
@@ -164,19 +166,19 @@ namespace Script
 		params.Add({ "AmmoInPrimWeapon", GetScriptType("list(integer)"), NULL });
 		params.Add({ "AmmoInSecWeapon", GetScriptType("list(integer)"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_Inventory", params);
+		new ScriptType_Script("s_Inventory", params);
 		params.Clear();
 
 		params.Add({ "pPlaceHolder", GetScriptType("Entity"), NULL });
 		params.Add({ "vLocalPosition", GetScriptType("vector"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_AIPassenger", params);
+		new ScriptType_Script("s_AIPassenger", params);
 		params.Clear();
 
 		params.Add({ "PowerUpList", GetScriptType("list(integer)"), NULL });
 		params.Add({ "MaxPowerUpList", GetScriptType("list(integer)"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_PowerUpInventory", params);
+		new ScriptType_Script("s_PowerUpInventory", params);
 		params.Clear();
 
 		params.Add({ "Type", GetScriptType("integer"), NULL });
@@ -190,7 +192,7 @@ namespace Script
 		params.Add({ "AmountTB", GetScriptType("Entity"), NULL });
 		params.Add({ "AmountTB_BG", GetScriptType("Entity"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_PowerUpSprite", params);
+		new ScriptType_Script("s_PowerUpSprite", params);
 		params.Clear();
 
 		params.Add({ "BlipSprite", GetScriptType("Entity"), NULL });
@@ -199,7 +201,7 @@ namespace Script
 		params.Add({ "EntityType", GetScriptType("integer"), NULL });
 		params.Add({ "SubMapIndex", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_RadarBlip", params);
+		new ScriptType_Script("s_RadarBlip", params);
 		params.Clear();
 
 		params.Add({ "OptionName", GetScriptType("integer"), NULL });
@@ -207,7 +209,7 @@ namespace Script
 		params.Add({ "TextFieldBG", GetScriptType("Entity"), NULL });
 		params.Add({ "OptionAction", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_MenuOption", params);
+		new ScriptType_Script("s_MenuOption", params);
 		params.Clear();
 
 		params.Add({ "TaxiZapEntry", GetScriptType("Entity"), NULL });
@@ -220,7 +222,7 @@ namespace Script
 		params.Add({ "EntrySpacing", GetScriptType("truth"), NULL });
 		params.Add({ "IsActiveEntry", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_TaxiZapOptions", params);
+		new ScriptType_Script("s_TaxiZapOptions", params);
 		params.Clear();
 
 		params.Add({ "IsAchieved", GetScriptType("truth"), NULL });
@@ -236,7 +238,7 @@ namespace Script
 		params.Add({ "AwardModelListBg", GetScriptType("list(Entity)"), NULL });
 		params.Add({ "NumOfAwards", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_ScoreBar", params);
+		new ScriptType_Script("s_ScoreBar", params);
 		params.Clear();
 
 		params.Add({ "TextBox", GetScriptType("Entity"), NULL });
@@ -246,7 +248,7 @@ namespace Script
 		params.Add({ "MaxScale", GetScriptType("number"), NULL });
 		params.Add({ "Expand", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_BounceText", params);
+		new ScriptType_Script("s_BounceText", params);
 		params.Clear();
 
 		params.Add({ "Placeholder", GetScriptType("Entity"), NULL });
@@ -256,7 +258,7 @@ namespace Script
 		params.Add({ "currenttime", GetScriptType("number"), NULL });
 		params.Add({ "at_pos", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_ped_resource", params);
+		new ScriptType_Script("s_ped_resource", params);
 		params.Clear();
 
 		params.Add({ "pBone", GetScriptType("Entity"), NULL });
@@ -266,14 +268,14 @@ namespace Script
 		params.Add({ "eRotateSpace", GetScriptType("integer"), NULL });
 		params.Add({ "bActive", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_CtrlBone", params);
+		new ScriptType_Script("s_CtrlBone", params);
 		params.Clear();
 
 		params.Add({ "Objective", GetScriptType("Entity"), NULL });
 		params.Add({ "Show", GetScriptType("truth"), NULL });
 		params.Add({ "Status", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_Mission_Objective", params);
+		new ScriptType_Script("s_Mission_Objective", params);
 		params.Clear();
 
 		params.Add({ "Mission_Valid", GetScriptType("truth"), NULL });
@@ -294,7 +296,7 @@ namespace Script
 		params.Add({ "MissionConditions", GetScriptType("list(Entity)"), NULL });
 		params.Add({ "ObjectiveList", GetScriptType("list(Entity)"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_Mission_data", params);
+		new ScriptType_Script("s_Mission_data", params);
 		params.Clear();
 
 		params.Add({ "TextBox", GetScriptType("Entity"), NULL });
@@ -310,7 +312,7 @@ namespace Script
 		params.Add({ "StayTime", GetScriptType("number"), NULL });
 		params.Add({ "InUse", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_ComboAwardString", params);
+		new ScriptType_Script("s_ComboAwardString", params);
 		params.Clear();
 
 		params.Add({ "MoveName", GetScriptType("integer"), NULL });
@@ -321,7 +323,7 @@ namespace Script
 		params.Add({ "SoundFrequency", GetScriptType("number"), NULL });
 		params.Add({ "CCmove", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_UniqueComboMove", params);
+		new ScriptType_Script("s_UniqueComboMove", params);
 		params.Clear();
 
 		params.Add({ "KillsNeeded", GetScriptType("integer"), NULL });
@@ -329,7 +331,7 @@ namespace Script
 		params.Add({ "GoodieAwards", GetScriptType("list(integer)"), NULL });
 		params.Add({ "AwardString", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_ComboAward", params);
+		new ScriptType_Script("s_ComboAward", params);
 		params.Clear();
 
 		params.Add({ "Position", GetScriptType("vector"), NULL });
@@ -337,7 +339,7 @@ namespace Script
 		params.Add({ "CurrentWeapons", GetScriptType("list(string)"), NULL });
 		params.Add({ "AmmoActiveWeapon", GetScriptType("number"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_StatusPoint", params);
+		new ScriptType_Script("s_StatusPoint", params);
 		params.Clear();
 
 		params.Add({ "ActionsPoints", GetScriptType("integer"), NULL });
@@ -354,7 +356,7 @@ namespace Script
 		params.Add({ "MostUsedWeapon", GetScriptType("integer"), NULL });
 		params.Add({ "Medals", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_Statistics", params);
+		new ScriptType_Script("s_Statistics", params);
 		params.Clear();
 
 		params.Add({ "pCallBack", GetScriptType("Entity"), NULL });
@@ -362,7 +364,7 @@ namespace Script
 		params.Add({ "nTimer", GetScriptType("number"), NULL });
 		params.Add({ "bRealTime", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_DelayedMessage", params);
+		new ScriptType_Script("s_DelayedMessage", params);
 		params.Clear();
 
 		params.Add({ "HasCollided", GetScriptType("truth"), NULL });
@@ -374,7 +376,7 @@ namespace Script
 		params.Add({ "ColPos", GetScriptType("vector"), NULL });
 		params.Add({ "SetDecal", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_CollisionInfo", params);
+		new ScriptType_Script("s_CollisionInfo", params);
 		params.Clear();
 
 		params.Add({ "CollisionEntity", GetScriptType("Entity"), NULL });
@@ -382,7 +384,7 @@ namespace Script
 		params.Add({ "CollisionPos", GetScriptType("vector"), NULL });
 		params.Add({ "ColliderEntity", GetScriptType("Entity"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_VehicleCollision", params);
+		new ScriptType_Script("s_VehicleCollision", params);
 		params.Clear();
 
 		params.Add({ "Sound", GetScriptType("list(Entity)"), NULL });
@@ -392,13 +394,13 @@ namespace Script
 		params.Add({ "Position_Type", GetScriptType("list(integer)"), NULL });
 		params.Add({ "Position_Enity", GetScriptType("list(Entity)"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_Random_sound", params);
+		new ScriptType_Script("s_Random_sound", params);
 		params.Clear();
 
 		params.Add({ "ent_1", GetScriptType("Entity"), NULL });
 		params.Add({ "ent_2", GetScriptType("Entity"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_Entity_pair", params);
+		new ScriptType_Script("s_Entity_pair", params);
 		params.Clear();
 
 		params.Add({ "Watched", GetScriptType("Entity"), NULL });
@@ -407,7 +409,7 @@ namespace Script
 		params.Add({ "InFocus", GetScriptType("truth"), NULL });
 		params.Add({ "LocalShowTime", GetScriptType("number"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_HealthWatchedEntity", params);
+		new ScriptType_Script("s_HealthWatchedEntity", params);
 		params.Clear();
 
 		params.Add({ "GamePulse", GetScriptType("integer"), NULL });
@@ -416,7 +418,7 @@ namespace Script
 		params.Add({ "StayTime", GetScriptType("number"), NULL });
 		params.Add({ "toHighPulses", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_pulse", params);
+		new ScriptType_Script("s_pulse", params);
 		params.Clear();
 
 		params.Add({ "at_entity", GetScriptType("Entity"), NULL });
@@ -426,26 +428,26 @@ namespace Script
 		params.Add({ "at_pos", GetScriptType("vector"), NULL });
 		params.Add({ "LifeTime", GetScriptType("number"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_particel_dam", params);
+		new ScriptType_Script("s_particel_dam", params);
 		params.Clear();
 
 		params.Add({ "list_index", GetScriptType("integer"), NULL });
 		params.Add({ "dist", GetScriptType("number"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_list_dist", params);
+		new ScriptType_Script("s_list_dist", params);
 		params.Clear();
 
 		params.Add({ "PedestrianGroup", GetScriptType("integer"), NULL });
 		params.Add({ "Minimum", GetScriptType("integer"), NULL });
 		params.Add({ "Maximum", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_neighborhood_config", params);
+		new ScriptType_Script("s_neighborhood_config", params);
 		params.Clear();
 
 		params.Add({ "PathPoint", GetScriptType("Entity"), NULL });
 		params.Add({ "Neighborhood", GetScriptType("Entity"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_pedestrian_points", params);
+		new ScriptType_Script("s_pedestrian_points", params);
 		params.Clear();
 
 		params.Add({ "Object", GetScriptType("Entity"), NULL });
@@ -453,14 +455,14 @@ namespace Script
 		params.Add({ "OpaPerSec", GetScriptType("number"), NULL });
 		params.Add({ "DelayTimer", GetScriptType("number"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_fadeEntity", params);
+		new ScriptType_Script("s_fadeEntity", params);
 		params.Clear();
 
 		params.Add({ "Valid", GetScriptType("truth"), NULL });
 		params.Add({ "Type", GetScriptType("integer"), NULL });
 		params.Add({ "Relation", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_target_cache_info", params);
+		new ScriptType_Script("s_target_cache_info", params);
 		params.Clear();
 
 		params.Add({ "TargetScore", GetScriptType("integer"), NULL });
@@ -468,20 +470,20 @@ namespace Script
 		params.Add({ "AwardString", GetScriptType("integer"), NULL });
 		params.Add({ "TutAwardString", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_Overall_Award", params);
+		new ScriptType_Script("s_Overall_Award", params);
 		params.Clear();
 
 		params.Add({ "NotifyThis", GetScriptType("Entity"), NULL });
 		params.Add({ "RequiredScore", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_ScoreNotification", params);
+		new ScriptType_Script("s_ScoreNotification", params);
 		params.Clear();
 
 		params.Add({ "position", GetScriptType("vector"), NULL });
 		params.Add({ "normal", GetScriptType("vector"), NULL });
 		params.Add({ "type", GetScriptType("integer"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_waiting_decal", params);
+		new ScriptType_Script("s_waiting_decal", params);
 		params.Clear();
 
 		params.Add({ "particle", GetScriptType("Entity"), NULL });
@@ -489,7 +491,7 @@ namespace Script
 		params.Add({ "impact_pos", GetScriptType("vector"), NULL });
 		params.Add({ "impact_orient", GetScriptType("quaternion"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_waiting_particle", params);
+		new ScriptType_Script("s_waiting_particle", params);
 		params.Clear();
 
 		params.Add({ "position", GetScriptType("vector"), NULL });
@@ -500,7 +502,7 @@ namespace Script
 		params.Add({ "probe", GetScriptType("Entity"), NULL });
 		params.Add({ "ignore", GetScriptType("Entity"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_waiting_blood_decal", params);
+		new ScriptType_Script("s_waiting_blood_decal", params);
 		params.Clear();
 
 		params.Add({ "dist", GetScriptType("number"), NULL });
@@ -512,13 +514,13 @@ namespace Script
 		params.Add({ "Type", GetScriptType("integer"), NULL });
 		params.Add({ "Queue", GetScriptType("list(Entity)"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_traffic_section", params);
+		new ScriptType_Script("s_traffic_section", params);
 		params.Clear();
 
 		params.Add({ "CaptionIndex", GetScriptType("integer"), NULL });
 		params.Add({ "Tutorials", GetScriptType("list(Entity)"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_TutorialMenu", params);
+		new ScriptType_Script("s_TutorialMenu", params);
 		params.Clear();
 
 		params.Add({ "obj_text", GetScriptType("integer"), NULL });
@@ -527,19 +529,19 @@ namespace Script
 		params.Add({ "delay", GetScriptType("number"), NULL });
 		params.Add({ "justify", GetScriptType("truth"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_TutorialPopUp", params);
+		new ScriptType_Script("s_TutorialPopUp", params);
 		params.Clear();
 
 		params.Add({ "logic_condition", GetScriptType("integer"), NULL });
 		params.Add({ "actor", GetScriptType("Entity"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_PendingLogicalCondition", params);
+		new ScriptType_Script("s_PendingLogicalCondition", params);
 		params.Clear();
 
 		params.Add({ "TutorialText", GetScriptType("integer"), NULL });
 		params.Add({ "index_list", GetScriptType("list(integer)"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_TutorialIndex", params);
+		new ScriptType_Script("s_TutorialIndex", params);
 		params.Clear();
 
 		params.Add({ "LanguageName", GetScriptType("string"), NULL });
@@ -548,7 +550,7 @@ namespace Script
 		params.Add({ "TextB", GetScriptType("Entity"), NULL });
 		params.Add({ "LanguageCode", GetScriptType("string"), NULL });
 
-		new ScriptTypes::ScriptType_Script("s_Language", params);
+		new ScriptType_Script("s_Language", params);
 		params.Clear();
 
 		params.Add({ "unit", GetScriptType("Entity"), NULL });
@@ -556,7 +558,7 @@ namespace Script
 		params.Add({ "unit_orient", GetScriptType("quaternion"), NULL });
 		params.Add({ "unit_velocity", GetScriptType("vector"), NULL });
 
-		new ScriptTypes::ScriptType_Script("element", params);
+		new ScriptType_Script("element", params);
 		params.Clear();
 
 		params.Add({ "unit", GetScriptType("Entity"), NULL });
@@ -571,19 +573,19 @@ namespace Script
 		params.Add({ "unit_bent_step", GetScriptType("integer"), NULL });
 		params.Add({ "unit_grav_direction", GetScriptType("number"), NULL });
 
-		new ScriptTypes::ScriptType_Script("hinge_element", params);
+		new ScriptType_Script("hinge_element", params);
 		params.Clear();
 
 		params.Add({ "parameter_name", GetScriptType("string"), NULL });
 		params.Add({ "parameter_value", GetScriptType("number"), NULL });
 
-		new ScriptTypes::ScriptType_Script("parameter", params);
+		new ScriptType_Script("parameter", params);
 		params.Clear();
 
 		params.Add({ "crossblend_speed", GetScriptType("number"), NULL });
 		params.Add({ "anim_slot", GetScriptType("Entity"), NULL });
 
-		new ScriptTypes::ScriptType_Script("crossblend_override", params);
+		new ScriptType_Script("crossblend_override", params);
 		params.Clear();
 
 		//if (GetGlobalPropertiesListTotalEntries() == 711)

@@ -158,7 +158,7 @@ namespace GameConfig {
 	static void				EnumMaterialsInCollmat();	//	@87D330
 	static void				EnumFaceColMaterials();	//	@87D100
 
-	static void				_GetDeveloperPath(String& outStr);	//	@4098D0
+	static void				GetInternalGameName(String& outStr);	//	@4098D0
 
 	static List<String>&	FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
 	static File&			ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8

@@ -3,7 +3,7 @@
 #include "LoadScreenInfo.h"
 #include "Progress.h"
 
-LoadScreenNode* tLoadScreenNode = nullptr;	//	@A3D7E4
+ScriptType_Entity* tLoadScreenNode;	//	@A3D7E4
 
 void LoadScreenNode::Activate_Impl()
 {
@@ -48,7 +48,7 @@ void LoadScreenNode::SetRenderOnTopNode(Node* _node)
 	m_RenderOnTopNode = _node;
 }
 
-void LoadScreenNode::SetLoadbarSprite(Node* _sprite)
+void LoadScreenNode::SetLoadbarSprite(class Sprite* _sprite)
 {
 	m_LoadBarSprite = _sprite;
 	g_Progress->SetLoadScreenSprite(_sprite);

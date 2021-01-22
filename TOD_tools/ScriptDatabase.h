@@ -16,7 +16,7 @@ struct GlobalProperty
 {
 	int							m_PropertyId;
 	const char*					m_PropertyName;
-	ScriptTypes::ScriptType*	m_PropertyType;
+	ScriptType*	m_PropertyType;
 };
 
 static List<GlobalProperty>&	GlobalPropertiesList = *(List<GlobalProperty>*)0xA3CF20;	//	@A3CF20
@@ -24,7 +24,7 @@ static List<GlobalProperty>&	GlobalPropertiesList = *(List<GlobalProperty>*)0xA3
 struct ScriptNodeProperties
 {
 	String						m_PropertyName;
-	ScriptTypes::ScriptType*	m_ScriptType;
+	ScriptType*					m_ScriptType;
 	int							m_TotalSizeBytes;
 };
 
@@ -43,7 +43,7 @@ struct GlobalCommand
 
 static List<GlobalCommand>&		GlobalCommandsList = *(List<GlobalCommand>*)0xA11470;	//	@A11470
 
-static ScriptTypes::ScriptType_Entity*	GlobalScriptsArray[410];	//	@A3B7A4
+static ScriptType_Entity*	GlobalScriptsArray[410];	//	@A3B7A4
 
 enum GlobalScriptIndex
 {
@@ -58,7 +58,7 @@ enum GlobalScriptIndex
 
 namespace Script
 {
-	static ScriptTypes::ScriptType*	GetScriptType(const char*);	//	@863070
+	static ScriptType*	GetScriptType(const char*);	//	@863070
 	static void	ReadDatabaseFile(const char* path);	//	@48C400
 	extern void	LoadScripts();	//	@7A1F60
 

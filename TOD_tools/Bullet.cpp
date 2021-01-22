@@ -1,6 +1,12 @@
 #include "Bullet.h"
 
 #pragma message(TODO_IMPLEMENTATION)
+Bullet::~Bullet()
+{
+	MESSAGE_CLASS_DESTROYED(Bullet);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 Bullet::Bullet() : Model()
 {
 	MESSAGE_CLASS_CREATED(Bullet);

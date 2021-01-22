@@ -97,7 +97,6 @@ extern Window* g_Window;
 void				SetGlobalInstanceHandle(HINSTANCE);	//	@A35EB0
 void				SetGlobalCmdLinePtr(LPSTR);	//	@43BF60
 LanguageCode CALLBACK GetSystemLanguageCode();	//	@43BDC0
-void				FindStringResource(int nBaseStringResourcesAddr, wchar_t* outString, int nMaxsize);	//	@43BFB0
 void				IncompatibleMachineParameterError(ErrorMessageId messageID, char bWarningIcon);	//	@43C040
 void				SetAccessibilityFeatures(bool bCollect);	//	@43C140
 LRESULT CALLBACK	WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);	//	@43C320
@@ -119,6 +118,8 @@ extern String		GameWorkingDirectory;	//	@A08FB0
 
 #ifdef INCLUDE_FIXES
 int CALLBACK		MenuClickCallback(WPARAM wParam);
+
+extern void CALLBACK ProcessDebugMenuOption(HWND, HINSTANCE, WPARAM);
 #endif
 
 static_assert(sizeof(Window) == WINDOW_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Window));

@@ -9,7 +9,7 @@ int& Scene::_A3DCD0 = *(int*)0xA3DCD0;
 int& Scene::_A3DCE4 = *(int*)0xA3DCE4;
 int& Scene::NewFrameNumber = *(int*)0xA3DCE0;
 bool& Scene::IsRewindBufferInUse = *(bool*)0xA1207C;
-ScriptTypes::ScriptType_Entity* tScene = nullptr;
+ScriptType_Entity* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
 
 #pragma message(TODO_IMPLEMENTATION)

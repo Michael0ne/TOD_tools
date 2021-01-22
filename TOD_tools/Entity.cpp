@@ -3,7 +3,7 @@
 #include "Globals.h"
 #include "MemoryCards.h"
 
-ScriptTypes::ScriptType_Entity* tEntity = nullptr;
+ScriptType_Entity* tEntity = nullptr;
 
 void Entity::Destroy()
 {
@@ -34,13 +34,13 @@ Entity::Entity()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-unsigned char Entity::SaveScriptDataToFile_Impl(ScriptTypes::ScriptType_Entity*, int, int, const char*)
+unsigned char Entity::SaveScriptDataToFile_Impl(ScriptType_Entity*, int, int, const char*)
 {
 	return NULL;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-unsigned char Entity::LoadScriptDataFromFile_Impl(ScriptTypes::ScriptType_Entity*, int, int)
+unsigned char Entity::LoadScriptDataFromFile_Impl(ScriptType_Entity*, int, int)
 {
 	return NULL;
 }
@@ -69,7 +69,7 @@ void Entity::SaveScriptDataToFile(int* params)
 		return;
 	}
 
-	ScriptTypes::ScriptType_Entity* memcard = (ScriptTypes::ScriptType_Entity*)(((MemoryCards*)params[1])->m_ScriptEntity);
+	ScriptType_Entity* memcard = (ScriptType_Entity*)(((MemoryCards*)params[1])->m_ScriptEntity);
 
 	while (tMemoryCards != memcard)
 	{
@@ -91,7 +91,7 @@ void Entity::LoadScriptDataFromFile(int* params)
 		return;
 	}
 
-	ScriptTypes::ScriptType_Entity* memcard = (ScriptTypes::ScriptType_Entity*)(((MemoryCards*)params[1])->m_ScriptEntity);
+	ScriptType_Entity* memcard = (ScriptType_Entity*)(((MemoryCards*)params[1])->m_ScriptEntity);
 
 	while (tMemoryCards != memcard)
 	{
@@ -106,7 +106,7 @@ void Entity::LoadScriptDataFromFile(int* params)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Entity::SetScript(ScriptTypes::ScriptType_Entity* script)
+void Entity::SetScript(ScriptType_Entity* script)
 {
 	//if (field_18)
 		//if (m_ScriptEntity)
