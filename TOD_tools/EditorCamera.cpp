@@ -13,7 +13,7 @@ EditorCamera::EditorCamera()
 	m_fDC = 50.0f;
 
 	field_D4 = field_D5 = field_E0 = NULL;
-	SetParam(10, &m_Offset, ScriptTypes::tNUMBER);
+	SetParam(10, &m_Offset, tNUMBER);
 	m_Offset = 50.0f;
 	m_Order = 1000;
 

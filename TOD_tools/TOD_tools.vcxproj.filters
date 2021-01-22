@@ -419,6 +419,9 @@
     <ClInclude Include="PhysSystem.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="GfxInternal_Dx9_Surface.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -720,6 +723,9 @@
     </ClCompile>
     <ClCompile Include="SceneSaveLoad.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxInternal_Dx9_Surface.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

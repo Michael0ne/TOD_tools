@@ -150,7 +150,7 @@ public:
 	const char*			GetScript() const;	//	@86A230
 	unsigned int		GetFlags() const;	//	@495DB0
 
-	void				SetParam(const int index, const void* param, const ScriptTypes::ScriptType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
+	void				SetParam(const int index, const void* param, const ScriptType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
 	void				SetOrient(const Orientation& orient);	//	@88DB20
 	Vector4f*			GetPos(Vector4f& outVec);	//	@483620
 	void				GetWorldMatrix(D3DXMATRIX& outMat);	//	@4842C0
@@ -159,6 +159,6 @@ public:
 	void				SetPos(const Vector4f&);	//	@88D6C0
 };
 
-extern ScriptTypes::ScriptType_Entity* tNode;	//	@A3D884
+extern ScriptType_Entity* tNode;	//	@A3D884
 
 static_assert(sizeof(Node) == NODE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Node));

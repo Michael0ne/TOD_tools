@@ -1,14 +1,11 @@
 #pragma once
-
 #include "Node.h"
 
-#define MODEL_CLASS_SIZE 256
+#define Model_CLASS_SIZE 256
 
-class Model : public Node
-{
-	friend class GeometryEffect;
+DECLARE_SCRIPT_ENTITY_CLASS(Model, Node)
+	DECLARE_SCRIPT_ENTITY_PROPERTY(modelres, const char*, ResType::Model*)
 protected:
-	int* m_ModelRes;
 	int field_54;
 	int field_58;
 	int field_5C;
@@ -39,8 +36,4 @@ protected:
 	int field_EC;
 	List<int> m_List_6;
 
-public:
-	Model();	//	@884BA0
-};
-
-static_assert(sizeof(Model) == MODEL_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Model));
+DECLARE_SCRIPT_ENTITY_CLASS_END(Model)

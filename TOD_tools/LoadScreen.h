@@ -9,7 +9,7 @@ class LoadScreenNode : public Node
 protected:
 	String		m_ImageFile;
 	Node*		m_RenderOnTopNode;
-	Node*		m_LoadBarSprite;
+	class Sprite* m_LoadBarSprite;
 
 	void		Activate_Impl();	//	@87C790
 
@@ -23,10 +23,9 @@ public:
 	void		Deactivate(int);	//	@87C9D0
 
 	void		SetRenderOnTopNode(Node* _node);	//	@87C6E0
-
-	void		SetLoadbarSprite(Node* _sprite);	//	@87C9E0
+	void		SetLoadbarSprite(class Sprite* _sprite);	//	@87C9E0
 };
 
-extern LoadScreenNode* tLoadScreenNode;	//	@A3D7E4
+extern ScriptType_Entity* tLoadScreenNode;	//	@A3D7E4
 
 static_assert(sizeof(LoadScreenNode) == LOAD_SCREEN_NODE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(LoadScreenNode));

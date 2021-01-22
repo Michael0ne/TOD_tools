@@ -2,6 +2,8 @@
 #include "Fragment.h"
 #include "Blocks.h"
 
+ScriptType_Entity* tNode;
+
 Position::Position(Node* owner)
 {
 	MESSAGE_CLASS_CREATED(Position);
@@ -212,7 +214,7 @@ unsigned int Node::GetFlags() const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Node::SetParam(const int index, const void* param, const ScriptTypes::ScriptType* type)
+void Node::SetParam(const int index, const void* param, const ScriptType* type)
 {
 	if (!m_ScriptEntity)
 		return;

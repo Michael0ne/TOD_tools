@@ -23,6 +23,7 @@ protected:
 	int field_164;
 
 public:
+	virtual ~Bullet();
 	Bullet();	//	@8C9ED0
 };
 

@@ -23,7 +23,7 @@ private:
 public:
 	GfxInternal_Dx9_Texture(const Vector2<float>& resolution, unsigned int, unsigned int levels);	//	@463BA0
 	GfxInternal_Dx9_Texture(void*);	//	@463C60
-	~GfxInternal_Dx9_Texture() {};
+	~GfxInternal_Dx9_Texture();
 
 	static void			InitTexturesMap();	//	@464120
 

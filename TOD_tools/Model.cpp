@@ -1,10 +1,12 @@
 #include "Model.h"
 
+ScriptType_Entity* tModel;
+
 Model::Model() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE | NODE_MASK_FRAGMENT)
 {
 	MESSAGE_CLASS_CREATED(Model);
 
-	m_ModelRes = nullptr;
+	modelres = nullptr;
 	field_54 = 1;
 	field_58 = 0;
 	field_5C = 1;
@@ -24,4 +26,21 @@ Model::Model() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE | NODE_MASK_FRAGME
 	m_Flags = m_Flags & 0x806440FF | 0x640000;
 	field_70 = field_70 & 0xFF2FFFFF | 0xF200000;
 	field_74 = 0;
+}
+
+Model::~Model()
+{
+	MESSAGE_CLASS_DESTROYED(Model);
+}
+
+void Model::Register()
+{
+	tModel = new ScriptType_Entity("Model");
+	tModel->InheritFrom(tNode);
+	tModel->SetCreator((ENTITYTYPE_CREATOR)Create);
+}
+
+Model* Model::Create(AllocatorIndex)
+{
+	return new Model();
 }

@@ -4,7 +4,7 @@ Light* Light::LightType1;
 Light* Light::LightType2;
 unsigned int Light::TotalLights;
 List<Light>* Light::LightsList;
-ScriptTypes::ScriptType_Entity* tLight;
+ScriptType_Entity* tLight;
 
 #pragma message(TODO_IMPLEMENTATION)
 Light::~Light()

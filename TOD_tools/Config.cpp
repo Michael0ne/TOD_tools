@@ -121,7 +121,7 @@ namespace GameConfig
 		g_Blocks = new Blocks(Script::LoadBlocks);
 
 		//	Init script types.
-		ScriptTypes::Init();
+		InitScriptTypes();
 
 		//	Init scratchpad (mostly used in CollisionProbe calculations).
 		g_Scratchpad = new Scratchpad();
@@ -215,25 +215,31 @@ namespace GameConfig
 
 		//	Is this the testing build?
 		String TestingPath;
-		_GetDeveloperPath(TestingPath);
+		GetInternalGameName(TestingPath);
 
-		if (_stricmp(TestingPath.m_szString, "testing")) {
-			//	NOTE: append ' **' to this string. Why?
-			TestingPath.Append(" **");
+		if (_stricmp(TestingPath.m_szString, "testing"))
+		{
+			m_GameName.Append(" *");
+			m_GameName.Append(TestingPath.m_szString);
+			m_GameName.Append("* ");
 		}
 
-		TestingPath.Append("(");
+		m_GameName.Append(" (");
 
 		//	Scripts search path if 'profile.txt' is available.
 		Script::ScriptsPath = "/data/scripts/stable/";
 
-		if (pProfileVariables)
-			if (pProfileVariables->IsVariableSet("script_searchpath"))
-				Script::ScriptsPath = pProfileVariables->GetParamValueString("script_searchpath");
+		if (pProfileVariables && pProfileVariables->IsVariableSet("script_searchpath"))
+			Script::ScriptsPath = pProfileVariables->GetParamValueString("script_searchpath");
 
-		//	NOTE: SetScriptsPath not necessary, since variable is already set above.
-		TestingPath.Append(" scripts: baked)");
-		TestingPath.Append(CONFIG_GAMENAME);
+#ifdef INCLUDE_FIXES
+		m_GameName.Append(" scripts: ");
+		m_GameName.Append(Script::ScriptsPath.m_szString);
+		m_GameName.Append(")");
+#else
+		m_GameName.Append(" scripts: baked)");
+		m_GameName = CONFIG_GAMENAME;
+#endif
 
 		if (m_ConfigurationVariables->IsVariableSet("relax_build_version_check"))
 			Script::RelaxBuildVersionCheck = m_ConfigurationVariables->GetParamValueBool("relax_build_version_check");
@@ -613,7 +619,6 @@ namespace GameConfig
 		if (pProfileVariables)
 			delete pProfileVariables;
 
-		//	Initialization completed. Game is running.
 #ifdef INCLUDE_FIXES
 		debug("Game init complete! Took %i ms\n", clock() - timeStart);
 #endif
@@ -1009,23 +1014,23 @@ namespace GameConfig
 		}
 	}
 
-	//	NOTE: what does this do?
-	void _GetDeveloperPath(String& outStr)
+	void GetInternalGameName(String& outStr)
 	{
-		String sDevPath = "E:\\Develop\\KapowSystems\\TOD1\\Libs\\Toolbox\\Functions.cpp";
+#ifdef INCLUDE_FIXES
+		const char devpath[] = "E:/Develop/KapowSystems/TOD1/Libs/Toolbox/Functions.cpp";
+#else
+		const char devpath[] = __FILE__;
+		String::ConvertBackslashes((char*)devpath);
+#endif
+		const char* kapowsystems_pos = strstr(devpath, "KapowSystems");
 
-		sDevPath.ConvertBackslashes();
-		sDevPath.ToLowerCase();
-
-		char* szKapSysStr = strstr(sDevPath.m_szString, "KapowSystems");
-
-		if (szKapSysStr) {
-			//	TODO: this is incomplete. Fix if necessary.
-			String tempstr;
-			sDevPath.Substring(&tempstr, szKapSysStr - sDevPath.m_szString + 13, 0x7FFFFFFE);
-			sDevPath.m_nLength = tempstr.m_nLength;
+		if (kapowsystems_pos)
+		{
+			char buf[64] = {};
+			strcpy(buf, devpath + (kapowsystems_pos - devpath + 13));
+			*strchr(buf, '/') = NULL;
 			
-			outStr.Append(sDevPath.m_szString);
+			outStr = buf;
 		}
 	}
 

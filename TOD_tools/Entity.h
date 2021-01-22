@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ScriptTypes.h"
+#include "ResourcesTypes.h"
 
 #define ENTITY_CLASS_SIZE 36
 
@@ -8,7 +9,7 @@ class Entity
 {
 	friend class Position;
 protected:
-	ScriptTypes::ScriptType_Entity* m_ScriptEntity;
+	ScriptType_Entity* m_ScriptEntity;
 	unsigned char	field_8[10];
 	short			m_Order;
 	//	NOTE: m_Id's highest bit contains block number associated with this entity (0-6).
@@ -17,8 +18,8 @@ protected:
 	int				field_1C;
 	int*			field_20;
 
-	unsigned char	SaveScriptDataToFile_Impl(ScriptTypes::ScriptType_Entity*, int, int, const char*);	//	@86B650
-	unsigned char	LoadScriptDataFromFile_Impl(ScriptTypes::ScriptType_Entity*, int, int);	//	@86B8B0
+	unsigned char	SaveScriptDataToFile_Impl(ScriptType_Entity*, int, int, const char*);	//	@86B650
+	unsigned char	LoadScriptDataFromFile_Impl(ScriptType_Entity*, int, int);	//	@86B8B0
 
 public:
 	virtual			~Entity();	//	@86C010
@@ -44,12 +45,12 @@ public:
 	void			SaveScriptDataToFile(int* params);	//	@86BBC0
 	void			LoadScriptDataFromFile(int* params);	//	@86BC20
 
-	void			SetScript(ScriptTypes::ScriptType_Entity*);	//	@869E20
+	void			SetScript(ScriptType_Entity*);	//	@869E20
 
 	static int		GetPropertyId(const char* prop);	//	@8732C0
 	static int*		GetMessageId_A(int*, int*, const char*);	//	@8729F0
 };
 
-extern ScriptTypes::ScriptType_Entity* tEntity;	//	@A3CEE0
+extern ScriptType_Entity* tEntity;	//	@A3CEE0
 
 static_assert(sizeof(Entity) == ENTITY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Entity));

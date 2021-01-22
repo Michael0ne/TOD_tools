@@ -37,17 +37,6 @@ void HookDInput()
 		return;
 	}
 
-	/*
-	*	Method offsets.
-	*	dinput8 + 0x0	- ConfigureDevices
-	*	dinput8 + 0x4	- DirectInput8Create
-	*	dinput8 + 0x8	- EnumDevices
-	*	dinput8 + 0xC	- EnumDevicesBySemantics
-	*	dinput8 + 0x10	- FindDevice
-	*	dinput8 + 0x14	- GetDeviceStatus
-	*	dinput8 + 0x18	- Initialize
-	*	dinput8 + 0x1C	- RunControlPanel
-	*/
 	__DirectInput8Create = (HRESULT (*)(HINSTANCE, DWORD, DWORD, DWORD, DWORD))GetProcAddress (g_DirectInput, "DirectInput8Create");
 
 	DirectInput8Create_Hooked = (DINPUT8CREATEORIGINAL)GetProcAddress(g_DirectInput, "DirectInput8Create");
@@ -63,6 +52,8 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 	const int nInterval = 100;
 
 	while (true) {
+		//	TODO: put PLUGINS initialization here, after you MADE sure that ALL game stuff is propertly initialized.
+		//	TODO: call all PLUGINS 'Update' function here.
 		if (Scene::RealTimeMs <= NULL)
 			continue;
 
@@ -75,6 +66,7 @@ DWORD WINAPI HookThread(LPVOID lpParam)
 		}
 	}
 
+	//	TODO: uninitialize all PLUGINS here, BEFORE all game classes de-initialized.
 	debug("HookThread has finished!\n");
 
 	return 0;
