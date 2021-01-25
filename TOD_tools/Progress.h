@@ -81,6 +81,7 @@ public:
 	void			Enable();	//	@87B5F0
 	void			Disable();	//	@87B690
 	void			SetLoadScreenSprite(Sprite*);	//	@87B710
+	void			UpdateProgressTime(unsigned int, UINT64);	//	@85D590
 
 	static UINT64	StartTime;	//	@A3D7D8
 };

@@ -100,15 +100,17 @@ namespace ResType
 		void			LoadResourceFromBlock(const char* _pathname) {};	//	@8FFC10
 	};
 
+	#define RESOURCE_CLASS_SIZE 28
+
 	//	NOTE: this class is actually inherited from another class, but parent doesn't seem to do anything important, so skipping it now.
+	#pragma pack(4)
 	class Resource
 	{
 	protected:
 		const char*		m_ResourcePath;
 		int				m_GlobalResourceId;	//	NOTE: this is an index for Blocks global 'ResourceTypeList'.
 		int				field_C;
-		time_t			m_ResourceTimestamp;
-		int				field_14;	//	TODO: 31st bit of resourcetimestamp written here. Why?
+		UINT64			m_ResourceTimestamp;
 	public:
 		int				field_18;
 
@@ -371,4 +373,5 @@ namespace ResType
 	static ResourceBase*		rtMeshColor;
 
 	static_assert(sizeof(ResourceBase) == RESTYPE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ResourceBase));
+	static_assert(sizeof(Resource) == RESOURCE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Resource));
 }

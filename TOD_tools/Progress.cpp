@@ -150,6 +150,29 @@ void Progress::SetLoadScreenSprite(Sprite* sprite)
 	m_LoadScreenSprite = sprite;
 }
 
+void Progress::UpdateProgressTime(unsigned int unk, UINT64 time)
+{
+	field_24 += unk;
+	if (time >= field_38 || !m_TimeStart)
+	{
+		float v1 = field_24 / field_28;
+		float v2 = field_48 <= NULL ? 0.f : ((time - field_50) / field_48);
+
+		if (v2 > v1)
+			v1 = v2;
+		if (v1 > 1.f)
+			v1 = 1.f;
+
+		UpdateProgress(((field_30 - field_2C) * v1) + field_2C, false);
+
+		if (m_TimeStart > NULL && field_38 < time)
+			do
+			{
+				field_38 += m_TimeStart;
+			} while (field_38 < time);
+	}
+}
+
 ProgressBase::~ProgressBase()
 {
 	MESSAGE_CLASS_DESTROYED(ProgressBase);

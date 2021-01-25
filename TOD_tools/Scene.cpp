@@ -2,52 +2,54 @@
 #include "SceneSaveLoad.h"
 #include "LogDump.h"
 #include "Performance.h"
+#include "Progress.h"
+#include "ScriptDatabase.h"
 
-int& Scene::RealTimeMs = *(int*)0xA3DCCC;
-int& Scene::GameTimeMs = *(int*)0xA3DCD4;
-int& Scene::_A3DCD0 = *(int*)0xA3DCD0;
-int& Scene::_A3DCE4 = *(int*)0xA3DCE4;
-int& Scene::NewFrameNumber = *(int*)0xA3DCE0;
-bool& Scene::IsRewindBufferInUse = *(bool*)0xA1207C;
 ScriptType_Entity* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
+
+
+int Scene::RealTimeMs;
+int Scene::GameTimeMs;
+int Scene::NextUpdateTime;
+int Scene::TotalFrames;
+int Scene::NewFrameNumber;
+bool Scene::IsRewindBufferInUse;
+bool Scene::LoadingAssetBlock;
 
 #pragma message(TODO_IMPLEMENTATION)
 Scene::Scene() : Folder_()
 {
 	MESSAGE_CLASS_CREATED(Scene);
-
-	m_List_1 = List<int>(0x13B00);
-	m_QuadTreesList = List<AuxQuadTree>(0x1A300);
-	m_ParticleSystemsList = List<ParticleSystem>(0x25B00);
-	m_CollisionListList = List<CollisionList>(0x1A300);
-	m_List_5 = List<int>(0x1CB00);
-	m_List_6 = List<int>(0x27B00);	//	NOTE: 3 lists below are initialized using while loop and pointers, why?
-	m_List_7 = List<int>(0x27B00);
-	m_List_8 = List<int>(0x27B00);
-
-	m_sSaveDir;
-
-	SceneInstance = this;
-
-	m_PlayMode = MODE_UNKNOWN_1;
-	m_NodesWithUpdateOrBlockingScripts = 0;
-
-	m_Buffer_1 = new Scene_Buffer(0, 36, 2);
-	m_Buffer_2 = new Scene_Buffer(0, 36, 2);
-	//	m_pSharedProbe = tCollisionProbe->CreateNode();
-
-	m_EditorCamera = nullptr;
-	m_GameCamera = nullptr;
-	m_QuadTreesAllocated = 0;
-
-	//	TODO: initialize lots more stuff here...
 }
 
-void Scene::SetFixedFramerate(float framerate)
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::ReleaseQuadTreeAndRenderlist()
 {
-	m_FixedFramerate = true;
-	m_FixedFramerateVal = 1.0f / framerate;
+	if (!SceneTree)
+	{
+		LogDump::LogA("quadtrees and renderlists not allocated\n");
+		return;
+	}
+}
+
+void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo)
+{
+	File assetfile(assetname, 161, true);
+
+	assetinfo->m_ResourceDataBufferPtr = g_Blocks->LoadResourceBlock(&assetfile, assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, 0);
+	DWORD64 starttick = __rdtsc();
+
+	g_Blocks->_878030();
+	g_Blocks->_875EB0();
+	g_Blocks->_877AE0();
+
+	LogDump::LogA("Timings: FixupAssetRefsInLoadedAssetBlocks: %f\n", (__rdtsc() - starttick) / Performance::ClockGetCycles());
+
+	if (assetinfo->m_ResourceDataBufferPtr)
+		LogDump::LogA("read asset block file: %s\n", assetname);
+	else
+		LogDump::LogA("Asset file could not be loaded: %s\n", assetname);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -61,8 +63,8 @@ void Scene::Start()
 	EnumSceneCamerasAndUpdate();
 	RealTimeMs = NULL;
 	GameTimeMs = NULL;
-	_A3DCD0 = NULL;
-	_A3DCE4 = NULL;
+	NextUpdateTime = NULL;
+	TotalFrames = NULL;
 	NewFrameNumber = NULL;
 
 	//	FIXME: this is stupid! Make something about it, like templated structure for passing parameters...
@@ -77,18 +79,64 @@ void Scene::Start()
 	if (IsRewindBufferInUse)
 	{
 		AllocateRewindBuffer();
-		FreeRewindBuffer(1);
+		ResetRewindBuffer(true);
 	}
 
 	m_RewindResumeTimeMs = NULL;
-	_A3DCE4 = NULL;
+	TotalFrames = NULL;
 	NewFrameNumber = NULL;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::Load(const char* sceneName)
 {
-	(*(void(__thiscall*)(Scene*, const char*))0x8980C0)(this, sceneName);
+	m_StartTimeMs = Performance::GetMilliseconds();
+
+	FreeRewindBuffer();
+	ReleaseQuadTreeAndRenderlist();
+
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Initialization", Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
+
+	g_Progress->Reset();
+	g_Progress->AddLoadbarPhase("load scene", 25 * Performance::ClockGetCycles(), true);
+	g_Progress->_40E7F0(1, __rdtsc());
+
+	if (g_Blocks->m_LoadBlocks)
+	{
+		String scene_path;
+		g_Blocks->GetFullResourcePath(scene_path, sceneName, "", ResType::PLATFORM_PC);
+		scene_path.Append("/");
+
+		char pathdummy[1024] = {};
+		char scene_fname[128] = {};
+		File::ExtractFilePath(sceneName, pathdummy, scene_fname, pathdummy);
+		scene_path.Append(scene_fname);
+
+		String block_path_shared, block_path_localised;
+		Folder_::GetResourcePathRelative(block_path_shared, scene_path, NONE, 0);
+		Folder_::GetResourcePathRelative(block_path_localised, scene_path, NONE, Script::GetCurrentCountryCode());
+		File::FindFileEverywhere(block_path_shared.m_szString);
+		File::FindFileEverywhere(block_path_localised.m_szString);
+
+		int mainAssetAllocMem = Allocators::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
+		LogDump::LogA("asset block before: %0.1f Kb\n", mainAssetAllocMem * 0.0009765625f);
+
+		if (strcmp(Allocators::AllocatorsList[Blocks::GetResourceBlockTypeNumber(NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+			((FrameBasedSubAllocator*)Allocators::AllocatorsList[Blocks::GetResourceBlockTypeNumber(NONE)])->_47A120();
+		
+		LoadingAssetBlock = true;
+		Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = false;
+		LoadResourceBlockIntoSceneBuffer(block_path_shared.m_szString, &m_AssetBlockInfo->m_AssetInfo_Shared);
+		LoadResourceBlockIntoSceneBuffer(block_path_localised.m_szString, &m_AssetBlockInfo->m_AssetInfo_Localised);
+		
+		m_BlockId = m_BlockId | 0x80000000;
+		LoadingAssetBlock = false;
+		LogDump::LogA("asset block took %0.1f Kb\n", (mainAssetAllocMem - Allocators::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations()) * 0.0009765625f);
+	}
+
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load main asset block", Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
+
+	m_StartTimeMs = Performance::GetMilliseconds();
 }
 
 void Scene::RefreshChildNodes()
@@ -101,8 +149,8 @@ void Scene::RefreshChildNodes()
 
 void Scene::FinishCreation(const char* logTitle)
 {
-	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", logTitle, Performance::GetMilliseconds() - m_TimeMs, Performance::GetMilliseconds() - m_nLoadTime[1]);
-	m_TimeMs = Performance::GetMilliseconds();
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", logTitle, Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
+	m_StartTimeMs = Performance::GetMilliseconds();
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -141,10 +189,19 @@ void Scene::AllocateRewindBuffer()
 
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Scene::FreeRewindBuffer(char unk)
+void Scene::FreeRewindBuffer()
 {
+	if (IsRewindBufferInUse && m_RewindBuffer1)
+	{
+		LogDump::LogA("Free rewind buffer\n");
+		ResetRewindBuffer(true);
 
+		delete m_RewindBuffer1;
+		delete m_RewindBuffer2;
+
+		m_RewindBuffer1 = nullptr;
+		m_RewindBuffer2 = nullptr;
+	}
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -153,9 +210,4 @@ void Scene::TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk
 	//TriggerGlobalScript(scriptId, unk);
 	//for (Node* children = sceneNode->m_FirstChild; children; children = children->m_NextSibling)
 		//TriggerScriptForAllChildren(scriptId, children, unk);
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-Scene_Buffer::Scene_Buffer(int unk1, char unk2, int unk3)
-{
 }

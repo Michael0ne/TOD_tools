@@ -101,4 +101,5 @@ namespace Script
 	extern List<StringTuple> DirectoryMappings;	//	@A35DE4
 
 	static bool IsRegionEurope() { return false; };	//	@420160
+	static const char* GetCurrentCountryCode() { return CountryCodes[LanguageStringsOffset]; };	//	@42E500
 }
