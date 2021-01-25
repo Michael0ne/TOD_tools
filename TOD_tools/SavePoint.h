@@ -4,20 +4,6 @@
 #include "SaveSlot.h"
 
 #define SAVEPOINT_CLASS_SIZE 64
-#define SAVEPOINT_FILE_VERSION 9
-#define ENGINE_VERSION 1925
-#define SAVEPOINT_FILE_BUFFERS 6
-
-struct SavePoint_File {
-	unsigned int	FileVersion;
-	unsigned int	GlobalPropertiesListCRC;
-	unsigned int	BuildVersion;
-	unsigned int	HeaderChecksum;
-	unsigned int	HeaderChecksum_1;	//	NOTE: this value is ignored.
-	unsigned int	BuffersInFile;	//	NOTE: initialized with 6 and doesn't change.
-	unsigned int	RewindBuffer_PtrToStruc;	//	NOTE: initialized with pointer to unknown struct from RewindBuffer.
-	//	NOTE: next thing is unknown RewindBuffer Entity's script properties written to a file.
-};
 
 enum SavePointStatus {
 	STATUS_SUCCESS = 0,

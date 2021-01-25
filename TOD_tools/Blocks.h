@@ -34,80 +34,55 @@ struct FastFindInfo
 	class Node*		m_Node;
 };
 
+#define ASSETHEADERSTRUCT_SIZE 136
+
+struct AssetHeaderStruct_t
+{
+	unsigned char m_AssetId[36];
+	int field_24;
+	int field_28;
+	int field_2C;
+	int field_30;
+	int field_34;
+
+	struct AssetHeaderStruct_1
+	{
+		char m_OriginalKey[32];
+		
+		int field_20;
+		int field_24;
+		int field_28;
+
+		int field_2C;
+		int field_30;
+		int field_34;
+		int field_38;
+		int field_3C;
+		int field_40;
+		int field_44;
+		int field_48;
+		int field_4C;
+
+		AssetHeaderStruct_1();	//	@401050
+		void	_401450(char* key, char* keydata);	//	@401450
+		void	_4010C0(const char* key);	//	@4010C0
+		void	_4011A0(char* key);	//	@4011A0
+	} field_38;
+};
+
+//	TODO: probably rename it to 'CurrentAssetBlock'.
 class Blocks
 {
+	friend class Scene;
 protected:
 	unsigned char	field_0;	//	TODO: this is 'vEntity' an array of vectors? Don't really understand what it is now...
 	BlockTypeNumber m_BlockType;
-	int	field_8;
-	int	field_C;
-	int	field_10;
-	int	field_14;
-	int	field_18;
-	int	field_1C;
-	int	field_20;
-	int	field_24;
-	int	field_28;
-	int	field_2C;
-	int	field_30;
-	int	field_34;
-	int	field_38;
-	int	field_3C;
-	int	field_40;
-	int	field_44;
-	int	field_48;
-	int	field_4C;
-	int	field_50;
-	int	field_54;
-	int	field_58;
-	int	field_5C;
-	int	field_60;
-	int	field_64;
-	int	field_68;
-	int	field_6C;
-	int	field_70;
-	int	field_74;
-	int	field_78;
-	int	field_7C;
-	int	field_80;
-	int	field_84;
-	int	field_88;
-	int	field_8C;
-	int	field_90;
-	int	field_94;
-	int	field_98;
-	int	field_9C;
-	int	field_A0;
-	int	field_A4;
-	int	field_A8;
-	int	field_AC;
-	int	field_B0;
-	int	field_B4;
-	int	field_B8;
-	int	field_BC;
-	int	field_C0;
-	int	field_C4;
-	int	field_C8;
-	int	field_CC;
-	int	field_D0;
-	int	field_D4;
-	int	field_D8;
-	int	field_DC;
-	int	field_E0;
-	int	field_E4;
-	int	field_E8;
-	int	field_EC;
-	int	field_F0;
-	int	field_F4;
-	int	field_F8;
-	int	field_FC;
-	int	field_100;
-	int	field_104;
-	int				field_108;
+	char			field_8[256];
+	int				m_ResourcesInBlock;
 	Allocator*		field_10C;
 	List<int>		m_UnkList_1;
 	List<FastFindInfo>	m_FastFindNodeVector;
-	List<int>		m_UnkList_2[6];
+	List<int>		m_UnkList_2[6];	//	NOTE: resource references for each Block?
 public:
 	List<ResType::Resource> m_ResourceTypesList;
 protected:
@@ -115,15 +90,16 @@ protected:
 	int				field_1B0[6];
 	int				field_1C8;
 	char			field_1CC;
-	int				field_1D0;
+	int*			field_1D0;
 	int				m_EngineVersionTimestamp;
 	int				m_RegionId;
-	char			field_1DC;
-	List<int>		m_UnkList_9;	//	NOTE: this looks like list of actual resources (assets) this block uses?
+	char			m_CheckTimestamp;
+	List<int>		m_UnkList_9;	//	NOTE: list of assets references?
 	bool			m_LoadBlocks;
 
 private:
 	void			AddTypesListItemAtPos(ResType::Resource* element, unsigned int index);	//	@8760C0
+	static void		AllocateResourceBlockBufferAligned(unsigned int, int** resBufStartPos, int* resBufSpace, BlockTypeNumber);	//	@852070
 
 public:
 	Blocks(bool loadBlocks);	//	@876E20
@@ -145,6 +121,7 @@ public:
 	void			SetRegionId(signed int id);	//	@875434
 	AllocatorIndex	GetAllocatorType() const;	//	@875360
 	int				InsertTypeListItem(void* res);	//	@877A90
+	void			GetFullResourcePath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform);	//	@8776B0
 	void			GetInternalFileName(String& outName, const char* str);	//	@8773A0
 	void			GetResourcePath(String& outStr, const char* path) const;	//	@875770
 	void			IncreaseResourceReferenceCount(ResType::Resource*);	//	@875320
@@ -153,14 +130,16 @@ public:
 	void			BuildFastFindNodeVector();	//	@877DA0
 	void			FillFastFindNodeVector(Node* _baseNode, FastFindInfo* _ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
 	ResType::ResourceBase*	LoadResourceFile(const char* _pathandname);	//	@878AB0
-	void*			LoadResourceBlock(class File*, void* resbufferptr, unsigned int* resdatasize, int resblockid);	//	@8759E0
+	void*			LoadResourceBlock(class File*, void* resbufferptr, unsigned int* resdatasize, BlockTypeNumber resblockid);	//	@8759E0
 	
 	static void		GetPlatformSpecificResourcePath(String& outPath, const char* respath, GameConfig::CountryCodes region, ResType::PlatformId platform);	//	@876500
 	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0
 
 	static const char* BlockTypeExtension[];	//	@A11B64
+	static bool		ChecksumChecked;	//	@A3D7C9
 };
 
 extern Blocks* g_Blocks;
 
 static_assert(sizeof(Blocks) == BLOCKS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Blocks));
+static_assert(sizeof(AssetHeaderStruct_t) == ASSETHEADERSTRUCT_SIZE, MESSAGE_WRONG_CLASS_SIZE(AssetHeaderStruct_t));

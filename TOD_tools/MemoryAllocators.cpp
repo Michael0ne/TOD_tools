@@ -366,6 +366,14 @@ void FrameBasedSubAllocator::stub9()
 	((SequentialSubAllocator*)this)->stub9();
 }
 
+void FrameBasedSubAllocator::_47A120()
+{
+	int* newspace = (int*)Allocate_A(12, NULL, NULL);
+	newspace[1] = field_30;
+	newspace[2] = (int)field_40;
+	field_40 = newspace;
+}
+
 BestFitAllocator::BestFitAllocator()
 {
 	MESSAGE_CLASS_CREATED(BestFitAllocator);

@@ -23,11 +23,11 @@ protected:
 	const char*					m_AllocatorName;
 public:
 	unsigned int				m_AllocatorIndex;
-protected:
-	void*						field_1C;
+	Allocator*					field_1C;
 	char						field_20;
 	char						field_21;
 
+protected:
 	void						RetrieveSystemAllocators();	//	@4775C0
 
 public:
@@ -151,6 +151,8 @@ public:
 	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) override;
 	virtual int					stub8(int unk) override;
 	virtual void				stub9() override;
+
+	void						_47A120();	//	@47A120
 };
 
 #define BESTFITALLOCATOR_CLASS_SIZE 292

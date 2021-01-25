@@ -32,10 +32,7 @@ public:
 
 public:
 	RewindBuffer(const unsigned int bufferSize);	//	@8AADA0
-	~RewindBuffer()
-	{
-		MESSAGE_CLASS_DESTROYED(RewindBuffer);
-	}
+	~RewindBuffer();	//	@875210
 
 	void* operator new(size_t size)
 	{

@@ -737,7 +737,7 @@ namespace GameConfig
 		g_Blocks->SetSceneName(scene);
 		Scene::SceneInstance->Load(scene);
 		Scene::SceneInstance->UpdateLoadedBlocks(0, 0);
-		Scene::SceneInstance->m_TimeMs = Performance::GetMilliseconds();
+		Scene::SceneInstance->m_StartTimeMs = Performance::GetMilliseconds();
 		Scene::SceneInstance->RefreshChildNodes();
 		Scene::SceneInstance->FinishCreation("Scene instantiate all completed.");
 

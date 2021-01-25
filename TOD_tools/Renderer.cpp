@@ -46,7 +46,7 @@ Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigne
 	g_Renderer = this;
 
 	m_TexturesList = List<GfxInternal_Dx9_Texture>();
-	m_TimeDelta = 0.0f;
+	m_TimeDelta = 0.f;
 	field_30 = 0;
 	m_TimeMilliseconds = Performance::GetMilliseconds();
 	field_34 = 0;

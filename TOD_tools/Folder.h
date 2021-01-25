@@ -13,7 +13,9 @@ struct AssetInfo
 		void*		m_ResourceDataBufferPtr;	//	NOTE: actual resource data read from file written here.
 		void*		m_ResourceAllocatedAlignedBufferPtr;	//	NOTE: pointer to buffer with resource data size written here.
 		int			m_ResourceDataBufferSize;
-	} m_AssetInfo[2];
+	};
+	ActualAssetInfo	m_AssetInfo_Shared;
+	ActualAssetInfo	m_AssetInfo_Localised;
 };
 
 //	NOTE: this is used on all .main files. And maybe another resource types, not sure now.
@@ -30,11 +32,11 @@ struct MainAssetBlock
 
 class Folder_ : public Node
 {
-private:
+protected:
 	int				m_BlockId;
 	AssetInfo*		m_AssetBlockInfo;
 
-	void			GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
+	static void			GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
 public:
 	Folder_() : Node(NODE_MASK_EMPTY)	//	NOTE: no actual constructor
 	{
