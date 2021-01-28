@@ -128,9 +128,6 @@
     <ClInclude Include="Config.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="RewindBuffer.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
@@ -422,6 +419,9 @@
     <ClInclude Include="GfxInternal_Dx9_Surface.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
+    <ClInclude Include="TransactionBuffer.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -477,9 +477,6 @@
     </ClCompile>
     <ClCompile Include="Config.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
-    </ClCompile>
-    <ClCompile Include="RewindBuffer.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
@@ -726,6 +723,9 @@
     </ClCompile>
     <ClCompile Include="GfxInternal_Dx9_Surface.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="TransactionBuffer.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

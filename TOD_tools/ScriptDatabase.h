@@ -3,11 +3,15 @@
 #include "ScriptTypes.h"
 
 #ifdef PLATFORM_PS2
-	#define SCRIPT_PROPERTIES_TOTAL 5229
-	#define SCRIPT_COMMANDS_TOTAL 1402
+	#define SCRIPT_PROPERTIES_TOTAL 5940
+	#define SCRIPT_PROPERTIES_BUILTIN_TOTAL 711
+
+	#define SCRIPT_PROPERTIES_BUILTIN_CRC 0xE99606BA
+	#define SCRIPT_PROPERTIES_DATABASE_CRC 0x24A37B21
 #else
-	#define SCRIPT_PROPERTIES_TOTAL 5283
-	#define SCRIPT_COMMANDS_TOTAL 1410
+	#define SCRIPT_PROPERTIES_TOTAL 5994
+	#define SCRIPT_PROPERTIES_BUILTIN_TOTAL 711
+
 	#define SCRIPT_PROPERTIES_BUILTIN_CRC 0xE99606BA
 	#define SCRIPT_PROPERTIES_LOADED_CRC 0x65C37710
 #endif
@@ -16,7 +20,9 @@ struct GlobalProperty
 {
 	int							m_PropertyId;
 	const char*					m_PropertyName;
-	ScriptType*	m_PropertyType;
+	ScriptType*					m_PropertyType;
+
+	void						GetNameAndType(String& outStr);	//	@8731C0
 };
 
 static List<GlobalProperty>&	GlobalPropertiesList = *(List<GlobalProperty>*)0xA3CF20;	//	@A3CF20
@@ -39,9 +45,35 @@ struct GlobalCommand
 	int							m_GlobalIndex;
 	const char*					m_ArgumentsString;
 	const char*					m_CommandName;
+
+	void						GetReturnTypeString(String& outStr);	//	@871A90
 };
 
 static List<GlobalCommand>&		GlobalCommandsList = *(List<GlobalCommand>*)0xA11470;	//	@A11470
+
+class GlobalScript
+{
+protected:
+	List<GlobalScriptProperty>	m_PropertiesList;
+	int							m_PropertiesMap[4];
+	int							field_20;
+	List<int>					m_List_1;
+	List<GlobalScriptParam>		m_ParamsList;
+	int							field_44;
+	ScriptType_Entity*			m_BaseEntity;
+	String						m_Name;
+	int							field_5C;
+	void						(*field_60)(int*);
+
+public:
+	GlobalScript();
+	~GlobalScript();
+
+	ScriptType_Entity*			AssignScriptToEntity(const ScriptType_Entity& parent);	//	@48A3F0
+
+	static GlobalScript*		GetGlobalScriptByName(const char* name);	//	@48C590
+	static List<GlobalScript>	ScriptsList;	//	@A0B424
+};
 
 static ScriptType_Entity*	GlobalScriptsArray[410];	//	@A3B7A4
 
@@ -102,4 +134,11 @@ namespace Script
 
 	static bool IsRegionEurope() { return false; };	//	@420160
 	static const char* GetCurrentCountryCode() { return CountryCodes[LanguageStringsOffset]; };	//	@42E500
+	static unsigned int GetGlobalPropertyListCRC();	//	@873440
+	static unsigned int GetGlobalCommandListCRC();	//	@871DD0
+
+	static unsigned int	GlobalPropertyListChecksum;	//	@A3CF40
+	static bool			GlobalPropertyListChecksumObtained;	//	@A3CF1C
+	static unsigned int	GlobalCommandListChecksum;	//	@A3CF18
+	static bool			GlobalCommandListChecksumObtained;	//	@A3CEF4
 }

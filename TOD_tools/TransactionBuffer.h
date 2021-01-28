@@ -18,7 +18,7 @@ public:
 	void	_8751D0();	//	@8751D0
 };
 
-class RewindBuffer
+class TransactionBuffer
 {
 public:
 	void*	m_pBuffer;
@@ -31,8 +31,8 @@ public:
 
 
 public:
-	RewindBuffer(const unsigned int bufferSize);	//	@8AADA0
-	~RewindBuffer();	//	@875210
+	TransactionBuffer(const unsigned int bufferSize);	//	@8AADA0
+	~TransactionBuffer();	//	@875210
 
 	void* operator new(size_t size)
 	{
@@ -45,4 +45,4 @@ public:
 	}
 };
 
-static_assert(sizeof(RewindBuffer) == REWINDBUFFER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(RewindBuffer));
+static_assert(sizeof(TransactionBuffer) == REWINDBUFFER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(TransactionBuffer));

@@ -121,8 +121,7 @@ void Entity::SetScript(ScriptType_Entity* script)
 #pragma message(TODO_IMPLEMENTATION)
 int Entity::GetPropertyId(const char* prop)
 {
-	char _prop[64];
-	memset(&_prop, NULL, sizeof(_prop));
+	char _prop[64] = {};
 
 	//	NOTE: copy 'prop' to local buffer and cut out everything after ':', after that turn to lower case.
 	if (strstr(prop, ":") != nullptr)
@@ -138,4 +137,25 @@ int Entity::GetPropertyId(const char* prop)
 		return *(msg + 4);
 	else
 		return -1;
+}
+
+void Entity::Register()
+{
+	tEntity = new ScriptType_Entity("Entity");
+	tEntity->SetCreator((CREATOR_)Create);
+
+	tEntity->RegisterScript("getpropertyid(string):integer", Entity::GetPropertyId, NULL, NULL, NULL, NULL, "GetPropertyIDMSG");
+	tEntity->RegisterScript("hasproperty(string):truth", Entity::HasProperty, NULL, NULL, NULL, NULL, "HasPropertyMSG");
+	tEntity->RegisterScript("savescriptdatatofile(entity,integer,integer,string):truth", Entity::SaveScriptDataToFile, NULL, NULL, NULL, NULL, NULL);
+	tEntity->RegisterScript("loadscriptdatafromfile(entity,integer,integer):integer", Entity::LoadScriptDataFromFile, NULL, NULL, NULL, NULL, NULL);
+	
+	tEntity->RegisterProperty("id", tINTEGER, INT_GETTER(Entity::GetId), NULL, NULL, NULL, INT_SETTER(nullptr), NULL, NULL, -1, "control=string");
+	tEntity->RegisterProperty("script_priority", tINTEGER, INT_GETTER(Entity::GetScriptPriority), NULL, NULL, NULL, INT_SETTER(Entity::SetScriptPriority), NULL, NULL, NULL, "control=string");
+
+	tEntity->_86E9B0();
+}
+
+Entity* Entity::Create(AllocatorIndex)
+{
+	return new Entity();
 }

@@ -1,9 +1,9 @@
-#include "RewindBuffer.h"
+#include "TransactionBuffer.h"
 
 #pragma message(TODO_IMPLEMENTATION)
-RewindBuffer::RewindBuffer(const unsigned int bufferSize)
+TransactionBuffer::TransactionBuffer(const unsigned int bufferSize)
 {
-	MESSAGE_CLASS_CREATED(RewindBuffer);
+	MESSAGE_CLASS_CREATED(TransactionBuffer);
 
 	m_UnknownList.field_4 = (*(void* (*)())0x8AB060)();
 	m_UnknownList.field_8 = 0;

@@ -9,6 +9,12 @@
  *	TODO -- things that need to be done sometime (sooner the better);
  *	NOTE -- a note, obviously, explaining why stuff is like that;
  *	FIXME -- uh-oh, this code MUST be fixed as soon as possible.
+ * 
+ *	Preprocessor defines and their usage:
+ *	INCLUDE_FIXES	-- includes fixes to obvious bugs and improvements;
+ *	PLATFORM_PS2	-- use PS2-specific code;
+ *	PLATFORM_LINUX	-- use linux-specific code;
+ *	If none of the 2 defined code compilation assumes Windows is being used as target platform.
  *
 */
 #pragma once

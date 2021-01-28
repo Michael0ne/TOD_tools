@@ -112,7 +112,7 @@ namespace ResType
 		int				field_C;
 		UINT64			m_ResourceTimestamp;
 	public:
-		int				field_18;
+		int				m_Flags;
 
 	public:
 		virtual			~Resource();	//	@851F90 scalar, actual dtor @8516C0
@@ -121,7 +121,7 @@ namespace ResType
 		virtual int		GetUnkFlag() const;
 		virtual void	stub5(int) {};
 		virtual void	GetResourcesDir(String& outDir, PlatformId platformId);
-		virtual void	stub7(int) {};
+		virtual void	ApplyAssetData(int*) {};
 		virtual char	SetResourcePlaceholder() { return NULL; };
 		virtual int		stub9();	//	NOTE: retrieves some unknown flag.
 		virtual void	GetResourceName(String& outName, int);

@@ -57,7 +57,7 @@ public:
 			Allocators::ReleaseMemory(ptr, false);
 	}
 
-	static bool		WriteSavePointFileData(const SavePoint& savepoint, const struct RewindBuffer& rewbuff);	//	@873DA0
+	static bool		WriteSavePointFileData(const SavePoint& savepoint, const struct TransactionBuffer& rewbuff);	//	@873DA0
 	static bool		VerifyFileChecksum(SavePoint*);	//	@874230
 
 	static int		OpenFilesCount;	//	@A35EA8

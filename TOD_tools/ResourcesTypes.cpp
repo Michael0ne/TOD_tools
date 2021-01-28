@@ -24,7 +24,7 @@ namespace ResType
 		m_ResTypeMethods = (void*)(*((int*)res_));
 
 		res_->~Resource();
-		if (res_->field_18 & 0x10000)
+		if (res_->m_Flags & 0x10000)
 			delete res_;
 	}
 
@@ -39,12 +39,12 @@ namespace ResType
 	#pragma message(TODO_IMPLEMENTATION)
 	void Resource::SetUnkFlag(unsigned char a1, int, int)
 	{
-		field_18 ^= (field_18 ^ (a1 << 18)) & 0x40000;
+		m_Flags ^= (m_Flags ^ (a1 << 18)) & 0x40000;
 	}
 
 	int Resource::GetUnkFlag() const
 {
-		return (field_18 >> 18) & 1;
+		return (m_Flags >> 18) & 1;
 	}
 
 	void Resource::GetResourcesDir(String& outDir, PlatformId platformId)
@@ -54,7 +54,7 @@ namespace ResType
 
 	int Resource::stub9()
 	{
-		return (((field_18 >> 19) & 1) != NULL) + 1;
+		return (((m_Flags >> 19) & 1) != NULL) + 1;
 	}
 
 	#pragma message(TODO_IMPLEMENTATION)
@@ -69,7 +69,6 @@ namespace ResType
 	void Resource::DestroyResource()
 	{
 		m_ResourceTimestamp = NULL;
-		field_14 = NULL;
 	}
 
 	Resource::Resource(bool a1)
@@ -80,14 +79,13 @@ namespace ResType
 			OpenResourcesList.SetCapacityAndErase(RESTYPE_MAX_OPEN_RESOURCES);
 
 		m_ResourceTimestamp = NULL;
-		field_14 = NULL;
-		field_18 = NULL;
+		m_Flags = NULL;
 
 		//	NOTE: field_4 is somehow initialized here. Haven't figured it out yet...
 
 		m_GlobalResourceId = a1 ? NULL : g_Blocks->InsertTypeListItem(this);
 
-		field_18 = field_18 & 0xFFF1FFFF | 0x10000;
+		m_Flags = m_Flags & 0xFFF1FFFF | 0x10000;
 	}
 
 	Resource::~Resource()
@@ -117,7 +115,7 @@ namespace ResType
 
 	void Resource::_8513E0(unsigned char a1)
 	{
-		field_18 ^= (field_18^ (a1 << 19)) & 0x80000;
+		m_Flags ^= (m_Flags^ (a1 << 19)) & 0x80000;
 	}
 
 	#pragma message(TODO_IMPLEMENTATION)

@@ -4,6 +4,7 @@
 #include "LogDump.h"
 #include "Performance.h"
 #include "Progress.h"
+#include "ScriptDatabase.h"
 
 Blocks* g_Blocks = nullptr;
 
@@ -45,12 +46,12 @@ void Blocks::GetResourcePath(String& outStr, const char* path) const
 
 void Blocks::IncreaseResourceReferenceCount(ResType::Resource* _res)
 {
-	++_res->field_18;
+	++_res->m_Flags;
 }
 
 void Blocks::DecreaseResourceReferenceCount(ResType::Resource* _res)
 {
-	--_res->field_18;
+	--_res->m_Flags;
 }
 
 const char* Blocks::GetCurrentSceneName() const
@@ -387,7 +388,6 @@ void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned i
 		for (unsigned int i = 0; i < 255; i++)
 			keydatabuf[i] = file->ReadBlock();
 
-		//	NOTE: roate bits?
 		assetHeaderStruct.field_38._401450("1E564E3B-D243-4ec5-AFB7", keydatabuf);
 		strcpy(field_8, keydatabuf);
 
@@ -416,42 +416,64 @@ void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned i
 		unsigned int checksum = NULL;
 		file->Read(&checksum, sizeof(checksum));
 
-		if (GetGlobalPropertiesListCRC() != checksum)
+		if (Script::GetGlobalPropertyListCRC() != checksum)
 			return nullptr;
 
 		file->Read(&checksum, sizeof(checksum));
-		if (GetGlobalCommandsListCRC() != checksum)
+		if (Script::GetGlobalCommandListCRC() != checksum)
 			return nullptr;
 
 		ChecksumChecked = true;
 	}
 
 	unsigned int	totalResources = NULL;
-	unsigned int	resourceElementSize = NULL;
+	unsigned int	resourcesInfoSize = NULL;
 	unsigned int	resourceBufferSize = NULL;
-	int*			resourceBuffer = nullptr;
+	int*			resourcesInfoBuffer = nullptr;
 	int*			resourceDataBuffer = nullptr;
 
 	file->Read(&totalResources, sizeof(totalResources));
-	file->Read(&resourceElementSize, sizeof(resourceElementSize));
+	file->Read(&resourcesInfoSize, sizeof(resourcesInfoSize));
 	file->Read(&resourceBufferSize, sizeof(resourceBufferSize));
 
-	*resdatasize = resourceElementSize;
-	AllocateResourceBlockBufferAligned(resourceElementSize, &resourceBuffer, (int*)resbufferptr, resblockid);
+	*resdatasize = resourcesInfoSize;
+	AllocateResourceBlockBufferAligned(resourcesInfoSize, &resourcesInfoBuffer, (int*)resbufferptr, resblockid);
 	resourceDataBuffer = (int*)Allocators::AllocateByType(RENDERLIST, resourceBufferSize);
 	g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
-	file->Seek(~(1 - 1)& (1 + file->GetPosition() - 1));	//	NOTE: 417DF0 inlined.
-	file->Read(&resourceBuffer, resourceElementSize);
+	file->SetPosAligned(0);
+	file->Read(&resourcesInfoBuffer, resourcesInfoSize);
+
+	//	NOTE: list type is 'ResType'.
+	int ResList[4] =
+	{
+		NULL, NULL, NULL, 0x18B00
+	};
 
 	if (totalResources > 0)
-		;
-	//	TODO: complete!
+		ResList->SetCapacity(totalResources);
+
+	time_t	fileTimestamp = File::GetFileTimestamp(file->GetFileName());
+	char*	resourcesDataSize = new char[16 * totalResources];	//	NOTE: intentionally make space for 4 ints so additional data can be written later.
+
+	file->SetPosAligned(0);
+	file->Read(resourcesDataSize, 4 * totalResources);	//	NOTE: array of actual sizes for buffers
+
+	if (totalResources > 0)
+	{
+		ResList
+	}
+
+	delete resourcesDataSize;
+
+	if (totalResources > 0)
+		for (unsigned int i = 0; i < totalResources; i++)
+			m_LoadedResourcesList.AddElement(ResList[0] + 4 * i);
 
 	LogDump::LogA("Done. Loading %d resource took %.2f secs.\n", totalResources, (Performance::GetMilliseconds() - timeStart) * 0.001f);
 	delete resourceDataBuffer;
 
-	return resourceBuffer;
+	return resourcesInfoBuffer;
 }
 
 ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId)
@@ -459,7 +481,7 @@ ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resou
 	if (!resourceBlockId ||
 		memcmp(BlockTypeExtension[resourceBlockId], "map", 4) ||
 		memcmp(BlockTypeExtension[resourceBlockId], "submap", 7))
-		return (ResourceBlockTypeNumber)(MAP | SUBMAP);
+		return RESTYPE_MAP;
 
 	if (!memcmp(BlockTypeExtension[resourceBlockId], "mission", 8))
 		return RESTYPE_MISSION;
@@ -516,7 +538,7 @@ Blocks::Blocks(bool loadBlocks)
 
 	m_ResourceTypesList = List<ResType::Resource>(0x18B00);
 	m_SceneNames = List<String>(0x18B00);
-	m_UnkList_9 = List<int>(0x18B00);
+	m_LoadedResourcesList = List<int>(0x18B00);
 
 	m_LoadBlocks = loadBlocks;
 

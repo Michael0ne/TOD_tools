@@ -1,6 +1,8 @@
 #include "ScriptTypes.h"
 #include "Blocks.h"
 #include "Node.h"
+#include "LogDump.h"
+#include "ScriptDatabase.h"
 
 int ScriptType::_489370(int* unk1, int* unk2)
 {
@@ -87,6 +89,35 @@ ScriptType::ScriptType(const ScriptType& _rhs)
 	m_GlobalId = _rhs.m_GlobalId;
 }
 
+unsigned int ScriptType::GetTypeSize_Impl(ScriptType* type)
+{
+	switch (type->m_TypeId)
+	{
+	case TYPE_NOTHING:
+		return 0;
+		break;
+	case TYPE_NUMBER:
+	case TYPE_INTEGER:
+	case TYPE_STRING:
+	case TYPE_TRUTH:
+	case TYPE_LIST:
+	case TYPE_DICT:
+	case TYPE_ENTITY:
+	case TYPE_SCRIPT:
+		return 1;
+		break;
+	case TYPE_VECTOR:
+		return 3;
+		break;
+	case TYPE_QUATERNION:
+		return 4;
+		break;
+	default:
+		return -1;
+		break;
+	}
+}
+
 ScriptType::~ScriptType()
 {
 	MESSAGE_CLASS_DESTROYED(ScriptType);
@@ -163,38 +194,96 @@ void ScriptType::RemoveTypeFromList(const char* name)
 	TypesListCRCCalculated = false;
 }
 
-int GetTypeSize(ScriptType* type)
+unsigned int ScriptType::GetTypeSize()
 {
-	//	NOTE: compiler should optimize this automatically.
-	switch (type->m_TypeId)
+	return GetTypeSize_Impl(this);
+}
+
+ScriptType* ScriptType::GetTypeByName(const char* name)
+{
+	if (TypesList.m_CurrIndex <= NULL)
+		return nullptr;
+
+	for (unsigned int i = NULL; i < TypesList.m_CurrIndex; i++)
+		if (strcmp(TypesList.m_Elements[i]->m_TypeName.m_szString, name) == NULL)
+			return TypesList.m_Elements[i];
+
+	return nullptr;
+}
+
+ScriptType* ScriptType::TryCreateGlobalVariable(const char* script)
+{
+	if (ScriptType* type_ = GetTypeByName(script))
+		return type_;
+
+	const char* parenthopenpos = strchr(script, '(');
+	const char* parenthclospos = strrchr(script, ')');
+
+	if (!parenthopenpos)
+		return nullptr;
+
+	if (strncmp(script, "list", parenthopenpos - script))
 	{
-	case TYPE_NOTHING:
-		return TYPE_NOTHING_SIZE;
-	case TYPE_NUMBER:
-		return TYPE_NUMBER_SIZE;
-	case TYPE_INTEGER:
-		return TYPE_INTEGER_SIZE;
-	case TYPE_STRING:
-		return TYPE_STRING_SIZE;
-	case TYPE_TRUTH:
-		return TYPE_TRUTH_SIZE;
-	case TYPE_VECTOR:
-		return TYPE_VECTOR_SIZE;
-	case TYPE_QUATERNION:
-		return TYPE_QUATERNION_SIZE;
-	case TYPE_COLOR:
-		return TYPE_COLOR_SIZE;
-	case TYPE_LIST:
-		return TYPE_LIST_SIZE;
-	case TYPE_DICT:
-		return TYPE_DICT_SIZE;
-	case TYPE_ENTITY:
-		return TYPE_ENTITY_SIZE;
-	case TYPE_SCRIPT:
-		return TYPE_SCRIPT_SIZE;
-	default:
-		return -1;
+		if (strncmp(script, "dict", parenthopenpos - script) == NULL)
+		{
+			char dict_element_type[50] = {};
+			strncpy(dict_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
+
+			new ScriptType_Dict(*TryCreateGlobalVariable(dict_element_type));
+		}
+
+		String script_name, script_type;
+		if (!ParseVariableString(script, script_name, script_type))
+			return nullptr;
+
+		String script_complete_name = script_name;
+		script_complete_name.Append("(");
+		script_complete_name.Append(script_type.m_szString);
+		script_complete_name.Append(")");
+
+		ScriptType* retn_type = GetTypeByName(script_complete_name.m_szString);
+		if (!retn_type)
+		{
+			retn_type = ScriptType_Entity::GetScriptEntityByName(script_type.m_szString);
+			if (!retn_type)
+				return nullptr;
+
+			GlobalScript* glob_script = GlobalScript::GetGlobalScriptByName(script_name.m_szString);
+			if (!glob_script)
+			{
+				LogDump::LogA("Unable to load script '%s'\n", script_name.m_szString);
+				return nullptr;
+			}
+
+			retn_type = glob_script->AssignScriptToEntity((ScriptType_Entity*)retn_type);
+		}
+
+		return retn_type;
 	}
+
+	char list_element_type[50] = {};
+	strncpy(list_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
+
+	return new ScriptType_List(*TryCreateGlobalVariable(list_element_type));
+}
+
+bool ScriptType::ParseVariableString(const char* variable, String& variableName, String& variableType)
+{
+	const char* parenth_open_pos = strchr(variable, '(');
+	const char* parenth_close_pos = strrchr(variable, ')');
+
+	if (!parenth_open_pos || !parenth_close_pos)
+		return false;
+
+	char buf[64] = {};
+	strncpy(buf, variable, parenth_open_pos - variable);
+	variableName = buf;
+
+	memset(buf, NULL, sizeof(buf));
+	strncpy(buf, parenth_open_pos + 1, parenth_close_pos - parenth_open_pos - 1);
+	variableType = buf;
+
+	return true;
 }
 
 void InitScriptTypes()
@@ -247,6 +336,19 @@ void ScriptType_Entity::InheritFrom(ScriptType_Entity* from)
 	//field_70 = from->m_HasParent ? from->m_Parent->m_PropertiesList_2.m_CurrIndex + from->m_Parent->field_70 : from->m_PropertiesList_2.m_CurrIndex + from->field_70;
 	m_Creator = from->m_Creator;
 	m_Parent = from;
+}
+
+ScriptType_Entity* ScriptType_Entity::GetScriptEntityByName(const char* name)
+{
+	if (TypesList.m_CurrIndex <= NULL)
+		return nullptr;
+
+	for (unsigned int i = NULL; i < TypesList.m_CurrIndex; i++)
+		if (TypesList.m_Elements[i]->m_TypeId == TYPE_ENTITY &&
+			strcmp(TypesList.m_Elements[i]->m_TypeName.m_szString, name) == 0)
+			return (ScriptType_Entity*)TypesList.m_Elements[i];
+
+	return nullptr;
 }
 
 ScriptType_List::ScriptType_List(const ScriptType& elementsType) : ScriptType(TYPE_LIST, szScriptTypeName[TYPE_LIST], TYPE_LIST_SIZE)
@@ -366,7 +468,7 @@ void ScriptFieldsList::Add(const ScriptField& _sf)
 
 	m_Elements[m_CurrentIndex].m_FieldOffset = m_TotalSizeBytes;
 	m_TotalSizeBytes += _sf.m_Type->m_Size;
-	m_TotalSize += GetTypeSize(_sf.m_Type);
+	m_TotalSize += _sf.m_Type->GetTypeSize();
 }
 
 void ScriptFieldsList::Clear()

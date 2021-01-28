@@ -1,5 +1,5 @@
 #include "SceneSaveLoad.h"
-#include "RewindBuffer.h"
+#include "TransactionBuffer.h"
 #include "StreamedSoundBuffers.h"
 
 SceneSaveLoad* g_SceneSaveLoad = nullptr;
@@ -25,14 +25,14 @@ void SceneSaveLoad::ResetSavedPlayMode()
 bool SceneSaveLoad::LoadSavePointData(class SavePoint* sp, ScriptType_Entity* ent, class Node* readFinishedCb)
 {
 	g_StreamedSoundBuffers->MeasureWaitForSoftPause();
-	m_SaveInfo_1.field_0 = new RewindBuffer(102400);
+	m_SaveInfo_1.m_TransactionBuffer = new TransactionBuffer(102400);
 	
-	if (!m_SaveInfo_1.field_0)
+	if (!m_SaveInfo_1.m_TransactionBuffer)
 		return false;
 
-	if (!((int*)(m_SaveInfo_1.field_0->m_pBuffer) + m_SaveInfo_1.field_0->m_nSize))
+	if (!((int*)(m_SaveInfo_1.m_TransactionBuffer->m_pBuffer) + m_SaveInfo_1.m_TransactionBuffer->m_nSize))
 	{
-		delete m_SaveInfo_1.field_0;
+		delete m_SaveInfo_1.m_TransactionBuffer;
 		return false;
 	}
 

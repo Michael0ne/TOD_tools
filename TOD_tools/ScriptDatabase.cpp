@@ -1,9 +1,15 @@
 #include "ScriptDatabase.h"
 #include "LogDump.h"
 #include "Performance.h"
+#include "Globals.h"
 
 namespace Script
 {
+	unsigned int GlobalPropertyListChecksum;
+	bool GlobalPropertyListChecksumObtained;
+	unsigned int GlobalCommandListChecksum;
+	bool GlobalCommandListChecksumObtained;
+	List<GlobalScript> GlobalScript::ScriptsList;
 
 	#pragma message(TODO_IMPLEMENTATION)
 	ScriptType* GetScriptType(const char* _scripttype)
@@ -588,21 +594,150 @@ namespace Script
 		new ScriptType_Script("crossblend_override", params);
 		params.Clear();
 
-		//if (GetGlobalPropertiesListTotalEntries() == 711)
+		//if (GetGlobalPropertiesListTotalEntries() == SCRIPT_PROPERTIES_BUILTIN_TOTAL)
 			//GetGlobalCommandsListTotalEntries();
 
-		//if (GetGlobalPropertiesListCRC() == 0xE99606BA)
+		//if (GetGlobalPropertiesListCRC() == SCRIPT_PROPERTIES_BUILTIN_CRC)
 			//GetGlobalCommandsListCRC();
 
 		//ReadDatabaseFile(File::GetFullResourcePath("/data/scripts/stable/Database.bin", "bin", 0));
 
-		//if (GetGlobalPropertiesListTotalEntries() == 5994)
+		//if (GetGlobalPropertiesListTotalEntries() == SCRIPT_PROPERTIES_TOTAL)
 			//GetGlobalCommandsListTotalEntries();
 
-		//if (GetGlobalPropertiesListCRC() == 0x65C37710)
+		//if (GetGlobalPropertiesListCRC() == SCRIPT_PROPERTIES_LOADED_CRC)
 			//GetGlobalCommandsListCRC();
 
 		//GlobalScriptsArray[65] = GetScriptByType("list(entity)");
 		//	TODO: much much more here...
 	}
+
+	unsigned int GetGlobalPropertyListCRC()
+	{
+		if (GlobalPropertyListChecksumObtained)
+			return GlobalPropertyListChecksum;
+
+		char checksum_str[102400] = {};
+		unsigned int checksum_str_len = NULL;
+
+		if (GlobalPropertiesList.m_CurrIndex > 0)
+		{
+			for (unsigned int i = NULL; i < GlobalPropertiesList.m_CurrIndex; i++)
+			{
+				String tempstr;
+				GlobalPropertiesList.m_Elements[i]->GetNameAndType(tempstr);
+
+				//	FIXME: overflow?
+				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
+					break;
+				else
+					checksum_str_len += strlen(tempstr.m_szString);
+
+				if (*checksum_str == NULL)
+					strcpy(checksum_str, tempstr.m_szString);
+				else
+					strcat(checksum_str, tempstr.m_szString);
+			}
+		}
+
+		GlobalPropertyListChecksum = Utils::CalcCRC32(checksum_str, checksum_str_len);
+		GlobalPropertyListChecksumObtained = true;
+		return GlobalPropertyListChecksum;
+	}
+
+	unsigned int GetGlobalCommandListCRC()
+	{
+		if (GlobalCommandListChecksumObtained)
+			return GlobalCommandListChecksum;
+
+		char checksum_str[102400] = {};
+		unsigned int checksum_str_len = NULL;
+
+		if (GlobalCommandsList.m_CurrIndex > 0)
+		{
+			for (unsigned int i = NULL; i < GlobalCommandsList.m_CurrIndex; i++)
+			{
+				String tempstr;
+				GlobalCommandsList.m_Elements[i]->GetReturnTypeString(tempstr);
+
+				//	FIXME: overflow?
+				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
+					break;
+				else
+					checksum_str_len += strlen(tempstr.m_szString);
+
+				if (*checksum_str == NULL)
+					strcpy(checksum_str, tempstr.m_szString);
+				else
+					strcat(checksum_str, tempstr.m_szString);
+			}
+		}
+
+		GlobalCommandListChecksum = Utils::CalcCRC32(checksum_str, checksum_str_len);
+		GlobalCommandListChecksumObtained = true;
+		return GlobalCommandListChecksum;
+	}
+
+}
+
+void GlobalProperty::GetNameAndType(String& outStr)
+{
+	if (m_PropertyType != tNOTHING)
+	{
+		char buf[256] = {};
+		strcpy(buf, m_PropertyName);
+		buf[strlen(m_PropertyName)] = ':';
+		strcat(buf, m_PropertyType->m_TypeName.m_szString);
+
+		outStr = buf;
+		return;
+	}
+	else
+		outStr = m_PropertyName;
+}
+
+void GlobalCommand::GetReturnTypeString(String& outStr)
+{
+	if (m_ArgumentsList.m_PropertiesList.m_Elements[0]->m_ScriptType->m_Size)
+	{
+		char buf[128] = {};
+		sprintf(buf, "%s:%s", m_ArgumentsString, m_ArgumentsList.m_PropertiesList.m_Elements[0]->m_ScriptType->m_TypeName.m_szString);
+
+		outStr = buf;
+		return;
+	}
+	else
+		outStr = m_ArgumentsString;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+ScriptType_Entity* GlobalScript::AssignScriptToEntity(const ScriptType_Entity& parent)
+{
+	if (!m_BaseEntity)
+		return nullptr;
+
+	if (!&parent)
+	{
+		LogDump::LogA("'%s' do not descent from '%s', script '%s' cannot be used on a '%s'\n",
+			parent.m_TypeName.m_szString,
+			m_BaseEntity->m_TypeName.m_szString,
+			m_Name.m_szString,
+			parent.m_TypeName.m_szString);
+
+		return nullptr;
+	}
+
+	//	TODO: finish!
+}
+
+GlobalScript* GlobalScript::GetGlobalScriptByName(const char* name)
+{
+	if (ScriptsList.m_CurrIndex <= NULL)
+		return nullptr;
+
+	for (unsigned int i = NULL; i < ScriptsList.m_CurrIndex; i++)
+		if (strcmp(name, ScriptsList.m_Elements[i]->m_Name.m_szString))
+			return ScriptsList.m_Elements[i];
+
+	return nullptr;
 }
