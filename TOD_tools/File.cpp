@@ -7,8 +7,13 @@
 unsigned int File::FilesOpen = 0;
 HANDLE	File::FilesSemaphoreArray[FILE_MAX_OPEN_FILES];
 List<StringTuple> File::DirectoryMappingsList;
+unsigned int File::AlignmentArray[3] =
+{
+	1, 1, 4
+};
 FileWrapper* FileWrapper::FilesArray[FILE_MAX_OPEN_FILES];
 
+extern bool GameDiscFound;
 extern void GetWorkingDirRelativePath(String* str);
 extern void GetGameWorkingDirRelativePath(String* str);
 
@@ -17,6 +22,42 @@ void FileWrapper::SetExecuteAttr(unsigned char _attr)
 	EnterCriticalSection(&m_CriticalSection);
 	m_ExecuteAttribute = _attr;
 	LeaveCriticalSection(&m_CriticalSection);
+}
+
+time_t File::GetFileTimestamp_Impl(const char* path)
+{
+	String workingdir = path;
+	WIN32_FIND_DATA findData = {};
+	HANDLE findHandle = INVALID_HANDLE_VALUE;
+	FILETIME fileTime = {};
+	SYSTEMTIME fileTimeSystem = {};
+	tm time_ = {};
+
+	GetWorkingDirRelativePath(&workingdir);
+	findHandle = FindFirstFile(workingdir.m_szString, &findData);
+
+	if (findHandle == INVALID_HANDLE_VALUE && GameDiscFound)
+	{
+		workingdir = path;
+		GetGameWorkingDirRelativePath(&workingdir);
+		findHandle = FindFirstFile(workingdir.m_szString, &findData);
+	}
+
+	FileTimeToLocalFileTime(&findData.ftLastWriteTime, &fileTime);
+	FileTimeToSystemTime(&fileTime, &fileTimeSystem);
+	FindClose(findHandle);
+
+	time_.tm_hour = fileTimeSystem.wHour;
+	time_.tm_year = fileTimeSystem.wYear - 1900;
+	time_.tm_mday = fileTimeSystem.wDay;
+	time_.tm_min = fileTimeSystem.wMinute;
+	time_.tm_mon = fileTimeSystem.wMonth - 1;
+	time_.tm_isdst = -1;
+	time_.tm_sec = fileTimeSystem.wSecond;
+	time_.tm_wday = fileTimeSystem.wDayOfWeek;
+	time_.tm_yday = NULL;
+
+	return mktime(&time_);
 }
 
 bool File::WriteBuffers()
@@ -360,6 +401,11 @@ char File::ReadString(void* outStr)
 	return true;
 }
 
+void File::SetPosAligned(unsigned char alignind)
+{
+	Seek(~(AlignmentArray[alignind] - 1) & (AlignmentArray[alignind] + GetPosition() - 1));
+}
+
 void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
 {
 	StringTuple _tmp(str1, str2);
@@ -421,6 +467,18 @@ bool File::FindFileEverywhere(const char* path)
 			return true;
 
 	return IsFileExists(GetPathFromDirectoryMappings(&_tmp, path)->m_szString);
+}
+
+time_t File::GetFileTimestamp(const char* filename)
+{
+	String tempstr;
+	int zipslot = NULL;
+
+	if (ZipArch::SlotId <= 0 ||
+		!ZipArch::FindFile(GetPathFromDirectoryMappings(&tempstr, filename)->m_szString, nullptr, &zipslot))
+		return GetFileTimestamp_Impl(GetPathFromDirectoryMappings(&tempstr, filename)->m_szString);
+	else
+		return GetFileTimestamp_Impl(FileWrapper::FilesArray[0]->m_WorkingDir.m_szString);
 }
 
 bool File::IsFileExists(const char* file)

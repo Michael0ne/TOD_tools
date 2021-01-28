@@ -86,6 +86,8 @@ public:
 
 private:
 	void			RemoveTypeFromList(const char* name);	//	@862B50
+	
+	static unsigned int	GetTypeSize_Impl(ScriptType* type);	//	@862AC0
 
 public:
 	ScriptType();
@@ -101,10 +103,13 @@ public:
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
 	}
-};
 
-static int GetTypeSize(ScriptType* type);	//	@862AC0
-static class ScriptType_Entity* GetScriptEntityByName(const char* name);	//	@862C70
+	unsigned int	GetTypeSize();	//	@862B20
+
+	static ScriptType*	GetTypeByName(const char* name);	//	@862C00
+	static ScriptType*	TryCreateGlobalVariable(const char* script);	//	@863070
+	static bool			ParseVariableString(const char* variable, String& variableName, String& variableType);	//	@862F70
+};
 
 class ScriptType_Nothing : public ScriptType
 {
@@ -310,7 +315,7 @@ private:
 #define SCRIPT_TYPE_ENTITY_CLASS_SIZE 120
 #define ENTITYTYPE_CREATOR Entity* (*)(AllocatorIndex)
 
-//	TODO: rename to 'EntityType' as in original code, remove from namespace.
+//	TODO: rename to 'EntityType' as in original code.
 class ScriptType_Entity : public ScriptType
 {
 protected:
@@ -337,6 +342,8 @@ public:
 	{
 		m_Creator = (void* (*)(AllocatorIndex))createproc;
 	}
+
+	static ScriptType_Entity* GetScriptEntityByName(const char* name);	//	@862C70
 };
 
 struct ScriptField
@@ -427,7 +434,7 @@ struct BuiltinMember
 {
 protected:
 	ScriptType* m_ReturnType;
-	void* (*m_GetProcPtr)();
+	void*		(*m_GetProcPtr)();
 	void		(*m_SetProcPtr)();
 	String		m_MemberProto;
 	String		m_String_1;
@@ -437,11 +444,10 @@ struct BuiltinHandler
 {
 protected:
 	String		m_Prototype;
-	void* (*m_Handler)(void*);
+	void*		(*m_Handler)(void*);
 	String		m_Name;
 
 public:
-	inline BuiltinHandler() {};
 	inline BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const char* _name);
 };
 
@@ -466,9 +472,9 @@ static ScriptType_String* tSTRING = (ScriptType_String*)0xA3CEB0;		//	@A3CEB0
 
 void	InitScriptTypes();	//	@8634E0
 
-static bool& TypesListCRCCalculated = *(bool*)0xA3CEC8;	//	@A3CEC8
-static List<ScriptType>& TypesList = *(List<ScriptType>*)0xA3CECC;	//	@A3CECC
-static int& TypesListCRC = *(int*)0xA3CEDC;				//	@A3CEDC
+static bool TypesListCRCCalculated;		//	@A3CEC8
+static List<ScriptType> TypesList;		//	@A3CECC
+static int TypesListCRC;				//	@A3CEDC
 
 static_assert(sizeof(ScriptType) == SCRIPT_TYPE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ScriptType));
 static_assert(sizeof(ScriptType_Entity) == SCRIPT_TYPE_ENTITY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ScriptType_Entity));

@@ -41,8 +41,8 @@ protected:
 	int				field_A0;
 	int				field_A4;
 	class CollisionProbe* m_SharedProbe;
-	class RewindBuffer* m_RewindBuffer1;
-	class RewindBuffer* m_RewindBuffer2;
+	class TransactionBuffer* m_RewindBuffer1;
+	class TransactionBuffer* m_RewindBuffer2;
 	float			field_B4;
 	float			field_B8;
 	float			field_BC;

@@ -5,6 +5,8 @@
 
 #define ENTITY_CLASS_SIZE 36
 
+typedef Entity* (*CREATOR_)(AllocatorIndex);
+
 class Entity
 {
 	friend class Position;
@@ -49,6 +51,8 @@ public:
 
 	static int		GetPropertyId(const char* prop);	//	@8732C0
 	static int*		GetMessageId_A(int*, int*, const char*);	//	@8729F0
+	static void		Register();	//	@86BC70
+	static Entity*	Create(AllocatorIndex);	//	@86C130
 };
 
 extern ScriptType_Entity* tEntity;	//	@A3CEE0

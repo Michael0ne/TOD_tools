@@ -37,7 +37,7 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 {
 	File assetfile(assetname, 161, true);
 
-	assetinfo->m_ResourceDataBufferPtr = g_Blocks->LoadResourceBlock(&assetfile, assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, 0);
+	assetinfo->m_ResourceDataBufferPtr = g_Blocks->LoadResourceBlock(&assetfile, assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, NONE);
 	DWORD64 starttick = __rdtsc();
 
 	g_Blocks->_878030();

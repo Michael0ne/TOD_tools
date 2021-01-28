@@ -94,7 +94,7 @@ protected:
 	int				m_EngineVersionTimestamp;
 	int				m_RegionId;
 	char			m_CheckTimestamp;
-	List<int>		m_UnkList_9;	//	NOTE: list of assets references?
+	List<int>		m_LoadedResourcesList;
 	bool			m_LoadBlocks;
 
 private:

@@ -74,6 +74,9 @@ protected:
 	bool			m_ExecuteAttribute;
 	FileWrapper*	m_ZipFileHandle;
 
+private:
+	static time_t	GetFileTimestamp_Impl(const char* path);	//	@437C90
+
 public:
 	virtual File*	scalar_destructor(bool) { return nullptr; };
 	virtual bool	WriteBuffers();	//	@417D20
@@ -100,6 +103,7 @@ public:
 
 	bool			IsFileOpen() const;	//	@417CF0
 	char			ReadString(void* outStr);	//	@4180C0
+	inline void		SetPosAligned(unsigned char alignind);	//	@417DF0
 
 	static void		AddDirectoryMappingsListEntry(const char* str1, const char* str2);	//	@418F90
 	static String*	GetPathFromDirectoryMappings(String* outStr, const char* path);	//	@41A360
@@ -108,12 +112,14 @@ public:
 	static String*	ExtractFileDir(String& outStr, const char* path);	//	@409360
 	static String*	ExtractFileName(String& outStr, const char* path);	//	@4093B0
 	static bool		FindFileEverywhere(const char* path);	//	@4182A0
+	static time_t	GetFileTimestamp(const char* filename);	//	@418460
 	static void		OpenZip(const char* szZipPath);	//	@419100
 	static void		ReadZipDirectories(const char* szFileSystem);	//	@419550
 
 	static unsigned int FilesOpen;	//	@A35DD8
 	static HANDLE	FilesSemaphoreArray[FILE_MAX_OPEN_FILES];	//	@A35D98
 	static List<StringTuple> DirectoryMappingsList;	//	@A35DE4
+	static unsigned int AlignmentArray[3];	//	@9B37E4
 };
 
 static_assert(sizeof(File) == FILE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(File));

@@ -2,7 +2,7 @@
 
 #include "MemoryAllocators.h"
 #include "ScriptTypes.h"
-#include "RewindBuffer.h"
+#include "TransactionBuffer.h"
 
 #define SCENESAVELOAD_CLASS_SIZE 120
 
@@ -14,15 +14,15 @@ enum ScenePlayMode
 	MODE_3 = 3
 };
 
-//	NOTE: saveslot data is compressed using inflate (version 1.2.1, stream size = 56).
+//	NOTE: saveslot data is compressed using deflate (version 1.2.1, stream size = 56).
 struct SaveInfo
 {
-	RewindBuffer* field_0;
-	int* field_4[6];	//	NOTE: when reading a save file, this seems like it holds pointers to 'Blocks'. (?)
-	int field_1C;	//	NOTE: when reading a save file, 'BAADF00D' written here.
-	ScriptType_Entity* field_20;
-	int m_SavedGameTimeMs;
-	int m_SavedFrameNumber;
+	TransactionBuffer*	m_TransactionBuffer;
+	Node*				m_CurrentUndo[6];
+	int					field_1C;	//	NOTE: when reading a save file, 'BAADF00D' written here.
+	ScriptType_Entity*	field_20;
+	int					m_SavedGameTimeMs;
+	int					m_SavedFrameNumber;
 };
 
 #define SAVEPOINT_FILE_VERSION 9
@@ -51,16 +51,16 @@ struct SaveFile
 class SceneSaveLoad
 {
 private:
-	int* field_0;
-	SaveInfo	m_SaveInfo;	//	NOTE: this is used when WRITING savepoint data.
-	ScenePlayMode m_SavedPlayMode;
-	int field_34;
-	int** field_38;
-	int field_3C;
-	int field_40;
-	char field_44;
-	SaveInfo m_SaveInfo_1;	//	NOTE: this is used when READING savepoint data.
-	int field_74;
+	int*				field_0;
+	SaveInfo			m_SaveInfo;	//	NOTE: this is used when WRITING savepoint data.
+	ScenePlayMode		m_SavedPlayMode;
+	int					field_34;
+	int**				field_38;
+	int					field_3C;
+	int					field_40;
+	char				field_44;
+	SaveInfo			m_SaveInfo_1;	//	NOTE: this is used when READING savepoint data.
+	int					field_74;
 
 public:
 	SceneSaveLoad();	//	@874510
@@ -76,10 +76,10 @@ public:
 			Allocators::ReleaseMemory(ptr, 0);
 	}
 
-	void		_874940();	//	@874940
-	void		ResetSavedPlayMode();	//	@873B90
-	bool		LoadSavePointData(class SavePoint*, ScriptType_Entity*, class Node* readFinishedCb);	//	@874F40
-	bool		CompressAndWriteSaveData(class SavePoint*, ScriptType_Entity*);	//	@874A00
+	void				_874940();	//	@874940
+	void				ResetSavedPlayMode();	//	@873B90
+	bool				LoadSavePointData(class SavePoint*, ScriptType_Entity*, class Node* readFinishedCb);	//	@874F40
+	bool				CompressAndWriteSaveData(class SavePoint*, ScriptType_Entity*);	//	@874A00
 };
 
 extern SceneSaveLoad* g_SceneSaveLoad;

@@ -194,7 +194,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
-    <ClInclude Include="RewindBuffer.h" />
+    <ClInclude Include="TransactionBuffer.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SavePoint.h" />
     <ClInclude Include="SaveSlot.h" />
@@ -307,7 +307,7 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
-    <ClCompile Include="RewindBuffer.cpp" />
+    <ClCompile Include="TransactionBuffer.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SavePoint.cpp" />
     <ClCompile Include="SaveSlot.cpp" />
