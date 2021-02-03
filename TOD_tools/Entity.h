@@ -10,15 +10,16 @@ typedef Entity* (*CREATOR_)(AllocatorIndex);
 class Entity
 {
 	friend class Position;
+	friend class Blocks;
 protected:
 	ScriptType_Entity* m_ScriptEntity;
 	unsigned char	field_8[10];
 	short			m_Order;
 	//	NOTE: m_Id's highest bit contains block number associated with this entity (0-6).
 	int				m_Id;		//	NOTE: actual id is m_Id >> 8 - lower 3 bytes.
-	int*			field_18;
+	int*			m_Parameters;	//	NOTE: raw array of entity parameters, seems like it.
 	int				field_1C;
-	int*			field_20;
+	int*			field_20;	//	NOTE: at field_20[1] is a pointer to ScriptThread. Maybe script thread that's attached to this entity (?)
 
 	unsigned char	SaveScriptDataToFile_Impl(ScriptType_Entity*, int, int, const char*);	//	@86B650
 	unsigned char	LoadScriptDataFromFile_Impl(ScriptType_Entity*, int, int);	//	@86B8B0

@@ -7,7 +7,7 @@ Fragment::Fragment(const Entity* owner)
 
 	m_ResourceInfo = nullptr;
 	field_8 = 1;
-	m_pOwner = (Entity*)owner;
+	m_Owner = (Entity*)owner;
 	(*(__int64* (__thiscall*)(__int64*))0x40FEA0)(&m_nUniqueId);
 	m_szName = nullptr;
 }

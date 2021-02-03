@@ -67,13 +67,13 @@ protected:
 	int m_TextureSets;
 	ResType::Model* m_ModelRes;
 	int field_1D4;
-	List<Node> m_PhysAttachments;
+	List<Bone> m_BonesList;
 	List<int> m_List_3;
-	List<int> m_List_4;
+	List<float> m_List_4;
 	Vector4f m_Pos_1;
-	List<int> m_AttachedNodesList;
-	List<int> m_List_6;
-	List<int> m_List_7;
+	List<Entity> m_AttachedNodesList;
+	List<Entity> m_AttachedLights;
+	List<int> m_List_5;
 	int field_248;
 	int field_24C;
 	int field_250;

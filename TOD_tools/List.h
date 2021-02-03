@@ -8,7 +8,8 @@
 #define LIST_FLAGS_NOT_ALLOCATED 0x400	//	NOTE: when allocation for elements have failed.
 #define LIST_FLAGS_DEFAULT 0x000FFF00
 
-//	TODO: probably replace it with stl vector.
+//	NOTE: there are 2 types of 'lists' used in the game. 1st - looks like STL array (elements = pointer to contiguous buffer where elements follow each other);
+//		2nd type - could be STL vector (elements = array of pointers, each pointer is pointer to actual element).
 template <typename T>
 class List
 {

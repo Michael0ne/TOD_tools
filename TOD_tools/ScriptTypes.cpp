@@ -103,7 +103,7 @@ unsigned int ScriptType::GetTypeSize_Impl(ScriptType* type)
 	case TYPE_LIST:
 	case TYPE_DICT:
 	case TYPE_ENTITY:
-	case TYPE_SCRIPT:
+	case TYPE_STRUCT:
 		return 1;
 		break;
 	case TYPE_VECTOR:
@@ -211,7 +211,7 @@ ScriptType* ScriptType::GetTypeByName(const char* name)
 	return nullptr;
 }
 
-ScriptType* ScriptType::TryCreateGlobalVariable(const char* script)
+ScriptType* ScriptType::LoadScript(const char* script)
 {
 	if (ScriptType* type_ = GetTypeByName(script))
 		return type_;
@@ -229,7 +229,7 @@ ScriptType* ScriptType::TryCreateGlobalVariable(const char* script)
 			char dict_element_type[50] = {};
 			strncpy(dict_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
 
-			new ScriptType_Dict(*TryCreateGlobalVariable(dict_element_type));
+			new ScriptType_Dict(*LoadScript(dict_element_type));
 		}
 
 		String script_name, script_type;
@@ -255,7 +255,7 @@ ScriptType* ScriptType::TryCreateGlobalVariable(const char* script)
 				return nullptr;
 			}
 
-			retn_type = glob_script->AssignScriptToEntity((ScriptType_Entity*)retn_type);
+			retn_type = glob_script->AssignScriptToEntity(*(ScriptType_Entity*)retn_type);
 		}
 
 		return retn_type;
@@ -264,7 +264,7 @@ ScriptType* ScriptType::TryCreateGlobalVariable(const char* script)
 	char list_element_type[50] = {};
 	strncpy(list_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
 
-	return new ScriptType_List(*TryCreateGlobalVariable(list_element_type));
+	return new ScriptType_List(*LoadScript(list_element_type));
 }
 
 bool ScriptType::ParseVariableString(const char* variable, String& variableName, String& variableType)
@@ -381,7 +381,7 @@ ScriptType_Dict::ScriptType_Dict(const ScriptType& elementsType) : ScriptType(TY
 	m_TypeName = buffer;
 }
 
-ScriptType_Script::ScriptType_Script(const char* name, const ScriptFieldsList& fields) : ScriptType(TYPE_SCRIPT, name, TYPE_SCRIPT_SIZE)
+ScriptType_Script::ScriptType_Script(const char* name, const ScriptFieldsList& fields) : ScriptType(TYPE_STRUCT, name, TYPE_STRUCT_SIZE)
 {
 	MESSAGE_CLASS_CREATED(ScriptType_Script);
 

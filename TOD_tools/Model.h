@@ -26,7 +26,7 @@ protected:
 	int field_94;
 	int field_98;
 	int field_9C;
-	List<int> m_List_1;
+	List<int> m_List_1;	//	NOTE: maybe list of attached models?
 	List<int> m_List_2;
 	List<int> m_List_3;
 	List<int> m_List_4;

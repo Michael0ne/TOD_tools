@@ -72,7 +72,7 @@ protected:
 	String			m_SaveDir;
 	int				m_MemoryCardIndex;
 	int				m_SaveSlotIndex;
-	ScriptType_Entity* m_SaveData;
+	Node*			m_MemorySummaryNode;
 	int				m_SaveGameSize;
 	class MemoryCards* m_MemoryCards;
 	Vector4f		m_CameraPosition;

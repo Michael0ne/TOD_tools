@@ -3,13 +3,14 @@
 #include "Performance.h"
 #include "Globals.h"
 
+List<GlobalScript> GlobalScript::ScriptsList;
+
 namespace Script
 {
 	unsigned int GlobalPropertyListChecksum;
 	bool GlobalPropertyListChecksumObtained;
 	unsigned int GlobalCommandListChecksum;
 	bool GlobalCommandListChecksumObtained;
-	List<GlobalScript> GlobalScript::ScriptsList;
 
 	#pragma message(TODO_IMPLEMENTATION)
 	ScriptType* GetScriptType(const char* _scripttype)

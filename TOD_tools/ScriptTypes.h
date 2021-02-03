@@ -2,7 +2,7 @@
 
 #include "Types.h"
 #include "List.h"
-#include "Dictionary.h"
+#include "KeyValueList.h"
 
 enum ScriptTypeId
 {
@@ -17,7 +17,7 @@ enum ScriptTypeId
 	TYPE_LIST = 8,			//	SIMPLE LIST
 	TYPE_DICT = 9,			//	DICTIONARY. (HASHMAP)
 	TYPE_ENTITY = 10,		//	SCRIPT ENTITY
-	TYPE_SCRIPT = 11,		//	SCRIPT WITH PARAMETERS (Struct essentially)
+	TYPE_STRUCT = 11,		//	STRUCTURE
 	TYPE_LAST_DONTUSE
 };
 
@@ -34,7 +34,7 @@ enum ScriptTypeSize
 	TYPE_LIST_SIZE = 1,
 	TYPE_DICT_SIZE = 1,
 	TYPE_ENTITY_SIZE = 1,
-	TYPE_SCRIPT_SIZE = 1
+	TYPE_STRUCT_SIZE = 1
 };
 
 static const char* szScriptTypeName[TYPE_LAST_DONTUSE] = {
@@ -107,7 +107,7 @@ public:
 	unsigned int	GetTypeSize();	//	@862B20
 
 	static ScriptType*	GetTypeByName(const char* name);	//	@862C00
-	static ScriptType*	TryCreateGlobalVariable(const char* script);	//	@863070
+	static ScriptType*	LoadScript(const char* script);	//	@863070
 	static bool			ParseVariableString(const char* variable, String& variableName, String& variableType);	//	@862F70
 };
 
@@ -295,43 +295,50 @@ public:
 
 static ScriptType_String* tyString = (ScriptType_String*)0xA3CEA0;	//	@A3CEA0
 
-struct EntityProperties
-{
-private:
-	ScriptType* m_ReturnType;
-	int field_4;
-	void* m_Getter;
-	int field_C;
-	int field_10;
-	int field_14;
-	void* m_Setter;
-	int field_1C;
-	int field_20;
-	int field_24;
-	int field_28;
-	int field_2C;
-};
-
 #define SCRIPT_TYPE_ENTITY_CLASS_SIZE 120
 #define ENTITYTYPE_CREATOR Entity* (*)(AllocatorIndex)
+
+struct EntityType_ScriptDesc
+{
+	void			(* m_ScriptProcPtr)(class Entity*, void* params);
+	unsigned int	field_4;
+	unsigned int	field_8;
+	unsigned int	field_C;
+};
+
+struct EntityType_MethodDesc
+{
+private:
+	ScriptType*		m_ReturnType;
+	int*			field_4;
+	void*			(* m_Getter)();
+	int				field_C;
+	int				field_10;
+	int				field_14;
+	void			(* m_Setter)(void*);
+	int				field_1C;
+	int				field_20;
+	int				field_24;
+	int				field_28;
+	int				field_2C;
+};
 
 //	TODO: rename to 'EntityType' as in original code.
 class ScriptType_Entity : public ScriptType
 {
 protected:
-	void* (*m_Creator)(AllocatorIndex allocatorIndex);
+	void*										(*m_Creator)(AllocatorIndex allocatorIndex);
 public:
-	ScriptType_Entity* m_Parent;
-	int* m_Script;
+	ScriptType_Entity*							m_Parent;
+	int*										m_Script;
 protected:
-	//	NOTE: it looks like 2 members below are Map's with key being the name of the script/property, value being index to lists with actual information for script/property.
-	int m_Properties[4];
-	int m_Properties_1[4];
-	List<EntityProperties> m_ScriptsList;
-	List<EntityProperties> m_PropertiesList;
-	int field_6C;
-	int field_70;
-	bool	m_HasParent;
+	KeyValueList<short,EntityType_ScriptDesc>	m_ScriptsList;	//	NOTE: each 'derived' script derives it's parent scripts.
+	KeyValueList<short, short>					field_2C;	//	NOTE: could be list with properties id's and their values.
+	List<EntityType_MethodDesc>					field_3C;	//	NOTE: could be list with methods for THIS exact class only.
+	List<EntityType_MethodDesc>					m_MethodsList;	//	NOTE: another list same as above, but there are more methods in this list.
+	int											field_6C;
+	int											field_70;
+	bool										m_HasParent;
 public:
 	ScriptType_Entity(const char* szEntityName);	//	@86CC00
 	~ScriptType_Entity();
@@ -433,7 +440,8 @@ public:
 struct BuiltinMember
 {
 protected:
-	ScriptType* m_ReturnType;
+	unsigned int m_MemberId;
+	ScriptType*	m_ReturnType;
 	void*		(*m_GetProcPtr)();
 	void		(*m_SetProcPtr)();
 	String		m_MemberProto;
@@ -451,14 +459,17 @@ public:
 	inline BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const char* _name);
 };
 
-class ScriptType_Builtin : public ScriptType
+class ScriptType_Builtin : public ScriptType_Entity
 {
 protected:
 	List<BuiltinHandler>	m_HandlersList;
-	Dictionary<String, BuiltinMember>	m_MembersMap;
+	KeyValueList<BuiltinMember, int>	m_MembersMap;
 
 	void	RegisterMember(ScriptType* _rettype, const char* _membname, void* (*_getproc)(), void (*_setproc)(int), const char* _membproto, const char* _unk);	//	@486D90
 	void	RegisterHandler(const char* _hsignature, void* (*_hndlr)(void*), const char* _hmsg);	//	@486430
+
+	void	ProfileBegin(void* args);	//	@484F50	//	NOTE: args[0] is of type const char*, args[1] is of type int.
+	void	ProfileEnd(void* args);		//	@484F60
 };
 
 static ScriptType_Nothing* tNOTHING = (ScriptType_Nothing*)0xA3CE94;	//	@A3CE94

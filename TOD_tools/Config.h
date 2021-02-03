@@ -21,39 +21,26 @@ namespace GameConfig {
 
 	struct Session_Variables
 	{
+		struct VariableNameInfo
+		{
+			unsigned int	m_Index;
+			String			m_Name;
+		};
+
+		struct VariableUnknownInfo
+		{
+			unsigned int	field_0;
+			void*			field_4;
+		};
 	protected:
-		int field_0;
-		int field_4;
-		int* field_8;
-		int field_C;
-
-		int field_10;
-		int field_14;
-		int* field_18;
-		int field_1C;
-
-		int field_20;
-		int field_24;
-		int* field_28;
-		int field_2C;
-
-		int field_30;
-		int field_34;
-		int* field_38;
-		int field_3C;
-
-		int field_40;
-		int field_44;
-		int* field_48;
-		int field_4C;
-
-		int field_50;
-		int field_54;
-		int* field_58;
-		int field_5C;
-
-		int m_TotalVariables;
-		char field_64;
+		KeyValueList<StringTuple, void> m_PlainValues;	//	NOTE: format is "varname=varvalue".
+		KeyValueList<VariableNameInfo, void> m_Keys;	//	NOTE: only variables names.
+		KeyValueList<void, void> field_20;
+		KeyValueList<VariableUnknownInfo, void> field_30;
+		KeyValueList<void, void> field_40;
+		KeyValueList<void, void> field_50;
+		int		m_TotalVariables;
+		char	field_64;
 
 		void	LoadVariablesFile(const char* file, int unk);	//	@412110
 		void	ParseVariablesFile(File* file, char unk);	//	@411A30
@@ -160,8 +147,15 @@ namespace GameConfig {
 
 	static void				GetInternalGameName(String& outStr);	//	@4098D0
 
+	struct CollmatListEntry
+	{
+		String				m_MaterialName;
+		unsigned int		m_MaterialIndex;	//	NOTE: some index into another array? Uinque id?
+	};
+
 	static List<String>&	FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
 	static File&			ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8
+	static KeyValueList<CollmatListEntry, void>	ColMatList;	//	@A11704	//	TODO: this more looks like double-linked list.
 
 	extern Config* g_Config;
 }

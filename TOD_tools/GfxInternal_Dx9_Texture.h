@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "stdafx.h"
 #include "Types.h"
 #include <map>
@@ -17,7 +17,7 @@ private:
 	int					m_Height_1;
 	int					m_Format;
 	int					field_20;
-	int					m_Levels;
+	unsigned short		m_Levels;
 	int					m_MipMapLevels;
 
 public:

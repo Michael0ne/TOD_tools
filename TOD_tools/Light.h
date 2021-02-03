@@ -24,6 +24,17 @@ protected:
 	Light_Properties();	//	@422100
 };
 
+struct LightsListStruct
+{
+	friend class Light;
+protected:
+	List<class Light>	m_LightList;
+	int* field_10;
+	int field_14;
+	int field_18;
+	int field_1C;
+};
+
 class Light : public Node
 {
 protected:
@@ -59,7 +70,7 @@ public:
 	static Light*		LightType1;		//	@A3D828
 	static Light*		LightType2;		//	@A3D82C
 	static unsigned int	TotalLights;	//	@A3D81C
-	static List<Light>*	LightsList;		//	@A3D820
+	static LightsListStruct	LightsList;		//	@A3D820
 };
 
 extern ScriptType_Entity*	tLight;	//	@A3D818

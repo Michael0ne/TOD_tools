@@ -68,7 +68,7 @@ namespace Audio {
 		LPDIRECTSOUND3DBUFFER m_pDirectSound3DBuffer;
 		LPDIRECTSOUNDBUFFER m_pDirectSoundBuffer_1;
 		class DieselPower* m_pDieselPower;
-		int* field_50;
+		int* field_50;	//	NOTE: pointer to some DieselPower structure, size unknown.
 		int* field_54;
 		IDirectSound* m_pDirectSound;
 		List<int> m_DieselPowerSoundBuffers;

@@ -7,15 +7,15 @@
 struct ZipSlotInfo
 {
 public:
-	int					field_0;
+	int					m_ChecksumsListSize;
 	union
 	{
 		unsigned char	_0 : 1;
 		unsigned char	_1 : 1;
 		unsigned char	_2 : 1;
 	}					field_4;
-	unsigned int*		field_8;
-	unsigned int*		field_C;
+	unsigned int*		m_ChecksumsList;
+	unsigned int*		field_C;	//	NOTE: pointer to some array, possible, structure could be 'offset:size'.
 
 	int*				_4198F0(const unsigned int* hashStr);	//	@4198F0
 	void				_41A5F0(unsigned int*);	//	@41A5F0

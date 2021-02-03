@@ -7,7 +7,7 @@
 class SignPost : public Node
 {
 protected:
-	int* m_ConnectionsList;
+	ScriptType_List* m_ConnectionsList;
 	List<int> m_Unknown_1;
 	List<int> m_Unknown_2;
 	int field_74;

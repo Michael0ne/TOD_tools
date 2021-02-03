@@ -75,19 +75,19 @@ class Blocks
 {
 	friend class Scene;
 protected:
-	unsigned char	field_0;	//	TODO: this is 'vEntity' an array of vectors? Don't really understand what it is now...
-	BlockTypeNumber m_BlockType;
+	unsigned char	field_0;
+	int				m_BlockType;
 	char			field_8[256];
-	int				m_ResourcesInBlock;
-	Allocator*		field_10C;
-	List<int>		m_UnkList_1;
+	int				field_108;
+	Allocator*		m_Defragmentator;
+	List<int>		m_UnkList_1;	//	NOTE: this seems to be related to Defragmentator object.
 	List<FastFindInfo>	m_FastFindNodeVector;
-	List<int>		m_UnkList_2[6];	//	NOTE: resource references for each Block?
+	List<Entity>		m_NodesList[6];	//	NOTE: this is 'vEntity[6]'. Where lies entities used by each block.
 public:
-	List<ResType::Resource> m_ResourceTypesList;
+	List<ResType::Resource> m_AssetsList;
 protected:
 	List<String>	m_SceneNames;
-	int				field_1B0[6];
+	int				m_NodesInNodeList[6];
 	int				field_1C8;
 	char			field_1CC;
 	int*			field_1D0;
@@ -99,6 +99,8 @@ protected:
 
 private:
 	void			AddTypesListItemAtPos(ResType::Resource* element, unsigned int index);	//	@8760C0
+	unsigned int	_875570(unsigned int );	//	@875570
+
 	static void		AllocateResourceBlockBufferAligned(unsigned int, int** resBufStartPos, int* resBufSpace, BlockTypeNumber);	//	@852070
 
 public:
@@ -131,6 +133,8 @@ public:
 	void			FillFastFindNodeVector(Node* _baseNode, FastFindInfo* _ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
 	ResType::ResourceBase*	LoadResourceFile(const char* _pathandname);	//	@878AB0
 	void*			LoadResourceBlock(class File*, void* resbufferptr, unsigned int* resdatasize, BlockTypeNumber resblockid);	//	@8759E0
+	Node*			_8755E0();	//	@8755E0
+	Node*			_875610(Node*);	//	@875610
 	
 	static void		GetPlatformSpecificResourcePath(String& outPath, const char* respath, GameConfig::CountryCodes region, ResType::PlatformId platform);	//	@876500
 	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0

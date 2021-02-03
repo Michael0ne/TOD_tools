@@ -158,7 +158,7 @@
     <ClInclude Include="GoodiePlaceHolder.h" />
     <ClInclude Include="Group.h" />
     <ClInclude Include="GuideBox.h" />
-    <ClInclude Include="Dictionary.h" />
+    <ClInclude Include="KeyValueList.h" />
     <ClInclude Include="HavocPlaceHolder.h" />
     <ClInclude Include="LensFlare.h" />
     <ClInclude Include="LensFlareManager.h" />
