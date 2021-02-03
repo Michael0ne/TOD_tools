@@ -64,8 +64,8 @@ AllocatorIndex Blocks::GetAllocatorType() const
 	if (!m_LoadBlocks)
 		return DEFAULT;
 
-	if (m_BlockType >= NONE)
-		return (AllocatorIndex)GetResourceBlockTypeNumber(m_BlockType);
+	if (m_CurrentAssetBlockIndex >= NONE)
+		return (AllocatorIndex)GetResourceBlockTypeNumber(m_CurrentAssetBlockIndex);
 
 	return DEFAULT;
 }
@@ -74,21 +74,21 @@ int Blocks::InsertTypeListItem(void* res)
 {
 	field_0 = 1;
 
-	if (m_ResourceTypesList.m_CurrIndex <= 1)
+	if (m_AssetsList.m_CurrIndex <= 1)
 	{
-		unsigned int _ind = m_ResourceTypesList.m_CurrIndex;
+		unsigned int _ind = m_AssetsList.m_CurrIndex;
 		AddTypesListItemAtPos((ResType::Resource*)res, _ind);
 
 		return _ind;
 	}
 
 	unsigned int ind = 0;
-	for (unsigned int i = 1; i < m_ResourceTypesList.m_CurrIndex; i++)
-		if (!m_ResourceTypesList.m_Elements[i])
+	for (unsigned int i = 1; i < m_AssetsList.m_CurrIndex; i++)
+		if (!m_AssetsList.m_Elements[i])
 			ind = i;
 
 	if (!ind)
-		ind = m_ResourceTypesList.m_CurrIndex;
+		ind = m_AssetsList.m_CurrIndex;
 
 	AddTypesListItemAtPos((ResType::Resource*)res, ind);
 
@@ -393,7 +393,7 @@ void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned i
 
 		int buf_ = NULL;
 		file->Read(&buf_, sizeof(buf_));
-		file->Read(&m_ResourcesInBlock, sizeof(m_ResourcesInBlock));
+		file->Read(&field_108, sizeof(field_108));
 	}
 
 	unsigned int assettimestamp = NULL;
@@ -476,6 +476,24 @@ void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned i
 	return resourcesInfoBuffer;
 }
 
+Node* Blocks::_8755E0()
+{
+	unsigned int nodeid = _875570(0x100000);
+	if (nodeid)
+		return (m_NodesList[(nodeid >> 20) & 7].m_Elements[nodeid & 0xFF8FFFFF]);
+	else
+		return nodeid;
+}
+
+Node* Blocks::_875610(Node* node)
+{
+	unsigned int nodeid = _875570(node->m_Id >> 8);
+	if (nodeid)
+		return (Node*)(m_NodesList[(nodeid >> 20) & 7].m_Elements[nodeid & 0xFF8FFFFF]);
+	else
+		return nodeid;
+}
+
 ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId)
 {
 	if (!resourceBlockId ||
@@ -497,14 +515,38 @@ ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resou
 
 void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
 {
-	if (m_ResourceTypesList.m_CurrIndex < index + 1)
+	if (m_AssetsList.m_CurrIndex < index + 1)
 	{
-		for (int ind = m_ResourceTypesList.m_CurrIndex; m_ResourceTypesList.m_CurrIndex < index + 1; ind++)
-			m_ResourceTypesList.AddElement(nullptr);
+		for (int ind = m_AssetsList.m_CurrIndex; m_AssetsList.m_CurrIndex < index + 1; ind++)
+			m_AssetsList.AddElement(nullptr);
 	}
 
-	m_ResourceTypesList.m_Elements[index] = element;
+	m_AssetsList.m_Elements[index] = element;
 	field_0 = 1;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+unsigned int Blocks::_875570(unsigned int id)
+{
+	unsigned int block_id;
+
+	while (true)
+	{
+		block_id = ((id >> 20) & 7) - 1;
+
+		if (((id & 0xFF8FFFFF) + 1) < m_NodesList[block_id].m_CurrIndex)
+			break;
+
+		if (block_id >= 6)
+			return NULL;
+
+		id = (block_id + 1) << 20;
+	};
+
+	unsigned int i = (id & 0xFF8FFFFF) + 1;
+	for (i; i < m_NodesList[block_id].m_CurrIndex; i++);
+
+	return i | ((block_id + 1) << 20);
 }
 
 void Blocks::AllocateResourceBlockBufferAligned(unsigned int pos, int** resBufStartPos, int* resBufSpace, BlockTypeNumber resBlockId)
@@ -518,8 +560,7 @@ Blocks::Blocks(bool loadBlocks)
 {
 	MESSAGE_CLASS_CREATED(Blocks);
 
-	field_10C = (*(Allocator * (*)(AllocatorIndex))0x4777F0)(DEFRAGMENTING);
-
+	m_Defragmentator = (*(Allocator * (*)(AllocatorIndex))0x4777F0)(DEFRAGMENTING);
 	m_UnkList_1 = List<int>(0x18B00, 9);
 
 	const unsigned int listCapacity[] =
@@ -529,14 +570,14 @@ Blocks::Blocks(bool loadBlocks)
 
 	for (unsigned int i = 1; i < 6; i++)
 	{
-		m_UnkList_2[i] = List<int>(0x27B00);
-		m_UnkList_2[i].m_Flags |= 0x1A000;
+		m_NodesList[i] = List<int>(0x27B00);
+		m_NodesList[i].m_Flags |= 0x1A000;
 		
 		if (listCapacity[i])
-			m_UnkList_2[i].SetCapacityAndErase(listCapacity[i]);
+			m_NodesList[i].SetCapacityAndErase(listCapacity[i]);
 	}
 
-	m_ResourceTypesList = List<ResType::Resource>(0x18B00);
+	m_AssetsList = List<ResType::Resource>(0x18B00);
 	m_SceneNames = List<String>(0x18B00);
 	m_LoadedResourcesList = List<int>(0x18B00);
 
@@ -547,17 +588,17 @@ Blocks::Blocks(bool loadBlocks)
 	field_0 = NULL;
 	m_RegionId = -1;
 
-	field_1B0[0] = field_1B0[1] = field_1B0[2] = field_1B0[3] = field_1B0[4] = field_1B0[5] = 1;
+	m_NodesInNodeList[0] = m_NodesInNodeList[1] = m_NodesInNodeList[2] = m_NodesInNodeList[3] = m_NodesInNodeList[4] = m_NodesInNodeList[5] = 1;
 
-	m_ResourceTypesList.AddElement(nullptr);
+	m_AssetsList.AddElement(nullptr);
 
 	field_1C8 = NULL;
 	field_1CC = NULL;
 	field_1D0 = nullptr;
 	m_CheckTimestamp = NULL;
 	m_EngineVersionTimestamp = NULL;
-	m_BlockType = UNKNOWN;
-	m_ResourcesInBlock = 2;
+	m_CurrentAssetBlockIndex = UNKNOWN;
+	field_108 = 2;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -579,17 +620,17 @@ void Blocks::SetSceneName(const char* szSceneName)
 
 int Blocks::GetFreeResourceTypeListItem(unsigned int index)
 {
-	if (index + 1 >= m_ResourceTypesList.m_CurrIndex)
+	if (index + 1 >= m_AssetsList.m_CurrIndex)
 		return 0;
 
-	ResType::Resource** restype = &m_ResourceTypesList.m_Elements[index + 1];
+	ResType::Resource** restype = &m_AssetsList.m_Elements[index + 1];
 	unsigned int freeind = index + 1;
 
 	while (!*restype) {
 		restype++;
 		freeind++;
 
-		if (freeind >= m_ResourceTypesList.m_CurrIndex)
+		if (freeind >= m_AssetsList.m_CurrIndex)
 			return 0;
 	}
 

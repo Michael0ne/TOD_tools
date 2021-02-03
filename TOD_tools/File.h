@@ -4,7 +4,7 @@
 
 #define FILE_CLASS_SIZE 52
 #define FILEWRAPPER_CLASS_SIZE 92
-#define FILE_MAX_OPEN_FILES 8
+#define FILE_MAX_ZIP_FILES 8
 #define FILE_BUFFER_SIZE (1024 * 128)
 #define FILE_ZIP_MAGIC_HEADER 0x16ED5B50
 
@@ -54,7 +54,7 @@ protected:
 	char			_437790();	//	@437790
 	void			GetLastErrorMessage(char*);	//	@437820
 
-	static FileWrapper*	FilesArray[FILE_MAX_OPEN_FILES];	//	@A35DB8
+	static FileWrapper*	ZipFilesArray[FILE_MAX_ZIP_FILES];	//	@A35DB8	//	NOTE: named so because only zip files accessed through it.
 };
 
 class File
@@ -117,7 +117,7 @@ public:
 	static void		ReadZipDirectories(const char* szFileSystem);	//	@419550
 
 	static unsigned int FilesOpen;	//	@A35DD8
-	static HANDLE	FilesSemaphoreArray[FILE_MAX_OPEN_FILES];	//	@A35D98
+	static HANDLE	FilesSemaphoreArray[FILE_MAX_ZIP_FILES];	//	@A35D98
 	static List<StringTuple> DirectoryMappingsList;	//	@A35DE4
 	static unsigned int AlignmentArray[3];	//	@9B37E4
 };

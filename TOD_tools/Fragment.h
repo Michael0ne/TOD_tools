@@ -7,7 +7,7 @@
 class Fragment
 {
 public:
-	class Entity	*m_pOwner;
+	class Entity	*m_Owner;
 	void*			m_ResourceInfo;
 	int				field_8;
 	const char*		m_szName;

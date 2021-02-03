@@ -93,7 +93,7 @@ namespace ResType
 		MESSAGE_CLASS_DESTROYED(Resource);
 
 		if (m_GlobalResourceId > 0)
-			g_Blocks->m_ResourceTypesList.m_Elements[m_GlobalResourceId] = nullptr;
+			g_Blocks->m_AssetsList.m_Elements[m_GlobalResourceId] = nullptr;
 
 		--TotalResourcesCreated;
 
@@ -132,7 +132,6 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(Texture);
 
-		field_20 = 1;
 		m_Texture = nullptr;
 		field_24 &= 0xFFFFFFF8;
 		_8513E0(1);
@@ -235,7 +234,7 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(Model);
 
-		m_List_1 = List<int>(0x18B00);
+		m_TextureResources = List<int>(0x18B00);
 
 		field_40 = NULL;
 		field_54 = NULL;

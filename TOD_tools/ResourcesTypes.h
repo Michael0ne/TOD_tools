@@ -144,11 +144,32 @@ namespace ResType
 
 	class Texture : public Resource
 	{
+		struct Tex
+		{
+			unsigned int	field_0;
+			unsigned int	field_4;
+			unsigned short	field_8;
+			unsigned char	field_A;
+			String			field_E;
+			unsigned int	field_12;
+			unsigned int	field_16;
+			unsigned int	field_1A;
+			unsigned int	field_1E;
+			unsigned short	field_22;
+			unsigned int	field_26;
+			unsigned int	field_2A;
+			unsigned int	field_2E;
+			unsigned int	field_32;
+			unsigned int	field_36;
+			unsigned int	field_3A;
+			unsigned int	field_3E;
+			unsigned int	field_42;
+		};
 	protected:
 		int				field_1C;
-		int				field_20;
+		Tex*			field_20;
 		int				field_24;
-		class GfxInternal_Dx9_Texture* m_Texture;
+		GfxInternal_Dx9_Texture* m_Texture;
 		int				field_2C;
 
 	private:
@@ -202,9 +223,15 @@ namespace ResType
 
 	class Model : public Resource
 	{
+		struct TextureReference
+		{
+			Texture*	m_TextureResource;
+			unsigned int field_4;
+			char*		m_TexturePath;
+		};
 	protected:
 		int				field_1C;
-		List<int>		m_List_1;
+		List<TextureReference> m_TextureResources;
 		List<class ModelPivot> m_PivotList;
 		int*			field_40;
 		Vector4f		m_BoundingRadius;

@@ -9,7 +9,8 @@
 #define GFXINTERNALDX9_CLASS_SIZE 38816
 #define GFXINTERNALDX9_VERTEX_CLASS_SIZE 40
 
-struct DisplayModeInfo {
+struct DisplayModeInfo
+{
 	int width;
 	int height;
 	bool available;
@@ -17,12 +18,13 @@ struct DisplayModeInfo {
 	int format;
 };
 
-struct GfxInternal_Dx9_Vertex {
+struct GfxInternal_Dx9_Vertex
+{
 	int m_Verticies;
 	int field_4;
 	int m_FVF;
 	int m_Length;
-	int field_10;
+	int* field_10;
 	unsigned int m_Stride;
 	int field_18;
 	int field_1C;
@@ -9579,7 +9581,7 @@ protected:
 	int m_AxisAlign;
 	int field_9730;
 	int m_ParticleSize;
-	Vector4f m_vUnkPos;	//	NOTE: ParticlePosition maybe?
+	Vector4f m_ParticleOrient;
 	int m_ParticleAlign;
 	int m_ParticleColor;
 	int* field_9750;

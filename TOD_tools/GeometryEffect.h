@@ -49,7 +49,7 @@ protected:
 	int field_12C;
 	int field_130;
 	int field_134;
-	List<int> m_List_1;
+	List<Entity> m_List_1;
 	GeometryEffect_120* field_148;
 	GeometryEffect_120* field_14C;
 	float m_EffectRadius;

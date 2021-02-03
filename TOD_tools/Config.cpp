@@ -775,35 +775,12 @@ namespace GameConfig
 	{
 		MESSAGE_CLASS_CREATED(Session_Variables);
 
-		field_0 = 0 | 0x80000000;
-		field_4 = 17 & 0xFF800000 | 0x800000;
-		field_8 = nullptr;
-		field_C = NULL;
-
-		field_10 = 0 | 0x80000000;
-		field_14 = 17 & 0xFF800000 | 0x800000;
-		field_18 = nullptr;
-		field_1C = NULL;
-
-		field_20 = 0 | 0x80000000;
-		field_24 = 17 & 0xFF800000 | 0x800000;
-		field_28 = nullptr;
-		field_2C = NULL;
-
-		field_30 = 0 | 0x80000000;
-		field_34 = 17 & 0xFF800000 | 0x800000;
-		field_38 = nullptr;
-		field_3C = NULL;
-
-		field_40 = 0 | 0x80000000;
-		field_44 = 17 & 0xFF800000 | 0x800000;
-		field_48 = nullptr;
-		field_4C = NULL;
-
-		field_50 = 0 | 0x80000000;
-		field_54 = 17 & 0xFF800000 | 0x800000;
-		field_58 = nullptr;
-		field_5C = NULL;
+		m_PlainValues;
+		m_Keys;
+		field_20;
+		field_30;
+		field_40;
+		field_50;
 
 		m_TotalVariables = NULL;
 		field_64 = NULL;
@@ -813,35 +790,12 @@ namespace GameConfig
 	{
 		MESSAGE_CLASS_CREATED(Session_Variables);
 
-		field_0 = 0 | 0x80000000;
-		field_4 = 17 & 0xFF800000 | 0x800000;
-		field_8 = nullptr;
-		field_C = NULL;
-
-		field_10 = 0 | 0x80000000;
-		field_14 = 17 & 0xFF800000 | 0x800000;
-		field_18 = nullptr;
-		field_1C = NULL;
-
-		field_20 = 0 | 0x80000000;
-		field_24 = 17 & 0xFF800000 | 0x800000;
-		field_28 = nullptr;
-		field_2C = NULL;
-
-		field_30 = 0 | 0x80000000;
-		field_34 = 17 & 0xFF800000 | 0x800000;
-		field_38 = nullptr;
-		field_3C = NULL;
-
-		field_40 = 0 | 0x80000000;
-		field_44 = 17 & 0xFF800000 | 0x800000;
-		field_48 = nullptr;
-		field_4C = NULL;
-
-		field_50 = 0 | 0x80000000;
-		field_54 = 17 & 0xFF800000 | 0x800000;
-		field_58 = nullptr;
-		field_5C = NULL;
+		m_PlainValues;
+		m_Keys;
+		field_20;
+		field_30;
+		field_40;
+		field_50;
 
 		LoadVariablesFile(file, unk);
 	}

@@ -30,8 +30,8 @@ protected:
 	class CollisionProbe* m_GroundProbe;
 	List<int>* m_HintNodeList;
 	List<int> m_List_8;
-	List<int> m_LastNormalList;
-	List<int> m_NormalList;
+	List<Vector4f> m_LastNormalList;
+	List<Vector4f> m_NormalList;
 	int field_308;
 	List<int> m_List_5;
 	int field_31C;
@@ -60,9 +60,11 @@ protected:
 	Node* m_DamageCtrl;
 	Vector4f m_Vec_8;
 	Vector4f m_Vec_7;
-	Vector4f m_Vec_6;
+	Vector4f m_OldUpVec;
 public:
 	OverdoseVehicle();	//	@92D3B0
 };
+
+extern ScriptType_Entity*	tOverdoseVehicle;	//	@A3E184
 
 static_assert(sizeof(OverdoseVehicle) == OVERDOSE_VEHICLE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(OverdoseVehicle));

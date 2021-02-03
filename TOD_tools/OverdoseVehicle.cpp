@@ -1,5 +1,7 @@
 #include "OverdoseVehicle.h"
 
+ScriptType_Entity* tOverdoseVehicle;
+
 OverdoseVehicle::OverdoseVehicle() : RigidBody()
 {
 	MESSAGE_CLASS_CREATED(OverdoseVehicle);
@@ -15,7 +17,7 @@ OverdoseVehicle::OverdoseVehicle() : RigidBody()
 
 	m_Vec_8 = Vector4f(0.0f, 1.0f, 0.0f, 0.0f);
 	m_Vec_7 = Vector4f(0.0f, 0.0f, 1.0f, 0.0f);
-	m_Vec_6 = Vector4f(0.0f, 1.0f, 0.0f, 0.0f);
+	m_OldUpVec = Vector4f(0.0f, 1.0f, 0.0f, 0.0f);
 
 	m_GroundProbe = nullptr;
 	m_RealWheelLF = m_RealWheelLR = m_RealWheelRF = m_RealWheelRR = nullptr;

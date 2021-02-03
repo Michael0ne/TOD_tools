@@ -165,7 +165,7 @@ protected:
 	struct {
 		int field_0;
 		int field_4;
-		int field_8;
+		int* field_8;
 	}	field_28[19];
 
 	signed int field_10C;
@@ -194,7 +194,7 @@ class PoolSubAllocator : public Allocator
 protected:
 	int field_24;
 	int field_28;
-	int field_2C;
+	void* field_2C;	//	NOTE: pointer to linked list, struct { void* m_NextSpacePtr; 
 	int field_30;
 	int field_34;
 	int field_38;
@@ -245,11 +245,13 @@ protected:
 	BestFitAllocator* m_DefragmentAllocator;
 	BestFitAllocator* m_DefragmentAllocator_1;
 	int m_Size;
+
 	struct Defragmentator_Space {
-		unsigned int m_Flags;
-		void* m_SpacePtr;
-		int field_8;
-	} *m_AllocatedSpace;
+		unsigned int	m_ChunkId;
+		void*			m_SpacePtr;
+		const char*		m_DefragmentatorName;	//	NOTE: seems to be always "ALLOCATOR_DEFRAGMENTING".
+	};
+	DefragmentatorBase*	m_AllocatedSpace;
 	int field_14;
 	int field_18;
 	int field_1C;

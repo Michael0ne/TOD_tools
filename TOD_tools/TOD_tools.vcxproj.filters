@@ -410,9 +410,6 @@
     <ClInclude Include="SceneSaveLoad.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="Dictionary.h">
-      <Filter>Header files\KapowSystems\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="PhysSystem.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
@@ -421,6 +418,9 @@
     </ClInclude>
     <ClInclude Include="TransactionBuffer.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyValueList.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
