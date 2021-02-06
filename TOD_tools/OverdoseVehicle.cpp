@@ -7,8 +7,8 @@ OverdoseVehicle::OverdoseVehicle() : RigidBody()
 	MESSAGE_CLASS_CREATED(OverdoseVehicle);
 
 	m_List_8 = List<int>(0x25300);
-	m_LastNormalList = List<int>(0x25300);
-	m_NormalList = List<int>(0x25300);
+	m_LastNormalList = List<Vector4f>(0x25300);
+	m_NormalList = List<Vector4f>(0x25300);
 	m_List_5 = List<int>(0x17300);
 	m_List_4 = List<int>(0x17300);
 	m_List_3 = List<int>(0x25300);

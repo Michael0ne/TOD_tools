@@ -9,7 +9,7 @@
 #include "InputKeyboard.h"
 #include "InputGameController.h"
 #include "StreamedSoundBuffers.h"
-#include "Renderer.h"
+#include "GfxInternal.h"
 #include "Font.h"
 #include "Random.h"
 #include "LoadScreenInfo.h"
@@ -23,14 +23,17 @@
 #include "ResourcesTypes.h"
 #include "ScriptDatabase.h"
 
-String Script::Filesystem = String();
-String Script::ControlType = String();
-String Script::Region = String();
-String Script::VersionName = String();
-String Script::StreamedSoundExt = String();
-String Script::LanguageMode = String();
-String Script::ScriptsPath = String();
-List<StringTuple> Script::DirectoryMappings = List<StringTuple>();
+namespace Script
+{
+	String Filesystem;
+	String ControlType;
+	String Region;
+	String VersionName;
+	String StreamedSoundExt;
+	String LanguageMode;
+	String ScriptsPath;
+	List<StringTuple> DirectoryMappings;
+}
 
 namespace GameConfig
 {
@@ -403,7 +406,7 @@ namespace GameConfig
 			String sWidescreenType = m_ConfigurationVariables->GetParamValueString("widescreen_emulation");
 
 			if (sWidescreenType.Equal("pal")) {
-				Renderer::WideScreen = true;
+				GfxInternal::WideScreen = true;
 				ScreenSize.x = 720;
 				ScreenSize.y = 576;
 
@@ -411,7 +414,7 @@ namespace GameConfig
 			}
 
 			if (sWidescreenType.Equal("ntsc")) {
-				Renderer::WideScreen = true;
+				GfxInternal::WideScreen = true;
 				ScreenSize.x = 720;
 				ScreenSize.y = 480;
 
@@ -419,7 +422,7 @@ namespace GameConfig
 			}
 
 			if (sWidescreenType.Equal("hdtv")) {
-				Renderer::WideScreen = true;
+				GfxInternal::WideScreen = true;
 				ScreenSize.x = 1280;
 				ScreenSize.y = 720;
 
@@ -428,10 +431,10 @@ namespace GameConfig
 		}
 
 		if (m_ConfigurationVariables->IsVariableSet("FSAA"))
-			Renderer::FSAA = m_ConfigurationVariables->GetParamValueBool("FSAA");
+			GfxInternal::FSAA = m_ConfigurationVariables->GetParamValueBool("FSAA");
 
 		if (m_ConfigurationVariables->IsVariableSet("ratioxy"))
-			Renderer::RatioXY = m_ConfigurationVariables->GetParamValueFloat("ratioxy");
+			GfxInternal::RatioXY = m_ConfigurationVariables->GetParamValueFloat("ratioxy");
 
 		Vector3<float> ScreenBuffers[31];
 
@@ -440,7 +443,7 @@ namespace GameConfig
 
 		ScreenBuffers[11].x = ScreenBuffers[12].x = 2.f;
 
-		g_Renderer = new Renderer(&ScreenSize, 32, 16, (Script::Fullscreen ? (Renderer::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
+		g_Renderer = new GfxInternal(&ScreenSize, 32, 16, (Script::Fullscreen ? (GfxInternal::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
 
 		//	Set region.
 		Script::Region = Script::IsRegionEurope() ? "europe" : "usa";
@@ -464,9 +467,9 @@ namespace GameConfig
 		g_Renderer->SetClearColorForBufferIndex(*((ColorRGB*)&m_vBackgroundSize), -1);
 
 		//	TODO: what is this?
-		Renderer::_A08704[0].field_0 = 0;
-		Renderer::_A08704[1].field_0 = 0;
-		Renderer::_A08704[5].field_0 = 0;
+		GfxInternal::_A08704[0].field_0 = 0;
+		GfxInternal::_A08704[1].field_0 = 0;
+		GfxInternal::_A08704[5].field_0 = 0;
 
 		if (m_ConfigurationVariables->IsVariableSet("version_name"))
 			Script::VersionName = m_ConfigurationVariables->GetParamValueString("version_name").m_szString;

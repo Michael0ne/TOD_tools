@@ -142,7 +142,7 @@ class ScriptThread : public IScriptThread
 
 	struct CallStackElement
 	{
-		Node*					m_NodePtr;
+		class Node*				m_NodePtr;
 		void					(*m_FuncPtr)(ScriptThread*);
 		unsigned int			field_8;
 		unsigned int			field_C;

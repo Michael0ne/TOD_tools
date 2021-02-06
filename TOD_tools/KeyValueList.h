@@ -19,5 +19,5 @@ protected:
 	K*					m_Values;
 
 public:
-	KeyValueList();
+	KeyValueList() {};
 };

@@ -2,6 +2,7 @@
 
 #include "ResourcesTypes.h"
 #include "Config.h"
+#include "Entity.h"
 
 #define BLOCKS_CLASS_SIZE 500
 
@@ -76,13 +77,13 @@ class Blocks
 	friend class Scene;
 protected:
 	unsigned char	field_0;
-	int				m_BlockType;
+	BlockTypeNumber m_BlockType;
 	char			field_8[256];
 	int				field_108;
 	Allocator*		m_Defragmentator;
 	List<int>		m_UnkList_1;	//	NOTE: this seems to be related to Defragmentator object.
 	List<FastFindInfo>	m_FastFindNodeVector;
-	List<Entity>		m_NodesList[6];	//	NOTE: this is 'vEntity[6]'. Where lies entities used by each block.
+	List<class Entity>		m_NodesList[6];	//	NOTE: this is 'vEntity[6]'. Where lies entities used by each block.
 public:
 	List<ResType::Resource> m_AssetsList;
 protected:
@@ -118,6 +119,7 @@ public:
 	}
 
 	void			SetSceneName(const char* szSceneName);	//	@877F40
+	void			RemoveLastSceneName();	//	@875650
 	int				GetFreeResourceTypeListItem(unsigned int index);	//	@875540
 	unsigned int	AddEntity(class Entity* ent);	//	@875FA0	//	NOTE: returns index
 	void			SetRegionId(signed int id);	//	@875434
@@ -133,8 +135,8 @@ public:
 	void			FillFastFindNodeVector(Node* _baseNode, FastFindInfo* _ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
 	ResType::ResourceBase*	LoadResourceFile(const char* _pathandname);	//	@878AB0
 	void*			LoadResourceBlock(class File*, void* resbufferptr, unsigned int* resdatasize, BlockTypeNumber resblockid);	//	@8759E0
-	Node*			_8755E0();	//	@8755E0
-	Node*			_875610(Node*);	//	@875610
+	Entity*			_8755E0();	//	@8755E0
+	Entity*			_875610(Entity*);	//	@875610
 	
 	static void		GetPlatformSpecificResourcePath(String& outPath, const char* respath, GameConfig::CountryCodes region, ResType::PlatformId platform);	//	@876500
 	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0

@@ -164,28 +164,28 @@ public:
 	void	SetWindowProperties(float width, float height, float ratio, float safearea);	//	@420D90
 };
 
-class Renderer
+class GfxInternal
 {
 private:
-	bool m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
-	List<GfxInternal_Dx9_Texture> m_TexturesList;
-	Scene_Buffer68* m_Buffer68;
-	Scene_Buffer108* m_Buffer108;
-	unsigned int m_RenderBufferTotal;
-	int field_20;
-	Buffer276* m_RenderBufferArray;
-	float m_TimeDelta;
-	int m_TimeMilliseconds;
-	int field_30;
-	char field_34;
-	char field_35;
-	float m_Time_1;
-	char (* m_CallbackUnknown)(int);
-	__int64	m_RenderEndTime;
+	bool							m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
+	List<GfxInternal_Dx9_Texture>	m_TexturesList;
+	Scene_Buffer68*					m_Buffer68;
+	Scene_Buffer108*				m_Buffer108;
+	unsigned int					m_RenderBufferTotal;
+	int								field_20;
+	Buffer276*						m_RenderBufferArray;
+	float							m_TimeDelta;
+	int								m_TimeMilliseconds;
+	int								m_FramesRendered;
+	char							field_34;
+	char							field_35;
+	float							m_Time_1;
+	char							(* m_SceneCallback)(int);
+	__int64							m_RenderEndTime;
 
 public:
-	Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
-	~Renderer();	//	@421470
+	GfxInternal(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
+	~GfxInternal();	//	@421470
 
 	void* operator new (size_t size)
 	{
@@ -197,13 +197,14 @@ public:
 			Allocators::ReleaseMemory(ptr, 0);
 	}
 
-	void	SetClearColorForBufferIndex(const ColorRGB& color, int index);	//	@41FDF0
-	void	SetClearFlagsForBufferIndex(const unsigned int flags, const int index);	//	@41FD90
-	void	SetRenderBufferIsEmpty(bool);	//	@420170
+	void							SetClearColorForBufferIndex(const ColorRGB& color, int index);	//	@41FDF0
+	void							SetClearFlagsForBufferIndex(const unsigned int flags, const int index);	//	@41FD90
+	void							SetRenderBufferIsEmpty(bool);	//	@420170
+	void							PrepareForNewLevel();	//	@420180
 
-	static bool WideScreen;	//	@A39F12
-	static bool FSAA;
-	static float RatioXY;	//	@A119F4
+	static bool						WideScreen;	//	@A39F12
+	static bool						FSAA;
+	static float					RatioXY;	//	@A119F4
 	
 	struct Renderer_Buffer2
 	{
@@ -211,11 +212,11 @@ public:
 		unsigned int	field_4;
 	};
 
-	static Renderer_Buffer2 _A08704[28];	//	@A08704
+	static Renderer_Buffer2			_A08704[28];	//	@A08704
 };
 
 extern ScreenProperties g_ScreenProperties;
-extern Renderer* g_Renderer;
+extern GfxInternal* g_Renderer;
 
 //	NOTE: this is used in 'ExecuteRenderCommand' @4342C0
 enum RendererCommandsList
@@ -352,4 +353,4 @@ enum RendererCommandsList
 	CMD_POP_PS2_SETGUARDBAND
 };	//	@A089D8
 
-static_assert(sizeof(Renderer) == RENDERER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Renderer));
+static_assert(sizeof(GfxInternal) == RENDERER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(GfxInternal));

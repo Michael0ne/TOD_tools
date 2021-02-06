@@ -155,7 +155,7 @@ void Progress::UpdateProgressTime(unsigned int unk, UINT64 time)
 	field_24 += unk;
 	if (time >= field_38 || !m_TimeStart)
 	{
-		float v1 = field_24 / field_28;
+		float v1 = (float)(field_24 / field_28);
 		float v2 = field_48 <= NULL ? 0.f : ((time - field_50) / field_48);
 
 		if (v2 > v1)

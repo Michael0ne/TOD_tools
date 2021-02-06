@@ -141,6 +141,7 @@ int Entity::GetPropertyId(const char* prop)
 
 void Entity::Register()
 {
+	/*
 	tEntity = new ScriptType_Entity("Entity");
 	tEntity->SetCreator((CREATOR_)Create);
 
@@ -153,6 +154,7 @@ void Entity::Register()
 	tEntity->RegisterProperty("script_priority", tINTEGER, INT_GETTER(Entity::GetScriptPriority), NULL, NULL, NULL, INT_SETTER(Entity::SetScriptPriority), NULL, NULL, NULL, "control=string");
 
 	tEntity->_86E9B0();
+	*/
 }
 
 Entity* Entity::Create(AllocatorIndex)

@@ -18,7 +18,7 @@ enum ScenePlayMode
 struct SaveInfo
 {
 	TransactionBuffer*	m_TransactionBuffer;
-	Node*				m_CurrentUndo[6];
+	class Node*			m_CurrentUndo[6];
 	int					field_1C;	//	NOTE: when reading a save file, 'BAADF00D' written here.
 	ScriptType_Entity*	field_20;
 	int					m_SavedGameTimeMs;

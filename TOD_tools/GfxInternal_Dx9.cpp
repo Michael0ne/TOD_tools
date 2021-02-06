@@ -1,6 +1,6 @@
 #include "GfxInternal_Dx9.h"
 #include "Window.h"
-#include "Renderer.h"
+#include "GfxInternal.h"
 #include "File.h"
 #include "LogDump.h"
 
@@ -10,6 +10,23 @@ Map<int, int>& GfxInternal_Dx9::g_UnkMap_1 = *(Map<int, int>*)0xA39F58;
 Map<int, int>& GfxInternal_Dx9::g_UnkMap_2 = *(Map<int, int>*)0xA39F38;
 Map<int, int>& GfxInternal_Dx9::g_RenderedTexturesMap = *(Map<int, int>*)0xA39F50;
 void* GfxInternal_Dx9::g_RenderBuffer = (void*)0xA35E60;
+
+const GfxInternal_Dx9_Vertex::VertexDeclaration GfxInternal_Dx9_Vertex::VertexDeclarations[] =
+{
+	{ 20, D3DFVF_DIFFUSE | D3DFVF_XYZRHW },
+	{ 24, D3DFVF_TEX1 | D3DFVF_XYZRHW},
+	{ 28, D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW },
+	{ 24, D3DFVF_NORMAL | D3DFVF_XYZ },
+	{ 16, D3DFVF_DIFFUSE | D3DFVF_XYZ },
+	{ 28, D3DFVF_DIFFUSE | D3DFVF_NORMAL | D3DFVF_XYZ },
+	{ 32, D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ },
+	{ 40, D3DFVF_TEX2 | D3DFVF_NORMAL | D3DFVF_XYZ },
+	{ 24, D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZ },
+	{ 36, D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_NORMAL | D3DFVF_XYZ },
+	{ 48, D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ },
+	{ 40, D3DFVF_NORMAL | D3DFVF_XYZ }
+};
+std::map<int, GfxInternal_Dx9_Vertex*> GfxInternal_Dx9_Vertex::VertexBufferMap;
 
 void GfxInternal_Dx9::GetScreenResolution(Vector2<int>& outRes)
 {
@@ -104,8 +121,8 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 		if (m_DisplayModesList.m_CurrIndex > 0) {
 			DisplayModeInfo** mode = m_DisplayModesList.m_Elements;
 
-			while ((*mode)->width != adapterModes.Width ||
-				(*mode)->height != adapterModes.Height) {
+			while ((*mode)->m_Width != adapterModes.Width ||
+				(*mode)->m_Height != adapterModes.Height) {
 				++ind;
 				++mode;
 				if (ind >= m_DisplayModesList.m_CurrIndex)
@@ -120,10 +137,10 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 
 			DisplayModeInfo* mode_sel = m_DisplayModesList.m_Elements[ind];
 
-			if (mode_sel->refreshrate <= 85 && adapterModes.RefreshRate > mode_sel->refreshrate) {
-				mode_sel->available = true;
-				mode_sel->refreshrate = adapterModes.RefreshRate;
-				mode_sel->format = adapterModes.Format;
+			if (mode_sel->m_RefreshRate <= 85 && adapterModes.RefreshRate > mode_sel->m_RefreshRate) {
+				mode_sel->m_Available = true;
+				mode_sel->m_RefreshRate = adapterModes.RefreshRate;
+				mode_sel->m_Format = adapterModes.Format;
 			}
 		}
 
@@ -134,11 +151,11 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 
 	for (unsigned int i = 0; i < m_DisplayModesList.m_CurrIndex; ++i)
 		debug("%ix%i @ %iHz - format=%i, available=%i\n",
-			m_DisplayModesList.m_Elements[i]->width,
-			m_DisplayModesList.m_Elements[i]->height,
-			m_DisplayModesList.m_Elements[i]->refreshrate,
-			m_DisplayModesList.m_Elements[i]->format,
-			m_DisplayModesList.m_Elements[i]->available);
+			m_DisplayModesList.m_Elements[i]->m_Width,
+			m_DisplayModesList.m_Elements[i]->m_Height,
+			m_DisplayModesList.m_Elements[i]->m_RefreshRate,
+			m_DisplayModesList.m_Elements[i]->m_Format,
+			m_DisplayModesList.m_Elements[i]->m_Available);
 
 	//	NOTE: EnumDisplayModes inlined --ends
 
@@ -157,7 +174,7 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 				unsigned int index = 0;
 
 				while (true) {
-					if ((*_modes)->width == mode.width && (*_modes)->height == mode.height && (*_modes)->available)
+					if ((*_modes)->m_Width == mode.m_Width && (*_modes)->m_Height == mode.m_Height && (*_modes)->m_Available)
 						break;
 					++index;
 					++_modes;
@@ -166,10 +183,10 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 						break;
 				}
 
-				m_DisplayMode.Width = mode.width;
-				m_DisplayMode.Height = mode.height;
-				m_ViewportWidth = (float)mode.width;
-				m_ViewportHeight = (float)mode.height;
+				m_DisplayMode.Width = mode.m_Width;
+				m_DisplayMode.Height = mode.m_Height;
+				m_ViewportWidth = (float)mode.m_Width;
+				m_ViewportHeight = (float)mode.m_Height;
 			}
 		}
 
@@ -219,9 +236,9 @@ DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(unsigned int width
 		if (i + 1 == m_DisplayModesList.m_CurrIndex)
 			break;
 		else
-			if (m_DisplayModesList.m_Elements[i]->width == width &&
-				m_DisplayModesList.m_Elements[i]->height == height &&
-				m_DisplayModesList.m_Elements[i]->available ||
+			if (m_DisplayModesList.m_Elements[i]->m_Width == width &&
+				m_DisplayModesList.m_Elements[i]->m_Height == height &&
+				m_DisplayModesList.m_Elements[i]->m_Available ||
 				!dontignoreunavailable)
 				return m_DisplayModesList.m_Elements[i];
 
@@ -234,9 +251,9 @@ void GfxInternal_Dx9::SetupWindowParams(unsigned int width, unsigned int height)
 
 	if (mode || (mode = IsScreenResolutionAvailable(640, 480, true)) != 0) {
 		m_Windowed = true;
-		m_nDisplayModeFormat = (D3DFORMAT)mode->format;	//	D3DFORMAT is just a enum
-		m_DisplayMode.Width = mode->width;
-		m_DisplayMode.Height = mode->height;
+		m_nDisplayModeFormat = (D3DFORMAT)mode->m_Format;	//	D3DFORMAT is just a enum
+		m_DisplayMode.Width = mode->m_Width;
+		m_DisplayMode.Height = mode->m_Height;
 
 		g_Window->SetWindowResolutionRaw(m_DisplayMode);
 		memset(&m_PresentParameters, 0, sizeof(m_PresentParameters));
@@ -245,7 +262,7 @@ void GfxInternal_Dx9::SetupWindowParams(unsigned int width, unsigned int height)
 		m_PresentParameters.BackBufferWidth = m_DisplayMode.Width;
 		m_PresentParameters.BackBufferHeight = m_DisplayMode.Height;
 		m_PresentParameters.BackBufferFormat = m_nDisplayModeFormat;
-		m_PresentParameters.FullScreen_RefreshRateInHz = mode->refreshrate;
+		m_PresentParameters.FullScreen_RefreshRateInHz = mode->m_RefreshRate;
 
 		CreateRenderDevice();
 	}
@@ -290,8 +307,8 @@ bool GfxInternal_Dx9::GetRegistryResolution(DisplayModeInfo& mode)
 		type != 4)
 		return false;
 
-	mode.width = x;
-	mode.height = y;
+	mode.m_Width = x;
+	mode.m_Height = y;
 
 	RegCloseKey(phkResult);
 
@@ -403,7 +420,7 @@ void GfxInternal_Dx9::SetProjection(float unk1, float aspectratio, float unk3, f
 	FLOAT fov = (float)atan2(tan(0.017453292 * unk1 * 0.5 * 0.75), 1.0) * 2;
 	FLOAT nearPlane = (float)(((m_ZBias * 0.001) + 1.0) * unk3);
 
-	if (Renderer::WideScreen)
+	if (GfxInternal::WideScreen)
 		D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fov, (FLOAT)1.7777778, nearPlane, farPlane);
 	else
 		D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fov, (m_ViewportWidth / m_ViewportHeight) / aspectratio, nearPlane, farPlane);
@@ -428,4 +445,34 @@ void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath
 	if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) &&
 		FAILED(D3DXCreateTextureFromFileA(m_Direct3DDevice, texturePath, m_TexturesArray)))
 		*m_TexturesArray = nullptr;
+}
+
+GfxInternal_Dx9_Vertex::GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags)
+{
+	m_BufferPtr = nullptr;
+	m_Direct3DVertexBuffer = nullptr;
+	field_16 = NULL;
+	m_Verticies = size;
+	m_Stride = VertexDeclarations[FVFindex].m_Stride;
+	m_FVF = VertexDeclarations[FVFindex].m_FVF;
+	m_Length = size * m_Stride;
+	field_4 = NULL;
+	m_Flags = flags;
+	m_FVFIndex = FVFindex;
+	field_20 = NULL;
+	m_BufferPtr = new char[m_Length];
+
+	CreateVertexBuffer();
+	VertexBufferMap.insert({ 0, this });	//	TODO: is this correct?
+}
+
+void GfxInternal_Dx9_Vertex::CreateVertexBuffer()
+{
+	LPDIRECT3DVERTEXBUFFER9 vertbuff = nullptr;
+	g_RendererDx->m_Direct3DDevice->CreateVertexBuffer(m_Length, m_Flags & 1 ? D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY : D3DUSAGE_WRITEONLY, m_FVF, D3DPOOL_DEFAULT, &vertbuff, nullptr);
+
+	if (vertbuff != m_Direct3DVertexBuffer)
+		m_Direct3DVertexBuffer->Release();
+
+	m_Direct3DVertexBuffer = vertbuff;
 }

@@ -62,4 +62,28 @@ namespace Utils
 	static bool (__cdecl* IsDirectoryValid)(const char* inPath) = (bool (__cdecl*)(const char*))0x418410;	//	NOTE: actual function at 437FD0.
 	static void (__cdecl* DeleteAllFilesInFolder)(const char* inPath) = (void (__cdecl*)(const char*))0x418B50;
 	static void (__cdecl* CreateDirectoryIfNotFound)(const char* inPath) = (void (__cdecl*)(const char*))0x4186F0;
+
+	//	TODO: is this correct?
+	static UINT64&	CreateUniqueId(UINT64& id_)
+	{
+		id_ = __rdtsc();
+		id_ = time(NULL);
+
+		return id_;
+	}
+
+	static void		GetBuildNumberString(char* str)	//	@401000
+	{
+		sprintf(str, "build %d.%d (%d)", KAPOW_ENGINE_VERSION_MAJOR, KAPOW_ENGINE_VERSION_MINOR, KAPOW_ENGINE_VERSION_BUILD);
+	}
+
+	static void		GetEngineAuthor(char* str)	//	@401020
+	{
+		sprintf(str, "by %s", "Kasper.Fauerby");
+	}
+
+	static unsigned int	GetEngineVersionBuild()
+	{
+		return KAPOW_ENGINE_VERSION_BUILD;
+	}
 }

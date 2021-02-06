@@ -11,6 +11,7 @@ class Entity
 {
 	friend class Position;
 	friend class Blocks;
+	friend class Fragment;
 protected:
 	ScriptType_Entity* m_ScriptEntity;
 	unsigned char	field_8[10];

@@ -67,7 +67,7 @@ protected:
 	int m_TextureSets;
 	ResType::Model* m_ModelRes;
 	int field_1D4;
-	List<Bone> m_BonesList;
+	List<class Bone> m_BonesList;
 	List<int> m_List_3;
 	List<float> m_List_4;
 	Vector4f m_Pos_1;

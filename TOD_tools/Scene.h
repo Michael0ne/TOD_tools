@@ -2,7 +2,9 @@
 
 #include "Folder.h"
 
-#define SCENE_CLASS_SIZE 620
+//#define SCENE_CLASS_SIZE 620
+//	FIXME: this is because of alignment issues caused by 64 bit member of this class. What to do?
+#define SCENE_CLASS_SIZE 612
 
 enum PlayMode
 {
@@ -21,6 +23,7 @@ enum SaveOperationStatus
 	STATUS_CANT_READ_SAVE_DATA = 4
 };
 
+#pragma pack(4)
 class Scene : public Folder_
 {
 protected:

@@ -20,7 +20,7 @@ ZipSlotInfo::~ZipSlotInfo()
 {
 	MESSAGE_CLASS_DESTROYED(ZipSlotInfo);
 
-	delete field_8;
+	delete m_ChecksumsList;
 	delete field_C;
 }
 
@@ -65,20 +65,20 @@ int* ZipSlotInfo::_4198F0(const unsigned int* hashStr)
 	//	NOTE: this is reconstructed assembly code.
 	int v2 = NULL, v3 = NULL, v4 = NULL;
 
-	if (field_0)
+	if (m_ChecksumsListSize)
 	{
 		do 
 		{
 			v4 = v3 + (v2 - v3) / 2;
-			if (field_8[v4] < *hashStr)
+			if (m_ChecksumsList[v4] < *hashStr)
 				v3 = v4 + 1;
 			else
 				v2 = v3 + (v2 - v3) / 2;
 		} while (v3 != v2);
 	}
 
-	if (v2 >= field_0 ||
-		*hashStr < field_8[v2])
+	if (v2 >= m_ChecksumsListSize ||
+		*hashStr < m_ChecksumsList[v2])
 		return nullptr;
 	else
 		return (int*)&field_C[v2];
@@ -89,13 +89,13 @@ void ZipSlotInfo::_41A5F0(unsigned int* a1)
 	//	NOTE: this is reconstructed assembly code.
 	if (field_4._2 & 1)
 	{
-		delete field_8;
+		delete m_ChecksumsList;
 		delete field_C;
 	}
 
-	field_0 = a1[1] & 0x7FFFFF;
-	field_8 = new unsigned int[4 * field_0];
-	field_C = new unsigned int[8 * field_0];
+	m_ChecksumsListSize = a1[1] & 0x7FFFFF;
+	m_ChecksumsList = new unsigned int[4 * m_ChecksumsListSize];
+	field_C = new unsigned int[8 * m_ChecksumsListSize];
 	*(int*)&field_4 |= 0x10000;
 
 	int* v1 = (int*)a1[2];
@@ -110,8 +110,8 @@ void ZipSlotInfo::_41A5F0(unsigned int* a1)
 
 		do
 		{
-			if (&field_8[v3])
-				field_8[v3] = *v1;
+			if (&m_ChecksumsList[v3])
+				m_ChecksumsList[v3] = *v1;
 			if (&field_C[v2])
 			{
 				field_C[v2] = v1[1];

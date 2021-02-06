@@ -61,13 +61,10 @@ const char* Blocks::GetCurrentSceneName() const
 
 AllocatorIndex Blocks::GetAllocatorType() const
 {
-	if (!m_LoadBlocks)
+	if (m_LoadBlocks && m_BlockType >= NULL)
+		return (AllocatorIndex)GetResourceBlockTypeNumber(g_Blocks->m_BlockType);
+	else
 		return DEFAULT;
-
-	if (m_CurrentAssetBlockIndex >= NONE)
-		return (AllocatorIndex)GetResourceBlockTypeNumber(m_CurrentAssetBlockIndex);
-
-	return DEFAULT;
 }
 
 int Blocks::InsertTypeListItem(void* res)
@@ -374,6 +371,8 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
 #pragma message(TODO_IMPLEMENTATION)
 void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned int* resdatasize, BlockTypeNumber resblockid)
 {
+	return nullptr;
+	/*
 	AssetHeaderStruct_t assetHeaderStruct;
 
 	LogDump::LogA("Loading resource block with ID=%i...\n", resblockid);
@@ -474,24 +473,25 @@ void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned i
 	delete resourceDataBuffer;
 
 	return resourcesInfoBuffer;
+	*/
 }
 
-Node* Blocks::_8755E0()
+Entity* Blocks::_8755E0()
 {
 	unsigned int nodeid = _875570(0x100000);
 	if (nodeid)
 		return (m_NodesList[(nodeid >> 20) & 7].m_Elements[nodeid & 0xFF8FFFFF]);
 	else
-		return nodeid;
+		return nullptr;
 }
 
-Node* Blocks::_875610(Node* node)
+Entity* Blocks::_875610(Entity* node)
 {
 	unsigned int nodeid = _875570(node->m_Id >> 8);
 	if (nodeid)
-		return (Node*)(m_NodesList[(nodeid >> 20) & 7].m_Elements[nodeid & 0xFF8FFFFF]);
+		return (m_NodesList[(nodeid >> 20) & 7].m_Elements[nodeid & 0xFF8FFFFF]);
 	else
-		return nodeid;
+		return nullptr;
 }
 
 ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId)
@@ -570,7 +570,7 @@ Blocks::Blocks(bool loadBlocks)
 
 	for (unsigned int i = 1; i < 6; i++)
 	{
-		m_NodesList[i] = List<int>(0x27B00);
+		m_NodesList[i] = List<Entity>(0x27B00);
 		m_NodesList[i].m_Flags |= 0x1A000;
 		
 		if (listCapacity[i])
@@ -597,7 +597,7 @@ Blocks::Blocks(bool loadBlocks)
 	field_1D0 = nullptr;
 	m_CheckTimestamp = NULL;
 	m_EngineVersionTimestamp = NULL;
-	m_CurrentAssetBlockIndex = UNKNOWN;
+	m_BlockType = UNKNOWN;
 	field_108 = 2;
 }
 
@@ -616,6 +616,11 @@ void Blocks::SetSceneName(const char* szSceneName)
 		sceneDir.Append("/");
 
 	m_SceneNames.AddElement(&sceneDir);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Blocks::RemoveLastSceneName()
+{
 }
 
 int Blocks::GetFreeResourceTypeListItem(unsigned int index)
