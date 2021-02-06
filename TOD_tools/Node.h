@@ -97,8 +97,8 @@ public:
 			unsigned _26 : 1;
 			unsigned DisabledOnCutscene : 1;
 			unsigned _28 : 1;
-			unsigned _29 : 1;
 			unsigned HasFragment : 1;
+			unsigned _30 : 1;
 		} m_FlagBits;
 		unsigned int	m_Flags;
 	} m_Flags;
@@ -110,7 +110,7 @@ public:
 	Position*			m_Position;
 	Node*				m_Parent;
 	Node*				m_FirstChild;
-	class Fragment*		m_Fragment;
+	Fragment*			m_Fragment;
 	char*				m_Name;
 
 	virtual				~Node();								//	@86C6D0
@@ -155,8 +155,10 @@ public:
 	Vector4f*			GetPos(Vector4f& outVec);	//	@483620
 	void				GetWorldMatrix(D3DXMATRIX& outMat);	//	@4842C0
 	void				SetParent(const Node* parent);	//	@88E9A0
+	void				DestroyAddon();	//	@88EB00	//	NOTE: actually unused.
 	void				SetName(const char*);	//	@88D610
 	void				SetPos(const Vector4f&);	//	@88D6C0
+	const char*			GetFragment() const;	//	@88DEA0
 };
 
 extern ScriptType_Entity* tNode;	//	@A3D884

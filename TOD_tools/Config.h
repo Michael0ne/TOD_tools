@@ -3,6 +3,7 @@
 #include "Types.h"
 #include "Globals.h"
 #include "File.h"
+#include "KeyValueList.h"
 
 namespace GameConfig {
 
@@ -155,7 +156,7 @@ namespace GameConfig {
 
 	static List<String>&	FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
 	static File&			ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8
-	static KeyValueList<CollmatListEntry, void>	ColMatList;	//	@A11704	//	TODO: this more looks like double-linked list.
+	static KeyValueList<CollmatListEntry, void>	ColMatList = KeyValueList<CollmatListEntry, void>();	//	@A11704	//	TODO: this more looks like double-linked list.
 
 	extern Config* g_Config;
 }

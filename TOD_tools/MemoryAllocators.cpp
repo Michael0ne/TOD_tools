@@ -809,7 +809,7 @@ void* Allocators::AllocateByType(unsigned char allocIndex, size_t size)
 
 int DefragmentatorBase::_4783F0(int unk1)
 {
-	return (m_AllocatedSpace[unk1].m_Flags >> 1) & 1;
+	return (m_AllocatedSpace[unk1].m_ChunkId >> 1) & 1;
 }
 
 DefragmentatorBase::DefragmentatorBase(BestFitAllocator* bestfitallocator, char unk1, int size)
@@ -820,7 +820,8 @@ DefragmentatorBase::DefragmentatorBase(BestFitAllocator* bestfitallocator, char 
 	m_DefragmentAllocator = bestfitallocator;
 	m_AllocatedSpace = (Defragmentator_Space*)malloc(sizeof(Defragmentator_Space) * size);
 	field_20 = unk1;
-	bestfitallocator->field_1C = this;
+	//	FIXME: is '_1C' a pointer to Defragmentator?
+	//bestfitallocator->field_1C = this;
 	m_DefragmentAllocator_1 = bestfitallocator;
 }
 

@@ -13,7 +13,6 @@ unsigned int File::AlignmentArray[3] =
 };
 FileWrapper* FileWrapper::ZipFilesArray[FILE_MAX_ZIP_FILES];
 
-extern bool GameDiscFound;
 extern void GetWorkingDirRelativePath(String* str);
 extern void GetGameWorkingDirRelativePath(String* str);
 
@@ -36,7 +35,7 @@ time_t File::GetFileTimestamp_Impl(const char* path)
 	GetWorkingDirRelativePath(&workingdir);
 	findHandle = FindFirstFile(workingdir.m_szString, &findData);
 
-	if (findHandle == INVALID_HANDLE_VALUE && GameDiscFound)
+	if (findHandle == INVALID_HANDLE_VALUE && Window::GameDiscFound)
 	{
 		workingdir = path;
 		GetGameWorkingDirRelativePath(&workingdir);

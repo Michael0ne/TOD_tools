@@ -3,7 +3,7 @@
 Light* Light::LightType1;
 Light* Light::LightType2;
 unsigned int Light::TotalLights;
-List<Light>* Light::LightsList;
+LightsListStruct Light::LightsList;
 ScriptType_Entity* tLight;
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -79,7 +79,7 @@ void Light::InitLightsList()
 
 void Light::ClearLightsList()
 {
-	delete LightsList;
+	//delete LightsList;
 }
 
 Light_Properties::Light_Properties()

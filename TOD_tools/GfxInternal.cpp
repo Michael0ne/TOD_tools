@@ -1,11 +1,12 @@
-#include "Renderer.h"
+#include "GfxInternal.h"
 #include "Performance.h"
+#include "LogDump.h"
 
-Renderer*	g_Renderer = nullptr;
-bool		Renderer::WideScreen;	//	@A39F12
-bool		Renderer::FSAA;
-float		Renderer::RatioXY = 1.0f;	//	@A119F4
-Renderer::Renderer_Buffer2	Renderer::_A08704[28] =
+GfxInternal*	g_Renderer = nullptr;
+bool		GfxInternal::WideScreen;	//	@A39F12
+bool		GfxInternal::FSAA;
+float		GfxInternal::RatioXY = 1.0f;	//	@A119F4
+GfxInternal::Renderer_Buffer2	GfxInternal::_A08704[28] =
 {
 	{0, 1},
 	{0, 2},
@@ -39,15 +40,15 @@ Renderer::Renderer_Buffer2	Renderer::_A08704[28] =
 ScreenProperties	g_ScreenProperties;	//	@A08810
 
 #pragma message(TODO_IMPLEMENTATION)
-Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
+GfxInternal::GfxInternal(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
 {
-	MESSAGE_CLASS_CREATED(Renderer);
+	MESSAGE_CLASS_CREATED(GfxInternal);
 
 	g_Renderer = this;
 
 	m_TexturesList = List<GfxInternal_Dx9_Texture>();
 	m_TimeDelta = 0.f;
-	field_30 = 0;
+	m_FramesRendered = 0;
 	m_TimeMilliseconds = Performance::GetMilliseconds();
 	field_34 = 0;
 
@@ -81,7 +82,7 @@ Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigne
 
 	field_35 = 1;
 	m_Time_1 = 0.f;
-	m_CallbackUnknown = nullptr;
+	m_SceneCallback = nullptr;
 	m_RenderEndTime = __rdtsc();
 
 #ifdef INCLUDE_FIXES
@@ -91,9 +92,9 @@ Renderer::Renderer(const Vector2<int>* resolution, unsigned int unused1, unsigne
 #endif
 }
 
-Renderer::~Renderer()
+GfxInternal::~GfxInternal()
 {
-	MESSAGE_CLASS_DESTROYED(Renderer);
+	MESSAGE_CLASS_DESTROYED(GfxInternal);
 
 	delete m_Buffer68;
 	delete m_Buffer108;
@@ -103,7 +104,7 @@ Renderer::~Renderer()
 	delete m_RenderBufferArray;
 }
 
-void Renderer::SetClearColorForBufferIndex(const ColorRGB& color, int index)
+void GfxInternal::SetClearColorForBufferIndex(const ColorRGB& color, int index)
 {
 	if (index != -1)
 		m_RenderBufferArray[index].m_ClearColor = color;
@@ -113,7 +114,7 @@ void Renderer::SetClearColorForBufferIndex(const ColorRGB& color, int index)
 				m_RenderBufferArray[i].m_ClearColor = color;
 }
 
-void Renderer::SetClearFlagsForBufferIndex(const unsigned int flags, const int index)
+void GfxInternal::SetClearFlagsForBufferIndex(const unsigned int flags, const int index)
 {
 	if (index != -1)
 		m_RenderBufferArray[index].m_ClearFlags = flags;
@@ -123,9 +124,34 @@ void Renderer::SetClearFlagsForBufferIndex(const unsigned int flags, const int i
 				m_RenderBufferArray[i].m_ClearFlags = flags;
 }
 
-void Renderer::SetRenderBufferIsEmpty(bool _empty)
+void GfxInternal::SetRenderBufferIsEmpty(bool _empty)
 {
 	m_RenderBufferEmpty = _empty;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal::PrepareForNewLevel()
+{
+	/*
+	if (g_RendererDx->m_SceneBegan &&
+		g_Renderer->m_FramesRendered > g_RendererDx->field_975C)
+	{
+		LogDump::LogA("GfxInternal::PrepareForNewLevel\n");
+		g_RendererDx->m_Direct3DDevice->EvictManagedResources();
+		if (g_RendererDx->BeginScene())
+		{
+			g_RendererDx->SetRenderTarget(nullptr);
+			GfxInternal_Dx9_Texture::DrawAllTextures();
+			
+			if (g_RendererDx->m_SceneBegan)
+				g_RendererDx->m_Direct3DDevice->EndScene();
+			g_RendererDx->m_SceneBegan = false;
+			g_RendererDx->HandleDeviceLost();
+		}
+
+		g_RendererDx->field_975C = g_Renderer->m_FramesRendered;
+	}
+	*/
 }
 
 void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, float unk2)

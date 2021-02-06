@@ -1,6 +1,7 @@
 #include "Node.h"
 #include "Fragment.h"
 #include "Blocks.h"
+#include "LogDump.h"
 
 ScriptType_Entity* tNode;
 
@@ -150,7 +151,7 @@ Node::Node(unsigned char allocationBitmask)
 	MESSAGE_CLASS_CREATED(Node);
 
 	m_Flags.m_FlagBits.HasFragment = true;
-	m_Flags.m_FlagBits._29 = true;
+	m_Flags.m_FlagBits._30 = true;
 	m_Flags.m_FlagBits._15 = true;
 	m_Flags.m_FlagBits._14 = true;
 	m_Flags.m_FlagBits._13 = true;
@@ -219,7 +220,7 @@ void Node::SetParam(const int index, const void* param, const ScriptType* type)
 	if (!m_ScriptEntity)
 		return;
 
-	if (m_Flags.m_FlagBits._29 && m_Flags.m_FlagBits.Volatile)
+	if (m_Flags.m_FlagBits.HasFragment && m_Flags.m_FlagBits.Volatile)
 		return;
 
 	unsigned char paramInd = 1 << (index & 7);
@@ -281,6 +282,19 @@ void Node::SetParent(const Node* parent)
 		//SetChildrenPositionToSame();	//	@88D1E0
 }
 
+void Node::DestroyAddon()
+{
+	if (m_Name && strstr(m_Name, "ADD_"))
+	{
+		SetParent(nullptr);
+		Destroy();
+		LogDump::LogA("addon destroyed\n");
+	}
+	else
+		for (Node* node_ = m_FirstChild; node_; node_ = node_->m_NextSibling)
+			node_->DestroyAddon();
+}
+
 void Node::SetName(const char* name)
 {
 	if (m_Name)
@@ -298,6 +312,20 @@ void Node::SetName(const char* name)
 #pragma message(TODO_IMPLEMENTATION)
 void Node::SetPos(const Vector4f&)
 {
+}
+
+const char* Node::GetFragment() const
+{
+	if (m_Fragment)
+		if (m_Flags.m_FlagBits.HasFragment)	//	TODO: check if this is correct!
+			return m_Fragment->m_Name;
+		else
+			if (m_Fragment->m_FragmentRes)
+				return m_Fragment->m_FragmentRes->AddResToOpenListAndReturnName();
+			else
+				return nullptr;
+	else
+		return nullptr;
 }
 
 Vector4f* NodePosition::GetPosition(Vector4f* outPos)

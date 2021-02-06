@@ -1,5 +1,5 @@
 #include "RenderBuffer.h"
-#include "Renderer.h"
+#include "GfxInternal.h"
 
 RenderBuffer* g_RenderBuffer = nullptr;
 int RenderBuffer::Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE];

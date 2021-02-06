@@ -8,7 +8,7 @@
 ScriptType_Entity* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
 
-
+AuxQuadTree* Scene::SceneTree;
 int Scene::RealTimeMs;
 int Scene::GameTimeMs;
 int Scene::NextUpdateTime;
@@ -40,9 +40,9 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 	assetinfo->m_ResourceDataBufferPtr = g_Blocks->LoadResourceBlock(&assetfile, assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, NONE);
 	DWORD64 starttick = __rdtsc();
 
-	g_Blocks->_878030();
-	g_Blocks->_875EB0();
-	g_Blocks->_877AE0();
+	//g_Blocks->_878030();
+	//g_Blocks->_875EB0();
+	//g_Blocks->_877AE0();
 
 	LogDump::LogA("Timings: FixupAssetRefsInLoadedAssetBlocks: %f\n", (__rdtsc() - starttick) / Performance::ClockGetCycles());
 
@@ -202,6 +202,11 @@ void Scene::FreeRewindBuffer()
 		m_RewindBuffer1 = nullptr;
 		m_RewindBuffer2 = nullptr;
 	}
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::ResetRewindBuffer(bool)
+{
 }
 
 #pragma message(TODO_IMPLEMENTATION)

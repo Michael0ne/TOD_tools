@@ -7,11 +7,6 @@ List<GlobalScript> GlobalScript::ScriptsList;
 
 namespace Script
 {
-	unsigned int GlobalPropertyListChecksum;
-	bool GlobalPropertyListChecksumObtained;
-	unsigned int GlobalCommandListChecksum;
-	bool GlobalCommandListChecksumObtained;
-
 	#pragma message(TODO_IMPLEMENTATION)
 	ScriptType* GetScriptType(const char* _scripttype)
 	{

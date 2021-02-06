@@ -12,7 +12,7 @@ struct AssetInfo
 	{
 		void*		m_ResourceDataBufferPtr;	//	NOTE: actual resource data read from file written here.
 		void*		m_ResourceAllocatedAlignedBufferPtr;	//	NOTE: pointer to buffer with resource data size written here.
-		int			m_ResourceDataBufferSize;
+		unsigned int m_ResourceDataBufferSize;
 	};
 	ActualAssetInfo	m_AssetInfo_Shared;
 	ActualAssetInfo	m_AssetInfo_Localised;

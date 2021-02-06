@@ -457,6 +457,7 @@ protected:
 
 public:
 	inline BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const char* _name);
+	BuiltinHandler() {};
 };
 
 class ScriptType_Builtin : public ScriptType_Entity
@@ -470,6 +471,7 @@ protected:
 
 	void	ProfileBegin(void* args);	//	@484F50	//	NOTE: args[0] is of type const char*, args[1] is of type int.
 	void	ProfileEnd(void* args);		//	@484F60
+	void	Print(void* args);	//	@484FB0
 };
 
 static ScriptType_Nothing* tNOTHING = (ScriptType_Nothing*)0xA3CE94;	//	@A3CE94

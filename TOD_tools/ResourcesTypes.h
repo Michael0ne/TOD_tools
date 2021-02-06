@@ -106,12 +106,11 @@ namespace ResType
 	#pragma pack(4)
 	class Resource
 	{
-	protected:
+	public:
 		const char*		m_ResourcePath;
 		int				m_GlobalResourceId;	//	NOTE: this is an index for Blocks global 'ResourceTypeList'.
 		int				field_C;
 		UINT64			m_ResourceTimestamp;
-	public:
 		int				m_Flags;
 
 	public:
@@ -169,7 +168,7 @@ namespace ResType
 		int				field_1C;
 		Tex*			field_20;
 		int				field_24;
-		GfxInternal_Dx9_Texture* m_Texture;
+		class GfxInternal_Dx9_Texture* m_Texture;
 		int				field_2C;
 
 	private:
@@ -265,6 +264,8 @@ namespace ResType
 
 		static void		CreateInstance();	//	@85DFA0
 		static Fragment* Create();	//	@85DE30
+
+		void			ApplyFragmentResource(unsigned int entityId, bool);	//	@85D990
 	};
 
 	class Movie : public Resource

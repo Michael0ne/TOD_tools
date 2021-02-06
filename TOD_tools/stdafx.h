@@ -19,8 +19,6 @@
 */
 #pragma once
 #pragma comment (lib, "Winmm.Lib")
-#pragma comment (lib, "dinput8.lib")
-#pragma comment (lib, "dsound.lib")
 
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
@@ -43,6 +41,10 @@
 #include <dinput.h>			//	For DirectInput stuff.
 #include <mmsystem.h>		//	Necessary for dsound.
 #include <dsound.h>			//	For DirectSound stuff.
+
+#define KAPOW_ENGINE_VERSION_MAJOR 34
+#define KAPOW_ENGINE_VERSION_MINOR 7
+#define KAPOW_ENGINE_VERSION_BUILD 1925
 
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
 #define MESSAGE_CLASS_CREATED(x) debug(#x " created at %X\n", this)

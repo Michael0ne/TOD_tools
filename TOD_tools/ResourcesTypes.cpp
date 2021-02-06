@@ -234,7 +234,7 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(Model);
 
-		m_TextureResources = List<int>(0x18B00);
+		m_TextureResources = List<TextureReference>(0x18B00);
 
 		field_40 = NULL;
 		field_54 = NULL;
@@ -300,6 +300,11 @@ namespace ResType
 	Fragment* Fragment::Create()
 	{
 		return new Fragment();
+	}
+
+	#pragma message(TODO_IMPLEMENTATION)
+	void Fragment::ApplyFragmentResource(unsigned int entityId, bool)
+	{
 	}
 
 	Resource* Movie::GetInstancePtr() const

@@ -18,6 +18,11 @@ TransactionBuffer::TransactionBuffer(const unsigned int bufferSize)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
+TransactionBuffer::~TransactionBuffer()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 void RewindBuffer_List::_8751D0()
 {
 	(*(void(__thiscall*)(RewindBuffer_List*))0x8751D0)(this);

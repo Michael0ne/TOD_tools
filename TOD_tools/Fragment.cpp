@@ -1,19 +1,44 @@
 #include "Fragment.h"
+#include "Globals.h"
+#include "Blocks.h"
+#include "Node.h"
 
-#pragma message(TODO_IMPLEMENTATION)
-Fragment::Fragment(const Entity* owner)
+Fragment::Fragment(Node* owner)
 {
 	MESSAGE_CLASS_CREATED(Fragment);
 
-	m_ResourceInfo = nullptr;
+	m_FragmentRes = nullptr;
 	field_8 = 1;
-	m_Owner = (Entity*)owner;
-	(*(__int64* (__thiscall*)(__int64*))0x40FEA0)(&m_nUniqueId);
-	m_szName = nullptr;
+	Utils::CreateUniqueId(m_UniqueId);
+	m_Owner = owner;
+	m_Name = nullptr;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-const char* Fragment::_GetResourcePath()
+void Fragment::SetFragmentName(const char* fragmentname)
 {
-	return (*(const char* (__thiscall*)(void*))0x851720)(m_ResourceInfo);
+	if (m_Name)
+		delete[] m_Name;
+
+	m_Name = new char[52];
+	strcpy(m_Name, fragmentname);
+}
+
+void Fragment::LoadResourceFile(const char* fname)
+{
+	ResType::ResourceHolder reshld;
+	reshld.LoadResourceFromBlock(fname);
+	m_FragmentRes->ApplyLoadedResource(reshld);
+
+	if (reshld.m_Resource)
+		g_Blocks->DecreaseResourceReferenceCount(reshld.m_Resource);
+}
+
+void Fragment::ApplyFragment() const
+{
+	if (m_FragmentRes && m_FragmentRes->m_ResourceTimestamp)
+	{
+		g_Blocks->SetSceneName(m_FragmentRes->m_ResourcePath);
+		m_FragmentRes->ApplyFragmentResource(m_Owner->m_Id >> 8, true);
+		g_Blocks->RemoveLastSceneName();
+	}
 }

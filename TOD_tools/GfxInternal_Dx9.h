@@ -11,29 +11,56 @@
 
 struct DisplayModeInfo
 {
-	int width;
-	int height;
-	bool available;
-	unsigned int refreshrate;
-	int format;
+	unsigned int	m_Width;
+	unsigned int	m_Height;
+	bool			m_Available;
+	unsigned int	m_RefreshRate;
+	int				m_Format;
 };
 
 struct GfxInternal_Dx9_Vertex
 {
-	int m_Verticies;
-	int field_4;
-	int m_FVF;
-	int m_Length;
-	int* field_10;
-	unsigned int m_Stride;
-	int field_18;
-	int field_1C;
-	int field_20;
-	IDirect3DVertexBuffer9* m_Direct3DVertexBuffer;
+	struct VertexDeclaration
+	{
+		unsigned int	m_Stride;
+		unsigned int	m_FVF;
+
+		VertexDeclaration(unsigned int s, unsigned int f)
+			: m_Stride(s), m_FVF(f)
+		{};
+	};
+
+	int							m_Verticies;
+	int							field_4;
+	int							m_FVF;
+	int							m_Length;
+	char*						m_BufferPtr;
+	short						m_Stride;
+	char						field_16;
+	int							m_FVFIndex;
+	int							m_Flags;
+	int							field_20;
+	LPDIRECT3DVERTEXBUFFER9		m_Direct3DVertexBuffer;
 
 public:
-	GfxInternal_Dx9_Vertex(int unk1, int size, int unk2);	//	@464E70
+	GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags);	//	@464E70
 	~GfxInternal_Dx9_Vertex();	//	@465070
+
+	void* operator new(size_t size)
+	{
+		if (!Allocators::Released)
+			return Allocators::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::AllocatorsList[DEFAULT]->Free(ptr);
+	}
+
+	void						CreateVertexBuffer();	//	@464CC0
+
+	static const VertexDeclaration	VertexDeclarations[];	//	@A0ABD0
+	static std::map<int, GfxInternal_Dx9_Vertex*>	VertexBufferMap;	//	@A39F58
 };
 
 struct GfxInternal_Dx9_IndexBuffer
@@ -74,9 +101,10 @@ struct GfxInternal_Dx9_Sampler
 //	TODO: as a future possibility - opengl version?
 class GfxInternal_Dx9
 {
-friend class Renderer;
-protected:
+friend class GfxInternal;
+public:
 	IDirect3DDevice9* m_Direct3DDevice;
+protected:
 	IDirect3DQuery9* m_FramesyncQuery;
 	char m_DeviceResetIssued;
 	char field_9[3];

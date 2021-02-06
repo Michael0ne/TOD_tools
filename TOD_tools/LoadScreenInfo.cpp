@@ -2,7 +2,7 @@
 #include "Performance.h"
 #include "LogDump.h"
 #include "Blocks.h"
-#include "Renderer.h"
+#include "GfxInternal.h"
 #include "ScriptDatabase.h"
 
 LoadScreenInfo* g_LoadScreenInfo = nullptr;

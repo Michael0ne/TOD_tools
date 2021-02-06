@@ -251,7 +251,8 @@ protected:
 		void*			m_SpacePtr;
 		const char*		m_DefragmentatorName;	//	NOTE: seems to be always "ALLOCATOR_DEFRAGMENTING".
 	};
-	DefragmentatorBase*	m_AllocatedSpace;
+
+	Defragmentator_Space*	m_AllocatedSpace;
 	int field_14;
 	int field_18;
 	int field_1C;

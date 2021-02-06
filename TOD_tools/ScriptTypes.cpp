@@ -509,6 +509,11 @@ void ScriptType_Builtin::RegisterHandler(const char* _hsignature, void* (*_hndlr
 	m_HandlersList.AddElement(&_hndlrtmp);
 }
 
+void ScriptType_Builtin::Print(void* args)
+{
+	LogDump::Print_Impl("%s", (const char*)*((int*)args));
+}
+
 BuiltinHandler::BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const char* _name)
 {
 	m_Prototype = _prot;

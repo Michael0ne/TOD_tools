@@ -51,8 +51,8 @@ void GfxInternal_Dx9_Surface::SetPixelColor(unsigned int x, unsigned int y, cons
 {
 	//	TODO: is this conversion correct?
 	unsigned int i = 4 * (x + y * m_WidthPowerOf2);
-	m_ColorPallette[i++]	= (char)clr.a * 255.f;
-	m_ColorPallette[i++]	= (char)clr.r * 255.f;
-	m_ColorPallette[i++]	= (char)clr.g * 255.f;
-	m_ColorPallette[i]		= (char)clr.b * 255.f;
+	m_ColorPallette[i++]	= (char)(clr.a * 255.f);
+	m_ColorPallette[i++]	= (char)(clr.r * 255.f);
+	m_ColorPallette[i++]	= (char)(clr.g * 255.f);
+	m_ColorPallette[i]		= (char)(clr.b * 255.f);
 }
