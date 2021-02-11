@@ -137,6 +137,7 @@ public:
 	void*			LoadResourceBlock(class File*, void* resbufferptr, unsigned int* resdatasize, BlockTypeNumber resblockid);	//	@8759E0
 	Entity*			_8755E0();	//	@8755E0
 	Entity*			_875610(Entity*);	//	@875610
+	int				GetRegionId() const;	//	@875440
 	
 	static void		GetPlatformSpecificResourcePath(String& outPath, const char* respath, GameConfig::CountryCodes region, ResType::PlatformId platform);	//	@876500
 	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0

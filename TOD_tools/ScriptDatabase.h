@@ -205,6 +205,7 @@ namespace Script
 	static float MinFadeDist = 15.f;	//	@A11C8C
 	static bool LodAndFade = true;	//	@A11C88
 	static bool FixDanglingRefs = true;	//	@A1207D
+	static float LodFactor = 1.0f;	//	@A12090
 	static unsigned int LanguageStringsOffset = 0;	//	@A35E28
 	static bool RelaxBuildVersionCheck;	//	@A5D5B0
 	static bool CutsceneDisableAware;	//	@A3D892
@@ -231,6 +232,16 @@ namespace Script
 
 	static bool IsRegionEurope() { return false; };	//	@420160
 	static const char* GetCurrentCountryCode() { return CountryCodes[LanguageStringsOffset]; };	//	@42E500
+	static void SetCountryCode(const char* lang)	//	@42E530
+	{
+		unsigned int languageIndex = NULL;
+
+		for (unsigned int i = 0; i < (sizeof(CountryCodes) / sizeof(char*)); i++)
+			if (strncmp(CountryCodes[i], lang, 2) == NULL)
+				languageIndex = i;
+
+		Script::LanguageStringsOffset = languageIndex;
+	}
 	static unsigned int GetGlobalPropertyListCRC();	//	@873440
 	static unsigned int GetGlobalCommandListCRC();	//	@871DD0
 	static unsigned int	GetCommandId(const char* commandName, bool alreadyRegistered);	//	@872590

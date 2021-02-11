@@ -269,7 +269,7 @@ namespace GameConfig
 			Script::LanguageStringsOffset = 0;
 
 		if (m_ConfigurationVariables->IsVariableSet("language_mode"))
-			SetCountryCode(m_ConfigurationVariables->GetParamValueString("language_mode").m_szString);
+			Script::SetCountryCode(m_ConfigurationVariables->GetParamValueString("language_mode").m_szString);
 
 		Script::LanguageMode = Script::CountryCodes[Script::LanguageStringsOffset];
 
@@ -443,7 +443,7 @@ namespace GameConfig
 
 		ScreenBuffers[11].x = ScreenBuffers[12].x = 2.f;
 
-		g_Renderer = new GfxInternal(&ScreenSize, 32, 16, (Script::Fullscreen ? (GfxInternal::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
+		g_GfxInternal = new GfxInternal(&ScreenSize, 32, 16, (Script::Fullscreen ? (GfxInternal::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
 
 		//	Set region.
 		Script::Region = Script::IsRegionEurope() ? "europe" : "usa";
@@ -464,7 +464,7 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("screen_safe_area"))
 			g_ScreenProperties.SetSafeArea(m_ConfigurationVariables->GetParamValueFloat("screen_safe_area"));
 
-		g_Renderer->SetClearColorForBufferIndex(*((ColorRGB*)&m_vBackgroundSize), -1);
+		g_GfxInternal->SetClearColorForBufferIndex(*((ColorRGB*)&m_vBackgroundSize), -1);
 
 		//	TODO: what is this?
 		GfxInternal::_A08704[0].field_0 = 0;
@@ -722,7 +722,7 @@ namespace GameConfig
 		delete g_InputMouse;
 		delete g_InputKeyboard;
 		delete Input::Gamepad::GetGameControllerByIndex(0);
-		delete g_Renderer;
+		delete g_GfxInternal;
 		delete g_StreamedSoundBuffers;
 		delete g_Window;
 
@@ -752,19 +752,17 @@ namespace GameConfig
 	{	
 	}
 
-	void Session_Variables::LoadVariablesFile(const char* file, int unk)
+	void Session_Variables::LoadVariablesFile(const char* file, bool configvariables)
 	{
 		LogDump::LogA("Loading variable file '%s'...\n", file);	//	NOTE: actual EXE code doesn't have call to LogA, only sprintf.
 
 		File file_(file, 1, true);
-		ParseVariablesFile(&file_, unk);
+		ParseVariablesFile(&file_, configvariables);
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
-	void Session_Variables::ParseVariablesFile(File* file, char unk)
+	void Session_Variables::ParseVariablesFile(File* file, bool configvariables)
 	{
-		(*(void(__thiscall*)(Session_Variables*, File*, char))0x411A30)(this, file, unk);
-
 		//file->WriteFromBuffer();
 		//int filesize = file->GetPosition();
 		//file->WriteBufferAndSetToStart();
@@ -778,29 +776,29 @@ namespace GameConfig
 	{
 		MESSAGE_CLASS_CREATED(Session_Variables);
 
-		m_PlainValues;
-		m_Keys;
-		field_20;
-		field_30;
-		field_40;
-		field_50;
+		m_PlainValues = { 17 };
+		m_Keys = { 17 };
+		field_20 = { 17 };
+		field_30 = { 17 };
+		field_40 = { 17 };
+		field_50 = { 17 };
 
 		m_TotalVariables = NULL;
 		field_64 = NULL;
 	}
 
-	Session_Variables::Session_Variables(const char* file, int unk)
+	Session_Variables::Session_Variables(const char* file, bool configvariables)
 	{
 		MESSAGE_CLASS_CREATED(Session_Variables);
 
-		m_PlainValues;
-		m_Keys;
-		field_20;
-		field_30;
-		field_40;
-		field_50;
+		m_PlainValues = { 17 };
+		m_Keys = { 17 };
+		field_20 = { 17 };
+		field_30 = { 17 };
+		field_40 = { 17 };
+		field_50 = { 17 };
 
-		LoadVariablesFile(file, unk);
+		LoadVariablesFile(file, configvariables);
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -916,18 +914,6 @@ namespace GameConfig
 		g_Window->Process(Scene::GameUpdate);
 
 		delete g_Config;
-	}
-
-	void SetCountryCode(const char* szCode)
-	{
-		unsigned int languageIndex = 0;
-
-		while (languageIndex++ < CONFIG_LANGUAGES) {
-			if (Script::CountryCodes[languageIndex] && strncmp(szCode, Script::CountryCodes[languageIndex], 2) == 0)
-				break;
-		}
-
-		Script::LanguageStringsOffset = languageIndex;
 	}
 
 	CountryCodes GetRegionId(String* regionStr)

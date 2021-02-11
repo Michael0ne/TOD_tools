@@ -19,7 +19,7 @@ RenderBuffer::RenderBuffer(int maxParams, AllocatorIndex allocatorType)
 		{
 			m_ParamsArray = Buffer;
 			m_MaxParams = RENDERBUFFER_DEFAULT_BUFFER_SIZE;
-			g_Renderer->SetRenderBufferIsEmpty(true);
+			g_GfxInternal->SetRenderBufferIsEmpty(true);
 			m_CurrentParamIndex = NULL;
 			m_PrevParamIndex = NULL;
 

@@ -12,7 +12,6 @@ namespace GameConfig {
 	#define CONFIG_GAMENAME "Total Overdose"
 	#define CONFIG_SAVEDIR	"/Total Overdose/"
 	#define CONFIG_CONFIGFILE "/configpc.txt"
-	#define CONFIG_LANGUAGES 6
 
 #ifdef INCLUDE_FIXES
 	#define CONFIG_MENU_RESOURCEID 103
@@ -34,20 +33,20 @@ namespace GameConfig {
 			void*			field_4;
 		};
 	protected:
-		KeyValueList<StringTuple, void> m_PlainValues;	//	NOTE: format is "varname=varvalue".
+		KeyValueList<KeyValueListElement<StringTuple>, KeyValueListElement<StringTuple>> m_PlainValues;	//	NOTE: format is "varname=varvalue".
 		KeyValueList<VariableNameInfo, void> m_Keys;	//	NOTE: only variables names.
-		KeyValueList<void, void> field_20;
-		KeyValueList<VariableUnknownInfo, void> field_30;
-		KeyValueList<void, void> field_40;
+		KeyValueList<void, void> field_20;	//	NOTE: appears to be always empty.
+		KeyValueList<KeyValueListElement<VariableUnknownInfo>, KeyValueListElement<VariableUnknownInfo>> field_30;
+		KeyValueList<void, void> field_40;	//	NOTE: this and one below appears to be unused.
 		KeyValueList<void, void> field_50;
 		int		m_TotalVariables;
 		char	field_64;
 
-		void	LoadVariablesFile(const char* file, int unk);	//	@412110
-		void	ParseVariablesFile(File* file, char unk);	//	@411A30
+		void	LoadVariablesFile(const char* file, bool configvariables);	//	@412110
+		void	ParseVariablesFile(File* file, bool configvariables);	//	@411A30
 	public:
 		Session_Variables(int);	//	@410680
-		Session_Variables(const char* file, int unk);	//	@4124D0
+		Session_Variables(const char* file, bool configvariables);	//	@4124D0
 		~Session_Variables();	//	@4107B0
 
 		void* operator new(size_t size)
@@ -92,7 +91,8 @@ namespace GameConfig {
 
 	class Config
 	{
-	private:
+		friend class ScriptType_Builtin;
+	protected:
 		bool				m_Initialized;
 		String				m_GameName;
 		String				m_ConfigFilePath;
@@ -141,7 +141,6 @@ namespace GameConfig {
 
 	void					InitialiseGame(LPSTR cmdline);	//	@93F680
 
-	static void				SetCountryCode(const char* szCode);	//	@42E530
 	static CountryCodes		GetRegionId(String* regionStr);	//	@875450
 	static void				EnumMaterialsInCollmat();	//	@87D330
 	static void				EnumFaceColMaterials();	//	@87D100
@@ -156,7 +155,7 @@ namespace GameConfig {
 
 	static List<String>&	FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
 	static File&			ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8
-	static KeyValueList<CollmatListEntry, void>	ColMatList = KeyValueList<CollmatListEntry, void>();	//	@A11704	//	TODO: this more looks like double-linked list.
+	static KeyValueList<CollmatListEntry, void>	ColMatList = KeyValueList<CollmatListEntry, void>(0);	//	@A11704	//	TODO: this more looks like double-linked list.
 
 	extern Config* g_Config;
 }

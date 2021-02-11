@@ -9682,7 +9682,7 @@ public:
 	void		SetProjection(float, float aspectratio, float, float nearplane);	//	@44E580
 	void		_44E680(const D3DMATRIX*, Vector2<float>*, unsigned int*);	//	@44E680
 	int			GetAvailableTextureMemory() const;	//	@44E960	//	NOTE: unused completely.
-	void		DumpScreenShot(void*);	//	@44E970	//	TODO: first param could be some internal surface class.
+	void		DumpScreenShot(GfxInternal_Dx9_Surface* surf);	//	@44E970
 	void		SetTextureAddressMode(int, int ind);	//	@44EB30
 	void		SetCullMode(unsigned int);	//	@44EB80
 	HRESULT		GetDeviceCaps(IDirect3D9*, D3DCAPS9*);	//	@44EBC0

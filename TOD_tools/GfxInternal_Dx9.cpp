@@ -404,7 +404,7 @@ void GfxInternal_Dx9::CreateRenderDevice()
 	//	::450610(1024)
 	//	::450DB0()
 
-	if (g_Renderer->WideScreen)
+	if (g_GfxInternal->WideScreen)
 		g_ScreenProperties.SetWindowProperties(m_ViewportWidth, m_ViewportHeight, (float)((m_ViewportWidth * 0.0625) / (m_ViewportHeight * 0.1111)), 1.0f);
 	else
 		g_ScreenProperties.SetWindowProperties(m_ViewportWidth, m_ViewportHeight, m_fAspectRatio, 1.0f);
@@ -445,6 +445,44 @@ void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath
 	if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) &&
 		FAILED(D3DXCreateTextureFromFileA(m_Direct3DDevice, texturePath, m_TexturesArray)))
 		*m_TexturesArray = nullptr;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface* surf)
+{
+	LogDump::LogA("Dumping screenshot!\n");
+	
+	LPDIRECT3DSURFACE9 backBufferSurface = nullptr;
+	D3DSURFACE_DESC backBufferSurfaceDesc;
+	D3DLOCKED_RECT backBufferRect;
+	
+	m_Direct3DDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &backBufferSurface);
+	backBufferSurface->GetDesc(&backBufferSurfaceDesc);
+	backBufferSurface->LockRect(&backBufferRect, nullptr, 16);	//	FIXME: replace 16 with actual flag.
+	
+	LogDump::LogA("copying from surface (%i,%i) --> (%i,%i)\n", backBufferSurfaceDesc.Width, backBufferSurfaceDesc.Height, surf->m_Width, surf->m_Height);
+	
+	//	TODO: convert colors
+	for (unsigned int x = 0; x < backBufferSurfaceDesc.Width; x++)
+		for (unsigned int y = 0; y < backBufferSurfaceDesc.Height; y++)
+			switch (backBufferSurfaceDesc.Format)
+			{
+				case D3DFMT_X8R8G8B8:
+				case D3DFMT_A8R8G8B8:
+					surf->SetPixelColor(x, y, {});
+					break;
+				case D3DFMT_R5G6B5:
+					surf->SetPixelColor(x, y, {});
+					break;
+				case D3DFMT_X1R5G5B5:
+				case D3DFMT_A1R5G5B5:
+					surf->SetPixelColor(x, y, {});
+					break;
+			}
+	
+	backBufferSurface->UnlockRect();
+	if (backBufferSurface)
+	backBufferSurface->Release();
 }
 
 GfxInternal_Dx9_Vertex::GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags)

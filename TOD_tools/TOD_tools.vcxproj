@@ -149,7 +149,6 @@
     <ClInclude Include="CutscenePlayer.h" />
     <ClInclude Include="DecalManager.h" />
     <ClInclude Include="DieselPowerSound.h" />
-    <ClInclude Include="DumpTable.h" />
     <ClInclude Include="DynamicSurroundGeometry.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="Entity.h" />
@@ -268,7 +267,6 @@
     <ClCompile Include="CutscenePlayer.cpp" />
     <ClCompile Include="DecalManager.cpp" />
     <ClCompile Include="DieselPowerSound.cpp" />
-    <ClCompile Include="DumpTable.cpp" />
     <ClCompile Include="DynamicSurroundGeometry.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="Entity.cpp" />

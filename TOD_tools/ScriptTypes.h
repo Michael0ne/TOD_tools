@@ -437,15 +437,42 @@ public:
 	}
 };
 
-struct BuiltinMember
+//	NOTE: DumpTable class.
+class DumpTable_Column
 {
 protected:
-	unsigned int m_MemberId;
-	ScriptType*	m_ReturnType;
-	void*		(*m_GetProcPtr)();
-	void		(*m_SetProcPtr)();
-	String		m_MemberProto;
-	String		m_String_1;
+	virtual ~DumpTable_Column();
+	DumpTable_Column();
+};
+
+class DumpTable_IntegerColumn : public DumpTable_Column
+{
+protected:
+	unsigned int	field_4;
+	char			field_8;
+	String			m_ColumnName;
+};
+
+struct DumpTable_Element
+{
+	friend class ScriptType_Builtin;
+protected:
+	List<DumpTable_Column>	m_Columns;
+	unsigned int	m_NumRows;
+
+public:
+	DumpTable_Element();	//	@4014E0
+	DumpTable_Element(const char* const s);	//	@401E40
+};
+
+//	NOTE: Builtin-related classes.
+struct BuiltinMember
+{
+	ScriptType*	m_RetType;
+	void*		(*m_GetProcPtr)(void);
+	void*		(*m_SetProcPtr)(void);
+	String		m_Proto;
+	String		m_Str_2;
 };
 
 struct BuiltinHandler
@@ -462,17 +489,122 @@ public:
 
 class ScriptType_Builtin : public ScriptType_Entity
 {
-protected:
+private:
+	ScriptType_Builtin();	//	@486D00
+	
 	List<BuiltinHandler>	m_HandlersList;
-	KeyValueList<BuiltinMember, int>	m_MembersMap;
+	KeyValueList<BuiltinMember, BuiltinMember>	m_MembersMap;
 
-	void	RegisterMember(ScriptType* _rettype, const char* _membname, void* (*_getproc)(), void (*_setproc)(int), const char* _membproto, const char* _unk);	//	@486D90
-	void	RegisterHandler(const char* _hsignature, void* (*_hndlr)(void*), const char* _hmsg);	//	@486430
+	void	RegisterMemberFunction(ScriptType* _rettype, const char* _membname, void* (*_getproc)(), void (*_setproc)(int), const char* _membproto, const char* _unk);	//	@486D90
+	void	RegisterHandler(const char* _hsignature, void*, const char* _hmsg);	//	@486430
 
-	void	ProfileBegin(void* args);	//	@484F50	//	NOTE: args[0] is of type const char*, args[1] is of type int.
-	void	ProfileEnd(void* args);		//	@484F60
-	void	Print(void* args);	//	@484FB0
+public:
+	void	Sin(float*);	//	@487C10
+	void	Cos(float*);	//	@487C30
+	void	Tan(float*);	//	@487C50
+	void	Asin(float*);	//	@487C70
+	void	Acos(float*);	//	@487C90
+	void	Atan(float*);	//	@487CB0
+	void	Abs(int*);	//	@487CE0
+	void	Fabs(float*);	//	@487CD0
+	void	Sqrt(float*);	//	@487D20
+	void	Floor(float*);	//	@487D00
+	void	Ceil(float*);	//	@487D30
+	void	Clamp(float*);	//	@487D50
+	void	Testbits(int*);	//	@487D90
+	void	Setbit(int*);	//	@487DB0
+	void	Getbit(int*);	//	@487DD0
+	void	Rand_seed(int*);	//	@484F70
+	void	Rand_integer(int*);	//	@484F80
+	void	Rand_number(float*);	//	@484FA0
+	void	Get_facecoll_MaterialID(void*);	//	@485D30
+	void	GetTime(float*);	//	@487DF0
+	void	Print(int*);	//	@484FB0
+	void	IsKeyDown(int*);	//	@485210
+	void	IsKeyPressed(int*);	//	@485250
+	void	IsKeyReleased(int*);	//	@485280
+	void	DrawPoint(int*);	//	@4855F0
+	void	DrawLine(int*);	//	@4855B0
+	void	DrawLine2D(int*);	//	@4855C0
+	void	DrawSphere(int*);	//	@485600
+	void	ProfileBegin(int*);	//	@484F50
+	void	ProfileEnd(int*);	//	@484F60
+	void	NumberToInteger(float*);	//	@487E30
+	void	IntegerToNumber(int*);	//	@487E20
+	void	PrintStack(int*);	//	@4852B0
+	void	GenericCall(int*);	//	@485300
+	void	QuadTreeQuery(int*);	//	@486950
+	void	AuxQuadTreeQuery(int*);	//	@4865A0
+	void	SetSelectedSoundrenderer(int*);	//	@484FE0
+	void	SfxMuteAll(int*);	//	@485070
+	void	SfxIsMuteAll(int*);	//	@485090
+	void	AllocateGlobalStreamedSound(int*);	//	@4850B0
+	void	DeallocateGlobalStreamedSound(int*);	//	@4850E0
+	void	PlayGlobalStreamedSound(int*);	//	@4850F0
+	void	StopGlobalStreamedSound(int*);	//	@485110
+	void	SetVolumePitchGlobalStreamedSound(int*);	//	@485130
+	void	GetDefaultFxVolumeVar(float*);	//	@485150
+	void	GetDefaultAmbienceVolumeVar(float*);	//	@485170
+	void	GetDefaultMusicVolumeVar(float*);	//	@485190
+	void	GetDefaultSpeaksVolumeVar(float*);	//	@4851B0
+	void	SetVolModifierOnGroup(int*);	//	@485870
+	void	CutsceneDisableAware(int*);	//	@4851D0
+	void	IsDebugConsoleActive(int*);	//	@4851E0
+	void	DebugConsoleTextBox(int*);	//	@4851F0
+	void	DebugConsolePrint(int*);	//	@485200
+	void	GlobalKillAllEmmiters(int*);	//	@484FD0
+	void	GetVersionNumber(char**);	//	@4856F0
+	void	GetConfigString(int*);	//	@485770
+	void	GetConfigTruth(int*);	//	@485310
+	void	GetSessionVariableString(char*);	//	@4857F0
+	void	SetSessionVariableString(char*);	//	@485390
+	void	GetSessionVariableTruth(char*);	//	@485350
+	void	SetSessionVariableTruth(char*);	//	@4853B0
+	void	SetCurrentCountryCode(char*);	//	@487E10
+	void	GetCurrentCountryCode(char*);	//	@4882F0
+	void	SetDiscErrorMessage(int*);	//	@485610
+	void	SetLodFactor(float*);	//	@4852E0
+	void	LoadScene(char**);	//	@485CD0
+	void	GetSystemLanguage(int*);	//	@4855D0
+	void	StartCleanupDashboard(int*);	//	@4853E0
+	void	SetScreenResolution(int*);	//	@4853F0
+	void	GetScreenResolution(float*);	//	@485420
+	void	IsScreenResolutionAvailable(int*);	//	@485460
+	void	IsWideScreen(int*);	//	@485640
+	void	SetVirtualHudScreenSize(float*);	//	@485480
+	void	GetVirtualHudScreenSize(float*);	//	@4854C0
+	void	GetScreenTopInVirtualUnits(float*);	//	@485500
+	void	GetScreenBottomInVirtualUnits(float*);	//	@485520
+	void	GetScreenLeftInVirtualUnits(float*);	//	@485540
+	void	GetScreenRightInVirtualUnits(float*);	//	@485560
+	void	DisableCurrentLoadScreen(int*);	//	@485580
+	void	GetEditorActive(bool*);	//	@4853D0
+	void	DumptableCreate(int*);	//	@486200
+	void	DumptableCreateFromFile(int*);	//	@4862C0
+	void	DumptableAddIntegerColumn(int*);	//	@4858C0
+	void	DumptableAddNumberColumn(int*);	//	@4858F0
+	void	DumptableAddStringColumn(int*);	//	@485920
+	void	DumptableSetNumRows(int*);	//	@485950
+	void	DumptableSetIntegerValue(int*);	//	@485970
+	void	DumptableSetNumberValue(float*);	//	@4859A0
+	void	DumptableSetStringValue(int*);	//	@4859D0
+	void	DumptableWriteToFile(int*);	//	@485A00
+	void	DumptableClose(int*);	//	@485A90
+	void	EditorReloadAllAssets(int*);	//	@485590
+	void	EditorSelectNode(int*);	//	@4855A0
+	void	GetRegion(int*);	//	@485620
+	void	GetMessageId(int*);	//	@488040
+	void	QuitGame(int*);	//	@485660
+	void	GetCoverdemoPlayMode(int*);	//	@485670
+	void	GetCoverdemoInactiveTimeoutSec(int*);	//	@485690
+	void	GetCoverdemoGameplayTimeoutSec(int*);	//	@4856B0
+	void	CoverdemoExit(int*);	//	@4856D0
+
+	static void	Register();	//	@486F30
 };
+
+extern List<DumpTable_Element>	DumpTable;	//	@A0B3A4
+extern ScriptType_Builtin* tBuiltin;	//	@A3B578
 
 static ScriptType_Nothing* tNOTHING = (ScriptType_Nothing*)0xA3CE94;	//	@A3CE94
 static ScriptType_Number* tNUMBER = (ScriptType_Number*)0xA3CEC0;		//	@A3CEC0
