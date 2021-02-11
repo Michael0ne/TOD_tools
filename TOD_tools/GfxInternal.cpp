@@ -2,7 +2,7 @@
 #include "Performance.h"
 #include "LogDump.h"
 
-GfxInternal*	g_Renderer = nullptr;
+GfxInternal*	g_GfxInternal = nullptr;
 bool		GfxInternal::WideScreen;	//	@A39F12
 bool		GfxInternal::FSAA;
 float		GfxInternal::RatioXY = 1.0f;	//	@A119F4
@@ -44,7 +44,7 @@ GfxInternal::GfxInternal(const Vector2<int>* resolution, unsigned int unused1, u
 {
 	MESSAGE_CLASS_CREATED(GfxInternal);
 
-	g_Renderer = this;
+	g_GfxInternal = this;
 
 	m_TexturesList = List<GfxInternal_Dx9_Texture>();
 	m_TimeDelta = 0.f;
@@ -152,6 +152,11 @@ void GfxInternal::PrepareForNewLevel()
 		g_RendererDx->field_975C = g_Renderer->m_FramesRendered;
 	}
 	*/
+}
+
+void GfxInternal::DumpScreenShot(GfxInternal_Dx9_Surface* surf)
+{
+	g_RendererDx->DumpScreenShot(surf);
 }
 
 void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, float unk2)

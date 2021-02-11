@@ -3,6 +3,15 @@
 #include "Node.h"
 #include "LogDump.h"
 #include "ScriptDatabase.h"
+#include "Random.h"
+#include "Performance.h"
+#include "StreamedSoundBuffers.h"
+#include "Window.h"
+#include "GfxInternal.h"
+#include "LoadScreenInfo.h"
+
+ScriptType_Builtin* tBuiltin;
+List<DumpTable_Element> DumpTable;
 
 int ScriptType::_489370(int* unk1, int* unk2)
 {
@@ -498,20 +507,645 @@ ScriptField::ScriptField(const char* name, ScriptType* stype, unsigned int)
 	m_Type = stype;
 }
 
+ScriptType_Builtin::ScriptType_Builtin() : ScriptType_Entity("builtin")
+{
+	MESSAGE_CLASS_CREATED(ScriptType_Builtin);
+
+	m_HandlersList;
+	m_MembersMap;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
-void ScriptType_Builtin::RegisterMember(ScriptType* _rettype, const char* _membname, void* (*_getproc)(), void (*_setproc)(int), const char* _membproto, const char* _unk)
+void ScriptType_Builtin::RegisterMemberFunction(ScriptType* _rettype, const char* _membname, void* (*_getproc)(), void (*_setproc)(int), const char* _membproto, const char* _unk)
 {
 }
 
-void ScriptType_Builtin::RegisterHandler(const char* _hsignature, void* (*_hndlr)(void*), const char* _hmsg)
+void ScriptType_Builtin::RegisterHandler(const char* _hsignature, void*, const char* _hmsg)
 {
 	BuiltinHandler _hndlrtmp(_hsignature, _hndlr, _hmsg);
 	m_HandlersList.AddElement(&_hndlrtmp);
 }
 
-void ScriptType_Builtin::Print(void* args)
+void ScriptType_Builtin::Sin(float* arg)
 {
-	LogDump::Print_Impl("%s", (const char*)*((int*)args));
+	*arg = sin(arg[1]);
+}
+
+void ScriptType_Builtin::Cos(float* arg)
+{
+	*arg = cos(arg[1]);
+}
+
+void ScriptType_Builtin::Tan(float* arg)
+{
+	*arg = tan(arg[1]);
+}
+
+void ScriptType_Builtin::Asin(float* arg)
+{
+	*arg = asin(arg[1]);
+}
+
+void ScriptType_Builtin::Acos(float* arg)
+{
+	*arg = acos(arg[1]);
+}
+
+void ScriptType_Builtin::Atan(float* arg)
+{
+	*arg = atan(arg[1]);
+}
+
+void ScriptType_Builtin::Abs(int* arg)
+{
+	*arg = abs(arg[1]);
+}
+
+void ScriptType_Builtin::Fabs(float* arg)
+{
+	*arg = fabs(arg[1]);
+}
+
+void ScriptType_Builtin::Sqrt(float* arg)
+{
+	*arg = sqrt(arg[1]);
+}
+
+void ScriptType_Builtin::Floor(float* arg)
+{
+	*arg = floor(arg[1]);
+}
+
+void ScriptType_Builtin::Ceil(float* arg)
+{
+	*arg = ceil(arg[1]);
+}
+
+void ScriptType_Builtin::Clamp(float* arg)
+{
+	if (arg[2] <= arg[1])
+		*arg = arg[1] <= arg[3] ? arg[1] : arg[3];
+	else
+		*arg = arg[2];
+}
+
+void ScriptType_Builtin::Testbits(int* arg)
+{
+	*arg = (arg[1] & arg[2]) != NULL;
+}
+
+void ScriptType_Builtin::Setbit(int* arg)
+{
+	*arg = arg[1] | (1 << arg[2]);
+}
+
+void ScriptType_Builtin::Getbit(int* arg)
+{
+	*arg = (arg[1] & (1 << arg[2])) != NULL;
+}
+
+void ScriptType_Builtin::Rand_seed(int* arg)
+{
+	Random::Init(*arg);
+}
+
+void ScriptType_Builtin::Rand_integer(int* arg)
+{
+	*arg = Random::Integer(arg[1]);
+}
+
+void ScriptType_Builtin::Rand_number(float* arg)
+{
+	*arg = Random::Float();
+}
+
+void ScriptType_Builtin::Get_facecoll_MaterialID(void* arg)
+{
+	*((int*)arg) = GetFacecollMaterialId((const char*)((int*)arg)[1]);	//	FIXME: this is obnoxious.
+}
+
+void ScriptType_Builtin::GetTime(float* arg)
+{
+	*arg = Performance::GetMilliseconds() * 0.001f;
+}
+
+void ScriptType_Builtin::Print(int* arg)
+{
+	LogDump::Print_Impl("%s", (const char*)*arg);
+}
+
+void ScriptType_Builtin::IsKeyDown(int* arg)
+{
+	*arg = g_InputKeyboard->m_bAcquired ? g_InputKeyboard->m_nButtonStates1[arg[1]] >> 7 : NULL;
+}
+
+void ScriptType_Builtin::IsKeyPressed(int* arg)
+{
+	*arg = g_InputKeyboard->m_bAcquired ? g_InputKeyboard->m_nButtonStates1[arg[1]] & 1 : NULL;
+}
+
+void ScriptType_Builtin::IsKeyReleased(int* arg)
+{
+	*arg = g_InputKeyboard->m_bAcquired ? (g_InputKeyboard->m_nButtonStates1[arg[1]] & 2) != NULL : NULL;
+}
+
+void ScriptType_Builtin::DrawPoint(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->DrawPoint: (%f, %f, %f) %i\n", (float)arg[1], (float)arg[2], (float)arg[3], arg[4]);
+#endif
+}
+
+void ScriptType_Builtin::DrawLine(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->DrawLine: (%f, %f, %f) (%f, %f, %f) %i\n", (float)arg[1], (float)arg[2], (float)arg[3], (float)arg[4], (float)arg[5], (float)arg[6], arg[7]);
+#endif
+}
+
+void ScriptType_Builtin::DrawLine2D(int*)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->DrawLine2D: (%f, %f, %f) (%f, %f, %f) %i\n", (float)arg[1], (float)arg[2], (float)arg[3], (float)arg[4], (float)arg[5], (float)arg[6], arg[7]);
+#endif
+}
+
+void ScriptType_Builtin::DrawSphere(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->DrawSphere: (%f, %f, %f) %f %i\n", (float)arg[1], (float)arg[2], (float)arg[3], (float)arg[4], arg[5]);
+#endif
+}
+
+void ScriptType_Builtin::ProfileBegin(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->ProfileBegin: \"%s\" %i\n", (const char*)(arg[1]), arg[2]);
+#endif
+}
+
+void ScriptType_Builtin::ProfileEnd(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->ProfileEnd: \"%s\" %i\n", (const char*)(arg[1]), arg[2]);
+#endif
+}
+
+void ScriptType_Builtin::NumberToInteger(float* arg)
+{
+	*arg = (int)arg[1];
+}
+
+void ScriptType_Builtin::IntegerToNumber(int* arg)
+{
+	*arg = (float)arg[1];
+}
+
+void ScriptType_Builtin::PrintStack(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->PrintStack: %X\n", arg[1]);	//	NOTE: arg[1] is of type Entity.
+#endif
+}
+
+void ScriptType_Builtin::GenericCall(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->GenericCall: %X\n", arg[1]);	//	NOTE: arg[1] is of type Entity.
+#endif
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::QuadTreeQuery(int* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::AuxQuadTreeQuery(int* arg)
+{
+}
+
+void ScriptType_Builtin::SetSelectedSoundrenderer(int* arg)
+{
+	LogDump::LogA("@@@@@@@@@ selected_sound: %d\n", *arg);
+
+	switch (*arg)
+	{
+	case 1:
+		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_DIESELPOWER);
+		break;
+	case 2:
+		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_DSOUND);
+		break;
+	case 3:
+		Audio::RememberSoundRenderer(NULL);
+		break;
+	default:
+		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_AUTOSELECT);
+		break;
+	}
+}
+
+void ScriptType_Builtin::SfxMuteAll(int* arg)
+{
+	g_StreamedSoundBuffers->m_Muted = *arg == 1;
+}
+
+void ScriptType_Builtin::SfxIsMuteAll(int* arg)
+{
+	*arg = (int)g_StreamedSoundBuffers->m_Muted;
+}
+
+void ScriptType_Builtin::AllocateGlobalStreamedSound(int* arg)
+{
+	*arg = Audio::AllocateGlobalStreamedSound((const char*)(arg[1]), arg[2] != NULL, arg[3] != NULL);
+}
+
+void ScriptType_Builtin::DeallocateGlobalStreamedSound(int* arg)
+{
+	Audio::DeallocateGlobalStreamedSound();
+}
+
+void ScriptType_Builtin::PlayGlobalStreamedSound(int* arg)
+{
+	*arg = Audio::PlayGlobalStreamedSound();
+}
+
+void ScriptType_Builtin::StopGlobalStreamedSound(int* arg)
+{
+	*arg = Audio::StopGlobalStreamedSound();
+}
+
+void ScriptType_Builtin::SetVolumePitchGlobalStreamedSound(int* arg)
+{
+	*arg = Audio::SetVolumePitchGlobalStreamedSound((float)arg[1], (float)arg[2]);
+}
+
+void ScriptType_Builtin::GetDefaultFxVolumeVar(float* arg)
+{
+	*arg = 1.0f;
+}
+
+void ScriptType_Builtin::GetDefaultAmbienceVolumeVar(float* arg)
+{
+	*arg = 1.0f;
+}
+
+void ScriptType_Builtin::GetDefaultMusicVolumeVar(float* arg)
+{
+	*arg = 1.0f;
+}
+
+void ScriptType_Builtin::GetDefaultSpeaksVolumeVar(float* arg)
+{
+	*arg = 1.0f;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::SetVolModifierOnGroup(int* arg)
+{
+}
+
+void ScriptType_Builtin::CutsceneDisableAware(int* arg)
+{
+	*arg = Script::CutsceneDisableAware;
+}
+
+void ScriptType_Builtin::IsDebugConsoleActive(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->IsDebugConsoleActive\n");
+#else
+	*arg = NULL;
+#endif
+}
+
+void ScriptType_Builtin::DebugConsoleTextBox(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->DebugConsoleTextBox: %i %i %i %i %i\n", arg[1], arg[2], arg[3], arg[4], arg[5]);
+#endif
+}
+
+void ScriptType_Builtin::DebugConsolePrint(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->DebugConsolePrint: \"%s\"\n", (const char*)arg[1]);
+#endif
+}
+
+void ScriptType_Builtin::GlobalKillAllEmmiters(int* arg)
+{
+	ParticleSystem::KillEmmiters(false, false);
+}
+
+void ScriptType_Builtin::GetVersionNumber(char** arg)
+{
+	char procname[64] = {};
+	HANDLE prochnd = NULL;
+
+	sprintf(procname, "v7_%04d", GetCurrentProcessId() ^ 0x19EA3FD3);
+	prochnd = OpenEvent(EVENT_MODIFY_STATE, FALSE, procname);
+	*arg = new char[6];	//	TODO: who deletes this?
+
+	if (prochnd)
+	{
+		CloseHandle(prochnd);
+		strcpy(*arg, "v1.00");
+	}
+	else
+		strcpy(*arg, "v1,00");
+}
+
+void ScriptType_Builtin::GetConfigString(int* arg)
+{
+	if (GameConfig::g_Config->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]))
+	{
+		*(char**)&(*arg) = new char[45];
+		String valstr = GameConfig::g_Config->m_ConfigurationVariables->GetParamValueString((const char*)arg[1]);
+		strcpy(*(char**)&(*arg), valstr.m_szString);
+	}
+	else
+		*arg = NULL;
+}
+
+void ScriptType_Builtin::GetConfigTruth(int* arg)
+{
+	if (GameConfig::g_Config->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]))
+		*arg = GameConfig::g_Config->m_ConfigurationVariables->GetParamValueBool((const char*)arg[1]);
+	else
+		*arg = NULL;
+}
+
+void ScriptType_Builtin::GetSessionVariableString(char* arg)
+{
+	if (GameConfig::g_Config->m_SessionVariables->IsVariableSet((const char*)arg[1]))
+	{
+		*(char**)&(*arg) = new char[45];
+		String valstr = GameConfig::g_Config->m_SessionVariables->GetParamValueString((const char*)arg[1]);
+		strcpy(*(char**)&(*arg), valstr.m_szString);
+	}
+	else
+		*arg = NULL;
+}
+
+void ScriptType_Builtin::SetSessionVariableString(char* arg)
+{
+	GameConfig::g_Config->m_SessionVariables->SetParamValueString((const char*)*arg, (const char*)arg[1]);
+}
+
+void ScriptType_Builtin::GetSessionVariableTruth(char* arg)
+{
+	if (GameConfig::g_Config->m_SessionVariables->IsVariableSet((const char*)arg[1]))
+		*arg = GameConfig::g_Config->m_SessionVariables->GetParamValueBool((const char*)arg[1]);
+	else
+		*arg = false;
+}
+
+void ScriptType_Builtin::SetSessionVariableTruth(char* arg)
+{
+	GameConfig::g_Config->m_SessionVariables->SetParamValueTruth((char*)*arg, (char*)arg[1]);
+}
+
+void ScriptType_Builtin::SetCurrentCountryCode(char* arg)
+{
+	Script::SetCountryCode((char*)*arg);
+}
+
+void ScriptType_Builtin::GetCurrentCountryCode(char* arg)
+{
+	*(char**)(&(*arg)) = new char[4];
+	strcpy(*(char**)(&(*arg)), Script::GetCurrentCountryCode());
+}
+
+void ScriptType_Builtin::SetDiscErrorMessage(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->SetDiscErrorMessage: %p %i\n", *arg, arg[1]);
+#endif
+}
+
+void ScriptType_Builtin::SetLodFactor(float* arg)
+{
+	Script::LodFactor = *arg;
+}
+
+void ScriptType_Builtin::LoadScene(char** arg)
+{
+	if (!*arg || !**arg || !strlen(*arg))
+		return;
+
+	GameConfig::g_Config->m_SceneName = *arg;
+}
+
+void ScriptType_Builtin::GetSystemLanguage(int* arg)
+{
+	*arg = GetSystemLanguageCode();
+}
+
+void ScriptType_Builtin::StartCleanupDashboard(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->StartCleanupDashboard: %i\n", *arg);
+#endif
+}
+
+void ScriptType_Builtin::SetScreenResolution(int* arg)
+{
+	g_GfxInternal->SetScreenResolution(*arg, arg[1]);
+	g_Blocks->ResetSceneChildrenNodes(NULL);
+}
+
+void ScriptType_Builtin::GetScreenResolution(float* arg)
+{
+	Vector2<int> res;
+	g_GfxInternal->GetScreenResolution(res);
+
+	*arg = res.x;
+	arg[1] = res.y;
+	arg[2] = 0.f;	//	NOTE: why?
+}
+
+void ScriptType_Builtin::IsScreenResolutionAvailable(int* arg)
+{
+	*arg = g_GfxInternal->IsScreenResolutionAvailable(arg[1], arg[2]);
+}
+
+void ScriptType_Builtin::IsWideScreen(int* arg)
+{
+	*arg = GfxInternal::IsWideScreen();
+}
+
+void ScriptType_Builtin::SetVirtualHudScreenSize(float* arg)
+{
+	g_ScreenProperties.SetHudScreenSize(*arg, arg[1], 1.f, 1.f);
+}
+
+void ScriptType_Builtin::GetVirtualHudScreenSize(float* arg)
+{
+	*arg = g_ScreenProperties.m_fVirtualHudScreensizeWidth;
+	arg[1] = g_ScreenProperties.m_fVirtualHudScreensizeHeight;
+	arg[2] = 0.f;
+}
+
+void ScriptType_Builtin::GetScreenTopInVirtualUnits(float* arg)
+{
+	*arg = g_ScreenProperties.GetScreenTop();
+}
+
+void ScriptType_Builtin::GetScreenBottomInVirtualUnits(float* arg)
+{
+	*arg = g_ScreenProperties.GetScreenBottom();
+}
+
+void ScriptType_Builtin::GetScreenLeftInVirtualUnits(float* arg)
+{
+	*arg = g_ScreenProperties.GetScreenLeft();
+}
+
+void ScriptType_Builtin::GetScreenRightInVirtualUnits(float* arg)
+{
+	*arg = g_ScreenProperties.GetScreenRight();
+}
+
+void ScriptType_Builtin::DisableCurrentLoadScreen(int* arg)
+{
+	g_LoadScreenInfo->Deactivate();
+}
+
+void ScriptType_Builtin::GetEditorActive(bool* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->GetEditorActive: %c\n", false);
+#endif
+
+	*arg = false;
+}
+
+void ScriptType_Builtin::DumptableCreate(int* arg)
+{
+	DumpTable_Element dtel;
+	DumpTable.AddElement(&dtel);
+
+	*arg = DumpTable.m_CurrIndex;
+}
+
+void ScriptType_Builtin::DumptableCreateFromFile(int* arg)
+{
+	String buff;
+	File dtfile((const char*)*arg, 1, true);
+
+	while (!dtfile.ReadIfNotEOF())
+	{
+		char buf[4] = {};
+		dtfile.Read(buf, sizeof(buf));
+		buff.Append(buf);
+	}
+
+	DumpTable_Element dtel(buff.m_szString);
+	DumpTable.AddElement(&dtel);
+
+	*arg = DumpTable.m_CurrIndex;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableAddIntegerColumn(int* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableAddNumberColumn(int* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableAddStringColumn(int* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableSetNumRows(int* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableSetIntegerValue(int* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableSetNumberValue(float* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableSetStringValue(int* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableWriteToFile(int* arg)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::DumptableClose(int* arg)
+{
+}
+
+void ScriptType_Builtin::EditorReloadAllAssets(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->EditorReloadAllAssets: %s\n", (const char*)*arg);
+#endif
+}
+
+void ScriptType_Builtin::EditorSelectNode(int* arg)
+{
+#ifdef INCLUDE_FIXES
+	debug("pBuiltinModule->EditorSelectNode: %p\n", *arg);
+#endif
+}
+
+void ScriptType_Builtin::GetRegion(int* arg)
+{
+	*arg = g_Blocks->GetRegionId();
+}
+
+void ScriptType_Builtin::GetMessageId(int* arg)
+{
+	*arg = Script::GetCommandId((const char*)arg[1]);
+}
+
+void ScriptType_Builtin::QuitGame(int* arg)
+{
+	g_Window->QuitGame();
+}
+
+void ScriptType_Builtin::GetCoverdemoPlayMode(int* arg)
+{
+	*arg = g_Window->GetCoverdemoPlayMode();
+}
+
+void ScriptType_Builtin::GetCoverdemoInactiveTimeoutSec(int* arg)
+{
+	*arg = g_Window->GetCoverdemoInactiveTimeoutSec();
+}
+
+void ScriptType_Builtin::GetCoverdemoGameplayTimeoutSec(int* arg)
+{
+	*arg = g_Window->GetCoverdemoGameplayTimeoutSec();
+}
+
+void ScriptType_Builtin::CoverdemoExit(int*)
+{
+	exit(0);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::Register()
+{
+	tBuiltin = new ScriptType_Builtin();
 }
 
 BuiltinHandler::BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const char* _name)
@@ -519,4 +1153,17 @@ BuiltinHandler::BuiltinHandler(const char* _prot, void* (*_hndlr)(void*), const 
 	m_Prototype = _prot;
 	m_Handler = _hndlr;
 	m_Name = _name;
+}
+
+DumpTable_Element::DumpTable_Element()
+{
+	MESSAGE_CLASS_CREATED(DumpTable_Element);
+
+	m_Columns;
+	m_NumRows = NULL;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+DumpTable_Element::DumpTable_Element(const char* const s)
+{
 }

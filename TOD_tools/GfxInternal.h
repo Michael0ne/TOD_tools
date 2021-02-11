@@ -137,7 +137,8 @@ public:
 
 class ScreenProperties
 {
-private:
+	friend class ScriptType_Builtin;
+protected:
 	float m_fVirtualHudScreensizeWidth;
 	float m_fVirtualHudScreensizeHeight;
 	float field_8;	//	NOTE: scaleX?
@@ -201,6 +202,7 @@ public:
 	void							SetClearFlagsForBufferIndex(const unsigned int flags, const int index);	//	@41FD90
 	void							SetRenderBufferIsEmpty(bool);	//	@420170
 	void							PrepareForNewLevel();	//	@420180
+	void							DumpScreenShot(GfxInternal_Dx9_Surface* surf) const;	//	@420100
 
 	static bool						WideScreen;	//	@A39F12
 	static bool						FSAA;
@@ -216,7 +218,7 @@ public:
 };
 
 extern ScreenProperties g_ScreenProperties;
-extern GfxInternal* g_Renderer;
+extern GfxInternal* g_GfxInternal;
 
 //	NOTE: this is used in 'ExecuteRenderCommand' @4342C0
 enum RendererCommandsList

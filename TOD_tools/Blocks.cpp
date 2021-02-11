@@ -494,6 +494,11 @@ Entity* Blocks::_875610(Entity* node)
 		return nullptr;
 }
 
+int Blocks::GetRegionId() const
+{
+	return m_RegionId;
+}
+
 ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId)
 {
 	if (!resourceBlockId ||
