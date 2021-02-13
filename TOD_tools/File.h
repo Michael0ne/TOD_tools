@@ -68,8 +68,8 @@ protected:
 	unsigned char	m_FileReadAttribute;
 	unsigned char	m_ReadFromZip;
 	int				m_SeekPosition;
-	int				m_ZipIndex;	//	NOTE: not sure how to name this one and below, data is coming from zip slot.
-	int				m_ZipPos;
+	int				m_FileChecksum;
+	int				m_FileSize;
 	int				m_ZipSlot;
 	bool			m_ExecuteAttribute;
 	FileWrapper*	m_ZipFileHandle;
