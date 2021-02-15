@@ -49,6 +49,7 @@
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
 #define MESSAGE_CLASS_CREATED(x) debug(#x " created at %X\n", this)
 #define MESSAGE_CLASS_DESTROYED(x) debug(#x " destroyed!\n")
+#define ASSERT_CLASS_SIZE(x, size) static_assert(sizeof(x) == size, MESSAGE_WRONG_CLASS_SIZE(x))
 
 #ifdef INCLUDE_FIXES
 #define	Stringify( L ) #L

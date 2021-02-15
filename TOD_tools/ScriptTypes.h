@@ -326,9 +326,8 @@ private:
 //	TODO: rename to 'EntityType' as in original code.
 class ScriptType_Entity : public ScriptType
 {
-protected:
-	void*										(*m_Creator)(AllocatorIndex allocatorIndex);
 public:
+	void*										(*m_Creator)(AllocatorIndex allocatorIndex);
 	ScriptType_Entity*							m_Parent;
 	int*										m_Script;
 protected:
@@ -517,7 +516,7 @@ public:
 	void	Rand_seed(int*);	//	@484F70
 	void	Rand_integer(int*);	//	@484F80
 	void	Rand_number(float*);	//	@484FA0
-	void	Get_facecoll_MaterialID(void*);	//	@485D30
+	void	Get_facecoll_MaterialID(int*);	//	@485D30
 	void	GetTime(float*);	//	@487DF0
 	void	Print(int*);	//	@484FB0
 	void	IsKeyDown(int*);	//	@485210

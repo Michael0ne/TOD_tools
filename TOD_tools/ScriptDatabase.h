@@ -58,7 +58,7 @@ struct CommandListEntry
 };
 
 static List<GlobalCommand>		GlobalCommandsList;		//	@A11470	//	NOTE: this is an array with contents allocated as single space with size and put consequently.
-static KeyValueList<CommandListEntry, void>	GlobalCommandsStringsList;	//	@A3CF08
+static KeyValueList<CommandListEntry, int>	GlobalCommandsStringsList;	//	@A3CF08
 
 #define GLOBALSCRIPT_CLASS_SIZE 100
 

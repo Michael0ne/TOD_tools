@@ -9,6 +9,8 @@
 #include "Window.h"
 #include "GfxInternal.h"
 #include "LoadScreenInfo.h"
+#include "InputKeyboard.h"
+#include "InputMouse.h"
 
 ScriptType_Builtin* tBuiltin;
 List<DumpTable_Element> DumpTable;
@@ -520,10 +522,9 @@ void ScriptType_Builtin::RegisterMemberFunction(ScriptType* _rettype, const char
 {
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::RegisterHandler(const char* _hsignature, void*, const char* _hmsg)
 {
-	BuiltinHandler _hndlrtmp(_hsignature, _hndlr, _hmsg);
-	m_HandlersList.AddElement(&_hndlrtmp);
 }
 
 void ScriptType_Builtin::Sin(float* arg)
@@ -619,9 +620,10 @@ void ScriptType_Builtin::Rand_number(float* arg)
 	*arg = Random::Float();
 }
 
-void ScriptType_Builtin::Get_facecoll_MaterialID(void* arg)
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Builtin::Get_facecoll_MaterialID(int* arg)
 {
-	*((int*)arg) = GetFacecollMaterialId((const char*)((int*)arg)[1]);	//	FIXME: this is obnoxious.
+	//*arg = GetFacecollMaterialId((const char*)arg[1]);	//	FIXME: this is obnoxious.
 }
 
 void ScriptType_Builtin::GetTime(float* arg)
@@ -663,7 +665,7 @@ void ScriptType_Builtin::DrawLine(int* arg)
 #endif
 }
 
-void ScriptType_Builtin::DrawLine2D(int*)
+void ScriptType_Builtin::DrawLine2D(int* arg)
 {
 #ifdef INCLUDE_FIXES
 	debug("pBuiltinModule->DrawLine2D: (%f, %f, %f) (%f, %f, %f) %i\n", (float)arg[1], (float)arg[2], (float)arg[3], (float)arg[4], (float)arg[5], (float)arg[6], arg[7]);
@@ -738,7 +740,7 @@ void ScriptType_Builtin::SetSelectedSoundrenderer(int* arg)
 		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_DSOUND);
 		break;
 	case 3:
-		Audio::RememberSoundRenderer(NULL);
+		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_UNDEFINED);	//	FIXME: this should be 0, but no enum for it right now.
 		break;
 	default:
 		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_AUTOSELECT);
@@ -756,29 +758,34 @@ void ScriptType_Builtin::SfxIsMuteAll(int* arg)
 	*arg = (int)g_StreamedSoundBuffers->m_Muted;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::AllocateGlobalStreamedSound(int* arg)
 {
-	*arg = Audio::AllocateGlobalStreamedSound((const char*)(arg[1]), arg[2] != NULL, arg[3] != NULL);
+	//*arg = Audio::AllocateGlobalStreamedSound((const char*)(arg[1]), arg[2] != NULL, arg[3] != NULL);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::DeallocateGlobalStreamedSound(int* arg)
 {
-	Audio::DeallocateGlobalStreamedSound();
+	//Audio::DeallocateGlobalStreamedSound();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::PlayGlobalStreamedSound(int* arg)
 {
-	*arg = Audio::PlayGlobalStreamedSound();
+	//*arg = Audio::PlayGlobalStreamedSound();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::StopGlobalStreamedSound(int* arg)
 {
-	*arg = Audio::StopGlobalStreamedSound();
+	//*arg = Audio::StopGlobalStreamedSound();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::SetVolumePitchGlobalStreamedSound(int* arg)
 {
-	*arg = Audio::SetVolumePitchGlobalStreamedSound((float)arg[1], (float)arg[2]);
+	//*arg = Audio::SetVolumePitchGlobalStreamedSound((float)arg[1], (float)arg[2]);
 }
 
 void ScriptType_Builtin::GetDefaultFxVolumeVar(float* arg)
@@ -834,9 +841,10 @@ void ScriptType_Builtin::DebugConsolePrint(int* arg)
 #endif
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::GlobalKillAllEmmiters(int* arg)
 {
-	ParticleSystem::KillEmmiters(false, false);
+	//ParticleSystem::KillEmmiters(false, false);
 }
 
 void ScriptType_Builtin::GetVersionNumber(char** arg)
@@ -889,9 +897,10 @@ void ScriptType_Builtin::GetSessionVariableString(char* arg)
 		*arg = NULL;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::SetSessionVariableString(char* arg)
 {
-	GameConfig::g_Config->m_SessionVariables->SetParamValueString((const char*)*arg, (const char*)arg[1]);
+	//GameConfig::g_Config->m_SessionVariables->SetParamValueString((const char*)*arg, (const char*)arg[1]);
 }
 
 void ScriptType_Builtin::GetSessionVariableTruth(char* arg)
@@ -902,9 +911,10 @@ void ScriptType_Builtin::GetSessionVariableTruth(char* arg)
 		*arg = false;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::SetSessionVariableTruth(char* arg)
 {
-	GameConfig::g_Config->m_SessionVariables->SetParamValueTruth((char*)*arg, (char*)arg[1]);
+	//GameConfig::g_Config->m_SessionVariables->SetParamValueTruth((char*)*arg, (char*)arg[1]);
 }
 
 void ScriptType_Builtin::SetCurrentCountryCode(char* arg)
@@ -950,10 +960,11 @@ void ScriptType_Builtin::StartCleanupDashboard(int* arg)
 #endif
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::SetScreenResolution(int* arg)
 {
-	g_GfxInternal->SetScreenResolution(*arg, arg[1]);
-	g_Blocks->ResetSceneChildrenNodes(NULL);
+	//g_GfxInternal->SetScreenResolution(*arg, arg[1]);
+	//g_Blocks->ResetSceneChildrenNodes(NULL);
 }
 
 void ScriptType_Builtin::GetScreenResolution(float* arg)
@@ -988,24 +999,28 @@ void ScriptType_Builtin::GetVirtualHudScreenSize(float* arg)
 	arg[2] = 0.f;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::GetScreenTopInVirtualUnits(float* arg)
 {
-	*arg = g_ScreenProperties.GetScreenTop();
+	//*arg = g_ScreenProperties.GetScreenTop();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::GetScreenBottomInVirtualUnits(float* arg)
 {
-	*arg = g_ScreenProperties.GetScreenBottom();
+	//*arg = g_ScreenProperties.GetScreenBottom();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::GetScreenLeftInVirtualUnits(float* arg)
 {
-	*arg = g_ScreenProperties.GetScreenLeft();
+	//*arg = g_ScreenProperties.GetScreenLeft();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::GetScreenRightInVirtualUnits(float* arg)
 {
-	*arg = g_ScreenProperties.GetScreenRight();
+	//*arg = g_ScreenProperties.GetScreenRight();
 }
 
 void ScriptType_Builtin::DisableCurrentLoadScreen(int* arg)
@@ -1112,9 +1127,10 @@ void ScriptType_Builtin::GetRegion(int* arg)
 	*arg = g_Blocks->GetRegionId();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::GetMessageId(int* arg)
 {
-	*arg = Script::GetCommandId((const char*)arg[1]);
+	//*arg = Script::GetCommandId((const char*)arg[1]);
 }
 
 void ScriptType_Builtin::QuitGame(int* arg)

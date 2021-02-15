@@ -377,9 +377,6 @@
     <ClInclude Include="ThirdParty\libpng-1.0.5\pngconf.h">
       <Filter>Header files\ThirdParty\libpng</Filter>
     </ClInclude>
-    <ClInclude Include="SaveSlot.h">
-      <Filter>Header files\KapowSystems\System</Filter>
-    </ClInclude>
     <ClInclude Include="AuxMonoStream.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
     </ClInclude>
@@ -417,6 +414,9 @@
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
     <ClInclude Include="Blocks.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryCard.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
   </ItemGroup>
@@ -700,9 +700,6 @@
     <ClCompile Include="LogDump.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="SaveSlot.cpp">
-      <Filter>Source files\KapowSystems\System</Filter>
-    </ClCompile>
     <ClCompile Include="AuxMonoStream.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
@@ -719,6 +716,9 @@
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="Blocks.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryCard.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,8 +19,16 @@ enum SaveOperationStatus
 	STATUS_OK = 0,
 	STATUS_CANT_OPEN_FILE = 1,
 	STATUS_CHECKSUM_MISMATCH = 2,
-	STATUS_SAVE_DIR_EMPTY = 3,
+	STATUS_SAVEDIR_NOT_READY = 3,
 	STATUS_CANT_READ_SAVE_DATA = 4
+};
+
+enum SaveLoadState
+{
+	STATE_DONE = 0,
+	STATE_SAVE = 1,
+	STATE_LOAD = 2,
+	STATE_LOAD_SUMMARY = 3
 };
 
 #pragma pack(4)
@@ -70,12 +78,12 @@ protected:
 	List<int>		m_List_6;
 	List<int>		m_List_7;
 	List<int>		m_List_8;
-	int				m_SaveLoadState;	//	NOTE: 1 - saving game, 2 - loading game.
+	SaveLoadState	m_SaveLoadState;
 	int				m_SavePointOperationError;
 	String			m_SaveDir;
 	int				m_MemoryCardIndex;
 	int				m_SaveSlotIndex;
-	Node*			m_MemorySummaryNode;
+	ScriptType_Entity* m_SaveData;
 	int				m_SaveGameSize;
 	class MemoryCards* m_MemoryCards;
 	Vector4f		m_CameraPosition;
@@ -121,6 +129,9 @@ public:
 	void			ResetRewindBuffer(bool);	//	@894A80
 	void			ReleaseQuadTreeAndRenderlist();	//	@896C30
 	void			LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo);	//	@892E40
+	void			CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode, unsigned int savesize);	//	@895B80
+	void			RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode, const MemoryCards* memcards);	//	@895C00
+	void			LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode);	//	@895CB0
 
 	static int		RealTimeMs;	//	@A3DCCC
 	static int		GameTimeMs;	//	@A3DCD4
