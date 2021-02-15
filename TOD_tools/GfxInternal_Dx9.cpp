@@ -450,6 +450,7 @@ void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath
 #pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface* surf)
 {
+	/*
 	LogDump::LogA("Dumping screenshot!\n");
 	
 	LPDIRECT3DSURFACE9 backBufferSurface = nullptr;
@@ -483,6 +484,7 @@ void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface* surf)
 	backBufferSurface->UnlockRect();
 	if (backBufferSurface)
 	backBufferSurface->Release();
+	*/
 }
 
 GfxInternal_Dx9_Vertex::GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags)

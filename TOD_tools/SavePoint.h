@@ -1,9 +1,10 @@
 #pragma once
 
 #include "File.h"
-#include "SaveSlot.h"
+#include "MemoryCard.h"
 
 #define SAVEPOINT_CLASS_SIZE 64
+#define SAVEPOINT_SAVE_SIZE 8092
 
 enum SavePointStatus {
 	STATUS_SUCCESS = 0,
@@ -17,7 +18,7 @@ enum SavePointStatus {
 class SavePoint
 {
 private:
-	SaveSlot*		m_SaveSlot;
+	MemoryCard*		m_SaveSlot;
 	String			m_SaveDir;
 	String			m_SlotIdStr;
 	File*			m_SaveFile;
@@ -45,7 +46,7 @@ public:
 	virtual bool ReadBlockIfFailed() { return false; };	//	@86C680
 	virtual const char* GetSaveSlotDir() { return nullptr; };	//	@86C250
 
-	SavePoint(SaveSlot* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize);	//	@86C160
+	SavePoint(MemoryCard* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize);	//	@86C160
 
 	void* operator new(size_t size)
 	{

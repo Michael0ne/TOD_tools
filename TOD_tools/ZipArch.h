@@ -3,7 +3,9 @@
 #include <map>
 
 #define ZIPSLOT_STRUCT_SIZE 16
+#define ZIP_MAX_SLOTS 8
 
+//	TODO: this looks very much like simple STL map, keys are file offsets, values are 'checksum,filesize'.
 struct ZipSlotInfo
 {
 	struct FileInfo
@@ -12,7 +14,7 @@ struct ZipSlotInfo
 		unsigned int	m_FileSize;
 	};
 public:
-	int					m_OffsetTableSize;
+	unsigned int		m_OffsetTableSize;
 	struct SlotFlags
 	{
 		unsigned char	field_0;

@@ -2,7 +2,7 @@
 
 int SavePoint::OpenFilesCount;
 
-SavePoint::SavePoint(SaveSlot* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize)
+SavePoint::SavePoint(MemoryCard* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize)
 {
 	MESSAGE_CLASS_CREATED(SavePoint);
 

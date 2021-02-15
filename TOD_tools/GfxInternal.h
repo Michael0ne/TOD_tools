@@ -202,7 +202,11 @@ public:
 	void							SetClearFlagsForBufferIndex(const unsigned int flags, const int index);	//	@41FD90
 	void							SetRenderBufferIsEmpty(bool);	//	@420170
 	void							PrepareForNewLevel();	//	@420180
-	void							DumpScreenShot(GfxInternal_Dx9_Surface* surf) const;	//	@420100
+	void							DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const;	//	@420100
+	Vector2<int>&					GetScreenResolution(Vector2<int>& res) const;	//	@41FD70
+	bool							IsScreenResolutionAvailable(int width, int height) const;	//	@485460
+
+	static bool						IsWideScreen();	//	@420120
 
 	static bool						WideScreen;	//	@A39F12
 	static bool						FSAA;

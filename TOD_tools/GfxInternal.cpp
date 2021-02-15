@@ -154,9 +154,24 @@ void GfxInternal::PrepareForNewLevel()
 	*/
 }
 
-void GfxInternal::DumpScreenShot(GfxInternal_Dx9_Surface* surf)
+void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const
 {
 	g_RendererDx->DumpScreenShot(surf);
+}
+
+Vector2<int>& GfxInternal::GetScreenResolution(Vector2<int>& res) const
+{
+	return (res = { (int)g_RendererDx->m_DisplayMode.Width, (int)g_RendererDx->m_DisplayMode.Height }, res);
+}
+
+bool GfxInternal::IsScreenResolutionAvailable(int width, int height) const
+{
+	return g_RendererDx->IsScreenResolutionAvailable(width, height, true) != false;
+}
+
+bool GfxInternal::IsWideScreen()
+{
+	return WideScreen;
 }
 
 void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, float unk2)

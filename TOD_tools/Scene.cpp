@@ -4,6 +4,7 @@
 #include "Performance.h"
 #include "Progress.h"
 #include "ScriptDatabase.h"
+#include "SavePoint.h"
 
 ScriptType_Entity* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
@@ -50,6 +51,76 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 		LogDump::LogA("read asset block file: %s\n", assetname);
 	else
 		LogDump::LogA("Asset file could not be loaded: %s\n", assetname);
+}
+
+void Scene::CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode, unsigned int savesize)
+{
+	LogDump::LogA("save point creation pending!\n");
+	if (savesize)
+	{
+		m_SaveSlotIndex = slotind;
+		m_SaveLoadState = STATE_SAVE;
+		m_MemoryCardIndex = memcardind;
+		m_SavePointOperationError = STATUS_OK;
+		m_SaveDir = savedirectory;
+		m_SaveGameSize = savesize;
+		m_SaveData = (ScriptType_Entity*)summarynode;
+	}
+	else
+		LogDump::LogA("Trying to create empty savepoint??? Bailing out.\n");
+}
+
+void Scene::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode, const MemoryCards* memcards)
+{
+	m_SaveLoadState = STATE_LOAD;
+	m_MemoryCardIndex = memcardind;
+	m_SaveSlotIndex = slotind;
+	m_SavePointOperationError = STATUS_OK;
+	m_SaveDir = savedirectory;
+	m_SaveData = (ScriptType_Entity*)summarynode;
+	m_MemoryCards = (MemoryCards*)memcards;
+}
+
+void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode)
+{
+	m_SaveLoadState = STATE_LOAD_SUMMARY;
+	m_MemoryCardIndex = memcardind;
+	m_SaveSlotIndex = slotind;
+	m_SavePointOperationError = STATUS_OK;
+	m_SaveDir = savedirectory;
+	m_SaveData = (ScriptType_Entity*)summarynode;
+
+	char slotstr[10] = {};
+	sprintf(slotstr, "Slot%02d", m_SaveSlotIndex);
+	SavePoint savepoint(MemoryCardInfo[m_MemoryCardIndex], m_SaveDir.m_szString, slotstr, SAVEPOINT_SAVE_SIZE);
+
+	if (savepoint.Open(0))
+	{
+		if (!g_SceneSaveLoad->LoadSaveSummary(savepoint, m_SaveData))
+			m_SavePointOperationError = STATUS_CANT_READ_SAVE_DATA;
+	}
+	else
+		m_SavePointOperationError = STATUS_CANT_OPEN_FILE;
+
+	if (m_SavePointOperationError == STATUS_CANT_READ_SAVE_DATA)
+	{
+		if (!MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_nLength)
+		{
+			LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.\n");
+
+			m_SavePointOperationError = STATUS_SAVEDIR_NOT_READY;
+			m_SaveLoadState = STATE_DONE;
+		}
+
+		if (!MemoryCardInfo[m_MemoryCardIndex]->m_Formatted ||
+			!Utils::IsDirectoryValid(MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_szString))
+		{
+			m_SavePointOperationError = STATUS_SAVEDIR_NOT_READY;
+			m_SaveLoadState = STATE_DONE;
+		}
+	}
+
+	m_SaveLoadState = STATE_DONE;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

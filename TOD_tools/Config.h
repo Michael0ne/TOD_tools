@@ -34,11 +34,11 @@ namespace GameConfig {
 		};
 	protected:
 		KeyValueList<KeyValueListElement<StringTuple>, KeyValueListElement<StringTuple>> m_PlainValues;	//	NOTE: format is "varname=varvalue".
-		KeyValueList<VariableNameInfo, void> m_Keys;	//	NOTE: only variables names.
-		KeyValueList<void, void> field_20;	//	NOTE: appears to be always empty.
+		KeyValueList<VariableNameInfo, int> m_Keys;	//	NOTE: only variables names.
+		KeyValueList<int, int> field_20;	//	NOTE: appears to be always empty.
 		KeyValueList<KeyValueListElement<VariableUnknownInfo>, KeyValueListElement<VariableUnknownInfo>> field_30;
-		KeyValueList<void, void> field_40;	//	NOTE: this and one below appears to be unused.
-		KeyValueList<void, void> field_50;
+		KeyValueList<int, int> field_40;	//	NOTE: this and one below appears to be unused.
+		KeyValueList<int, int> field_50;
 		int		m_TotalVariables;
 		char	field_64;
 
@@ -155,7 +155,7 @@ namespace GameConfig {
 
 	static List<String>&	FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
 	static File&			ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8
-	static KeyValueList<CollmatListEntry, void>	ColMatList = KeyValueList<CollmatListEntry, void>(0);	//	@A11704	//	TODO: this more looks like double-linked list.
+	static KeyValueList<CollmatListEntry, int>	ColMatList = KeyValueList<CollmatListEntry, int>(0);	//	@A11704	//	TODO: this more looks like double-linked list.
 
 	extern Config* g_Config;
 }

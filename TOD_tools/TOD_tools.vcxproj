@@ -203,7 +203,7 @@
     <ClInclude Include="TransactionBuffer.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SavePoint.h" />
-    <ClInclude Include="SaveSlot.h" />
+    <ClInclude Include="MemoryCard.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneSaveLoad.h" />
     <ClInclude Include="Scratchpad.h" />
@@ -315,7 +315,7 @@
     <ClCompile Include="TransactionBuffer.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SavePoint.cpp" />
-    <ClCompile Include="SaveSlot.cpp" />
+    <ClCompile Include="MemoryCard.cpp" />
     <ClCompile Include="SceneSaveLoad.cpp" />
     <ClCompile Include="Scratchpad.cpp" />
     <ClCompile Include="ScriptDatabase.cpp" />

@@ -9,7 +9,8 @@ namespace Input {
 
 	class Keyboard
 	{
-	private:
+		friend class ScriptType_Builtin;
+	protected:
 		unsigned char			m_nButtonStates[256];
 		unsigned char			m_nButtonStates1[256];
 		bool					m_bAcquired;

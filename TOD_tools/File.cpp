@@ -359,6 +359,19 @@ File::~File()
 		delete m_FileHandle;
 }
 
+unsigned int File::GetSize()
+{
+	if (m_ReadFromZip)
+		return m_FileSize;
+
+	unsigned int currPos = m_FileHandle->GetPosition();
+	m_FileHandle->WriteFromBufferAndSetToEnd();
+	unsigned int fsize = m_FileHandle->GetPosition();
+	m_FileHandle->Seek(currPos);
+
+	return fsize;
+}
+
 bool File::IsFileOpen() const
 {
 	return (m_ReadFromZip && m_FileChecksum >= 0) || m_FileHandle->m_File != nullptr;
@@ -1091,15 +1104,41 @@ void File::OpenZip(const char* szZipPath)
 				if (ValidZipFile)
 					FileHeaderArray -= 8;
 
-				//	TODO: fill info about this file entry.
+				char			fileNameBuffer[MAX_PATH] = {};
+				char*			fileNameBufferPtr = &fileNameBuffer[0];
+				unsigned int	fileOffset = FileHeaderArray[24] + ((FileHeaderArray[25] + ((FileHeaderArray[26] + (FileHeaderArray[27] << 8)) << 8)) << 8);
+				unsigned int	filePathStrlen = FileHeaderArray[28] + (FileHeaderArray[29] << 8);
+				unsigned short	nextOffset_1 = FileHeaderArray[30] + (FileHeaderArray[31] << 8);
+				unsigned short	nextOffset_2 = FileHeaderArray[32] + (FileHeaderArray[33] << 8);
+				unsigned int	nextOffset_3 = FileHeaderArray[42] + ((FileHeaderArray[43] + ((FileHeaderArray[44] + (FileHeaderArray[45] << 8)) << 8)) << 8);
 
 				if (ValidZipFile)
 					FileHeaderArray += 8;
 
-				//	TODO: read filename.
-				//	TODO: increate FilesList pointer by some amount.
-				//	TODO: convert filename backslashes and to lowercase.
-				//	TODO: calculate CRC for filename, add it to FilesMap with data 'checksum, filesize'.
+				if (filePathStrlen > NULL)
+				{
+					unsigned char* filenameStartOffset = FileHeaderArray + 46;
+
+					for (unsigned int j = filePathStrlen; j != 1; j--)
+					{
+						if (ValidZipFile)
+							*fileNameBufferPtr++ = (*filenameStartOffset << 2) | (*filenameStartOffset >> 6);
+						else
+							*fileNameBufferPtr++ = *filenameStartOffset;
+						
+						filenameStartOffset++;
+					}
+				}
+
+				FileHeaderArray += filePathStrlen + nextOffset_1 + nextOffset_2 + 46;
+				unsigned int FileChecksum = nextOffset_1 + nextOffset_3 + filePathStrlen + 30;
+
+				String::ConvertBackslashes(fileNameBuffer);
+				String::ToLowerCase(fileNameBuffer);
+
+				unsigned int checksum = Utils::CalcCRC32(fileNameBuffer, strlen(fileNameBuffer));
+				std::pair<unsigned int, ZipSlotInfo::FileInfo> tmp = { checksum, { FileChecksum, fileOffset } };
+				FilesMap.insert(tmp);
 			}
 		}
 

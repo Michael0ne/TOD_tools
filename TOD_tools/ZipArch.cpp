@@ -1,9 +1,26 @@
 #include "ZipArch.h"
 #include "Globals.h"
 
-String ZipArch::ZipNames[8];
-ZipSlotInfo ZipArch::SlotInfo[8];
+String ZipArch::ZipNames[ZIP_MAX_SLOTS];
+ZipSlotInfo ZipArch::SlotInfo[ZIP_MAX_SLOTS];
 unsigned int ZipArch::SlotId = NULL;
+
+ZipSlotInfo::ZipSlotInfo()
+	: m_OffsetTableSize(0), m_OffsetTable(nullptr), m_FilesInfo(nullptr)
+{
+	MESSAGE_CLASS_CREATED(ZipSlotInfo);
+
+	m_Flags.field_2 = 1;
+	m_Flags.field_0 = 79;
+}
+
+ZipSlotInfo::~ZipSlotInfo()
+{
+	MESSAGE_CLASS_DESTROYED(ZipSlotInfo);
+
+	delete m_OffsetTable;
+	delete m_FilesInfo;
+}
 
 ZipSlotInfo::FileInfo* ZipSlotInfo::FindFileByCRC(unsigned int* checksum)
 {
@@ -24,19 +41,39 @@ ZipSlotInfo::FileInfo* ZipSlotInfo::FindFileByCRC(unsigned int* checksum)
 	return (size >= m_OffsetTableSize || *checksum < m_OffsetTable[size]) ? nullptr : &m_FilesInfo[size];
 }
 
-ZipSlotInfo::ZipSlotInfo()
-	: m_OffsetTableSize(0), m_OffsetTable(nullptr), m_FilesInfo(nullptr)
+#pragma message(TODO_IMPLEMENTATION)
+void ZipSlotInfo::AddFileInfo(const std::map<unsigned int, FileInfo>& fileInfo)
 {
-	MESSAGE_CLASS_CREATED(ZipSlotInfo);
-
-	m_Flags.field_2 = 1;
-	m_Flags.field_0 = 79;
 }
 
-ZipSlotInfo::~ZipSlotInfo()
+bool ZipArch::FindFile(const char* inPathStr, ZipSlotInfo::FileInfo* outFileInfo, int* outZipSlot)
 {
-	MESSAGE_CLASS_DESTROYED(ZipSlotInfo);
+	String::ToLowerCase((char*)(inPathStr + 1));
+	unsigned int checksum = Utils::CalcCRC32(inPathStr + 1, strlen(inPathStr) - 1);
 
-	delete m_OffsetTable;
-	delete m_FilesInfo;
+	if (ZipArch::SlotId <= NULL)
+		return false;
+
+	unsigned int slotIndex = NULL;
+	ZipSlotInfo::FileInfo* fileInfo = nullptr;
+	while (true)
+	{
+		fileInfo = ZipArch::SlotInfo[slotIndex].FindFileByCRC(&checksum);
+		if (fileInfo)
+			break;
+		
+		slotIndex++;
+
+		if (slotIndex >= ZipArch::SlotId)
+			return false;
+	}
+
+	if (outFileInfo)
+	{
+		outFileInfo->m_Checksum = fileInfo->m_Checksum;	//	TODO: maybe don't need to copy values and just assign pointer?
+		outFileInfo->m_FileSize = fileInfo->m_FileSize;
+	}
+
+	*outZipSlot = slotIndex;
+	return true;
 }

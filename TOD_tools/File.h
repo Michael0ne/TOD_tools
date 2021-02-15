@@ -101,6 +101,7 @@ public:
 	File(const char* _filename, int _desiredaccess, bool _createifnotfound);	//	@418E30
 	~File();	//	@417E20
 
+	unsigned int	GetSize();	//	@417C10
 	bool			IsFileOpen() const;	//	@417CF0
 	char			ReadString(void* outStr);	//	@4180C0
 	inline void		SetPosAligned(unsigned char alignind);	//	@417DF0

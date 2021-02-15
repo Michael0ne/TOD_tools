@@ -16,7 +16,7 @@
 #include "Scene.h"
 #include "Progress.h"
 #include "RenderBuffer.h"
-#include "SaveSlot.h"
+#include "MemoryCard.h"
 #include "LogDump.h"
 #include "EditorCamera.h"
 #include "ZipArch.h"
@@ -283,9 +283,9 @@ namespace GameConfig
 		Input::Gamepad::GetGameControllerByIndex(0);
 
 		//	Init saves directories information (ps2 emulation and pc).
-		SaveSlots[SAVE_SLOT_0] = new SaveSlot(SAVE_SLOT_0);
-		SaveSlots[SAVE_SLOT_1] = new SaveSlot(SAVE_SLOT_1);
-		SaveSlots[SAVE_SLOT_8] = new SaveSlot(SAVE_SLOT_8);
+		MemoryCardInfo[SAVE_SLOT_0] = new MemoryCard(SAVE_SLOT_0);
+		MemoryCardInfo[SAVE_SLOT_1] = new MemoryCard(SAVE_SLOT_1);
+		MemoryCardInfo[SAVE_SLOT_8] = new MemoryCard(SAVE_SLOT_8);
 
 		Script::SavePlatformPS2 = true;
 
@@ -306,10 +306,10 @@ namespace GameConfig
 				do {
 					//	TODO: implementation for utility function!
 					Utils::CreateDirectoriesRecursive(szMemcard0[memcardindex]);
-					SaveSlots[memcardindex]->m_SaveFolderPath = szMemcard0[memcardindex];
+					MemoryCardInfo[memcardindex]->m_SaveFolderPath = szMemcard0[memcardindex];
 
-					if (!SaveSlots[memcardindex]->IsFormatted())
-						SaveSlots[memcardindex]->FormatCard();
+					if (!MemoryCardInfo[memcardindex]->IsFormatted())
+						MemoryCardInfo[memcardindex]->FormatCard();
 
 					memcardindex++;
 				} while (memcardindex < 2);
@@ -317,17 +317,17 @@ namespace GameConfig
 
 			const char szHarddisk[] = "/savegames/harddisk/";
 			Utils::CreateDirectoriesRecursive(szHarddisk);
-			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath = szHarddisk;
+			MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath = szHarddisk;
 
-			if (!SaveSlots[SAVE_SLOT_8]->IsFormatted())
-				SaveSlots[SAVE_SLOT_8]->FormatCard();
+			if (!MemoryCardInfo[SAVE_SLOT_8]->IsFormatted())
+				MemoryCardInfo[SAVE_SLOT_8]->FormatCard();
 		}else{
 			//	For PC, just figure out system user data directory.
 			Script::SavePlatformPS2 = false;
 			Script::FileCheck = true;
 
-			GetUserDocumentsDir(SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath);
-			SaveSlots[SAVE_SLOT_8]->m_SaveFolderPath.Append(CONFIG_SAVEDIR);
+			GetUserDocumentsDir(MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath);
+			MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath.Append(CONFIG_SAVEDIR);
 		}
 
 		Script::CutsceneDisableAware = false;
@@ -801,23 +801,19 @@ namespace GameConfig
 		LoadVariablesFile(file, configvariables);
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
 	Session_Variables::~Session_Variables()
 	{
 		MESSAGE_CLASS_DESTROYED(Session_Variables);
-
-		(*(void (__thiscall*)(Session_Variables*))0x4107B0)(this);
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
+	#pragma message(TODO_IMPLEMENTATION)
 	bool Session_Variables::IsVariableSet(const char* variableName)
 	{
-		bool(__thiscall * _IsVariableSet)(Session_Variables* _this, const char* _varname) = (bool (__thiscall*)(Session_Variables*, const char*))0x410080;
-		
-		return _IsVariableSet(this, variableName);
+		//return m_PlainValues.HasKey(variableName);
+		return false;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
+	#pragma message(TODO_IMPLEMENTATION)
 	bool Session_Variables::GetParamValueBool(const char* variableName)
 	{
 		bool(__thiscall * _GetParamValueBool)(Session_Variables * _this, const char* _varname) = (bool(__thiscall*)(Session_Variables*, const char*))0x410900;
