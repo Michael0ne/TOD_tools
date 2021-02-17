@@ -14,6 +14,14 @@ unsigned int File::AlignmentArray[3] =
 };
 FileWrapper* FileWrapper::ZipFilesArray[FILE_MAX_ZIP_FILES];
 
+ULARGE_INTEGER FileWrapper::GetStorageFreeSpace()
+{
+	ULARGE_INTEGER spaceAvailable;
+
+	GetDiskFreeSpaceEx(WorkingDirectory.m_szString, &spaceAvailable, nullptr, nullptr);
+	return spaceAvailable;
+}
+
 extern void GetWorkingDirRelativePath(String* str);
 extern void GetGameWorkingDirRelativePath(String* str);
 
@@ -1054,6 +1062,11 @@ void File::ReadZipDirectories(const char* szFileSystem)
 			memset(&szZipName, 0, sizeof(szZipName));
 		}
 	}
+}
+
+ULARGE_INTEGER File::GetStorageFreeSpace()
+{
+	return FileWrapper::GetStorageFreeSpace();
 }
 
 #pragma message(TODO_IMPLEMENTATION)

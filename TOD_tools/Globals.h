@@ -5,6 +5,7 @@
 namespace Utils
 {
 	static char LastSavedCRCString[4] = {};	//	@9B6F84
+	static unsigned int _A3A060 = NULL;	//	@A3A060
 
 	static const char* generic_crc32(int* t, char* base, size_t len)	//	@465840
 	{
@@ -31,6 +32,18 @@ namespace Utils
 		}
 
 		return result;
+	}
+
+	static void crc32_init_default(int* str)	//	@A3A060
+	{
+		*str = NULL;
+		++_A3A060;
+	}
+
+	static void crc32_gen(int* str)	//	@4658A0
+	{
+		generic_crc32(str, LastSavedCRCString, sizeof(LastSavedCRCString));
+		--_A3A060;
 	}
 
 	static int CalcCRC32(const char* str, unsigned int len)	//	@4657C0

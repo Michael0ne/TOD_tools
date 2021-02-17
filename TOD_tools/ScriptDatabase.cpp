@@ -607,73 +607,6 @@ namespace Script
 		//GlobalScriptsArray[65] = GetScriptByType("list(entity)");
 		//	TODO: much much more here...
 	}
-
-	unsigned int GetGlobalPropertyListCRC()
-	{
-		if (GlobalPropertyListChecksumObtained)
-			return GlobalPropertyListChecksum;
-
-		char checksum_str[102400] = {};
-		unsigned int checksum_str_len = NULL;
-
-		if (GlobalPropertiesList.m_CurrIndex > 0)
-		{
-			for (unsigned int i = NULL; i < GlobalPropertiesList.m_CurrIndex; i++)
-			{
-				String tempstr;
-				GlobalPropertiesList.m_Elements[i]->GetNameAndType(tempstr);
-
-				//	FIXME: overflow?
-				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
-					break;
-				else
-					checksum_str_len += strlen(tempstr.m_szString);
-
-				if (*checksum_str == NULL)
-					strcpy(checksum_str, tempstr.m_szString);
-				else
-					strcat(checksum_str, tempstr.m_szString);
-			}
-		}
-
-		GlobalPropertyListChecksum = Utils::CalcCRC32(checksum_str, checksum_str_len);
-		GlobalPropertyListChecksumObtained = true;
-		return GlobalPropertyListChecksum;
-	}
-
-	unsigned int GetGlobalCommandListCRC()
-	{
-		if (GlobalCommandListChecksumObtained)
-			return GlobalCommandListChecksum;
-
-		char checksum_str[102400] = {};
-		unsigned int checksum_str_len = NULL;
-
-		if (GlobalCommandsList.m_CurrIndex > 0)
-		{
-			for (unsigned int i = NULL; i < GlobalCommandsList.m_CurrIndex; i++)
-			{
-				String tempstr;
-				GlobalCommandsList.m_Elements[i]->GetReturnTypeString(tempstr);
-
-				//	FIXME: overflow?
-				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
-					break;
-				else
-					checksum_str_len += strlen(tempstr.m_szString);
-
-				if (*checksum_str == NULL)
-					strcpy(checksum_str, tempstr.m_szString);
-				else
-					strcat(checksum_str, tempstr.m_szString);
-			}
-		}
-
-		GlobalCommandListChecksum = Utils::CalcCRC32(checksum_str, checksum_str_len);
-		GlobalCommandListChecksumObtained = true;
-		return GlobalCommandListChecksum;
-	}
-
 }
 
 void GlobalProperty::GetNameAndType(String& outStr)
@@ -707,23 +640,9 @@ void GlobalCommand::GetReturnTypeString(String& outStr)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-ScriptType_Entity* GlobalScript::AssignScriptToEntity(const ScriptType_Entity& parent)
+ScriptType_Entity* GlobalScript::AssignScriptToEntity(const ScriptType_Entity* parent)
 {
-	if (!m_BaseEntity)
-		return nullptr;
-
-	if (!&parent)
-	{
-		LogDump::LogA("'%s' do not descent from '%s', script '%s' cannot be used on a '%s'\n",
-			parent.m_TypeName.m_szString,
-			m_BaseEntity->m_TypeName.m_szString,
-			m_Name.m_szString,
-			parent.m_TypeName.m_szString);
-
-		return nullptr;
-	}
-
-	//	TODO: finish!
+	return nullptr;
 }
 
 GlobalScript* GlobalScript::GetGlobalScriptByName(const char* name)

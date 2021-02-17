@@ -94,9 +94,9 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
 	sprintf(slotstr, "Slot%02d", m_SaveSlotIndex);
 	SavePoint savepoint(MemoryCardInfo[m_MemoryCardIndex], m_SaveDir.m_szString, slotstr, SAVEPOINT_SAVE_SIZE);
 
-	if (savepoint.Open(0))
+	if (savepoint.Open(STATUS_SUCCESS))
 	{
-		if (!g_SceneSaveLoad->LoadSaveSummary(savepoint, m_SaveData))
+		if (!g_SceneSaveLoad->LoadSaveSummary(&savepoint, m_SaveData))
 			m_SavePointOperationError = STATUS_CANT_READ_SAVE_DATA;
 	}
 	else

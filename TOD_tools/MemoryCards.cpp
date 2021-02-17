@@ -72,7 +72,7 @@ void MemoryCards::HasCardChanged(int* args) const
 unsigned int MemoryCards::GetCardFreeSpace(unsigned int memcardind) const
 {
 	if (MemoryCardInfo[memcardind]->IsFormatted())
-		return File::GetDiskFreeSpace().LowPart;
+		return File::GetStorageFreeSpace().LowPart;
 
 	LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
 	

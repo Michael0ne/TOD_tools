@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ScriptTypes.h"
+#include "Globals.h"
 
 #ifdef PLATFORM_PS2
 	#define SCRIPT_PROPERTIES_TOTAL 5940
@@ -107,7 +108,7 @@ public:
 
 	void						RegisterMember(unsigned int fieldId, const char* const defaultValue, unsigned int);	//	@48AF10
 
-	ScriptType_Entity*			AssignScriptToEntity(const ScriptType_Entity& parent);	//	@48A3F0
+	ScriptType_Entity*			AssignScriptToEntity(const ScriptType_Entity* parent);	//	@48A3F0
 
 	static GlobalScript*		GetGlobalScriptByName(const char* name);	//	@48C590
 	static List<GlobalScript>	ScriptsList;	//	@A0B424
@@ -152,7 +153,7 @@ class ScriptThread : public IScriptThread
 	struct ThreadCallStack
 	{
 		unsigned int			field_0;
-		int*					field_4;
+		int*					m_Addresses;
 		unsigned int			field_8;
 	};
 
@@ -242,12 +243,77 @@ namespace Script
 
 		Script::LanguageStringsOffset = languageIndex;
 	}
-	static unsigned int GetGlobalPropertyListCRC();	//	@873440
-	static unsigned int GetGlobalCommandListCRC();	//	@871DD0
-	static unsigned int	GetCommandId(const char* commandName, bool alreadyRegistered);	//	@872590
 
 	static unsigned int	GlobalPropertyListChecksum;	//	@A3CF40
 	static bool			GlobalPropertyListChecksumObtained;	//	@A3CF1C
 	static unsigned int	GlobalCommandListChecksum;	//	@A3CF18
 	static bool			GlobalCommandListChecksumObtained;	//	@A3CEF4
+
+	static unsigned int GetGlobalPropertyListCRC()	//	@873440
+	{
+		if (GlobalPropertyListChecksumObtained)
+			return GlobalPropertyListChecksum;
+
+		char checksum_str[102400] = {};
+		unsigned int checksum_str_len = NULL;
+
+		if (GlobalPropertiesList.m_CurrIndex > 0)
+		{
+			for (unsigned int i = NULL; i < GlobalPropertiesList.m_CurrIndex; i++)
+			{
+				String tempstr;
+				GlobalPropertiesList.m_Elements[i]->GetNameAndType(tempstr);
+
+				//	FIXME: overflow?
+				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
+					break;
+				else
+					checksum_str_len += strlen(tempstr.m_szString);
+
+				if (*checksum_str == NULL)
+					strcpy(checksum_str, tempstr.m_szString);
+				else
+					strcat(checksum_str, tempstr.m_szString);
+			}
+		}
+
+		GlobalPropertyListChecksum = Utils::CalcCRC32(checksum_str, checksum_str_len);
+		GlobalPropertyListChecksumObtained = true;
+		return GlobalPropertyListChecksum;
+	}
+
+	static unsigned int GetGlobalCommandListCRC()	//	@871DD0
+	{
+		if (GlobalCommandListChecksumObtained)
+			return GlobalCommandListChecksum;
+
+		char checksum_str[102400] = {};
+		unsigned int checksum_str_len = NULL;
+
+		if (GlobalCommandsList.m_CurrIndex > 0)
+		{
+			for (unsigned int i = NULL; i < GlobalCommandsList.m_CurrIndex; i++)
+			{
+				String tempstr;
+				GlobalCommandsList.m_Elements[i]->GetReturnTypeString(tempstr);
+
+				//	FIXME: overflow?
+				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
+					break;
+				else
+					checksum_str_len += strlen(tempstr.m_szString);
+
+				if (*checksum_str == NULL)
+					strcpy(checksum_str, tempstr.m_szString);
+				else
+					strcat(checksum_str, tempstr.m_szString);
+			}
+		}
+
+		GlobalCommandListChecksum = Utils::CalcCRC32(checksum_str, checksum_str_len);
+		GlobalCommandListChecksumObtained = true;
+		return GlobalCommandListChecksum;
+	}
+
+	static unsigned int	GetCommandId(const char* commandName, bool alreadyRegistered);	//	@872590
 }
