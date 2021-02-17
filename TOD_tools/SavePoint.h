@@ -5,6 +5,7 @@
 
 #define SAVEPOINT_CLASS_SIZE 64
 #define SAVEPOINT_SAVE_SIZE 8092
+#define SAVEPOINT_MAX_OPEN_FILES 3
 
 enum SavePointStatus {
 	STATUS_SUCCESS = 0,
@@ -17,8 +18,9 @@ enum SavePointStatus {
 //	NOTE: this is actually derived from FileInternal class, so methods are same.
 class SavePoint
 {
-private:
-	MemoryCard*		m_SaveSlot;
+	friend class SceneSaveLoad;
+protected:
+	MemoryCard*		m_SaveMemoryCard;
 	String			m_SaveDir;
 	String			m_SlotIdStr;
 	File*			m_SaveFile;
@@ -58,7 +60,12 @@ public:
 			Allocators::ReleaseMemory(ptr, false);
 	}
 
-	static bool		WriteSavePointFileData(const SavePoint& savepoint, const struct TransactionBuffer& rewbuff);	//	@873DA0
+	time_t			GetTime() const;	//	@928920
+	bool			Open(SavePointStatus mode);	//	@43B240
+	int				CalculateChecksum(SavePoint* savepoint, int pos);	//	@874180
+	bool			CloseFile();	//	@869D90
+
+	static bool		WriteSavePointFileData(const SavePoint& savepoint, const class TransactionBuffer& rewbuff);	//	@873DA0
 	static bool		VerifyFileChecksum(SavePoint*);	//	@874230
 
 	static int		OpenFilesCount;	//	@A35EA8

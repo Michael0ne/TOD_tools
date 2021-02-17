@@ -55,6 +55,9 @@ protected:
 	void			GetLastErrorMessage(char*);	//	@437820
 
 	static FileWrapper*	ZipFilesArray[FILE_MAX_ZIP_FILES];	//	@A35DB8	//	NOTE: named so because only zip files accessed through it.
+
+public:
+	static ULARGE_INTEGER GetStorageFreeSpace();	//	@4377B0
 };
 
 class File
@@ -116,6 +119,7 @@ public:
 	static time_t	GetFileTimestamp(const char* filename);	//	@418460
 	static void		OpenZip(const char* szZipPath);	//	@419100
 	static void		ReadZipDirectories(const char* szFileSystem);	//	@419550
+	static ULARGE_INTEGER GetStorageFreeSpace();	//	@417D40
 
 	static unsigned int FilesOpen;	//	@A35DD8
 	static HANDLE	FilesSemaphoreArray[FILE_MAX_ZIP_FILES];	//	@A35D98

@@ -266,7 +266,7 @@ ScriptType* ScriptType::LoadScript(const char* script)
 				return nullptr;
 			}
 
-			retn_type = glob_script->AssignScriptToEntity(*(ScriptType_Entity*)retn_type);
+			retn_type = glob_script->AssignScriptToEntity((ScriptType_Entity*)retn_type);
 		}
 
 		return retn_type;
@@ -529,32 +529,32 @@ void ScriptType_Builtin::RegisterHandler(const char* _hsignature, void*, const c
 
 void ScriptType_Builtin::Sin(float* arg)
 {
-	*arg = sin(arg[1]);
+	*arg = (float)sin(arg[1]);
 }
 
 void ScriptType_Builtin::Cos(float* arg)
 {
-	*arg = cos(arg[1]);
+	*arg = (float)cos(arg[1]);
 }
 
 void ScriptType_Builtin::Tan(float* arg)
 {
-	*arg = tan(arg[1]);
+	*arg = (float)tan(arg[1]);
 }
 
 void ScriptType_Builtin::Asin(float* arg)
 {
-	*arg = asin(arg[1]);
+	*arg = (float)asin(arg[1]);
 }
 
 void ScriptType_Builtin::Acos(float* arg)
 {
-	*arg = acos(arg[1]);
+	*arg = (float)acos(arg[1]);
 }
 
 void ScriptType_Builtin::Atan(float* arg)
 {
-	*arg = atan(arg[1]);
+	*arg = (float)atan(arg[1]);
 }
 
 void ScriptType_Builtin::Abs(int* arg)
@@ -564,22 +564,22 @@ void ScriptType_Builtin::Abs(int* arg)
 
 void ScriptType_Builtin::Fabs(float* arg)
 {
-	*arg = fabs(arg[1]);
+	*arg = (float)fabs(arg[1]);
 }
 
 void ScriptType_Builtin::Sqrt(float* arg)
 {
-	*arg = sqrt(arg[1]);
+	*arg = (float)sqrt(arg[1]);
 }
 
 void ScriptType_Builtin::Floor(float* arg)
 {
-	*arg = floor(arg[1]);
+	*arg = (float)floor(arg[1]);
 }
 
 void ScriptType_Builtin::Ceil(float* arg)
 {
-	*arg = ceil(arg[1]);
+	*arg = (float)ceil(arg[1]);
 }
 
 void ScriptType_Builtin::Clamp(float* arg)
@@ -972,8 +972,8 @@ void ScriptType_Builtin::GetScreenResolution(float* arg)
 	Vector2<int> res;
 	g_GfxInternal->GetScreenResolution(res);
 
-	*arg = res.x;
-	arg[1] = res.y;
+	*arg = (float)res.x;
+	arg[1] = (float)res.y;
 	arg[2] = 0.f;	//	NOTE: why?
 }
 
