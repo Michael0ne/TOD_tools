@@ -27,7 +27,7 @@ bool MemoryCard::IsFormatted() const
 
 	if (m_SaveFolderPath.m_nLength) {
 		if (m_Formatted) {
-			if (Utils::IsDirectoryValid(m_SaveFolderPath.m_szString)) {
+			if (File::IsDirectoryValid(m_SaveFolderPath.m_szString)) {
 				//	NOTE: original function uses String for this, but it requires heap allocation, don't really need that for string appending.
 				char temp[MAX_PATH];
 				strcpy(temp, m_SaveFolderPath.m_szString);
@@ -55,14 +55,14 @@ bool MemoryCard::FormatCard()
 		return false;
 	}
 
-	if (!m_Formatted || !Utils::IsDirectoryValid(m_SaveFolderPath.m_szString)) {
+	if (!m_Formatted || !File::IsDirectoryValid(m_SaveFolderPath.m_szString)) {
 		debug("Warning: Memory Card not found.");
 
 		return false;
 	}
 
 	Utils::DeleteAllFilesInFolder(m_SaveFolderPath.m_szString);
-	Utils::CreateDirectoryIfNotFound(m_SaveFolderPath.m_szString);	//	NOTE: these above are not used outside this class, maybe just private static methods?
+	File::CreateNewDirectory(m_SaveFolderPath.m_szString);	//	NOTE: these above are not used outside this class, maybe just private static methods?
 
 	char temp[MAX_PATH];
 	strcpy(temp, m_SaveFolderPath.m_szString);
@@ -81,29 +81,24 @@ bool MemoryCard::IsSaveDirPresent(const char* const directory) const
 		savePath.Append("/");
 		savePath.Append(directory);
 
-		return Utils::IsDirectoryValid(savePath.m_szString);
+		return File::IsDirectoryValid(savePath.m_szString);
 	}
-	else
-	{
-		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
 
-		return false;
-	}
+
+	LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
+	return false;
 }
 
 bool MemoryCard::IsSaveFilePresent(const char* const directory, const char* const slot) const
 {
 	if (IsFormatted())
 	{
-		String tempStr;
-		return File::FindFileEverywhere(GetFullSaveFolderPath(tempStr, directory, slot).m_szString);
+		String tempStr = GetFullSaveFolderPath(tempStr, directory, slot);
+		return File::FindFileEverywhere(tempStr.m_szString);
 	}
-	else
-	{
-		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
-		
-		return false;
-	}
+	
+	LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
+	return false;
 }
 
 unsigned int MemoryCard::GetSavePointFileSize(const char* const directory, const char* const slotfilename) const
@@ -115,11 +110,9 @@ unsigned int MemoryCard::GetSavePointFileSize(const char* const directory, const
 		
 		return savefile.GetSize();
 	}
-	else
-	{
-		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
-		return NULL;
-	}
+	
+	LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
+	return NULL;
 }
 
 String& MemoryCard::GetFullSaveFolderPath(String& outStr, const char* const directory, const char* const slot) const
@@ -130,4 +123,53 @@ String& MemoryCard::GetFullSaveFolderPath(String& outStr, const char* const dire
 	outStr.Append(slot);
 
 	return outStr;
+}
+
+bool MemoryCard::DeleteSavePointFile(const char* const savedir, const char* const slotindstr)
+{
+	if (!IsFormatted())
+	{
+		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
+		return false;
+	}
+
+	String tempStr;
+	if (File::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_szString))
+		File::FindDirectoryMappedFileAndDelete(tempStr.m_szString);
+#ifdef INCLUDE_FIXES
+	else
+		return false;
+#endif
+
+	return true;	//	TODO: even if file was not found - return true. Bug or intent?
+}
+
+bool MemoryCard::IsSavePointFileExists(const char* const savedir, const char* const slotindstr) const
+{
+	if (!IsFormatted())
+	{
+		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
+		return false;
+	}
+
+	String tempStr;
+	return File::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_szString);
+}
+
+bool MemoryCard::CreateSaveDirectory(const char* const savedir)
+{
+	if (!IsFormatted())
+	{
+		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
+		return false;
+	}
+
+	String savedirStr = m_SaveFolderPath;
+	savedirStr.Append("/");
+	savedirStr.Append(savedir);
+
+	if (!File::IsDirectoryValid(savedirStr.m_szString))
+		File::CreateNewDirectory(savedirStr.m_szString);
+
+	return true;
 }

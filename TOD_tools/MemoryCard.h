@@ -46,6 +46,9 @@ public:
 	bool			IsSaveFilePresent(const char* const directory, const char* const slot) const;	//	@928DC0
 	unsigned int	GetSavePointFileSize(const char* const directory, const char* const slotfilename) const;	//	@928F00
 	String&			GetFullSaveFolderPath(String& outStr, const char* const directory, const char* const slot) const;	//	@43B160
+	bool			DeleteSavePointFile(const char* const savedir, const char* const slotindstr);	//	@928D00
+	bool			IsSavePointFileExists(const char* const savedir, const char* const slotindstr) const;	//	@928DC0
+	bool			CreateSaveDirectory(const char* const savedir);	//	@928AA0
 };
 
 extern MemoryCard* MemoryCardInfo[SAVE_SLOT_LAST];	//	@A35E84

@@ -256,16 +256,15 @@ namespace GameConfig
 		//	Detect and set language.
 		Script::LanguageStringsOffset = 0;
 
-		//	TODO: implementation for utilities functions!
-		if (Utils::IsFileAvailable("/es_sounds.zip") || Utils::IsFileAvailable("/es_sounds.naz"))
+		if (File::IsFileValid("/es_sounds.zip") || File::IsFileValid("/es_sounds.naz"))
 			Script::LanguageStringsOffset = 4;
-		if (Utils::IsFileAvailable("/fr_sounds.zip") || Utils::IsFileAvailable("/fr_sounds.naz"))
+		if (File::IsFileValid("/fr_sounds.zip") || File::IsFileValid("/fr_sounds.naz"))
 			Script::LanguageStringsOffset = 1;
-		if (Utils::IsFileAvailable("/de_sounds.zip") || Utils::IsFileAvailable("/de_sounds.naz"))
+		if (File::IsFileValid("/de_sounds.zip") || File::IsFileValid("/de_sounds.naz"))
 			Script::LanguageStringsOffset = 3;
-		if (Utils::IsFileAvailable("/it_sounds.zip") || Utils::IsFileAvailable("/it_sounds.naz"))
+		if (File::IsFileValid("/it_sounds.zip") || File::IsFileValid("/it_sounds.naz"))
 			Script::LanguageStringsOffset = 2;
-		if (Utils::IsFileAvailable("/uk_sounds.zip") || Utils::IsFileAvailable("/uk_sounds.naz"))
+		if (File::IsFileValid("/uk_sounds.zip") || File::IsFileValid("/uk_sounds.naz"))
 			Script::LanguageStringsOffset = 0;
 
 		if (m_ConfigurationVariables->IsVariableSet("language_mode"))

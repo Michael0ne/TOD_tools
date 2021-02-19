@@ -113,7 +113,7 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
 		}
 
 		if (!MemoryCardInfo[m_MemoryCardIndex]->m_Formatted ||
-			!Utils::IsDirectoryValid(MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_szString))
+			!File::IsDirectoryValid(MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_szString))
 		{
 			m_SavePointOperationError = STATUS_SAVEDIR_NOT_READY;
 			m_SaveLoadState = STATE_DONE;

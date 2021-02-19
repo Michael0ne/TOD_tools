@@ -34,6 +34,7 @@ enum SaveLoadState
 #pragma pack(4)
 class Scene : public Folder_
 {
+	friend class MemoryCards;
 protected:
 	ResType::MeshColor* m_StaticLighting;
 	int				m_PlayMode;	//	NOTE: 2 - menu.
