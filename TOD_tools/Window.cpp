@@ -20,9 +20,6 @@ LPSTR Window::CmdLine = nullptr;
 STICKYKEYS Window::StickyKeysFeature = { 8, 0 };
 TOGGLEKEYS Window::ToggleKeysFeature = { 8, 0 };
 FILTERKEYS Window::FilterKeysFeature = { 24, 0, 0, 0, 0, 0 };
-bool Window::GameDiscFound = false;
-String WorkingDirectory;
-String GameWorkingDirectory;
 
 bool Window::ProcessMessages()
 {
@@ -547,8 +544,6 @@ Window::Window(const char* wndClassName, int flags, UINT16 nMenuResourceId, char
 	char				szDesktopPath[MAX_PATH];
 	MEMORYSTATUSEX		memoryStatus;
 
-	patch(0xa35eb8, this, 4);
-
 	m_Flags = flags;
 	m_Visible = true;
 #ifdef INCLUDE_FIXES
@@ -663,7 +658,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 #endif
 		}
 
-		FindGameDir();
+		FileWrapper::FindGameDir();
 		GameConfig::InitialiseGame(lpCmdLine);
 	}
 	else
@@ -698,117 +693,6 @@ void GetUserDocumentsDir(String& outString)
 
 	if (SHGetFolderPath(0, CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE, NULL, NULL, pszPath) != S_FALSE)
 		outString = pszPath;
-}
-
-void FindGameDir()
-{
-	char currdir[1024];
-	memset(currdir, NULL, sizeof(currdir));
-
-	GetCurrentDirectory(sizeof(currdir), currdir);
-	SetWorkingDir(currdir);
-	SetGameWorkingDir(currdir);
-	Window::GameDiscFound = false;
-	SetErrorMode(SEM_FAILCRITICALERRORS);
-	char driveLetter = NULL;
-	char RootPathName[] = "\\:";
-
-	for (int drive = GetLogicalDrives(); drive; ++driveLetter)
-	{
-		if (drive & 1)
-		{
-			*(unsigned char*)&RootPathName = 'A' + driveLetter;
-#ifdef INCLUDE_FIXES
-			if (GetDriveType(RootPathName) == DRIVE_CDROM || GetDriveType(RootPathName) == DRIVE_FIXED)
-#else
-			if (GetDriveType(RootPathName) == DRIVE_CDROM)
-#endif
-			{
-				char buffer[64];
-				strcpy(buffer, RootPathName);
-				strcat(buffer, "\\Program Files\\Eidos\\Total Overdose\\TotalOverdose.exe");
-
-				LogDump::LogA("Found cd/dvd drive %s - looking for ID file '%s'\n", RootPathName, buffer);
-
-				if (GetFileAttributes(buffer) != -1)
-				{
-					memset(buffer, NULL, sizeof(buffer));
-					strcpy(buffer, RootPathName);
-					strcat(buffer, "/Program Files/Eidos/Total Overdose/");
-
-					SetGameWorkingDir(buffer);
-					Window::GameDiscFound = true;
-
-					LogDump::LogA("Found game disc.\n");
-
-					break;
-				}
-			}
-		}
-		drive = drive >> 1;
-	}
-
-	SetErrorMode(NULL);
-}
-
-void SetWorkingDir(const char* str)
-{
-	WorkingDirectory = str;
-	WorkingDirectory.ConvertBackslashes();
-
-	if (WorkingDirectory.m_szString[WorkingDirectory.m_nLength - 1] != '/')
-		WorkingDirectory.Append("/");
-}
-
-void SetGameWorkingDir(const char* str)
-{
-	GameWorkingDirectory = String(str);
-	GameWorkingDirectory.ConvertBackslashes();
-
-	if (GameWorkingDirectory.m_szString[GameWorkingDirectory.m_nLength - 1] != '/')
-		GameWorkingDirectory.Append("/");
-}
-
-void GetWorkingDirRelativePath(String* str)
-{
-	if (!str->m_nLength)
-	{
-		*str = WorkingDirectory;
-
-		return;
-	}
-
-	char buffer[1024];
-	memset(buffer, NULL, sizeof(buffer));
-
-	strcpy(buffer, WorkingDirectory.m_szString);
-	if (buffer[WorkingDirectory.m_nLength - 1] == '/' && str->m_szString[0] == '/')
-		strcat(buffer, (const char*)((int)str->m_szString + 1));
-	else
-		strcat(buffer, str->m_szString);
-
-	*str = buffer;
-}
-
-void GetGameWorkingDirRelativePath(String* str)
-{
-	if (!str->m_nLength)
-	{
-		*str = GameWorkingDirectory;
-
-		return;
-	}
-
-	char buffer[1024];
-	memset(buffer, NULL, sizeof(buffer));
-
-	strcpy(buffer, GameWorkingDirectory.m_szString);
-	if (buffer[GameWorkingDirectory.m_nLength - 1] == '/' && str->m_szString[0] == '/')
-		strcat(buffer, (const char*)((int)str->m_szString + 1));
-	else
-		strcat(buffer, str->m_szString);
-
-	*str = buffer;
 }
 
 void SetWarningString(const char* (*ptr)())

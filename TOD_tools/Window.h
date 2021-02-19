@@ -2,7 +2,6 @@
 #include "Types.h"
 #include "Globals.h"
 
-#define WINDOW_CLASS_SIZE 68
 
 enum LanguageCode
 {
@@ -24,13 +23,12 @@ enum ErrorMessageId
 	ERRMSG_INSUFFICIENT_RAM = 6
 };
 
-//	Game window wrapper.
 class Window
 {
 public:
 	String			m_WindowTitle;
 	String			m_UserDesktopPath;
-	int				(__stdcall *m_MenuItemClickedCallback)(WPARAM);
+	int				(CALLBACK *m_MenuItemClickedCallback)(WPARAM);
 	HWND			m_WindowHandle;
 	int				m_Flags;
 	bool			m_Visible;
@@ -89,7 +87,6 @@ public:
 	static STICKYKEYS	StickyKeysFeature;	//	@A0917C
 	static TOGGLEKEYS	ToggleKeysFeature;	//	@A09184
 	static FILTERKEYS	FilterKeysFeature;	//	@A0918C
-	static bool			GameDiscFound;	//	@A35E68
 };
 
 extern Window* g_Window;
@@ -103,18 +100,12 @@ LRESULT CALLBACK	WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);	
 int	CALLBACK		WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd);	//	@43CB40
 bool				IsProcessAGameProcess(DWORD, LPCSTR);	//	@43C990
 void				GetUserDocumentsDir(String& outString);	//	@43CAE0
-void				FindGameDir();	//	@439230
-void				SetWorkingDir(const char* str);	//	@438460
-void				SetGameWorkingDir(const char* str);	//	@438560
-void				GetWorkingDirRelativePath(String* str);	//	@437A70
-void				GetGameWorkingDirRelativePath(String* str);	//	@437B80
+
+//	TODO: this stuff is not supposed to be here, but no appropriate namespace exists right now.
 void				SetWarningString(const char* (*ptr)());	//	@406E00
 const char*			GetWarningString();	//	@406E10
 
 static const char*	(*WarningStringProc)() = nullptr;	//	@A35B80
-
-extern String		WorkingDirectory;	//	@A08FA0
-extern String		GameWorkingDirectory;	//	@A08FB0
 
 #ifdef INCLUDE_FIXES
 int CALLBACK		MenuClickCallback(WPARAM wParam);
@@ -122,4 +113,4 @@ int CALLBACK		MenuClickCallback(WPARAM wParam);
 extern void CALLBACK ProcessDebugMenuOption(HWND, HINSTANCE, WPARAM);
 #endif
 
-static_assert(sizeof(Window) == WINDOW_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Window));
+ASSERT_CLASS_SIZE(Window, 68);
