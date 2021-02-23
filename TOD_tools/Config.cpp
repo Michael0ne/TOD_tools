@@ -346,40 +346,40 @@ namespace GameConfig
 		//	Figure out sound renderer.
 		if (m_ConfigurationVariables->IsVariableSet("soundrenderer")) {
 			String soundrenderer = m_ConfigurationVariables->GetParamValueString("soundrenderer");
-			Audio::SoundSystemType rendererid = Audio::SOUND_SYSTEM_UNDEFINED;
+			SoundSystemType rendererid = SOUND_SYSTEM_UNDEFINED;
 
 			soundrenderer.ToLowerCase();
 
 			if (soundrenderer.Equal("directsound"))
-				rendererid = Audio::SOUND_SYSTEM_DSOUND;
+				rendererid = SOUND_SYSTEM_DSOUND;
 			if (soundrenderer.Equal("dieselpower"))
-				rendererid = Audio::SOUND_SYSTEM_DIESELPOWER;
+				rendererid = SOUND_SYSTEM_DIESELPOWER;
 			if (soundrenderer.Equal("auto"))
-				rendererid = Audio::SOUND_SYSTEM_AUTOSELECT;
+				rendererid = SOUND_SYSTEM_AUTOSELECT;
 
 			if (rendererid != 0)
-				Audio::RememberSoundRenderer(rendererid);
+				StreamedSoundBuffers::RememberSoundRenderer(rendererid);
 		}
 
 		//	Init sound renderer.
-		g_StreamedSoundBuffers = new Audio::StreamedSoundBuffers(1, 44100);
+		g_StreamedSoundBuffers = new StreamedSoundBuffers(1, 44100);
 
 		if (m_ConfigurationVariables->IsVariableSet("sound_max_concurrent_sounds"))
-			g_StreamedSoundBuffers->m_nMaxConcurrentSounds = m_ConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
+			g_StreamedSoundBuffers->m_MaxConcurrentSounds = m_ConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
 
 		//	Override default volume values.
 		if (m_ConfigurationVariables->IsVariableSet("change_sound_group_volume_scaling") && m_ConfigurationVariables->GetParamValueBool("change_sound_group_volume_scaling")) {
 			if (m_ConfigurationVariables->IsVariableSet("default_fx_volume_var"))
-				Audio::SetDefaultFxVolume(m_ConfigurationVariables->GetParamValueFloat("default_fx_volume_var"));
+				StreamedSoundBuffers::SetDefaultFxVolume(m_ConfigurationVariables->GetParamValueFloat("default_fx_volume_var"));
 
 			if (m_ConfigurationVariables->IsVariableSet("default_ambience_volume_var"))
-				Audio::SetDefaultAmbienceVolume(m_ConfigurationVariables->GetParamValueFloat("default_ambience_volume_var"));
+				StreamedSoundBuffers::SetDefaultAmbienceVolume(m_ConfigurationVariables->GetParamValueFloat("default_ambience_volume_var"));
 
 			if (m_ConfigurationVariables->IsVariableSet("default_music_volume_var"))
-				Audio::SetDefaultMusicVolume(m_ConfigurationVariables->GetParamValueFloat("default_music_volume_var"));
+				StreamedSoundBuffers::SetDefaultMusicVolume(m_ConfigurationVariables->GetParamValueFloat("default_music_volume_var"));
 
 			if (m_ConfigurationVariables->IsVariableSet("default_speaks_volume_var"))
-				Audio::SetDefaultSpeaksVolume(m_ConfigurationVariables->GetParamValueFloat("default_speaks_volume_var"));
+				StreamedSoundBuffers::SetDefaultSpeaksVolume(m_ConfigurationVariables->GetParamValueFloat("default_speaks_volume_var"));
 		}
 
 		//	Sound is enabled if not overridden.

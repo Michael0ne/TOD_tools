@@ -1,10 +1,5 @@
 #pragma once
-
 #include "Folder.h"
-
-//#define SCENE_CLASS_SIZE 620
-//	FIXME: this is because of alignment issues caused by 64 bit member of this class. What to do?
-#define SCENE_CLASS_SIZE 612
 
 enum PlayMode
 {
@@ -141,6 +136,7 @@ public:
 	static int		NewFrameNumber;	//	@A3DCE0
 	static bool		IsRewindBufferInUse;	//	@A1207C
 	static bool		LoadingAssetBlock;	//	@A3CE60
+	static float	FrameRate;	//	@A3DCC0
 
 	static Scene*	SceneInstance;	//	@A3DCBC
 	static AuxQuadTree* SceneTree;	//	@A3DCE8
@@ -150,4 +146,4 @@ public:
 
 extern ScriptType_Entity* tScene;	//	@A3DCB8
 
-static_assert(sizeof(Scene) == SCENE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Scene));
+ASSERT_CLASS_SIZE(Scene, 612);	//	FIXME: actual size is 620.

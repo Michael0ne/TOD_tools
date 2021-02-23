@@ -42,7 +42,7 @@ TextBox::TextBox() : Sprite()
 	m_VerticalScroll = 0.0f;
 	m_Id = m_Id | 8;
 
-	m_QuadTree->m_nUserType = m_QuadTree->m_nUserType & 0xFFFFFF | m_QuadTree->m_nUserType & 0xFF000000 | 0x8000000;
+	m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x8000000;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

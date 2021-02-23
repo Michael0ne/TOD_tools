@@ -27,7 +27,7 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	m_v3u = m_v3v = 1.0f;
 	m_v4u = 1.0f; m_v4v = 0.0f;
 
-	m_QuadTree->m_nUserType = m_QuadTree->m_nUserType & 0xFFFFFF | m_QuadTree->m_nUserType & 0xFF000000 | 0x80000000;
+	m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x80000000;
 
 	SpritesList.AddElement(this);
 }

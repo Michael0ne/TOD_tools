@@ -24,8 +24,8 @@ public:
 		m_Density = 0.02f;
 		m_FogColor = ColorRGB(1.0f, 1.0f, 1.0f, 1.0f);
 
-		m_QuadTree->m_nUserType = m_QuadTree->m_nUserType & 0xFFFFFF | m_QuadTree->m_nUserType & 0xFF000000 | 0x8000000;
+		m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x8000000;
 	}
 };
 
-static_assert(sizeof(Fog) == FOG_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Fog));
+ASSERT_CLASS_SIZE(Fog, 112);

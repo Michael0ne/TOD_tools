@@ -99,9 +99,9 @@ public:
 			unsigned _28 : 1;
 			unsigned HasFragment : 1;
 			unsigned _30 : 1;
-		} m_FlagBits;
+		}				m_FlagBits;
 		unsigned int	m_Flags;
-	} m_Flags;
+	}					m_Flags;
 	short				m_GlobalIdInBlockigList;
 	short				m_GlobalIdInSceneList;
 	AuxQuadTree*		m_QuadTree;
@@ -144,6 +144,7 @@ public:
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 
 	const char*			GetTypename() const;	//	@891160
@@ -163,4 +164,4 @@ public:
 
 extern ScriptType_Entity* tNode;	//	@A3D884
 
-static_assert(sizeof(Node) == NODE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Node));
+ASSERT_CLASS_SIZE(Node, 80);
