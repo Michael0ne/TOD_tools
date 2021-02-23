@@ -17,6 +17,7 @@ int Scene::TotalFrames;
 int Scene::NewFrameNumber;
 bool Scene::IsRewindBufferInUse;
 bool Scene::LoadingAssetBlock;
+float Scene::FrameRate;
 
 #pragma message(TODO_IMPLEMENTATION)
 Scene::Scene() : Folder_()

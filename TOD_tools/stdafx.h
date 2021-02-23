@@ -51,6 +51,8 @@
 #define MESSAGE_CLASS_DESTROYED(x) debug(#x " destroyed!\n")
 #define ASSERT_CLASS_SIZE(x, size) static_assert(sizeof(x) == size, MESSAGE_WRONG_CLASS_SIZE(x))
 
+#define ALIGN_4BYTES(x) (x) & 0xFFFFFFFC
+
 #ifdef INCLUDE_FIXES
 #define	Stringify( L ) #L
 #define MakeString( M, L ) M(L)

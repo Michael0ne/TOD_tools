@@ -2,8 +2,6 @@
 
 #include "Node.h"
 
-#define GROUP_CLASS_SIZE 80
-
 class Group : public Node
 {
 protected:
@@ -13,8 +11,8 @@ public:
 	{
 		MESSAGE_CLASS_CREATED(Group);
 
-		m_QuadTree->m_nUserType = m_QuadTree->m_nUserType & 0xFFFFFF | m_QuadTree->m_nUserType & 0xFF000000 | 0x80000000;
+		m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x80000000;
 	}
 };
 
-static_assert(sizeof(Group) == GROUP_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Group));
+ASSERT_CLASS_SIZE(Group, 80);

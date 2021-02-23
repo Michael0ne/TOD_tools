@@ -14,14 +14,15 @@ struct Light_Properties
 {
 	friend class Light;
 protected:
-	int field_0;
-	Vector3f m_Vec_1;
-	Vector3f m_Vec_2;
-	float m_Range;
-	float m_Brightness;
-	int field_24;
+	int					field_0;
+	Vector3f			m_Vec_1;
+	Vector3f			m_Vec_2;
+	float				m_Range;
+	float				m_Brightness;
+	int					field_24;
 
 	Light_Properties();	//	@422100
+	~Light_Properties();	//	@422190
 };
 
 struct LightsListStruct
@@ -29,31 +30,31 @@ struct LightsListStruct
 	friend class Light;
 protected:
 	List<class Light>	m_LightList;
-	int* field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
+	int*				field_10;
+	int					field_14;
+	int					field_18;
+	int					field_1C;
 };
 
 class Light : public Node
 {
 protected:
-	ColorRGB m_LightColor;
-	ColorRGB m_StaticColor;
-	Light_Properties m_LightProperties;
-	unsigned int m_Flags;
-	Vector4f m_Vec_1;
-	Vector4f m_Vec_2;
-	int field_BC;
-	int field_C0;
-	int field_C4;
-	int field_C8;
-	int field_CC;
-	int field_D0;
-	int field_D4;
-	int field_D8;
-	int field_DC;
-	int field_E0;
+	ColorRGB			m_LightColor;
+	ColorRGB			m_StaticColor;
+	Light_Properties	m_LightProperties;
+	unsigned int		m_Flags;
+	Vector4f			m_Vec_1;
+	Vector4f			m_Vec_2;
+	int					field_BC;
+	int					field_C0;
+	int					field_C4;
+	int					field_C8;
+	int					field_CC;
+	int					field_D0;
+	int					field_D4;
+	int					field_D8;
+	int					field_DC;
+	int					field_E0;
 
 public:
 	virtual ~Light();	//	@880680
@@ -75,4 +76,4 @@ public:
 
 extern ScriptType_Entity*	tLight;	//	@A3D818
 
-static_assert(sizeof(Light) == LIGHT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Light));
+ASSERT_CLASS_SIZE(Light, 228);

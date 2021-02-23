@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define COLLISIONPROBE_CLASS_SIZE 292
 
 class CollisionProbe : public Node
 {
@@ -45,7 +42,9 @@ public:
 
 	void		Reset();	//	@8B61D0
 	
-	static List<Node>&	ms_List;	//	@A3DD4C
+	static List<CollisionProbe>	ProbesList;	//	@A3DD4C
 };
 
-static_assert(sizeof(CollisionProbe) == COLLISIONPROBE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(CollisionProbe));
+extern ScriptType_Entity* tCollisionProbe;	//	@A3DE38
+
+ASSERT_CLASS_SIZE(CollisionProbe, 292);

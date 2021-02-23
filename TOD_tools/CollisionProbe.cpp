@@ -1,6 +1,7 @@
 #include "CollisionProbe.h"
 
-List<Node>& CollisionProbe::ms_List = *(List<Node>*)0xA3DD4C;	//	@A3DD4C
+List<CollisionProbe> CollisionProbe::ProbesList;
+ScriptType_Entity* tCollisionProbe;
 
 CollisionProbe::CollisionProbe(int unk1, float unk2) : Node(NODE_MASK_POSITION)
 {
@@ -19,7 +20,7 @@ CollisionProbe::CollisionProbe(int unk1, float unk2) : Node(NODE_MASK_POSITION)
 	Reset();
 
 	field_FC = 1;
-	ms_List.AddElement(this);
+	ProbesList.AddElement(this);
 	field_D0 = 0;
 
 	Reset();

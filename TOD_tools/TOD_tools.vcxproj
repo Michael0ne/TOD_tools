@@ -131,7 +131,7 @@
   <ItemGroup>
     <ClInclude Include="AnimLayer.h" />
     <ClInclude Include="AnimSlot.h" />
-    <ClInclude Include="AuxMonoStream.h" />
+    <ClInclude Include="StreamedWAV.h" />
     <ClInclude Include="AuxQuadTree.h" />
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="Bone.h" />
@@ -200,6 +200,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
+    <ClInclude Include="StreamedSound.h" />
     <ClInclude Include="TransactionBuffer.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SavePoint.h" />
@@ -249,7 +250,7 @@
   <ItemGroup>
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
-    <ClCompile Include="AuxMonoStream.cpp" />
+    <ClCompile Include="StreamedWAV.cpp" />
     <ClCompile Include="AuxQuadTree.cpp" />
     <ClCompile Include="Blocks.cpp" />
     <ClCompile Include="Bone.cpp" />
@@ -312,6 +313,7 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
+    <ClCompile Include="StreamedSound.cpp" />
     <ClCompile Include="TransactionBuffer.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SavePoint.cpp" />
