@@ -37,11 +37,15 @@ In future, after skeleton of the engine is done and all basic functions are done
 
 Included libraries can be found under 'TOD_tools\ThirdParty'.
 
-## Process
+## Process (Windows)
 
 I use Visual Studio 2019 (16.8.5) to build this project. Before compiling and linking, make sure you build included third party libraries.
 If any errors occure - check project settings, make sure you use 'Debug' build configuration.
 After build succeeded a batch file is executed to copy output file into game directory (updateHookFile.bat), so make sure to replace game path to where your actual game is.
+
+## Process (Linux/PS2/etc...)
+
+If you want to build for Linux/PS2/coffepot/etc, then you can't do that right away without tinkering with code. As stated in comments (see contibuting section below), good idea would be to wrap platform-specific code around 'PLATFORM_<platform>'. Check these classes: 'File', 'Window', 'GfxInternal' ('GfxInternal_Dx9' is an abstratction for DX9 code, so good idea is to create 'GfxInternal_OpenGL' and do stuff there). As for project itself - right now I'm using Visual Studio to build code, but see no problem to use premake/cmake/etc to generate project for specific target.
 
 # Contributing
 
