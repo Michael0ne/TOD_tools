@@ -638,17 +638,17 @@ void ScriptType_Builtin::Print(int* arg)
 
 void ScriptType_Builtin::IsKeyDown(int* arg)
 {
-	*arg = g_InputKeyboard->m_bAcquired ? g_InputKeyboard->m_nButtonStates1[arg[1]] >> 7 : NULL;
+	*arg = g_InputKeyboard->m_Acquired ? g_InputKeyboard->m_ButtonStates_1[arg[1]] >> 7 : NULL;
 }
 
 void ScriptType_Builtin::IsKeyPressed(int* arg)
 {
-	*arg = g_InputKeyboard->m_bAcquired ? g_InputKeyboard->m_nButtonStates1[arg[1]] & 1 : NULL;
+	*arg = g_InputKeyboard->m_Acquired ? g_InputKeyboard->m_ButtonStates_1[arg[1]] & 1 : NULL;
 }
 
 void ScriptType_Builtin::IsKeyReleased(int* arg)
 {
-	*arg = g_InputKeyboard->m_bAcquired ? (g_InputKeyboard->m_nButtonStates1[arg[1]] & 2) != NULL : NULL;
+	*arg = g_InputKeyboard->m_Acquired ? (g_InputKeyboard->m_ButtonStates_1[arg[1]] & 2) != NULL : NULL;
 }
 
 void ScriptType_Builtin::DrawPoint(int* arg)
@@ -734,16 +734,16 @@ void ScriptType_Builtin::SetSelectedSoundrenderer(int* arg)
 	switch (*arg)
 	{
 	case 1:
-		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_DIESELPOWER);
+		StreamedSoundBuffers::RememberSoundRenderer(SOUND_SYSTEM_DIESELPOWER);
 		break;
 	case 2:
-		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_DSOUND);
+		StreamedSoundBuffers::RememberSoundRenderer(SOUND_SYSTEM_DSOUND);
 		break;
 	case 3:
-		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_UNDEFINED);	//	FIXME: this should be 0, but no enum for it right now.
+		StreamedSoundBuffers::RememberSoundRenderer(SOUND_SYSTEM_UNDEFINED);	//	FIXME: this should be 0, but no enum for it right now.
 		break;
 	default:
-		Audio::RememberSoundRenderer(Audio::SOUND_SYSTEM_AUTOSELECT);
+		StreamedSoundBuffers::RememberSoundRenderer(SOUND_SYSTEM_AUTOSELECT);
 		break;
 	}
 }

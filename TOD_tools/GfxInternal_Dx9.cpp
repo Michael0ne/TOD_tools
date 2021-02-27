@@ -3,8 +3,9 @@
 #include "GfxInternal.h"
 #include "File.h"
 #include "LogDump.h"
+#include "InputKeyboard.h"
 
-GfxInternal_Dx9* g_RendererDx = NULL;
+GfxInternal_Dx9* g_GfxInternal_Dx9;
 const D3DMATRIX& GfxInternal_Dx9::g_IdentityMatrix = *(D3DMATRIX*)0xA0AD38;
 Map<int, int>& GfxInternal_Dx9::g_UnkMap_1 = *(Map<int, int>*)0xA39F58;
 Map<int, int>& GfxInternal_Dx9::g_UnkMap_2 = *(Map<int, int>*)0xA39F38;
@@ -30,19 +31,17 @@ std::map<int, GfxInternal_Dx9_Vertex*> GfxInternal_Dx9_Vertex::VertexBufferMap;
 
 void GfxInternal_Dx9::GetScreenResolution(Vector2<int>& outRes)
 {
-	outRes.x = g_RendererDx->m_DisplayMode.Width;
-	outRes.y = g_RendererDx->m_DisplayMode.Height;
+	outRes.x = g_GfxInternal_Dx9->m_DisplayModeWidth;
+	outRes.y = g_GfxInternal_Dx9->m_DisplayModeHeight;
 }
 
-GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1)
+GfxInternal_Dx9::GfxInternal_Dx9(unsigned int resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1)
 {
 	MESSAGE_CLASS_CREATED(GfxInternal_Dx9);
 
 	m_DisplayModesList = List<DisplayModeInfo>();
-	m_UnkList_1 = List<int>();
-
-	//	NOTE: Another list allocation is here.
-	(*(void (__cdecl*)())0x45F3C0)();
+	m_LightsPropertiesList = List<Light_Properties>();
+	field_9770;
 
 	m_IdentityMatrix = g_IdentityMatrix;
 
@@ -51,12 +50,12 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 	if (FAILED(m_Direct3DInterface))
 		IncompatibleMachineParameterError(ERRMSG_DIRECTX9_NOT_FOUND, 0);
 
-	m_SceneBegan = false;
+	m_RenderingScene = false;
 	m_DeviceLost = false;
-	field_1B1[0] = 1;
-	field_1B1[1] = 1;
-	field_1B1[2] = 0;
-	m_ScreenSize = (Vector2<int>*)resolution;
+	field_1B1 = 1;
+	field_1B2 = 1;
+	field_1B3 = 0;
+	m_ScreenSize = resolution;
 	field_975C = -1;
 	m_FramesyncQuery = nullptr;
 	m_DeviceResetIssued = false;
@@ -68,27 +67,25 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 
 	memset(m_TexturesArray, NULL, 16 * sizeof(LPDIRECT3DTEXTURE9));
 	m_Direct3DDevice = 0;
-	m_pTexturesArray_2[0] = 0;
-	m_pTexturesArray_2[1] = 0;
+	m_TexturesArray_2[0] = 0;
+	m_TexturesArray_2[1] = 0;
 	field_9700 = 0;
 	field_9704 = 0;
-	m_nUnkTexturesStage[0] = 0;
-	m_nUnkTexturesStage[1] = 0;
-	m_nUnkTexturesStage[2] = 0;
-	m_nUnkTexturesStage[3] = 0;
-	m_pIndexBuffer = nullptr;
+	m_TextureStages[0] = 0;
+	m_TextureStages[1] = 0;
+	m_TextureStages[2] = 0;
+	m_TextureStages[3] = 0;
+	m_IndexBuffer = nullptr;
 	m_CurrentVertexBuffer = nullptr;
-	m_RenderTarget = nullptr;
 	field_9670 = -1;
 	field_9674 = 0;
 	m_Direct3DVertexDeclaration = nullptr;
-	field_9750 = 0;
 	field_9664 = 0;
 
 	m_ViewportWidth = (float)resolution->x;
 	m_ViewportHeight = (float)resolution->y;
-	m_DisplayMode.Width = resolution->x;
-	m_DisplayMode.Height = resolution->y;
+	m_DisplayModeWidth = resolution->x;
+	m_DisplayModeHeight = resolution->y;
 
 	//	NOTE: Propagate default display modes.
 	constexpr unsigned int modesTotal = 5;
@@ -160,9 +157,9 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 	//	NOTE: EnumDisplayModes inlined --ends
 
 	//	Fallback to default display mode if all of the found adapter modes are unavailable.
-	if (m_DisplayMode.Width == 0 || m_DisplayMode.Height) {
-		m_DisplayMode.Width = 800;
-		m_DisplayMode.Height = 600;
+	if (m_DisplayModeWidth == 0 || m_DisplayModeHeight) {
+		m_DisplayModeWidth = 800;
+		m_DisplayModeHeight = 600;
 		m_ViewportWidth = 800;
 		m_ViewportHeight = 600;
 
@@ -183,8 +180,8 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 						break;
 				}
 
-				m_DisplayMode.Width = mode.m_Width;
-				m_DisplayMode.Height = mode.m_Height;
+				m_DisplayModeWidth = mode.m_Width;
+				m_DisplayModeHeight = mode.m_Height;
 				m_ViewportWidth = (float)mode.m_Width;
 				m_ViewportHeight = (float)mode.m_Height;
 			}
@@ -194,13 +191,12 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>* resolution, unsigned int un
 	}
 
 	if ((int)resolution & 2)
-		SetupWindowParams(m_DisplayMode.Width, m_DisplayMode.Height);
+		SetupWindowParams(m_DisplayModeWidth, m_DisplayModeHeight);
 	else
-		SetupWindowParams_2(*(Vector2f*)&m_DisplayMode);
+		SetupWindowParams_2(*(Vector2f*)&m_DisplayModeWidth);
 
-	m_f9758 = 0.0;
-	m_nViewportSurfaceIndex = 0;
-	field_553C = 0;
+	field_9758 = 0.0;
+	m_ActiveViewportSurfaceIndex = 0;
 	m_FlushDirectly = false;
 }
 
@@ -213,10 +209,10 @@ GfxInternal_Dx9::~GfxInternal_Dx9()
 	m_Direct3DDevice->GetDepthStencilSurface(&depthSurface);
 	depthSurface->Release();
 
-	delete m_pDepthStencilSurface;
-	delete[] &m_ViewportTextures;
+	delete m_DepthStencilSurface;
+	delete[] &m_ViewportTexturesArray;
 	delete[] &m_TexturesArray;
-	delete[] &m_pVertexBuffer;	//	NOTE:	'DestroyVertexBufferObjects' @450710 inlined.
+	delete[] &m_VertexBuffer;	//	NOTE:	'DestroyVertexBufferObjects' @450710 inlined.
 
 	m_Direct3DDevice->Release();
 	m_Direct3DInterface->Release();
@@ -224,10 +220,37 @@ GfxInternal_Dx9::~GfxInternal_Dx9()
 	m_Direct3DDevice = nullptr;
 	m_Direct3DInterface = nullptr;
 
-	g_RendererDx = nullptr;
+	g_GfxInternal_Dx9 = nullptr;
 }
 
-DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(unsigned int width, unsigned int height, bool dontignoreunavailable)
+void GfxInternal_Dx9::SetupViewportSurface()
+{
+	if (m_ViewportTexturesArray[0])
+		SetRenderTarget(m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex]);
+}
+
+void GfxInternal_Dx9::HandleDeviceLost()
+{
+	HRESULT presentresult = m_Direct3DDevice->Present(nullptr, nullptr, NULL, nullptr);
+
+	if (FAILED(presentresult))
+	{
+		if (presentresult == D3DERR_DEVICELOST)
+		{
+			LogDump::LogA("Present: Lost the device..\n");
+			m_DeviceLost = true;
+		}
+		LogDump::LogA("Couldn't blit from back to front buffer", presentresult);
+	}
+
+	if (field_1B2 && m_FramesyncQuery && !m_DeviceLost)
+	{
+		m_FramesyncQuery->Issue(D3DISSUE_END);
+		m_DeviceResetIssued = true;
+	}
+}
+
+GfxInternal_Dx9::DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(unsigned int width, unsigned int height, bool dontignoreunavailable)
 {
 	if (m_DisplayModesList.m_CurrIndex <= 0)
 		return nullptr;
@@ -251,17 +274,17 @@ void GfxInternal_Dx9::SetupWindowParams(unsigned int width, unsigned int height)
 
 	if (mode || (mode = IsScreenResolutionAvailable(640, 480, true)) != 0) {
 		m_Windowed = true;
-		m_nDisplayModeFormat = (D3DFORMAT)mode->m_Format;	//	D3DFORMAT is just a enum
-		m_DisplayMode.Width = mode->m_Width;
-		m_DisplayMode.Height = mode->m_Height;
+		m_DisplayModeFormat = (D3DFORMAT)mode->m_Format;	//	D3DFORMAT is just a enum
+		m_DisplayModeWidth = mode->m_Width;
+		m_DisplayModeHeight = mode->m_Height;
 
-		g_Window->SetWindowResolutionRaw(m_DisplayMode);
+		g_Window->SetWindowResolutionRaw(*(D3DDISPLAYMODE*)&m_DisplayModeWidth);
 		memset(&m_PresentParameters, 0, sizeof(m_PresentParameters));
 
 		m_PresentParameters.Windowed = false;
-		m_PresentParameters.BackBufferWidth = m_DisplayMode.Width;
-		m_PresentParameters.BackBufferHeight = m_DisplayMode.Height;
-		m_PresentParameters.BackBufferFormat = m_nDisplayModeFormat;
+		m_PresentParameters.BackBufferWidth = m_DisplayModeWidth;
+		m_PresentParameters.BackBufferHeight = m_DisplayModeHeight;
+		m_PresentParameters.BackBufferFormat = m_DisplayModeFormat;
 		m_PresentParameters.FullScreen_RefreshRateInHz = mode->m_RefreshRate;
 
 		CreateRenderDevice();
@@ -280,7 +303,7 @@ void GfxInternal_Dx9::SetupWindowParams_2(const Vector2<float> mode)
 	if (SUCCEEDED(result)) {
 		ZeroMemory(&m_PresentParameters, sizeof(D3DPRESENT_PARAMETERS));
 
-		m_nDisplayModeFormat = _mode.Format;
+		m_DisplayModeFormat = _mode.Format;
 		m_PresentParameters.Windowed = true;
 		m_PresentParameters.BackBufferFormat = _mode.Format;
 		m_PresentParameters.FullScreen_RefreshRateInHz = 0;
@@ -315,14 +338,50 @@ bool GfxInternal_Dx9::GetRegistryResolution(DisplayModeInfo& mode)
 	return true;
 }
 
+bool GfxInternal_Dx9::ProcessGameInput()
+{
+	if (!ProcessingInput)
+		return ProcessingInput;
+
+	g_Window->ProcessMessages();
+
+	if (g_InputKeyboard)
+	{
+		g_InputKeyboard->Process();
+		g_InputKeyboard->Reset();
+
+		if (g_InputKeyboard->m_Acquired && g_InputKeyboard->m_ButtonStates[VK_PAUSE] & 1)
+			ProcessingInput = false;
+	}
+
+	return ProcessingInput;
+}
+
+void GfxInternal_Dx9::ProcessFramesyncQuery()
+{
+	if (m_FramesyncQuery && !m_DeviceLost)
+	{
+		if (m_DeviceResetIssued)
+			while (m_FramesyncQuery->GetData(nullptr, NULL, D3DGETDATA_FLUSH) == 1);
+		m_DeviceResetIssued = false;
+	}
+}
+
+void GfxInternal_Dx9::EndScene()
+{
+	if (m_RenderingScene)
+		m_Direct3DDevice->EndScene();
+	m_RenderingScene = false;
+}
+
 void GfxInternal_Dx9::RememberResolution()
 {
 	HKEY phkResult;
 	LPDWORD disposition = 0;
 
 	if (!RegCreateKeyExA(HKEY_CURRENT_USER, Window::RegistryKey, 0, 0, 0, 0xF003F, 0, &phkResult, disposition)) {
-		RegSetValueExA(phkResult, "XRes", 0, 4, (const BYTE*)&m_DisplayMode.Width, 4);
-		RegSetValueExA(phkResult, "YRes", 0, 4, (const BYTE*)&m_DisplayMode.Height, 4);
+		RegSetValueExA(phkResult, "XRes", 0, 4, (const BYTE*)&m_DisplayModeWidth, 4);
+		RegSetValueExA(phkResult, "YRes", 0, 4, (const BYTE*)&m_DisplayModeHeight, 4);
 		RegCloseKey(phkResult);
 	}
 }
@@ -360,6 +419,38 @@ HRESULT GfxInternal_Dx9::GetDeviceCaps(IDirect3D9* d3d, D3DCAPS9* d3dcaps)
 	return d3d->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, NULL, D3DRTYPE_TEXTURE, D3DFMT_DXT1);
 }
 
+bool GfxInternal_Dx9::BeginScene()
+{
+	if (m_RenderingScene)
+		return m_RenderingScene;
+
+	HRESULT cooplevel = m_Direct3DDevice->TestCooperativeLevel();
+
+	if (cooplevel == D3DERR_DEVICELOST)
+	{
+		LogDump::LogA("GfxInternal_Dx9::BeginScene - Device is currently lost.. wait til we get it back..\n");
+		m_DeviceLost = true;
+		
+		return false;
+	}
+
+	if (cooplevel == D3DERR_DEVICENOTRESET)
+	{
+		LogDump::LogA("GfxInternal_Dx9::BeginScene - Device is lost, but we can now reset it..\n");
+		Reset();
+	}
+
+	if (!m_DeviceLost)
+	{
+		if (field_1B2)
+			ProcessFramesyncQuery();
+		if (SUCCEEDED(m_Direct3DDevice->BeginScene()))
+			m_RenderingScene = true;
+	}
+
+	return m_RenderingScene;
+}
+
 void GfxInternal_Dx9::CreateRenderDevice()
 {
 	int behaviourFlags;
@@ -370,10 +461,10 @@ void GfxInternal_Dx9::CreateRenderDevice()
 	m_PresentParameters.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
 	if (m_Windowed)
-		m_PresentParameters.PresentationInterval = field_1B1[1] != 0 ? 1 : 0x80000000;
+		m_PresentParameters.PresentationInterval = field_1B2 != 0 ? 1 : 0x80000000;
 	else {
 		m_PresentParameters.PresentationInterval = 0x80000000;
-		field_1B1[1] = 0;
+		field_1B2 = 0;
 	}
 
 	if (m_Direct3DDevice) {
@@ -398,7 +489,7 @@ void GfxInternal_Dx9::CreateRenderDevice()
 		&m_PresentParameters,
 		&m_Direct3DDevice);
 
-	field_1B1[0] = 1;
+	field_1B1 = 1;
 
 	//	CreateSurfaces();
 	//	::450610(1024)
@@ -407,23 +498,23 @@ void GfxInternal_Dx9::CreateRenderDevice()
 	if (g_GfxInternal->WideScreen)
 		g_ScreenProperties.SetWindowProperties(m_ViewportWidth, m_ViewportHeight, (float)((m_ViewportWidth * 0.0625) / (m_ViewportHeight * 0.1111)), 1.0f);
 	else
-		g_ScreenProperties.SetWindowProperties(m_ViewportWidth, m_ViewportHeight, m_fAspectRatio, 1.0f);
+		g_ScreenProperties.SetWindowProperties(m_ViewportWidth, m_ViewportHeight, m_AspectRatio, 1.0f);
 }
 
-void GfxInternal_Dx9::SetProjection(float unk1, float aspectratio, float unk3, float farPlane)
+void GfxInternal_Dx9::SetProjection(float fov, float aspectratio, float nearplane, float farplane)
 {
-	m_fFarPlane = farPlane;
-	m_fAspectRatio = aspectratio;
-	field_554C = unk3;
-	field_5544 = unk1;
+	m_FarPlane = farplane;
+	m_AspectRatio = aspectratio;
+	m_NearPlane = nearplane;
+	m_FOV = fov;
 
-	FLOAT fov = (float)atan2(tan(0.017453292 * unk1 * 0.5 * 0.75), 1.0) * 2;
-	FLOAT nearPlane = (float)(((m_ZBias * 0.001) + 1.0) * unk3);
+	FLOAT fov = (float)atan2(tan(0.017453292 * fov * 0.5 * 0.75), 1.0) * 2;
+	FLOAT nearPlane = (float)(((m_ZBias * 0.001) + 1.0) * nearplane);
 
 	if (GfxInternal::WideScreen)
-		D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fov, (FLOAT)1.7777778, nearPlane, farPlane);
+		D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fov, (FLOAT)1.7777778, nearPlane, farplane);
 	else
-		D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fov, (m_ViewportWidth / m_ViewportHeight) / aspectratio, nearPlane, farPlane);
+		D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fov, (m_ViewportWidth / m_ViewportHeight) / aspectratio, nearPlane, farplane);
 
 	m_Direct3DDevice->SetTransform(D3DTRANSFORMSTATETYPE::D3DTS_PROJECTION, &m_ProjectionMatrix);
 }
@@ -509,7 +600,7 @@ GfxInternal_Dx9_Vertex::GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags
 void GfxInternal_Dx9_Vertex::CreateVertexBuffer()
 {
 	LPDIRECT3DVERTEXBUFFER9 vertbuff = nullptr;
-	g_RendererDx->m_Direct3DDevice->CreateVertexBuffer(m_Length, m_Flags & 1 ? D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY : D3DUSAGE_WRITEONLY, m_FVF, D3DPOOL_DEFAULT, &vertbuff, nullptr);
+	g_GfxInternal_Dx9->m_Direct3DDevice->CreateVertexBuffer(m_Length, m_Flags & 1 ? D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY : D3DUSAGE_WRITEONLY, m_FVF, D3DPOOL_DEFAULT, &vertbuff, nullptr);
 
 	if (vertbuff != m_Direct3DVertexBuffer)
 		m_Direct3DVertexBuffer->Release();

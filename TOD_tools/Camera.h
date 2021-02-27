@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define CAMERA_CLASS_SIZE 212
 
 class Camera : public Node
 {
@@ -38,4 +35,4 @@ public:
 	Camera();	//	@87D8F0
 };
 
-static_assert(sizeof(Camera) == CAMERA_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Camera));
+ASSERT_CLASS_SIZE(Camera, 212);

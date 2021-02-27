@@ -17,7 +17,7 @@ class GfxInternal_Dx9_Texture
 	};
 
 private:
-	int					field_0;
+	LPDIRECT3DSURFACE9	m_Direct3DSurface;
 	LPDIRECT3DTEXTURE9	m_Texture;
 	char*				m_TextureSurfaceBits;
 	int					m_Width;
@@ -28,6 +28,26 @@ private:
 	int					field_20;
 	unsigned short		m_Levels;
 	int					m_MipMapLevels;
+
+	/*
+	* NOTE: this is used by GfxInternal_Dx9 class, an extension to what is already above. Probably another class, contains 'unpacked' texture information.
+	String				m_String_1;
+	String				m_String_2;
+	int					field_40;
+	int					field_44;
+	int					field_48;
+	int					field_4C;
+	short				field_50;
+	int					field_54;
+	int					field_58;
+	int					field_5C;
+	int					field_60;
+	int					field_64;
+	int					field_68;
+	int					field_6C;
+	int					field_70;
+	ResType::Texture	m_TextureResource;
+	*/
 
 public:
 	GfxInternal_Dx9_Texture(const Vector2<float>& resolution, unsigned int, unsigned int levels);	//	@463BA0

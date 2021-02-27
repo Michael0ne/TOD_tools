@@ -1,4 +1,5 @@
 #include "Light.h"
+#include "GfxInternal_Dx9.h"
 
 Light* Light::LightType1;
 Light* Light::LightType2;
@@ -90,4 +91,9 @@ Light_Properties::Light_Properties()
 	m_Range = 100.0f;
 	m_Brightness = 1.0f;
 	field_24 = NULL & 0xFFFFFFE2 | 34;
+}
+
+Light_Properties::~Light_Properties()
+{
+	g_GfxInternal_Dx9->_45E5D0(this);
 }

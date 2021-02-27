@@ -185,7 +185,7 @@ private:
 	__int64							m_RenderEndTime;
 
 public:
-	GfxInternal(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
+	GfxInternal(unsigned int resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
 	~GfxInternal();	//	@421470
 
 	void* operator new (size_t size)
@@ -196,6 +196,7 @@ public:
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 
 	void							SetClearColorForBufferIndex(const ColorRGB& color, int index);	//	@41FDF0

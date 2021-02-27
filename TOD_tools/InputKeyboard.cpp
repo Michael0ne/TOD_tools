@@ -1,7 +1,8 @@
 #include "InputKeyboard.h"
 #include "Window.h"
+#include "LogDump.h"
 
-Input::Keyboard*	g_InputKeyboard = NULL;	//	TODO: replace references to this as of right now not all functions are implemented yet.
+Input::Keyboard*	g_InputKeyboard;
 const char*			g_KeyboardButtons[] = {
 	"-none-",
 	"ESCAPE",
@@ -130,63 +131,63 @@ namespace Input
 	{
 		ResetKeyboardButtons();
 
-		if (!m_bAcquired)
+		if (!m_Acquired)
 			return;
 
 		DWORD buffSize = INPUT_KEYBOARD_BUFFERS_COUNT;
-		if (HRESULT keybDevDataResult = m_pDInputDevice->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), (LPDIDEVICEOBJECTDATA)m_pBuffer, &buffSize, NULL))
+		if (HRESULT keybDevDataResult = m_DirectInputDeviceInterface->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), (LPDIDEVICEOBJECTDATA)m_DataBuffer, &buffSize, NULL))
 			if (keybDevDataResult == 1)
-				debug("WARNING: Keyboard buffer overflowed! (size %i, count %i)\n", INPUT_KEYBOARD_BUFFERS_COUNT, buffSize);
+				LogDump::LogA("WARNING: Keyboard buffer overflowed! (size %i, count %i)\n", INPUT_KEYBOARD_BUFFERS_COUNT, buffSize);
 			else
 				UnacquireAndResetKeyboard();
 
 		if (buffSize)
 		{
-			if (m_nBufferSize <= buffSize)
-				m_nBufferSize = buffSize;
+			if (m_DataBufferSize <= buffSize)
+				m_DataBufferSize = buffSize;
 
 			for (unsigned int ind = 0; ind < buffSize; ind++)
-				m_nButtonStates[m_pBuffer[ind]->dwOfs] = ((m_pBuffer[ind]->dwData >> 7) & 1) == 0 ? m_nButtonStates[m_pBuffer[ind]->dwOfs] | 2 : m_nButtonStates[m_pBuffer[ind]->dwOfs] | 1;
+				m_ButtonStates[m_DataBuffer[ind]->dwOfs] = ((m_DataBuffer[ind]->dwData >> 7) & 1) == 0 ? m_ButtonStates[m_DataBuffer[ind]->dwOfs] | 2 : m_ButtonStates[m_DataBuffer[ind]->dwOfs] | 1;
 		}
 
-		if (SUCCEEDED(m_pDInputDevice->GetDeviceState(sizeof(m_nButtonStates1), m_nButtonStates1)))
+		if (SUCCEEDED(m_DirectInputDeviceInterface->GetDeviceState(sizeof(m_ButtonStates_1), m_ButtonStates_1)))
 			UnacquireAndResetKeyboard();
 
-		if (m_bAcquired &&
-			(m_nButtonStates1[56] & 0x80) != NULL &&
-			(m_nButtonStates1[15] & 0x80) != NULL)
+		if (m_Acquired &&
+			(m_ButtonStates_1[56] & 0x80) != NULL &&
+			(m_ButtonStates_1[15] & 0x80) != NULL)
 		{
-			m_nButtonStates1[15] = NULL;
-			m_nButtonStates[15] = NULL;
+			m_ButtonStates_1[15] = NULL;
+			m_ButtonStates[15] = NULL;
 		}
 	}
 
 	void Keyboard::Reset()
 	{
-		memset(&m_nButtonStates, NULL, sizeof(m_nButtonStates));
+		memset(&m_ButtonStates, NULL, sizeof(m_ButtonStates));
 	}
 
 	void Keyboard::ResetKeyboardButtons()
 	{
-		if (!m_bAcquired)
+		if (!m_Acquired)
 		{
-			if (!FAILED(m_pDInputDevice->Acquire()))
-				m_bAcquired = true;
+			if (!FAILED(m_DirectInputDeviceInterface->Acquire()))
+				m_Acquired = true;
 
 			for (int ind = 255; ind != 0; ind--)
-				m_nButtonStates1[ind] = NULL;
+				m_ButtonStates_1[ind] = NULL;
 		}
 	}
 
 	void Keyboard::UnacquireAndResetKeyboard()
 	{
-		if (m_bAcquired)
+		if (m_Acquired)
 		{
-			m_pDInputDevice->Unacquire();
-			m_bAcquired = false;
+			m_DirectInputDeviceInterface->Unacquire();
+			m_Acquired = false;
 
 			for (int ind = 255; ind != 0; ind--)
-				m_nButtonStates1[ind] = NULL;
+				m_ButtonStates_1[ind] = NULL;
 		}
 	}
 
@@ -206,25 +207,25 @@ namespace Input
 
 		g_InputKeyboard = this;
 
-		m_pDeviceObject = nullptr;
-		m_pDInputDevice = nullptr;
-		m_bAcquired = false;
-		m_nBufferSize = NULL;
+		m_DirectInputDevice = nullptr;
+		m_DirectInputDeviceInterface = nullptr;
+		m_Acquired = false;
+		m_DataBufferSize = NULL;
 
 		for (int ind = 255; ind != 0; ind--)
-			m_nButtonStates1[ind] = NULL;
+			m_ButtonStates_1[ind] = NULL;
 
-		if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_pDeviceObject, NULL)))
+		if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_DirectInputDevice, NULL)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
-		if (FAILED(m_pDeviceObject->CreateDevice(GUID_SysKeyboard, &m_pDInputDevice, NULL)))
+		if (FAILED(m_DirectInputDevice->CreateDevice(GUID_SysKeyboard, &m_DirectInputDeviceInterface, NULL)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
-		if (FAILED(m_pDInputDevice->SetDataFormat(&c_dfDIKeyboard)))
+		if (FAILED(m_DirectInputDeviceInterface->SetDataFormat(&c_dfDIKeyboard)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
-		if (FAILED(m_pDInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
+		if (FAILED(m_DirectInputDeviceInterface->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 
-		*(int*)&m_pBuffer = (int)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT, NULL, NULL);
-		memset(m_pBuffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT);
+		*(int*)&m_DataBuffer = (int)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT, NULL, NULL);
+		memset(m_DataBuffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT);
 
 		DIPROPDWORD diProperty;
 		diProperty.diph.dwSize = 20;
@@ -233,17 +234,17 @@ namespace Input
 		diProperty.diph.dwHow = 0;
 		diProperty.dwData = 30;
 
-		if (FAILED(m_pDInputDevice->SetProperty(DIPROP_BUFFERSIZE, &diProperty.diph)))
+		if (FAILED(m_DirectInputDeviceInterface->SetProperty(DIPROP_BUFFERSIZE, &diProperty.diph)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 
-		if (m_bAcquired)
+		if (m_Acquired)
 			return;
 
-		if (SUCCEEDED(m_pDInputDevice->Acquire()))
-			m_bAcquired = true;
+		if (SUCCEEDED(m_DirectInputDeviceInterface->Acquire()))
+			m_Acquired = true;
 
 		for (int ind = 255; ind != 0; ind--)
-			m_nButtonStates1[ind] = NULL;
+			m_ButtonStates_1[ind] = NULL;
 	}
 
 	Keyboard::~Keyboard()
@@ -252,17 +253,16 @@ namespace Input
 
 		UnacquireAndResetKeyboard();
 
-		//	NOTE: pretty sure this is redundant, since destructors for these should be inserted automatically.
-		if (m_pDInputDevice)
+		if (m_DirectInputDeviceInterface)
 		{
-			m_pDInputDevice->Release();
-			m_pDInputDevice = nullptr;
+			m_DirectInputDeviceInterface->Release();
+			m_DirectInputDeviceInterface = nullptr;
 		}
 
-		if (m_pDeviceObject)
+		if (m_DirectInputDevice)
 		{
-			m_pDeviceObject->Release();
-			m_pDeviceObject = nullptr;
+			m_DirectInputDevice->Release();
+			m_DirectInputDevice = nullptr;
 		}
 	}
 

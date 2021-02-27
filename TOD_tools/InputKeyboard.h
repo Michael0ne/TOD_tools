@@ -1,24 +1,22 @@
 #pragma once
-
 #include "MemoryAllocators.h"
 
 namespace Input {
 
-#define INPUT_KEYBOARD_CLASS_SIZE 532
-#define INPUT_KEYBOARD_BUFFERS_COUNT 30
+	#define INPUT_KEYBOARD_BUFFERS_COUNT 30
 
 	class Keyboard
 	{
 		friend class ScriptType_Builtin;
+		friend class GfxInternal_Dx9;
 	protected:
-		unsigned char			m_nButtonStates[256];
-		unsigned char			m_nButtonStates1[256];
-		bool					m_bAcquired;
-		unsigned char			_pad[3];
-		IDirectInputDevice8*	m_pDInputDevice;
-		IDirectInput8*			m_pDeviceObject;
-		DIDEVICEOBJECTDATA**	m_pBuffer;	//	NOTE: judging by the code in exe, this is initialized with exact size, but because actual structure is much less, this more looks like an array of structures.
-		unsigned int			m_nBufferSize;
+		unsigned char			m_ButtonStates[256];
+		unsigned char			m_ButtonStates_1[256];
+		bool					m_Acquired;
+		IDirectInputDevice8*	m_DirectInputDeviceInterface;
+		IDirectInput8*			m_DirectInputDevice;
+		DIDEVICEOBJECTDATA**	m_DataBuffer;	//	NOTE: judging by the code in exe, this is initialized with exact size, but because actual structure is much less, this more looks like an array of structures.
+		unsigned int			m_DataBufferSize;
 
 	public:
 		Keyboard();		//	@43AD80
@@ -32,6 +30,7 @@ namespace Input {
 		{
 			if (ptr)
 				Allocators::ReleaseMemory(ptr, 0);
+			ptr = nullptr;
 		}
 
 		void					Process();	//	@43AF60
@@ -45,4 +44,4 @@ namespace Input {
 extern Input::Keyboard*			g_InputKeyboard;
 extern const char*				g_KeyboardButtons[];
 
-static_assert(sizeof(Input::Keyboard) == INPUT_KEYBOARD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Input::Keyboard));
+ASSERT_CLASS_SIZE(Input::Keyboard, 532);
