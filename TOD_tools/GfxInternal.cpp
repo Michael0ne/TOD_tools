@@ -40,7 +40,7 @@ GfxInternal::Renderer_Buffer2	GfxInternal::_A08704[28] =
 ScreenProperties	g_ScreenProperties;	//	@A08810
 
 #pragma message(TODO_IMPLEMENTATION)
-GfxInternal::GfxInternal(const Vector2<int>* resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
+GfxInternal::GfxInternal(unsigned int resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
 {
 	MESSAGE_CLASS_CREATED(GfxInternal);
 
@@ -52,7 +52,7 @@ GfxInternal::GfxInternal(const Vector2<int>* resolution, unsigned int unused1, u
 	m_TimeMilliseconds = Performance::GetMilliseconds();
 	field_34 = 0;
 
-	g_RendererDx = new GfxInternal_Dx9(resolution, unused1, unused2, FSAA, NULL);
+	g_GfxInternal_Dx9 = new GfxInternal_Dx9(resolution, unused1, unused2, FSAA, NULL);
 
 	field_20 = unk1;
 	m_RenderBufferTotal = buffersCount;
@@ -67,7 +67,7 @@ GfxInternal::GfxInternal(const Vector2<int>* resolution, unsigned int unused1, u
 			m_RenderBufferArray[buffersCount] = Buffer276(*buffersDimens);
 
 			m_RenderBufferArray[buffersCount].m_ViewportDimensions_1 = { 0.f, 0.f };
-			m_RenderBufferArray[buffersCount].m_ViewportDimensions_2 = { g_RendererDx->m_ViewportWidth, g_RendererDx->m_ViewportHeight };
+			m_RenderBufferArray[buffersCount].m_ViewportDimensions_2 = { g_GfxInternal_Dx9->m_ViewportWidth, g_GfxInternal_Dx9->m_ViewportHeight };
 
 			buffersDimens++;
 		}
@@ -99,7 +99,7 @@ GfxInternal::~GfxInternal()
 	delete m_Buffer68;
 	delete m_Buffer108;
 
-	delete g_RendererDx;
+	delete g_GfxInternal_Dx9;
 
 	delete m_RenderBufferArray;
 }
@@ -156,17 +156,17 @@ void GfxInternal::PrepareForNewLevel()
 
 void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const
 {
-	g_RendererDx->DumpScreenShot(surf);
+	g_GfxInternal_Dx9->DumpScreenShot(surf);
 }
 
 Vector2<int>& GfxInternal::GetScreenResolution(Vector2<int>& res) const
 {
-	return (res = { (int)g_RendererDx->m_DisplayMode.Width, (int)g_RendererDx->m_DisplayMode.Height }, res);
+	return (res = { g_GfxInternal_Dx9->m_DisplayModeWidth, g_GfxInternal_Dx9->m_DisplayModeHeight }, res);
 }
 
 bool GfxInternal::IsScreenResolutionAvailable(int width, int height) const
 {
-	return g_RendererDx->IsScreenResolutionAvailable(width, height, true) != false;
+	return g_GfxInternal_Dx9->IsScreenResolutionAvailable(width, height, true) != false;
 }
 
 bool GfxInternal::IsWideScreen()

@@ -419,8 +419,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 			if (Msg != WM_ERASEBKGND)
 			{
-				if (Msg == WM_ACTIVATEAPP && !wParam && g_RendererDx)
-					if (g_RendererDx->m_Windowed)
+				if (Msg == WM_ACTIVATEAPP && !wParam && g_GfxInternal_Dx9)
+					if (g_GfxInternal_Dx9->m_Windowed)
 						ShowWindow(hWnd, SW_MINIMIZE);
 
 				return DefWindowProc(hWnd, Msg, wParam, lParam);
@@ -449,13 +449,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 		if (Msg == WM_SYSCOMMAND &&
 			(wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) &&
-			g_RendererDx->m_Windowed)
+			g_GfxInternal_Dx9->m_Windowed)
 			return 1;
 		
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
 
-	if (!g_RendererDx->m_Windowed)
+	if (!g_GfxInternal_Dx9->m_Windowed)
 		return DefWindowProc(hWnd, Msg, wParam, lParam);
 
 	return 1;

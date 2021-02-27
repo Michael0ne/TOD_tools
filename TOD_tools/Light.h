@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Node.h"
 
 #define LIGHT_CLASS_SIZE 228
