@@ -250,6 +250,7 @@
   <ItemGroup>
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
+    <ClCompile Include="KeyValueList.cpp" />
     <ClCompile Include="StreamedWAV.cpp" />
     <ClCompile Include="AuxQuadTree.cpp" />
     <ClCompile Include="Blocks.cpp" />

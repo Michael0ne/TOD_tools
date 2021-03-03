@@ -26,7 +26,7 @@ protected:
 	void*					m_SampledData;
 	std::map<int, int>		field_28;
 	int						field_34;
-	class StreamedWAV*	m_AuxMonoStream_1;
+	class StreamedWAV*		m_AuxMonoStream_1;
 	List<int>				m_List;
 
 public:
@@ -79,9 +79,7 @@ protected:
 		unsigned int		m_Flags;
 	}						m_Flags;
 
-	char					m_EventCount;
-	char					m_PlayCount;
-	char					m_StopCount;
+	int						field_54;
 	int						field_58;
 	int						field_5C;
 	char					m_StoppingFinished;
@@ -89,7 +87,7 @@ protected:
 	int						m_SoundBufferBlockSize;
 	int						field_6C;
 	int						field_70;
-	class StreamedWAV*	m_AuxMonoStream;
+	class StreamedWAV*		m_StreamedWAV;
 	int						field_78;
 	int						field_7C;
 	LPDWORD					m_ThreadId;
@@ -126,42 +124,40 @@ public:
 	virtual void			stub3();
 	virtual void			SetSampledData(void*);
 	virtual bool			_443350(int);
-	void					_4433A0(bool);
-	bool					IsLooped(int);
-	int						Play(int, char, int);
-	bool					IsPlaying(int);
-	bool					AreAnyInstancesPlaying();
-	void					_440850(int);
-	void					Stop(int);
-	void					SetPause(int, bool);
-	void					SetPause_A(int, bool);
-	bool					IsPaused(int);
-	bool					IsMonoStreamCreated();
-	int						_443480();
-	void					SetVolume(int, float);
-	float					GetVolume(int);
-	void					SetFrequencyMultiplier(int, float mul);
-	float					GetFrequencyMultiplier(int);
-	int						_4435C0(int, int);
-	float					_443650(int);
-	void					SetSoundPosition(int, const Vector4f*);
-	void					_4438B0(Vector4f*, int);
-	void					_443990(int, int*);
-	Vector4f*				_4439E0(Vector4f*, int);
-	void					SetPan(int, float);
-	float					GetPan(int);
-	void					SetFrequency(int, float);
-	float					GetFrequency(int);
-	void					_443C20(int, float);
-	float					_443C90(int);
-	void					_443CD0(int, float);
-	float					_443D30(int);
-	void					_443D40(int, float, float, float);
-	int						_442810();
-	void					DumpInfo();
-	int						_443E00();
-
-
+	virtual void			_4433A0(bool);
+	virtual bool			IsLooped(int);
+	virtual int				Play(int, char, int);
+	virtual bool			IsPlaying(int);
+	virtual bool			AreAnyInstancesPlaying();
+	virtual void			_440850(int);
+	virtual void			Stop(int);
+	virtual void			SetPause(int, bool);
+	virtual void			SetPause_A(int, bool);
+	virtual bool			IsPaused(int);
+	virtual bool			IsMonoStreamCreated();
+	virtual int				_443480();
+	virtual void			SetVolume(int, float);
+	virtual float			GetVolume(int);
+	virtual void			SetFrequencyMultiplier(int, float mul);
+	virtual float			GetFrequencyMultiplier(int);
+	virtual int				_4435C0(int, int);
+	virtual float			_443650(int);
+	virtual void			SetSoundPosition(int, const Vector4f*);
+	virtual void			_4438B0(Vector4f*, int);
+	virtual void			_443990(int, int*);
+	virtual Vector4f*		_4439E0(Vector4f*, int);
+	virtual void			SetPan(int, float);
+	virtual float			GetPan(int);
+	virtual void			SetFrequency(int, float);
+	virtual float			GetFrequency(int);
+	virtual void			_443C20(int, float);
+	virtual float			_443C90(int);
+	virtual void			_443CD0(int, float);
+	virtual float			_443D30(int);
+	virtual void			_443D40(int, float, float, float);
+	virtual int				_442810();
+	virtual void			DumpInfo();
+	virtual void			_443E00();
 };
 
 ASSERT_CLASS_SIZE(StreamBuffer, 76);

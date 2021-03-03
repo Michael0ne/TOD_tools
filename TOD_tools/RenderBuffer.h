@@ -25,4 +25,4 @@ public:
 
 extern RenderBuffer* g_RenderBuffer;	//	@A35E60
 
-static_assert(sizeof(RenderBuffer) == RENDERBUFFER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(RenderBuffer));
+ASSERT_CLASS_SIZE(RenderBuffer, 20);

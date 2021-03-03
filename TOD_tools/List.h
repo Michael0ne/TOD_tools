@@ -53,7 +53,8 @@ public:
 			return;
 
 		m_Capacity = capacity;
-		delete[] m_Elements;
+		if (m_Elements)
+			delete[] m_Elements;
 
 		AdjustListCapacity();
 	}

@@ -735,6 +735,11 @@ Allocators::~Allocators()
 	Released = true;
 }
 
+Allocator* Allocators::_4777F0(AllocatorIndex allocind)
+{
+	return AllocatorsList[allocind]->field_1C;
+}
+
 void Allocators::ReleaseMemory(void* ptr, bool aligned)
 {
 	if (Released)

@@ -83,9 +83,9 @@ protected:
 	Allocator*		m_Defragmentator;
 	List<int>		m_UnkList_1;	//	NOTE: this seems to be related to Defragmentator object.
 	List<FastFindInfo>	m_FastFindNodeVector;
-	List<class Entity>		m_NodesList[6];	//	NOTE: this is 'vEntity[6]'. Where lies entities used by each block.
+	List<class Entity>		m_NodesList[6];
 public:
-	List<ResType::Resource> m_AssetsList;
+	List<ResType::Resource> m_ResourcesInstancesList;
 protected:
 	List<String>	m_SceneNames;
 	int				m_NodesInNodeList[6];
@@ -94,8 +94,8 @@ protected:
 	int*			field_1D0;
 	int				m_EngineVersionTimestamp;
 	int				m_RegionId;
-	char			m_CheckTimestamp;
-	List<int>		m_LoadedResourcesList;
+	bool			m_CheckTimestamp;
+	List<int>		m_AssetsList;
 	bool			m_LoadBlocks;
 
 private:

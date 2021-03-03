@@ -39,6 +39,7 @@ protected:
 
 public:
 	CollisionProbe(int unk1, float unk2);	//	@8BA600
+	CollisionProbe() {};
 
 	void		Reset();	//	@8B61D0
 	

@@ -15,6 +15,22 @@
 ScriptType_Builtin* tBuiltin;
 List<DumpTable_Element> DumpTable;
 
+const Vector4f ScriptType_Builtin::ZeroVector = {};
+const Vector4f ScriptType_Builtin::RightVector = { 1.f, 0.f, 0.f, 0.f };
+const Vector4f ScriptType_Builtin::UpVector = { 0.f, 1.f, 0.f, 0.f };
+const Vector4f ScriptType_Builtin::InVector = { 0.f, 0.f, 1.f, 0.f };
+const Vector4f ScriptType_Builtin::LeftVector = { -1.f, 0.f, 0.f, 0.f };
+const Vector4f ScriptType_Builtin::DownVector = { 0.f, -1.f, 0.f, 0.f };
+const Vector4f ScriptType_Builtin::OutVector = { 0.f, 0.f, -1.f, 0.f };
+const ColorRGB ScriptType_Builtin::ColorBlack = { 0.f, 0.f, 0.f, 1.f };
+const ColorRGB ScriptType_Builtin::ColorRed = { 1.f, 0.f, 0.f, 1.f };
+const ColorRGB ScriptType_Builtin::ColorGreen = { 0.f, 1.f, 0.f, 1.f };
+const ColorRGB ScriptType_Builtin::ColorYellow = { 1.f, 1.f, 0.f, 1.f };
+const ColorRGB ScriptType_Builtin::ColorDarkBlue = { 0.f, 0.f, 1.f, 1.f };
+const ColorRGB ScriptType_Builtin::ColorPink = { 1.f, 0.f, 1.f, 1.f };
+const ColorRGB ScriptType_Builtin::ColorBlue = { 0.f, 1.f, 1.f, 1.f };
+const ColorRGB ScriptType_Builtin::ColorWhite = { 1.f, 1.f, 1.f, 1.f };
+
 int ScriptType::_489370(int* unk1, int* unk2)
 {
 	if (unk2)
@@ -316,6 +332,39 @@ void InitScriptTypes()
 	tQUATERNION = tyQuaternion;
 	tCOLOR = tyColor;
 	tSTRING = tyString;
+}
+
+unsigned int GetTypesChecksum()
+{
+	if (TypesListCRCCalculated)
+		return TypesListCRC;
+
+	char checksum_str[102400] = {};
+	unsigned int checksum_str_len = NULL;
+
+	if (TypesList.m_CurrIndex > 0)
+	{
+		for (unsigned int i = NULL; i < TypesList.m_CurrIndex; i++)
+		{
+			if (TypesList.m_Elements[i]->m_TypeId != TYPE_ENTITY)
+				continue;
+
+			//	FIXME: overflow?
+			if (checksum_str_len + strlen(TypesList.m_Elements[i]->m_TypeName.m_szString) > sizeof(checksum_str))
+				break;
+			else
+				checksum_str_len += strlen(TypesList.m_Elements[i]->m_TypeName.m_szString);
+
+			if (*checksum_str == NULL)
+				strcpy(checksum_str, TypesList.m_Elements[i]->m_TypeName.m_szString);
+			else
+				strcat(checksum_str, TypesList.m_Elements[i]->m_TypeName.m_szString);
+		}
+	}
+
+	TypesListCRC = Utils::CalcCRC32(checksum_str, checksum_str_len);
+	TypesListCRCCalculated = true;
+	return TypesListCRC;
 }
 
 ScriptType_Entity::ScriptType_Entity(const char* szEntityName) : ScriptType(TYPE_ENTITY, szEntityName, TYPE_ENTITY_SIZE)
@@ -869,9 +918,9 @@ void ScriptType_Builtin::GetConfigString(int* arg)
 {
 	if (GameConfig::g_Config->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]))
 	{
-		*(char**)&(*arg) = new char[45];
-		String valstr = GameConfig::g_Config->m_ConfigurationVariables->GetParamValueString((const char*)arg[1]);
-		strcpy(*(char**)&(*arg), valstr.m_szString);
+		String configstr;
+		GameConfig::g_Config->m_ConfigurationVariables->GetParamValueString(configstr, (const char*)arg[1]);
+		*arg = (int)_strdup(configstr.m_szString);
 	}
 	else
 		*arg = NULL;
@@ -885,13 +934,13 @@ void ScriptType_Builtin::GetConfigTruth(int* arg)
 		*arg = NULL;
 }
 
-void ScriptType_Builtin::GetSessionVariableString(char* arg)
+void ScriptType_Builtin::GetSessionVariableString(int* arg)
 {
 	if (GameConfig::g_Config->m_SessionVariables->IsVariableSet((const char*)arg[1]))
 	{
-		*(char**)&(*arg) = new char[45];
-		String valstr = GameConfig::g_Config->m_SessionVariables->GetParamValueString((const char*)arg[1]);
-		strcpy(*(char**)&(*arg), valstr.m_szString);
+		String sessionstr;
+		GameConfig::g_Config->m_SessionVariables->GetParamValueString(sessionstr, (const char*)arg[1]);
+		*arg = (int)_strdup(sessionstr.m_szString);
 	}
 	else
 		*arg = NULL;

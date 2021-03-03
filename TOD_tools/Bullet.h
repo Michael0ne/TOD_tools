@@ -8,6 +8,7 @@ class Bullet : public Model
 {
 	struct BulletShell
 	{
+		friend class Bullet;
 	protected:
 		Vector4f			m_RightVec;
 		Vector4f			m_UpVec;
@@ -25,8 +26,9 @@ class Bullet : public Model
 		int					field_64;
 
 	public:
-		BulletShell();
-		BulletShell(const BulletShell& rhs);	//	@8CAFA0
+		BulletShell();	//	NOTE: no actual constructor.
+		BulletShell(const BulletShell& rhs) = default;	//	@8CAFA0
+		~BulletShell();	//	NOTE: no actual destructor.
 	};
 protected:
 	float					m_Speed;
@@ -40,7 +42,7 @@ protected:
 	int						field_138;
 	List<int>				m_List_3;
 	List<int>				m_List_4;
-	Light_Properties*		m_LightingProperties;
+	Light_Properties*		m_Lighting;
 	int						field_160;
 	int						field_164;
 

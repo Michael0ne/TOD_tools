@@ -105,12 +105,12 @@ bool SceneSaveLoad::LoadSaveSummaryToBuffer(SavePoint* savepoint, SaveInfo* save
 	return false;
 }
 
-bool SceneSaveLoad::LoadSaveSummary(class SavePoint* savepoint, const ScriptType_Entity* summarynode)
+bool SceneSaveLoad::LoadSaveSummary(class SavePoint* savepoint, const class Node* summarynode)
 {
 	if (!savepoint)
 		return false;
 
-	m_SaveInfo_1.field_20 = (ScriptType_Entity*)summarynode;
+	m_SaveInfo_1.m_MemorySummaryNode = (Node*)summarynode;
 	return LoadSaveSummaryToBuffer(savepoint, &m_SaveInfo_1);
 }
 

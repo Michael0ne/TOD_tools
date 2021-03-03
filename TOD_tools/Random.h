@@ -16,5 +16,5 @@ public:
 	static int			Values[624];	//	@A3A3A8
 	static int			_A0ADC8;	//	@A0ADC8
 	static int			SeedSet;	//	@A3AD6C
-	static int*			_A3AD68;	//	@A3AD68
+	static int*			LastRandomValue;	//	@A3AD68
 };

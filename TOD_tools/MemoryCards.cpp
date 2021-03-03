@@ -172,7 +172,7 @@ bool MemoryCards::IsPrepared(unsigned int memcardind) const
 		return true;
 }
 
-void MemoryCards::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, ScriptType_Entity* summarynode) const
+void MemoryCards::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, Node* summarynode) const
 {
 	Scene::SceneInstance->LoadSavePointSummary(memcardind, slotind, MEMCARD_DEFAULT_SAVE_DIR, summarynode);
 }
@@ -262,12 +262,12 @@ bool MemoryCards::UnPrepareCardForSavegames_Impl(unsigned int memcardind)
 	return false;
 }
 
-void MemoryCards::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, ScriptType_Entity* summarynode) const
+void MemoryCards::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, Node* summarynode) const
 {
 	Scene::SceneInstance->RestoreSavePoint(memcardind, slotind, MEMCARD_DEFAULT_SAVE_DIR, summarynode, this);
 }
 
-void MemoryCards::CreateSavePoint(unsigned int memcardind, unsigned int slotind, ScriptType_Entity* textbox, unsigned int, const char* const savedirectory, ScriptType_Entity* summarynode) const
+void MemoryCards::CreateSavePoint(unsigned int memcardind, unsigned int slotind, ScriptType_Entity* textbox, unsigned int, const char* const savedirectory, Node* summarynode) const
 {
 	Scene::SceneInstance->CreateSavePoint(memcardind, slotind, MEMCARD_DEFAULT_SAVE_DIR, summarynode, m_SaveFileSize);
 }

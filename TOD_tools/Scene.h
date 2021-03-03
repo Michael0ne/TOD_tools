@@ -79,7 +79,7 @@ protected:
 	String			m_SaveDir;
 	int				m_MemoryCardIndex;
 	int				m_SaveSlotIndex;
-	ScriptType_Entity* m_SaveData;
+	Node*			m_SaveData;
 	int				m_SaveGameSize;
 	class MemoryCards* m_MemoryCards;
 	Vector4f		m_CameraPosition;
@@ -125,9 +125,9 @@ public:
 	void			ResetRewindBuffer(bool);	//	@894A80
 	void			ReleaseQuadTreeAndRenderlist();	//	@896C30
 	void			LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo);	//	@892E40
-	void			CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode, unsigned int savesize);	//	@895B80
-	void			RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode, const MemoryCards* memcards);	//	@895C00
-	void			LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode);	//	@895CB0
+	void			CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, unsigned int savesize);	//	@895B80
+	void			RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, const MemoryCards* memcards);	//	@895C00
+	void			LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode);	//	@895CB0
 
 	static int		RealTimeMs;	//	@A3DCCC
 	static int		GameTimeMs;	//	@A3DCD4

@@ -133,6 +133,10 @@ public:
 	}
 
 	void	Init(const Scene_Buffer108& buf, unsigned int unk);	//	@4617D0
+
+	static void		CreateMeshBufferMap();	//	@460AB0
+	
+	static std::map<int, int>*	MeshBuffersMap;	//	@A39F38
 };
 
 class ScreenProperties
@@ -148,7 +152,7 @@ protected:
 	float m_fScreenRatio;
 	float m_fScreenSafeArea;
 	char m_bSafeArea;	//	NOTE: is this float?
-	char field_21[3];
+	char field_21;
 	float m_fVirtualHudScreensizeHalfWidth;
 	float m_fVirtualHudScreensizeHalfHeight;
 	float field_2C;
@@ -185,7 +189,7 @@ private:
 	__int64							m_RenderEndTime;
 
 public:
-	GfxInternal(unsigned int resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
+	GfxInternal(const Vector2<int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
 	~GfxInternal();	//	@421470
 
 	void* operator new (size_t size)
@@ -360,4 +364,4 @@ enum RendererCommandsList
 	CMD_POP_PS2_SETGUARDBAND
 };	//	@A089D8
 
-static_assert(sizeof(GfxInternal) == RENDERER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(GfxInternal));
+ASSERT_CLASS_SIZE(GfxInternal, 72);

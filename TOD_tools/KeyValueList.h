@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 
 template <typename T>
 struct KeyValueListElement
@@ -21,14 +22,26 @@ protected:
 	V*					m_Values;
 
 public:
-	KeyValueList();
-	~KeyValueList();
+	KeyValueList() {};
+	~KeyValueList() {};
 
 	KeyValueList(unsigned int elemcount)
 		:	m_TotalEntries(NULL),
 			m_Flags(0xFF800000 | elemcount)
 	{};
 
-	bool				HasKey() const;
-	const V&			GetValue(const K&) const;
+	bool	GetValue(const char* const keyname, V& ret) const
+	{
+		return false;
+	}
+
+	void	SetValue(const char* const keyname, const V& value)
+	{
+		return;
+	}
+
+	bool	HasKey(const char* const keyname) const
+	{
+		return false;
+	}
 };

@@ -18,9 +18,9 @@ enum ScenePlayMode
 struct SaveInfo
 {
 	TransactionBuffer*	m_TransactionBuffer;
-	class Node*			m_CurrentUndo[6];
+	class Folder_*		m_LoadedFolders[6];
 	int					field_1C;	//	NOTE: when reading a save file, 'BAADF00D' written here.
-	ScriptType_Entity*	field_20;
+	class Node*			m_MemorySummaryNode;
 	int					m_SavedGameTimeMs;
 	int					m_SavedFrameNumber;
 };
@@ -79,7 +79,7 @@ public:
 	void				_874940();	//	@874940
 	void				ResetSavedPlayMode();	//	@873B90
 	bool				LoadSaveSummaryToBuffer(class SavePoint* savepoint, SaveInfo* saveinfo);	//	@874570
-	bool				LoadSaveSummary(class SavePoint* savepoint, const ScriptType_Entity* summarynode);	//	@874910
+	bool				LoadSaveSummary(class SavePoint* savepoint, const class Node* summarynode);	//	@874910
 	bool				LoadSavePointData(class SavePoint*, ScriptType_Entity*, class Node* readFinishedCb);	//	@874F40
 	bool				CompressAndWriteSaveData(class SavePoint*, ScriptType_Entity*);	//	@874A00
 	bool				ResetGame(class Node** loadedBlocksArray);	//	@874D00

@@ -38,9 +38,10 @@ GfxInternal::Renderer_Buffer2	GfxInternal::_A08704[28] =
 	{1, 0}
 };	//	@A08704
 ScreenProperties	g_ScreenProperties;	//	@A08810
+std::map<int, int>* Scene_Buffer68::MeshBuffersMap;
 
 #pragma message(TODO_IMPLEMENTATION)
-GfxInternal::GfxInternal(unsigned int resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
+GfxInternal::GfxInternal(const Vector2<int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
 {
 	MESSAGE_CLASS_CREATED(GfxInternal);
 
@@ -67,7 +68,7 @@ GfxInternal::GfxInternal(unsigned int resolution, unsigned int unused1, unsigned
 			m_RenderBufferArray[buffersCount] = Buffer276(*buffersDimens);
 
 			m_RenderBufferArray[buffersCount].m_ViewportDimensions_1 = { 0.f, 0.f };
-			m_RenderBufferArray[buffersCount].m_ViewportDimensions_2 = { g_GfxInternal_Dx9->m_ViewportWidth, g_GfxInternal_Dx9->m_ViewportHeight };
+			m_RenderBufferArray[buffersCount].m_ViewportDimensions_2 = { (float)g_GfxInternal_Dx9->m_ViewportResolution.x, (float)g_GfxInternal_Dx9->m_ViewportResolution.y };
 
 			buffersDimens++;
 		}
@@ -161,7 +162,7 @@ void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const
 
 Vector2<int>& GfxInternal::GetScreenResolution(Vector2<int>& res) const
 {
-	return (res = { g_GfxInternal_Dx9->m_DisplayModeWidth, g_GfxInternal_Dx9->m_DisplayModeHeight }, res);
+	return (res = g_GfxInternal_Dx9->m_DisplayModeResolution, res);
 }
 
 bool GfxInternal::IsScreenResolutionAvailable(int width, int height) const
@@ -225,4 +226,9 @@ Buffer276::Buffer276(const Vector3f& bufferSize)
 
 	m_ProjectionMatrixParams = { 70.f, 1.f, 1.f, 1000.f };
 	m_ClearColor = { 0.f, 0.f, 0.f, 1.f };
+}
+
+void Scene_Buffer68::CreateMeshBufferMap()
+{
+	MeshBuffersMap = new std::map<int, int>();
 }

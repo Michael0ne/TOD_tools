@@ -39,14 +39,14 @@ bool Window::ProcessMessages()
 	return false;
 }
 
-void Window::SetWindowResolutionRaw(const D3DDISPLAYMODE& resolution)
+void Window::SetWindowResolutionRaw(const Vector2<int>& resolution)
 {
-	SetWindowPos(m_WindowHandle, 0, 0, 0, resolution.Width, resolution.Height, SWP_NOMOVE);
+	SetWindowPos(m_WindowHandle, 0, 0, 0, resolution.x, resolution.y, SWP_NOMOVE);
 }
 
-void Window::SetWindowResolutionDontMove(const Vector2<float>& resolution)
+void Window::SetWindowResolutionDontMove(const Vector2<int>& resolution)
 {
-	tagRECT		Rect = { 0, 0, (LONG)resolution.x, (LONG)resolution.y };
+	tagRECT		Rect = { 0, 0, resolution.x, resolution.y };
 	DWORD		dwMenuName = GetClassLongA(m_WindowHandle, GCL_MENUNAME);
 	DWORD		dwStyle = GetWindowLongA(m_WindowHandle, GWL_STYLE);
 
