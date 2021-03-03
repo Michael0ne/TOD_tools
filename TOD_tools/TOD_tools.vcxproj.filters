@@ -727,6 +727,9 @@
     <ClCompile Include="StreamedWAV.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="KeyValueList.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="dinput_h.def">

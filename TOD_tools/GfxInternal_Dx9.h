@@ -48,8 +48,10 @@ public:
 
 	void						CreateVertexBuffer();	//	@464CC0
 
+	static void					CreateVerticesMap();	//	@4651B0
+
 	static const VertexDeclaration	VertexDeclarations[];	//	@A0ABD0
-	static std::map<int, GfxInternal_Dx9_Vertex*>	VertexBufferMap;	//	@A39F58
+	static std::map<int, GfxInternal_Dx9_Vertex*>*	VertexBufferMap;	//	@A39F58
 };
 
 struct GfxInternal_Dx9_IndexBuffer
@@ -88,6 +90,12 @@ class GfxInternal_Dx9
 		Vector2f field_14;
 	};
 
+	struct LightStatus
+	{
+		bool	m_Enabled;
+		Light*	m_Light;
+	};
+
 public:
 	IDirect3DDevice9*	m_Direct3DDevice;
 protected:
@@ -118,7 +126,7 @@ protected:
 	unsigned char	m_SeparateAlphaBlend;
 	IDirect3D9*	m_Direct3DInterface;
 	D3DCAPS9	m_DeviceCaps;
-	unsigned int	m_ScreenSize;
+	int			field_174;
 	D3DPRESENT_PARAMETERS	m_PresentParameters;
 	char		m_DeviceLost;
 	char		field_1B1;
@@ -162,13 +170,13 @@ protected:
 	char		m_ZWriteEnabled;
 	int			field_228;
 	int			field_22C;
-
 	int			field_230;
 	int			field_234;
 	int			m_CullMode;
 	char		field_23C;
 	char		m_TextureBlendingEnabled;
 	char		field_23E;
+
 	int			m_TextureStageStateType;
 	int			field_244;
 	int			field_248;
@@ -214,19 +222,18 @@ protected:
 	char		field_2C9;
 	char		field_2CA;
 	char		field_2CB;
-	bool		m_FlushDirectly;
+	bool		m_FlushDirectly;	//	2CC
+
 	IDirect3DTexture9*	m_TexturesArray[16];
 public:
 	bool		m_Windowed;
 protected:
 	bool		m_RenderingScene;
 	D3DFORMAT	m_DisplayModeFormat;
-	int			m_ViewportWidth_1;	//	NOTE: backbuffer dimensions?
-	int			m_ViewportHeight_1;
-	float		m_ViewportWidth;
-	float		m_ViewportHeight;
-	int			m_DisplayModeWidth;
-	int			m_DisplayModeHeight;
+	unsigned int	m_ViewportWidth_1;	//	NOTE: backbuffer dimensions?
+	unsigned int	m_ViewportHeight_1;
+	Vector2<int>	m_ViewportResolution;
+	Vector2<int>	m_DisplayModeResolution;
 
 	VerticesBuffer	m_VerticesBuffer[750];
 	char		m_DrawingText;
@@ -247,7 +254,7 @@ protected:
 
 	char		field_9664;
 	int			field_9668;
-	int			field_966C;	//	NOTE: some color value.
+	int			m_WireframeColor;
 	int			field_9670;
 	int			field_9674;
 	float		m_Opacity;
@@ -294,7 +301,7 @@ protected:
 	int			m_ParticleSystemEnded;
 	float		field_9758;
 	int			field_975C;
-	List<Light_Properties>	m_LightsPropertiesList;
+	List<LightStatus>	m_SceneLights;
 	std::map<int, int>	field_9770;
 	int			field_977C;
 	int			field_9780;
@@ -307,7 +314,7 @@ protected:
 	int			field_979C;
 
 public:
-	GfxInternal_Dx9(unsigned int resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1);	//	@45E620
+	GfxInternal_Dx9(const Vector2<int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1);	//	@45E620
 	~GfxInternal_Dx9();	//	@45DA20
 
 	void* operator new(size_t size)
@@ -322,7 +329,7 @@ public:
 	}
 
 	void		RememberResolution();	//	@44CFF0
-	bool		GetRegistryResolution(DisplayModeInfo&);	//	@44D080
+	bool		GetRegistryResolution(Vector2<int>&);	//	@44D080
 	bool		ProcessGameInput();	//	@44D140
 	void		stub1();	//	@44D1A0
 	void		SetFVF(unsigned int);	//	@44D1B0
@@ -424,7 +431,7 @@ public:
 	void		DrawSaturation(float);	//	@45AC00
 	void		DrawVignette(const Texture*, const Vector3<float>&, float, float, float);	//	@45AE60
 	void		SetupWindowParams(unsigned int width, unsigned int height);	//	@45BE30
-	void		SetupWindowParams_2(const Vector2<float> resolution);	//	@45BEF0
+	void		SetupWindowParams_2(const Vector2<int> resolution);	//	@45BEF0
 	bool		SetScreenResolution(unsigned int width, unsigned int height);	//	@45BF90
 	bool		SetupScreenRes();	//	@45C0D0
 	void		RenderTriangle(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C250
@@ -442,12 +449,9 @@ public:
 	void		EnableLight(void*, unsigned int lightindex);	//	@45DBA0
 	void		_45E5D0(void*);	//	@45E5D0	//	NOTE: toggle light from scene.
 
-	static Map<int, int>& g_UnkMap_1;
-	static Map<int, int>& g_UnkMap_2;
-	static Map<int, int>& g_RenderedTexturesMap;
-	static void* g_RenderBuffer;
-	static const D3DMATRIX& g_IdentityMatrix;
-	static bool	ProcessingInput;	//	@A39F10
+	static std::map<int, int>	RenderedTexturesMap;	//	@A39F50
+	static const D3DMATRIX		IdentityMatrix;	//	@A0AD38
+	static bool					ProcessingInput;	//	@A39F10
 
 	static void GetScreenResolution(Vector2<int>& outRes);	//	@41FD70
 };

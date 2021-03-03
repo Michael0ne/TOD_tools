@@ -670,7 +670,8 @@ bool File::FindFileEverywhere(const char* path)
 	if (!path || *path == NULL)
 		return false;
 
-	String pathStr = GetPathFromDirectoryMappings(pathStr, path);
+	String pathStr;
+	GetPathFromDirectoryMappings(pathStr, path);
 	int zipSlot;
 
 	if (ZipArch::SlotId > NULL)
@@ -682,7 +683,8 @@ bool File::FindFileEverywhere(const char* path)
 
 time_t File::GetFileTimestamp(const char* filename)
 {
-	String pathStr = GetPathFromDirectoryMappings(pathStr, filename);
+	String pathStr;
+	GetPathFromDirectoryMappings(pathStr, filename);
 	int zipslot = NULL;
 
 	if (ZipArch::SlotId <= 0 ||
@@ -1268,20 +1270,23 @@ ULARGE_INTEGER File::GetStorageFreeSpace()
 
 bool File::IsDirectoryValid(const char* const path)
 {
-	String pathStr = GetPathFromDirectoryMappings(pathStr, path);
+	String pathStr;
+	GetPathFromDirectoryMappings(pathStr, path);
 
 	return FileWrapper::IsDirectoryValid(pathStr.m_szString);
 }
 
 bool File::IsFileValid(const char* const file)
 {
-	String fileStr = GetPathFromDirectoryMappings(fileStr, file);
+	String fileStr;
+	GetPathFromDirectoryMappings(fileStr, file);
 	return FileWrapper::IsFileValid(fileStr.m_szString);
 }
 
 bool File::IsFileReadOnly(const char* const file)
 {
-	String fileStr = GetPathFromDirectoryMappings(fileStr, file);
+	String fileStr;
+	GetPathFromDirectoryMappings(fileStr, file);
 	
 	if (!FindFileEverywhere(fileStr.m_szString))
 		return false;
@@ -1295,13 +1300,15 @@ bool File::IsFileReadOnly(const char* const file)
 
 void File::CreateNewDirectory(const char* const dir)
 {
-	String dirStr = GetPathFromDirectoryMappings(dirStr, dir);
+	String dirStr;
+	GetPathFromDirectoryMappings(dirStr, dir);
 	FileWrapper::CreateNewDirectory(dirStr.m_szString);
 }
 
 void File::RemoveDirectory_(const char* const dir)
 {
-	String dirStr = GetPathFromDirectoryMappings(dirStr, dir);
+	String dirStr;
+	GetPathFromDirectoryMappings(dirStr, dir);
 	FileWrapper::RemoveDirectory_(dirStr.m_szString);
 }
 
@@ -1312,7 +1319,8 @@ void File::SetFileAttrib(const char* const file, unsigned int attrib, char unk)
 
 bool File::EnumerateFolderFiles(const char* const dir, List<String>& outFilesList)
 {
-	String dirStr = GetPathFromDirectoryMappings(dirStr, dir);
+	String dirStr;
+	GetPathFromDirectoryMappings(dirStr, dir);
 	return FileWrapper::EnumerateFolderFiles(dirStr.m_szString, outFilesList);
 }
 

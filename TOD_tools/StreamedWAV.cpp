@@ -1,5 +1,4 @@
 #include "StreamedWAV.h"
-#include "Globals.h"
 #include "StreamedSoundBuffers.h"
 #include "LogDump.h"
 

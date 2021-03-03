@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define DECAL_MANAGER_CLASS_SIZE 100
 
 class DecalManager : public Node
 {
@@ -19,4 +16,4 @@ public:
 	DecalManager();	//	NOTE: no constructor.
 };
 
-static_assert(sizeof(DecalManager) == DECAL_MANAGER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(DecalManager));
+ASSERT_CLASS_SIZE(DecalManager, 100);

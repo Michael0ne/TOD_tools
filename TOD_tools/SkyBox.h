@@ -3,21 +3,32 @@
 
 class SkyBox : public Model
 {
+	//	NOTE: possible name 'Mesh'.
+	struct SkyBoxStructUnknown
+	{
+		void*	field_0;
+		unsigned short field_4;
+		unsigned int field_8;
+		void*	field_C;
+		void*	field_10;
+		String	field_14;
+		float	field_18;
+		float	field_1C;
+		float	field_20;
+		float	field_24;
+		float	field_28;
+		float	field_2C;
+		float	field_30;
+		float	field_34;
+	};
+
 protected:
 	int		field_104;
 
 public:
-	SkyBox() : Model()	//	NOTE: no constructor.
-	{
-		MESSAGE_CLASS_CREATED(SkyBox);
+	SkyBox();	//	NOTE: constructor inlined.
 
-		m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x8000000;
-
-		if (!ms_A3E0B0[0])
-			(*(void(__thiscall*)(SkyBox*))0x8F20B0)(this);	//	TODO: implementation!
-	}
-
-	static	int**	ms_A3E0B0;	//	@A3E0B0	//	NOTE: this could be vertex buffers array.
+	static	SkyBoxStructUnknown*	_A3E0B0[5];	//	@A3E0B0
 };
 
 ASSERT_CLASS_SIZE(SkyBox, 260);

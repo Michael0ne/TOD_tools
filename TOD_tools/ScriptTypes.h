@@ -555,7 +555,7 @@ public:
 	void	GetVersionNumber(char**);	//	@4856F0
 	void	GetConfigString(int*);	//	@485770
 	void	GetConfigTruth(int*);	//	@485310
-	void	GetSessionVariableString(char*);	//	@4857F0
+	void	GetSessionVariableString(int*);	//	@4857F0
 	void	SetSessionVariableString(char*);	//	@485390
 	void	GetSessionVariableTruth(char*);	//	@485350
 	void	SetSessionVariableTruth(char*);	//	@4853B0
@@ -600,6 +600,22 @@ public:
 	void	CoverdemoExit(int*);	//	@4856D0
 
 	static void	Register();	//	@486F30
+
+	static const Vector4f		ZeroVector;	//	@9B7084
+	static const Vector4f		RightVector;	//	@9B70A4
+	static const Vector4f		UpVector;	//	@9B70B4
+	static const Vector4f		InVector;	//	@9B70C4
+	static const Vector4f		LeftVector;	//	@9B70D4
+	static const Vector4f		DownVector;	//	@9B70F4
+	static const Vector4f		OutVector;	//	@9B7104
+	static const ColorRGB		ColorBlack;	//	@9B7114
+	static const ColorRGB		ColorRed;	//	@9B7124
+	static const ColorRGB		ColorGreen;	//	@9B7134
+	static const ColorRGB		ColorYellow;	//	@9B7144
+	static const ColorRGB		ColorDarkBlue;	//	@9B7154
+	static const ColorRGB		ColorPink;	//	@9B7164
+	static const ColorRGB		ColorBlue;	//	@9B7174
+	static const ColorRGB		ColorWhite;	//	@9B7184
 };
 
 extern List<DumpTable_Element>	DumpTable;	//	@A0B3A4
@@ -615,6 +631,7 @@ static ScriptType_Color* tCOLOR = (ScriptType_Color*)0xA3CEA4;		//	@A3CEA4
 static ScriptType_String* tSTRING = (ScriptType_String*)0xA3CEB0;		//	@A3CEB0
 
 void	InitScriptTypes();	//	@8634E0
+unsigned int GetTypesChecksum();	//	@862CF0
 
 static bool TypesListCRCCalculated;		//	@A3CEC8
 static List<ScriptType> TypesList;		//	@A3CECC

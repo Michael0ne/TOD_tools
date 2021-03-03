@@ -367,6 +367,7 @@ public:
 	Allocators();	//	@478040
 	~Allocators();	//	@9B1AF0
 
+	static Allocator*		_4777F0(AllocatorIndex allocind);	//	@4777F0
 	static void				ReleaseMemory(void* ptr, bool aligned);	//	@4778D0
 	static Allocator*		GetAllocatorByMemoryPointer(void* ptr);	//	@4777B0
 	static void*			Realloc(void* oldptr, size_t newsize, bool);	//	@477940

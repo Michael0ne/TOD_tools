@@ -64,7 +64,7 @@ Entity* Node::FindNode(const char* nodeName)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Node::_88EC20(int unk)
+void Node::SetFlags(int unk)
 {
 	(*(void(__thiscall*)(Node*, int))0x88EC20)(this, unk);
 }

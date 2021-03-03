@@ -134,6 +134,8 @@ namespace ResType
 		const char*		AddResToOpenListAndReturnName();	//	@851720
 		void			_8513E0(unsigned char);	//	@8513E0
 		void			ApplyLoadedResource(ResourceHolder&);
+		
+		static void		Destroy(Resource* res);	//	@851FC0
 
 		static unsigned int	LastOpenResourceIndex;	//	@A3BE14
 	};
@@ -175,6 +177,7 @@ namespace ResType
 		inline Texture();	//	NOTE: always inlined.
 
 	public:
+		virtual ~Texture() = default;
 		virtual Resource* GetInstancePtr() const override;
 
 		void			GetTextureResolution(Vector2<int>& outRes);	//	@853650

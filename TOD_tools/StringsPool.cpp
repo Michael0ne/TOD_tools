@@ -10,7 +10,7 @@ String::String(const char* str)
 	if (m_nLength == NULL)
 		return;
 
-	if (m_nLength > 4)
+	if (m_nLength >= 4)
 	{
 		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 
@@ -30,7 +30,7 @@ String::String(const String& rhs)
 	if (m_nLength == NULL)
 		return;
 
-	if (m_nLength > 4)
+	if (m_nLength >= 4)
 	{
 		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 		
@@ -53,7 +53,7 @@ void String::operator=(const String& _r)
 	if (m_nLength == NULL)
 		return;
 	
-	if (m_nLength > 4)
+	if (m_nLength >= 4)
 	{
 		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 
@@ -103,7 +103,7 @@ void String::Append(const char* str)
 	memcpy(&m_szString[_len], str, _len_str + 1);
 }
 
-bool String::Equal(const char* _str)
+bool String::Equal(const char* const _str) const
 {
 	//	If base string is empty.
 	if (m_szString == &m_pEmpty && m_nBitMask < 0)
@@ -113,87 +113,32 @@ bool String::Equal(const char* _str)
 	if (m_szString == _str)
 		return true;
 
-	//	If first character is null.
-	if (!*m_szString)
-		if (!*_str)
-			return true;
-		else
-			return false;
-
-	char* _base = m_szString;
-	char _char = *m_szString;
-	while (_char == *_str)
-	{
-		_char = (_base++)[1];
-		_str++;
-
-		if (!_char)
-			if (!*_str)
-				return true;
-			else
-				return false;
-	}
-
-	if (*m_szString)
-		return false;
-
-	if (!*_str)
-		return true;
-
-	return false;
+	return strncmp(_str, m_szString, m_nLength) == NULL;
 }
 
 bool String::EqualIgnoreCase(const char* str1, const char* str2, unsigned int len)
 {
-	if (!len)
-		return true;
-
-	char* str1_ = (char*)str1;
-	char* str2_ = (char*)str2;
-	unsigned int ind = 0;
-
-	while (true)
-	{
-		char str1_char = *str1_;
-		char str2_char = *str2_;
-
-		++str1_;
-		++str2_;
-		++ind;
-
-		if (!str1_char)
-			return str2_char == 0;
-
-		if (!str2_char || (str2_char & str1_char) & 0xDF)
-			break;
-
-		if (ind == len)
-			return true;
-	}
-
-	return false;
+	return strncmp(str1, str2, len) == NULL;
 }
 
 void String::AllocateSpaceForString()
 {
-	if (m_nLength < 4)
+	if (m_nLength >= 4)
+	{
+		m_nBitMask = (m_nBitMask ^ (m_nLength + (m_nLength >> 2))) & STRING_BITMASK_ONLY_SIZE ^ m_nBitMask;
+		m_szString = (char*)Allocators::AllocatorsList[TEMP]->Allocate_A(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+	}
+	else
 	{
 		m_nBitMask = m_nBitMask & STRING_BITMASK_SHORT | 4;
 		m_szString = &m_pEmpty;
-	}else{
-		m_nBitMask = (m_nBitMask ^ (m_nLength + (m_nLength >> 2))) & 0x7FFFFFFF ^ m_nBitMask;
-
-		if (Allocators::Released)
-			m_szString = nullptr;
-		else
-			m_szString = (char*)Allocators::AllocatorsList[TEMP]->Allocate_A(m_nBitMask & 0x7FFFFFFF, NULL, NULL);
 	}
 }
 
 void String::AdjustBufferSize()
 {
 	if (m_nLength < (int)(m_nBitMask & STRING_BITMASK_ONLY_SIZE) ||
-		m_nLength < 4)
+		m_nLength <= 3)
 	{
 		m_nBitMask |= STRING_BITMASK_SHORT;
 		return;

@@ -19,7 +19,7 @@ namespace GameConfig {
 	#define CONFIG_MENU_RESOURCEID 0
 #endif
 
-	struct Session_Variables
+	struct ConfigVariables
 	{
 		struct VariableNameInfo
 		{
@@ -29,12 +29,12 @@ namespace GameConfig {
 
 		struct VariableUnknownInfo
 		{
-			unsigned int	field_0;
-			void*			field_4;
+			unsigned int	m_Index;
+			char			field_4;
 		};
 	protected:
 		KeyValueList<KeyValueListElement<StringTuple>, KeyValueListElement<StringTuple>> m_PlainValues;	//	NOTE: format is "varname=varvalue".
-		KeyValueList<VariableNameInfo, int> m_Keys;	//	NOTE: only variables names.
+		KeyValueList<KeyValueListElement<VariableNameInfo>, KeyValueListElement<VariableNameInfo>> m_Keys;	//	NOTE: only variables names.
 		KeyValueList<int, int> field_20;	//	NOTE: appears to be always empty.
 		KeyValueList<KeyValueListElement<VariableUnknownInfo>, KeyValueListElement<VariableUnknownInfo>> field_30;
 		KeyValueList<int, int> field_40;	//	NOTE: this and one below appears to be unused.
@@ -45,9 +45,9 @@ namespace GameConfig {
 		void	LoadVariablesFile(const char* file, bool configvariables);	//	@412110
 		void	ParseVariablesFile(File* file, bool configvariables);	//	@411A30
 	public:
-		Session_Variables(int);	//	@410680
-		Session_Variables(const char* file, bool configvariables);	//	@4124D0
-		~Session_Variables();	//	@4107B0
+		ConfigVariables(int);	//	@410680
+		ConfigVariables(const char* file, bool configvariables);	//	@4124D0
+		~ConfigVariables();	//	@4107B0
 
 		void* operator new(size_t size)
 		{
@@ -56,23 +56,23 @@ namespace GameConfig {
 		void operator delete(void* ptr)
 		{
 			if (ptr)
-				Allocators::ReleaseMemory(ptr, 0);
+				Allocators::ReleaseMemory(ptr, false);
+			ptr = nullptr;
 		}
 
-		bool IsVariableSet(const char* variableName);	//	@410080
+		bool IsVariableSet(const char* const variableName) const;	//	@410080
 
-		bool GetParamValueBool(const char* variableName);	//	@410900
-		int GetParamValueInt(const char* variableName);	//	@410A30
-		float GetParamValueFloat(const char* variableName);	//	@410AC0
-		const Vector2<int>& GetParamValueVector2(const char* variableName, Vector2<int>& outVec, char delimiter);	//	@410B50
-		const Vector2<float>& GetParamValueVector2(const char* variableName, Vector2<float>& outVec, char delimiter);	//	@410BE0
-		const Vector3<float>& GetParamValueVector3(const char* variableName, Vector3<float>& outVec, char delimiter);	//	@410C70
-		const Vector4f& GetParamValueVector4(const char* variableName, Vector4f& outVec, char delimiter);	//	@410D90
-		void GetParamValueString(const char* variableName, String& outStr);	//	@410E30
-		const String& GetParamValueString(const char* variableName);
+		const bool GetParamValueBool(const char* const variableName) const;	//	@410900
+		const int GetParamValueInt(const char* const variableName) const;	//	@410A30
+		const float GetParamValueFloat(const char* const variableName) const;	//	@410AC0
+		Vector2<int>& GetParamValueVector2i(Vector2<int>& outvec, const char* const variableName, const char delimiter) const;	//	@410B50
+		Vector2<float>& GetParamValueVector2f(Vector2<float>& outvec, const char* const variableName, const char delimiter) const;	//	@410BE0
+		Vector3<float>& GetParamValueVector3(Vector3<float>& outvec, const char* const variableName, const char delimiter) const;	//	@410C70
+		Vector4f& GetParamValueVector4(Vector4f& outvec, const char* const variableName, const char delimiter) const;	//	@410D90
+		String& GetParamValueString(String& outstr, const char* const variableName) const;	//	@410E30
 
-		void SetParamValue(const char* variableName, char* value);	//	@4114E0
-		void SetParamValueBool(const char* variableName, int value);	//	@4116D0
+		void SetParamValue(const char* const variableName, const char* const value);	//	@4114E0
+		void SetParamValueBool(const char* const variableName, const bool value);	//	@4116D0
 	};
 
 	enum CountryCodes
@@ -96,27 +96,27 @@ namespace GameConfig {
 		bool				m_Initialized;
 		String				m_GameName;
 		String				m_ConfigFilePath;
-		Session_Variables*	m_ConfigurationVariables;
-		Session_Variables*	m_SessionVariables;
-		String				m_sUnkString_1;
-		String				m_sUnkString_2;
+		ConfigVariables*	m_ConfigurationVariables;
+		ConfigVariables*	m_SessionVariables;
+		String				m_String_1;
+		String				m_String_2;
 		int					field_4C;
 		bool				m_ShouldStartGame;
 		ConfigCallback*		m_UninitialiseCallback;
 		String				m_SceneName;
-		Vector4f			m_vBackgroundSize;	//	TODO: better name?
+		Vector4f			m_Background;	//	TODO: better name?
 
-		int					m_nGlobalPropertiesListCRC;
-		int					m_nGlobalCommandsListCRC;
-		int					m_nTypesListCRC;
+		int					m_PropertiesBuiltinChecksum;
+		int					m_CommandsBuiltinChecksum;
+		int					m_TypesBuiltinChecksum;
 
-		int					m_TotalGlobalProperties;
-		int					m_TotalGlobalCommands;
-		int					m_TotalTypes;
+		int					m_PropertiesTotal;
+		int					m_CommandsTotal;
+		int					m_TypesTotal;
 
-		int					m_GlobalPropertiesListCRC;
-		int					m_GlobalCommandsListCRC;
-		int					m_TypesListCRC;
+		int					m_PropertiesLoadedChecksum;
+		int					m_CommandsLoadedChecksum;
+		int					m_TypesLoadedChecksum;
 
 	public:
 		Config();	//	@93CB60
@@ -130,6 +130,7 @@ namespace GameConfig {
 		{
 			if (ptr)
 				Allocators::ReleaseMemory(ptr, 0);
+			ptr = nullptr;
 		}
 
 		void				Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId);	//	@93D480
@@ -160,4 +161,5 @@ namespace GameConfig {
 	extern Config* g_Config;
 }
 
-static_assert(sizeof(GameConfig::Config) == CONFIG_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Config));
+ASSERT_CLASS_SIZE(GameConfig::Config, 156);
+ASSERT_CLASS_SIZE(GameConfig::ConfigVariables, 104);

@@ -20,6 +20,7 @@ protected:
 	float				m_Brightness;
 	int					field_24;
 
+public:
 	Light_Properties();	//	@422100
 	~Light_Properties();	//	@422190
 };

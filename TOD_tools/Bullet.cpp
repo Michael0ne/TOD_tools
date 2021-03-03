@@ -2,6 +2,17 @@
 
 Bullet* tBullet = nullptr;
 
+Bullet::~Bullet()
+{
+	MESSAGE_CLASS_DESTROYED(Bullet);
+
+	for (unsigned int i = 0; i < m_CollisionProbesList.m_CurrIndex; i--)
+		m_CollisionProbesList.m_Elements[i]->Destroy();
+
+	delete m_SceneBufferPtr;
+	delete m_Lighting;
+}
+
 Bullet::Bullet()
 {
 	MESSAGE_CLASS_CREATED(Bullet);
@@ -10,7 +21,7 @@ Bullet::Bullet()
 	m_CollisionProbesList;
 	m_List_3;
 	m_List_4;
-	m_LightingProperties = nullptr;
+	m_Lighting = nullptr;
 	field_160 = 1;
 	field_164 = -1;
 	m_Speed = 100.0f;
@@ -23,6 +34,8 @@ Bullet::Bullet()
 	for (unsigned int i = 0; i < m_BulletShellsTotal; i++)
 	{
 		BulletShell bulletshell;
+		bulletshell.m_Vec_5 = ScriptType_Builtin::ZeroVector;
+
 		m_BulletShellsList.AddElement(&bulletshell);
 
 		CollisionProbe* colprobe = (CollisionProbe*)tCollisionProbe->CreateNode();
@@ -32,4 +45,19 @@ Bullet::Bullet()
 
 	m_QuadTree->field_1C = m_QuadTree->field_1C & 0xFFFFFF | m_QuadTree->field_1C & 0xFF000000 | 0x8000000;
 	m_SceneBufferPtr = nullptr;
+}
+
+Bullet* Bullet::Create(AllocatorIndex)
+{
+	return new Bullet();
+}
+
+Bullet::BulletShell::BulletShell()
+{
+	MESSAGE_CLASS_CREATED(BulletShell);
+}
+
+Bullet::BulletShell::~BulletShell()
+{
+	MESSAGE_CLASS_DESTROYED(BulletShell);
 }

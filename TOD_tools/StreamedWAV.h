@@ -1,5 +1,4 @@
 #pragma once
-
 #include "File.h"
 #include "ThirdParty/libvorbis-1.1.0/include/vorbisfile.h"
 
@@ -70,4 +69,4 @@ public:
 	static List<SoundBufferInfo>	SoundBuffersList;	//	@A08468
 };
 
-ASSERT_CLASS_SIZE(StreamedWAV, 92)
+ASSERT_CLASS_SIZE(StreamedWAV, 92);

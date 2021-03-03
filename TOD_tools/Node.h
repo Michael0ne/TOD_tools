@@ -117,7 +117,7 @@ public:
 	virtual void		Destroy();								//	@88F770
 	virtual void		_484CC0(int);							//	@484CC0
 	virtual Entity*		FindNode(const char* nodeName);			//	@88EED0
-	virtual void		_88EC20(int unk);						//	@88EC20	//	NOTE: this could be 'SetFlagsForChildren'.
+	virtual void		SetFlags(int);							//	@88EC20	//	NOTE: this could be 'SetFlagsForChildren'.
 	virtual void		RefreshQuadTree();						//	@88DE70	//	NOTE: this could be 'Instantiate'.
 	virtual void		Update();								//	@8CB190
 	virtual void		_88C300();								//	@88C300	//	NOTE: void _88C300() { *(unsigned char*)0xA3D890 = 1; };
@@ -129,7 +129,7 @@ public:
 	virtual void		nullsub_4(int);							//	@883EC0
 	virtual void		nullsub_5();							//	@8CB190
 	virtual void		nullsub_6(int);							//	@883EC0
-	virtual String*		GetResourceName(String* unk);			//	@484E80	//	NOTE: this could be 'GetResourceName'.
+	virtual String*		GetResourceName(String* unk);			//	@484E80
 	virtual Vector4f*	GetBounds(Vector4f& unk) const;			//	@484DC0
 
 public:

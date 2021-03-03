@@ -71,21 +71,21 @@ int Blocks::InsertTypeListItem(void* res)
 {
 	field_0 = 1;
 
-	if (m_AssetsList.m_CurrIndex <= 1)
+	if (m_ResourcesInstancesList.m_CurrIndex <= 1)
 	{
-		unsigned int _ind = m_AssetsList.m_CurrIndex;
+		unsigned int _ind = m_ResourcesInstancesList.m_CurrIndex;
 		AddTypesListItemAtPos((ResType::Resource*)res, _ind);
 
 		return _ind;
 	}
 
 	unsigned int ind = 0;
-	for (unsigned int i = 1; i < m_AssetsList.m_CurrIndex; i++)
-		if (!m_AssetsList.m_Elements[i])
+	for (unsigned int i = 1; i < m_ResourcesInstancesList.m_CurrIndex; i++)
+		if (!m_ResourcesInstancesList.m_Elements[i])
 			ind = i;
 
 	if (!ind)
-		ind = m_AssetsList.m_CurrIndex;
+		ind = m_ResourcesInstancesList.m_CurrIndex;
 
 	AddTypesListItemAtPos((ResType::Resource*)res, ind);
 
@@ -520,13 +520,13 @@ ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resou
 
 void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
 {
-	if (m_AssetsList.m_CurrIndex < index + 1)
+	if (m_ResourcesInstancesList.m_CurrIndex < index + 1)
 	{
-		for (int ind = m_AssetsList.m_CurrIndex; m_AssetsList.m_CurrIndex < index + 1; ind++)
-			m_AssetsList.AddElement(nullptr);
+		for (int ind = m_ResourcesInstancesList.m_CurrIndex; m_ResourcesInstancesList.m_CurrIndex < index + 1; ind++)
+			m_ResourcesInstancesList.AddElement(nullptr);
 	}
 
-	m_AssetsList.m_Elements[index] = element;
+	m_ResourcesInstancesList.m_Elements[index] = element;
 	field_0 = 1;
 }
 
@@ -560,47 +560,39 @@ void Blocks::AllocateResourceBlockBufferAligned(unsigned int pos, int** resBufSt
 	*resBufStartPos = (int*)(~(ResType::ResourceAlignment[0] - 1) & (*resBufSpace + ResType::ResourceAlignment[0] - 1));
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 Blocks::Blocks(bool loadBlocks)
 {
 	MESSAGE_CLASS_CREATED(Blocks);
 
-	m_Defragmentator = (*(Allocator * (*)(AllocatorIndex))0x4777F0)(DEFRAGMENTING);
-	m_UnkList_1 = List<int>(0x18B00, 9);
-
-	const unsigned int listCapacity[] =
-	{
-		NULL, 11200, 4100, 6000, 2800, NULL, 100
-	};
-
-	for (unsigned int i = 1; i < 6; i++)
-	{
-		m_NodesList[i] = List<Entity>(0x27B00);
-		m_NodesList[i].m_Flags |= 0x1A000;
-		
-		if (listCapacity[i])
-			m_NodesList[i].SetCapacityAndErase(listCapacity[i]);
-	}
-
-	m_AssetsList = List<ResType::Resource>(0x18B00);
-	m_SceneNames = List<String>(0x18B00);
-	m_LoadedResourcesList = List<int>(0x18B00);
-
+	m_Defragmentator = Allocators::_4777F0(DEFRAGMENTING);
+	m_UnkList_1;
+	m_FastFindNodeVector;
+	m_NodesList[0];
+	m_NodesList[1];
+	m_NodesList[2];
+	m_NodesList[3];
+	m_NodesList[4];
+	m_NodesList[5];
+	m_ResourcesInstancesList;
+	m_SceneNames;
+	m_AssetsList;
 	m_LoadBlocks = loadBlocks;
 
 	g_Blocks = this;
 
+	//m_NodesList[0].SetCapacityAndErase(11200);
+	//m_NodesList[1].SetCapacityAndErase(4100);
+	//m_NodesList[2].SetCapacityAndErase(6000);
+	//m_NodesList[3].SetCapacityAndErase(2800);
+	//m_NodesList[4];
+	//m_NodesList[5].SetCapacityAndErase(100);
 	field_0 = NULL;
 	m_RegionId = -1;
-
-	m_NodesInNodeList[0] = m_NodesInNodeList[1] = m_NodesInNodeList[2] = m_NodesInNodeList[3] = m_NodesInNodeList[4] = m_NodesInNodeList[5] = 1;
-
-	m_AssetsList.AddElement(nullptr);
-
+	m_ResourcesInstancesList.SetCapacityAndErase(1);
 	field_1C8 = NULL;
 	field_1CC = NULL;
 	field_1D0 = nullptr;
-	m_CheckTimestamp = NULL;
+	m_CheckTimestamp = false;
 	m_EngineVersionTimestamp = NULL;
 	m_BlockType = UNKNOWN;
 	field_108 = 2;
@@ -630,27 +622,44 @@ void Blocks::RemoveLastSceneName()
 
 int Blocks::GetFreeResourceTypeListItem(unsigned int index)
 {
-	if (index + 1 >= m_AssetsList.m_CurrIndex)
+	if (index + 1 >= m_ResourcesInstancesList.m_CurrIndex)
 		return 0;
 
-	ResType::Resource** restype = &m_AssetsList.m_Elements[index + 1];
+	ResType::Resource** restype = &m_ResourcesInstancesList.m_Elements[index + 1];
 	unsigned int freeind = index + 1;
 
 	while (!*restype) {
 		restype++;
 		freeind++;
 
-		if (freeind >= m_AssetsList.m_CurrIndex)
+		if (freeind >= m_ResourcesInstancesList.m_CurrIndex)
 			return 0;
 	}
 
 	return freeind;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 unsigned int Blocks::AddEntity(Entity* ent)
 {
-	return (*(unsigned int(__thiscall*)(Blocks*, Entity*))0x875FA0)(this, ent);
+	unsigned int listind = m_BlockType == UNKNOWN ? 0 : m_BlockType;
+	unsigned int listcap;
+
+	if (field_1C8)
+	{
+		listcap = field_1C8;
+		field_1C8 = NULL;
+	}
+	else
+		listcap = m_NodesInNodeList[listind];
+	listcap = listcap & 0xFF8FFFFF;
+
+	if (listcap >= m_NodesList[listind].m_Capacity)
+		LogDump::LogA("Warning: vEntity[%d] is grown to size %d. Please adjust reserve() calls.\n", listind, listcap);
+
+	m_NodesList->AddElement(ent);
+	m_NodesInNodeList[listind]++;
+
+	return listcap | ((listind + 1) << 20);
 }
 
 void Blocks::SetRegionId(signed int id)

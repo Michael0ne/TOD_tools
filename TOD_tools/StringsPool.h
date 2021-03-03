@@ -34,7 +34,7 @@ public:
 	void operator=(const String& _r);
 
 	void			Append(const char* str);
-	bool			Equal(const char* _str);	//	@40FE30
+	bool			Equal(const char* const _str) const;	//	@40FE30
 	String*			Substring(String* outStr, unsigned int posStart, unsigned int length);	//	@409E90
 	inline bool		Empty()
 	{

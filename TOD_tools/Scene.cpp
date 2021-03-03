@@ -54,7 +54,7 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 		LogDump::LogA("Asset file could not be loaded: %s\n", assetname);
 }
 
-void Scene::CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode, unsigned int savesize)
+void Scene::CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, unsigned int savesize)
 {
 	LogDump::LogA("save point creation pending!\n");
 	if (savesize)
@@ -65,31 +65,31 @@ void Scene::CreateSavePoint(unsigned int memcardind, unsigned int slotind, const
 		m_SavePointOperationError = STATUS_OK;
 		m_SaveDir = savedirectory;
 		m_SaveGameSize = savesize;
-		m_SaveData = (ScriptType_Entity*)summarynode;
+		m_SaveData = (Node*)summarynode;
 	}
 	else
 		LogDump::LogA("Trying to create empty savepoint??? Bailing out.\n");
 }
 
-void Scene::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode, const MemoryCards* memcards)
+void Scene::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, const MemoryCards* memcards)
 {
 	m_SaveLoadState = STATE_LOAD;
 	m_MemoryCardIndex = memcardind;
 	m_SaveSlotIndex = slotind;
 	m_SavePointOperationError = STATUS_OK;
 	m_SaveDir = savedirectory;
-	m_SaveData = (ScriptType_Entity*)summarynode;
+	m_SaveData = (Node*)summarynode;
 	m_MemoryCards = (MemoryCards*)memcards;
 }
 
-void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const ScriptType_Entity* summarynode)
+void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode)
 {
 	m_SaveLoadState = STATE_LOAD_SUMMARY;
 	m_MemoryCardIndex = memcardind;
 	m_SaveSlotIndex = slotind;
 	m_SavePointOperationError = STATUS_OK;
 	m_SaveDir = savedirectory;
-	m_SaveData = (ScriptType_Entity*)summarynode;
+	m_SaveData = (Node*)summarynode;
 
 	char slotstr[10] = {};
 	sprintf(slotstr, "Slot%02d", m_SaveSlotIndex);

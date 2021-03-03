@@ -6,6 +6,14 @@
 
 StreamedSoundBuffers* g_StreamedSoundBuffers = nullptr;
 
+std::vector<SoundBufferStatus> StreamedSoundBuffers::vSoundBuffers;
+float StreamedSoundBuffers::DefaultFxVolume;
+float StreamedSoundBuffers::DefaultAmbienceVolume;
+float StreamedSoundBuffers::DefaultMusicVolume;
+float StreamedSoundBuffers::DefaultSpeaksVolume;
+SoundSystemType StreamedSoundBuffers::SoundRendererId;
+HANDLE StreamedSoundBuffers::SemaphoreObject;
+
 void StreamedSoundBuffers::SetDefaultFxVolume(float vol)
 {
 	DefaultFxVolume = vol;
@@ -79,6 +87,7 @@ SoundSystemType StreamedSoundBuffers::GetSoundRenderer()
 	return SoundRendererId;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 StreamedSoundBuffers::StreamedSoundBuffers(char channels, int sampleRate)
 {
 	MESSAGE_CLASS_CREATED(StreamedSoundBuffers);
@@ -194,6 +203,7 @@ StreamedSoundBuffers::StreamedSoundBuffers(char channels, int sampleRate)
 	m_GlobalPause = false;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 StreamedSoundBuffers::~StreamedSoundBuffers()
 {
 	MESSAGE_CLASS_DESTROYED(StreamedSoundBuffers);
@@ -215,6 +225,7 @@ StreamedSoundBuffers::~StreamedSoundBuffers()
 		}
 	}
 	else
+	{
 		if (m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
 		{
 			for (unsigned int ind = 0; ind < m_DieselPowerSoundBuffers.m_CurrIndex; ++ind)
@@ -223,12 +234,13 @@ StreamedSoundBuffers::~StreamedSoundBuffers()
 			for (unsigned int ind = 0; ind < m_StreamDataBufferList.m_CurrIndex; ++ind)
 				if (m_StreamDataBufferList.m_Elements[ind])
 					(*(void(__stdcall*)(signed int))m_StreamDataBufferList.m_Elements[ind])(1);
-			m_DieselPower->stub33();
+			//m_DieselPower->stub33();
 			Sleep(2000);
 
-			delete m_DieselPower;
+			//delete m_DieselPower;
 			m_DieselPower = nullptr;
 		}
+	}
 
 	g_StreamedSoundBuffers = nullptr;
 }
@@ -250,21 +262,22 @@ inline void StreamedSoundBuffers::SetDefaultVolumeLevels()
 	}
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffers::InitDieselPower()
 {
 	LogDump::LogA("Initializing Sound System.....\n");
 
 	SetDefaultVolumeLevels();
 
-	m_DieselPower = DieselPower::CallFactory(1, 2, 1, 3.0f, g_Window->m_WindowHandle, 1, 0, 0);
+	//m_DieselPower = DieselPower::CallFactory(1, 2, 1, 3.0f, g_Window->m_WindowHandle, 1, 0, 0);
 
 	if (!m_DieselPower)
 		return;
 
-	m_DieselPower->stub25(1);
-	m_DieselPower->stub26(1);
+	//m_DieselPower->stub25(1);
+	//m_DieselPower->stub26(1);
 
-	field_50 = m_DieselPower->stub24();
+	//field_50 = m_DieselPower->stub24();
 
 	switch (m_SpeakerConfig - 1)
 	{
@@ -283,11 +296,11 @@ void StreamedSoundBuffers::InitDieselPower()
 	}
 
 	(*(void(__stdcall*)())(field_50 + 80))();
-	field_54 = m_DieselPower->stub23();
-	m_DirectSound = m_DieselPower->GetDirectSound();
+	//field_54 = m_DieselPower->stub23();
+	//m_DirectSound = m_DieselPower->GetDirectSound();
 	m_Muted = false;
 
-	LogDump::LogA("Sound Rendering System is '%s'\n", m_DieselPower->GetSystemName());
+	//LogDump::LogA("Sound Rendering System is '%s'\n", m_DieselPower->GetSystemName());
 
 	g_StreamedSoundBuffers = this;
 }
@@ -300,6 +313,7 @@ void StreamedSoundBuffers::GetMaxDistance(Vector4f& outVec) const
 		m_DirectSound3DBuffer->GetMaxDistance((D3DVALUE*)&outVec);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 HRESULT StreamedSoundBuffers::CreateSoundBuffer(DSBUFFERDESC* bufferDesc)
 {
 	m_DirectSoundBuffer = nullptr;
@@ -309,10 +323,10 @@ HRESULT StreamedSoundBuffers::CreateSoundBuffer(DSBUFFERDESC* bufferDesc)
 	if (m_SoundSystem != SOUND_SYSTEM_DIESELPOWER)
 		return m_DirectSound->CreateSoundBuffer(bufferDesc, &m_DirectSoundBuffer, NULL);
 
-	if (bufferDesc->dwFlags & DSBCAPS_CTRL3D)
-		field_24 = field_28 = m_DieselPower->stub21(bufferDesc->dwBufferBytes, bufferDesc->lpwfxFormat);
-	else
-		field_24 = m_DieselPower->stub16(bufferDesc->dwBufferBytes, 11, &bufferDesc->lpwfxFormat);
+	//if (bufferDesc->dwFlags & DSBCAPS_CTRL3D)
+		//field_24 = field_28 = m_DieselPower->stub21(bufferDesc->dwBufferBytes, bufferDesc->lpwfxFormat);
+	//else
+		//field_24 = m_DieselPower->stub16(bufferDesc->dwBufferBytes, 11, &bufferDesc->lpwfxFormat);
 
 	return S_OK;
 }
@@ -414,7 +428,7 @@ void StreamedSoundBuffers::InitDirectSound(char channels, int sampleRate)
 	LogDump::LogA("Sound priority level set to %d\n", soundPriorityLevel);
 
 	DSBUFFERDESC dsBuffer;
-	memset(&dsBuffer, NULL, sizeof(DSBUFFERDESC));
+	ZeroMemory(&dsBuffer, sizeof(DSBUFFERDESC));
 
 	dsBuffer.dwSize = sizeof(DSBUFFERDESC);
 	dsBuffer.dwReserved = NULL;
@@ -439,6 +453,7 @@ void StreamedSoundBuffers::InitDirectSound(char channels, int sampleRate)
 	LogDump::LogA("Sound Rendering System is 'DirectSound'\n");
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffers::SetListener3DPos(const Vector4f& pos)
 {
 	float dist = *(float*)0xA3DCC4 >= 0.0099999998f ? *(float*)0xA3DCC4 : 0.0099999998f;

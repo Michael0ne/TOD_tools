@@ -21,14 +21,11 @@ namespace ResType
 		SetResourceAlignment(16, 2);
 
 		Resource* res_ = m_Creator();
-		m_ResTypeMethods = (void*)(*((int*)res_));
-
-		res_->~Resource();
-		if (res_->m_Flags & 0x10000)
-			delete res_;
+		m_ResTypeMethods = (void*)*((int*)res_);
+		Resource::Destroy(res_);
 	}
 
-	void ResourceBase::SetResourceAlignment(unsigned int size, unsigned int index)
+	inline void ResourceBase::SetResourceAlignment(unsigned int size, unsigned int index)
 	{
 		m_Alignment[index] = size;
 
@@ -80,11 +77,8 @@ namespace ResType
 
 		m_ResourceTimestamp = NULL;
 		m_Flags = NULL;
-
-		//	NOTE: field_4 is somehow initialized here. Haven't figured it out yet...
-
+		m_ResourcePath = nullptr;
 		m_GlobalResourceId = a1 ? NULL : g_Blocks->InsertTypeListItem(this);
-
 		m_Flags = m_Flags & 0xFFF1FFFF | 0x10000;
 	}
 
@@ -93,11 +87,12 @@ namespace ResType
 		MESSAGE_CLASS_DESTROYED(Resource);
 
 		if (m_GlobalResourceId > 0)
-			g_Blocks->m_AssetsList.m_Elements[m_GlobalResourceId] = nullptr;
+			g_Blocks->m_ResourcesInstancesList.m_Elements[m_GlobalResourceId] = nullptr;
 
 		--TotalResourcesCreated;
 
-		delete m_ResourcePath;
+		if (m_ResourcePath)
+			delete m_ResourcePath;
 	}
 
 	const char* Resource::AddResToOpenListAndReturnName()
@@ -123,8 +118,15 @@ namespace ResType
 	{
 	}
 
+	void Resource::Destroy(Resource* res)
+	{
+		res->~Resource();
+		if (res->m_Flags & 0x10000)
+			delete res;
+	}
+
 	Resource* Texture::GetInstancePtr() const
-{
+	{
 		return (Resource*)rtTexture;
 	}
 

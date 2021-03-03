@@ -46,23 +46,23 @@ namespace GameConfig
 		m_Initialized = false;
 		m_GameName;
 		m_ConfigFilePath;
-		m_sUnkString_1;
-		m_sUnkString_2;
+		m_String_1;
+		m_String_2;
 		m_SceneName;
 		m_ConfigurationVariables = nullptr;
 		m_SessionVariables = nullptr;
 		field_4C = 0;
 		m_ShouldStartGame = false;
-		m_vBackgroundSize;
-		m_nGlobalPropertiesListCRC = 0;
-		m_nGlobalCommandsListCRC = 0;
-		m_nTypesListCRC = 0;
-		m_TotalGlobalProperties = 0;
-		m_TotalGlobalCommands = 0;
-		m_TotalTypes = 0;
-		m_GlobalPropertiesListCRC = 0;
-		m_GlobalCommandsListCRC = 0;
-		m_TypesListCRC = 0;
+		m_Background;
+		m_PropertiesBuiltinChecksum = 0;
+		m_CommandsBuiltinChecksum = 0;
+		m_TypesBuiltinChecksum = 0;
+		m_PropertiesTotal = 0;
+		m_CommandsTotal = 0;
+		m_TypesTotal = 0;
+		m_PropertiesLoadedChecksum = 0;
+		m_CommandsLoadedChecksum = 0;
+		m_TypesLoadedChecksum = 0;
 		m_UninitialiseCallback = nullptr;
 	}
 
@@ -97,21 +97,21 @@ namespace GameConfig
 		if (File::FindFileEverywhere(m_ConfigFilePath.m_szString)) {
 			LogDump::LogA("Initialising engine with '%s'\n", m_ConfigFilePath.m_szString);
 
-			m_ConfigurationVariables = new Session_Variables(m_ConfigFilePath.m_szString, 1);;
+			m_ConfigurationVariables = new ConfigVariables(m_ConfigFilePath.m_szString, 1);;
 		}else
-			m_ConfigurationVariables = new Session_Variables(0);
+			m_ConfigurationVariables = new ConfigVariables(0);
 
-		Session_Variables* pProfileVariables = nullptr;
+		ConfigVariables* pProfileVariables = nullptr;
 
 		//	Try and look for profile variables file.
 		if (File::FindFileEverywhere("/profile.txt"))
-			pProfileVariables = new Session_Variables("/profile.txt", 0);
+			pProfileVariables = new ConfigVariables("/profile.txt", 0);
 
 		if (m_ConfigurationVariables->IsVariableSet("filecheck"))
 			Script::FileCheck = m_ConfigurationVariables->GetParamValueBool("filecheck") == 0;
 
 		if (m_ConfigurationVariables->IsVariableSet("control_type"))
-			Script::ControlType = m_ConfigurationVariables->GetParamValueString("control_type");
+			m_ConfigurationVariables->GetParamValueString(Script::ControlType, "control_type");
 
 		if (m_ConfigurationVariables->IsVariableSet("forcefeedback"))
 			Script::ForceFeedback = m_ConfigurationVariables->GetParamValueBool("forcefeedback");
@@ -152,12 +152,8 @@ namespace GameConfig
 		//	TODO: implementation!
 		InitEntitiesDatabase();
 
-		//	Init unknown maps (lists), somehow related to renderer.
-		//	TODO: implementation!
-		(*(void(__cdecl*)())0x460AB0)();
-		(*(void(__cdecl*)())0x4651B0)();	//	NOTE: init some verticies map.
-
-		//	Init rendered textures map.
+		Scene_Buffer68::CreateMeshBufferMap();
+		GfxInternal_Dx9_Vertex::CreateVerticesMap();
 		GfxInternal_Dx9_Texture::InitTexturesMap();
 
 		//	Init renderer commands buffer.
@@ -178,7 +174,7 @@ namespace GameConfig
 
 		Script::Filesystem = "blocks.naz, sounds.naz, videos00.naz, videos01.naz";
 		if (m_ConfigurationVariables->IsVariableSet("filesystem"))
-			Script::Filesystem = m_ConfigurationVariables->GetParamValueString("filesystem");
+			m_ConfigurationVariables->GetParamValueString(Script::Filesystem, "filesystem");
 
 #ifdef INCLUDE_FIXES
 		m_UninitialiseCallback = new ConfigCallback();
@@ -187,8 +183,12 @@ namespace GameConfig
 #endif
 
 		//	If log dump file is here - open it.
-		if (m_ConfigurationVariables->IsVariableSet("logdumpfile")) {
-			LogDump::OpenLogDump(m_ConfigurationVariables->GetParamValueString("logdumpfile").m_szString);
+		if (m_ConfigurationVariables->IsVariableSet("logdumpfile"))
+		{
+			String logdumpfilestr;
+			m_ConfigurationVariables->GetParamValueString(logdumpfilestr, "logdumpfile");
+			LogDump::OpenLogDump(logdumpfilestr.m_szString);
+
 		}
 
 		//	If we have 'profile.txt' available, check directory mappings and other stuff.
@@ -201,7 +201,8 @@ namespace GameConfig
 			sprintf(DirectorymappingStr, "directorymapping%d", index++);
 
 			while (pProfileVariables->IsVariableSet(DirectorymappingStr)) {
-				String dirmapping = pProfileVariables->GetParamValueString(DirectorymappingStr);
+				String dirmapping;
+				pProfileVariables->GetParamValueString(dirmapping, DirectorymappingStr);
 
 				if (strchr(dirmapping.m_szString, '>') != nullptr)
 				{
@@ -233,7 +234,7 @@ namespace GameConfig
 		Script::ScriptsPath = "/data/scripts/stable/";
 
 		if (pProfileVariables && pProfileVariables->IsVariableSet("script_searchpath"))
-			Script::ScriptsPath = pProfileVariables->GetParamValueString("script_searchpath");
+			pProfileVariables->GetParamValueString(Script::ScriptsPath, "script_searchpath");
 
 #ifdef INCLUDE_FIXES
 		m_GameName.Append(" scripts: ");
@@ -247,13 +248,11 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("relax_build_version_check"))
 			Script::RelaxBuildVersionCheck = m_ConfigurationVariables->GetParamValueBool("relax_build_version_check");
 
-		//	What icon should we use?
 		if (_stricmp(TestingPath.m_szString, "stable"))
 			Script::IconResourceId = 103;
 		else
 			Script::IconResourceId = 101;
 
-		//	Detect and set language.
 		Script::LanguageStringsOffset = 0;
 
 		if (File::IsFileValid("/es_sounds.zip") || File::IsFileValid("/es_sounds.naz"))
@@ -268,11 +267,14 @@ namespace GameConfig
 			Script::LanguageStringsOffset = 0;
 
 		if (m_ConfigurationVariables->IsVariableSet("language_mode"))
-			Script::SetCountryCode(m_ConfigurationVariables->GetParamValueString("language_mode").m_szString);
+		{
+			String countrycodestr;
+			m_ConfigurationVariables->GetParamValueString(countrycodestr, "language_mode");
+			Script::SetCountryCode(countrycodestr.m_szString);
+		}
 
 		Script::LanguageMode = Script::CountryCodes[Script::LanguageStringsOffset];
 
-		//	Create required devices - window, mouse, keyboard, gamepad.
 		g_Window = new Window(m_GameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
 
 		g_InputMouse = new Input::Mouse();
@@ -291,7 +293,8 @@ namespace GameConfig
 		//	Detect platform.
 		if (m_ConfigurationVariables->IsVariableSet("save_platform"))
 		{
-			String platform = m_ConfigurationVariables->GetParamValueString("save_platform");
+			String platform;
+			m_ConfigurationVariables->GetParamValueString(platform, "save_platform");
 
 			//	For PS2 we want 2 memory cards and harddisk available.
 			if (platform.Equal("PS2")) {
@@ -339,13 +342,15 @@ namespace GameConfig
 
 		//	Default streamed sound files extension.
 		if (m_ConfigurationVariables->IsVariableSet("streamed_sound_ext"))
-			Script::StreamedSoundExt = m_ConfigurationVariables->GetParamValueString("streamed_sound_ext");
+			m_ConfigurationVariables->GetParamValueString(Script::StreamedSoundExt, "streamed_sound_ext");
 		else
 			Script::StreamedSoundExt = "ogg";
 
 		//	Figure out sound renderer.
-		if (m_ConfigurationVariables->IsVariableSet("soundrenderer")) {
-			String soundrenderer = m_ConfigurationVariables->GetParamValueString("soundrenderer");
+		if (m_ConfigurationVariables->IsVariableSet("soundrenderer"))
+		{
+			String soundrenderer;
+			m_ConfigurationVariables->GetParamValueString(soundrenderer, "soundrenderer");
 			SoundSystemType rendererid = SOUND_SYSTEM_UNDEFINED;
 
 			soundrenderer.ToLowerCase();
@@ -368,7 +373,8 @@ namespace GameConfig
 			g_StreamedSoundBuffers->m_MaxConcurrentSounds = m_ConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
 
 		//	Override default volume values.
-		if (m_ConfigurationVariables->IsVariableSet("change_sound_group_volume_scaling") && m_ConfigurationVariables->GetParamValueBool("change_sound_group_volume_scaling")) {
+		if (m_ConfigurationVariables->IsVariableSet("change_sound_group_volume_scaling") && m_ConfigurationVariables->GetParamValueBool("change_sound_group_volume_scaling"))
+		{
 			if (m_ConfigurationVariables->IsVariableSet("default_fx_volume_var"))
 				StreamedSoundBuffers::SetDefaultFxVolume(m_ConfigurationVariables->GetParamValueFloat("default_fx_volume_var"));
 
@@ -386,25 +392,28 @@ namespace GameConfig
 		g_StreamedSoundBuffers->m_Sound = !m_ConfigurationVariables->IsVariableSet("sound") ||
 													m_ConfigurationVariables->GetParamValueBool("sound");
 
-		//	NOTE: what is this parameter?
-		Vector3<float> vBackground = Vector3<float>();
+		Vector3<float> BackgroundSizeVec;
 		if (m_ConfigurationVariables->IsVariableSet("background"))
-			m_ConfigurationVariables->GetParamValueVector3("background", vBackground, ',');
+			m_ConfigurationVariables->GetParamValueVector3(BackgroundSizeVec, "background", ',');
 
-		m_vBackgroundSize.x = vBackground.x * (float)(1/255);
-		m_vBackgroundSize.y = vBackground.y * (float)(1/255);
-		m_vBackgroundSize.z = vBackground.z * (float)(1/255);
+		m_Background.x = BackgroundSizeVec.x * (float)(1/255);
+		m_Background.y = BackgroundSizeVec.y * (float)(1/255);
+		m_Background.z = BackgroundSizeVec.z * (float)(1/255);
+		m_Background.a = 1.f;
 
 		//	Override screen size.
-		Vector2<int> ScreenSize = Vector2<int>();
+		Vector2<int> ScreenSize;
 		if (m_ConfigurationVariables->IsVariableSet("screensize"))
-			m_ConfigurationVariables->GetParamValueVector2("screensize", ScreenSize, ',');
+			m_ConfigurationVariables->GetParamValueVector2i(ScreenSize, "screensize", ',');
 
 		//	Widescreen emulation
-		if (m_ConfigurationVariables->IsVariableSet("widescreen_emulation")) {
-			String sWidescreenType = m_ConfigurationVariables->GetParamValueString("widescreen_emulation");
+		if (m_ConfigurationVariables->IsVariableSet("widescreen_emulation"))
+		{
+			String WideScreenType;
+			m_ConfigurationVariables->GetParamValueString(WideScreenType, "widescreen_emulation");
 
-			if (sWidescreenType.Equal("pal")) {
+			if (WideScreenType.Equal("pal"))
+			{
 				GfxInternal::WideScreen = true;
 				ScreenSize.x = 720;
 				ScreenSize.y = 576;
@@ -412,7 +421,8 @@ namespace GameConfig
 				LogDump::LogA("EMULATING Pal-Wide\n");
 			}
 
-			if (sWidescreenType.Equal("ntsc")) {
+			if (WideScreenType.Equal("ntsc"))
+			{
 				GfxInternal::WideScreen = true;
 				ScreenSize.x = 720;
 				ScreenSize.y = 480;
@@ -420,7 +430,8 @@ namespace GameConfig
 				LogDump::LogA("EMULATING Ntsc-Wide\n");
 			}
 
-			if (sWidescreenType.Equal("hdtv")) {
+			if (WideScreenType.Equal("hdtv"))
+			{
 				GfxInternal::WideScreen = true;
 				ScreenSize.x = 1280;
 				ScreenSize.y = 720;
@@ -436,34 +447,30 @@ namespace GameConfig
 			GfxInternal::RatioXY = m_ConfigurationVariables->GetParamValueFloat("ratioxy");
 
 		Vector3<float> ScreenBuffers[31];
-
-		for (unsigned int i = 0; i < 31; i++)
-			ScreenBuffers[i];
-
 		ScreenBuffers[11].x = ScreenBuffers[12].x = 2.f;
 
-		g_GfxInternal = new GfxInternal(&ScreenSize, 32, 16, (Script::Fullscreen ? (GfxInternal::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
+		g_GfxInternal = new GfxInternal(ScreenSize, 32, 16, (Script::Fullscreen ? (GfxInternal::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
 
 		//	Set region.
 		Script::Region = Script::IsRegionEurope() ? "europe" : "usa";
 
 		if (m_ConfigurationVariables->IsVariableSet("region"))
-			Script::Region = m_ConfigurationVariables->GetParamValueString("region").m_szString;
+			m_ConfigurationVariables->GetParamValueString(Script::Region, "region");
 
 		g_Blocks->SetRegionId(GetRegionId(&Script::Region));
 		LogDump::LogA("Using region: %s\n", Script::Region.m_szString);
 
-		if (m_ConfigurationVariables->IsVariableSet("virtual_hud_screensize")) {
+		if (m_ConfigurationVariables->IsVariableSet("virtual_hud_screensize"))
+		{
 			Vector2<float> VirtualHudSize;
-			m_ConfigurationVariables->GetParamValueVector2("virtual_hud_screensize", VirtualHudSize, ',');
-
+			m_ConfigurationVariables->GetParamValueVector2f(VirtualHudSize, "virtual_hud_screensize", ',');
 			g_ScreenProperties.SetHudScreenSize(VirtualHudSize.x, VirtualHudSize.y, 1.0, 1.0);
 		}
 
 		if (m_ConfigurationVariables->IsVariableSet("screen_safe_area"))
 			g_ScreenProperties.SetSafeArea(m_ConfigurationVariables->GetParamValueFloat("screen_safe_area"));
 
-		g_GfxInternal->SetClearColorForBufferIndex(*((ColorRGB*)&m_vBackgroundSize), -1);
+		g_GfxInternal->SetClearColorForBufferIndex(*((ColorRGB*)&m_Background), -1);
 
 		//	TODO: what is this?
 		GfxInternal::_A08704[0].field_0 = 0;
@@ -471,7 +478,7 @@ namespace GameConfig
 		GfxInternal::_A08704[5].field_0 = 0;
 
 		if (m_ConfigurationVariables->IsVariableSet("version_name"))
-			Script::VersionName = m_ConfigurationVariables->GetParamValueString("version_name").m_szString;
+			m_ConfigurationVariables->GetParamValueString(Script::VersionName, "version_name");
 
 		//	NOTE: this is unused.
 		Script::_A1B98D = 0;
@@ -512,27 +519,25 @@ namespace GameConfig
 
 		//Script::LoadScripts();
 
-		//	Since scripts loaded and ready, calculate CRC and remember it.
-		//	TODO: implementation!
-		//m_GlobalPropertiesListCRC = (*(int(__cdecl*)())0x873440)();
-		//m_GlobalCommandsListCRC = (*(int (__cdecl*)())0x871DD0)();
-		//m_TypesListCRC = (*(int(__cdecl*)())0x862CF0)();
+		m_PropertiesLoadedChecksum = Script::GetGlobalPropertyListCRC();
+		m_CommandsLoadedChecksum = Script::GetGlobalCommandListCRC();
+		m_TypesLoadedChecksum = GetTypesChecksum();
 
 		//	Instantiate scene.
 		bool SceneSet = false;
 		if (m_ConfigurationVariables->IsVariableSet("scenefile"))
 		{
-			const char* sceneFile = m_ConfigurationVariables->GetParamValueString("scenefile").m_szString;
-			LogDump::LogA("Opening scene %s\n", sceneFile);
+			String scenefile;
+			m_ConfigurationVariables->GetParamValueString(scenefile, "scenefile");
+			LogDump::LogA("Opening scene %s\n", scenefile.m_szString);
 
-			//SceneSet = OpenScene(sceneFile);
+			SceneSet = OpenScene(scenefile.m_szString);
 		}
 
-		//if (!SceneSet)
-			//if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
-				//tScene->CreateNode();
+		if (!SceneSet)
+			if (!(SceneSet = OpenScene("/data/Overdose_THE_GAME/OverdoseIntro.scene")))
+				tScene->CreateNode();
 
-		//	TODO: implementation! Scene is not initialized here!
 		if (m_ConfigurationVariables->IsVariableSet("fixedframerate"))
 		{
 			Scene::SceneInstance->m_FixedFramerate = true;
@@ -569,7 +574,8 @@ namespace GameConfig
 		Script::CheckDataSanity = false;
 		Script::CheckDivisionByZero = false;
 
-		if (pProfileVariables) {
+		if (pProfileVariables)
+		{
 			if (pProfileVariables->IsVariableSet("check_data_sanity"))
 				Script::CheckDataSanity = pProfileVariables->GetParamValueBool("check_data_sanity");
 
@@ -607,7 +613,8 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("fix_dangling_refs"))
 			Script::FixDanglingRefs = m_ConfigurationVariables->GetParamValueBool("fix_dangling_refs");
 
-		if (m_ConfigurationVariables->IsVariableSet("simulate_release_build")) {
+		if (m_ConfigurationVariables->IsVariableSet("simulate_release_build"))
+		{
 			Script::SimulateReleaseBuild = m_ConfigurationVariables->GetParamValueBool("simulate_release_build");
 			LogDump::LogA("Script::SimulateReleaseBuild == %i\n", Script::SimulateReleaseBuild);
 		}
@@ -751,7 +758,7 @@ namespace GameConfig
 	{	
 	}
 
-	void Session_Variables::LoadVariablesFile(const char* file, bool configvariables)
+	void ConfigVariables::LoadVariablesFile(const char* file, bool configvariables)
 	{
 		LogDump::LogA("Loading variable file '%s'...\n", file);	//	NOTE: actual EXE code doesn't have call to LogA, only sprintf.
 
@@ -760,7 +767,7 @@ namespace GameConfig
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
-	void Session_Variables::ParseVariablesFile(File* file, bool configvariables)
+	void ConfigVariables::ParseVariablesFile(File* file, bool configvariables)
 	{
 		//file->WriteFromBuffer();
 		//int filesize = file->GetPosition();
@@ -771,9 +778,9 @@ namespace GameConfig
 		//buffer[bytesread] = NULL;
 	}
 
-	Session_Variables::Session_Variables(int)
+	ConfigVariables::ConfigVariables(int)
 	{
-		MESSAGE_CLASS_CREATED(Session_Variables);
+		MESSAGE_CLASS_CREATED(ConfigVariables);
 
 		m_PlainValues = { 17 };
 		m_Keys = { 17 };
@@ -786,9 +793,9 @@ namespace GameConfig
 		field_64 = NULL;
 	}
 
-	Session_Variables::Session_Variables(const char* file, bool configvariables)
+	ConfigVariables::ConfigVariables(const char* file, bool configvariables)
 	{
-		MESSAGE_CLASS_CREATED(Session_Variables);
+		MESSAGE_CLASS_CREATED(ConfigVariables);
 
 		m_PlainValues = { 17 };
 		m_Keys = { 17 };
@@ -800,105 +807,177 @@ namespace GameConfig
 		LoadVariablesFile(file, configvariables);
 	}
 
-	Session_Variables::~Session_Variables()
+	ConfigVariables::~ConfigVariables()
 	{
-		MESSAGE_CLASS_DESTROYED(Session_Variables);
+		MESSAGE_CLASS_DESTROYED(ConfigVariables);
 	}
 
-	#pragma message(TODO_IMPLEMENTATION)
-	bool Session_Variables::IsVariableSet(const char* variableName)
+	bool ConfigVariables::IsVariableSet(const char* const variableName) const
 	{
-		//return m_PlainValues.HasKey(variableName);
-		return false;
+		return m_PlainValues.HasKey(variableName);
 	}
 
-	#pragma message(TODO_IMPLEMENTATION)
-	bool Session_Variables::GetParamValueBool(const char* variableName)
+	const bool ConfigVariables::GetParamValueBool(const char* const variableName) const
 	{
-		bool(__thiscall * _GetParamValueBool)(Session_Variables * _this, const char* _varname) = (bool(__thiscall*)(Session_Variables*, const char*))0x410900;
+		KeyValueListElement<StringTuple> val_;
+		if (!m_PlainValues.GetValue(variableName, val_))
+			return false;
 		
-		return _GetParamValueBool(this, variableName);
+		if (strncmp(val_.m_Element.m_String_2.m_szString, "true", 4) == NULL ||
+			strncmp(val_.m_Element.m_String_2.m_szString, "1", 1) == NULL)
+			return true;
+		else
+			return false;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	int Session_Variables::GetParamValueInt(const char* variableName)
+	const int ConfigVariables::GetParamValueInt(const char* const variableName) const
 	{
-		int(__thiscall * _GetParamInt)(Session_Variables * _this, const char* _varname) = (int(__thiscall*)(Session_Variables*, const char*))0x410A30;
+		KeyValueListElement<StringTuple> val_;
+		if (!m_PlainValues.GetValue(variableName, val_))
+			return NULL;
 
-		return _GetParamInt(this, variableName);
+		return atol(val_.m_Element.m_String_2.m_szString);
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	float Session_Variables::GetParamValueFloat(const char* variableName)
+	const float ConfigVariables::GetParamValueFloat(const char* const variableName) const
 	{
-		float(__thiscall * _GetParamFloat)(Session_Variables * _this, const char* _varname) = (float(__thiscall*)(Session_Variables*, const char*))0x410AC0;
+		KeyValueListElement<StringTuple> val_;
+		if (!m_PlainValues.GetValue(variableName, val_))
+			return 0.f;
 
-		return _GetParamFloat(this, variableName);
+		return (float)atof(val_.m_Element.m_String_2.m_szString);
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	const Vector2<int>& Session_Variables::GetParamValueVector2(const char* variableName, Vector2<int>& outVec, char delimiter)
+	Vector2<int>& ConfigVariables::GetParamValueVector2i(Vector2<int>& outvec, const char* variableName, char delimiter) const
 	{
-		const Vector2<int>& (__thiscall * _GetParamVec2i)(Session_Variables * _this, Vector2<int>* _outvec, const char* _varname, char _delim) = (const Vector2<int>&(__thiscall*)(Session_Variables*, Vector2<int>*, const char*, char))0x410B50;
+		KeyValueListElement<StringTuple> val_;
+		if (!m_PlainValues.GetValue(variableName, val_))
+			return outvec;
 
-		return _GetParamVec2i(this, &outVec, variableName, delimiter);
+		char* tok = strtok(val_.m_Element.m_String_2.m_szString, (char*)&delimiter);
+		while (tok != NULL)
+		{
+			if (outvec.x)
+				outvec.y = atoi(tok);
+			else
+				outvec.x = atoi(tok);
+
+			tok = strtok(NULL, (char*)&delimiter);
+		}
+
+		return outvec;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	const Vector2<float>& Session_Variables::GetParamValueVector2(const char* variableName, Vector2<float>& outVec, char delimiter)
+	Vector2<float>& ConfigVariables::GetParamValueVector2f(Vector2<float>& outvec, const char* const variableName, const char delimiter) const
 	{
-		const Vector2<float>&(__thiscall * _GetParamVec2)(Session_Variables * _this, Vector2<float>*, const char* _varname, char _delim) = (const Vector2<float>&(__thiscall*)(Session_Variables*, Vector2<float>*, const char*, char))0x410BE0;
+		KeyValueListElement<StringTuple> val_;
+		if (!m_PlainValues.GetValue(variableName, val_))
+			return outvec;
+		
+		char* tok = strtok(val_.m_Element.m_String_2.m_szString, (char*)&delimiter);
+		while (tok != NULL)
+		{
+			if (outvec.x)
+				outvec.y = (float)atof(tok);
+			else
+				outvec.x = (float)atof(tok);
 
-		return _GetParamVec2(this, &outVec, variableName, delimiter);
+			tok = strtok(NULL, (char*)&delimiter);
+		}
+
+		return outvec;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	const Vector4f& Session_Variables::GetParamValueVector4(const char* variableName, Vector4f& outVec, char delimiter)
+	Vector3<float>& ConfigVariables::GetParamValueVector3(Vector3<float>& outvec, const char* const variableName, const char delimiter) const
 	{
-		const Vector4f&(__thiscall * _GetParamVec4)(Session_Variables * _this, Vector4f* _outvec, const char* _varname, char _delim) = (const Vector4f&(__thiscall*)(Session_Variables*, Vector4f*, const char*, char))0x410C70;
+		KeyValueListElement<StringTuple> val_;
+		if (!m_PlainValues.GetValue(variableName, val_))
+			return outvec;
 
-		return _GetParamVec4(this, &outVec, variableName, delimiter);
+		char* tok = strtok(val_.m_Element.m_String_2.m_szString, (char*)&delimiter);
+		int i = 0;
+
+		while (tok != NULL)
+		{
+			switch (i)
+			{
+			case 0:
+				outvec.x = (float)atof(tok);
+				break;
+			case 1:
+				outvec.y = (float)atof(tok);
+				break;
+			case 2:
+				outvec.z = (float)atof(tok);
+				break;
+			}
+
+			tok = strtok(NULL, (char*)&delimiter);
+			i++;
+		}
+
+		return outvec;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	const Vector3<float>& Session_Variables::GetParamValueVector3(const char* variableName, Vector3<float>& outVec, char delimiter)
+	Vector4f& ConfigVariables::GetParamValueVector4(Vector4f& outvec, const char* const variableName, const char delimiter) const
 	{
-		const Vector3<float>& (__thiscall * _GetParamVec3)(Session_Variables * _this, const char* _varname, float* _outX, float* _outY, float* _outZ, char _delim) = (const Vector3<float> & (__thiscall*)(Session_Variables*, const char*, float*, float*, float*, char))0x410D90;
+		KeyValueListElement<StringTuple> val_;
+		if (!m_PlainValues.GetValue(variableName, val_))
+			return outvec;
 
-		return _GetParamVec3(this, variableName, &outVec.x, &outVec.y, &outVec.z, delimiter);
+		char* tok = strtok(val_.m_Element.m_String_2.m_szString, (char*)&delimiter);
+		int i = 0;
+
+		while (tok != NULL)
+		{
+			switch (i)
+			{
+			case 0:
+				outvec.x = (float)atof(tok);
+				break;
+			case 1:
+				outvec.y = (float)atof(tok);
+				break;
+			case 2:
+				outvec.z = (float)atof(tok);
+				break;
+			case 3:
+				outvec.a = (float)atof(tok);
+				break;
+			}
+
+			tok = strtok(NULL, (char*)&delimiter);
+			i++;
+		}
+
+		return outvec;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	void Session_Variables::GetParamValueString(const char* variableName, String& outStr)
+	String& ConfigVariables::GetParamValueString(String& outstr, const char* const variableName) const
 	{
-		void (__thiscall * _GetParamString)(Session_Variables * _this, String* _outstr, const char* _varname) = (void (__thiscall*)(Session_Variables*, String*, const char*))0x410E30;
+		KeyValueListElement<StringTuple> val_;
+		if (!m_PlainValues.GetValue(variableName, val_))
+			return outstr;
 
-		_GetParamString(this, &outStr, variableName);
+		//	TODO: get rid of copy assignment here.
+		//	NOTE: original code has 3 (or 4) memory allocations here.
+		return (outstr = val_.m_Element.m_String_2, outstr);
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	const String& Session_Variables::GetParamValueString(const char* variableName)
+	void ConfigVariables::SetParamValue(const char* const variableName, const char* const value)
 	{
-		String* outStr = nullptr;
-		const String& (__thiscall * _GetParamString)(Session_Variables * _this, String * _outstr, const char* _varname) = (const String& (__thiscall*)(Session_Variables*, String*, const char*))0x410E30;
+		KeyValueListElement<StringTuple> val_;
+		val_.m_Element.m_String_2 = value;
 
-		return _GetParamString(this, outStr, variableName);
+		m_PlainValues.SetValue(variableName, val_);
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
-	void Session_Variables::SetParamValue(const char* variableName, char* value)
+	void ConfigVariables::SetParamValueBool(const char* const variableName, const bool value)
 	{
-		void(__thiscall * _SetParamValue)(Session_Variables * _this, const char* _varname, char* _val) = (void(__thiscall*)(Session_Variables*, const char*, char*))0x4114E0;
+		KeyValueListElement<StringTuple> val_;
+		val_.m_Element.m_String_2 = value ? "true" : "false";
 
-		_SetParamValue(this, variableName, value);
-	}
-
-#pragma message(TODO_IMPLEMENTATION)
-	void Session_Variables::SetParamValueBool(const char* variableName, int value)
-	{
-		void(__thiscall * _SetParamValueBool)(Session_Variables * _this, const char* _varname, int _val) = (void(__thiscall*)(Session_Variables*, const char*, int))0x4116D0;
-
-		_SetParamValueBool(this, variableName, value);
+		m_PlainValues.SetValue(variableName, val_);
 	}
 
 	void InitialiseGame(LPSTR cmdline)
@@ -955,10 +1034,10 @@ namespace GameConfig
 	void GetInternalGameName(String& outStr)
 	{
 #ifdef INCLUDE_FIXES
-		const char devpath[] = "E:/Develop/KapowSystems/TOD1/Libs/Toolbox/Functions.cpp";
-#else
 		const char devpath[] = __FILE__;
 		String::ConvertBackslashes((char*)devpath);
+#else
+		const char devpath[] = "E:/Develop/KapowSystems/TOD1/Libs/Toolbox/Functions.cpp";
 #endif
 		const char* kapowsystems_pos = strstr(devpath, "KapowSystems");
 
