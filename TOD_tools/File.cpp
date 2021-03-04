@@ -7,9 +7,9 @@
 
 unsigned int File::FilesOpen = NULL;
 HANDLE	File::FilesSemaphoreArray[FILE_MAX_ZIP_FILES];
-List<StringTuple> File::DirectoryMappingsList;
+List<StringTuple> File::DirectoryMappingsList = {};
 unsigned int File::AlignmentArray[3] = { 1, 1, 4 };
-FileWrapper* FileWrapper::ZipFilesArray[FILE_MAX_ZIP_FILES];
+FileWrapper* FileWrapper::ZipFilesArray[FILE_MAX_ZIP_FILES] = {};
 bool FileWrapper::GameDiscFound = false;
 String FileWrapper::WorkingDirectory;
 String FileWrapper::GameWorkingDirectory;
@@ -740,6 +740,7 @@ FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _create
 	m_ExecuteAttribute = NULL;
 	m_FilePosition = NULL;
 	m_Read = false;
+	m_CriticalSection = {};
 
 	InitializeCriticalSection(&m_CriticalSection);
 
@@ -790,8 +791,7 @@ FileWrapper::~FileWrapper()
 {
 	if (m_File)
 	{
-		if (m_Buffer != m_BufferBegin &&
-			!m_Read)
+		if (m_Buffer != m_BufferBegin && !m_Read)
 		{
 			DWORD numBytesWritten = NULL;
 			WriteFile(m_File, m_Buffer, m_BufferBegin - m_Buffer, &numBytesWritten, nullptr);
@@ -800,7 +800,7 @@ FileWrapper::~FileWrapper()
 	}
 
 	if (m_Buffer)
-		Allocators::ReleaseMemory(m_Buffer, false);
+		delete[] m_Buffer;
 
 	if (m_File && m_CreateIfNotFound)
 		CloseHandle(m_File);
@@ -818,9 +818,7 @@ HANDLE FileWrapper::CreateFile_()
 	{
 		if (m_DesiredAccess_1 & FILE_WRITE_DATA)
 		{
-			char errbuf[512];
-			memset(&errbuf, NULL, sizeof(errbuf));
-
+			char errbuf[512] = {};
 			GetLastErrorMessage(errbuf);
 			LogDump::LogA("Could not open file for writing: %s\n", errbuf);
 
@@ -844,7 +842,10 @@ HANDLE FileWrapper::CreateFile_()
 	}
 
 	if (m_File)
-		m_Buffer = m_BufferBegin = m_BufferEnd = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(FILE_BUFFER_SIZE, NULL, NULL);
+	{
+		m_Buffer = new char[FILE_BUFFER_SIZE];
+		m_BufferBegin = m_BufferEnd = m_Buffer;
+	}
 
 	LeaveCriticalSection(&m_CriticalSection);
 
@@ -1214,9 +1215,7 @@ void File::ReadZipDirectories(const char* szFileSystem)
 {
 	if (szFileSystem && *szFileSystem) {
 		int nCurrentArchiveIndex = 0;
-		char szZipName[255];
-
-		memset(&szZipName, 0, sizeof(szZipName));
+		char szZipName[255] = {};
 
 		while (true)
 		{
@@ -1224,9 +1223,7 @@ void File::ReadZipDirectories(const char* szFileSystem)
 			do {
 				char cCurrentChar = szFileSystem[nCurrentArchiveIndex];
 
-				if (!cCurrentChar)
-					break;
-				if (cCurrentChar == ' ' || cCurrentChar == ',')
+				if (!cCurrentChar || cCurrentChar == ' ' || cCurrentChar == ',')
 					break;
 
 				++nCurrentArchiveIndex;
@@ -1257,8 +1254,6 @@ void File::ReadZipDirectories(const char* szFileSystem)
 
 			if (!szFileSystem[nCurrentArchiveIndex])
 				break;
-
-			memset(&szZipName, 0, sizeof(szZipName));
 		}
 	}
 }
@@ -1325,18 +1320,18 @@ bool File::EnumerateFolderFiles(const char* const dir, List<String>& outFilesLis
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void File::OpenZip(const char* szZipPath)
+void File::OpenZip(const char* const zipName)
 {
-	if (!FileWrapper::IsFileExists(szZipPath))
+	if (!FileWrapper::IsFileExists(zipName))
 		return;
 
 	int slotId = ZipArch::SlotId++;
-	LogDump::LogA("Opening zip <%s> into slot %i\n", szZipPath, ZipArch::SlotId);
+	LogDump::LogA("Opening zip <%s> into slot %i\n", zipName, slotId);
 
 	ZipArch::SlotInfo[slotId].m_Flags.field_0 = 15;
-	ZipArch::ZipNames[slotId] = szZipPath;
+	ZipArch::ZipNames[slotId] = zipName;
 
-	FileWrapper::ZipFilesArray[slotId] = new FileWrapper(szZipPath, 33, true);
+	FileWrapper::ZipFilesArray[slotId] = new FileWrapper(zipName, 33, true);
 	FileWrapper::ZipFilesArray[slotId]->WriteFromBufferAndSetToEnd();
 
 	if (FileWrapper::ZipFilesArray[slotId]->GetPosition())

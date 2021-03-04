@@ -254,7 +254,11 @@ namespace Script
 		if (GlobalPropertyListChecksumObtained)
 			return GlobalPropertyListChecksum;
 
+#ifdef INCLUDE_FIXES
+		char checksum_str[16360] = {};
+#else
 		char checksum_str[102400] = {};
+#endif
 		unsigned int checksum_str_len = NULL;
 
 		if (GlobalPropertiesList.m_CurrIndex > 0)
@@ -264,7 +268,6 @@ namespace Script
 				String tempstr;
 				GlobalPropertiesList.m_Elements[i]->GetNameAndType(tempstr);
 
-				//	FIXME: overflow?
 				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
 					break;
 				else
@@ -287,7 +290,11 @@ namespace Script
 		if (GlobalCommandListChecksumObtained)
 			return GlobalCommandListChecksum;
 
+#ifdef INCLUDE_FIXES
+		char checksum_str[16360] = {};
+#else
 		char checksum_str[102400] = {};
+#endif
 		unsigned int checksum_str_len = NULL;
 
 		if (GlobalCommandsList.m_CurrIndex > 0)
@@ -297,7 +304,6 @@ namespace Script
 				String tempstr;
 				GlobalCommandsList.m_Elements[i]->GetReturnTypeString(tempstr);
 
-				//	FIXME: overflow?
 				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
 					break;
 				else

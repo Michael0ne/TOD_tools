@@ -48,6 +48,9 @@ namespace Utils
 
 	static int CalcCRC32(const char* str, unsigned int len)	//	@4657C0
 	{
+		if (!*str || len == NULL)
+			return NULL;
+
 		char* str_ptr = (char*)str;
 		int sum = NULL;
 
@@ -64,13 +67,13 @@ namespace Utils
 					break;
 				str_ptr = LastSavedCRCString;
 			}
-		} while (str_ptr != &LastSavedCRCString[5]);
+		} while (str_ptr != &LastSavedCRCString[4]);
 
 		return sum;
 	}
 
 	static void(__cdecl* CreateDirectoriesRecursive)(const char* szPath) = (void(__cdecl*)(const char*))0x4096E0;
-	static const char* (__cdecl* GetErrorCodeDescription)(unsigned int code) = (const char* (__cdecl*)(unsigned int))0x99E9F8;	//	NOTE: DO NOT DECOMPILE!!!
+	static const char* (__cdecl* GetErrorCodeDescription)(unsigned int code) = (const char* (__cdecl*)(unsigned int))0x99E9F8;	//	NOTE: DO NOT DECOMPILE!!! This is likely a D3D9 library function.
 	static void (__cdecl* DeleteAllFilesInFolder)(const char* inPath) = (void (__cdecl*)(const char*))0x418B50;
 
 	//	TODO: is this correct?

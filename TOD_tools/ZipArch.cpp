@@ -1,8 +1,8 @@
 #include "ZipArch.h"
 #include "Globals.h"
 
-String ZipArch::ZipNames[ZIP_MAX_SLOTS];
-ZipSlotInfo ZipArch::SlotInfo[ZIP_MAX_SLOTS];
+String ZipArch::ZipNames[ZIP_MAX_SLOTS] = {};
+ZipSlotInfo ZipArch::SlotInfo[ZIP_MAX_SLOTS] = {};
 unsigned int ZipArch::SlotId = NULL;
 
 ZipSlotInfo::ZipSlotInfo()

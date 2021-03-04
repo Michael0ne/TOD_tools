@@ -97,7 +97,7 @@ namespace GameConfig
 		if (File::FindFileEverywhere(m_ConfigFilePath.m_szString)) {
 			LogDump::LogA("Initialising engine with '%s'\n", m_ConfigFilePath.m_szString);
 
-			m_ConfigurationVariables = new ConfigVariables(m_ConfigFilePath.m_szString, 1);;
+			m_ConfigurationVariables = new ConfigVariables(m_ConfigFilePath.m_szString, 1);
 		}else
 			m_ConfigurationVariables = new ConfigVariables(0);
 
@@ -489,7 +489,7 @@ namespace GameConfig
 		g_Font = new Font((const void*)0xA1B698);
 
 		//	Load NAZ archives into memory.
-		File::ReadZipDirectories(Script::Filesystem.m_szString);
+		//File::ReadZipDirectories(Script::Filesystem.m_szString);
 
 		//	Parse collmat file
 		EnumMaterialsInCollmat();
@@ -742,7 +742,7 @@ namespace GameConfig
 
 	bool Config::OpenScene(const char* scene)
 	{
-		tScene->CreateNode();
+		tScene->CreateNode();	//	NOTE: this calls creator which essentially creates instance of class.
 		g_Blocks->SetSceneName(scene);
 		Scene::SceneInstance->Load(scene);
 		Scene::SceneInstance->UpdateLoadedBlocks(0, 0);
@@ -760,7 +760,7 @@ namespace GameConfig
 
 	void ConfigVariables::LoadVariablesFile(const char* file, bool configvariables)
 	{
-		LogDump::LogA("Loading variable file '%s'...\n", file);	//	NOTE: actual EXE code doesn't have call to LogA, only sprintf.
+		LogDump::LogA("Loading variable file '%s'...\n", file);
 
 		File file_(file, 1, true);
 		ParseVariablesFile(&file_, configvariables);
@@ -769,25 +769,81 @@ namespace GameConfig
 #pragma message(TODO_IMPLEMENTATION)
 	void ConfigVariables::ParseVariablesFile(File* file, bool configvariables)
 	{
-		//file->WriteFromBuffer();
-		//int filesize = file->GetPosition();
-		//file->WriteBufferAndSetToStart();
+		file->WriteFromBuffer();
+		const unsigned int filesize = file->GetPosition();
+		file->_WriteBufferAndSetToStart();
+		char* const buffer = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(filesize + 1, NULL, NULL);
+		const int bytesread = file->Read(buffer, filesize);
 
-		//char* buffer = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(filesize + 1, NULL, NULL);
-		//int bytesread = file->Read(buffer, filesize);
-		//buffer[bytesread] = NULL;
+		if (bytesread <= NULL)
+		{
+			LogDump::LogA("%d variables read.\n", 0);
+			field_64 = configvariables;
+			m_TotalVariables = 0;
+			return;
+		}
+
+		unsigned int lineNumber = NULL;
+		char* currline = strtok(buffer, "\n");
+		while (currline)
+		{
+			//	TODO: curly brackets are somehow used, haven't figured out how yet...
+
+			if (!*currline)
+				continue;
+
+			char* eqpos = strchr(currline, '=');
+
+			if (eqpos)
+			{
+				char keybuf[32] = {};
+				char* quotmarkpos = strchr(eqpos + 1, '"');
+				if (quotmarkpos)
+					*strrchr(eqpos + 1, '"') = NULL;
+
+				strncpy(keybuf, currline, eqpos - currline);
+				
+				m_PlainValues[keybuf] = quotmarkpos ? quotmarkpos + 1 : eqpos + 1;
+				m_Keys[lineNumber] = keybuf;
+				m_StringVariables[lineNumber] = quotmarkpos != nullptr;
+			}
+			else
+			{
+				if (strstr(currline, "#include") == currline)
+				{
+					char* quotmarkpos = strchr(currline, '"');
+
+					if (quotmarkpos)
+					{
+						char includename[32] = {};
+						strncpy(includename, quotmarkpos + 1, strrchr(currline, '"') - quotmarkpos);
+
+						LoadVariablesFile(includename, false);
+						field_64 = false;
+					}
+					else
+					{
+						m_UnrecognizedKeys[lineNumber] = currline;
+					}
+				}
+				else
+				{
+					m_UnrecognizedKeys[lineNumber] = currline;
+				}
+			}
+
+			lineNumber++;
+			currline = strtok(NULL, "\n");
+		}
+
+		LogDump::LogA("%d variables read.\n", lineNumber);
+		field_64 = configvariables;
+		m_TotalVariables = lineNumber;
 	}
 
 	ConfigVariables::ConfigVariables(int)
 	{
 		MESSAGE_CLASS_CREATED(ConfigVariables);
-
-		m_PlainValues = { 17 };
-		m_Keys = { 17 };
-		field_20 = { 17 };
-		field_30 = { 17 };
-		field_40 = { 17 };
-		field_50 = { 17 };
 
 		m_TotalVariables = NULL;
 		field_64 = NULL;
@@ -796,13 +852,6 @@ namespace GameConfig
 	ConfigVariables::ConfigVariables(const char* file, bool configvariables)
 	{
 		MESSAGE_CLASS_CREATED(ConfigVariables);
-
-		m_PlainValues = { 17 };
-		m_Keys = { 17 };
-		field_20 = { 17 };
-		field_30 = { 17 };
-		field_40 = { 17 };
-		field_50 = { 17 };
 
 		LoadVariablesFile(file, configvariables);
 	}
@@ -814,170 +863,115 @@ namespace GameConfig
 
 	bool ConfigVariables::IsVariableSet(const char* const variableName) const
 	{
-		return m_PlainValues.HasKey(variableName);
+		return m_PlainValues.find(variableName) != m_PlainValues.end();
 	}
 
 	const bool ConfigVariables::GetParamValueBool(const char* const variableName) const
 	{
-		KeyValueListElement<StringTuple> val_;
-		if (!m_PlainValues.GetValue(variableName, val_))
-			return false;
-		
-		if (strncmp(val_.m_Element.m_String_2.m_szString, "true", 4) == NULL ||
-			strncmp(val_.m_Element.m_String_2.m_szString, "1", 1) == NULL)
-			return true;
+		if (IsVariableSet(variableName))
+			return m_PlainValues.at(variableName).m_szString == "true" ? true : false;
 		else
 			return false;
 	}
 
 	const int ConfigVariables::GetParamValueInt(const char* const variableName) const
 	{
-		KeyValueListElement<StringTuple> val_;
-		if (!m_PlainValues.GetValue(variableName, val_))
+		if (IsVariableSet(variableName))
+			return atol(m_PlainValues.at(variableName).m_szString);
+		else
 			return NULL;
-
-		return atol(val_.m_Element.m_String_2.m_szString);
 	}
 
 	const float ConfigVariables::GetParamValueFloat(const char* const variableName) const
 	{
-		KeyValueListElement<StringTuple> val_;
-		if (!m_PlainValues.GetValue(variableName, val_))
+		if (IsVariableSet(variableName))
+			return (float)atof(m_PlainValues.at(variableName).m_szString);
+		else
 			return 0.f;
-
-		return (float)atof(val_.m_Element.m_String_2.m_szString);
 	}
 
 	Vector2<int>& ConfigVariables::GetParamValueVector2i(Vector2<int>& outvec, const char* variableName, char delimiter) const
 	{
-		KeyValueListElement<StringTuple> val_;
-		if (!m_PlainValues.GetValue(variableName, val_))
+		if (!IsVariableSet(variableName))
 			return outvec;
 
-		char* tok = strtok(val_.m_Element.m_String_2.m_szString, (char*)&delimiter);
-		while (tok != NULL)
-		{
-			if (outvec.x)
-				outvec.y = atoi(tok);
-			else
-				outvec.x = atoi(tok);
-
-			tok = strtok(NULL, (char*)&delimiter);
-		}
+		const String varval = m_PlainValues.at(variableName);
+		char* delimpos = nullptr;
+		int* vecint = (int*)&outvec;
+		
+		//	TODO: bounds check.
+		while (delimpos = strtok(delimpos ? NULL : varval.m_szString, (char*)&delimiter))
+			*vecint++ = atoi(delimpos);
 
 		return outvec;
 	}
 
 	Vector2<float>& ConfigVariables::GetParamValueVector2f(Vector2<float>& outvec, const char* const variableName, const char delimiter) const
 	{
-		KeyValueListElement<StringTuple> val_;
-		if (!m_PlainValues.GetValue(variableName, val_))
+		if (!IsVariableSet(variableName))
 			return outvec;
-		
-		char* tok = strtok(val_.m_Element.m_String_2.m_szString, (char*)&delimiter);
-		while (tok != NULL)
-		{
-			if (outvec.x)
-				outvec.y = (float)atof(tok);
-			else
-				outvec.x = (float)atof(tok);
 
-			tok = strtok(NULL, (char*)&delimiter);
-		}
+		const String varval = m_PlainValues.at(variableName);
+		char* delimpos = nullptr;
+		float* vecfl = (float*)&outvec;
+
+		//	TODO: bounds check.
+		while (delimpos = strtok(delimpos ? NULL : varval.m_szString, (char*)&delimiter))
+			*vecfl++ = (float)atof(delimpos);
 
 		return outvec;
 	}
 
 	Vector3<float>& ConfigVariables::GetParamValueVector3(Vector3<float>& outvec, const char* const variableName, const char delimiter) const
 	{
-		KeyValueListElement<StringTuple> val_;
-		if (!m_PlainValues.GetValue(variableName, val_))
+		if (!IsVariableSet(variableName))
 			return outvec;
 
-		char* tok = strtok(val_.m_Element.m_String_2.m_szString, (char*)&delimiter);
-		int i = 0;
+		const String varval = m_PlainValues.at(variableName);
+		char* delimpos = nullptr;
+		float* vecfl = (float*)&outvec;
 
-		while (tok != NULL)
-		{
-			switch (i)
-			{
-			case 0:
-				outvec.x = (float)atof(tok);
-				break;
-			case 1:
-				outvec.y = (float)atof(tok);
-				break;
-			case 2:
-				outvec.z = (float)atof(tok);
-				break;
-			}
-
-			tok = strtok(NULL, (char*)&delimiter);
-			i++;
-		}
+		//	TODO: bounds check.
+		while (delimpos = strtok(delimpos ? NULL : varval.m_szString, (char*)&delimiter))
+			*vecfl++ = (float)atof(delimpos);
 
 		return outvec;
 	}
 
 	Vector4f& ConfigVariables::GetParamValueVector4(Vector4f& outvec, const char* const variableName, const char delimiter) const
 	{
-		KeyValueListElement<StringTuple> val_;
-		if (!m_PlainValues.GetValue(variableName, val_))
+		if (!IsVariableSet(variableName))
 			return outvec;
 
-		char* tok = strtok(val_.m_Element.m_String_2.m_szString, (char*)&delimiter);
-		int i = 0;
+		const String varval = m_PlainValues.at(variableName);
+		char* delimpos = nullptr;
+		float* vecfl = (float*)&outvec;
 
-		while (tok != NULL)
-		{
-			switch (i)
-			{
-			case 0:
-				outvec.x = (float)atof(tok);
-				break;
-			case 1:
-				outvec.y = (float)atof(tok);
-				break;
-			case 2:
-				outvec.z = (float)atof(tok);
-				break;
-			case 3:
-				outvec.a = (float)atof(tok);
-				break;
-			}
-
-			tok = strtok(NULL, (char*)&delimiter);
-			i++;
-		}
+		//	TODO: bounds check.
+		while (delimpos = strtok(delimpos ? NULL : varval.m_szString, (char*)&delimiter))
+			*vecfl++ = (float)atof(delimpos);
 
 		return outvec;
 	}
 
 	String& ConfigVariables::GetParamValueString(String& outstr, const char* const variableName) const
 	{
-		KeyValueListElement<StringTuple> val_;
-		if (!m_PlainValues.GetValue(variableName, val_))
+		if (!IsVariableSet(variableName))
 			return outstr;
-
-		//	TODO: get rid of copy assignment here.
-		//	NOTE: original code has 3 (or 4) memory allocations here.
-		return (outstr = val_.m_Element.m_String_2, outstr);
+		else
+			return (outstr = m_PlainValues.at(variableName), outstr);
 	}
 
 	void ConfigVariables::SetParamValue(const char* const variableName, const char* const value)
 	{
-		KeyValueListElement<StringTuple> val_;
-		val_.m_Element.m_String_2 = value;
-
-		m_PlainValues.SetValue(variableName, val_);
+		if (IsVariableSet(variableName))
+			m_PlainValues.at(variableName) = value;
 	}
 
 	void ConfigVariables::SetParamValueBool(const char* const variableName, const bool value)
 	{
-		KeyValueListElement<StringTuple> val_;
-		val_.m_Element.m_String_2 = value ? "true" : "false";
-
-		m_PlainValues.SetValue(variableName, val_);
+		if (IsVariableSet(variableName))
+			m_PlainValues.at(variableName) = value ? "true" : "false";
 	}
 
 	void InitialiseGame(LPSTR cmdline)

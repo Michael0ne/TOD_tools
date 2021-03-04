@@ -44,34 +44,6 @@ void HookDInput()
 	debug("DirectInput8 hooked! Lib addr: %0.4x, DirectInput8Create method addr: %0.4x\n", &g_DirectInput, &__DirectInput8Create);
 }
 
-DWORD WINAPI HookThread(LPVOID lpParam)
-{
-	debug("HookThread started...\n");
-
-	int nLastKeyPress = 0;
-	const int nInterval = 100;
-
-	while (true) {
-		//	TODO: put PLUGINS initialization here, after you MADE sure that ALL game stuff is propertly initialized.
-		//	TODO: call all PLUGINS 'Update' function here.
-		if (Scene::RealTimeMs <= NULL)
-			continue;
-
-		if (GetAsyncKeyState(VK_TAB) && Scene::RealTimeMs > nLastKeyPress + nInterval) {
-
-			//	Do something!
-			debug("Key pressed!\n");
-			
-			nLastKeyPress = Scene::RealTimeMs - nInterval;
-		}
-	}
-
-	//	TODO: uninitialize all PLUGINS here, BEFORE all game classes de-initialized.
-	debug("HookThread has finished!\n");
-
-	return 0;
-}
-
 void MemoryHook()
 {
 	//	Insert all hooks here.
@@ -129,26 +101,11 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 		//	Install memory hooks.
 		MemoryHook();
 
-		//	Make separate thread.
-		DWORD dwThreadId;
-		hHookThread = CreateThread(NULL, 0, HookThread, NULL, 0, &dwThreadId);
-		if (hHookThread == NULL)
-			debug("Failed to create HookThread!\n");
-		else
-			debug("Hook thread created with id %d\n", dwThreadId);
-
 		break;
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:
 		break;
 	case DLL_PROCESS_DETACH:
-		//	Terminate separate thread.
-		if (hHookThread) {
-			CloseHandle(hHookThread);
-			debug("Hook thread terminated\n");
-			hHookThread = NULL;
-		}
-
 		//	Free allocated memory.
 		MemoryUnHook();
 

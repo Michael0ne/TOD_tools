@@ -18,7 +18,7 @@ public:
 		m_nLength(0), m_szString(&m_pEmpty), m_nBitMask(STRING_BITMASK_DEFAULT), m_pEmpty(NULL)
 	{}
 
-	String(const char* str);
+	String(const char* const str);
 	String(const String& rhs);
 	inline ~String()
 	{
@@ -31,12 +31,21 @@ public:
 		m_pEmpty = NULL;
 	}
 
-	void operator=(const String& _r);
+	String& operator=(const String& _r);
+	const bool operator<(const String& _r) const
+	{
+		return m_nLength < _r.m_nLength;
+	}
+	const bool operator==(const String& _r) const
+	{
+		return m_nLength == _r.m_nLength &&
+			m_szString == _r.m_szString;
+	}
 
 	void			Append(const char* str);
 	bool			Equal(const char* const _str) const;	//	@40FE30
 	String*			Substring(String* outStr, unsigned int posStart, unsigned int length);	//	@409E90
-	inline bool		Empty()
+	inline bool		Empty() const
 	{
 		return (m_szString != &m_pEmpty ? (*m_szString != NULL && m_szString != nullptr) : (m_pEmpty != NULL));
 	}
