@@ -32,6 +32,27 @@ protected:
 	~FileWrapper();	//	@436F40
 
 public:
+	static void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	static void* operator new[](size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	static void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, false);
+		ptr = nullptr;
+	}
+	static void operator delete[](void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, false);
+		ptr = nullptr;
+	}
+
 	void			SetFileHandle(HANDLE _hnd);	//	@436D90
 	void			ReleaseFileHandle();	//	@436DC0
 	void			_436FF0(HANDLE);	//	@436FF0
@@ -150,6 +171,27 @@ public:
 
 	File(const char* _filename, int _desiredaccess, bool _createifnotfound);	//	@418E30
 
+	static void* operator new(size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	static void* operator new[](size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+		static void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, false);
+		ptr = nullptr;
+	}
+	static void operator delete[](void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, false);
+		ptr = nullptr;
+	}
+
 	unsigned int	GetSize();	//	@417C10
 	bool			IsFileOpen() const;	//	@417CF0
 	char			ReadString(void* outStr);	//	@4180C0
@@ -163,7 +205,7 @@ public:
 	static void		FindDirectoryMappedFileAndDelete(const char* const filename);	//	@418810
 	static bool		FindFileEverywhere(const char* path);	//	@4182A0
 	static time_t	GetFileTimestamp(const char* filename);	//	@418460
-	static void		OpenZip(const char* szZipPath);	//	@419100
+	static void		OpenZip(const char* const zipName);	//	@419100
 	static void		ReadZipDirectories(const char* szFileSystem);	//	@419550
 	static ULARGE_INTEGER GetStorageFreeSpace();	//	@417D40
 	static bool		IsDirectoryValid(const char* const path);	//	@418410

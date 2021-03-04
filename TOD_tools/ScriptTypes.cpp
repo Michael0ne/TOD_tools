@@ -339,7 +339,11 @@ unsigned int GetTypesChecksum()
 	if (TypesListCRCCalculated)
 		return TypesListCRC;
 
+#ifdef INCLUDE_FIXES
+	char checksum_str[16376] = {};
+#else
 	char checksum_str[102400] = {};
+#endif
 	unsigned int checksum_str_len = NULL;
 
 	if (TypesList.m_CurrIndex > 0)
@@ -349,7 +353,6 @@ unsigned int GetTypesChecksum()
 			if (TypesList.m_Elements[i]->m_TypeId != TYPE_ENTITY)
 				continue;
 
-			//	FIXME: overflow?
 			if (checksum_str_len + strlen(TypesList.m_Elements[i]->m_TypeName.m_szString) > sizeof(checksum_str))
 				break;
 			else

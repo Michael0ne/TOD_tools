@@ -4,9 +4,10 @@
 #include "Globals.h"
 #include "File.h"
 #include "KeyValueList.h"
+#include <map>
 
-namespace GameConfig {
-
+namespace GameConfig
+{
 	#define CONFIG_CLASS_SIZE 156
 
 	#define CONFIG_GAMENAME "Total Overdose"
@@ -21,24 +22,19 @@ namespace GameConfig {
 
 	struct ConfigVariables
 	{
-		struct VariableNameInfo
-		{
-			unsigned int	m_Index;
-			String			m_Name;
-		};
-
-		struct VariableUnknownInfo
-		{
-			unsigned int	m_Index;
-			char			field_4;
-		};
 	protected:
-		KeyValueList<KeyValueListElement<StringTuple>, KeyValueListElement<StringTuple>> m_PlainValues;	//	NOTE: format is "varname=varvalue".
-		KeyValueList<KeyValueListElement<VariableNameInfo>, KeyValueListElement<VariableNameInfo>> m_Keys;	//	NOTE: only variables names.
-		KeyValueList<int, int> field_20;	//	NOTE: appears to be always empty.
-		KeyValueList<KeyValueListElement<VariableUnknownInfo>, KeyValueListElement<VariableUnknownInfo>> field_30;
-		KeyValueList<int, int> field_40;	//	NOTE: this and one below appears to be unused.
-		KeyValueList<int, int> field_50;
+		std::map<String, String>	m_PlainValues;
+		int	pad_1;
+		std::map<unsigned int, String>	m_Keys;
+		int pad_2;
+		std::map<unsigned int, String>	m_UnrecognizedKeys;
+		int pad_3;
+		std::map<unsigned int, bool>	m_StringVariables;	//	NOTE: if variable at index is a string then it's set to true.
+		int pad_4;
+		std::map<unsigned int, String>	field_40;
+		int pad_5;
+		std::map<int, int>	field_50;
+		int pad_6;
 		int		m_TotalVariables;
 		char	field_64;
 

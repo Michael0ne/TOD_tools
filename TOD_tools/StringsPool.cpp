@@ -1,6 +1,6 @@
 #include "StringsPool.h"
 
-String::String(const char* str)
+String::String(const char* const str)
 {
 	m_nLength = strlen(str);
 	m_nBitMask = (STRING_BITMASK_DEFAULT ^ (m_nLength + (m_nLength >> 2))) & STRING_BITMASK_ONLY_SIZE ^ STRING_BITMASK_DEFAULT;
@@ -40,7 +40,7 @@ String::String(const String& rhs)
 		strcpy_s(&m_pEmpty, m_nLength + 1, &(rhs.m_pEmpty));
 }
 
-void String::operator=(const String& _r)
+String& String::operator=(const String& _r)
 {
 	if (m_szString != &m_pEmpty && (m_nBitMask & STRING_BITMASK_DEFAULT) != NULL)
 		Allocators::ReleaseMemory(m_szString, 0);
@@ -51,7 +51,7 @@ void String::operator=(const String& _r)
 	m_pEmpty = NULL;
 
 	if (m_nLength == NULL)
-		return;
+		return *this;
 	
 	if (m_nLength >= 4)
 	{
@@ -61,6 +61,8 @@ void String::operator=(const String& _r)
 	}
 	else
 		strcpy_s(&m_pEmpty, m_nLength + 1, _r.m_szString);
+
+	return *this;
 }
 
 String* String::Substring(String* outStr, unsigned int posStart, unsigned int length)
@@ -126,7 +128,7 @@ void String::AllocateSpaceForString()
 	if (m_nLength >= 4)
 	{
 		m_nBitMask = (m_nBitMask ^ (m_nLength + (m_nLength >> 2))) & STRING_BITMASK_ONLY_SIZE ^ m_nBitMask;
-		m_szString = (char*)Allocators::AllocatorsList[TEMP]->Allocate_A(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 	}
 	else
 	{
@@ -137,8 +139,7 @@ void String::AllocateSpaceForString()
 
 void String::AdjustBufferSize()
 {
-	if (m_nLength < (int)(m_nBitMask & STRING_BITMASK_ONLY_SIZE) ||
-		m_nLength <= 3)
+	if (m_nLength <= 3)
 	{
 		m_nBitMask |= STRING_BITMASK_SHORT;
 		return;
