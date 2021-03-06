@@ -1,6 +1,6 @@
 #pragma once
 #include "File.h"
-#include "ThirdParty/libvorbis-1.1.0/include/vorbisfile.h"
+#include "libvorbis-1.1.0/include/vorbisfile.h"
 
 #define AUDIO_AUXMONOSTREAM_CLASS_SIZE 92
 #define AUDIO_AUXMONOSTREAM_FLAG_FILE_SET 0x10
