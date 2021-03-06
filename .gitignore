@@ -18,6 +18,10 @@ desktop.ini
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+[Dd]ebug DLL/
+[Dd]ebug EXE/
+[Rr]elease DLL/
+[Rr]elease EXE/
 x64/
 x86/
 bld/
