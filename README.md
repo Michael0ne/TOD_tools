@@ -5,17 +5,23 @@
 TOD Tools - this is a reverse engineered engine and game code project for Total Overdose and possibly, other games that use this version of Kapow Engine.
 Original game & engine are by Eidos interactive. You NEED to own a game copy to use this tools.
 
+There are 3 'subprojects' you can see:
+
+* TOD1 - reverse engineered game and engine;
+* debugmenu - everything for debugging an egine;
+* restools - a tool to "view and sometimes extract" some game assets.
+
 ## Current state
 
-Currently, after compilation you get 'dinput8' DLL, that will be put into game's directory (the hooking method).
-In future, after skeleton of the engine is done and all basic functions are done, this will become an actual EXE file after compilation that can be ran.
+After compilation using 'Release/Debug DLL' you get 'dinput8.dll' file that can be put against game EXE without touching original game code - this makes possible to call original game functions inside your plugin or inside this DLL.
+When compiling using 'Release/Debug EXE' you get 'TOD1.exe' file that's intent is to replace actual game EXE and be used instead.
 
 # Q/A
 
 * Is this project a cheat for the game of some sort?
   * No, the goal of this project is completely different, see summary. For 'how to use cheats' see wiki page.
 * Are there any tools to extract game assets?
-  * There is a 'naztozip' tool by 'CTPAX-X Team' to convert 'naz' archives into zip archives. I have a tool to read game assets, but it's not ready for the public yet.
+  * To convert and unpack 'NAZ' archives use 'naztozip' tool by 'CTPAX-X Team'. To read information about already extracted assets (that are supported by the tool), use 'restools' found in appropriate folder.
 * Is this modified RenderWare?
   * No, this is completely different engine.
 
@@ -39,9 +45,9 @@ Included libraries can be found under 'TOD_tools\ThirdParty'.
 
 ## Process (Windows)
 
-I use Visual Studio 2019 (16.8.5) to build this project. Before compiling and linking, make sure you build included third party libraries.
-If any errors occure - check project settings, make sure you use 'Debug' build configuration.
-After build succeeded a batch file is executed to copy output file into game directory (updateHookFile.bat), so make sure to replace game path to where your actual game is.
+I use Visual Studio 2019 (16.8.5) to build this project.
+It's always a good idea to re-compile provided third party libraries under your specific machine and link against them when compiling the rest.
+If you're using 'Release/Debug DLL' build configuration, then after successfull build a batch file is executed to copy output file into game directory (updateHookFile.bat), so make sure to replace game path to where your actual game is.
 
 ## Process (Linux/PS2/etc...)
 
@@ -50,3 +56,7 @@ If you want to build for Linux/PS2/coffepot/etc, then you can't do that right aw
 # Contributing
 
 Check 'stdafx' header file for comments about how to write code.
+
+# License
+
+All third party libraries come with their license included in appropriate header files, I do not own any rights to these libraries.
