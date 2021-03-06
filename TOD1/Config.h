@@ -23,7 +23,7 @@ namespace GameConfig
 	struct ConfigVariables
 	{
 	protected:
-		std::map<String, String>	m_PlainValues;
+		std::map<String, String>	m_KeyValueMap;
 		int	pad_1;
 		std::map<unsigned int, String>	m_Keys;
 		int pad_2;
@@ -35,6 +35,7 @@ namespace GameConfig
 		int pad_5;
 		std::map<int, int>	field_50;
 		int pad_6;
+
 		int		m_TotalVariables;
 		char	field_64;
 
@@ -134,6 +135,10 @@ namespace GameConfig
 		void				UninitialiseGame();	//	@93CBC0
 		bool				OpenScene(const char* scene);	//	@93CE00
 		void				CreateUnknownMatricies();	//	@93D360
+		
+		static void			_93CDA0(const char* const str);	//	@93CDA0
+
+		static String		_A1B9F8;	//	@A1B9F8	//	NOTE: unused, max length is 10'000 symbols.
 	};
 
 	void					InitialiseGame(LPSTR cmdline);	//	@93F680

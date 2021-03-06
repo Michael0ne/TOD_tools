@@ -38,6 +38,7 @@ namespace Script
 namespace GameConfig
 {
 	Config* g_Config = nullptr;
+	String Config::_A1B9F8;
 
 	Config::Config()
 	{
@@ -758,6 +759,14 @@ namespace GameConfig
 	{	
 	}
 
+	void Config::_93CDA0(const char* const str)
+	{
+		if (_A1B9F8.m_nLength >= 10000)
+			return;
+
+		_A1B9F8.Append(str);
+	}
+
 	void ConfigVariables::LoadVariablesFile(const char* file, bool configvariables)
 	{
 		LogDump::LogA("Loading variable file '%s'...\n", file);
@@ -803,7 +812,7 @@ namespace GameConfig
 
 				strncpy(keybuf, currline, eqpos - currline);
 				
-				m_PlainValues[keybuf] = quotmarkpos ? quotmarkpos + 1 : eqpos + 1;
+				m_KeyValueMap[keybuf] = quotmarkpos ? quotmarkpos + 1 : eqpos + 1;
 				m_Keys[lineNumber] = keybuf;
 				m_StringVariables[lineNumber] = quotmarkpos != nullptr;
 			}
@@ -863,13 +872,13 @@ namespace GameConfig
 
 	bool ConfigVariables::IsVariableSet(const char* const variableName) const
 	{
-		return m_PlainValues.find(variableName) != m_PlainValues.end();
+		return m_KeyValueMap.find(variableName) != m_KeyValueMap.end();
 	}
 
 	const bool ConfigVariables::GetParamValueBool(const char* const variableName) const
 	{
 		if (IsVariableSet(variableName))
-			return m_PlainValues.at(variableName).m_szString == "true" ? true : false;
+			return m_KeyValueMap.at(variableName).m_szString == "true" ? true : false;
 		else
 			return false;
 	}
@@ -877,7 +886,7 @@ namespace GameConfig
 	const int ConfigVariables::GetParamValueInt(const char* const variableName) const
 	{
 		if (IsVariableSet(variableName))
-			return atol(m_PlainValues.at(variableName).m_szString);
+			return atol(m_KeyValueMap.at(variableName).m_szString);
 		else
 			return NULL;
 	}
@@ -885,7 +894,7 @@ namespace GameConfig
 	const float ConfigVariables::GetParamValueFloat(const char* const variableName) const
 	{
 		if (IsVariableSet(variableName))
-			return (float)atof(m_PlainValues.at(variableName).m_szString);
+			return (float)atof(m_KeyValueMap.at(variableName).m_szString);
 		else
 			return 0.f;
 	}
@@ -895,7 +904,7 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outvec;
 
-		const String varval = m_PlainValues.at(variableName);
+		const String varval = m_KeyValueMap.at(variableName);
 		char* delimpos = nullptr;
 		int* vecint = (int*)&outvec;
 		
@@ -911,7 +920,7 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outvec;
 
-		const String varval = m_PlainValues.at(variableName);
+		const String varval = m_KeyValueMap.at(variableName);
 		char* delimpos = nullptr;
 		float* vecfl = (float*)&outvec;
 
@@ -927,7 +936,7 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outvec;
 
-		const String varval = m_PlainValues.at(variableName);
+		const String varval = m_KeyValueMap.at(variableName);
 		char* delimpos = nullptr;
 		float* vecfl = (float*)&outvec;
 
@@ -943,7 +952,7 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outvec;
 
-		const String varval = m_PlainValues.at(variableName);
+		const String varval = m_KeyValueMap.at(variableName);
 		char* delimpos = nullptr;
 		float* vecfl = (float*)&outvec;
 
@@ -959,19 +968,19 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outstr;
 		else
-			return (outstr = m_PlainValues.at(variableName), outstr);
+			return (outstr = m_KeyValueMap.at(variableName), outstr);
 	}
 
 	void ConfigVariables::SetParamValue(const char* const variableName, const char* const value)
 	{
 		if (IsVariableSet(variableName))
-			m_PlainValues.at(variableName) = value;
+			m_KeyValueMap.at(variableName) = value;
 	}
 
 	void ConfigVariables::SetParamValueBool(const char* const variableName, const bool value)
 	{
 		if (IsVariableSet(variableName))
-			m_PlainValues.at(variableName) = value ? "true" : "false";
+			m_KeyValueMap.at(variableName) = value ? "true" : "false";
 	}
 
 	void InitialiseGame(LPSTR cmdline)

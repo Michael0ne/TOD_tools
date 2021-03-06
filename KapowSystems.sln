@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TOD_hook", "TOD_tools\TOD_tools.vcxproj", "{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TOD_scriptdatabase_coder", "TOD_scriptdatabase_coder\TOD_scriptdatabase_coder.vcxproj", "{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TOD1", "TOD1\TOD_tools.vcxproj", "{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "debugmenu", "debugmenu\debugmenu.vcxproj", "{1819C9A3-F059-45F4-A983-759E81DC215E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "restools", "restools\restools.vcxproj", "{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,20 +17,12 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Debug|Win32.ActiveCfg = Debug|Win32
-		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Debug|Win32.Build.0 = Debug|Win32
-		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Debug|x64.ActiveCfg = Debug|Win32
-		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Release|Win32.ActiveCfg = Release|Win32
-		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Release|Win32.Build.0 = Release|Win32
-		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Release|x64.ActiveCfg = Release|Win32
-		{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}.Debug|Win32.Build.0 = Debug|Win32
-		{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}.Debug|x64.ActiveCfg = Debug|x64
-		{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}.Debug|x64.Build.0 = Debug|x64
-		{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}.Release|Win32.ActiveCfg = Release|Win32
-		{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}.Release|Win32.Build.0 = Release|Win32
-		{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}.Release|x64.ActiveCfg = Release|x64
-		{0E3B838C-D11E-41A8-8AE4-97EBAEE94F87}.Release|x64.Build.0 = Release|x64
+		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Debug|Win32.ActiveCfg = Debug DLL|Win32
+		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Debug|Win32.Build.0 = Debug DLL|Win32
+		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Debug|x64.ActiveCfg = Debug DLL|Win32
+		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Release|Win32.ActiveCfg = Release DLL|Win32
+		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Release|Win32.Build.0 = Release DLL|Win32
+		{518D090C-BA7C-4436-9FB5-0EFCB8F9DAB7}.Release|x64.ActiveCfg = Release DLL|Win32
 		{1819C9A3-F059-45F4-A983-759E81DC215E}.Debug|Win32.ActiveCfg = Debug|Win32
 		{1819C9A3-F059-45F4-A983-759E81DC215E}.Debug|Win32.Build.0 = Debug|Win32
 		{1819C9A3-F059-45F4-A983-759E81DC215E}.Debug|x64.ActiveCfg = Debug|x64
@@ -39,6 +31,14 @@ Global
 		{1819C9A3-F059-45F4-A983-759E81DC215E}.Release|Win32.Build.0 = Release|Win32
 		{1819C9A3-F059-45F4-A983-759E81DC215E}.Release|x64.ActiveCfg = Release|x64
 		{1819C9A3-F059-45F4-A983-759E81DC215E}.Release|x64.Build.0 = Release|x64
+		{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}.Debug|Win32.Build.0 = Debug|Win32
+		{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}.Debug|x64.ActiveCfg = Debug|x64
+		{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}.Debug|x64.Build.0 = Debug|x64
+		{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}.Release|Win32.ActiveCfg = Release|Win32
+		{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}.Release|Win32.Build.0 = Release|Win32
+		{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}.Release|x64.ActiveCfg = Release|x64
+		{6CBF97BE-2975-40D1-8D88-CE373AD02CB8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
