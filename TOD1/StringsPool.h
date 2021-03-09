@@ -32,14 +32,26 @@ public:
 	}
 
 	String& operator=(const String& _r);
-	const bool operator<(const String& _r) const
+
+	bool operator<(const String& _r) const
 	{
 		return m_nLength < _r.m_nLength;
 	}
-	const bool operator==(const String& _r) const
+
+	bool operator<(const char* const _r) const
 	{
-		return m_nLength == _r.m_nLength &&
-			m_szString == _r.m_szString;
+		return m_szString < _r;
+	}
+
+	bool operator==(const String& _r) const
+	{
+		return m_szString == _r.m_szString &&
+			m_nLength == _r.m_nLength;
+	}
+
+	bool operator==(const char* const _r) const
+	{
+		return m_szString == _r;
 	}
 
 	void			Append(const char* str);
@@ -77,9 +89,9 @@ public:
 	static inline void ToLowerCase(char* str)
 	{
 		char* s_ = str;
-		while (*(s_++))
-			if (*s_ >= 65 && *s_ <= 90)
-				*s_ += 32;
+		do
+			*s_ = tolower(*s_);
+		while (*(s_++));
 	}
 
 	inline void		Concatenate(const String& baseStr, const String& appendStr)	//	@419C50

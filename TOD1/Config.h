@@ -13,6 +13,10 @@ namespace GameConfig
 	#define CONFIG_GAMENAME "Total Overdose"
 	#define CONFIG_SAVEDIR	"/Total Overdose/"
 	#define CONFIG_CONFIGFILE "/configpc.txt"
+	#define CONFIG_PROFILEFILE "/profile.txt"
+	#define CONFIG_SCRIPTS_PATH_STABLE "/data/scripts/stable/"
+	#define CONFIG_COLLMAT_FILENAME "/CollMat.txt"
+	#define CONFIG_FACECOLL_FILENAME "/FaceColl.mat"
 
 #ifdef INCLUDE_FIXES
 	#define CONFIG_MENU_RESOURCEID 103
@@ -23,7 +27,7 @@ namespace GameConfig
 	struct ConfigVariables
 	{
 	protected:
-		std::map<String, String>	m_KeyValueMap;
+		mutable std::map<String, String>	m_KeyValueMap;
 		int	pad_1;
 		std::map<unsigned int, String>	m_Keys;
 		int pad_2;
@@ -130,7 +134,7 @@ namespace GameConfig
 			ptr = nullptr;
 		}
 
-		void				Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId);	//	@93D480
+		void				Process(LPSTR cmdline, int, const char* configFileName, signed int iconResId);	//	@93D480
 		void				InitEntitiesDatabase();	//	@93C950
 		void				UninitialiseGame();	//	@93CBC0
 		bool				OpenScene(const char* scene);	//	@93CE00
@@ -149,15 +153,37 @@ namespace GameConfig
 
 	static void				GetInternalGameName(String& outStr);	//	@4098D0
 
-	struct CollmatListEntry
+	enum FaceColl
 	{
-		String				m_MaterialName;
-		unsigned int		m_MaterialIndex;	//	NOTE: some index into another array? Uinque id?
+		FACECOLL_METAL = 1,
+		FACECOLL_WOOD = 2,
+		FACECOLL_DIRT = 3,
+		FACECOLL_STONE = 4,
+		FACECOLL_BUSH = 5,
+		FACECOLL_GLASS = 6,
+		FACECOLL_WIREFENCE = 7,
+		FACECOLL_GRASS = 8,
+		FACECOLL_ASPHALT = 9,
+		FACECOLL_WATER = 10,
+		FACECOLL_CLOTH = 11,
+		FACECOLL_ALLROUND = 12,
+
+		FACECOLL_CONCRETE,
+		FACECOLL_SOLIDGLASS,
+		FACECOLL_BROKENWINDOW_ELVEZ,
+		FACECOLL_BROKENWINDOW_BURGERBAR,
+		FACECOLL_BROKENWINDOW_SHOPPINGMALL,
+		FACECOLL_BROKENWINDOW_VIRGILLO,
+		FACECOLL_DEFAULT_NO_DECAL
 	};
 
-	static List<String>&	FaceColList = *(List<String>*)0xA3D7EC;	//	@A3D7EC
-	static File&			ColMatFilePtr = *(File*)0xA3D7E8;	//	@A3D7E8
-	static KeyValueList<CollmatListEntry, int>	ColMatList = KeyValueList<CollmatListEntry, int>(0);	//	@A11704	//	TODO: this more looks like double-linked list.
+	static bool				OpenCollMatFile(const char* const fileName, String& materialName, int& materialProperties);	//	@87CE50
+	static bool				ReadAndParseCollMatMaterial(String& materialName, int& outMaterialProperties);	//	@87CC80
+
+	static List<String>		FaceCollList;	//	@A3D7EC
+	static File*			CollMatFile;	//	@A3D7E8
+	static std::map<String, unsigned int>	CollMatProperties;	//	@A11704
+	static std::map<String, FaceColl>	CollMatMaterialsTypes;	//	@A3D7FC
 
 	extern Config* g_Config;
 }

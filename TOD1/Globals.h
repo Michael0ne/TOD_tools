@@ -4,7 +4,7 @@
 
 namespace Utils
 {
-	static char LastSavedCRCString[4] = {};	//	@9B6F84
+	static char LastSavedCRCString[5] = {};	//	@9B6F84
 	static unsigned int _A3A060 = NULL;	//	@A3A060
 
 	static const char* generic_crc32(int* t, char* base, size_t len)	//	@465840
@@ -51,23 +51,29 @@ namespace Utils
 		if (!*str || len == NULL)
 			return NULL;
 
-		char* str_ptr = (char*)str;
-		int sum = NULL;
+		int chround = 0;
+		const char* _str = str;
+		int sum = 0;
 
-		do 
+		do
 		{
 			while (true)
 			{
-				for (int ind = 0; ind != 8; ++ind)
-					if (sum < NULL)
-						sum = sum ^ 0x4C11DB7;
-					else
-						sum = (*str_ptr >> ind) & 1 | (2 * sum);
-				if (++str_ptr != &str[len])
+				do
+				{
+					bool nosum = sum < 0;
+					sum = (*_str >> chround) & 1 | (2 * sum);
+					if (nosum)
+						sum ^= 0x4C11DB7;
+					++chround;
+				} while (chround != 8);
+
+				chround = 0;
+				if (++_str != &str[len])
 					break;
-				str_ptr = LastSavedCRCString;
+				_str = LastSavedCRCString;
 			}
-		} while (str_ptr != &LastSavedCRCString[4]);
+		} while (_str != &LastSavedCRCString[5]);
 
 		return sum;
 	}

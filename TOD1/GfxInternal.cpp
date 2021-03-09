@@ -58,19 +58,16 @@ GfxInternal::GfxInternal(const Vector2<int>& resolution, unsigned int unused1, u
 	field_20 = unk1;
 	m_RenderBufferTotal = buffersCount;
 
-	m_RenderBufferArray = (Buffer276*)new Buffer276[buffersCount];
+	m_RenderBufferArray = new Buffer276[buffersCount];
 
 	if (buffersCount > 0)
 	{
-		for (; buffersCount; buffersCount--)
+		for (unsigned int i = 0; buffersCount--; i++)
 		{
-			//	NOTE: since when calling 'new' can't really call constructor with parameters as needed, do this.
-			m_RenderBufferArray[buffersCount] = Buffer276(*buffersDimens);
+			m_RenderBufferArray[i] = Buffer276(*buffersDimens++);
 
-			m_RenderBufferArray[buffersCount].m_ViewportDimensions_1 = { 0.f, 0.f };
-			m_RenderBufferArray[buffersCount].m_ViewportDimensions_2 = { (float)g_GfxInternal_Dx9->m_ViewportResolution.x, (float)g_GfxInternal_Dx9->m_ViewportResolution.y };
-
-			buffersDimens++;
+			m_RenderBufferArray[i].m_ViewportDimensions_1 = { 0.f, 0.f };
+			m_RenderBufferArray[i].m_ViewportDimensions_2 = { (float)g_GfxInternal_Dx9->m_ViewportResolution.x, (float)g_GfxInternal_Dx9->m_ViewportResolution.y };
 		}
 	}
 

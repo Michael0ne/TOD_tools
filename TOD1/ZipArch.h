@@ -2,54 +2,28 @@
 #include "StringsPool.h"
 #include <map>
 
-#define ZIPSLOT_STRUCT_SIZE 16
 #define ZIP_MAX_SLOTS 8
-
-//	TODO: this looks very much like simple STL map, keys are file offsets, values are 'checksum,filesize'.
-struct ZipSlotInfo
-{
-	struct FileInfo
-	{
-		unsigned int	m_Checksum;
-		unsigned int	m_FileSize;
-	};
-public:
-	unsigned int		m_OffsetTableSize;
-	struct SlotFlags
-	{
-		unsigned char	field_0;
-		unsigned char	field_1;
-		unsigned char	field_2;
-		unsigned char	field_3;
-	}					m_Flags;
-	unsigned int*		m_OffsetTable;
-	FileInfo*			m_FilesInfo;	//	NOTE: size is 'OffsetTableSize' * sizeof(FileInfo).
-
-	ZipSlotInfo();
-	~ZipSlotInfo();
-
-	void*				operator new(size_t size)
-	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
-	}
-	void				operator delete(void* ptr)
-	{
-		if (ptr)
-			Allocators::ReleaseMemory(ptr, false);
-	}
-
-	FileInfo*			FindFileByCRC(unsigned int* checksum);	//	@4198F0
-	void				AddFileInfo(const std::map<unsigned int, FileInfo>& fileInfo);	//	@41A5F0
-};
 
 class ZipArch
 {
 public:
-	static bool			FindFile(const char* inPathStr, ZipSlotInfo::FileInfo*, int* outZipSlot);	//	@41A500
+	struct FileInfo
+	{
+		unsigned int	m_OffsetInArch;
+		unsigned int	m_FileSize;
+
+		FileInfo(unsigned int offset, unsigned int filesize)
+			: m_OffsetInArch(offset), m_FileSize(filesize)
+		{};
+
+		FileInfo()
+			: m_OffsetInArch(0), m_FileSize(0)
+		{};
+	};
+
+	static bool			FindFile(const char* inPathStr, FileInfo& outFileInfo, int* outZipSlotIndex);	//	@41A500
 	
 	static String		ZipNames[];	//	@A085A8
-	static ZipSlotInfo	SlotInfo[];	//	@A08628
+	static std::map<unsigned int, FileInfo>	SlotInfo[];	//	@A08628
 	static unsigned int	SlotId;	//	@A35DDC
 };
-
-static_assert(sizeof(ZipSlotInfo) == ZIPSLOT_STRUCT_SIZE, MESSAGE_WRONG_CLASS_SIZE(ZipSlotInfo));

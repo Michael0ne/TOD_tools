@@ -38,7 +38,7 @@ namespace Script
 namespace GameConfig
 {
 	Config* g_Config = nullptr;
-	String Config::_A1B9F8;
+	String Config::_A1B9F8 = {};
 
 	Config::Config()
 	{
@@ -76,7 +76,7 @@ namespace GameConfig
 	}
 
 #pragma message(TODO_IMPLEMENTATION)
-	void Config::Process(LPSTR lpCmdLine, int unk, const char* szConfigFilename, signed int nIconResId)
+	void Config::Process(LPSTR, int, const char* configFileName, signed int iconResId)
 	{
 #ifdef INCLUDE_FIXES
 		clock_t timeStart = clock();
@@ -84,32 +84,28 @@ namespace GameConfig
 
 		CoInitialize(0);
 
-		//	Set filename for configuration file.
-		if (szConfigFilename && *szConfigFilename)
-			m_ConfigFilePath = szConfigFilename;
+		if (configFileName && *configFileName)
+			m_ConfigFilePath = configFileName;
 		else
 			m_ConfigFilePath = CONFIG_CONFIGFILE;
 
-		//	Set gamename.
 		m_GameName = CONFIG_GAMENAME;
 
-		//	Try and look for configuration variables file.
-		//	TODO: CreateBuffer implementation!
-		if (File::FindFileEverywhere(m_ConfigFilePath.m_szString)) {
+		if (File::FindFileEverywhere(m_ConfigFilePath.m_szString))
+		{
 			LogDump::LogA("Initialising engine with '%s'\n", m_ConfigFilePath.m_szString);
 
 			m_ConfigurationVariables = new ConfigVariables(m_ConfigFilePath.m_szString, 1);
-		}else
+		}
+		else
 			m_ConfigurationVariables = new ConfigVariables(0);
 
-		ConfigVariables* pProfileVariables = nullptr;
-
-		//	Try and look for profile variables file.
-		if (File::FindFileEverywhere("/profile.txt"))
-			pProfileVariables = new ConfigVariables("/profile.txt", 0);
+		ConfigVariables* profileVariables = nullptr;
+		if (File::FindFileEverywhere(CONFIG_PROFILEFILE))
+			profileVariables = new ConfigVariables(CONFIG_PROFILEFILE, 0);
 
 		if (m_ConfigurationVariables->IsVariableSet("filecheck"))
-			Script::FileCheck = m_ConfigurationVariables->GetParamValueBool("filecheck") == 0;
+			Script::FileCheck = m_ConfigurationVariables->GetParamValueBool("filecheck") == 0;	//	NOTE: wtf?
 
 		if (m_ConfigurationVariables->IsVariableSet("control_type"))
 			m_ConfigurationVariables->GetParamValueString(Script::ControlType, "control_type");
@@ -121,19 +117,14 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("loadblocks"))
 			Script::LoadBlocks = m_ConfigurationVariables->GetParamValueBool("loadblocks");
 
-		//	Try and initialize Blocks class.
 		g_Blocks = new Blocks(Script::LoadBlocks);
 
-		//	Init script types.
 		InitScriptTypes();
 
-		//	Init scratchpad (mostly used in CollisionProbe calculations).
 		g_Scratchpad = new Scratchpad();
 
-		//	Init SceneNode (contains rewind buffer).
 		g_SceneSaveLoad = new SceneSaveLoad();
 
-		//	Init resources types.
 		ResType::Texture::CreateInstance();
 		ResType::Font::CreateInstance();
 		ResType::Text::CreateInstance();
@@ -146,21 +137,16 @@ namespace GameConfig
 		ResType::Animation::CreateInstance();
 		ResType::MeshColor::CreateInstance();
 
-		//	Init unknown matricies.
 		CreateUnknownMatricies();
 
-		//	Register script entities.
-		//	TODO: implementation!
 		InitEntitiesDatabase();
 
 		Scene_Buffer68::CreateMeshBufferMap();
 		GfxInternal_Dx9_Vertex::CreateVerticesMap();
 		GfxInternal_Dx9_Texture::InitTexturesMap();
 
-		//	Init renderer commands buffer.
 		RenderBuffer::CreateRenderBuffer();
 
-		//	Init lights.
 		Light::InitLightsList();
 
 		if (m_ConfigurationVariables->IsVariableSet("ps2_max_texture_size"))
@@ -193,17 +179,17 @@ namespace GameConfig
 		}
 
 		//	If we have 'profile.txt' available, check directory mappings and other stuff.
-		if (pProfileVariables) {
-			char DirectorymappingStr[22];
+		if (profileVariables)
+		{
+			char DirectorymappingStr[22] = {};
 			unsigned int index = 0;
-
-			memset(&DirectorymappingStr, 0, sizeof(DirectorymappingStr));
 
 			sprintf(DirectorymappingStr, "directorymapping%d", index++);
 
-			while (pProfileVariables->IsVariableSet(DirectorymappingStr)) {
+			while (profileVariables->IsVariableSet(DirectorymappingStr))
+			{
 				String dirmapping;
-				pProfileVariables->GetParamValueString(dirmapping, DirectorymappingStr);
+				profileVariables->GetParamValueString(dirmapping, DirectorymappingStr);
 
 				if (strchr(dirmapping.m_szString, '>') != nullptr)
 				{
@@ -218,7 +204,6 @@ namespace GameConfig
 			}
 		}
 
-		//	Is this the testing build?
 		String TestingPath;
 		GetInternalGameName(TestingPath);
 
@@ -231,11 +216,9 @@ namespace GameConfig
 
 		m_GameName.Append(" (");
 
-		//	Scripts search path if 'profile.txt' is available.
-		Script::ScriptsPath = "/data/scripts/stable/";
-
-		if (pProfileVariables && pProfileVariables->IsVariableSet("script_searchpath"))
-			pProfileVariables->GetParamValueString(Script::ScriptsPath, "script_searchpath");
+		Script::ScriptsPath = CONFIG_SCRIPTS_PATH_STABLE;
+		if (profileVariables && profileVariables->IsVariableSet("script_searchpath"))
+			profileVariables->GetParamValueString(Script::ScriptsPath, "script_searchpath");
 
 #ifdef INCLUDE_FIXES
 		m_GameName.Append(" scripts: ");
@@ -276,7 +259,7 @@ namespace GameConfig
 
 		Script::LanguageMode = Script::CountryCodes[Script::LanguageStringsOffset];
 
-		g_Window = new Window(m_GameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, !Script::IconResourceId ? nIconResId : Script::IconResourceId);
+		g_Window = new Window(m_GameName.m_szString, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_szString, Script::IconResourceId ? Script::IconResourceId : iconResId);
 
 		g_InputMouse = new Input::Mouse();
 		g_InputKeyboard = new Input::Keyboard();
@@ -284,48 +267,44 @@ namespace GameConfig
 
 		Input::Gamepad::GetGameControllerByIndex(0);
 
-		//	Init saves directories information (ps2 emulation and pc).
+		//	TODO: we probably want to control how many of save slots are available.
 		MemoryCardInfo[SAVE_SLOT_0] = new MemoryCard(SAVE_SLOT_0);
 		MemoryCardInfo[SAVE_SLOT_1] = new MemoryCard(SAVE_SLOT_1);
 		MemoryCardInfo[SAVE_SLOT_8] = new MemoryCard(SAVE_SLOT_8);
 
 		Script::SavePlatformPS2 = true;
 
-		//	Detect platform.
 		if (m_ConfigurationVariables->IsVariableSet("save_platform"))
 		{
 			String platform;
 			m_ConfigurationVariables->GetParamValueString(platform, "save_platform");
 
-			//	For PS2 we want 2 memory cards and harddisk available.
-			if (platform.Equal("PS2")) {
-				const char* szMemcard0[2] = {
+			if (platform.Equal("PS2"))
+			{
+				const char* const memcardFolders[] =
+				{
 					"/savegames/memorycard0/",
 					"/savegames/memorycard1/"
 				};
 
-				int memcardindex = 0;
+				for (unsigned int i = 0; i < (sizeof(memcardFolders) / sizeof(char*)); i++)
+				{
+					MemoryCardInfo[i]->m_SaveFolderPath = memcardFolders[i];
+					Utils::CreateDirectoriesRecursive(memcardFolders[i]);
 
-				do {
-					//	TODO: implementation for utility function!
-					Utils::CreateDirectoriesRecursive(szMemcard0[memcardindex]);
-					MemoryCardInfo[memcardindex]->m_SaveFolderPath = szMemcard0[memcardindex];
-
-					if (!MemoryCardInfo[memcardindex]->IsFormatted())
-						MemoryCardInfo[memcardindex]->FormatCard();
-
-					memcardindex++;
-				} while (memcardindex < 2);
+					if (!MemoryCardInfo[i]->IsFormatted())
+						MemoryCardInfo[i]->FormatCard();
+				}
 			}
 
-			const char szHarddisk[] = "/savegames/harddisk/";
-			Utils::CreateDirectoriesRecursive(szHarddisk);
-			MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath = szHarddisk;
+			MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath = "/savegames/harddisk/";
+			Utils::CreateDirectoriesRecursive(MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath.m_szString);
 
 			if (!MemoryCardInfo[SAVE_SLOT_8]->IsFormatted())
 				MemoryCardInfo[SAVE_SLOT_8]->FormatCard();
-		}else{
-			//	For PC, just figure out system user data directory.
+		}
+		else
+		{
 			Script::SavePlatformPS2 = false;
 			Script::FileCheck = true;
 
@@ -341,13 +320,11 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("cutscene_force_complete_lod_updates"))
 			Script::CutsceneForceCompleteLodUpdates = m_ConfigurationVariables->GetParamValueBool("cutscene_force_complete_lod_updates");
 
-		//	Default streamed sound files extension.
 		if (m_ConfigurationVariables->IsVariableSet("streamed_sound_ext"))
 			m_ConfigurationVariables->GetParamValueString(Script::StreamedSoundExt, "streamed_sound_ext");
 		else
 			Script::StreamedSoundExt = "ogg";
 
-		//	Figure out sound renderer.
 		if (m_ConfigurationVariables->IsVariableSet("soundrenderer"))
 		{
 			String soundrenderer;
@@ -367,13 +344,11 @@ namespace GameConfig
 				StreamedSoundBuffers::RememberSoundRenderer(rendererid);
 		}
 
-		//	Init sound renderer.
 		g_StreamedSoundBuffers = new StreamedSoundBuffers(1, 44100);
 
 		if (m_ConfigurationVariables->IsVariableSet("sound_max_concurrent_sounds"))
 			g_StreamedSoundBuffers->m_MaxConcurrentSounds = m_ConfigurationVariables->GetParamValueInt("sound_max_concurrent_sounds");
 
-		//	Override default volume values.
 		if (m_ConfigurationVariables->IsVariableSet("change_sound_group_volume_scaling") && m_ConfigurationVariables->GetParamValueBool("change_sound_group_volume_scaling"))
 		{
 			if (m_ConfigurationVariables->IsVariableSet("default_fx_volume_var"))
@@ -389,7 +364,6 @@ namespace GameConfig
 				StreamedSoundBuffers::SetDefaultSpeaksVolume(m_ConfigurationVariables->GetParamValueFloat("default_speaks_volume_var"));
 		}
 
-		//	Sound is enabled if not overridden.
 		g_StreamedSoundBuffers->m_Sound = !m_ConfigurationVariables->IsVariableSet("sound") ||
 													m_ConfigurationVariables->GetParamValueBool("sound");
 
@@ -402,12 +376,10 @@ namespace GameConfig
 		m_Background.z = BackgroundSizeVec.z * (float)(1/255);
 		m_Background.a = 1.f;
 
-		//	Override screen size.
 		Vector2<int> ScreenSize;
 		if (m_ConfigurationVariables->IsVariableSet("screensize"))
 			m_ConfigurationVariables->GetParamValueVector2i(ScreenSize, "screensize", ',');
 
-		//	Widescreen emulation
 		if (m_ConfigurationVariables->IsVariableSet("widescreen_emulation"))
 		{
 			String WideScreenType;
@@ -452,7 +424,6 @@ namespace GameConfig
 
 		g_GfxInternal = new GfxInternal(ScreenSize, 32, 16, (Script::Fullscreen ? (GfxInternal::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
 
-		//	Set region.
 		Script::Region = Script::IsRegionEurope() ? "europe" : "usa";
 
 		if (m_ConfigurationVariables->IsVariableSet("region"))
@@ -484,15 +455,12 @@ namespace GameConfig
 		//	NOTE: this is unused.
 		Script::_A1B98D = 0;
 
-		//	Initialize baked font.
-		//	TODO: implementation!
-		Font::MakeCharactersMap((void*)0xA1B698);
-		g_Font = new Font((const void*)0xA1B698);
+		Font::MakeCharactersMap(Font::GlyphsInfo);
+		new Font(Font::GlyphsInfo);
 
 		//	Load NAZ archives into memory.
-		//File::ReadZipDirectories(Script::Filesystem.m_szString);
+		File::ReadZipDirectories(Script::Filesystem.m_szString);
 
-		//	Parse collmat file
 		EnumMaterialsInCollmat();
 		//	Parse facecolmat file
 		EnumFaceColMaterials();
@@ -575,13 +543,13 @@ namespace GameConfig
 		Script::CheckDataSanity = false;
 		Script::CheckDivisionByZero = false;
 
-		if (pProfileVariables)
+		if (profileVariables)
 		{
-			if (pProfileVariables->IsVariableSet("check_data_sanity"))
-				Script::CheckDataSanity = pProfileVariables->GetParamValueBool("check_data_sanity");
+			if (profileVariables->IsVariableSet("check_data_sanity"))
+				Script::CheckDataSanity = profileVariables->GetParamValueBool("check_data_sanity");
 
-			if (pProfileVariables->IsVariableSet("check_division_by_zero"))
-				Script::CheckDivisionByZero = pProfileVariables->GetParamValueBool("check_division_by_zero");
+			if (profileVariables->IsVariableSet("check_division_by_zero"))
+				Script::CheckDivisionByZero = profileVariables->GetParamValueBool("check_division_by_zero");
 		}
 
 		//	Start editor or game.
@@ -626,8 +594,8 @@ namespace GameConfig
 		g_Window->SetCursorReleased(false);
 #endif
 
-		if (pProfileVariables)
-			delete pProfileVariables;
+		if (profileVariables)
+			delete profileVariables;
 
 #ifdef INCLUDE_FIXES
 		debug("Game init complete! Took %i ms\n", clock() - timeStart);
@@ -781,7 +749,8 @@ namespace GameConfig
 		file->WriteFromBuffer();
 		const unsigned int filesize = file->GetPosition();
 		file->_WriteBufferAndSetToStart();
-		char* const buffer = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(filesize + 1, NULL, NULL);
+		char* const buffer = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(filesize, NULL, NULL);
+		memset(buffer, NULL, filesize);
 		const int bytesread = file->Read(buffer, filesize);
 
 		if (bytesread <= NULL)
@@ -872,13 +841,26 @@ namespace GameConfig
 
 	bool ConfigVariables::IsVariableSet(const char* const variableName) const
 	{
-		return m_KeyValueMap.find(variableName) != m_KeyValueMap.end();
+		//	FIXME: optimize this!
+		const auto& s_ = m_KeyValueMap.find(variableName);
+		const size_t varstrlen = strlen(variableName);
+
+		if (s_ == m_KeyValueMap.end())
+			return false;
+
+		if (s_->first.m_nLength != varstrlen)
+			return false;
+		else
+			if (strncmp(s_->first.m_szString, variableName, varstrlen) == NULL)
+				return true;
+			else
+				return false;
 	}
 
 	const bool ConfigVariables::GetParamValueBool(const char* const variableName) const
 	{
 		if (IsVariableSet(variableName))
-			return m_KeyValueMap.at(variableName).m_szString == "true" ? true : false;
+			return m_KeyValueMap[variableName].m_szString == "true" ? true : false;
 		else
 			return false;
 	}
@@ -886,7 +868,7 @@ namespace GameConfig
 	const int ConfigVariables::GetParamValueInt(const char* const variableName) const
 	{
 		if (IsVariableSet(variableName))
-			return atol(m_KeyValueMap.at(variableName).m_szString);
+			return atol(m_KeyValueMap[variableName].m_szString);
 		else
 			return NULL;
 	}
@@ -894,7 +876,7 @@ namespace GameConfig
 	const float ConfigVariables::GetParamValueFloat(const char* const variableName) const
 	{
 		if (IsVariableSet(variableName))
-			return (float)atof(m_KeyValueMap.at(variableName).m_szString);
+			return (float)atof(m_KeyValueMap[variableName].m_szString);
 		else
 			return 0.f;
 	}
@@ -904,12 +886,12 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outvec;
 
-		const String varval = m_KeyValueMap.at(variableName);
+		char* const varval = m_KeyValueMap[variableName].m_szString;
 		char* delimpos = nullptr;
 		int* vecint = (int*)&outvec;
 		
 		//	TODO: bounds check.
-		while (delimpos = strtok(delimpos ? NULL : varval.m_szString, (char*)&delimiter))
+		while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
 			*vecint++ = atoi(delimpos);
 
 		return outvec;
@@ -920,12 +902,12 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outvec;
 
-		const String varval = m_KeyValueMap.at(variableName);
+		char* const varval = m_KeyValueMap[variableName].m_szString;
 		char* delimpos = nullptr;
 		float* vecfl = (float*)&outvec;
 
 		//	TODO: bounds check.
-		while (delimpos = strtok(delimpos ? NULL : varval.m_szString, (char*)&delimiter))
+		while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
 			*vecfl++ = (float)atof(delimpos);
 
 		return outvec;
@@ -936,12 +918,12 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outvec;
 
-		const String varval = m_KeyValueMap.at(variableName);
+		char* const varval = m_KeyValueMap[variableName].m_szString;
 		char* delimpos = nullptr;
 		float* vecfl = (float*)&outvec;
 
 		//	TODO: bounds check.
-		while (delimpos = strtok(delimpos ? NULL : varval.m_szString, (char*)&delimiter))
+		while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
 			*vecfl++ = (float)atof(delimpos);
 
 		return outvec;
@@ -952,12 +934,12 @@ namespace GameConfig
 		if (!IsVariableSet(variableName))
 			return outvec;
 
-		const String varval = m_KeyValueMap.at(variableName);
+		char* const varval = m_KeyValueMap[variableName].m_szString;
 		char* delimpos = nullptr;
 		float* vecfl = (float*)&outvec;
 
 		//	TODO: bounds check.
-		while (delimpos = strtok(delimpos ? NULL : varval.m_szString, (char*)&delimiter))
+		while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
 			*vecfl++ = (float)atof(delimpos);
 
 		return outvec;
@@ -967,20 +949,20 @@ namespace GameConfig
 	{
 		if (!IsVariableSet(variableName))
 			return outstr;
-		else
-			return (outstr = m_KeyValueMap.at(variableName), outstr);
+
+		return (outstr = m_KeyValueMap[variableName], outstr);
 	}
 
 	void ConfigVariables::SetParamValue(const char* const variableName, const char* const value)
 	{
 		if (IsVariableSet(variableName))
-			m_KeyValueMap.at(variableName) = value;
+			m_KeyValueMap[variableName] = value;
 	}
 
 	void ConfigVariables::SetParamValueBool(const char* const variableName, const bool value)
 	{
 		if (IsVariableSet(variableName))
-			m_KeyValueMap.at(variableName) = value ? "true" : "false";
+			m_KeyValueMap[variableName] = value ? "true" : "false";
 	}
 
 	void InitialiseGame(LPSTR cmdline)
@@ -1007,30 +989,83 @@ namespace GameConfig
 		return COUNTRY_UNKNOWN;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
 	void EnumMaterialsInCollmat()
 	{
-		(*(void(*)())0x87D330)();
+		String materialname;
+		int materialproperties = NULL;
+		char collmatFilename[] = "/CollMat.txt";
+
+#ifdef INCLUDE_FIXES
+		if (!File::FindFileEverywhere(collmatFilename))
+			return;
+#else
+		//	NOTE: original code doesn't check the result.
+		File::FindFileEverywhere(collmatFilename);
+#endif
+
+		if (OpenCollMatFile(collmatFilename, materialname, materialproperties))
+		{
+			unsigned int totalMaterials = NULL;
+			unsigned int deftype = 19;
+
+			do 
+			{
+				CollMatProperties[materialname] = materialproperties;
+				
+				materialname.ToLowerCase();
+
+				FaceColl mattype;
+				if (strstr(materialname.m_szString, "metal"))
+					mattype = FACECOLL_METAL;
+				else if (strstr(materialname.m_szString, "wood"))
+					mattype = FACECOLL_WOOD;
+				else if (strstr(materialname.m_szString, "dirt"))
+					mattype = FACECOLL_DIRT;
+				else if (strstr(materialname.m_szString, "stone"))
+					mattype = FACECOLL_STONE;
+				else if (strstr(materialname.m_szString, "bush"))
+					mattype = FACECOLL_BUSH;
+				else if (strstr(materialname.m_szString, "glass"))
+					mattype = FACECOLL_GLASS;
+				else if (strstr(materialname.m_szString, "wirefence"))
+					mattype = FACECOLL_WIREFENCE;
+				else if (strstr(materialname.m_szString, "grass"))
+					mattype = FACECOLL_GRASS;
+				else if (strstr(materialname.m_szString, "asphalt"))
+					mattype = FACECOLL_ASPHALT;
+				else if (strstr(materialname.m_szString, "water"))
+					mattype = FACECOLL_WATER;
+				else if (strstr(materialname.m_szString, "cloth"))
+					mattype = FACECOLL_CLOTH;
+				else if (strstr(materialname.m_szString, "allround"))
+					mattype = FACECOLL_ALLROUND;
+				else
+					mattype = (FaceColl)deftype++;
+
+				CollMatMaterialsTypes[materialname] = mattype;
+
+			} while (ReadAndParseCollMatMaterial(materialname, materialproperties));
+
+			delete CollMatFile;
+			LogDump::LogA("%d materials found in file\n", totalMaterials);
+		}
 	}
 
 	void EnumFaceColMaterials()
 	{
-		if (FaceColList.m_CurrIndex > 0)
+		if (FaceCollList.m_CurrIndex > 0 ||
+			!File::FindFileEverywhere(CONFIG_FACECOLL_FILENAME))
 			return;
 
-		if (!File::FindFileEverywhere("/FaceColl.mat"))
-			return;
-
-		File faceColFile("/FaceColl.mat", 1, true);
-
+		File faceColFile(CONFIG_FACECOLL_FILENAME, 1, true);
 		if (!faceColFile.IsFileOpen())
 			return;
 
 		String buffer;
-
-		while (faceColFile.ReadString(&buffer)) {
+		while (faceColFile.ReadString(&buffer))
+		{
 			buffer.ToLowerCase();
-			FaceColList.AddElement(&buffer);
+			FaceCollList.AddElement(&buffer);
 		}
 	}
 
@@ -1052,6 +1087,62 @@ namespace GameConfig
 			
 			outStr = buf;
 		}
+	}
+
+	bool OpenCollMatFile(const char* const fileName, String& materialName, int& materialProperties)
+	{
+		CollMatFile = new File(fileName, 1, true);
+
+		if (CollMatFile->IsFileOpen())
+			return ReadAndParseCollMatMaterial(materialName, materialProperties);
+		else
+			return false;
+	}
+
+	bool ReadAndParseCollMatMaterial(String& materialName, int& outMaterialProperties)
+	{
+		if (!CollMatFile)
+			return false;
+
+		String buf;
+		if (CollMatFile->ReadString(&buf))
+			return false;
+
+		outMaterialProperties = NULL;
+		char* tok = strtok(buf.m_szString, ": \t");
+
+		if (tok)
+		{
+			materialName = tok;
+			char* matparams = strtok(NULL, ": \t");
+
+			if (matparams)
+			{
+				while (true)
+				{
+					if (strcmp(matparams, "SOLID") == NULL)
+						outMaterialProperties = outMaterialProperties | 1;
+					if (strcmp(matparams, "BULLETPROOF") == NULL)
+						outMaterialProperties = outMaterialProperties | 2;
+					if (strcmp(matparams, "OPAQUE") == NULL)
+						outMaterialProperties = outMaterialProperties | 4;
+					if (strcmp(matparams, "CAMERABLOCK") == NULL)
+						outMaterialProperties = outMaterialProperties | 8;
+					if (strcmp(matparams, "TRIGGER") == NULL)
+						outMaterialProperties = outMaterialProperties | 16;
+					if (strcmp(matparams, "NAVIGATIONBLOCK") == NULL)
+						outMaterialProperties = outMaterialProperties | 32;
+					if (strcmp(matparams, "PHYSICS") == NULL)
+						outMaterialProperties = outMaterialProperties | 64;
+
+					matparams = strtok(NULL, ": \t");
+					if (!matparams)
+						break;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	void ConfigCallback::UninitialiseGameCallback(int)

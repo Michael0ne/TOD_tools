@@ -220,7 +220,7 @@ namespace Script
 
 	static bool LoadBlocks;
 	static bool Fullscreen;
-	static int IconResourceId;
+	static unsigned int IconResourceId;
 
 	extern String Filesystem;
 	extern String ControlType;
@@ -233,12 +233,12 @@ namespace Script
 
 	static bool IsRegionEurope() { return false; };	//	@420160
 	static const char* GetCurrentCountryCode() { return CountryCodes[LanguageStringsOffset]; };	//	@42E500
-	static void SetCountryCode(const char* lang)	//	@42E530
+	static void SetCountryCode(const char* const lang)	//	@42E530
 	{
 		unsigned int languageIndex = NULL;
 
 		for (unsigned int i = 0; i < (sizeof(CountryCodes) / sizeof(char*)); i++)
-			if (strncmp(CountryCodes[i], lang, 2) == NULL)
+			if (*CountryCodes[i] == *lang && CountryCodes[i][1] == lang[1])
 				languageIndex = i;
 
 		Script::LanguageStringsOffset = languageIndex;
