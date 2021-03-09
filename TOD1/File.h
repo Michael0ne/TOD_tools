@@ -32,21 +32,21 @@ protected:
 	~FileWrapper();	//	@436F40
 
 public:
-	static void* operator new(size_t size)
+	void* operator new(size_t size)
 	{
 		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
-	static void* operator new[](size_t size)
+	void* operator new[](size_t size)
 	{
 		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
-	static void operator delete(void* ptr)
+	void operator delete(void* ptr)
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, false);
 		ptr = nullptr;
 	}
-	static void operator delete[](void* ptr)
+	void operator delete[](void* ptr)
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, false);
@@ -65,7 +65,7 @@ protected:
 	void			_436E70();	//	@436E70
 	void			ReadBlock_Internal();	//	@436EA0
 	void			ReadBlockFromOffset();	//	@436EE0
-	char			ReadBlock();	//	@4370C0
+	int				ReadBlock();	//	@4370C0
 	char			_WriteBufferBlockAndInsertNewLine(char);	//	@437170
 	int				Read(LPVOID, int);	//	@437230
 	int				WriteBuffer(const char*, int);	//	@437430
@@ -111,7 +111,7 @@ public:
 	virtual int		_scanf(IFile*, const char* format, ...);
 	virtual int		WriteFormattedVarlistDataToBuffer(char* _buf, va_list args);
 	virtual int		_scanf_impl(char* format, int* outArgs);
-	virtual char	ReadBlock() = 0;
+	virtual int		ReadBlock() = 0;
 	virtual int		ReadBlockAndGetPosition() = 0;
 	virtual char	_WriteBufferBlockAndInsertNewLine(char _newlinesym) = 0;
 	virtual int		Read(void* _buffer, int _numbytestoread) = 0;
@@ -139,8 +139,8 @@ protected:
 	unsigned char	m_FileReadAttribute;
 	unsigned char	m_ReadFromZip;
 	int				m_SeekPosition;
-	int				m_FileChecksum;
-	int				m_FileSize;
+	int				m_OffsetInZip;
+	int				m_SizeInZip;
 	int				m_ZipSlot;
 	bool			m_ExecuteAttribute;
 	FileWrapper*	m_ZipFileHandle;
@@ -155,7 +155,7 @@ public:
 	virtual int		_scanf(File*, const char* _format, ...);	//	@417960
 	virtual int		WriteFormattedVarlistDataToBuffer(char* _buf, va_list args);	//	@42F040
 	virtual int		_scanf_impl(char* format, int* outArgs);	//	@42F0A0
-	virtual char	ReadBlock();	//	@417980
+	virtual int		ReadBlock();	//	@417980
 	virtual int		ReadBlockAndGetPosition();	//	@419BD0
 	virtual char	_WriteBufferBlockAndInsertNewLine(char _newlinesym);	//	@419BF0	//	NOTE: this is a thunk function.
 	virtual int		Read(void* _buffer, int _numbytestoread);	//	@417A30
@@ -171,21 +171,21 @@ public:
 
 	File(const char* _filename, int _desiredaccess, bool _createifnotfound);	//	@418E30
 
-	static void* operator new(size_t size)
+	void* operator new(size_t size)
 	{
 		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
-	static void* operator new[](size_t size)
+	void* operator new[](size_t size)
 	{
 		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
-		static void operator delete(void* ptr)
+	void operator delete(void* ptr)
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, false);
 		ptr = nullptr;
 	}
-	static void operator delete[](void* ptr)
+	void operator delete[](void* ptr)
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, false);
@@ -206,7 +206,7 @@ public:
 	static bool		FindFileEverywhere(const char* path);	//	@4182A0
 	static time_t	GetFileTimestamp(const char* filename);	//	@418460
 	static void		OpenZip(const char* const zipName);	//	@419100
-	static void		ReadZipDirectories(const char* szFileSystem);	//	@419550
+	static void		ReadZipDirectories(const char* fileSystem);	//	@419550
 	static ULARGE_INTEGER GetStorageFreeSpace();	//	@417D40
 	static bool		IsDirectoryValid(const char* const path);	//	@418410
 	static bool		IsFileValid(const char* const file);	//	@418B00

@@ -1,21 +1,52 @@
 #include "Font.h"
+#include "LogDump.h"
 
-//	NOTE: maybe preset characters map?
-void* Font::_A1B698 = (void*)0xA1B698;
-Font* g_Font = (Font*)0xA35E00;
+Font* g_Font;
 
-#pragma message(TODO_IMPLEMENTATION)
-Font::Font(const void* GlyphsInfo)
+const float Font::_9B38D4 = (float)0x00008000;
+const float Font::_9B38D8 = (float)0xFFFF7F7F;
+GlyphInfo Font::GlyphsInfo =
+{
+	138, 18, nullptr, nullptr
+};
+
+Font::Font(const GlyphInfo& glyphsInfo)
 {
 	MESSAGE_CLASS_CREATED(Font);
+
+	field_0 = NULL;
+	field_3C = NULL;
+	m_GlyphsList = {};
+	field_54 = NULL;
+	field_50 = NULL;
+
+	if (!g_Font)
+		g_Font = this;
+
+	field_10 = -1;
+	field_14 = NULL;
+	field_18 = 0.f;
+	field_20 = 0.f;
+	field_30 = _9B38D4;
+	field_8 = NULL;
+	field_C = NULL;
+	field_1C = 1.f;
+	field_34 = _9B38D8;
+
+	CreateBakedFont(glyphsInfo);
+
+	field_38 = field_38 & 0xFFFFE09A | 0x88;
+	field_5C = 1.f;
+	field_60 = 1.f;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Font::MakeCharactersMap(void* GlyphsInfo)
+void Font::CreateBakedFont(const GlyphInfo& GlyphsInfo)
 {
+	LogDump::LogA("Creating baked font...\n");
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Font::CreateBakedFont(void* unkStruc)
+void Font::MakeCharactersMap(GlyphInfo& GlyphsInfo)
 {
 }

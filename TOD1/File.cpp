@@ -18,7 +18,7 @@ bool FileWrapper::IsStorageFull()
 {
 	ULARGE_INTEGER spaceAvailable = {};
 	GetDiskFreeSpaceEx(WorkingDirectory.m_szString, &spaceAvailable, nullptr, nullptr);
-	
+
 	return spaceAvailable.QuadPart == NULL;
 }
 
@@ -175,7 +175,7 @@ bool FileWrapper::EnumerateFolderFiles(const char* const dir, List<String>& outF
 	if (searchHandle == INVALID_HANDLE_VALUE)
 		return false;
 
-	do 
+	do
 		outFilesList.AddElement(new String(searchFilesData.cFileName));
 	while (FindNextFile(searchHandle, &searchFilesData));
 
@@ -205,7 +205,7 @@ void FileWrapper::SetFileAttrib(const char* const file, unsigned int attrib, cha
 		break;
 	}
 
-	SetFileAttributes(fileStr.m_szString, unk ? ( newAttrib | GetFileAttributes(fileStr.m_szString) ) : ( ~newAttrib & GetFileAttributes(fileStr.m_szString) ));
+	SetFileAttributes(fileStr.m_szString, unk ? (newAttrib | GetFileAttributes(fileStr.m_szString)) : (~newAttrib & GetFileAttributes(fileStr.m_szString)));
 }
 
 void FileWrapper::SetExecuteAttr(unsigned char _attr)
@@ -320,20 +320,20 @@ int File::_scanf_impl(char* format, int* outArgs)
 	return (*(int(__thiscall*)(File*, const char*, int*))0x42F0A0)(this, format, outArgs);
 }
 
-char File::ReadBlock()
+int File::ReadBlock()
 {
 	if (!m_ReadFromZip)
 		return m_FileHandle->ReadBlock();
 
-	if (m_SeekPosition >= m_FileSize)
+	if (m_SeekPosition >= m_SizeInZip)
 		return -1;
 
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
-	
+
 	FileWrapper::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
-	FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_FileChecksum + m_SeekPosition);
-	char bytesread = FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlock();
-	m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_FileChecksum;
+	FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_OffsetInZip + m_SeekPosition);
+	int bytesread = FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlock();
+	m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
 
 	ReleaseSemaphore(FileWrapper::ZipFilesArray[m_ZipSlot], 1, 0);
 
@@ -358,27 +358,29 @@ int File::Read(void* _buffer, int _numbytestoread)
 	if (!m_ReadFromZip)
 		return m_FileHandle->Read(_buffer, _numbytestoread);
 
-	if (m_SeekPosition >= m_FileSize)
+	if (m_SeekPosition >= m_SizeInZip)
 		return NULL;
 
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
-	FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_FileChecksum);
+	FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_OffsetInZip);
 	FileWrapper::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(true);
 
 	if (m_ExecuteAttribute)
 	{
-		int bytesread = FileWrapper::ZipFilesArray[m_ZipSlot]->Read(_buffer, ((m_SeekPosition + _numbytestoread) > m_FileSize) ? m_FileSize - m_SeekPosition : _numbytestoread);
+		int bytesread = FileWrapper::ZipFilesArray[m_ZipSlot]->Read(_buffer, ((m_SeekPosition + _numbytestoread) > m_SizeInZip) ? m_SizeInZip - m_SeekPosition : _numbytestoread);
 
-		m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_FileChecksum;
+		m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
 		ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
 		return bytesread;
-	}else{
+	}
+	else
+	{
 		int bytesread = NULL;
 
 		for (; bytesread < _numbytestoread; bytesread++)
 		{
-			if (FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() >= m_FileSize + m_FileChecksum)
+			if (FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() >= m_SizeInZip + m_OffsetInZip)
 				break;
 			char lastchar = FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlock();
 			if (lastchar == '\n' ||
@@ -392,7 +394,7 @@ int File::Read(void* _buffer, int _numbytestoread)
 			((char*)(_buffer))[bytesread] = lastchar;
 		}
 
-		m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_FileChecksum;
+		m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
 		ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
 		return bytesread;
@@ -426,7 +428,7 @@ char File::_WriteBufferAndSetToStart()
 	}
 
 	EnterCriticalSection(&m_FileHandle->m_CriticalSection);
-	
+
 	if (m_FileHandle->m_File)
 	{
 		if (m_FileHandle->m_Buffer != m_FileHandle->m_BufferBegin &&
@@ -456,7 +458,7 @@ char File::WriteFromBuffer()
 	if (!m_ReadFromZip)
 		return m_FileHandle->WriteFromBufferAndSetToEnd();
 
-	m_SeekPosition = m_FileSize;
+	m_SeekPosition = m_SizeInZip;
 
 	return true;
 }
@@ -473,10 +475,10 @@ char File::ReadBlockDecreasePosition()
 
 	WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
 
-	FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_FileChecksum);
+	FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_OffsetInZip);
 	FileWrapper::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
 	FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
-	m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_FileChecksum;
+	m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
 
 	ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
@@ -500,7 +502,6 @@ const char* File::GetFileName() const
 
 File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
 {
-	ZipSlotInfo::FileInfo finfo;
 	String fname;
 
 	GetPathFromDirectoryMappings(fname, _filename);
@@ -513,23 +514,25 @@ File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
 	m_ExecuteAttribute = NULL;
 	m_SeekPosition = NULL;
 	m_ZipFileHandle = nullptr;
-	m_FileChecksum = NULL;
-	m_FileSize = NULL;
+	m_OffsetInZip = NULL;
+	m_SizeInZip = NULL;
 
+	ZipArch::FileInfo zipFileInfo;
 	if (_desiredaccess & 1 &&
 		ZipArch::SlotId > 0 &&
-		ZipArch::FindFile(_filename, &finfo, &m_ZipSlot))
+		ZipArch::FindFile(_filename, zipFileInfo, &m_ZipSlot))
 	{
 		m_ReadFromZip = true;
-		m_FileSize = finfo.m_FileSize;
-		m_FileChecksum = finfo.m_Checksum;
+		m_SizeInZip = zipFileInfo.m_FileSize;
+		m_OffsetInZip = zipFileInfo.m_OffsetInArch;
 		m_SeekPosition = NULL;
 		m_ExecuteAttribute = (_desiredaccess >> 5) & 1;
 		m_ZipFileHandle = nullptr;
-	}else
+	}
+	else
 		m_FileHandle = new FileWrapper(m_FileName.m_szString, _desiredaccess, _createifnotfound);
 
-	if ((m_ReadFromZip && m_FileChecksum) || (m_FileHandle && m_FileHandle->m_File != NULL))
+	if ((m_ReadFromZip && m_OffsetInZip) || (m_FileHandle && m_FileHandle->m_File != NULL))
 		++FilesOpen;
 
 	MESSAGE_CLASS_CREATED(File);
@@ -543,7 +546,7 @@ File::~File()
 		if (m_ZipFileHandle)
 			delete m_ZipFileHandle;
 
-	if ((m_ReadFromZip && m_FileChecksum >= 0) || (m_FileHandle->m_File != nullptr))
+	if ((m_ReadFromZip && m_OffsetInZip >= 0) || (m_FileHandle->m_File != nullptr))
 		--FilesOpen;
 
 	if (m_FileHandle)
@@ -553,7 +556,7 @@ File::~File()
 unsigned int File::GetSize()
 {
 	if (m_ReadFromZip)
-		return m_FileSize;
+		return m_SizeInZip;
 
 	unsigned int currPos = m_FileHandle->GetPosition();
 	m_FileHandle->WriteFromBufferAndSetToEnd();
@@ -565,7 +568,7 @@ unsigned int File::GetSize()
 
 bool File::IsFileOpen() const
 {
-	return (m_ReadFromZip && m_FileChecksum >= 0) || m_FileHandle->m_File != nullptr;
+	return (m_ReadFromZip && m_OffsetInZip >= 0) || m_FileHandle->m_File != nullptr;
 }
 
 char File::ReadString(void* outStr)
@@ -654,7 +657,8 @@ String* File::ExtractFileName(String& outStr, const char* path)
 		ExtractFilePath(path, buf_, buf, buf_);
 		outStr = buf;
 		return &outStr;
-	}else
+	}
+	else
 		return NULL;
 }
 
@@ -673,10 +677,10 @@ bool File::FindFileEverywhere(const char* path)
 	String pathStr;
 	GetPathFromDirectoryMappings(pathStr, path);
 	int zipSlot;
+	ZipArch::FileInfo zipFileInfo;
 
-	if (ZipArch::SlotId > NULL)
-		if (ZipArch::FindFile(pathStr.m_szString, nullptr, &zipSlot))
-			return true;
+	if (ZipArch::SlotId > 0 && ZipArch::FindFile(pathStr.m_szString, zipFileInfo, &zipSlot))
+		return true;
 
 	return FileWrapper::IsFileExists(pathStr.m_szString);
 }
@@ -686,9 +690,9 @@ time_t File::GetFileTimestamp(const char* filename)
 	String pathStr;
 	GetPathFromDirectoryMappings(pathStr, filename);
 	int zipslot = NULL;
+	ZipArch::FileInfo zipFileInfo;
 
-	if (ZipArch::SlotId <= 0 ||
-		!ZipArch::FindFile(pathStr.m_szString, nullptr, &zipslot))
+	if (ZipArch::SlotId <= 0 || !ZipArch::FindFile(pathStr.m_szString, zipFileInfo, &zipslot))
 		return GetFileTimestamp_Impl(pathStr.m_szString);
 	else
 		return GetFileTimestamp_Impl(FileWrapper::ZipFilesArray[0]->m_WorkingDir.m_szString);
@@ -852,10 +856,10 @@ HANDLE FileWrapper::CreateFile_()
 	return m_File;
 }
 
-char FileWrapper::ReadBlock()
+int FileWrapper::ReadBlock()
 {
 	EnterCriticalSection(&m_CriticalSection);
-	
+
 	if (m_BufferBegin == m_BufferEnd &&
 		m_Read)
 	{
@@ -865,7 +869,7 @@ char FileWrapper::ReadBlock()
 		m_BufferBegin = m_Buffer;
 	}
 
-	if (m_BufferBegin = m_BufferEnd)
+	if (m_BufferBegin == m_BufferEnd)
 	{
 		LeaveCriticalSection(&m_CriticalSection);
 
@@ -881,7 +885,9 @@ char FileWrapper::ReadBlock()
 		LeaveCriticalSection(&m_CriticalSection);
 
 		return endsym;
-	}else{
+	}
+	else
+	{
 		if (m_BufferBegin == m_BufferEnd)
 			ReadBlock_Internal();
 
@@ -1051,7 +1057,9 @@ char FileWrapper::_WriteBufferBlockAndInsertNewLine(char _sym)
 		LeaveCriticalSection(&m_CriticalSection);
 
 		return true;
-	}else{
+	}
+	else
+	{
 		*m_BufferBegin = '\r';
 		m_BufferBegin++;
 
@@ -1083,7 +1091,9 @@ int FileWrapper::WriteBuffer(const char* _buf, int _len)
 		LeaveCriticalSection(&m_CriticalSection);
 
 		return _len;
-	}else{
+	}
+	else
+	{
 		if (m_Buffer != m_BufferBegin && !m_Read)
 		{
 			DWORD numBytesWritten = NULL;
@@ -1097,7 +1107,9 @@ int FileWrapper::WriteBuffer(const char* _buf, int _len)
 		{
 			buf = (char*)_buf;
 			ind = _len;
-		}else{
+		}
+		else
+		{
 			int ind_ = NULL;
 			for (buf = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(_len * 2, NULL, NULL); ind_ < _len; ++ind_)
 			{
@@ -1105,7 +1117,8 @@ int FileWrapper::WriteBuffer(const char* _buf, int _len)
 				{
 					buf[ind++] = '\r';
 					buf[ind] = '\n';
-				}else
+				}
+				else
 					buf[ind] = _buf[ind_];
 
 				++ind;
@@ -1193,14 +1206,16 @@ char FileWrapper::WriteFromBufferAndSetToEnd()
 		{
 			DWORD numBytesRead = NULL;
 			WriteFile(m_File, m_Buffer, m_BufferBegin - m_Buffer, &numBytesRead, nullptr);
-			m_BufferEnd = m_BufferBegin = m_Buffer;
+			m_BufferEnd = m_Buffer;
+			m_BufferBegin = m_Buffer;
 		}
 
 		if (m_Read)
 		{
 			if (m_BufferBegin != m_BufferEnd)
 				SetFilePointer(m_File, m_BufferBegin - m_BufferEnd, NULL, FILE_CURRENT);
-			m_BufferEnd = m_BufferBegin = m_Buffer;
+			m_BufferEnd = m_Buffer;
+			m_BufferBegin = m_Buffer;
 		}
 
 		m_FilePosition = SetFilePointer(m_File, NULL, NULL, FILE_END);
@@ -1211,50 +1226,52 @@ char FileWrapper::WriteFromBufferAndSetToEnd()
 	return true;
 }
 
-void File::ReadZipDirectories(const char* szFileSystem)
+void File::ReadZipDirectories(const char* fileSystem)
 {
-	if (szFileSystem && *szFileSystem) {
-		int nCurrentArchiveIndex = 0;
-		char szZipName[255] = {};
+	if (!fileSystem || !*fileSystem)
+		return;
+
+	int archIndex = 0;
+	char zipName[255] = {};
+
+	while (true)
+	{
+		int nCharIndex = 0;
+		do
+		{
+			char currChar = fileSystem[archIndex];
+
+			if (!currChar || currChar == ' ' || currChar == ',')
+				break;
+
+			++archIndex;
+			zipName[nCharIndex++] = currChar;
+		} while (nCharIndex < 255);
+
+		zipName[nCharIndex] = 0;
 
 		while (true)
 		{
-			int nCharIndex = 0;
-			do {
-				char cCurrentChar = szFileSystem[nCurrentArchiveIndex];
+			char currChar = fileSystem[archIndex];
 
-				if (!cCurrentChar || cCurrentChar == ' ' || cCurrentChar == ',')
-					break;
-
-				++nCurrentArchiveIndex;
-				szZipName[nCharIndex++] = cCurrentChar;
-			} while (nCharIndex < 255);
-
-			szZipName[nCharIndex] = 0;
-
-			while (true)
-			{
-				char cCurrentChar = szFileSystem[nCurrentArchiveIndex];
-
-				if (cCurrentChar != ' ' && cCurrentChar != ',')
-					break;
-
-				++nCurrentArchiveIndex;
-			}
-
-			OpenZip(szZipName);
-
-			char sZipNameLocalised[32] = {};
-
-			strcpy(sZipNameLocalised, Script::LanguageMode.m_szString);
-			strcat(sZipNameLocalised, "_");
-			strcat(sZipNameLocalised, szZipName);
-
-			OpenZip(sZipNameLocalised);
-
-			if (!szFileSystem[nCurrentArchiveIndex])
+			if (currChar != ' ' && currChar != ',')
 				break;
+
+			++archIndex;
 		}
+
+		OpenZip(zipName);
+
+		char zipNameLocalised[32] = {};
+
+		strcpy(zipNameLocalised, Script::LanguageMode.m_szString);
+		strcat(zipNameLocalised, "_");
+		strcat(zipNameLocalised, zipName);
+
+		OpenZip(zipNameLocalised);
+
+		if (!fileSystem[archIndex])
+			break;
 	}
 }
 
@@ -1282,12 +1299,13 @@ bool File::IsFileReadOnly(const char* const file)
 {
 	String fileStr;
 	GetPathFromDirectoryMappings(fileStr, file);
-	
+
 	if (!FindFileEverywhere(fileStr.m_szString))
 		return false;
 
 	int zipslot = NULL;
-	if (ZipArch::SlotId && ZipArch::FindFile(fileStr.m_szString, nullptr, &zipslot))
+	ZipArch::FileInfo zipFileInfo;
+	if (ZipArch::SlotId && ZipArch::FindFile(fileStr.m_szString, zipFileInfo, &zipslot))
 		return true;
 
 	return FileWrapper::IsFileReadOnly(fileStr.m_szString);
@@ -1328,7 +1346,7 @@ void File::OpenZip(const char* const zipName)
 	int slotId = ZipArch::SlotId++;
 	LogDump::LogA("Opening zip <%s> into slot %i\n", zipName, slotId);
 
-	ZipArch::SlotInfo[slotId].m_Flags.field_0 = 15;
+	//	ZipArch::SlotInfo[slotId].field_4 = 15;	//	TODO: reserve space?
 	ZipArch::ZipNames[slotId] = zipName;
 
 	FileWrapper::ZipFilesArray[slotId] = new FileWrapper(zipName, 33, true);
@@ -1354,22 +1372,21 @@ void File::OpenZip(const char* const zipName)
 		FileWrapper::ZipFilesArray[slotId]->Seek(CentralDirectoryStartOffset);
 
 		unsigned char* FileHeaderArray = new unsigned char[CentralDirectorySize];
+		unsigned char* FileHeaderArrayStartPtr = FileHeaderArray;
 		FileWrapper::ZipFilesArray[slotId]->Read(FileHeaderArray, CentralDirectorySize);
 
-		std::map<unsigned int, ZipSlotInfo::FileInfo> FilesMap;
+		std::map<unsigned int, ZipArch::FileInfo> FilesMap;
 
 		if (FilesInArchive > 0)
 		{
 			for (unsigned int i = FilesInArchive; i; i--)
 			{
-				String filePath;
-
 				if (ValidZipFile)
 					FileHeaderArray -= 8;
 
 				char			fileNameBuffer[MAX_PATH] = {};
 				char*			fileNameBufferPtr = &fileNameBuffer[0];
-				unsigned int	fileOffset = FileHeaderArray[24] + ((FileHeaderArray[25] + ((FileHeaderArray[26] + (FileHeaderArray[27] << 8)) << 8)) << 8);
+				unsigned int	FileSize = FileHeaderArray[24] + ((FileHeaderArray[25] + ((FileHeaderArray[26] + (FileHeaderArray[27] << 8)) << 8)) << 8);
 				unsigned int	filePathStrlen = FileHeaderArray[28] + (FileHeaderArray[29] << 8);
 				unsigned short	nextOffset_1 = FileHeaderArray[30] + (FileHeaderArray[31] << 8);
 				unsigned short	nextOffset_2 = FileHeaderArray[32] + (FileHeaderArray[33] << 8);
@@ -1382,32 +1399,35 @@ void File::OpenZip(const char* const zipName)
 				{
 					unsigned char* filenameStartOffset = FileHeaderArray + 46;
 
-					for (unsigned int j = filePathStrlen; j != 1; j--)
+					for (unsigned int j = filePathStrlen; j; j--)
 					{
 						if (ValidZipFile)
 							*fileNameBufferPtr++ = (*filenameStartOffset << 2) | (*filenameStartOffset >> 6);
 						else
 							*fileNameBufferPtr++ = *filenameStartOffset;
-						
+
 						filenameStartOffset++;
 					}
 				}
 
 				FileHeaderArray += filePathStrlen + nextOffset_1 + nextOffset_2 + 46;
-				unsigned int FileChecksum = nextOffset_1 + nextOffset_3 + filePathStrlen + 30;
+				unsigned int FileOffset = nextOffset_1 + nextOffset_3 + filePathStrlen + 30;
 
 				String::ConvertBackslashes(fileNameBuffer);
 				String::ToLowerCase(fileNameBuffer);
 
 				unsigned int checksum = Utils::CalcCRC32(fileNameBuffer, strlen(fileNameBuffer));
-				std::pair<unsigned int, ZipSlotInfo::FileInfo> tmp = { checksum, { FileChecksum, fileOffset } };
-				FilesMap.insert(tmp);
+				FilesMap[checksum] = { FileOffset, FileSize };
+
+#ifdef INCLUDE_FIXES
+				LogDump::LogA("Read \"%s\" (crc: %x, offset: %i, size: %i bytes) from \"%s\"\n", fileNameBuffer, checksum, FileOffset, FileSize, zipName);
+#endif
 			}
 		}
 
-		ZipArch::SlotInfo[slotId].AddFileInfo(FilesMap);
+		ZipArch::SlotInfo[slotId] = FilesMap;
 
-		delete[] FileHeaderArray;
+		delete[] FileHeaderArrayStartPtr;
 	}
 }
 

@@ -88,7 +88,7 @@ namespace Input {
 	};
 }
 
-extern Input::Gamepad**			g_InputGamepad;	//	@A35E7C
+extern Input::Gamepad*			g_InputGamepad[INPUT_GAMEPAD_MAX_GAMEPADS];	//	@A35E7C
 extern const char*				g_GamepadButtons[INPUT_GAMEPAD_MAX_BUTTONS];
 
-static_assert(sizeof(Input::Gamepad) == INPUT_GAMEPAD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Input::Gamepad));
+ASSERT_CLASS_SIZE(Input::Gamepad, 228);

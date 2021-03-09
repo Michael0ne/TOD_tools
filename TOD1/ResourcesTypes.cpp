@@ -22,7 +22,7 @@ namespace ResType
 
 		Resource* res_ = m_Creator();
 		m_ResTypeMethods = (void*)*((int*)res_);
-		Resource::Destroy(res_);
+		delete res_;
 	}
 
 	inline void ResourceBase::SetResourceAlignment(unsigned int size, unsigned int index)

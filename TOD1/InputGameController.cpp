@@ -2,7 +2,7 @@
 #include "ScriptDatabase.h"
 #include "LogDump.h"
 
-Input::Gamepad** g_InputGamepad;
+Input::Gamepad* g_InputGamepad[INPUT_GAMEPAD_MAX_GAMEPADS] = {};
 
 const char* g_GamepadButtons[INPUT_GAMEPAD_MAX_BUTTONS] = {
 	"SELECT",
@@ -242,7 +242,7 @@ namespace Input
 		DirectInputGamepadsFound = NULL;
 		g_pDirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)DIEnumDevicesCallback, NULL, NULL);
 
-		g_InputGamepad = (Gamepad**)(new unsigned int[DirectInputGamepadsFound]);
+		//g_InputGamepad = (Gamepad**)(new unsigned int[DirectInputGamepadsFound]);
 	}
 
 	int Gamepad::NumberDirectInputDevices()
