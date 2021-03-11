@@ -3,12 +3,12 @@
 ## Summary
 
 TOD Tools - this is a reverse engineered engine and game code project for Total Overdose and possibly, other games that use this version of Kapow Engine.
-Original game & engine are by Eidos interactive. You NEED to own a game copy to use this tools.
+Original game & engine are by Eidos interactive. You MUST to own a game copy to use these tools.
 
 There are 3 'subprojects' you can see:
 
 * TOD1 - reverse engineered game and engine;
-* debugmenu - everything for debugging an egine;
+* debugmenu - everything for debugging an engine;
 * restools - a tool to "view and sometimes extract" some game assets.
 
 ## Current state
@@ -29,6 +29,10 @@ When compiling using 'Release/Debug EXE' you get 'TOD1.exe' file that's intent i
 
 * Implementation for MemoryAllocators classes.
 * Implementation for AssetBlocks.
+* Implementation for loading scripts.
+* Implementation for loading resources natively.
+* Implementation for rendering with DirectX 9.
+* Implementation for game logic.
 * Much much more, see 'TODO' scattered all around the source code.
 
 # Building
@@ -43,15 +47,19 @@ When compiling using 'Release/Debug EXE' you get 'TOD1.exe' file that's intent i
 
 Included libraries can be found under 'TOD_tools\ThirdParty'.
 
-## Process (Windows)
+## Process for Windows
 
-I use Visual Studio 2019 (16.8.5) to build this project.
+I use Visual Studio 2019 (16.9.1) to build this project.
 It's always a good idea to re-compile provided third party libraries under your specific machine and link against them when compiling the rest.
-If you're using 'Release/Debug DLL' build configuration, then after successfull build a batch file is executed to copy output file into game directory (updateHookFile.bat), so make sure to replace game path to where your actual game is.
+If you're using 'Release DLL' or 'Debug DLL' build configuration, then after successfull build a batch file is executed to copy output file into game directory (updateHookFile.bat), you should edit this file to replace game path to where your actual game is.
 
-## Process (Linux/PS2/etc...)
+## Process for Linux/PS2/etc...
 
-If you want to build for Linux/PS2/coffepot/etc, then you can't do that right away without tinkering with code. As stated in comments (see contibuting section below), good idea would be to wrap platform-specific code around 'PLATFORM_<platform>'. Check these classes: 'File', 'Window', 'GfxInternal' ('GfxInternal_Dx9' is an abstratction for DX9 code, so good idea is to create 'GfxInternal_OpenGL' and do stuff there). As for project itself - right now I'm using Visual Studio to build code, but see no problem to use premake/cmake/etc to generate project for specific target.
+If you want to build for Linux/PS2/coffepot/etc, then you can't do that right away without tinkering with code. As stated in comments (see contibuting section below), a good idea would be to wrap platform-specific code around 'PLATFORM_<platform>'.
+
+Check these classes: 'File', 'Window', 'GfxInternal' ('GfxInternal_Dx9' is an abstraction for DirectX 9 code, so good idea is to create 'GfxInternal_OpenGL' and do stuff there).
+
+As for project itself - right now I'm using Visual Studio to build code, but see no problem to use premake/cmake/etc to generate project for specific target.
 
 # Contributing
 
