@@ -5,6 +5,7 @@
 #include "File.h"
 #include "KeyValueList.h"
 #include <map>
+#include <list>
 
 namespace GameConfig
 {
@@ -15,8 +16,6 @@ namespace GameConfig
 	#define CONFIG_CONFIGFILE "/configpc.txt"
 	#define CONFIG_PROFILEFILE "/profile.txt"
 	#define CONFIG_SCRIPTS_PATH_STABLE "/data/scripts/stable/"
-	#define CONFIG_COLLMAT_FILENAME "/CollMat.txt"
-	#define CONFIG_FACECOLL_FILENAME "/FaceColl.mat"
 
 #ifdef INCLUDE_FIXES
 	#define CONFIG_MENU_RESOURCEID 103
@@ -140,6 +139,7 @@ namespace GameConfig
 		bool				OpenScene(const char* scene);	//	@93CE00
 		void				CreateUnknownMatricies();	//	@93D360
 		
+		static bool			UpdateGame();	//	@93CEB0
 		static void			_93CDA0(const char* const str);	//	@93CDA0
 
 		static String		_A1B9F8;	//	@A1B9F8	//	NOTE: unused, max length is 10'000 symbols.
@@ -180,10 +180,10 @@ namespace GameConfig
 	static bool				OpenCollMatFile(const char* const fileName, String& materialName, int& materialProperties);	//	@87CE50
 	static bool				ReadAndParseCollMatMaterial(String& materialName, int& outMaterialProperties);	//	@87CC80
 
-	static List<String>		FaceCollList;	//	@A3D7EC
-	static File*			CollMatFile;	//	@A3D7E8
-	static std::map<String, unsigned int>	CollMatProperties;	//	@A11704
-	static std::map<String, FaceColl>	CollMatMaterialsTypes;	//	@A3D7FC
+	extern std::list<String>	FaceCollList;	//	@A3D7EC
+	extern File*			CollMatFile;	//	@A3D7E8
+	extern std::map<String, unsigned int>	CollMatProperties;	//	@A11704
+	extern std::map<String, FaceColl>	CollMatMaterialsTypes;	//	@A3D7FC
 
 	extern Config* g_Config;
 }

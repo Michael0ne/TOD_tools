@@ -7,15 +7,15 @@ RigidBody::RigidBody() : Node(NODE_MASK_EMPTY)
 	m_Orientation_t = Orientation(0.0f, 0.0f, 0.0f, 1.0f);
 	m_UnkVec_6 = Orientation(0.0f, 0.0f, 0.0f, 1.0f);
 	
-	m_Unknown_1 = List<int>(0x25300);
+	//m_Unknown_1 = List<int>(0x25300);
 	
 	m_CollMass = 10.0f;
 
-	m_Position_t = Vector4f();
-	m_LinearSpeed = Vector4f();
-	m_AngularMomentum = Vector4f();
-	m_LinearVelocity = Vector4f();
-	m_CollAngularSpeed = Vector4f();
+	m_Position_t = {};
+	m_LinearSpeed = {};
+	m_AngularMomentum = {};
+	m_LinearVelocity = {};
+	m_CollAngularSpeed = {};
 
 	m_UnkVec_1 = Vector4f(1.0f, 1.0f, 1.0f, 0.0f);
 

@@ -11,11 +11,11 @@ Model::Model() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE | NODE_MASK_FRAGME
 	field_58 = 0;
 	field_5C = 1;
 
-	m_List_1 = List<int>(0x1A300);
-	m_List_2 = List<int>(0x1A300);
-	m_List_3 = List<int>(0x1FB00);
-	m_List_4 = List<int>(0x1FB00);
-	m_List_6 = List<int>(0x1A300);
+	//m_List_1 = List<int>(0x1A300);
+	//m_List_2 = List<int>(0x1A300);
+	//m_List_3 = List<int>(0x1FB00);
+	//m_List_4 = List<int>(0x1FB00);
+	//m_List_6 = List<int>(0x1A300);
 
 	field_E0 = 0;
 	field_E4 = 1;
@@ -37,7 +37,7 @@ void Model::Register()
 {
 	tModel = new ScriptType_Entity("Model");
 	tModel->InheritFrom(tNode);
-	tModel->SetCreator((ENTITYTYPE_CREATOR)Create);
+	tModel->SetCreator((ScriptType_Entity::CREATOR)Create);
 }
 
 Model* Model::Create(AllocatorIndex)

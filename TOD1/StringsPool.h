@@ -20,6 +20,7 @@ public:
 
 	String(const char* const str);
 	String(const String& rhs);
+	String(String& rhs);
 	inline ~String()
 	{
 		if (m_szString != &m_pEmpty && (m_nBitMask & STRING_BITMASK_DEFAULT) != NULL)
@@ -68,9 +69,9 @@ public:
 	inline void		ToLowerCase()
 	{
 		char* s_ = m_szString;
-		while (*(s_++))
-			if (*s_ >= 65 && *s_ <= 90)
-				*s_ += 32;
+		do
+			*s_ = tolower(*s_);
+		while (*(s_++));
 	}
 	inline void		Replace(char oldChar, char newChar)
 	{

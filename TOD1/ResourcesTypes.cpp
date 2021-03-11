@@ -10,8 +10,8 @@ namespace ResType
 		MESSAGE_CLASS_CREATED(ResourceBase);
 
 		m_ResourceTypeName = type;
-		m_ResourceIndex = ResTypeList.m_CurrIndex;
-		ResTypeList.AddElement(this);
+		m_ResourceIndex = ResTypeList.size();
+		ResTypeList.push_back(this);
 		m_Creator = creator;
 		field_2C = NULL;
 		m_VerifyChecksum = false;
@@ -73,7 +73,7 @@ namespace ResType
 		MESSAGE_CLASS_CREATED(Resource);
 
 		if (TotalResourcesCreated == NULL)
-			OpenResourcesList.SetCapacityAndErase(RESTYPE_MAX_OPEN_RESOURCES);
+			OpenResourcesList.reserve(RESTYPE_MAX_OPEN_RESOURCES);
 
 		m_ResourceTimestamp = NULL;
 		m_Flags = NULL;
@@ -103,9 +103,9 @@ namespace ResType
 		String resPath;
 		g_Blocks->GetInternalFileName(resPath, m_ResourcePath);
 
-		OpenResourcesList.m_Elements[_currresind] = &resPath;
+		OpenResourcesList[_currresind] = resPath;
 
-		return OpenResourcesList.m_Elements[_currresind]->m_szString;
+		return OpenResourcesList[_currresind].m_szString;
 	}
 
 	void Resource::_8513E0(unsigned char a1)
@@ -142,9 +142,8 @@ namespace ResType
 	void Texture::CreateInstance()
 	{
 		rtTexture = new ResourceBase(RESTYPE_TEXTURE_NAME, (CREATOR)Create);
-		String ext = RESTYPE_TEXTURE_EXT;
 
-		rtTexture->m_ResourceExtensionsList.AddElement(&ext);
+		rtTexture->m_ResourceExtensionsList.push_back(RESTYPE_TEXTURE_EXT);
 
 		rtTexture->SetResourceAlignment(16, 1);
 		rtTexture->SetResourceAlignment(128, 2);
@@ -174,11 +173,9 @@ namespace ResType
 	void Font::CreateInstance()
 	{
 		rtFont = new ResourceBase(RESTYPE_FONT_NAME, (CREATOR)Create);
-		String ext = RESTYPE_FONT_EXT_1;
-		String ext_2 = RESTYPE_FONT_EXT_2;
 
-		rtFont->m_ResourceExtensionsList.AddElement(&ext);
-		rtFont->m_ResourceExtensionsList.AddElement(&ext_2);
+		rtFont->m_ResourceExtensionsList.push_back(RESTYPE_FONT_EXT_1);
+		rtFont->m_ResourceExtensionsList.push_back(RESTYPE_FONT_EXT_2);
 
 		rtFont->SetResourceAlignment(16, 1);
 		rtFont->SetResourceAlignment(128, 2);
@@ -201,9 +198,9 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(Text);
 
-		m_List_1 = List<int>(0x18B00);
-		m_List_2 = List<int>(0x18B00);
-		m_List_3 = List<int>(0x18B00);
+		//m_List_1 = List<int>(0x18B00);
+		//m_List_2 = List<int>(0x18B00);
+		//m_List_3 = List<int>(0x18B00);
 
 		field_50 = NULL;
 	}
@@ -211,9 +208,8 @@ namespace ResType
 	void Text::CreateInstance()
 	{
 		rtText = new ResourceBase(RESTYPE_TEXT_NAME, (CREATOR)Create);
-		String ext = RESTYPE_TEXT_EXT;
 
-		rtText->m_ResourceExtensionsList.AddElement(&ext);
+		rtText->m_ResourceExtensionsList.push_back(RESTYPE_TEXT_EXT);
 
 		rtText->SetResourceAlignment(16, 1);
 		rtText->SetResourceAlignment(16, 2);
@@ -236,7 +232,7 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(Model);
 
-		m_TextureResources = List<TextureReference>(0x18B00);
+		//m_TextureResources = List<TextureReference>(0x18B00);
 
 		field_40 = NULL;
 		field_54 = NULL;
@@ -248,9 +244,8 @@ namespace ResType
 	void Model::CreateInstance()
 	{
 		rtModel = new ResourceBase(RESTYPE_MODEL_NAME, (CREATOR)Create);
-		String ext = RESTYPE_MODEL_EXT;
 
-		rtModel->m_ResourceExtensionsList.AddElement(&ext);
+		rtModel->m_ResourceExtensionsList.push_back(RESTYPE_MODEL_EXT);
 
 		rtModel->SetResourceAlignment(16, 1);
 		rtModel->SetResourceAlignment(16, 2);
@@ -286,11 +281,9 @@ namespace ResType
 	void Fragment::CreateInstance()
 	{
 		rtFragment = new ResourceBase(RESTYPE_FRAGMENT_NAME, (CREATOR)Create);
-		String ext = RESTYPE_FRAGMENT_EXT_1;
-		String ext_1 = RESTYPE_FRAGMENT_EXT_2;
 
-		rtFragment->m_ResourceExtensionsList.AddElement(&ext);
-		rtFragment->m_ResourceExtensionsList.AddElement(&ext_1);
+		rtFragment->m_ResourceExtensionsList.push_back(RESTYPE_FRAGMENT_EXT_1);
+		rtFragment->m_ResourceExtensionsList.push_back(RESTYPE_FRAGMENT_EXT_2);
 
 		rtFragment->SetResourceAlignment(16, 1);
 		rtFragment->SetResourceAlignment(16, 2);
@@ -322,11 +315,9 @@ namespace ResType
 	void Movie::CreateInstance()
 	{
 		rtMovie = new ResourceBase(RESTYPE_MOVIE_NAME, (CREATOR)Create);
-		String ext = RESTYPE_MOVIE_EXT_1;
-		String ext_2 = RESTYPE_MOVIE_EXT_2;
 
-		rtMovie->m_ResourceExtensionsList.AddElement(&ext);
-		rtMovie->m_ResourceExtensionsList.AddElement(&ext_2);
+		rtMovie->m_ResourceExtensionsList.push_back(RESTYPE_MOVIE_EXT_1);
+		rtMovie->m_ResourceExtensionsList.push_back(RESTYPE_MOVIE_EXT_2);
 
 		rtMovie->SetResourceAlignment(16, 1);
 		rtMovie->SetResourceAlignment(16, 2);
@@ -347,8 +338,8 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(Cutscene);
 
-		m_List_1 = List<int>(0x23B00);
-		m_List_2 = List<int>(0x23B00);
+		//m_List_1 = List<int>(0x23B00);
+		//m_List_2 = List<int>(0x23B00);
 
 		field_40 = 1;
 		field_48 = 1;
@@ -360,9 +351,8 @@ namespace ResType
 	void Cutscene::CreateInstance()
 	{
 		rtCutscene = new ResourceBase(RESTYPE_CUTSCENE_NAME, (CREATOR)Create);
-		String ext = RESTYPE_CUTSCENE_EXT;
 
-		rtCutscene->m_ResourceExtensionsList.AddElement(&ext);
+		rtCutscene->m_ResourceExtensionsList.push_back(RESTYPE_CUTSCENE_EXT);
 
 		rtCutscene->SetResourceAlignment(16, 1);
 		rtCutscene->SetResourceAlignment(16, 2);
@@ -389,9 +379,8 @@ namespace ResType
 	void Sound::CreateInstance()
 	{
 		rtSound = new ResourceBase(RESTYPE_SOUND_NAME, (CREATOR)Create);
-		String ext = RESTYPE_SOUND_EXT;
 
-		rtSound->m_ResourceExtensionsList.AddElement(&ext);
+		rtSound->m_ResourceExtensionsList.push_back(RESTYPE_SOUND_EXT);
 
 		rtSound->SetResourceAlignment(16, 1);
 		rtSound->SetResourceAlignment(16, 2);
@@ -422,11 +411,9 @@ namespace ResType
 	void StreamedSoundInfo::CreateInstance()
 	{
 		rtStreamedSoundInfo = new ResourceBase(RESTYPE_STREAMEDSOUNDINFO_NAME, (CREATOR)Create);
-		String ext = RESTYPE_STREAMEDSOUNDINFO_EXT_1;
-		String ext_2 = RESTYPE_STREAMEDSOUNDINFO_EXT_2;
 
-		rtStreamedSoundInfo->m_ResourceExtensionsList.AddElement(&ext);
-		rtStreamedSoundInfo->m_ResourceExtensionsList.AddElement(&ext_2);
+		rtStreamedSoundInfo->m_ResourceExtensionsList.push_back(RESTYPE_STREAMEDSOUNDINFO_EXT_1);
+		rtStreamedSoundInfo->m_ResourceExtensionsList.push_back(RESTYPE_STREAMEDSOUNDINFO_EXT_2);
 
 		rtStreamedSoundInfo->SetResourceAlignment(16, 1);
 		rtStreamedSoundInfo->SetResourceAlignment(16, 2);
@@ -449,9 +436,9 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(Animation);
 
-		m_List_1 = List<int>(0x22300);
-		m_List_2 = List<int>(0x22300);
-		m_List_3 = List<int>(0x22300);
+		//m_List_1 = List<int>(0x22300);
+		//m_List_2 = List<int>(0x22300);
+		//m_List_3 = List<int>(0x22300);
 
 		field_5C = nullptr;
 		field_28 = NULL;
@@ -463,9 +450,8 @@ namespace ResType
 	void Animation::CreateInstance()
 	{
 		rtAnimation = new ResourceBase(RESTYPE_ANIMATION_NAME, (CREATOR)Create);
-		String ext = RESTYPE_ANIMATION_EXT;
 
-		rtAnimation->m_ResourceExtensionsList.AddElement(&ext);
+		rtAnimation->m_ResourceExtensionsList.push_back(RESTYPE_ANIMATION_EXT);
 
 		rtAnimation->SetResourceAlignment(16, 1);
 		rtAnimation->SetResourceAlignment(16, 2);
@@ -489,8 +475,8 @@ namespace ResType
 	{
 		MESSAGE_CLASS_CREATED(MeshColor);
 
-		m_List_1 = List<int>(0x20300);
-		m_List_2 = List<int>(0x20300);
+		//m_List_1 = List<int>(0x20300);
+		//m_List_2 = List<int>(0x20300);
 
 		field_40 = nullptr;
 		field_48 = nullptr;
@@ -501,11 +487,9 @@ namespace ResType
 	void MeshColor::CreateInstance()
 	{
 		rtMeshColor = new ResourceBase(RESTYPE_MESHCOLOR_NAME, (CREATOR)Create);
-		String ext = RESTYPE_MESHCOLOR_EXT_1;
-		String ext_1 = RESTYPE_MESHCOLOR_EXT_2;
 
-		rtMeshColor->m_ResourceExtensionsList.AddElement(&ext);
-		rtMeshColor->m_ResourceExtensionsList.AddElement(&ext_1);
+		rtMeshColor->m_ResourceExtensionsList.push_back(RESTYPE_MESHCOLOR_EXT_1);
+		rtMeshColor->m_ResourceExtensionsList.push_back(RESTYPE_MESHCOLOR_EXT_2);
 	}
 
 	MeshColor* MeshColor::Create()

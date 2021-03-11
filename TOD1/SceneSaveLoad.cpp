@@ -48,7 +48,7 @@ bool SceneSaveLoad::LoadSaveSummaryToBuffer(SavePoint* savepoint, SaveInfo* save
 	if (savepoint->Read(&propertyChecksum, sizeof(propertyChecksum)) != sizeof(propertyChecksum))
 		return false;
 
-	unsigned int propertyChecksumDefined = Script::GetGlobalPropertyListCRC();
+	unsigned int propertyChecksumDefined = GetGlobalPropertyListChecksum();
 
 	if (propertyChecksum != propertyChecksumDefined)
 	{

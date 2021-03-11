@@ -1,7 +1,8 @@
 #pragma once
-
-#include "ScriptTypes.h"
 #include "Globals.h"
+#include "LogDump.h"
+#include <vector>
+#include <map>
 
 #ifdef PLATFORM_PS2
 	#define SCRIPT_PROPERTIES_TOTAL 5940
@@ -19,49 +20,56 @@
 
 struct GlobalProperty
 {
-	int							m_PropertyId;
-	const char*					m_PropertyName;
-	ScriptType*					m_PropertyType;
+	int							m_PropertyId = 0;
+	char*						m_PropertyName = nullptr;
+	class ScriptType*			m_PropertyType = nullptr;
 
-	void						GetNameAndType(String& outStr);	//	@8731C0
+	void						GetNameAndType(String& outStr) const;	//	@8731C0
+
+	GlobalProperty() {};
+	GlobalProperty(const char* const propertyname, unsigned int ind);
+	~GlobalProperty();
 };
 
-static List<GlobalProperty>		GlobalPropertiesList;	//	@A3CF20
+extern std::vector<GlobalProperty>		GlobalPropertiesList;	//	@A3CF20
+extern std::map<String, unsigned int>	GlobalPropertiesMap;	//	@A3CF30
 
-struct ScriptNodeProperties
+class GlobalCommand
 {
-	String						m_PropertyName;
-	ScriptType*					m_ScriptType;
-	int							m_TotalSizeBytes;
-};
-
-struct GlobalCommand
-{
-	struct
+protected:
+	struct CommandArgument
 	{
-		List<ScriptNodeProperties>	m_PropertiesList;	//	NOTE: 0th element is always return type.
-		int						m_TotalSizeBytes;	//	NOTE: these 2 seem to be always equal.
-		int						m_TotalSize;
-	}							m_ArgumentsList;	//	NOTE: element at index 0 is always return scripttype.
+		String					m_PropertyName;
+		class ScriptType*		m_ScriptType;
+		unsigned int			m_TotalSizeBytes;
+
+		CommandArgument(String& argname, const class ScriptType* argtype, unsigned int argsize);
+	};
+
+	struct CommandArguments
+	{
+		std::vector<CommandArgument>	m_ArgumentsList;
+		int						field_C;
+		unsigned int			m_TotalSizeBytes;
+		unsigned int			m_TotalSize;
+	};
+	
+	CommandArguments			m_Arguments;	//	NOTE: element at index 0 is always return scripttype.
 	int							m_GlobalIndex;
 	const char*					m_ArgumentsString;	//	NOTE: full name with arguments.
 	const char*					m_CommandName;	//	NOTE: the name without arguments (only command name).
 
+private:
+	void						AddArgumentType(const ScriptType* argtype);	//	@862650
+
+public:
+	GlobalCommand(const char* const commandname, const unsigned int commandind);	//	@871FE0
+
 	void						GetReturnTypeString(String& outStr);	//	@871A90
 };
 
-struct CommandListEntry
-{
-	String						m_Command;
-	unsigned int				m_IndexInGlobalList;
-	CommandListEntry*			m_Next;
-	CommandListEntry*			m_Previous;
-};
-
-static List<GlobalCommand>		GlobalCommandsList;		//	@A11470	//	NOTE: this is an array with contents allocated as single space with size and put consequently.
-static KeyValueList<CommandListEntry, int>	GlobalCommandsStringsList;	//	@A3CF08
-
-#define GLOBALSCRIPT_CLASS_SIZE 100
+extern std::vector<GlobalCommand>		GlobalCommandsList;	//	@A11470
+extern std::map<String, unsigned int>	GlobalCommandsMap;	//	@A3CF08
 
 //	NOTE: more appropriate name could be 'BuiltinScript' since they're baked in game. Essentially this is a representation of a class instance that can be used by scripts in game.
 class GlobalScript
@@ -92,13 +100,13 @@ class GlobalScript
 		ScriptType*				m_ParamType;
 	};
 protected:
-	List<GlobalScriptField>		m_FieldsList;
+	std::vector<GlobalScriptField>	m_FieldsList;
 	int							m_FieldsDefaultValues[4];	//	[field_id] = field_val
 	unsigned int				m_ScriptSizeBytes;
-	List<GlobalScriptMethod>	m_MethodsList;
-	List<GlobalScriptParam>		m_ParamsList;
+	std::vector<GlobalScriptMethod>	m_MethodsList;
+	std::vector<GlobalScriptParam>		m_ParamsList;
 	int							field_44;
-	ScriptType_Entity*			m_BaseEntity;
+	class ScriptType_Entity*	m_BaseEntity;
 	String						m_Name;
 	int							field_5C;
 	void						(__cdecl* field_60)(int*);	//	NOTE: constructor (?)
@@ -108,13 +116,13 @@ public:
 
 	void						RegisterMember(unsigned int fieldId, const char* const defaultValue, unsigned int);	//	@48AF10
 
-	ScriptType_Entity*			AssignScriptToEntity(const ScriptType_Entity* parent);	//	@48A3F0
+	class ScriptType_Entity*	AssignScriptToEntity(const ScriptType_Entity* parent);	//	@48A3F0
 
 	static GlobalScript*		GetGlobalScriptByName(const char* name);	//	@48C590
-	static List<GlobalScript>	ScriptsList;	//	@A0B424
+	static std::vector<GlobalScript>	ScriptsList;	//	@A0B424
 };
 
-static_assert(sizeof(GlobalScript) == GLOBALSCRIPT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(GlobalScript));
+ASSERT_CLASS_SIZE(GlobalScript, 100);
 
 struct ScriptObject
 {
@@ -125,73 +133,24 @@ protected:
 
 static ScriptObject*			GlobalScriptsArray[205];	//	@A3B7A4
 
-class IScriptThread
-{
-public:
-	virtual ~IScriptThread();
-	virtual int stub1(void*);
-};
+extern unsigned int	GlobalPropertyListChecksum;	//	@A3CF40
+extern bool			GlobalPropertyListChecksumObtained;	//	@A3CF1C
+extern unsigned int	GlobalCommandListChecksum;	//	@A3CF18
+extern bool			GlobalCommandListChecksumObtained;	//	@A3CEF4
 
-class ScriptThread : public IScriptThread
-{
-	struct ThreadList_1
-	{
-		unsigned int			field_0;
-		int*					field_4;	//	NOTE: pointer to another list. Contents vary.
-		unsigned int			field_8;
-	};
+extern unsigned int GetGlobalPropertyListChecksum();	//	@873440
+extern unsigned int GetGlobalCommandListChecksum();	//	@871DD0
+extern int	GetPropertyIdByName(const char* const propertyname);	//	@8732C0
+extern int	GetCommandByName_Impl(const char* const commandname);	//	@872360
+extern int	GetCommandByName(const char* const commandname);	//	@872410
+extern int	RegisterGlobalProperty(const char* const propertyname, bool existingProperty);	//	@8736B0
+extern int	RegisterGlobalCommand(const char* const commandname, bool existingCommand);	//	@872590
 
-	struct CallStackElement
-	{
-		class Node*				m_NodePtr;
-		void					(*m_FuncPtr)(ScriptThread*);
-		unsigned int			field_8;
-		unsigned int			field_C;
-		unsigned int			field_10;
-	};
-
-	struct ThreadCallStack
-	{
-		unsigned int			field_0;
-		int*					m_Addresses;
-		unsigned int			field_8;
-	};
-
-	struct MethodStruct
-	{
-		void					(* field_0)(ScriptThread*);
-		int						field_4;
-		void					(* field_8)(ScriptThread*);
-		Node*					field_C;
-		GlobalScript*			field_10;
-		unsigned int			field_14;
-	};
-protected:
-	Defragmentator*				m_Defragmentator;
-	List<ThreadList_1>			m_List_1;	//	NOTE: associated with defragmentator?
-	Defragmentator*				m_Defragmentator_1;
-	List<ThreadCallStack>		m_CallStack;
-	int							m_SleepUntil;
-	int							m_WaitForFrame;
-	int							m_ThreadFlags;
-	Node*						m_ScriptNode;
-	MethodStruct*				field_3C;
-	CallStackElement*			field_40;
-public:
-	virtual ~ScriptThread();	//	@48ED10
-	virtual int					stub1(void*);
-
-	ScriptThread(class Node*);	//	@48EC70
-
-	void						DumpState(String&);	//	@48D690
-};
+extern void	ReadDatabaseFile(const char* path);	//	@48C400
+extern void	LoadScripts();	//	@7A1F60
 
 namespace Script
 {
-	static ScriptType* GetScriptType(const char*);	//	@863070
-	static void	ReadDatabaseFile(const char* path);	//	@48C400
-	extern void	LoadScripts();	//	@7A1F60
-
 	static bool FileCheck = false;	//	@A35DE0
 	static bool ForceFeedback = false;	//	@A35E70
 	static bool SavePlatformPS2 = true;	//	@A090C8
@@ -243,83 +202,4 @@ namespace Script
 
 		Script::LanguageStringsOffset = languageIndex;
 	}
-
-	static unsigned int	GlobalPropertyListChecksum;	//	@A3CF40
-	static bool			GlobalPropertyListChecksumObtained;	//	@A3CF1C
-	static unsigned int	GlobalCommandListChecksum;	//	@A3CF18
-	static bool			GlobalCommandListChecksumObtained;	//	@A3CEF4
-
-	static unsigned int GetGlobalPropertyListCRC()	//	@873440
-	{
-		if (GlobalPropertyListChecksumObtained)
-			return GlobalPropertyListChecksum;
-
-#ifdef INCLUDE_FIXES
-		char checksum_str[16360] = {};
-#else
-		char checksum_str[102400] = {};
-#endif
-		unsigned int checksum_str_len = NULL;
-
-		if (GlobalPropertiesList.m_CurrIndex > 0)
-		{
-			for (unsigned int i = NULL; i < GlobalPropertiesList.m_CurrIndex; i++)
-			{
-				String tempstr;
-				GlobalPropertiesList.m_Elements[i]->GetNameAndType(tempstr);
-
-				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
-					break;
-				else
-					checksum_str_len += strlen(tempstr.m_szString);
-
-				if (*checksum_str == NULL)
-					strcpy(checksum_str, tempstr.m_szString);
-				else
-					strcat(checksum_str, tempstr.m_szString);
-			}
-		}
-
-		GlobalPropertyListChecksum = Utils::CalcCRC32(checksum_str, checksum_str_len);
-		GlobalPropertyListChecksumObtained = true;
-		return GlobalPropertyListChecksum;
-	}
-
-	static unsigned int GetGlobalCommandListCRC()	//	@871DD0
-	{
-		if (GlobalCommandListChecksumObtained)
-			return GlobalCommandListChecksum;
-
-#ifdef INCLUDE_FIXES
-		char checksum_str[16360] = {};
-#else
-		char checksum_str[102400] = {};
-#endif
-		unsigned int checksum_str_len = NULL;
-
-		if (GlobalCommandsList.m_CurrIndex > 0)
-		{
-			for (unsigned int i = NULL; i < GlobalCommandsList.m_CurrIndex; i++)
-			{
-				String tempstr;
-				GlobalCommandsList.m_Elements[i]->GetReturnTypeString(tempstr);
-
-				if (checksum_str_len + strlen(tempstr.m_szString) > sizeof(checksum_str))
-					break;
-				else
-					checksum_str_len += strlen(tempstr.m_szString);
-
-				if (*checksum_str == NULL)
-					strcpy(checksum_str, tempstr.m_szString);
-				else
-					strcat(checksum_str, tempstr.m_szString);
-			}
-		}
-
-		GlobalCommandListChecksum = Utils::CalcCRC32(checksum_str, checksum_str_len);
-		GlobalCommandListChecksumObtained = true;
-		return GlobalCommandListChecksum;
-	}
-
-	static unsigned int	GetCommandId(const char* commandName, bool alreadyRegistered);	//	@872590
 }

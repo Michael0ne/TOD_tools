@@ -422,6 +422,9 @@
     <ClInclude Include="StreamedWAV.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptThread.h">
+      <Filter>Header files\KapowSystems\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -729,6 +732,9 @@
     </ClCompile>
     <ClCompile Include="KeyValueList.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptThread.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -115,7 +115,6 @@ public:
 	void			Load(const char* sceneName);	//	@8980C0
 	void			RefreshChildNodes();	//	@88C2B0
 	void			FinishCreation(const char* logTitle);	//	@8935F0
-	static bool		GameUpdate();	//	@93CEB0
 	void			UpdateActiveCameraPosition();	//	@893480
 	void			EnumSceneCamerasAndUpdate();	//	@893870
 	void			UpdateLoadedBlocks(int unk1, Node* unk2);	//	@8986E0

@@ -1,8 +1,5 @@
 #pragma once
-
 #include "RigidBody.h"
-
-#define OVERDOSE_VEHICLE_CLASS_SIZE 980
 
 class OverdoseVehicle : public RigidBody
 {
@@ -28,21 +25,21 @@ protected:
 	float m_RollAngleT;
 	float m_TiltAngleSpeed;
 	class CollisionProbe* m_GroundProbe;
-	List<int>* m_HintNodeList;
-	List<int> m_List_8;
-	List<Vector4f> m_LastNormalList;
-	List<Vector4f> m_NormalList;
+	int* m_HintNodeList;
+	int m_List_8[4];
+	int m_LastNormalList[4];
+	int m_NormalList[4];
 	int field_308;
-	List<int> m_List_5;
+	int m_List_5[4];
 	int field_31C;
-	List<int> m_List_4;
+	int m_List_4[4];
 	float m_WheelRadius;
 	int* m_DistList;
-	List<int> m_List_3;
+	int m_List_3[4];
 	int* m_CVList;
-	List<int> m_List_2;
+	int m_List_2[4];
 	int* m_CarContactList;
-	List<int> m_List_1;
+	int m_List_1[4];
 	float m_Tilt;
 	char m_IsOutOfBounds;
 	char m_IsDriveableGround;
@@ -67,4 +64,4 @@ public:
 
 extern ScriptType_Entity*	tOverdoseVehicle;	//	@A3E184
 
-static_assert(sizeof(OverdoseVehicle) == OVERDOSE_VEHICLE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(OverdoseVehicle));
+ASSERT_CLASS_SIZE(OverdoseVehicle, 980);

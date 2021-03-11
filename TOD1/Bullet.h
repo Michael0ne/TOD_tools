@@ -37,11 +37,11 @@ protected:
 	float					m_ImpulseMultiplier;
 	unsigned int			m_BulletShellsTotal;
 	int*					m_SceneBufferPtr;
-	List<BulletShell>		m_BulletShellsList;
-	List<CollisionProbe>	m_CollisionProbesList;
+	int						m_BulletShellsList[4];
+	int						m_CollisionProbesList[4];
 	int						field_138;
-	List<int>				m_List_3;
-	List<int>				m_List_4;
+	int						m_List_3[4];
+	int						m_List_4[4];
 	Light_Properties*		m_Lighting;
 	int						field_160;
 	int						field_164;

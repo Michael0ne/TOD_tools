@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define SPRITE_CLASS_SIZE 164
 
 class Sprite : public Node
 {
@@ -43,7 +40,7 @@ public:
 
 	static void	TriggerMouseCallbacks();	//	@8F4A00
 
-	static List<Sprite>&	SpritesList;	//	@A3E0D0
+	static std::vector<Sprite*>	SpritesList;	//	@A3E0D0
 };
 
-static_assert(sizeof(Sprite) == SPRITE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Sprite));
+ASSERT_CLASS_SIZE(Sprite, 164);

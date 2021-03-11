@@ -1,15 +1,12 @@
 #pragma once
-
 #include "Node.h"
-
-#define SIGNPOST_CLASS_SIZE 136
 
 class SignPost : public Node
 {
 protected:
 	ScriptType_List* m_ConnectionsList;
-	List<int> m_Unknown_1;
-	List<int> m_Unknown_2;
+	int	m_Unknown_1[4];
+	int	m_Unknown_2[4];
 	int field_74;
 	int field_78;
 	int field_7C;
@@ -19,7 +16,7 @@ protected:
 public:
 	SignPost();	//	@920EA0
 
-	static List<SignPost>&	ms_List;	//	@A133F0
+	static std::vector<SignPost*>	SignPostList;	//	@A133F0
 };
 
-static_assert(sizeof(SignPost) == SIGNPOST_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SignPost));
+ASSERT_CLASS_SIZE(SignPost, 136);

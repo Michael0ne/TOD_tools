@@ -49,7 +49,7 @@ protected:
 	int field_12C;
 	int field_130;
 	int field_134;
-	List<Entity> m_List_1;
+	int m_List_1[4];
 	GeometryEffect_120* field_148;
 	GeometryEffect_120* field_14C;
 	float m_EffectRadius;
@@ -62,4 +62,4 @@ public:
 	GeometryEffect();
 };
 
-static_assert(sizeof(GeometryEffect) == GEOMETRY_EFFECT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(GeometryEffect));
+ASSERT_CLASS_SIZE(GeometryEffect, 364);

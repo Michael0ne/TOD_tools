@@ -1,7 +1,7 @@
 #include "ParticleSystem.h"
 #include "ScriptDatabase.h"
 
-bool& ParticleSystem::LodAndFade = *(bool*)0xA08944;	//	@A08944
+bool ParticleSystem::LodAndFade;
 
 ParticleSystem::ParticleSystem() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
@@ -12,8 +12,8 @@ ParticleSystem::ParticleSystem() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	m_ModelRes = nullptr;
 	field_5C = 1;
 
-	m_List_1 = List<int>(0x1FB00);
-	m_List_2 = List<int>(0x1FB00);
+	//m_List_1 = List<int>(0x1FB00);
+	//m_List_2 = List<int>(0x1FB00);
 
 	field_60 = ParticleSystem_Struct96();
 

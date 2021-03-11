@@ -1,24 +1,21 @@
 #pragma once
-
 #include "Node.h"
-
-#define CUTSCENEPLAYER_CLASS_SIZE 244
-
-enum E_CUTSCENEPLAYER_FLAGS
-{
-	FLAG_IS_PLAYING = 0x000000FF,
-	FLAG_IS_LOOPED = 0xF3000000,
-	FLAG_IS_CURRENT_CAMERA_OVERRIDEN = 0xF1FFFFFF,
-	FLAG_IS_DEFAULT_INHERIT = 0xFF000000
-};
 
 class CutscenePlayer : public Node
 {
+	enum CutscenePlayerFlags
+	{
+		FLAG_IS_PLAYING = 0x000000FF,
+		FLAG_IS_LOOPED = 0xF3000000,
+		FLAG_IS_CURRENT_CAMERA_OVERRIDEN = 0xF1FFFFFF,
+		FLAG_IS_DEFAULT_INHERIT = 0xFF000000
+	};
+
 protected:
 	int field_50;
 	int field_54;
-	List<int> m_RegisteredRootObjects;
-	List<int> m_List_2;
+	int m_RegisteredRootObjects[4];
+	int m_List_2[4];
 	float m_Speed;
 	int field_7C;
 	float field_80;
@@ -39,4 +36,4 @@ public:
 	CutscenePlayer();	//	@9170D0
 };
 
-static_assert(sizeof(CutscenePlayer) == CUTSCENEPLAYER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(CutscenePlayer));
+ASSERT_CLASS_SIZE(CutscenePlayer, 244);

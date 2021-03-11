@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define PARTICLE_SYSTEM_CLASS_SIZE 244
 
 struct ParticleSystem_Struct96
 {
@@ -72,8 +69,8 @@ protected:
 	int field_5C;
 	ParticleSystem_Struct96 field_60;
 	int field_C0;
-	List<int> m_List_1;
-	List<int> m_List_2;
+	int m_List_1[4];
+	int m_List_2[4];
 	int field_E4;
 	int field_E8;
 	int field_EC;
@@ -82,7 +79,7 @@ protected:
 public:
 	ParticleSystem();	//	@8EB650
 
-	static bool&	LodAndFade;	//	@A08944
+	static bool	LodAndFade;	//	@A08944
 };
 
-static_assert(sizeof(ParticleSystem) == PARTICLE_SYSTEM_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ParticleSystem));
+ASSERT_CLASS_SIZE(ParticleSystem, 244);

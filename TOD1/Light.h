@@ -1,8 +1,6 @@
 #pragma once
 #include "Node.h"
 
-#define LIGHT_CLASS_SIZE 228
-
 enum LightType
 {
 	LIGHT_TYPE_1 = 1,
@@ -29,7 +27,7 @@ struct LightsListStruct
 {
 	friend class Light;
 protected:
-	List<class Light>	m_LightList;
+	int					m_LightList[4];
 	int*				field_10;
 	int					field_14;
 	int					field_18;

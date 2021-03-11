@@ -616,7 +616,7 @@ void SetGlobalCmdLinePtr(LPSTR cmdl)
 	Window::CmdLine = cmdl;
 }
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
 	Performance::Init();
 	Sleep(10);

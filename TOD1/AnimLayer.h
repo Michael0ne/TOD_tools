@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define ANIMLAYER_CLASS_SIZE 324
 
 class AnimLayer : public Node
 {
@@ -31,18 +28,18 @@ protected:
 	int							field_D4;
 	int							field_D8;
 	int							field_DC;
-	List<int>					m_List_1;
+	int							m_List_1[4];
 	float						m_PlayPos_1;
 	int							field_F4;
 	int							field_F8;
 	int							field_FC;
 	int							field_100;
 	int							field_104;
-	List<int>					m_List_2;
+	int							m_List_2[4];
 	float						m_PlayPos_2;
 	int							field_11C;
 	int							field_120;
-	List<int>					m_List_3;
+	int							m_List_3[4];
 	float						m_f134;
 	int							field_138;
 	int							field_13C;
@@ -51,4 +48,4 @@ public:
 	AnimLayer();	//	@902F90
 };
 
-static_assert(sizeof(AnimLayer) == ANIMLAYER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(AnimLayer));
+ASSERT_CLASS_SIZE(AnimLayer, 324);

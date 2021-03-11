@@ -249,6 +249,7 @@
   <ItemGroup>
     <ClInclude Include="AnimLayer.h" />
     <ClInclude Include="AnimSlot.h" />
+    <ClInclude Include="ScriptThread.h" />
     <ClInclude Include="StreamedWAV.h" />
     <ClInclude Include="AuxQuadTree.h" />
     <ClInclude Include="Blocks.h" />
@@ -369,6 +370,7 @@
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
     <ClCompile Include="KeyValueList.cpp" />
+    <ClCompile Include="ScriptThread.cpp" />
     <ClCompile Include="StreamedWAV.cpp" />
     <ClCompile Include="AuxQuadTree.cpp" />
     <ClCompile Include="Blocks.cpp" />

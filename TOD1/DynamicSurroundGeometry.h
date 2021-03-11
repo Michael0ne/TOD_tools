@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define DYNAMIC_SURROUND_GEOMETRY_CLASS_SIZE 276
 
 class DynamicSurroundGeometry : public Node
 {
@@ -42,19 +39,19 @@ public:
 protected:
 	float m_fC8;
 	int field_CC;
-	List<int> m_List_1;
-	List<int> m_List_2;
+	int m_List_1[4];
+	int m_List_2[4];
 	int field_F0;
 	int field_F4;
 	int field_F8;
-	List<int> m_List_3;
+	int m_List_3[4];
 	int field_10C;
 	float m_f110;
 
 public:
 	DynamicSurroundGeometry();	//	@8D8FF0
 
-	static int&		TotalCreated;	//	@A3E0E0
+	static unsigned int	TotalCreated;	//	@A3E0E0
 };
 
-static_assert(sizeof(DynamicSurroundGeometry) == DYNAMIC_SURROUND_GEOMETRY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(DynamicSurroundGeometry));
+ASSERT_CLASS_SIZE(DynamicSurroundGeometry, 276);

@@ -40,6 +40,25 @@ String::String(const String& rhs)
 		strcpy_s(&m_pEmpty, m_nLength + 1, &(rhs.m_pEmpty));
 }
 
+String::String(String& rhs)
+{
+	m_nLength = rhs.m_nLength;
+	m_nBitMask = rhs.m_nBitMask;
+	m_szString = &m_pEmpty;
+	m_pEmpty = NULL;
+
+	if (m_nLength == NULL)
+		return;
+
+	if (m_nLength >= 4)
+	{
+		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		strcpy_s(m_szString, m_nLength + 1, rhs.m_szString);
+	}
+	else
+		strcpy_s(&m_pEmpty, m_nLength + 1, &(rhs.m_pEmpty));
+}
+
 String& String::operator=(const String& _r)
 {
 	if (m_szString != &m_pEmpty && (m_nBitMask & STRING_BITMASK_DEFAULT) != NULL)

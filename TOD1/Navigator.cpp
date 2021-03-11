@@ -5,8 +5,8 @@ Navigator::Navigator() : Node(NODE_MASK_EMPTY)
 {
 	MESSAGE_CLASS_CREATED(Navigator);
 
-	m_PathList = List<int>(0x24300);
-	m_Unknown_2 = List<int>(0x173000);
+	//m_PathList = List<int>(0x24300);
+	//m_Unknown_2 = List<int>(0x173000);
 
 	m_TargetPoint = Vector4f();
 

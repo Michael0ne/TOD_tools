@@ -1,6 +1,6 @@
 #include "DynamicSurroundGeometry.h"
 
-int& DynamicSurroundGeometry::TotalCreated = *(int*)0xA3E0E0;
+unsigned int DynamicSurroundGeometry::TotalCreated;
 
 DynamicSurroundGeometry::DynamicSurroundGeometry() : Node(NODE_MASK_QUADTREE)
 {
@@ -8,9 +8,9 @@ DynamicSurroundGeometry::DynamicSurroundGeometry() : Node(NODE_MASK_QUADTREE)
 
 	m_Texture_1 = m_Texture_2 = m_Texture_3 = m_Texture_4 = nullptr;
 
-	m_List_1 = List<int>(0x1FB00);
-	m_List_2 = List<int>(0x1FB00);
-	m_List_3 = List<int>(0x26300);
+	//m_List_1 = List<int>(0x1FB00);
+	//m_List_2 = List<int>(0x1FB00);
+	//m_List_3 = List<int>(0x26300);
 
 	m_ObjectDensity = 0.02f;
 	m_InitialHeight = 5.0f;

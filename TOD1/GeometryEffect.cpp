@@ -1,15 +1,10 @@
 #include "GeometryEffect.h"
 
-GeometryEffect::~GeometryEffect()
-{
-	MESSAGE_CLASS_DESTROYED(GeometryEffect);
-}
-
 GeometryEffect::GeometryEffect() : Model()
 {
 	MESSAGE_CLASS_CREATED(GeometryEffect);
 
-	m_List_1 = List<Entity>(0x21B00);
+	//m_List_1 = List<Entity>(0x21B00);
 
 	m_EffectLifeTime = 2.0f;
 	m_Flags = m_Flags & 0xFFFFFF80;
@@ -22,4 +17,9 @@ GeometryEffect::GeometryEffect() : Model()
 	m_Flags = m_Flags & 0xFFFFFF7F;
 	m_EffectRadius = 5.0f;
 	m_Flags &= 0xFFFF7FFF;
+}
+
+GeometryEffect::~GeometryEffect()
+{
+	MESSAGE_CLASS_DESTROYED(GeometryEffect);
 }

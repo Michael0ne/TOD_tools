@@ -1,6 +1,6 @@
 #include "MockupBox.h"
 
-int& MockupBox::TotalCreated = *(int*)0xA3DFD8;	//	@A3DFD8
+unsigned int MockupBox::TotalCreated;
 
 #pragma message(TODO_IMPLEMENTATION)
 MockupBox::MockupBox() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
@@ -10,8 +10,8 @@ MockupBox::MockupBox() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	m_ResourceInfo = nullptr;
 	field_68 = 1;
 
-	m_List_1 = List<int>(0x1FB00);
-	m_List_2 = List<int>(0x1FB00);
+	//m_List_1 = List<int>(0x1FB00);
+	//m_List_2 = List<int>(0x1FB00);
 
 	field_B8 = 0;
 	field_70 = 0;

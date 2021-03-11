@@ -1,4 +1,5 @@
 #include "ScriptTypes.h"
+
 #include "Blocks.h"
 #include "Node.h"
 #include "LogDump.h"
@@ -11,9 +12,6 @@
 #include "LoadScreenInfo.h"
 #include "InputKeyboard.h"
 #include "InputMouse.h"
-
-ScriptType_Builtin* tBuiltin;
-List<DumpTable_Element> DumpTable;
 
 const Vector4f ScriptType_Builtin::ZeroVector = {};
 const Vector4f ScriptType_Builtin::RightVector = { 1.f, 0.f, 0.f, 0.f };
@@ -30,6 +28,18 @@ const ColorRGB ScriptType_Builtin::ColorDarkBlue = { 0.f, 0.f, 1.f, 1.f };
 const ColorRGB ScriptType_Builtin::ColorPink = { 1.f, 0.f, 1.f, 1.f };
 const ColorRGB ScriptType_Builtin::ColorBlue = { 0.f, 1.f, 1.f, 1.f };
 const ColorRGB ScriptType_Builtin::ColorWhite = { 1.f, 1.f, 1.f, 1.f };
+
+std::vector<DumpTable_Element>	DumpTable;
+ScriptType_Builtin* tBuiltin;
+
+ScriptType_Nothing* tNOTHING;
+ScriptType_Number* tNUMBER;
+ScriptType_Integer* tINTEGER;
+ScriptType_Boolean* tBOOLEAN;
+ScriptType_Vector* tVECTOR;
+ScriptType_Quaternion* tQUATERNION;
+ScriptType_Color* tCOLOR;
+ScriptType_String* tSTRING;
 
 int ScriptType::_489370(int* unk1, int* unk2)
 {
@@ -91,7 +101,7 @@ int ScriptType::_8637F0(int* unk1, String* unk2, int unk3)
 	return (*(int(__thiscall*)(ScriptType*, int*, String*, int))0x8637F0)(this, unk1, unk2, unk3);
 }
 
-ScriptType::ScriptType(ScriptTypeId typeId, const char* typeName, ScriptTypeSize typeSize)
+ScriptType::ScriptType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize)
 {
 	MESSAGE_CLASS_CREATED(ScriptType);
 
@@ -99,13 +109,9 @@ ScriptType::ScriptType(ScriptTypeId typeId, const char* typeName, ScriptTypeSize
 	m_TypeId = typeId;
 	m_Size = typeSize;
 
-	TypesList.AddElement(this);
-	m_GlobalId = TypesList.m_CurrIndex - 1;
+	TypesList.push_back(this);
+	m_GlobalId = TypesList.size() - 1;
 	TypesListCRCCalculated = false;
-}
-
-ScriptType::ScriptType()
-{
 }
 
 ScriptType::ScriptType(const ScriptType& _rhs)
@@ -116,7 +122,7 @@ ScriptType::ScriptType(const ScriptType& _rhs)
 	m_GlobalId = _rhs.m_GlobalId;
 }
 
-unsigned int ScriptType::GetTypeSize_Impl(ScriptType* type)
+unsigned int ScriptType::GetTypeSize_Impl(const ScriptType* type)
 {
 	switch (type->m_TypeId)
 	{
@@ -202,38 +208,23 @@ bool ScriptType::IsInfinite(void* unk1)
 
 void ScriptType::RemoveTypeFromList(const char* name)
 {
-	if (TypesList.m_Elements == &TypesList.m_Elements[TypesList.m_CurrIndex])
-	{
-		TypesListCRCCalculated = false;
-		return;
-	}
-
-	for (unsigned int i = NULL; i != TypesList.m_Capacity; i++)
-		if (TypesList.m_Elements[i] && strncmp(name, TypesList.m_Elements[i]->m_TypeName.m_szString, strlen(name)) == NULL)
-		{
-			memcpy(TypesList.m_Elements, TypesList.m_Elements + 1, 4 * (((int)TypesList.m_Elements + TypesList.m_CurrIndex * 4 - (int)TypesList.m_Elements) >> 2) - 4);
-			--TypesList.m_CurrIndex;
-
-			TypesListCRCCalculated = false;
-			return;
-		}
-
+	TypesList.pop_back();
 	TypesListCRCCalculated = false;
 }
 
-unsigned int ScriptType::GetTypeSize()
+unsigned int ScriptType::GetTypeSize() const
 {
 	return GetTypeSize_Impl(this);
 }
 
 ScriptType* ScriptType::GetTypeByName(const char* name)
 {
-	if (TypesList.m_CurrIndex <= NULL)
+	if (!TypesList.size())
 		return nullptr;
 
-	for (unsigned int i = NULL; i < TypesList.m_CurrIndex; i++)
-		if (strcmp(TypesList.m_Elements[i]->m_TypeName.m_szString, name) == NULL)
-			return TypesList.m_Elements[i];
+	for (std::vector<ScriptType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
+		if (strncmp((*it)->m_TypeName.m_szString, name, strlen(name)) == NULL)
+			return (*it);
 
 	return nullptr;
 }
@@ -315,23 +306,23 @@ bool ScriptType::ParseVariableString(const char* variable, String& variableName,
 
 void InitScriptTypes()
 {
-	tyNothing = new ScriptType_Nothing(TYPE_NOTHING, szScriptTypeName[TYPE_NOTHING], TYPE_NOTHING_SIZE);
-	tyNumber = new ScriptType_Number(TYPE_NUMBER, szScriptTypeName[TYPE_NUMBER], TYPE_NUMBER_SIZE);
-	tyInteger = new ScriptType_Integer(TYPE_INTEGER, szScriptTypeName[TYPE_INTEGER], TYPE_INTEGER_SIZE);
-	tyBoolean = new ScriptType_Boolean(TYPE_TRUTH, szScriptTypeName[TYPE_TRUTH], TYPE_TRUTH_SIZE);
-	tyVector = new ScriptType_Vector(TYPE_VECTOR, szScriptTypeName[TYPE_VECTOR], TYPE_VECTOR_SIZE);
-	tyQuaternion = new ScriptType_Quaternion(TYPE_QUATERNION, szScriptTypeName[TYPE_QUATERNION], TYPE_QUATERNION_SIZE);
-	tyColor = new ScriptType_Color(TYPE_COLOR, szScriptTypeName[TYPE_COLOR], TYPE_COLOR_SIZE);
-	tyString = new ScriptType_String(TYPE_STRING, szScriptTypeName[TYPE_STRING], TYPE_STRING_SIZE);
+	static ScriptType_Nothing*	tyNothing = new ScriptType_Nothing(ScriptType::ScriptTypeId::TYPE_NOTHING, "nothing", ScriptType::ScriptTypeSize::TYPE_NOTHING_SIZE);
+	static ScriptType_Number*	tyNumber = new ScriptType_Number(ScriptType::ScriptTypeId::TYPE_NUMBER, "number", ScriptType::ScriptTypeSize::TYPE_NUMBER_SIZE);
+	static ScriptType_Integer*	tyInteger = new ScriptType_Integer(ScriptType::ScriptTypeId::TYPE_INTEGER, "integer", ScriptType::ScriptTypeSize::TYPE_INTEGER_SIZE);
+	static ScriptType_Boolean*	tyBoolean = new ScriptType_Boolean(ScriptType::ScriptTypeId::TYPE_TRUTH, "truth", ScriptType::ScriptTypeSize::TYPE_TRUTH_SIZE);
+	static ScriptType_Vector*	tyVector = new ScriptType_Vector(ScriptType::ScriptTypeId::TYPE_VECTOR, "vector", ScriptType::ScriptTypeSize::TYPE_VECTOR_SIZE);
+	static ScriptType_Quaternion*	tyQuaternion = new ScriptType_Quaternion(ScriptType::ScriptTypeId::TYPE_QUATERNION, "quaternion", ScriptType::ScriptTypeSize::TYPE_QUATERNION_SIZE);
+	static ScriptType_Color*	tyColor = new ScriptType_Color(ScriptType::ScriptTypeId::TYPE_COLOR, "color", ScriptType::ScriptTypeSize::TYPE_COLOR_SIZE);
+	static ScriptType_String*	tyString = new ScriptType_String(ScriptType::ScriptTypeId::TYPE_STRING, "string", ScriptType::ScriptTypeSize::TYPE_STRING_SIZE);
 
-	tNOTHING = tyNothing;
-	tNUMBER = tyNumber;
-	tINTEGER = tyInteger;
-	tBOOLEAN = tyBoolean;
-	tVECTOR = tyVector;
-	tQUATERNION = tyQuaternion;
-	tCOLOR = tyColor;
-	tSTRING = tyString;
+	tNOTHING	= tyNothing;
+	tNUMBER		= tyNumber;
+	tINTEGER	= tyInteger;
+	tBOOLEAN	= tyBoolean;
+	tVECTOR		= tyVector;
+	tQUATERNION	= tyQuaternion;
+	tCOLOR		= tyColor;
+	tSTRING		= tyString;
 }
 
 unsigned int GetTypesChecksum()
@@ -346,22 +337,22 @@ unsigned int GetTypesChecksum()
 #endif
 	unsigned int checksum_str_len = NULL;
 
-	if (TypesList.m_CurrIndex > 0)
+	if (TypesList.size() > 0)
 	{
-		for (unsigned int i = NULL; i < TypesList.m_CurrIndex; i++)
+		for (std::vector<ScriptType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
 		{
-			if (TypesList.m_Elements[i]->m_TypeId != TYPE_ENTITY)
+			if ((*it)->m_TypeId != ScriptType::ScriptTypeId::TYPE_ENTITY)
 				continue;
 
-			if (checksum_str_len + strlen(TypesList.m_Elements[i]->m_TypeName.m_szString) > sizeof(checksum_str))
+			if (checksum_str_len + strlen((*it)->m_TypeName.m_szString) > sizeof(checksum_str))
 				break;
 			else
-				checksum_str_len += strlen(TypesList.m_Elements[i]->m_TypeName.m_szString);
+				checksum_str_len += strlen((*it)->m_TypeName.m_szString);
 
 			if (*checksum_str == NULL)
-				strcpy(checksum_str, TypesList.m_Elements[i]->m_TypeName.m_szString);
+				strcpy(checksum_str, (*it)->m_TypeName.m_szString);
 			else
-				strcat(checksum_str, TypesList.m_Elements[i]->m_TypeName.m_szString);
+				strcat(checksum_str, (*it)->m_TypeName.m_szString);
 		}
 	}
 
@@ -401,20 +392,40 @@ void ScriptType_Entity::InheritFrom(ScriptType_Entity* from)
 	m_Parent = from;
 }
 
+void ScriptType_Entity::RegisterScript(const char* const scriptname, const void* const scriptprocptr, const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7)
+{
+	m_ScriptsList[RegisterGlobalCommand(scriptname, true)] = { scriptprocptr, a3, a4, a5 };
+}
+
+void ScriptType_Entity::RegisterProperty(const ScriptType* returntype, const char* const propertyname, const void* getterprocptr, const int a4, const int a5, const int a6, const void* setterprocptr, const int a8, const int a9, const int a10, const char* const a11, const int a12, const int a13, const int argumentstotal)
+{
+	char buf[26] = {};
+	sprintf(buf, "%s:%s", propertyname, returntype->m_TypeName.m_szString);
+	unsigned int propindmask = RegisterGlobalProperty(buf, true) | 0x7FFF0000;
+
+	if (argumentstotal < 0)
+		m_PropertiesList_1.emplace_back(returntype, nullptr, getterprocptr, a4, a5, a6, setterprocptr, a8, a9, a10, (propindmask ^ (0xFFFF0000 * (m_PropertiesList_1.size() + field_70))) & 0x7FFF0000 ^ propindmask, 0);
+	else
+	{
+		if (argumentstotal - field_6C >= m_PropertiesList.size())
+			m_PropertiesList.insert(m_PropertiesList.begin(), argumentstotal - field_6C + 1, {});
+		m_PropertiesList.emplace_back(returntype, nullptr, getterprocptr, a4, a5, a6, setterprocptr, a8, a9, a10, (propindmask ^ (argumentstotal << 16)) & 0x7FFF0000 ^ propindmask, 0);
+	}
+}
+
 ScriptType_Entity* ScriptType_Entity::GetScriptEntityByName(const char* name)
 {
-	if (TypesList.m_CurrIndex <= NULL)
+	if (!TypesList.size())
 		return nullptr;
 
-	for (unsigned int i = NULL; i < TypesList.m_CurrIndex; i++)
-		if (TypesList.m_Elements[i]->m_TypeId == TYPE_ENTITY &&
-			strcmp(TypesList.m_Elements[i]->m_TypeName.m_szString, name) == 0)
-			return (ScriptType_Entity*)TypesList.m_Elements[i];
+	for (std::vector<ScriptType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
+		if (strncmp((*it)->m_TypeName.m_szString, name, strlen(name)) == NULL)
+			return (ScriptType_Entity*)(*it);
 
 	return nullptr;
 }
 
-ScriptType_List::ScriptType_List(const ScriptType& elementsType) : ScriptType(TYPE_LIST, szScriptTypeName[TYPE_LIST], TYPE_LIST_SIZE)
+ScriptType_List::ScriptType_List(const ScriptType& elementsType) : ScriptType(TYPE_LIST, "list", TYPE_LIST_SIZE)
 {
 	MESSAGE_CLASS_CREATED(ScriptType_List);
 
@@ -432,7 +443,7 @@ ScriptType_List::ScriptType_List(const ScriptType& elementsType) : ScriptType(TY
 		m_IsTypeId3_8_9_11 = false;
 }
 
-ScriptType_Dict::ScriptType_Dict(const ScriptType& elementsType) : ScriptType(TYPE_DICT, szScriptTypeName[TYPE_DICT], TYPE_DICT_SIZE)
+ScriptType_Dict::ScriptType_Dict(const ScriptType& elementsType) : ScriptType(TYPE_DICT, "dict", TYPE_DICT_SIZE)
 {
 	MESSAGE_CLASS_CREATED(ScriptType_Dict);
 
@@ -466,45 +477,6 @@ ScriptFieldsList::ScriptFieldsList(unsigned int flags)
 	m_TotalSizeBytes = NULL;
 }
 
-ScriptFieldsList::ScriptFieldsList(const ScriptFieldsList& rhs)
-{
-	if (&rhs == this)
-		return;
-
-	if (m_Flags & LIST_FLAGS_CLEAR_ELEMENTS && m_Elements)
-		for (unsigned int i = NULL; i < m_CurrentIndex; i++)
-			delete& (m_Elements[i].m_Name);
-
-	if (m_Capacity < m_CurrentIndex)
-	{
-		m_Capacity = m_CurrentIndex;
-
-		if (m_Flags & LIST_FLAGS_CLEAR_ELEMENTS_ALL && m_Elements)
-			delete m_Elements;
-		else
-			m_Flags |= LIST_FLAGS_CLEAR_ELEMENTS_ALL;
-
-		m_Elements = (ScriptField*)Allocators::AllocateByType((unsigned char)m_Flags, sizeof(ScriptField) * m_CurrentIndex);
-		m_Capacity = m_CurrentIndex;
-
-		if (!m_Elements)
-		{
-			m_Flags |= LIST_FLAGS_NOT_ALLOCATED;
-			m_Capacity = NULL;
-			m_CurrentIndex = NULL;
-
-			return;
-		}
-
-		if (m_CurrentIndex <= NULL)
-			return;
-
-		for (unsigned int i = NULL; i < m_CurrentIndex; i++)
-			if (&m_Elements[i])
-				m_Elements[i] = rhs.m_Elements[i];
-	}
-}
-
 void ScriptFieldsList::Add(const ScriptField& _sf)
 {
 	if (m_CurrentIndex >= m_Capacity)
@@ -532,20 +504,6 @@ void ScriptFieldsList::Add(const ScriptField& _sf)
 	m_Elements[m_CurrentIndex].m_FieldOffset = m_TotalSizeBytes;
 	m_TotalSizeBytes += _sf.m_Type->m_Size;
 	m_TotalSize += _sf.m_Type->GetTypeSize();
-}
-
-void ScriptFieldsList::Clear()
-{
-	if (!m_Elements)
-		return;
-
-	if (m_Flags & LIST_FLAGS_CLEAR_ELEMENTS)
-		for (unsigned int i = NULL; i < m_CurrentIndex; i++)
-			if (&m_Elements[i])
-				delete& m_Elements[i];
-
-	if (m_Flags & LIST_FLAGS_CLEAR_ELEMENTS_ALL)
-		delete m_Elements;
 }
 
 ScriptField::ScriptField(const ScriptField& rhs)
@@ -931,10 +889,7 @@ void ScriptType_Builtin::GetConfigString(int* arg)
 
 void ScriptType_Builtin::GetConfigTruth(int* arg)
 {
-	if (GameConfig::g_Config->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]))
-		*arg = GameConfig::g_Config->m_ConfigurationVariables->GetParamValueBool((const char*)arg[1]);
-	else
-		*arg = NULL;
+	*arg = GameConfig::g_Config->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]) ? GameConfig::g_Config->m_ConfigurationVariables->GetParamValueBool((const char*)arg[1]) : 0;
 }
 
 void ScriptType_Builtin::GetSessionVariableString(int* arg)
@@ -949,24 +904,19 @@ void ScriptType_Builtin::GetSessionVariableString(int* arg)
 		*arg = NULL;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void ScriptType_Builtin::SetSessionVariableString(char* arg)
+void ScriptType_Builtin::SetSessionVariableString(int* arg)
 {
-	//GameConfig::g_Config->m_SessionVariables->SetParamValueString((const char*)*arg, (const char*)arg[1]);
+	GameConfig::g_Config->m_SessionVariables->SetParamValue((const char*)arg[0], (const char*)arg[1]);
 }
 
 void ScriptType_Builtin::GetSessionVariableTruth(char* arg)
 {
-	if (GameConfig::g_Config->m_SessionVariables->IsVariableSet((const char*)arg[1]))
-		*arg = GameConfig::g_Config->m_SessionVariables->GetParamValueBool((const char*)arg[1]);
-	else
-		*arg = false;
+	*arg = GameConfig::g_Config->m_SessionVariables->IsVariableSet((const char*)arg[1]) ? GameConfig::g_Config->m_SessionVariables->GetParamValueBool((const char*)arg[1]) : *arg = false;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void ScriptType_Builtin::SetSessionVariableTruth(char* arg)
+void ScriptType_Builtin::SetSessionVariableTruth(int* arg)
 {
-	//GameConfig::g_Config->m_SessionVariables->SetParamValueTruth((char*)*arg, (char*)arg[1]);
+	GameConfig::g_Config->m_SessionVariables->SetParamValueBool((const char*)arg[0], (bool)arg[1]);
 }
 
 void ScriptType_Builtin::SetCurrentCountryCode(char* arg)
@@ -1089,23 +1039,22 @@ void ScriptType_Builtin::GetEditorActive(bool* arg)
 	*arg = false;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::DumptableCreate(int* arg)
 {
-	DumpTable_Element dtel;
-	DumpTable.AddElement(&dtel);
-
-	*arg = DumpTable.m_CurrIndex;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptType_Builtin::DumptableCreateFromFile(int* arg)
 {
+	/*
 	String buff;
 	File dtfile((const char*)*arg, 1, true);
 
 	while (!dtfile.ReadIfNotEOF())
 	{
-		char buf[4] = {};
-		dtfile.Read(buf, sizeof(buf));
+		char buf[5] = {};
+		dtfile.Read(buf, sizeof(buf) - 1);
 		buff.Append(buf);
 	}
 
@@ -1113,6 +1062,7 @@ void ScriptType_Builtin::DumptableCreateFromFile(int* arg)
 	DumpTable.AddElement(&dtel);
 
 	*arg = DumpTable.m_CurrIndex;
+	*/
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -1234,4 +1184,68 @@ DumpTable_Element::DumpTable_Element()
 #pragma message(TODO_IMPLEMENTATION)
 DumpTable_Element::DumpTable_Element(const char* const s)
 {
+}
+
+ScriptType_Nothing::ScriptType_Nothing(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
+{
+	MESSAGE_CLASS_CREATED(ScriptType_Nothing);
+}
+
+ScriptType_Number::ScriptType_Number(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
+{
+	MESSAGE_CLASS_CREATED(ScriptType_Number);
+}
+
+ScriptType_Integer::ScriptType_Integer(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
+{
+	MESSAGE_CLASS_CREATED(ScriptType_Integer);
+}
+
+ScriptType_Boolean::ScriptType_Boolean(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
+{
+	MESSAGE_CLASS_CREATED(ScriptType_Boolean);
+}
+
+ScriptType_Vector::ScriptType_Vector(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
+{
+	MESSAGE_CLASS_CREATED(ScriptType_Vector);
+}
+
+ScriptType_Quaternion::ScriptType_Quaternion(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
+{
+	MESSAGE_CLASS_CREATED(ScriptType_Quaternion);
+}
+
+ScriptType_Color::ScriptType_Color(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
+{
+	MESSAGE_CLASS_CREATED(ScriptType_Color);
+}
+
+ScriptType_String::ScriptType_String(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : ScriptType(typeId, typeName, typeSize)
+{
+	MESSAGE_CLASS_CREATED(ScriptType_String);
+}
+
+ScriptType_Entity::ScriptFuncDesc::ScriptFuncDesc(const void* const scriptprocptr, int a2, int a3, int a4)
+{
+	m_ScriptProcPtr = (void (*)(class Entity*, void* params))scriptprocptr;
+	field_4 = a2;
+	field_8 = a3;
+	field_C = a4;
+}
+
+ScriptType_Entity::ScriptMethodDesc::ScriptMethodDesc(const ScriptType* rettype, int* a2, const void* const getterprocptr, unsigned int a4, unsigned int a5, unsigned int a6, const void* const setterprocptr, unsigned int a8, unsigned int a9, int a10, unsigned int a11, unsigned int a12)
+{
+	m_ReturnType = (ScriptType*)rettype;
+	field_4 = a2;
+	m_Getter = (void* (*)())getterprocptr;
+	field_C = a4;
+	field_10 = a5;
+	field_14 = a6;
+	m_Setter = (void (*)(void*))setterprocptr;
+	field_1C = a8;
+	field_20 = a9;
+	field_24 = a10;
+	field_28 = a11;
+	field_2C = a12;
 }

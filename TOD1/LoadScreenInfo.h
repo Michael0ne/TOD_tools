@@ -7,7 +7,7 @@
 
 class LoadScreenInfo
 {
-protected:
+public:
 	ResType::Texture*	m_TextureResource;
 	String				m_TexturePath;
 	bool				m_Enabled;
