@@ -2,17 +2,19 @@
 
 Bullet* tBullet = nullptr;
 
+#pragma message(TODO_IMPLEMENTATION)
 Bullet::~Bullet()
 {
 	MESSAGE_CLASS_DESTROYED(Bullet);
 
-	for (unsigned int i = 0; i < m_CollisionProbesList.m_CurrIndex; i--)
-		m_CollisionProbesList.m_Elements[i]->Destroy();
+	//for (unsigned int i = 0; i < m_CollisionProbesList.m_CurrIndex; i--)
+		//m_CollisionProbesList.m_Elements[i]->Destroy();
 
 	delete m_SceneBufferPtr;
 	delete m_Lighting;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 Bullet::Bullet()
 {
 	MESSAGE_CLASS_CREATED(Bullet);
@@ -36,11 +38,11 @@ Bullet::Bullet()
 		BulletShell bulletshell;
 		bulletshell.m_Vec_5 = ScriptType_Builtin::ZeroVector;
 
-		m_BulletShellsList.AddElement(&bulletshell);
+		//m_BulletShellsList.AddElement(&bulletshell);
 
 		CollisionProbe* colprobe = (CollisionProbe*)tCollisionProbe->CreateNode();
 		colprobe->SetFlags(0x20);
-		m_CollisionProbesList.AddElement(colprobe);
+		//m_CollisionProbesList.AddElement(colprobe);
 	}
 
 	m_QuadTree->field_1C = m_QuadTree->field_1C & 0xFFFFFF | m_QuadTree->field_1C & 0xFF000000 | 0x8000000;

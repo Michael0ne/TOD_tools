@@ -111,7 +111,7 @@ public:
 	virtual int		_scanf(IFile*, const char* format, ...);
 	virtual int		WriteFormattedVarlistDataToBuffer(char* _buf, va_list args);
 	virtual int		_scanf_impl(char* format, int* outArgs);
-	virtual int		ReadBlock() = 0;
+	virtual char	ReadBlock() = 0;
 	virtual int		ReadBlockAndGetPosition() = 0;
 	virtual char	_WriteBufferBlockAndInsertNewLine(char _newlinesym) = 0;
 	virtual int		Read(void* _buffer, int _numbytestoread) = 0;
@@ -155,7 +155,7 @@ public:
 	virtual int		_scanf(File*, const char* _format, ...);	//	@417960
 	virtual int		WriteFormattedVarlistDataToBuffer(char* _buf, va_list args);	//	@42F040
 	virtual int		_scanf_impl(char* format, int* outArgs);	//	@42F0A0
-	virtual int		ReadBlock();	//	@417980
+	virtual char	ReadBlock();	//	@417980
 	virtual int		ReadBlockAndGetPosition();	//	@419BD0
 	virtual char	_WriteBufferBlockAndInsertNewLine(char _newlinesym);	//	@419BF0	//	NOTE: this is a thunk function.
 	virtual int		Read(void* _buffer, int _numbytestoread);	//	@417A30
@@ -194,7 +194,7 @@ public:
 
 	unsigned int	GetSize();	//	@417C10
 	bool			IsFileOpen() const;	//	@417CF0
-	char			ReadString(void* outStr);	//	@4180C0
+	char			ReadString(String& outStr);	//	@4180C0
 	inline void		SetPosAligned(unsigned char alignind);	//	@417DF0
 
 	static void		AddDirectoryMappingsListEntry(const char* str1, const char* str2);	//	@418F90

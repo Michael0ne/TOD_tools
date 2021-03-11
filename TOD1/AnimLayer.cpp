@@ -18,12 +18,12 @@ AnimLayer::AnimLayer() : Node(NODE_MASK_EMPTY)
 	m_TargetAnim_Entity = nullptr;
 	m_TargetAnim_Entity_2 = nullptr;
 	m_MotionLayer = 0;
-	m_Pos_1 = Vector4f();
+	m_Pos_1 = {};
 	m_Weight = 0.0f;
 	m_SpeedMultiplier = 1.0f;
 	m_CrossBlendFactor = 0.0f;
 	m_OverrideTarget = m_OverrideTarget & 0xFFFFFFFC;
-	m_GamePivotPos = Vector4f();
-	m_GamePivotPos_2 = Vector4f();
+	m_GamePivotPos = {};
+	m_GamePivotPos_2 = {};
 	m_ClearOverrideTarget_1 = m_ClearOverrideTarget_1 & 0xFFFFFFFC;
 }

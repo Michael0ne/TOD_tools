@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define NAVIGATOR_CLASS_SIZE 220
 
 class Navigator : public Node
 {
@@ -15,9 +12,9 @@ protected:
 	unsigned int				m_Flags;
 	float						m_MaxLookAhead;
 	float						m_f84;
-	List<int>					m_PathList;
+	int							m_PathList[4];
 	int*						field_98;
-	List<int>					m_Unknown_2;
+	int							m_Unknown_2[4];
 	int							m_PathPoint;
 	float						m_PathFraction;
 	int							m_ObstacleCheckInterval;
@@ -31,4 +28,4 @@ public:
 	Navigator();	//	@91DB30
 };
 
-static_assert(sizeof(Navigator) == NAVIGATOR_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Navigator));
+ASSERT_CLASS_SIZE(Navigator, 220);

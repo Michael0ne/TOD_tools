@@ -2,18 +2,19 @@
 
 ScriptType_Entity* tOverdoseVehicle;
 
+#pragma message(TODO_IMPLEMENTATION)
 OverdoseVehicle::OverdoseVehicle() : RigidBody()
 {
 	MESSAGE_CLASS_CREATED(OverdoseVehicle);
 
-	m_List_8 = List<int>(0x25300);
-	m_LastNormalList = List<Vector4f>(0x25300);
-	m_NormalList = List<Vector4f>(0x25300);
-	m_List_5 = List<int>(0x17300);
-	m_List_4 = List<int>(0x17300);
-	m_List_3 = List<int>(0x25300);
-	m_List_2 = List<int>(0x25300);
-	m_List_1 = List<int>(0x25300);
+	//m_List_8 = List<int>(0x25300);
+	//m_LastNormalList = List<Vector4f>(0x25300);
+	//m_NormalList = List<Vector4f>(0x25300);
+	//m_List_5 = List<int>(0x17300);
+	//m_List_4 = List<int>(0x17300);
+	//m_List_3 = List<int>(0x25300);
+	//m_List_2 = List<int>(0x25300);
+	//m_List_1 = List<int>(0x25300);
 
 	m_Vec_8 = Vector4f(0.0f, 1.0f, 0.0f, 0.0f);
 	m_Vec_7 = Vector4f(0.0f, 0.0f, 1.0f, 0.0f);
@@ -27,7 +28,7 @@ OverdoseVehicle::OverdoseVehicle() : RigidBody()
 	m_LFSpring = m_RFSpring = m_LRSpring = m_RRSpring = 0.0f;
 	m_f254 = m_f258 = m_f25C = m_f260 = 0.0f;
 
-	m_CurrentVelocity = Vector4f();
+	m_CurrentVelocity = {};
 
 	m_SpringKoefficient = 0.0f;
 	m_IsBike = false;
@@ -35,20 +36,20 @@ OverdoseVehicle::OverdoseVehicle() : RigidBody()
 	m_Stiffness = 0.0f;
 	m_RealmainbodyDefaultY = 0.0f;
 
-	m_FrontPointVelocity = Vector4f();
-	m_RearPointVelocity = Vector4f();
-	m_FrontPointT = Vector4f();
-	m_RearPointT = Vector4f();
+	m_FrontPointVelocity = {};
+	m_RearPointVelocity = {};
+	m_FrontPointT = {};
+	m_RearPointT = {};
 
 	m_RollAngleT = 0.0f;
 	m_TiltAngleSpeed = 0.0f;
 
-	m_List_8.m_CurrIndex = 0;
-	m_LastNormalList.m_CurrIndex = 0;
-	m_NormalList.m_CurrIndex = 0;
-	m_List_3.m_CurrIndex = 0;
-	m_List_2.m_CurrIndex = 0;
-	m_List_1.m_CurrIndex = 0;
+	//m_List_8.m_CurrIndex = 0;
+	//m_LastNormalList.m_CurrIndex = 0;
+	//m_NormalList.m_CurrIndex = 0;
+	//m_List_3.m_CurrIndex = 0;
+	//m_List_2.m_CurrIndex = 0;
+	//m_List_1.m_CurrIndex = 0;
 
 	m_WheelRadius = 0.0f;
 

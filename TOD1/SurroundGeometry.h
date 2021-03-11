@@ -1,14 +1,11 @@
 #pragma once
-
 #include "Node.h"
-
-#define SURROUNDGEOMETRY_CLASS_SIZE 1540
 
 class SurroundGeometry : public Node
 {
 protected:
 	int m_Category;
-	List<int> m_List_1;
+	int m_List_1[4];
 	int field_64;
 	int field_68;
 	int field_6C;
@@ -337,8 +334,8 @@ protected:
 	int field_578;
 	int field_57C;
 	int field_580;
-	List<int> m_List_2;
-	List<int> m_List_3;
+	int m_List_2[4];
+	int m_List_3[4];
 	int field_5A4;
 	int field_5A8;
 	int field_5AC;
@@ -367,7 +364,7 @@ protected:
 public:
 	SurroundGeometry();	//	@8F9F10
 
-	static int&		TotalCreated;	//	@A3E0E0
+	static unsigned int		TotalCreated;	//	@A3E0E0
 };
 
-static_assert(sizeof(SurroundGeometry) == SURROUNDGEOMETRY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SurroundGeometry));
+ASSERT_CLASS_SIZE(SurroundGeometry, 1540);

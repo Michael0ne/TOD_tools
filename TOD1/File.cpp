@@ -320,7 +320,7 @@ int File::_scanf_impl(char* format, int* outArgs)
 	return (*(int(__thiscall*)(File*, const char*, int*))0x42F0A0)(this, format, outArgs);
 }
 
-int File::ReadBlock()
+char File::ReadBlock()
 {
 	if (!m_ReadFromZip)
 		return m_FileHandle->ReadBlock();
@@ -332,12 +332,12 @@ int File::ReadBlock()
 
 	FileWrapper::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
 	FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_OffsetInZip + m_SeekPosition);
-	int bytesread = FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlock();
+	char charread = FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlock();
 	m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
 
-	ReleaseSemaphore(FileWrapper::ZipFilesArray[m_ZipSlot], 1, 0);
+	ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
-	return bytesread;
+	return charread;
 }
 
 int File::ReadBlockAndGetPosition()
@@ -571,19 +571,19 @@ bool File::IsFileOpen() const
 	return (m_ReadFromZip && m_OffsetInZip >= 0) || m_FileHandle->m_File != nullptr;
 }
 
-char File::ReadString(void* outStr)
+char File::ReadString(String& outStr)
 {
 	if (ReadIfNotEOF())
 		return false;
 
-	int _charread = ReadBlock();
+	char _charread = ReadBlock();
 
 	if (_charread == -1)
 		return true;
 
 	while (true)
 	{
-		if ((char)_charread == '\n')
+		if (_charread == '\n')
 		{
 			char _endsym = ReadBlock();
 			if (_endsym != '\r' && _endsym != -1)
@@ -592,12 +592,14 @@ char File::ReadString(void* outStr)
 			return true;
 		}
 
-		if ((char)_charread == '\r')
+		if (_charread == '\r')
 			break;
 
-		((String*)outStr)->Append((const char*)_charread);
+		char buf[2] = { _charread, NULL };
+		outStr.Append(buf);
 
-		if (ReadBlock() == -1)
+		_charread = ReadBlock();
+		if (_charread == -1)
 			return true;
 	}
 
@@ -1419,7 +1421,8 @@ void File::OpenZip(const char* const zipName)
 				unsigned int checksum = Utils::CalcCRC32(fileNameBuffer, strlen(fileNameBuffer));
 				FilesMap[checksum] = { FileOffset, FileSize };
 
-#ifdef INCLUDE_FIXES
+#if defined INCLUDE_FIXES && defined VERBOSELOG
+				//	NOTE: this will drastically increase your log size! Use with caution.
 				LogDump::LogA("Read \"%s\" (crc: %x, offset: %i, size: %i bytes) from \"%s\"\n", fileNameBuffer, checksum, FileOffset, FileSize, zipName);
 #endif
 			}

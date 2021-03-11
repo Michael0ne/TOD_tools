@@ -1,9 +1,6 @@
 #pragma once
-
 #include "Node.h"
 #include "ResourcesTypes.h"
-
-#define SOUNDSLOT_CLASS_SIZE 176
 
 class SoundSlot : public Node
 {
@@ -25,7 +22,7 @@ protected:
 	unsigned short				m_Randompitch_Length;
 	unsigned short				m_Randomvolume_Length;
 	Node*						m_StreamAllocationCallback;
-	List<class SoundEmitter>	m_SoundEmittersList;
+	int							m_SoundEmittersList[4];
 	unsigned int				m_Flags;
 	unsigned char				m_DopplerFactor;
 	unsigned char				m_LfeLevel;
@@ -43,4 +40,4 @@ public:
 	SoundSlot();	//	@89D590
 };
 
-static_assert(sizeof(SoundSlot) == SOUNDSLOT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SoundSlot));
+ASSERT_CLASS_SIZE(SoundSlot, 176);

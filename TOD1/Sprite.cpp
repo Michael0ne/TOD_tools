@@ -1,6 +1,6 @@
 #include "Sprite.h"
 
-List<Sprite>& Sprite::SpritesList = *(List<Sprite>*)0xA3E0D0;	//	@A3E0D0
+std::vector<Sprite*> Sprite::SpritesList;
 
 Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
@@ -29,7 +29,7 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 
 	m_QuadTree->field_1C = m_QuadTree->field_1C & 0xFFFFFF | m_QuadTree->field_1C & 0xFF000000 | 0x80000000;
 
-	SpritesList.AddElement(this);
+	SpritesList.push_back(this);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

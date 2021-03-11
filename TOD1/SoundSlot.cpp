@@ -3,7 +3,6 @@
 #include "StreamedSoundBuffers.h"
 
 #pragma message(TODO_IMPLEMENTATION)
-
 const char* SoundSlot::GetStreamingSound()
 {
 	delete m_StreamingSoundName;
@@ -29,7 +28,7 @@ void SoundSlot::DeallocateStream()
 
 	//for (; m_SoundEmittersList.m_Elements;)
 		//*(m_SoundEmittersList.m_Elements++).field_24 = NULL;
-	m_SoundEmittersList.m_CurrIndex = NULL;
+	//m_SoundEmittersList.m_CurrIndex = NULL;
 
 	//delete m_StreamBuffer;
 }
@@ -84,7 +83,7 @@ SoundSlot::SoundSlot() : Node(NODE_MASK_EMPTY)
 	m_Sound;
 	field_7C = 1;
 
-	m_SoundEmittersList = List<class SoundEmitter>(0x1A300);
+	//m_SoundEmittersList = List<class SoundEmitter>(0x1A300);
 
 	m_Flags = m_Flags & 0xFF230111 | 0x1020111;
 	m_Volume = 10000;

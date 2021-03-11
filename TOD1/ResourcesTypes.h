@@ -1,11 +1,10 @@
 #pragma once
-
-#include "List.h"
 #include "Types.h"
+#include "StringsPool.h"
+#include <vector>
 
 namespace ResType
 {
-#define RESTYPE_CLASS_SIZE 60
 #define RESTYPE_MAX_OPEN_RESOURCES 10
 
 #define RESTYPE_TEXTURE_NAME "texture"
@@ -65,16 +64,14 @@ namespace ResType
 		unsigned char	m_RegionString[4];	//	NOTE: this could be as well Pascal string... size is arbitrary and depends on field above.
 	};
 
-	#define CREATOR Resource* (*)()
-
 	class ResourceBase
 	{
 	public:
-		class Resource*		(__cdecl* m_Creator)();
+		class Resource*	(__cdecl* m_Creator)();
 		String			m_ResourceTypeName;
 		void*			m_ResTypeMethods;
 		int				m_ResourceIndex;
-		List<String>	m_ResourceExtensionsList;
+		std::vector<String>	m_ResourceExtensionsList;
 		char			field_2C;
 		bool			m_VerifyChecksum;
 		unsigned int	m_Alignment[3];
@@ -87,7 +84,9 @@ namespace ResType
 	};
 
 	static unsigned int	ResourceAlignment[3];	//	@A3BE1C
-	static List<ResourceBase>	ResTypeList = List<ResourceBase>(0x19300);	//	@A10F80
+	static std::vector<ResourceBase*>	ResTypeList;	//	@A10F80
+
+	ASSERT_CLASS_SIZE(ResourceBase, 60);
 
 	struct ResourceHolder
 	{
@@ -100,13 +99,13 @@ namespace ResType
 		void			LoadResourceFromBlock(const char* _pathname) {};	//	@8FFC10
 	};
 
-	#define RESOURCE_CLASS_SIZE 28
-
 	//	NOTE: this class is actually inherited from another class, but parent doesn't seem to do anything important, so skipping it now.
 	#pragma pack(4)
 	class Resource
 	{
 	public:
+		typedef Resource* (*CREATOR)();
+
 		const char*		m_ResourcePath;
 		int				m_GlobalResourceId;	//	NOTE: this is an index for Blocks global 'ResourceTypeList'.
 		int				field_C;
@@ -141,7 +140,9 @@ namespace ResType
 	};
 
 	static unsigned int TotalResourcesCreated = NULL;	//	@A3BE10
-	static List<String>	OpenResourcesList = List<String>(0xC300);	//	@A10F00
+	static std::vector<String>	OpenResourcesList;	//	@A10F00
+
+	ASSERT_CLASS_SIZE(Resource, 28);
 
 	class Texture : public Resource
 	{
@@ -207,9 +208,9 @@ namespace ResType
 	{
 	protected:
 		int				field_1C;
-		List<int>		m_List_1;
-		List<int>		m_List_2;
-		List<int>		m_List_3;
+		int				m_List_1[4];
+		int				m_List_2[4];
+		int				m_List_3[4];
 		int				field_50;
 		int				field_54;
 
@@ -233,8 +234,8 @@ namespace ResType
 		};
 	protected:
 		int				field_1C;
-		List<TextureReference> m_TextureResources;
-		List<class ModelPivot> m_PivotList;
+		int				m_TextureResources[4];	//	FIXME: make this actual list!
+		int				m_PivotList[4];
 		int*			field_40;
 		Vector4f		m_BoundingRadius;
 		int*			field_54;
@@ -292,8 +293,8 @@ namespace ResType
 	{
 	protected:
 		int				field_1C;
-		List<int>		m_List_1;
-		List<int>		m_List_2;
+		int				m_List_1[4];
+		int				m_List_2[4];
 		int				field_40;
 		int				field_44;
 		int				field_48;
@@ -352,9 +353,9 @@ namespace ResType
 		int				field_20;
 		int				field_24;
 		int				field_28;
-		List<int>		m_List_1;
-		List<int>		m_List_2;
-		List<int>		m_List_3;
+		int				m_List_1[4];
+		int				m_List_2[4];
+		int				m_List_3[4];
 		int*			field_5C;
 		int				field_60;
 		short			field_64;
@@ -374,8 +375,8 @@ namespace ResType
 	{
 	protected:
 		int				field_1C;
-		List<int>		m_List_1;
-		List<int>		m_List_2;
+		int				m_List_1[4];
+		int				m_List_2[4];
 		int*			field_40;
 		int*			field_44;
 		int*			field_48;
@@ -402,7 +403,4 @@ namespace ResType
 	static ResourceBase*		rtStreamedSoundInfo;
 	static ResourceBase*		rtAnimation;
 	static ResourceBase*		rtMeshColor;
-
-	static_assert(sizeof(ResourceBase) == RESTYPE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ResourceBase));
-	static_assert(sizeof(Resource) == RESOURCE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Resource));
 }

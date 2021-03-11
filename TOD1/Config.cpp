@@ -39,6 +39,11 @@ namespace GameConfig
 {
 	Config* g_Config = nullptr;
 	String Config::_A1B9F8 = {};
+	
+	std::list<String>	FaceCollList;
+	File* CollMatFile;
+	std::map<String, unsigned int>	CollMatProperties;
+	std::map<String, FaceColl>	CollMatMaterialsTypes;
 
 	Config::Config()
 	{
@@ -75,7 +80,7 @@ namespace GameConfig
 			UninitialiseGame();
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
+	#pragma message(TODO_IMPLEMENTATION)
 	void Config::Process(LPSTR, int, const char* configFileName, signed int iconResId)
 	{
 #ifdef INCLUDE_FIXES
@@ -488,8 +493,8 @@ namespace GameConfig
 
 		//Script::LoadScripts();
 
-		m_PropertiesLoadedChecksum = Script::GetGlobalPropertyListCRC();
-		m_CommandsLoadedChecksum = Script::GetGlobalCommandListCRC();
+		m_PropertiesLoadedChecksum = GetGlobalPropertyListChecksum();
+		m_CommandsLoadedChecksum = GetGlobalCommandListChecksum();
 		m_TypesLoadedChecksum = GetTypesChecksum();
 
 		//	Instantiate scene.
@@ -602,12 +607,12 @@ namespace GameConfig
 #endif
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
+	#pragma message(TODO_IMPLEMENTATION)
 	void Config::InitEntitiesDatabase()
 	{
-		/*
 		Entity::Register();
-		Scripts::RegisterGlobalProperty("block_id:integer", 1);
+		RegisterGlobalProperty("block_id:integer", true);
+		/*
 		Node::Register();
 		NodeSpatial::Register();
 		NodeLogical::Register();
@@ -664,7 +669,7 @@ namespace GameConfig
 		GeometryEffect::Register();
 		ProfilerInput::Register();
 		RealtimeFolder::Register();
-		Builtin::Register();
+		ScriptType_Builtin::Register();
 		PlaceHolder::Register();
 		CharacterPlaceHolder::Register();
 		HavocPlaceHolder::Register();
@@ -683,7 +688,7 @@ namespace GameConfig
 		*/
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
+	#pragma message(TODO_IMPLEMENTATION)
 	void Config::UninitialiseGame()
 	{
 		//Scene::SceneInstance->Destroy();
@@ -722,9 +727,70 @@ namespace GameConfig
 		return true;
 	}
 
-#pragma message(TODO_IMPLEMENTATION)
+	#pragma message(TODO_IMPLEMENTATION)
 	void Config::CreateUnknownMatricies()
 	{	
+	}
+
+	#pragma message(TODO_IMPLEMENTATION)
+	bool Config::UpdateGame()
+	{
+		if (!Scene::SceneInstance)
+			return true;
+
+		/*
+		Scene::SceneInstance->m_Buffer_1->Reset();
+		Scene::SceneInstance->m_Buffer_2->Reset();
+		Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->DefragmentIfNecessary();
+		UINT64 startTime = __rdtsc();
+		Scene::SceneInstance->Update();
+		g_GfxInternal->SetClearFlagsForBufferIndex(3, 0);
+		if (!g_LoadScreenInfo->m_Enabled)
+			Scene::SceneInstance->nullsub_2();	//	@896370	//	NOTE: 'Render' method?
+		++Scene::TotalFrames;
+		Scene::SceneInstance->m_StartTimeMs = __rdtsc() - startTime;
+
+		if (g_StreamedSoundBuffers && Scene::SceneInstance->m_ActiveCamera)
+		{
+			Vector4f cameraPos;
+			D3DXMATRIX cameraMatrix;
+			Quaternion cameraOrient;
+
+			Scene::SceneInstance->m_ActiveCamera->GetPos(cameraPos);
+			g_StreamedSoundBuffers->SetListener3DPos(cameraPos);
+			Scene::SceneInstance->m_ActiveCamera->GetWorldMatrix(cameraMatrix);
+			GetRotationFromWorldMatrix(cameraPos, cameraOrient);
+			g_StreamedSoundBuffers->SetListener3DOrientation(cameraOrient);
+			SoundSlot::UpdateSoundGroups(Scene::FrameRate);	//	@89D120
+			g_StreamedSoundBuffers->WaitForSoftPause();
+		}
+
+		if (!g_LoadScreenInfo->m_Enabled)
+		{
+			Scene::SceneInstance->m_Buffer_1->_436BF0();
+			Scene::SceneInstance->m_Buffer_2->_436BF0();
+			Scene::SceneInstance->m_Buffer_1->_436040(19, 0);
+			Scene::SceneInstance->m_Buffer_2->_436040(29, 0);
+
+			if (g_GfxInternal->m_RenderBufferEmpty)
+				g_Blocks->ResetSceneChildrenNodes(1);	//	@875390
+			else
+				g_GfxInternal->Render(0, 1, 0xFFFFFFFF, 0xFFFFFFFF);
+		}
+
+		if (g_Config->m_SceneName.Equal("") || g_Config->m_SceneName.m_nLength == 0)
+			return true;
+
+		Scene::SceneInstance->Reset();	//	@89A1A0
+		Scene::SceneInstance->Destroy();
+		g_Progress->Enable();
+		g_Config->OpenScene(g_Config->m_SceneName.m_szString);
+		g_Progress->Disable();
+		g_Config->m_SceneName = "";
+		Scene::SceneInstance->Start();
+		*/
+
+		return true;
 	}
 
 	void Config::_93CDA0(const char* const str)
@@ -970,7 +1036,7 @@ namespace GameConfig
 		g_Config = new Config();
 
 		g_Config->Process(cmdline, NULL, nullptr, NULL);
-		g_Window->Process(Scene::GameUpdate);
+		g_Window->Process(Config::UpdateGame);
 
 		delete g_Config;
 	}
@@ -1008,7 +1074,7 @@ namespace GameConfig
 			unsigned int totalMaterials = NULL;
 			unsigned int deftype = 19;
 
-			do 
+			do
 			{
 				CollMatProperties[materialname] = materialproperties;
 				
@@ -1043,6 +1109,7 @@ namespace GameConfig
 					mattype = (FaceColl)deftype++;
 
 				CollMatMaterialsTypes[materialname] = mattype;
+				++totalMaterials;
 
 			} while (ReadAndParseCollMatMaterial(materialname, materialproperties));
 
@@ -1053,19 +1120,20 @@ namespace GameConfig
 
 	void EnumFaceColMaterials()
 	{
-		if (FaceCollList.m_CurrIndex > 0 ||
-			!File::FindFileEverywhere(CONFIG_FACECOLL_FILENAME))
+		char filename[] = "/FaceColl.mat";
+		if (FaceCollList.size() > 0 ||
+			!File::FindFileEverywhere(filename))
 			return;
 
-		File faceColFile(CONFIG_FACECOLL_FILENAME, 1, true);
+		File faceColFile(filename, 1, true);
 		if (!faceColFile.IsFileOpen())
 			return;
 
 		String buffer;
-		while (faceColFile.ReadString(&buffer))
+		while (faceColFile.ReadString(buffer))
 		{
 			buffer.ToLowerCase();
-			FaceCollList.AddElement(&buffer);
+			FaceCollList.push_back(buffer);
 		}
 	}
 
@@ -1105,7 +1173,7 @@ namespace GameConfig
 			return false;
 
 		String buf;
-		if (CollMatFile->ReadString(&buf))
+		if (!CollMatFile->ReadString(buf))
 			return false;
 
 		outMaterialProperties = NULL;

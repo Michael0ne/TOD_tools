@@ -1,11 +1,6 @@
 #pragma once
-
 #include "ScriptTypes.h"
 #include "ResourcesTypes.h"
-
-#define ENTITY_CLASS_SIZE 36
-
-typedef Entity* (*CREATOR_)(AllocatorIndex);
 
 class Entity
 {
@@ -39,6 +34,7 @@ public:
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 
 	int				GetId() const;	//	@489770
@@ -51,7 +47,6 @@ public:
 
 	void			SetScript(ScriptType_Entity*);	//	@869E20
 
-	static int		GetPropertyId(const char* prop);	//	@8732C0
 	static int*		GetMessageId_A(int*, int*, const char*);	//	@8729F0
 	static void		Register();	//	@86BC70
 	static Entity*	Create(AllocatorIndex);	//	@86C130
@@ -59,4 +54,4 @@ public:
 
 extern ScriptType_Entity* tEntity;	//	@A3CEE0
 
-static_assert(sizeof(Entity) == ENTITY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Entity));
+ASSERT_CLASS_SIZE(Entity, 36);

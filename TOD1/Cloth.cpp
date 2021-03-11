@@ -12,6 +12,6 @@ Cloth::Cloth() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	field_AC = 1;
 	field_B0 = -1;
 
-	m_List_1 = List<int>(0x1FB00);
-	m_List_2 = List<int>(0x1FB00);
+	//m_List_1 = List<int>(0x1FB00);
+	//m_List_2 = List<int>(0x1FB00);
 }

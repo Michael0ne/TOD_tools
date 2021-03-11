@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define RIGIDBODY_CLASS_SIZE 580
 
 class RigidBody : public Node
 {
@@ -78,7 +75,7 @@ protected:
 	char field_22C;
 	char field_22D;
 	__int16 field_22E;
-	List<int> m_Unknown_1;
+	int m_Unknown_1[4];
 	bool m_Grounded;
 
 public:
@@ -87,4 +84,4 @@ public:
 	void		SetBoxInertialMatrix(const Vector4f* vec);	//	@9332C0
 };
 
-static_assert(sizeof(RigidBody) == RIGIDBODY_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(RigidBody));
+ASSERT_CLASS_SIZE(RigidBody, 580);

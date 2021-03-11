@@ -1,9 +1,6 @@
 #pragma once
-
 #include "Node.h"
 #include "ResourcesTypes.h"
-
-#define CHARACTER_CLASS_SIZE 596
 
 class Character : public Node
 {
@@ -63,17 +60,17 @@ protected:
 	int field_1B0;
 	int field_1B4;
 	float m_Opacity;
-	List<int> m_List_1;
+	int	m_List_1[4];
 	int m_TextureSets;
 	ResType::Model* m_ModelRes;
 	int field_1D4;
-	List<class Bone> m_BonesList;
-	List<int> m_List_3;
-	List<float> m_List_4;
+	int m_BonesList[4];
+	int m_List_3[4];
+	int m_List_4[4];
 	Vector4f m_Pos_1;
-	List<Entity> m_AttachedNodesList;
-	List<Entity> m_AttachedLights;
-	List<int> m_List_5;
+	int m_AttachedNodesList[4];
+	int m_AttachedLights[4];
+	int m_List_5[4];
 	int field_248;
 	int field_24C;
 	int field_250;
@@ -93,4 +90,4 @@ public:
 	void		UpdateAnimation();	//	@90B3F0
 };
 
-static_assert(sizeof(Character) == CHARACTER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Character));
+ASSERT_CLASS_SIZE(Character, 596);

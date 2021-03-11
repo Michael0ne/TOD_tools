@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Node.h"
-
-#define CLOTH_CLASS_SIZE 180
 
 class Cloth : public Node
 {
@@ -18,8 +15,8 @@ protected:
 	float m_WindInfluence;
 	float m_Opacity;
 	unsigned int m_Flags;
-	List<int> m_List_1;
-	List<int> m_List_2;
+	int m_List_1[4];
+	int m_List_2[4];
 	int field_A8;
 	int field_AC;
 	int field_B0;
@@ -35,7 +32,8 @@ public:
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 };
 
-static_assert(sizeof(Cloth) == CLOTH_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Cloth));
+ASSERT_CLASS_SIZE(Cloth, 180);

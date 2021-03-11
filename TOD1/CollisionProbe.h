@@ -12,18 +12,18 @@ protected:
 	int m_ClosestCollisionVolume;
 	float m_MinDistance;
 	class ScriptType_Entity* m_TouchingNodes;
-	List<int> m_List_1;
+	int m_List_1[4];
 	int m_SurfaceID;
 	int m_MaterialID;
 	int field_AC;
 	float m_Angle;
 	float m_Radius;
-	List<Node> m_IgnoredNodes;
+	int m_IgnoredNodes[4];
 	int m_DynamicMask;
 	int m_UserMask;
 	int* field_D0;
 	class ScriptType_Entity* m_Nodes;
-	List<int> m_List_3;
+	int m_List_3[4];
 	int m_CollisionMask;
 	int m_LineMode;
 	float m_LineThickness;
@@ -43,7 +43,7 @@ public:
 
 	void		Reset();	//	@8B61D0
 	
-	static List<CollisionProbe>	ProbesList;	//	@A3DD4C
+	static std::vector<CollisionProbe*>	ProbesList;	//	@A3DD4C
 };
 
 extern ScriptType_Entity* tCollisionProbe;	//	@A3DE38

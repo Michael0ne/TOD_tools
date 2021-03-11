@@ -1,8 +1,6 @@
 #pragma once
 #include "Node.h"
 
-#define Model_CLASS_SIZE 256
-
 DECLARE_SCRIPT_ENTITY_CLASS(Model, Node)
 	DECLARE_SCRIPT_ENTITY_PROPERTY(modelres, const char*, ResType::Model*)
 protected:
@@ -26,14 +24,14 @@ protected:
 	int field_94;
 	int field_98;
 	int field_9C;
-	List<int> m_List_1;	//	NOTE: maybe list of attached models?
-	List<int> m_List_2;
-	List<int> m_List_3;
-	List<int> m_List_4;
+	int m_List_1[4];	//	NOTE: maybe list of attached models?
+	int m_List_2[4];
+	int m_List_3[4];
+	int m_List_4[4];
 	int field_E0;
 	int field_E4;
 	int field_E8;
 	int field_EC;
-	List<int> m_List_6;
+	int m_List_6[4];
 
-DECLARE_SCRIPT_ENTITY_CLASS_END(Model)
+DECLARE_SCRIPT_ENTITY_CLASS_END(Model, 256)

@@ -226,12 +226,6 @@ void Scene::FinishCreation(const char* logTitle)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-bool Scene::GameUpdate()
-{
-	return (*(bool (*)())0x93CEB0)();
-}
-
-#pragma message(TODO_IMPLEMENTATION)
 void Scene::UpdateActiveCameraPosition()
 {
 
