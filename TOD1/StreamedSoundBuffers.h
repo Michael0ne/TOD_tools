@@ -2,6 +2,7 @@
 #include "Types.h"
 #include "Globals.h"
 #include "StreamedSound.h"
+#include "StringsPool.h"
 #include <vector>
 
 #define STREAMEDSOUNDBUFFERS_MAX_CONCURRENT_SOUNDS 100
@@ -68,24 +69,24 @@ public:
 	int*						field_50;	//	NOTE: pointer to some DieselPower structure, size unknown.
 	int*						field_54;
 	LPDIRECTSOUND				m_DirectSound;
-	List<int>					m_DieselPowerSoundBuffers;
-	List<StreamedSound>	m_StreamDataBufferList;
-	List<int>					m_SoundList_1;
-	List<int>					m_SoundList_2;
-	List<int>					m_SoundList_3;
-	List<int>					m_SoundList_4;
-	List<int>					m_SoundList_5;
-	List<int>					m_SoundList_6;
-	List<int>					m_SoundList_7;
-	List<int>					m_SoundList_8;
-	List<int>*					m_SoundList_1_Ptr;
-	List<int>*					m_SoundList_2_Ptr;
-	List<int>*					m_SoundList_3_Ptr;
-	List<int>*					m_SoundList_4_Ptr;
-	List<int>*					m_SoundList_5_Ptr;
-	List<int>*					m_SoundList_6_Ptr;
-	List<int>*					m_SoundList_7_Ptr;
-	List<int>*					m_SoundList_8_Ptr;
+	std::vector<int>			m_DieselPowerSoundBuffers;
+	std::vector<StreamedSound*>	m_StreamDataBufferList;
+	std::vector<int>			m_SoundList_1;
+	std::vector<int>			m_SoundList_2;
+	std::vector<int>			m_SoundList_3;
+	std::vector<int>			m_SoundList_4;
+	std::vector<int>			m_SoundList_5;
+	std::vector<int>			m_SoundList_6;
+	std::vector<int>			m_SoundList_7;
+	std::vector<int>			m_SoundList_8;
+	std::vector<int>*			m_SoundList_1_Ptr;
+	std::vector<int>*			m_SoundList_2_Ptr;
+	std::vector<int>*			m_SoundList_3_Ptr;
+	std::vector<int>*			m_SoundList_4_Ptr;
+	std::vector<int>*			m_SoundList_5_Ptr;
+	std::vector<int>*			m_SoundList_6_Ptr;
+	std::vector<int>*			m_SoundList_7_Ptr;
+	std::vector<int>*			m_SoundList_8_Ptr;
 	String						m_Str_1;
 public:
 	StreamedSoundBuffers(char channels, int sampleRate);	//	@43E080

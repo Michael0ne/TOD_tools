@@ -7,7 +7,7 @@
 
 unsigned int File::FilesOpen = NULL;
 HANDLE	File::FilesSemaphoreArray[FILE_MAX_ZIP_FILES];
-List<StringTuple> File::DirectoryMappingsList = {};
+std::vector<StringTuple> File::DirectoryMappingsList;
 unsigned int File::AlignmentArray[3] = { 1, 1, 4 };
 FileWrapper* FileWrapper::ZipFilesArray[FILE_MAX_ZIP_FILES] = {};
 bool FileWrapper::GameDiscFound = false;
@@ -149,7 +149,7 @@ void FileWrapper::RemoveDirectory_(const char* const dir)
 	RemoveDirectory(workingDir.m_szString);
 }
 
-bool FileWrapper::EnumerateFolderFiles(const char* const dir, List<String>& outFilesList)
+bool FileWrapper::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)
 {
 	String workingDir = dir;
 	GetWorkingDirRelativePath(workingDir);
@@ -176,7 +176,7 @@ bool FileWrapper::EnumerateFolderFiles(const char* const dir, List<String>& outF
 		return false;
 
 	do
-		outFilesList.AddElement(new String(searchFilesData.cFileName));
+		outFilesList.push_back(searchFilesData.cFileName);
 	while (FindNextFile(searchHandle, &searchFilesData));
 
 	FindClose(searchHandle);
@@ -617,26 +617,31 @@ void File::SetPosAligned(unsigned char alignind)
 
 void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
 {
-	StringTuple _tmp(str1, str2);
-
-	DirectoryMappingsList.AddElement(&_tmp);
+	DirectoryMappingsList.push_back({ str1, str2 });
 }
 
 String& File::GetPathFromDirectoryMappings(String& outStr, const char* path)
 {
-	if (DirectoryMappingsList.m_CurrIndex <= NULL)
-		return (outStr = path, outStr);
+	if (DirectoryMappingsList.size() <= NULL)
+	{
+		outStr = path;
+		return outStr;
+	}
 
-	for (unsigned int ind = 0; ind < DirectoryMappingsList.m_CurrIndex; ind++)
-		if (String::EqualIgnoreCase(path, DirectoryMappingsList.m_Elements[ind]->m_String_1.m_szString, DirectoryMappingsList.m_Elements[ind]->m_String_1.m_nLength))
+	const size_t pathstrlen = strlen(path);
+	for (std::vector<StringTuple>::iterator it = DirectoryMappingsList.begin(); it != DirectoryMappingsList.end(); ++it)
+	{
+		if (strncmp(path, it->m_String_1.m_szString, pathstrlen) == NULL)
 		{
-			outStr = DirectoryMappingsList.m_Elements[ind]->m_String_2.m_szString;
-			outStr.Append(&path[DirectoryMappingsList.m_Elements[ind]->m_String_1.m_nLength]);
+			outStr = it->m_String_2.m_szString;
+			outStr.Append(&path[it->m_String_1.m_nLength]);
 
 			return outStr;
 		}
+	}
 
-	return (outStr = path, outStr);
+	outStr = path;
+	return outStr;
 }
 
 String* File::ExtractFileDir(String& outStr, const char* path)
@@ -702,37 +707,21 @@ time_t File::GetFileTimestamp(const char* filename)
 
 void File::ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension)
 {
-	char buff[256];
-	memset(&buff, NULL, sizeof(buff));
+	if (!inFilePath || !*inFilePath)
+		return;
 
-	char* dotPos = strchr(buff, '.');
-	if (dotPos)
-	{
-		*dotPos = NULL;
-		if (outFileExtension)
-			while (true)
-				if (*dotPos == NULL) break; else *(outFileExtension++) = *(dotPos++);
-		else
-			*outFileExtension = NULL;
-	}
+	const char* const lastdotpos = strrchr(inFilePath, '.');
+	const char* lastslashpos = strrchr(inFilePath, '/');
+	if (!lastslashpos)
+		lastslashpos = strrchr(inFilePath, '\\');
+	if (!lastslashpos)
+		return;
 
-	char* slashPos = strrchr(buff, '/');
-	slashPos = slashPos == nullptr ? strrchr(buff, '\\') : slashPos;
+	if (lastdotpos)
+		strcpy(outFileExtension, lastdotpos + 1);
 
-	if (slashPos)
-	{
-		if (outFileName)
-			strcpy(outFileName, slashPos + 1);
-		*(slashPos + 1) = NULL;
-		if (outDirectory)
-			strcpy(outDirectory, buff);
-	}
-	else {
-		if (outDirectory)
-			*outDirectory = NULL;
-		if (outFileName)
-			strcpy(outFileName, buff);
-	}
+	strncpy(outFileName, lastslashpos + 1, lastdotpos - lastslashpos - 1);
+	strncpy(outDirectory, inFilePath, lastslashpos - inFilePath + 1);
 }
 
 FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _createifnotfound)
@@ -1332,14 +1321,13 @@ void File::SetFileAttrib(const char* const file, unsigned int attrib, char unk)
 	FileWrapper::SetFileAttrib(file, attrib, unk);
 }
 
-bool File::EnumerateFolderFiles(const char* const dir, List<String>& outFilesList)
+bool File::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)
 {
 	String dirStr;
 	GetPathFromDirectoryMappings(dirStr, dir);
 	return FileWrapper::EnumerateFolderFiles(dirStr.m_szString, outFilesList);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void File::OpenZip(const char* const zipName)
 {
 	if (!FileWrapper::IsFileExists(zipName))

@@ -47,7 +47,6 @@ public:
 
 	void			SetScript(ScriptType_Entity*);	//	@869E20
 
-	static int*		GetMessageId_A(int*, int*, const char*);	//	@8729F0
 	static void		Register();	//	@86BC70
 	static Entity*	Create(AllocatorIndex);	//	@86C130
 };

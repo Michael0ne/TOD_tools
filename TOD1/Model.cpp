@@ -2,6 +2,7 @@
 
 ScriptType_Entity* tModel;
 
+#pragma message(TODO_IMPLEMENTATION)
 Model::Model() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE | NODE_MASK_FRAGMENT)
 {
 	MESSAGE_CLASS_CREATED(Model);
@@ -28,11 +29,13 @@ Model::Model() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE | NODE_MASK_FRAGME
 	field_74 = 0;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 Model::~Model()
 {
 	MESSAGE_CLASS_DESTROYED(Model);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Model::Register()
 {
 	tModel = new ScriptType_Entity("Model");

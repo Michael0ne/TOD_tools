@@ -160,6 +160,9 @@ public:
 	void				SetName(const char*);	//	@88D610
 	void				SetPos(const Vector4f&);	//	@88D6C0
 	const char*			GetFragment() const;	//	@88DEA0
+
+	static void			Register();	//	@88FCD0
+	static Node*		Create(AllocatorIndex);	//	@88D680
 };
 
 extern ScriptType_Entity* tNode;	//	@A3D884

@@ -43,7 +43,6 @@ namespace Input
 	{
 		MESSAGE_CLASS_CREATED(Gamepad);
 
-		m_sModelName;
 		field_B4 = unk1;
 		m_bForceFeedbackAvailable = false;
 		m_bIsVibrating = false;

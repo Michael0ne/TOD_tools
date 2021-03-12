@@ -8,8 +8,8 @@
 
 ScriptType_Entity* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
-
 AuxQuadTree* Scene::SceneTree;
+
 int Scene::RealTimeMs;
 int Scene::GameTimeMs;
 int Scene::NextUpdateTime;
@@ -18,6 +18,9 @@ int Scene::NewFrameNumber;
 bool Scene::IsRewindBufferInUse;
 bool Scene::LoadingAssetBlock;
 float Scene::FrameRate;
+int Scene::PreBlocksUnloadedCommand;
+int Scene::BlocksUnloadedCommand;
+int Scene::InvalidatePlaceholderModelCommand = -1;
 
 #pragma message(TODO_IMPLEMENTATION)
 Scene::Scene() : Folder_()
@@ -176,7 +179,7 @@ void Scene::Load(const char* sceneName)
 	if (g_Blocks->m_LoadBlocks)
 	{
 		String scene_path;
-		g_Blocks->GetFullResourcePath(scene_path, sceneName, "", ResType::PLATFORM_PC);
+		g_Blocks->GetPlatformSpecificPath(scene_path, sceneName, "", ResType::PLATFORM_PC);
 		scene_path.Append("/");
 
 		char pathdummy[1024] = {};
@@ -281,4 +284,25 @@ void Scene::TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk
 	//TriggerGlobalScript(scriptId, unk);
 	//for (Node* children = sceneNode->m_FirstChild; children; children = children->m_NextSibling)
 		//TriggerScriptForAllChildren(scriptId, children, unk);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::Register()
+{
+	tScene = new ScriptType_Entity("Scene");
+	tScene->InheritFrom(tNode);
+	tScene->SetCreator((ScriptType_Entity::CREATOR)Create);
+
+	//	TODO: ...
+
+	PreBlocksUnloadedCommand = RegisterGlobalCommand("pre_blocks_unloaded", true);
+	BlocksUnloadedCommand = RegisterGlobalCommand("blocks_unloaded", true);
+	InvalidatePlaceholderModelCommand = RegisterGlobalCommand("invalidate_placeholder_model", true);
+
+	tScene->_86E9B0();
+}
+
+Scene* Scene::Create(AllocatorIndex)
+{
+	return new Scene();
 }

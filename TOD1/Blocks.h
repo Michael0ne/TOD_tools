@@ -1,10 +1,8 @@
 #pragma once
-
 #include "ResourcesTypes.h"
 #include "Config.h"
 #include "Entity.h"
-
-#define BLOCKS_CLASS_SIZE 500
+#include <vector>
 
 enum ResourceBlockTypeNumber
 {
@@ -34,8 +32,6 @@ struct FastFindInfo
 	unsigned int	m_Index;	//	NOTE: maybe?
 	class Node*		m_Node;
 };
-
-#define ASSETHEADERSTRUCT_SIZE 136
 
 struct AssetHeaderStruct_t
 {
@@ -81,13 +77,13 @@ protected:
 	char			field_8[256];
 	int				field_108;
 	Allocator*		m_Defragmentator;
-	List<int>		m_UnkList_1;	//	NOTE: this seems to be related to Defragmentator object.
-	List<FastFindInfo>	m_FastFindNodeVector;
-	List<class Entity>		m_NodesList[6];
+	std::vector<int>m_UnkList_1;	//	NOTE: this seems to be related to Defragmentator object.
+	std::vector<FastFindInfo>	m_FastFindNodeVector;
+	std::vector<class Entity*>	m_NodesList[6];
 public:
-	List<ResType::Resource> m_ResourcesInstancesList;
+	std::vector<ResType::Resource*>	m_ResourcesInstancesList;
 protected:
-	List<String>	m_SceneNames;
+	std::vector<String>	m_SceneNames;
 	int				m_NodesInNodeList[6];
 	int				field_1C8;
 	char			field_1CC;
@@ -95,7 +91,7 @@ protected:
 	int				m_EngineVersionTimestamp;
 	int				m_RegionId;
 	bool			m_CheckTimestamp;
-	List<int>		m_AssetsList;
+	std::vector<int>	m_AssetsList;
 	bool			m_LoadBlocks;
 
 private:
@@ -116,6 +112,7 @@ public:
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 
 	void			SetSceneName(const char* szSceneName);	//	@877F40
@@ -125,7 +122,7 @@ public:
 	void			SetRegionId(signed int id);	//	@875434
 	AllocatorIndex	GetAllocatorType() const;	//	@875360
 	int				InsertTypeListItem(void* res);	//	@877A90
-	void			GetFullResourcePath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform);	//	@8776B0
+	void			GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform);	//	@8776B0
 	void			GetInternalFileName(String& outName, const char* str);	//	@8773A0
 	void			GetResourcePath(String& outStr, const char* path) const;	//	@875770
 	void			IncreaseResourceReferenceCount(ResType::Resource*);	//	@875320
@@ -148,5 +145,5 @@ public:
 
 extern Blocks* g_Blocks;
 
-static_assert(sizeof(Blocks) == BLOCKS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Blocks));
-static_assert(sizeof(AssetHeaderStruct_t) == ASSETHEADERSTRUCT_SIZE, MESSAGE_WRONG_CLASS_SIZE(AssetHeaderStruct_t));
+ASSERT_CLASS_SIZE(Blocks, 500);
+ASSERT_CLASS_SIZE(AssetHeaderStruct_t, 136);

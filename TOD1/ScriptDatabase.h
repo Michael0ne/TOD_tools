@@ -188,7 +188,7 @@ namespace Script
 	extern String StreamedSoundExt;	//	@A35EE4
 	extern String LanguageMode;	//	@A086A8
 	extern String ScriptsPath;	//	@A0B434
-	extern List<StringTuple> DirectoryMappings;	//	@A35DE4
+	extern std::vector<StringTuple> DirectoryMappings;	//	@A35DE4
 
 	static bool IsRegionEurope() { return false; };	//	@420160
 	static const char* GetCurrentCountryCode() { return CountryCodes[LanguageStringsOffset]; };	//	@42E500

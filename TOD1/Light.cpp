@@ -95,5 +95,5 @@ Light_Properties::Light_Properties()
 
 Light_Properties::~Light_Properties()
 {
-	g_GfxInternal_Dx9->_45E5D0(this);
+	//g_GfxInternal_Dx9->_45E5D0(*this);
 }

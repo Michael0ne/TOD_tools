@@ -15,33 +15,15 @@ bool		Blocks::ChecksumChecked;
 
 void Blocks::GetResourcePath(String& outStr, const char* path) const
 {
-	if (strstr(path, "/data") == nullptr)
-	{
-		if (strstr(path, "data/") == nullptr)
-		{
-			if (*path == '/')
-			{
-				outStr = "/data";
-				outStr.Append(path);
+	if (!path || !*path)
+		return;
 
-				return;
-			}
-			else
-			{
-				outStr = GetCurrentSceneName();
-				outStr.Append(path);
+	String path_;
+	if (m_SceneNames.size())
+		path_ = m_SceneNames[m_SceneNames.size() - 1];
 
-				return;
-			}
-		}
-		else
-		{
-			outStr = "data/";
-			outStr.Append(path);
-
-			return;
-		}
-	}
+	//	TODO: what this does exactly?
+	outStr = path;
 }
 
 void Blocks::IncreaseResourceReferenceCount(ResType::Resource* _res)
@@ -56,7 +38,7 @@ void Blocks::DecreaseResourceReferenceCount(ResType::Resource* _res)
 
 const char* Blocks::GetCurrentSceneName() const
 {
-	return m_SceneNames.m_CurrIndex ? m_SceneNames.m_Elements[m_SceneNames.m_CurrIndex]->m_szString : nullptr;
+	return m_SceneNames.size() ? m_SceneNames.end()->m_szString : nullptr;
 }
 
 AllocatorIndex Blocks::GetAllocatorType() const
@@ -71,28 +53,28 @@ int Blocks::InsertTypeListItem(void* res)
 {
 	field_0 = 1;
 
-	if (m_ResourcesInstancesList.m_CurrIndex <= 1)
+	if (m_ResourcesInstancesList.size() <= 1)
 	{
-		unsigned int _ind = m_ResourcesInstancesList.m_CurrIndex;
+		unsigned int _ind = m_ResourcesInstancesList.size();
 		AddTypesListItemAtPos((ResType::Resource*)res, _ind);
 
 		return _ind;
 	}
 
 	unsigned int ind = 0;
-	for (unsigned int i = 1; i < m_ResourcesInstancesList.m_CurrIndex; i++)
-		if (!m_ResourcesInstancesList.m_Elements[i])
+	for (unsigned int i = 1; i < m_ResourcesInstancesList.size(); i++)
+		if (!m_ResourcesInstancesList[i])
 			ind = i;
 
 	if (!ind)
-		ind = m_ResourcesInstancesList.m_CurrIndex;
+		ind = m_ResourcesInstancesList.size();
 
 	AddTypesListItemAtPos((ResType::Resource*)res, ind);
 
 	return ind;
 }
 
-void Blocks::GetFullResourcePath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform)
+void Blocks::GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform)
 {
 	char buff[1024] = {};
 
@@ -133,8 +115,8 @@ void Blocks::GetInternalFileName(String& outName, const char* str)
 {
 	char* _scenename = NULL;
 
-	if (m_SceneNames.m_CurrIndex)
-		_scenename = m_SceneNames.m_Elements[m_SceneNames.m_CurrIndex - 1]->m_szString;
+	if (m_SceneNames.size())
+		_scenename = m_SceneNames[m_SceneNames.size() - 1].m_szString;
 
 	if (String::EqualIgnoreCase(str, _scenename, strlen(_scenename)))
 	{
@@ -480,7 +462,7 @@ Entity* Blocks::_8755E0()
 {
 	unsigned int nodeid = _875570(0x100000);
 	if (nodeid)
-		return (m_NodesList[(nodeid >> 20) & 7].m_Elements[nodeid & 0xFF8FFFFF]);
+		return (m_NodesList[(nodeid >> 20) & 7][nodeid & 0xFF8FFFFF]);
 	else
 		return nullptr;
 }
@@ -489,7 +471,7 @@ Entity* Blocks::_875610(Entity* node)
 {
 	unsigned int nodeid = _875570(node->m_Id >> 8);
 	if (nodeid)
-		return (m_NodesList[(nodeid >> 20) & 7].m_Elements[nodeid & 0xFF8FFFFF]);
+		return (m_NodesList[(nodeid >> 20) & 7][nodeid & 0xFF8FFFFF]);
 	else
 		return nullptr;
 }
@@ -520,13 +502,8 @@ ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resou
 
 void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
 {
-	if (m_ResourcesInstancesList.m_CurrIndex < index + 1)
-	{
-		for (int ind = m_ResourcesInstancesList.m_CurrIndex; m_ResourcesInstancesList.m_CurrIndex < index + 1; ind++)
-			m_ResourcesInstancesList.AddElement(nullptr);
-	}
-
-	m_ResourcesInstancesList.m_Elements[index] = element;
+	m_ResourcesInstancesList.insert(m_ResourcesInstancesList.begin(), index, {});
+	m_ResourcesInstancesList.push_back(element);
 	field_0 = 1;
 }
 
@@ -539,7 +516,7 @@ unsigned int Blocks::_875570(unsigned int id)
 	{
 		block_id = ((id >> 20) & 7) - 1;
 
-		if (((id & 0xFF8FFFFF) + 1) < m_NodesList[block_id].m_CurrIndex)
+		if (((id & 0xFF8FFFFF) + 1) < m_NodesList[block_id].size())
 			break;
 
 		if (block_id >= 6)
@@ -549,7 +526,7 @@ unsigned int Blocks::_875570(unsigned int id)
 	};
 
 	unsigned int i = (id & 0xFF8FFFFF) + 1;
-	for (i; i < m_NodesList[block_id].m_CurrIndex; i++);
+	for (i; i < m_NodesList[block_id].size(); i++);
 
 	return i | ((block_id + 1) << 20);
 }
@@ -588,7 +565,7 @@ Blocks::Blocks(bool loadBlocks)
 	//m_NodesList[5].SetCapacityAndErase(100);
 	field_0 = NULL;
 	m_RegionId = -1;
-	m_ResourcesInstancesList.SetCapacityAndErase(1);
+	m_ResourcesInstancesList.reserve(1);
 	field_1C8 = NULL;
 	field_1CC = NULL;
 	field_1D0 = nullptr;
@@ -612,7 +589,7 @@ void Blocks::SetSceneName(const char* szSceneName)
 	if (sceneDir.m_nLength > 0 && sceneDir.m_szString[sceneDir.m_nLength - 1] != '/')
 		sceneDir.Append("/");
 
-	m_SceneNames.AddElement(&sceneDir);
+	m_SceneNames.push_back(sceneDir);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -622,17 +599,17 @@ void Blocks::RemoveLastSceneName()
 
 int Blocks::GetFreeResourceTypeListItem(unsigned int index)
 {
-	if (index + 1 >= m_ResourcesInstancesList.m_CurrIndex)
+	if (index + 1 >= m_ResourcesInstancesList.size())
 		return 0;
 
-	ResType::Resource** restype = &m_ResourcesInstancesList.m_Elements[index + 1];
+	ResType::Resource** restype = &m_ResourcesInstancesList[index + 1];
 	unsigned int freeind = index + 1;
 
 	while (!*restype) {
 		restype++;
 		freeind++;
 
-		if (freeind >= m_ResourcesInstancesList.m_CurrIndex)
+		if (freeind >= m_ResourcesInstancesList.size())
 			return 0;
 	}
 
@@ -653,10 +630,10 @@ unsigned int Blocks::AddEntity(Entity* ent)
 		listcap = m_NodesInNodeList[listind];
 	listcap = listcap & 0xFF8FFFFF;
 
-	if (listcap >= m_NodesList[listind].m_Capacity)
+	if (listcap >= m_NodesList[listind].size())
 		LogDump::LogA("Warning: vEntity[%d] is grown to size %d. Please adjust reserve() calls.\n", listind, listcap);
 
-	m_NodesList->AddElement(ent);
+	m_NodesList[listind].push_back(ent);
 	m_NodesInNodeList[listind]++;
 
 	return listcap | ((listind + 1) << 20);

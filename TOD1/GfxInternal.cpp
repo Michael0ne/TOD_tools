@@ -47,7 +47,6 @@ GfxInternal::GfxInternal(const Vector2<int>& resolution, unsigned int unused1, u
 
 	g_GfxInternal = this;
 
-	m_TexturesList = List<GfxInternal_Dx9_Texture>();
 	m_TimeDelta = 0.f;
 	m_FramesRendered = 0;
 	m_TimeMilliseconds = Performance::GetMilliseconds();

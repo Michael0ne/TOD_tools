@@ -65,21 +65,21 @@ void Progress::Complete()
 
 void Progress::_40E7F0(unsigned int unk1, UINT64 unk2)
 {
-	if (field_20 + 1 < m_LoadBarPhases.m_CurrIndex)
+	if (field_20 + 1 < m_LoadBarPhases.size())
 	{
 		field_20++;
 		field_28 = unk1;
 		field_2C = field_30;
 		field_24 = NULL;
-		field_30 += m_LoadBarPhases.m_Elements[field_20]->m_Time / m_TotalTimeToLoad;
+		field_30 += m_LoadBarPhases[field_20].m_Time / m_TotalTimeToLoad;
 
-		stub1(m_LoadBarPhases.m_Elements[field_20]->m_Status.m_szString);
+		stub1(m_LoadBarPhases[field_20].m_Status.m_szString);
 
 		field_38 = m_TimeStart + unk2;
 
-		if (m_LoadBarPhases.m_Elements[field_20]->field_18)
+		if (m_LoadBarPhases[field_20].field_18)
 		{
-			field_48 = m_LoadBarPhases.m_Elements[field_20]->m_Time;
+			field_48 = m_LoadBarPhases[field_20].m_Time;
 			field_50 = unk2;
 		}
 		else
@@ -95,13 +95,13 @@ void Progress::Reset()
 	field_20 = -1;
 	field_30 = 0.f;
 
-	m_LoadBarPhases.Erase();
+	m_LoadBarPhases.clear();
 }
 
 void Progress::AddLoadbarPhase(const char* phaseName, UINT64 timeToLoad, bool unk)
 {
 	ProgressStateInfo stateinfo_(phaseName, timeToLoad, unk);
-	m_LoadBarPhases.AddElement(&stateinfo_);
+	m_LoadBarPhases.push_back(stateinfo_);
 	m_TotalTimeToLoad += timeToLoad;
 }
 
@@ -195,7 +195,6 @@ ProgressBase::ProgressBase(UINT64 timeStart)
 {
 	MESSAGE_CLASS_CREATED(ProgressBase);
 
-	m_LoadBarPhases = List<ProgressStateInfo>(0x8B00);
 	m_TimeStart = timeStart;
 
 	LogDump::LogA("PROGRESS RESET.\n");
@@ -204,5 +203,5 @@ ProgressBase::ProgressBase(UINT64 timeStart)
 	field_20 = -1;
 	field_30 = NULL;
 
-	m_LoadBarPhases.Erase();
+	m_LoadBarPhases.clear();
 }

@@ -103,7 +103,7 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>& resolution, unsigned int un
 	};
 
 	for (int i = 0; i < modesTotal; i++)
-		m_DisplayModesList.AddElement(&DefaultDisplayModes[i]);
+		m_DisplayModesList.push_back(DefaultDisplayModes[i]);
 
 	EnumDisplayModes();
 
@@ -113,11 +113,11 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>& resolution, unsigned int un
 		m_ViewportResolution = { 800, 600 };
 		Vector2<int> res;
 
-		if (GetRegistryResolution(res) && m_DisplayModesList.m_CurrIndex)
-			for (unsigned int i = 0; i < m_DisplayModesList.m_CurrIndex; i++)
-				if (m_DisplayModesList.m_Elements[i]->m_Available &&
-					m_DisplayModesList.m_Elements[i]->m_Width == res.x &&
-					m_DisplayModesList.m_Elements[i]->m_Height == res.y)
+		if (GetRegistryResolution(res) && m_DisplayModesList.size())
+			for (unsigned int i = 0; i < m_DisplayModesList.size(); i++)
+				if (m_DisplayModesList[i].m_Available &&
+					m_DisplayModesList[i].m_Width == res.x &&
+					m_DisplayModesList[i].m_Height == res.y)
 					m_DisplayModeResolution = m_ViewportResolution = res;
 
 		RememberResolution();
@@ -143,7 +143,8 @@ GfxInternal_Dx9::~GfxInternal_Dx9()
 
 	LPDIRECT3DSURFACE9 depthSurface = nullptr;
 	m_Direct3DDevice->GetDepthStencilSurface(&depthSurface);
-	depthSurface->Release();
+	if (depthSurface)
+		depthSurface->Release();
 
 	delete m_DepthStencilSurface;
 	delete[] & m_ViewportTexturesArray;
@@ -189,18 +190,18 @@ void GfxInternal_Dx9::HandleDeviceLost()
 
 GfxInternal_Dx9::DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(unsigned int width, unsigned int height, bool dontignoreunavailable)
 {
-	if (m_DisplayModesList.m_CurrIndex <= 0)
+	if (m_DisplayModesList.size() <= 0)
 		return nullptr;
 
-	for (unsigned int i = NULL; i != m_DisplayModesList.m_CurrIndex; i++)
-		if (i + 1 == m_DisplayModesList.m_CurrIndex)
+	for (unsigned int i = NULL; i != m_DisplayModesList.size(); i++)
+		if (i + 1 == m_DisplayModesList.size())
 			break;
 		else
-			if (m_DisplayModesList.m_Elements[i]->m_Width == width &&
-				m_DisplayModesList.m_Elements[i]->m_Height == height &&
-				m_DisplayModesList.m_Elements[i]->m_Available ||
+			if (m_DisplayModesList[i].m_Width == width &&
+				m_DisplayModesList[i].m_Height == height &&
+				m_DisplayModesList[i].m_Available ||
 				!dontignoreunavailable)
-				return m_DisplayModesList.m_Elements[i];
+				return &m_DisplayModesList[i];
 
 	return nullptr;
 }
@@ -218,25 +219,19 @@ void GfxInternal_Dx9::EnumDisplayModes()
 		m_Direct3DInterface->EnumAdapterModes(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8, adapterMode, &adapterModes);
 		unsigned int ind = 0;
 
-		if (m_DisplayModesList.m_CurrIndex > 0) {
-			DisplayModeInfo** mode = m_DisplayModesList.m_Elements;
-
-			while ((*mode)->m_Width != adapterModes.Width || (*mode)->m_Height != adapterModes.Height)
-			{
-				++ind;
-				++mode;
-				if (ind >= m_DisplayModesList.m_CurrIndex)
+		if (m_DisplayModesList.size() > 0)
+		{
+			for (std::vector<DisplayModeInfo>::iterator it = m_DisplayModesList.begin(); it != m_DisplayModesList.end(); ++it, ++ind)
+				if (it->m_Width == adapterModes.Width && it->m_Height == adapterModes.Height)
 					break;
-			}
 
-			if (ind >= m_DisplayModesList.m_CurrIndex)
+			if (ind >= m_DisplayModesList.size())
 			{
 				adapterMode = adapterIndex + 1;
-
 				continue;
 			}
 
-			DisplayModeInfo* mode_sel = m_DisplayModesList.m_Elements[ind];
+			DisplayModeInfo* mode_sel = &m_DisplayModesList[ind];
 
 			if (mode_sel->m_RefreshRate <= 85 && adapterModes.RefreshRate > mode_sel->m_RefreshRate)
 			{
@@ -251,13 +246,13 @@ void GfxInternal_Dx9::EnumDisplayModes()
 
 	LogDump::LogA("Kapow will use these modes when in full-screen:\n");
 
-	for (unsigned int i = 0; i < m_DisplayModesList.m_CurrIndex; ++i)
+	for (unsigned int i = 0; i < m_DisplayModesList.size(); ++i)
 		LogDump::LogA("%ix%i @ %iHz - format=%i, available=%i\n",
-			m_DisplayModesList.m_Elements[i]->m_Width,
-			m_DisplayModesList.m_Elements[i]->m_Height,
-			m_DisplayModesList.m_Elements[i]->m_RefreshRate,
-			m_DisplayModesList.m_Elements[i]->m_Format,
-			m_DisplayModesList.m_Elements[i]->m_Available);
+			m_DisplayModesList[i].m_Width,
+			m_DisplayModesList[i].m_Height,
+			m_DisplayModesList[i].m_RefreshRate,
+			m_DisplayModesList[i].m_Format,
+			m_DisplayModesList[i].m_Available);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -530,13 +525,13 @@ void GfxInternal_Dx9::EnableLight(void*, unsigned int lightindex)
 {
 }
 
-void GfxInternal_Dx9::_45E5D0(void* light)
+void GfxInternal_Dx9::_45E5D0(LightStatus& light)
 {
-	for (unsigned int i = 0; i < m_SceneLights.m_CurrIndex; i++)
-		if (m_SceneLights.m_Elements[i] == light)
+	for (unsigned int i = 0; i < m_SceneLights.size(); i++)
+		if (&m_SceneLights[i] == &light)
 		{
-			EnableLight(light, 0);
-			m_SceneLights.m_Elements[i]->m_Enabled = false;
+			EnableLight((void*)&light, 0);
+			m_SceneLights[i].m_Enabled = false;
 		}
 }
 

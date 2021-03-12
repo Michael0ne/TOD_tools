@@ -328,6 +328,17 @@ const char* Node::GetFragment() const
 		return nullptr;
 }
 
+void Node::Register()
+{
+	tNode = new ScriptType_Entity("Node");
+	tNode->SetCreator((ScriptType_Entity::CREATOR)Create);
+}
+
+Node* Node::Create(AllocatorIndex)
+{
+	return new Node();
+}
+
 Vector4f* NodePosition::GetPosition(Vector4f* outPos)
 {
 	((Node*)(this - 9))->GetPos(*outPos);

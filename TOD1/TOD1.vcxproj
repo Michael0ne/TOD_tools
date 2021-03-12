@@ -283,11 +283,9 @@
     <ClInclude Include="GoodiePlaceHolder.h" />
     <ClInclude Include="Group.h" />
     <ClInclude Include="GuideBox.h" />
-    <ClInclude Include="KeyValueList.h" />
     <ClInclude Include="HavocPlaceHolder.h" />
     <ClInclude Include="LensFlare.h" />
     <ClInclude Include="LensFlareManager.h" />
-    <ClInclude Include="List.h" />
     <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="LoadScreenInfo.h" />
     <ClInclude Include="LogDump.h" />
@@ -369,7 +367,7 @@
   <ItemGroup>
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
-    <ClCompile Include="KeyValueList.cpp" />
+    <ClCompile Include="NodeLogical.cpp" />
     <ClCompile Include="ScriptThread.cpp" />
     <ClCompile Include="StreamedWAV.cpp" />
     <ClCompile Include="AuxQuadTree.cpp" />

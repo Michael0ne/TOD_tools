@@ -3,19 +3,19 @@
 #include "LogDump.h"
 
 SoundBufferInfo StreamedWAV::EmptySoundBufferInfo;
-List<SoundBufferInfo> StreamedWAV::SoundBuffersList;
+std::vector<SoundBufferInfo> StreamedWAV::SoundBuffersList;
 
 SoundBufferInfo* StreamedWAV::CheckIfSoundBufferIsUsed(char* ptr)
 {
-	if (SoundBuffersList.m_CurrIndex <= NULL)
+	if (SoundBuffersList.size() <= NULL)
 		return &EmptySoundBufferInfo;
 
 	unsigned int ind = 0;
-	while (SoundBuffersList.m_Elements[ind]->m_BufferPtr != ptr ||
-		!SoundBuffersList.m_Elements[ind]->m_Used)
-		if (++ind >= SoundBuffersList.m_CurrIndex)
+	while (SoundBuffersList[ind].m_BufferPtr != ptr ||
+		!SoundBuffersList[ind].m_Used)
+		if (++ind >= SoundBuffersList.size())
 			return &EmptySoundBufferInfo;
-	return SoundBuffersList.m_Elements[ind];
+	return &SoundBuffersList[ind];
 }
 
 StreamedWAV::StreamedWAV(unsigned int sampleRate)
@@ -45,8 +45,7 @@ StreamedWAV::StreamedWAV(unsigned int sampleRate)
 
 	m_SoundBufferPtr = new char[sampleRate];
 
-	SoundBufferInfo _sndBufInf(true, m_SoundBufferPtr);
-	SoundBuffersList.AddElement(&_sndBufInf);
+	SoundBuffersList.push_back({ true, m_SoundBufferPtr });
 }
 
 StreamedWAV::StreamedWAV(unsigned int sampleRate, const char* soundFile)
@@ -64,7 +63,7 @@ StreamedWAV::StreamedWAV(unsigned int sampleRate, const char* soundFile)
 	m_Flags = 0 | AUDIO_AUXMONOSTREAM_FLAG_FILE_SET;
 	m_SampleRate = sampleRate;
 
-	SoundBuffersList.SetCapacityAndErase(12);
+	SoundBuffersList.reserve(12);
 
 	String::ToLowerCase((char*)soundFile);
 	m_FileName = soundFile;

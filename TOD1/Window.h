@@ -1,7 +1,8 @@
 #pragma once
 #include "Types.h"
 #include "Globals.h"
-
+#include "StringsPool.h"
+#include <windef.h>
 
 enum LanguageCode
 {

@@ -3,9 +3,7 @@
 #include "Types.h"
 #include "Globals.h"
 #include "File.h"
-#include "KeyValueList.h"
 #include <map>
-#include <list>
 
 namespace GameConfig
 {
@@ -26,24 +24,25 @@ namespace GameConfig
 	struct ConfigVariables
 	{
 	protected:
-		mutable std::map<String, String>	m_KeyValueMap;
-		int	pad_1;
+		mutable std::map<String, String>m_KeyValueMap;
+		int								field_C;
 		std::map<unsigned int, String>	m_Keys;
-		int pad_2;
+		int								field_1C;
 		std::map<unsigned int, String>	m_UnrecognizedKeys;
-		int pad_3;
+		int								field_2C;
 		std::map<unsigned int, bool>	m_StringVariables;	//	NOTE: if variable at index is a string then it's set to true.
-		int pad_4;
+		int								field_3C;
 		std::map<unsigned int, String>	field_40;
-		int pad_5;
-		std::map<int, int>	field_50;
-		int pad_6;
+		int								field_4C;
+		std::map<int, int>				field_50;
+		int								field_5C;
 
 		int		m_TotalVariables;
 		char	field_64;
 
 		void	LoadVariablesFile(const char* file, bool configvariables);	//	@412110
 		void	ParseVariablesFile(File* file, bool configvariables);	//	@411A30
+
 	public:
 		ConfigVariables(int);	//	@410680
 		ConfigVariables(const char* file, bool configvariables);	//	@4124D0
@@ -74,6 +73,8 @@ namespace GameConfig
 		void SetParamValue(const char* const variableName, const char* const value);	//	@4114E0
 		void SetParamValueBool(const char* const variableName, const bool value);	//	@4116D0
 	};
+
+	ASSERT_CLASS_SIZE(ConfigVariables, 104);
 
 	enum CountryCodes
 	{
@@ -145,6 +146,8 @@ namespace GameConfig
 		static String		_A1B9F8;	//	@A1B9F8	//	NOTE: unused, max length is 10'000 symbols.
 	};
 
+	ASSERT_CLASS_SIZE(Config, 156);
+
 	void					InitialiseGame(LPSTR cmdline);	//	@93F680
 
 	static CountryCodes		GetRegionId(String* regionStr);	//	@875450
@@ -187,6 +190,3 @@ namespace GameConfig
 
 	extern Config* g_Config;
 }
-
-ASSERT_CLASS_SIZE(GameConfig::Config, 156);
-ASSERT_CLASS_SIZE(GameConfig::ConfigVariables, 104);

@@ -120,7 +120,8 @@ void String::Append(const char* str)
 	m_nLength = _len + _len_str;
 
 	AdjustBufferSize();
-
+	
+	//	FIXME: fix case where trying to append to an empty string!
 	memcpy(&m_szString[_len], str, _len_str + 1);
 }
 
