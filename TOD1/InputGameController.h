@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Window.h"
 
 namespace Input {
@@ -7,7 +6,6 @@ namespace Input {
 	static const GUID& GUID_RUMBLE_EFFECT = *(const GUID*)0x9D8694;
 	static const GUID& GUID_CONTROLLER_DATA_FORMAT = *(const GUID*)0x9D822C;
 
-#define INPUT_GAMEPAD_CLASS_SIZE 228
 #define INPUT_GAMEPAD_MAX_GAMEPADS 4
 #define INPUT_GAMEPAD_MAX_BUTTONS 16
 

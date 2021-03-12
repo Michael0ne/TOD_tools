@@ -1,17 +1,31 @@
 #include "Camera.h"
 
+ScriptType_Entity*	tCamera;
+
 #pragma message(TODO_IMPLEMENTATION)
 Camera::Camera() : Node(NODE_MASK_POSITION)
 {
 	MESSAGE_CLASS_CREATED(Camera);
 
-	(*(void(__thiscall*)(Vector4f*))0x4087C0)(&m_vUnknown_2);
+	(*(void(__thiscall*)(int*))0x4087C0)(field_50);	//	TODO: some method that does set up matrix projection with default parameters?
 
-	m_Offset = 0.0f;
-	m_Fov = 70.0f;
-	m_NearClip = 1.0f;
-	m_FarClip = 1000.0f;
-	m_DynlightCullRange = 100.0f;
+	m_Offset = 0.f;
+	m_Fov = 70.f;
+	m_NearClip = 1.f;
+	m_FarClip = 1000.f;
+	m_DynlightCullRange = 100.f;
+	field_4C = ScriptType_Builtin::ZeroVector;
+}
 
-	m_vUnknown_1 = Vector4<float>();
+#pragma message(TODO_IMPLEMENTATION)
+void Camera::Register()
+{
+	tCamera = new ScriptType_Entity("Camera");
+	tCamera->InheritFrom(tNode);
+	tCamera->SetCreator((ScriptType_Entity::CREATOR)Create);
+}
+
+Camera* Camera::Create(AllocatorIndex)
+{
+	return new Camera();
 }

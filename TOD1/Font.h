@@ -1,5 +1,6 @@
 #pragma once
-#include "List.h"
+#include "StringsPool.h"
+#include <vector>
 
 struct GlyphInfo
 {
@@ -28,7 +29,7 @@ private:
 	float			field_34;
 	int				field_38;
 	int				field_3C;
-	List<String>	m_GlyphsList;
+	std::vector<String>	m_GlyphsList;
 	int				field_50;
 	int				field_54;
 	float			field_58;

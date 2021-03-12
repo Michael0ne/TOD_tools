@@ -413,6 +413,11 @@ void ScriptType_Entity::RegisterProperty(const ScriptType* returntype, const cha
 	}
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void ScriptType_Entity::_86E9B0()
+{
+}
+
 ScriptType_Entity* ScriptType_Entity::GetScriptEntityByName(const char* name)
 {
 	if (!TypesList.size())
@@ -703,14 +708,14 @@ void ScriptType_Builtin::ProfileEnd(int* arg)
 #endif
 }
 
-void ScriptType_Builtin::NumberToInteger(float* arg)
+void ScriptType_Builtin::NumberToInteger(void* arg)
 {
-	*arg = (int)arg[1];
+	*((int*)arg) = (int)(((float*)arg)[1]);
 }
 
-void ScriptType_Builtin::IntegerToNumber(int* arg)
+void ScriptType_Builtin::IntegerToNumber(void* arg)
 {
-	*arg = (float)arg[1];
+	*((float*)arg) = (float)((int*)arg)[1];
 }
 
 void ScriptType_Builtin::PrintStack(int* arg)

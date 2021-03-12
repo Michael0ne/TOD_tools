@@ -44,9 +44,9 @@ class ScriptThread : public IScriptThread
 	};
 protected:
 	Defragmentator*				m_Defragmentator;
-	List<ThreadList_1>			m_List_1;	//	NOTE: associated with defragmentator?
+	std::vector<ThreadList_1>	m_List_1;	//	NOTE: associated with defragmentator?
 	Defragmentator*				m_Defragmentator_1;
-	List<ThreadCallStack>		m_CallStack;
+	std::vector<ThreadCallStack>m_CallStack;
 	int							m_SleepUntil;
 	int							m_WaitForFrame;
 	int							m_ThreadFlags;

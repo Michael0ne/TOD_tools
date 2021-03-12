@@ -1,10 +1,9 @@
 #pragma once
-
 #include "Globals.h"
+#include "MemoryAllocators.h"
 
-namespace Input {
-
-#define INPUT_MOUSE_CLASS_SIZE 96
+namespace Input
+{
 #define INPUT_MOUSE_BUFFERS_COUNT 30
 #define INPUT_MOUSE_MAX_BUTTONS 10
 
@@ -51,6 +50,7 @@ namespace Input {
 		{
 			if (ptr)
 				Allocators::ReleaseMemory(ptr, 0);
+			ptr = nullptr;
 		}
 
 		void					_Acquire();	//	@43B370
@@ -62,9 +62,9 @@ namespace Input {
 		const char*				MousePositionTostr(unsigned int axis);	//	@43B4C0
 		void					Process();	//	@43B670
 	};
+
+	ASSERT_CLASS_SIZE(Mouse, 96);
 }
 
 extern Input::Mouse*			g_InputMouse;
 extern const char*				g_MouseButtons[];
-
-static_assert(sizeof(Input::Mouse) == INPUT_MOUSE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Input::Mouse));

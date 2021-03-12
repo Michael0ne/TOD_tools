@@ -1,7 +1,8 @@
 #pragma once
-#include "List.h"
+#include "StringsPool.h"
 #include "Types.h"
 #include <map>
+#include <vector>
 
 class IStreamBuffer
 {
@@ -27,7 +28,7 @@ protected:
 	std::map<int, int>		field_28;
 	int						field_34;
 	class StreamedWAV*		m_AuxMonoStream_1;
-	List<int>				m_List;
+	std::vector<int>		m_List;
 
 public:
 	virtual ~StreamBuffer();	//	@441AC0

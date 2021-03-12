@@ -1,5 +1,6 @@
 #pragma once
 #include "File.h"
+#include <vector>
 #include "libvorbis-1.1.0/include/vorbisfile.h"
 
 #define AUDIO_AUXMONOSTREAM_CLASS_SIZE 92
@@ -66,7 +67,7 @@ public:
 	void* operator new[](size_t size);
 	void operator delete(void*);
 
-	static List<SoundBufferInfo>	SoundBuffersList;	//	@A08468
+	static std::vector<SoundBufferInfo>	SoundBuffersList;	//	@A08468
 };
 
 ASSERT_CLASS_SIZE(StreamedWAV, 92);

@@ -118,6 +118,7 @@ void Entity::SetScript(ScriptType_Entity* script)
 		//script->m_ParentNode->_489BE0(this);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Entity::Register()
 {
 	tEntity = new ScriptType_Entity("Entity");

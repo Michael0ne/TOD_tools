@@ -87,7 +87,7 @@ namespace ResType
 		MESSAGE_CLASS_DESTROYED(Resource);
 
 		if (m_GlobalResourceId > 0)
-			g_Blocks->m_ResourcesInstancesList.m_Elements[m_GlobalResourceId] = nullptr;
+			g_Blocks->m_ResourcesInstancesList[m_GlobalResourceId] = nullptr;
 
 		--TotalResourcesCreated;
 

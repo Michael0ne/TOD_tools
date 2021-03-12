@@ -1,9 +1,7 @@
 #pragma once
+#include "StringsPool.h"
+#include <vector>
 
-#include "List.h"
-
-#define FILE_CLASS_SIZE 52
-#define FILEWRAPPER_CLASS_SIZE 92
 #define FILE_MAX_ZIP_FILES 8
 #define FILE_BUFFER_SIZE (1024 * 128)
 #define FILE_ZIP_MAGIC_HEADER 0x16ED5B50
@@ -82,7 +80,7 @@ protected:
 	static bool		IsFileReadOnly(const char* const file);	//	@4380C0
 	static void		CreateNewDirectory(const char* const dir);	//	@438120
 	static void		RemoveDirectory_(const char* const dir);	//	@4389D0
-	static bool		EnumerateFolderFiles(const char* const dir, List<String>& outFilesList);	//	@439420
+	static bool		EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList);	//	@439420
 	static void		SetFileAttrib(const char* const file, unsigned int attrib, char unk);	//	@438310
 
 	static FileWrapper*	ZipFilesArray[FILE_MAX_ZIP_FILES];	//	@A35DB8	//	NOTE: named so because only zip files accessed through it.
@@ -101,6 +99,8 @@ public:
 	static String	WorkingDirectory;	//	@A08FA0
 	static String	GameWorkingDirectory;	//	@A08FB0
 };
+
+ASSERT_CLASS_SIZE(FileWrapper, 92);
 
 class IFile
 {
@@ -211,16 +211,15 @@ public:
 	static bool		IsDirectoryValid(const char* const path);	//	@418410
 	static bool		IsFileValid(const char* const file);	//	@418B00
 	static bool		IsFileReadOnly(const char* const file);	//	@418550
-	static bool		EnumerateFolderFiles(const char* const dir, List<String>& outFilesList);	//	@418670
+	static bool		EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList);	//	@418670
 	static void		CreateNewDirectory(const char* const dir);	//	@4186F0
 	static void		RemoveDirectory_(const char* const dir);	//	@418740
 	static void		SetFileAttrib(const char* const file, unsigned int attrib, char unk);	//	@417D50
 
 	static unsigned int FilesOpen;	//	@A35DD8
 	static HANDLE	FilesSemaphoreArray[FILE_MAX_ZIP_FILES];	//	@A35D98
-	static List<StringTuple> DirectoryMappingsList;	//	@A35DE4
+	static std::vector<StringTuple> DirectoryMappingsList;	//	@A35DE4
 	static unsigned int AlignmentArray[3];	//	@9B37E4
 };
 
-static_assert(sizeof(File) == FILE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(File));
-static_assert(sizeof(FileWrapper) == FILEWRAPPER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(FileWrapper));
+ASSERT_CLASS_SIZE(File, 52);

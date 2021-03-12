@@ -22,6 +22,9 @@
 #include "ZipArch.h"
 #include "ResourcesTypes.h"
 #include "ScriptDatabase.h"
+#include "NodeSpatial.h"
+#include "NodeLogical.h"
+#include "Model.h"
 
 namespace Script
 {
@@ -32,7 +35,7 @@ namespace Script
 	String StreamedSoundExt;
 	String LanguageMode;
 	String ScriptsPath;
-	List<StringTuple> DirectoryMappings;
+	std::vector<StringTuple> DirectoryMappings;
 }
 
 namespace GameConfig
@@ -174,7 +177,6 @@ namespace GameConfig
 		m_UninitialiseCallback = nullptr;
 #endif
 
-		//	If log dump file is here - open it.
 		if (m_ConfigurationVariables->IsVariableSet("logdumpfile"))
 		{
 			String logdumpfilestr;
@@ -183,7 +185,6 @@ namespace GameConfig
 
 		}
 
-		//	If we have 'profile.txt' available, check directory mappings and other stuff.
 		if (profileVariables)
 		{
 			char DirectorymappingStr[22] = {};
@@ -491,7 +492,7 @@ namespace GameConfig
 		//	NOTE: this adjusts size for global entities lists.
 		//(*(void(__cdecl*)(int, int))0x8C66E0)(8192, 512);
 
-		//Script::LoadScripts();
+		LoadScripts();
 
 		m_PropertiesLoadedChecksum = GetGlobalPropertyListChecksum();
 		m_CommandsLoadedChecksum = GetGlobalCommandListChecksum();
@@ -612,14 +613,14 @@ namespace GameConfig
 	{
 		Entity::Register();
 		RegisterGlobalProperty("block_id:integer", true);
-		/*
 		Node::Register();
 		NodeSpatial::Register();
 		NodeLogical::Register();
 		Camera::Register();
 		Model::Register();
-		Folder::Register();
+		Folder_::Register();
 		Scene::Register();
+		/*
 		MockupBox::Register();
 		EditorCamera::Register();
 		Character::Register();

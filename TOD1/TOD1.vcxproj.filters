@@ -116,9 +116,6 @@
     <ClInclude Include="Light.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="List.h">
-      <Filter>Header files\KapowSystems\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
@@ -403,9 +400,6 @@
     </ClInclude>
     <ClInclude Include="TransactionBuffer.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyValueList.h">
-      <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
     <ClInclude Include="GfxInternal.h">
       <Filter>Header files\KapowSystems\Render</Filter>
@@ -730,10 +724,10 @@
     <ClCompile Include="StreamedWAV.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="KeyValueList.cpp">
-      <Filter>Source files\KapowSystems\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="ScriptThread.cpp">
+      <Filter>Source files\KapowSystems\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeLogical.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
   </ItemGroup>

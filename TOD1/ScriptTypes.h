@@ -324,6 +324,7 @@ public:
 		const int a12,
 		const int a13,
 		const int argumentstotal);	//	@86D370
+	void	_86E9B0();	//	@86E9B0	//	NOTE: probably, this propagates all methods and properties from parent entity.
 
 	static ScriptType_Entity* GetScriptEntityByName(const char* name);	//	@862C70
 };
@@ -507,8 +508,8 @@ public:
 	void	DrawSphere(int*);	//	@485600
 	void	ProfileBegin(int*);	//	@484F50
 	void	ProfileEnd(int*);	//	@484F60
-	void	NumberToInteger(float*);	//	@487E30
-	void	IntegerToNumber(int*);	//	@487E20
+	void	NumberToInteger(void*);	//	@487E30
+	void	IntegerToNumber(void*);	//	@487E20
 	void	PrintStack(int*);	//	@4852B0
 	void	GenericCall(int*);	//	@485300
 	void	QuadTreeQuery(int*);	//	@486950

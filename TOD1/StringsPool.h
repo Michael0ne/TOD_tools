@@ -102,8 +102,8 @@ public:
 		
 		AdjustBufferSize();
 		
-		strcpy(m_szString, baseStr.m_szString);
-		strcat(m_szString, appendStr.m_szString);
+		strcpy_s(m_szString, m_nLength, baseStr.m_szString);
+		strcat_s(m_szString, m_nLength, appendStr.m_szString);
 	}
 private:
 	void			AllocateSpaceForString();	//	@4056E0

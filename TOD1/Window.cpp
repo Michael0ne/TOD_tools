@@ -625,14 +625,15 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	Window::WindowInstanceHandle = hInstance;
 	Window::CmdLine = lpCmdLine;
 
-	char exefname[1024];
-	char exedir[1024];
-	char exeext[8];
-	char fname[16];
+	char exefname[1024] = {};
+	char exedir[1024] = {};
+	char exeext[8] = {};
+	char fname[16] = {};
 	DWORD procIdArr[1024];
 	DWORD procIdRetnSize = NULL;
 
 	GetModuleFileName(GetModuleHandle(nullptr), exefname, sizeof(exefname));
+	String::ConvertBackslashes(exefname);
 	File::ExtractFilePath(exefname, exedir, fname, exeext);
 
 	char exefullname[32] = {};

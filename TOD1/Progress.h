@@ -1,9 +1,8 @@
 #pragma once
-
-#include "List.h"
 #include "Performance.h"
 #include "Sprite.h"
 #include "GfxInternal_Dx9_Texture.h"
+#include <vector>
 
 #define PROGRESS_CLASS_SIZE 112
 #define PROGRESS_BASE_CLASS_SIZE 72
@@ -28,7 +27,7 @@ class ProgressBase
 {
 protected:
 	int field_4;
-	List<ProgressStateInfo> m_LoadBarPhases;
+	std::vector<ProgressStateInfo> m_LoadBarPhases;
 	UINT64 m_TotalTimeToLoad;
 	unsigned int field_20;
 	int field_24;
@@ -46,6 +45,8 @@ public:
 
 	ProgressBase(UINT64 timeStart);	//	@40E900
 };
+
+ASSERT_CLASS_SIZE(ProgressBase, 72);
 
 class Progress : ProgressBase
 {
@@ -89,5 +90,4 @@ public:
 extern Progress*		g_Progress;	//	@A3D7D0
 extern ProgressBase*	g_ProgressBase;	//	@A35B88
 
-static_assert(sizeof(ProgressBase) == PROGRESS_BASE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(ProgressBase));
-static_assert(sizeof(Progress) == PROGRESS_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Progress));
+ASSERT_CLASS_SIZE(Progress, 112);

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Node.h"
 #include "Blocks.h"
 
@@ -18,17 +17,7 @@ struct AssetInfo
 	ActualAssetInfo	m_AssetInfo_Localised;
 };
 
-//	NOTE: this is used on all .main files. And maybe another resource types, not sure now.
-//	NOTE: asset files are LITTLE endian.
-struct MainAssetBlock
-{
-	unsigned int	m_EngineTimestamp;	//	NOTE: the game reads it as timestamp, but if represented as timestamp - it's just garbage.
-	unsigned int	m_CRCPropertiesList;
-	unsigned int	m_CRCCommandsList;
-	int				m_ResourcesInFile;	//	NOTE: this value can be negavite (-1).
-	unsigned int	m_ResourceElementSize;
-	unsigned int	m_ResourceBufferSize;	//	NOTE: this is the size for the buffer that game allocates when reading asset block file.
-};
+ASSERT_CLASS_SIZE(AssetInfo, 24);
 
 class Folder_ : public Node
 {
@@ -36,13 +25,14 @@ protected:
 	int				m_BlockId;
 	AssetInfo*		m_AssetBlockInfo;
 
-	static void			GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
+	static void		GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
 public:
-	Folder_() : Node(NODE_MASK_EMPTY)	//	NOTE: no actual constructor
-	{
-		MESSAGE_CLASS_CREATED(Folder_);
-	}
+	Folder_();
+
+	static void		Register();	//	@87E810
+	static Folder_* Create();	//	@87E730
 };
 
-static_assert(sizeof(Folder_) == FOLDER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Folder_));
-static_assert(sizeof(AssetInfo) == FOLDER_ASSETINFO_SIZE, MESSAGE_WRONG_CLASS_SIZE(AssetInfo));
+extern ScriptType_Entity*	tFolder;	//	@A3D810
+
+ASSERT_CLASS_SIZE(Folder_, 88);

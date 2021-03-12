@@ -1,8 +1,6 @@
 #pragma once
-
 #include "GfxInternal_Dx9.h"
 
-#define RENDERER_CLASS_SIZE 72
 
 class Buffer276
 {
@@ -173,7 +171,7 @@ class GfxInternal
 {
 private:
 	bool							m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
-	List<GfxInternal_Dx9_Texture>	m_TexturesList;
+	std::vector<GfxInternal_Dx9_Texture*>	m_TexturesList;
 	Scene_Buffer68*					m_Buffer68;
 	Scene_Buffer108*				m_Buffer108;
 	unsigned int					m_RenderBufferTotal;
@@ -228,6 +226,8 @@ public:
 
 extern ScreenProperties g_ScreenProperties;
 extern GfxInternal* g_GfxInternal;
+
+ASSERT_CLASS_SIZE(GfxInternal, 72);
 
 //	NOTE: this is used in 'ExecuteRenderCommand' @4342C0
 enum RendererCommandsList
@@ -363,5 +363,3 @@ enum RendererCommandsList
 	CMD_POP_ENABLEALPHATEST,
 	CMD_POP_PS2_SETGUARDBAND
 };	//	@A089D8
-
-ASSERT_CLASS_SIZE(GfxInternal, 72);

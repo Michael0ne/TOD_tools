@@ -1,12 +1,13 @@
 #include "Folder.h"
 #include "File.h"
 
+ScriptType_Entity*	tFolder;
+
 void Folder_::GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode)
 {
-	char fileExt[8], fileDir[1024], fileName[128];
-	memset(&fileExt, NULL, sizeof(fileExt));
-	memset(&fileDir, NULL, sizeof(fileDir));
-	memset(&fileName, NULL, sizeof(fileName));
+	char	fileExt[8] = {};
+	char	fileDir[1024] = {};
+	char	fileName[128] = {};
 
 	File::ExtractFilePath(resourceName.m_szString, fileDir, fileName, fileExt);
 
@@ -29,4 +30,28 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Bloc
 	strcat(fileDir, blockType ? Blocks::BlockTypeExtension[blockType] : Blocks::BlockTypeExtension[MAIN]);
 
 	outPath = fileDir;
+}
+
+Folder_::Folder_() : Node(NODE_MASK_EMPTY)
+{
+	MESSAGE_CLASS_CREATED(Folder_);
+
+	m_BlockId = 0;
+	m_AssetBlockInfo = nullptr;
+}
+
+void Folder_::Register()
+{
+	tFolder = new ScriptType_Entity("Folder");
+	tFolder->InheritFrom(tNode);
+	tFolder->SetCreator((ScriptType_Entity::CREATOR)Create);
+
+	//tFolder->RegisterProperty(tINTEGER, "block_id", )
+
+	tFolder->_86E9B0();
+}
+
+Folder_* Folder_::Create()
+{
+	return new Folder_();
 }

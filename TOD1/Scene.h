@@ -1,5 +1,6 @@
 #pragma once
 #include "Folder.h"
+#include <vector>
 
 enum PlayMode
 {
@@ -56,10 +57,10 @@ protected:
 	int				field_C0;
 	int				m_RewindResumeTimeMs;
 	int				field_C8;
-	List<int>		m_List_1;
-	List<AuxQuadTree> m_QuadTreesList;
-	List<class ParticleSystem> m_ParticleSystemsList;
-	List<CollisionList> m_CollisionListList;
+	std::vector<int>m_List_1;
+	std::vector<AuxQuadTree*> m_QuadTreesList;
+	std::vector<class ParticleSystem*> m_ParticleSystemsList;
+	std::vector<CollisionList*> m_CollisionListList;
 	int				m_NodesWithUpdateOrBlockingScripts;
 	char			m_InitMode;
 	float			m_TimeMultiplier;
@@ -70,10 +71,10 @@ public:
 	float			m_FixedFramerateVal;
 protected:
 	int				field_128;
-	List<int>		m_List_5;
-	List<int>		m_List_6;
-	List<int>		m_List_7;
-	List<int>		m_List_8;
+	std::vector<int>m_List_5;
+	std::vector<int>m_List_6;
+	std::vector<int>m_List_7;
+	std::vector<int>m_List_8;
 	SaveLoadState	m_SaveLoadState;
 	int				m_SavePointOperationError;
 	String			m_SaveDir;
@@ -140,7 +141,13 @@ public:
 	static Scene*	SceneInstance;	//	@A3DCBC
 	static AuxQuadTree* SceneTree;	//	@A3DCE8
 
+	static int		PreBlocksUnloadedCommand;	//	@A3DCF8
+	static int		BlocksUnloadedCommand;	//	@A3DCFC
+	static int		InvalidatePlaceholderModelCommand;	//	@A12098
+
 	static void		TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk);	//	@892F10
+	static void		Register();	//	@899CC0
+	static Scene*	Create(AllocatorIndex);	//	@89A7A0
 };
 
 extern ScriptType_Entity* tScene;	//	@A3DCB8

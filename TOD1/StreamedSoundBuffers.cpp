@@ -228,12 +228,12 @@ StreamedSoundBuffers::~StreamedSoundBuffers()
 	{
 		if (m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
 		{
-			for (unsigned int ind = 0; ind < m_DieselPowerSoundBuffers.m_CurrIndex; ++ind)
-				if (m_DieselPowerSoundBuffers.m_Elements[ind])
-					(*(void(__stdcall*)(signed int))m_DieselPowerSoundBuffers.m_Elements[ind])(1);
-			for (unsigned int ind = 0; ind < m_StreamDataBufferList.m_CurrIndex; ++ind)
-				if (m_StreamDataBufferList.m_Elements[ind])
-					(*(void(__stdcall*)(signed int))m_StreamDataBufferList.m_Elements[ind])(1);
+			for (unsigned int ind = 0; ind < m_DieselPowerSoundBuffers.size(); ++ind)
+				if (m_DieselPowerSoundBuffers[ind])
+					(*(void(__stdcall*)(signed int))m_DieselPowerSoundBuffers[ind])(1);
+			for (unsigned int ind = 0; ind < m_StreamDataBufferList.size(); ++ind)
+				if (m_StreamDataBufferList[ind])
+					(*(void(__stdcall*)(signed int))m_StreamDataBufferList[ind])(1);
 			//m_DieselPower->stub33();
 			Sleep(2000);
 
@@ -503,9 +503,9 @@ void StreamedSoundBuffers::WaitForSoftPause()
 int StreamedSoundBuffers::GetPlayingSoundsNumber()
 {
 	int res = 0;
-	for (unsigned int ind = 0; ind < m_StreamDataBufferList.m_CurrIndex; ++ind)
-		if ((*(bool(__stdcall*)(int))(m_StreamDataBufferList.m_Elements[ind] + 32))(0) &&
-			!(*(bool(__stdcall*)(int))(m_StreamDataBufferList.m_Elements[ind] + 56))(0))
+	for (unsigned int ind = 0; ind < m_StreamDataBufferList.size(); ++ind)
+		if ((*(bool(__stdcall*)(int))(m_StreamDataBufferList[ind] + 32))(0) &&
+			!(*(bool(__stdcall*)(int))(m_StreamDataBufferList[ind] + 56))(0))
 			++res;
 	return res;
 }
@@ -528,14 +528,14 @@ void StreamedSoundBuffers::MeasureWaitForSoftPause()
 
 void StreamedSoundBuffers::_43E850()
 {
-	for (unsigned int ind = 0; ind < m_DieselPowerSoundBuffers.m_CurrIndex; ++ind)
-		(*(void(__stdcall*)(int))(m_DieselPowerSoundBuffers.m_Elements[ind] + 40))(0);
+	for (unsigned int ind = 0; ind < m_DieselPowerSoundBuffers.size(); ++ind)
+		(*(void(__stdcall*)(int))(m_DieselPowerSoundBuffers[ind] + 40))(0);
 }
 
 void StreamedSoundBuffers::StopAllSounds()
 {
-	for (unsigned int i = 0; i < m_StreamDataBufferList.m_CurrIndex; ++i)
-		m_StreamDataBufferList.m_Elements[i]->_443E00();
+	for (unsigned int i = 0; i < m_StreamDataBufferList.size(); ++i)
+		m_StreamDataBufferList[i]->_443E00();
 }
 
 #pragma message(TODO_IMPLEMENTATION)

@@ -1,10 +1,10 @@
 #pragma once
 #include "Types.h"
-#include "List.h"
 #include "MemoryAllocators.h"
 #include "GfxInternal_Dx9_Texture.h"
 #include "Light.h"
 #include <d3dx9math.h>
+#include <vector>
 
 struct GfxInternal_Dx9_Vertex
 {
@@ -106,7 +106,7 @@ protected:
 	int			field_C;
 	int			m_TotalPrimitivesDrawn;
 	int			m_TotalVerticiesDrawn;
-	List<DisplayModeInfo>	m_DisplayModesList;
+	std::vector<DisplayModeInfo>	m_DisplayModesList;
 	union {
 		unsigned char m_VertexShader11 : 1;
 		unsigned char m_VertexShader20 : 1;
@@ -301,7 +301,7 @@ protected:
 	int			m_ParticleSystemEnded;
 	float		field_9758;
 	int			field_975C;
-	List<LightStatus>	m_SceneLights;
+	std::vector<LightStatus>	m_SceneLights;
 	std::map<int, int>	field_9770;
 	int			field_977C;
 	int			field_9780;
@@ -447,7 +447,7 @@ public:
 	void		_45D5E0();	//	@45D5E0
 	void		RenderFullscreenTexture(const class Texture*);	//	@45D940
 	void		EnableLight(void*, unsigned int lightindex);	//	@45DBA0
-	void		_45E5D0(void*);	//	@45E5D0	//	NOTE: toggle light from scene.
+	void		_45E5D0(LightStatus&);	//	@45E5D0	//	NOTE: toggle light from scene.
 
 	static std::map<int, int>	RenderedTexturesMap;	//	@A39F50
 	static const D3DMATRIX		IdentityMatrix;	//	@A0AD38
