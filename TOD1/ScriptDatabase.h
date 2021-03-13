@@ -64,6 +64,7 @@ private:
 
 public:
 	GlobalCommand(const char* const commandname, const unsigned int commandind);	//	@871FE0
+	~GlobalCommand();
 
 	void						GetReturnTypeString(String& outStr);	//	@871A90
 };
