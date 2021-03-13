@@ -198,7 +198,15 @@ void* SystemSubAllocator::Allocate_A(size_t size, int filler, int unk)
 	if (m_ProfilerEnabled)
 		stub9();
 
-	return malloc(size);
+	void* space = malloc(size);
+
+	if (space)
+	{
+		memset(space, filler, size);
+		return space;
+	}
+
+	return nullptr;
 }
 
 void* SystemSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)

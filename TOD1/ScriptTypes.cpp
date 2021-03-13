@@ -247,7 +247,9 @@ ScriptType* ScriptType::LoadScript(const char* script)
 			char dict_element_type[50] = {};
 			strncpy(dict_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
 
-			new ScriptType_Dict(*LoadScript(dict_element_type));
+			ScriptType* dictelscript = LoadScript(dict_element_type);
+			if (dictelscript)
+				new ScriptType_Dict(dictelscript);
 		}
 
 		String script_name, script_type;
@@ -281,8 +283,12 @@ ScriptType* ScriptType::LoadScript(const char* script)
 
 	char list_element_type[50] = {};
 	strncpy(list_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
+	ScriptType* listelscript = LoadScript(list_element_type);
 
-	return new ScriptType_List(*LoadScript(list_element_type));
+	if (listelscript)
+		return new ScriptType_List(listelscript);
+	else
+		return nullptr;
 }
 
 bool ScriptType::ParseVariableString(const char* variable, String& variableName, String& variableType)
@@ -430,16 +436,16 @@ ScriptType_Entity* ScriptType_Entity::GetScriptEntityByName(const char* name)
 	return nullptr;
 }
 
-ScriptType_List::ScriptType_List(const ScriptType& elementsType) : ScriptType(TYPE_LIST, "list", TYPE_LIST_SIZE)
+ScriptType_List::ScriptType_List(const ScriptType* elementsType) : ScriptType(TYPE_LIST, "list", TYPE_LIST_SIZE)
 {
 	MESSAGE_CLASS_CREATED(ScriptType_List);
 
-	*m_ListElementsType = elementsType;
-	m_ListElementSize = elementsType.m_Size;
+	m_ListElementsType = (ScriptType*)elementsType;
+	m_ListElementSize = elementsType->m_Size;
 
 	//	NOTE: is this correct?
-	char buffer[64];
-	sprintf(buffer, "list(%s)", elementsType.m_TypeName.m_szString);
+	char buffer[64] = {};
+	sprintf(buffer, "list(%s)", elementsType->m_TypeName.m_szString);
 	m_TypeName = buffer;
 
 	if (m_TypeId == 3 || m_TypeId == 8 || m_TypeId == 9 || m_TypeId == 11)
@@ -448,15 +454,15 @@ ScriptType_List::ScriptType_List(const ScriptType& elementsType) : ScriptType(TY
 		m_IsTypeId3_8_9_11 = false;
 }
 
-ScriptType_Dict::ScriptType_Dict(const ScriptType& elementsType) : ScriptType(TYPE_DICT, "dict", TYPE_DICT_SIZE)
+ScriptType_Dict::ScriptType_Dict(const ScriptType* elementsType) : ScriptType(TYPE_DICT, "dict", TYPE_DICT_SIZE)
 {
 	MESSAGE_CLASS_CREATED(ScriptType_Dict);
 
-	*m_ElementsType = elementsType;
+	m_ElementsType = (ScriptType*)elementsType;
 
 	//	NOTE: is this correct?
-	char buffer[64];
-	sprintf(buffer, "dict(%s)", elementsType.m_TypeName.m_szString);
+	char buffer[64] = {};
+	sprintf(buffer, "dict(%s)", elementsType->m_TypeName.m_szString);
 	m_TypeName = buffer;
 }
 

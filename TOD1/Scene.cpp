@@ -21,11 +21,16 @@ float Scene::FrameRate;
 int Scene::PreBlocksUnloadedCommand;
 int Scene::BlocksUnloadedCommand;
 int Scene::InvalidatePlaceholderModelCommand = -1;
+int Scene::RewindOrRetryFinishedCommand = -1;
 
 #pragma message(TODO_IMPLEMENTATION)
 Scene::Scene() : Folder_()
 {
 	MESSAGE_CLASS_CREATED(Scene);
+
+	SceneInstance = this;
+
+	RewindOrRetryFinishedCommand = GetCommandByName("rewind_or_retry_finished(integer)");
 }
 
 #pragma message(TODO_IMPLEMENTATION)

@@ -27,11 +27,10 @@ unsigned int GetGlobalPropertyListChecksum()
 		{
 			String tempstr;
 			it->GetNameAndType(tempstr);
-			
-			if (checksum_str.m_nLength)
-				checksum_str.Append(tempstr.m_szString);
-			else
-				checksum_str = tempstr;
+
+			if (checksum_str.m_nLength >= 10000)
+				break;
+			checksum_str.Append(tempstr.m_szString);
 		}
 	}
 
@@ -53,10 +52,7 @@ unsigned int GetGlobalCommandListChecksum()
 			String tempstr;
 			it->GetReturnTypeString(tempstr);
 
-			if (checksum_str.m_nLength)
-				checksum_str.Append(tempstr.m_szString);
-			else
-				checksum_str = tempstr;
+			checksum_str.Append(tempstr.m_szString);
 		}
 	}
 
@@ -94,7 +90,7 @@ int GetCommandByName(const char* const commandname)
 	const char* const ddotpos = strchr(commandname, ':');
 	if (ddotpos)
 	{
-		char cmdname[64] = {};
+		char cmdname[256] = {};
 		strncpy(cmdname, commandname, ddotpos - commandname);
 
 		return GetCommandByName_Impl(cmdname);
@@ -120,7 +116,12 @@ int RegisterGlobalProperty(const char* const propertyname, bool existingProperty
 	if (existingProperty && propid >= 0)
 	{
 		if (strncmp(GlobalPropertiesList[propid].m_PropertyType->m_TypeName.m_szString, proptype, strlen(proptype)) == NULL)
+		{
+#if defined INCLUDE_FIXES && defined VERBOSELOG
+			LogDump::LogA("Property \"%s\" was already registered with id=%d!\n", propertyname, propid);
+#endif
 			return propid;
+		}
 		else
 			return -1;
 	}
@@ -131,12 +132,16 @@ int RegisterGlobalProperty(const char* const propertyname, bool existingProperty
 		unsigned int propind = GlobalPropertiesList.size();
 		GlobalPropertiesList.emplace_back(propertyname, propind);
 
-		char propname[64] = {};
+		char propname[256] = {};
 		strncpy(propname, propertyname, ddotpos - propertyname);
 		String::ToLowerCase(propname);
 
 		GlobalPropertiesMap[propname] = propind;
 		GlobalPropertyListChecksumObtained = false;
+
+#if defined INCLUDE_FIXES && defined VERBOSELOG
+		LogDump::LogA("Property \"%s\" has been registered with id=%d\n", propertyname, propind);
+#endif
 
 		return propind;
 	}
@@ -154,6 +159,10 @@ int RegisterGlobalCommand(const char* const commandname, bool existingCommand)
 		if (ddotpos)
 			ScriptType::GetTypeByName(ddotpos + 1);
 
+#if defined INCLUDE_FIXES && defined VERBOSELOG
+		LogDump::LogA("Command \"%s\" already exists with id=%d!\n", commandname, cmdid);
+#endif
+
 		return cmdid;
 	}
 	else
@@ -163,19 +172,21 @@ int RegisterGlobalCommand(const char* const commandname, bool existingCommand)
 
 		if (ddotpos)
 		{
-			char cmdname[64] = {};
+			char cmdname[256] = {};
 			strncpy(cmdname, commandname, ddotpos - commandname);
 			GlobalCommandsMap[cmdname] = commandind;
 		}
 		else
 			GlobalCommandsMap[commandname] = commandind;
 
+#if defined INCLUDE_FIXES && defined VERBOSELOG
+		LogDump::LogA("Command \"%s\" has been registered with id=%d!\n", commandname, commandind);
+#endif
+
 		return commandind;
 	}
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-//	NOTE: this is unoptimized version.
 void ReadDatabaseFile(const char* path)
 {
 	LogDump::LogA("Loading script database\n");
@@ -314,10 +325,69 @@ GlobalCommand::GlobalCommand(const char* const commandname, const unsigned int c
 {
 	MESSAGE_CLASS_CREATED(GlobalCommand);
 
-	//m_GlobalIndex = commandind;
+	char cmdname[256] = {};
+	strcpy(cmdname, commandname);
 
-	//const char* const ddotpos = strchr(commandname, ':');
-	//if (ddotpos)
+	m_Arguments.m_TotalSize = NULL;
+	m_Arguments.m_TotalSizeBytes = NULL;
+	m_GlobalIndex = commandind;
+
+	if (!commandname || !*commandname || !strchr(commandname, ':'))
+	{
+		AddArgumentType(tNOTHING);
+	}
+	else
+	{
+		AddArgumentType(ScriptType::GetTypeByName(strchr(commandname, ':') + 1));
+		*strchr(cmdname, ':') = NULL;
+	}
+
+	char* const brcktopenpos = strchr(cmdname, '(');
+	const char* const brcktclospos = strrchr(cmdname, ')');
+
+	if (!brcktopenpos || !brcktclospos)
+	{
+		m_CommandName = _strdup(cmdname);
+	}
+	else
+	{
+		if (brcktopenpos + 1 <= brcktclospos)
+		{
+			char args[256] = {};
+			strcpy(args, brcktopenpos + 1);
+			*strrchr(args, ')') = NULL;
+
+			char* tok = strtok(args, ",");
+			while (tok)
+			{
+				ScriptType* argscripttype = ScriptType::LoadScript(tok);
+#ifdef INCLUDE_FIXES
+				//	NOTE: this should NOT happen!
+				if (!argscripttype)
+				{
+					LogDump::LogA("*** Failed to load script \"%s\" ( command: \"%s\" ) ***\n", tok, commandname);
+					AddArgumentType(tNOTHING);
+				}
+				else
+#endif					
+				AddArgumentType(argscripttype);
+				tok = strtok(NULL, ",");
+			}
+		}
+
+		*brcktopenpos = NULL;
+		m_CommandName = _strdup(cmdname);
+	}
+
+	m_ArgumentsString = _strdup(cmdname);
+}
+
+GlobalCommand::~GlobalCommand()
+{
+	MESSAGE_CLASS_DESTROYED(GlobalCommand);
+
+	delete m_ArgumentsString;
+	delete m_CommandName;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

@@ -144,6 +144,7 @@ public:
 	static int		PreBlocksUnloadedCommand;	//	@A3DCF8
 	static int		BlocksUnloadedCommand;	//	@A3DCFC
 	static int		InvalidatePlaceholderModelCommand;	//	@A12098
+	static int		RewindOrRetryFinishedCommand;	//	@A1209C
 
 	static void		TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk);	//	@892F10
 	static void		Register();	//	@899CC0

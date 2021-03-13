@@ -15,7 +15,7 @@ public:
 	char			m_pEmpty;
 
 	inline String() :
-		m_nLength(0), m_szString(&m_pEmpty), m_nBitMask(STRING_BITMASK_DEFAULT), m_pEmpty(NULL)
+		m_nLength(0), m_szString(&m_pEmpty), m_nBitMask(STRING_BITMASK_SHORT), m_pEmpty(NULL)
 	{}
 
 	String(const char* const str);
@@ -25,11 +25,6 @@ public:
 	{
 		if (m_szString != &m_pEmpty && (m_nBitMask & STRING_BITMASK_DEFAULT) != NULL)
 			Allocators::ReleaseMemory(m_szString, 0);
-
-		m_szString = &m_pEmpty;
-		m_nLength = 0;
-		m_nBitMask &= STRING_BITMASK_DEFAULT;
-		m_pEmpty = NULL;
 	}
 
 	String& operator=(const String& _r);

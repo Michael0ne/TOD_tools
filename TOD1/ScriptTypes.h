@@ -393,7 +393,7 @@ protected:
 	char m_IsTypeId3_8_9_11;
 
 public:
-	ScriptType_List(const ScriptType& elementsType);	//	@870630
+	ScriptType_List(const ScriptType* elementsType);	//	@870630
 	~ScriptType_List()
 	{
 		MESSAGE_CLASS_DESTROYED(ScriptType_List);
@@ -406,7 +406,7 @@ protected:
 	ScriptType* m_ElementsType;
 
 public:
-	ScriptType_Dict(const ScriptType& elementsType);	//	@867B50
+	ScriptType_Dict(const ScriptType* elementsType);	//	@867B50
 	~ScriptType_Dict()
 	{
 		MESSAGE_CLASS_DESTROYED(ScriptType_Dict);
