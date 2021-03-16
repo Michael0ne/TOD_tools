@@ -13,8 +13,8 @@ There are 3 'subprojects' you can see:
 
 ## Current state
 
-After compilation using 'Release/Debug DLL' you get 'dinput8.dll' file that can be put against game EXE without touching original game code - this makes possible to call original game functions inside your plugin or inside this DLL.
-When compiling using 'Release/Debug EXE' you get 'TOD1.exe' file that's intent is to replace actual game EXE and be used instead.
+After compilation using 'Release DLL' or 'Debug DLL' you get 'dinput8.dll' file that can be put against game EXE without touching original game code - this makes possible to call original game functions inside your plugin or inside this DLL.
+When compiling using 'Release EXE' or 'Debug EXE' you get 'TOD1.exe' file that's intent is to replace actual game EXE and be used instead.
 
 # Q/A
 
@@ -51,7 +51,7 @@ Included libraries can be found under 'TOD_tools\ThirdParty'.
 
 I use Visual Studio 2019 (16.9.1) to build this project.
 It's always a good idea to re-compile provided third party libraries under your specific machine and link against them when compiling the rest.
-If you're using 'Release DLL' or 'Debug DLL' build configuration, then after successfull build a batch file is executed to copy output file into game directory (updateHookFile.bat), you should edit this file to replace game path to where your actual game is.
+After the build a batch file is executed to copy output file into game directory (updateHookFile.bat), you should edit this batch file to replace game path to where your actual game is.
 
 ## Process for Linux/PS2/etc...
 
