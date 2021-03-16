@@ -69,6 +69,12 @@
     <Filter Include="Source files\ThirdParty">
       <UniqueIdentifier>{61536c81-37a9-4a91-8dad-11a99ae33e2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{fa90815a-a4bf-4f11-867a-6490b772a9b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Icons">
+      <UniqueIdentifier>{30ef79e1-ac7e-4241-b2d3-9f8dc48f59e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -419,9 +425,15 @@
     <ClInclude Include="ScriptThread.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="Buffer92.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="File.cpp">
@@ -730,10 +742,29 @@
     <ClCompile Include="NodeLogical.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="Buffer92.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="dinput_h.def">
       <Filter>Source files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Program Files\Eidos\Total Overdose\engine.ico">
+      <Filter>Resources\Icons</Filter>
+    </Image>
+    <Image Include="..\..\..\Program Files\Eidos\Total Overdose\debug.ico">
+      <Filter>Resources\Icons</Filter>
+    </Image>
+    <Image Include="..\..\..\Program Files\Eidos\Total Overdose\retail.ico">
+      <Filter>Resources\Icons</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TOD1.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

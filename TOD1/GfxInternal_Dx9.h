@@ -232,8 +232,8 @@ protected:
 	D3DFORMAT	m_DisplayModeFormat;
 	unsigned int	m_ViewportWidth_1;	//	NOTE: backbuffer dimensions?
 	unsigned int	m_ViewportHeight_1;
-	Vector2<int>	m_ViewportResolution;
-	Vector2<int>	m_DisplayModeResolution;
+	Vector2<unsigned int>	m_ViewportResolution;
+	Vector2<unsigned int>	m_DisplayModeResolution;
 
 	VerticesBuffer	m_VerticesBuffer[750];
 	char		m_DrawingText;
@@ -314,7 +314,7 @@ protected:
 	int			field_979C;
 
 public:
-	GfxInternal_Dx9(const Vector2<int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1);	//	@45E620
+	GfxInternal_Dx9(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1);	//	@45E620
 	~GfxInternal_Dx9();	//	@45DA20
 
 	void* operator new(size_t size)
@@ -329,7 +329,7 @@ public:
 	}
 
 	void		RememberResolution();	//	@44CFF0
-	bool		GetRegistryResolution(Vector2<int>&);	//	@44D080
+	bool		GetRegistryResolution(Vector2<unsigned int>&);	//	@44D080
 	bool		ProcessGameInput();	//	@44D140
 	void		stub1();	//	@44D1A0
 	void		SetFVF(unsigned int);	//	@44D1B0
@@ -431,7 +431,7 @@ public:
 	void		DrawSaturation(float);	//	@45AC00
 	void		DrawVignette(const Texture*, const Vector3<float>&, float, float, float);	//	@45AE60
 	void		SetupWindowParams(unsigned int width, unsigned int height);	//	@45BE30
-	void		SetupWindowParams_2(const Vector2<int> resolution);	//	@45BEF0
+	void		SetupWindowParams_2(const Vector2<unsigned int> resolution);	//	@45BEF0
 	bool		SetScreenResolution(unsigned int width, unsigned int height);	//	@45BF90
 	bool		SetupScreenRes();	//	@45C0D0
 	void		RenderTriangle(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C250
@@ -453,7 +453,7 @@ public:
 	static const D3DMATRIX		IdentityMatrix;	//	@A0AD38
 	static bool					ProcessingInput;	//	@A39F10
 
-	static void GetScreenResolution(Vector2<int>& outRes);	//	@41FD70
+	static void GetScreenResolution(Vector2<unsigned int>& outRes);	//	@41FD70
 };
 
 extern GfxInternal_Dx9* g_GfxInternal_Dx9;	//	@A39F14

@@ -10,7 +10,7 @@ class FileWrapper
 {
 	friend class File;
 protected:
-	CRITICAL_SECTION m_CriticalSection;
+	mutable CRITICAL_SECTION m_CriticalSection;
 	HANDLE			m_File;
 	String			m_WorkingDir;
 	String			m_GameWorkingDir;
@@ -57,7 +57,7 @@ public:
 	HANDLE			CreateFile_();	//	@4378D0
 
 protected:
-	int				GetPosition();	//	@436DF0
+	int				GetPosition() const;	//	@436DF0
 	void			SetExecuteAttr(unsigned char);	//	@436E10
 	void			_436E30();	//	@436E30
 	void			_436E70();	//	@436E70
@@ -120,7 +120,7 @@ public:
 	virtual int		Seek(int _pos) = 0;
 	virtual char	_WriteBufferAndSetToStart() = 0;
 	virtual char	WriteFromBuffer() = 0;
-	virtual int		GetPosition() = 0;
+	virtual int		GetPosition() const = 0;
 	virtual char	ReadBlockDecreasePosition() = 0;
 	virtual char	ReadIfNotEOF() = 0;
 	virtual const char* GetFileName() const;
@@ -164,7 +164,7 @@ public:
 	virtual int		Seek(int _pos);	//	@417B90
 	virtual char	_WriteBufferAndSetToStart();	//	@417BB0
 	virtual char	WriteFromBuffer();	//	@417BD0
-	virtual int		GetPosition();	//	@417BF0
+	virtual int		GetPosition() const;	//	@417BF0
 	virtual char	ReadBlockDecreasePosition();	//	@417C50
 	virtual char	ReadIfNotEOF();	//	@417850
 	virtual const char* GetFileName() const;	//	@419C40
@@ -195,7 +195,7 @@ public:
 	unsigned int	GetSize();	//	@417C10
 	bool			IsFileOpen() const;	//	@417CF0
 	char			ReadString(String& outStr);	//	@4180C0
-	inline void		SetPosAligned(unsigned char alignind);	//	@417DF0
+	void			SetPosAligned(unsigned char alignind);	//	@417DF0
 
 	static void		AddDirectoryMappingsListEntry(const char* str1, const char* str2);	//	@418F90
 	static String&	GetPathFromDirectoryMappings(String& outStr, const char* path);	//	@41A360

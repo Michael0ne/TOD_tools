@@ -1,22 +1,21 @@
 #pragma once
-
 #include "MemoryAllocators.h"
 
-#define RENDERBUFFER_CLASS_SIZE 20
 #define RENDERBUFFER_DEFAULT_BUFFER_SIZE 128
 #define RENDERBUFFER_MAX_PARAMS_SIZE 250
 
 class RenderBuffer
 {
 private:
-	int m_MaxParams;
-	int* m_ParamsArray;
-	int m_CurrentParamIndex;
-	int m_PrevParamIndex;
-	int m_AllocatorId;
+	int		m_MaxParams;
+	int*	m_ParamsArray;
+	int		m_CurrentParamIndex;
+	int		m_PrevParamIndex;
+	int		m_AllocatorId;
 
 public:
-	RenderBuffer(int maxParams, AllocatorIndex allocatorType);	//	@415400
+	RenderBuffer(unsigned int maxParams, AllocatorIndex allocatorType);	//	@415400
+	RenderBuffer() {};
 
 	static void	CreateRenderBuffer();	//	@436070
 

@@ -124,17 +124,12 @@ void Allocator::Dump()
 	return;
 }
 
-int Allocator::stub23(int, int, int, int)
+int Allocator::stub24(int, int, int, int)
 {
 	return 0;
 }
 
-int Allocator::stub24(int, int, int, int, int)
-{
-	return 0;
-}
-
-int Allocator::stub25()
+int Allocator::stub25(int, int, int, int, int)
 {
 	return 0;
 }
@@ -144,7 +139,7 @@ int Allocator::stub26()
 	return 0;
 }
 
-int Allocator::stub27(int)
+int Allocator::stub27()
 {
 	return 0;
 }
@@ -154,17 +149,17 @@ int Allocator::stub28(int)
 	return 0;
 }
 
-char Allocator::stub29(int)
+int Allocator::stub29(int)
 {
 	return 0;
 }
 
-char Allocator::stub30(int, int, int)
+char Allocator::stub30(int)
 {
 	return 0;
 }
 
-int Allocator::stub31(int)
+char Allocator::stub31(int, int, int)
 {
 	return 0;
 }
@@ -174,14 +169,23 @@ int Allocator::stub32(int)
 	return 0;
 }
 
-char Allocator::stub33(int, int)
+int Allocator::stub33(int)
 {
 	return 0;
 }
 
-void Allocator::stub34()
+char Allocator::stub34(int, int)
+{
+	return 0;
+}
+
+void Allocator::stub35()
 {
 	return;
+}
+
+void Allocator::stub36()
+{
 }
 
 SystemSubAllocator::SystemSubAllocator()
@@ -342,16 +346,59 @@ void* FrameBasedSubAllocator::Allocate_A(size_t size, int filler, int unk)
 	return AllocateAligned(size, 4, filler, unk);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void* FrameBasedSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
 {
-	return (*(void* (__thiscall*)(FrameBasedSubAllocator*, size_t, size_t, int, int))0x479F60)(this, size, alignment, filler, unk);
+	if (field_40[1] == field_30)
+		field_40[1] += _47A4A0(alignment) - field_30;
+
+	void* allocspace = SequentialSubAllocator::AllocateAligned(size, alignment, filler, unk);
+	if (allocspace)
+		++*field_40;
+
+	return allocspace;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void FrameBasedSubAllocator::Free(void* ptr)
 {
-	(*(void(__thiscall*)(FrameBasedSubAllocator*, void*))0x479FF0)(this, ptr);
+	if ((int)ptr >= field_40[1])
+	{
+		--*field_40;
+		SequentialSubAllocator::Free(ptr);
+		
+		return;
+	}
+
+	if (!field_40)
+	{
+		field_40 = nullptr;
+		--*field_40;
+
+		SequentialSubAllocator::Free(ptr);
+		
+		return;
+	}
+
+	int* _f40 = field_40;
+	while (true)
+	{
+		if ((int)ptr < _f40[1] && _f40[2] && (int)ptr >= ((int*)_f40[2])[1])
+			break;
+		
+		_f40 = (int*)_f40[2];
+		if (!_f40)
+		{
+			_f40 = nullptr;
+			--*_f40;
+
+			SequentialSubAllocator::Free(ptr);
+			
+			return;
+		}
+	}
+
+	--*((int*)field_40[2]);
+	SequentialSubAllocator::Free(ptr);
 }
 
 void FrameBasedSubAllocator::FreeAligned(void* ptr)
@@ -372,6 +419,42 @@ int FrameBasedSubAllocator::stub8(int unk)
 void FrameBasedSubAllocator::stub9()
 {
 	((SequentialSubAllocator*)this)->stub9();
+}
+
+void FrameBasedSubAllocator::SetNameAndAllocatedSpaceParams(void* _allocbufferptr, const char* _allocname, int _allocsize)
+{
+	SequentialSubAllocator::SetNameAndAllocatedSpaceParams(_allocbufferptr, _allocname, _allocsize);
+
+	*field_40 = NULL;
+	field_40[2] = NULL;
+	field_40[1] = field_30;
+}
+
+void FrameBasedSubAllocator::stub35()
+{
+	int* _fld40 = field_40;
+	if (_fld40)
+	{
+		while (true)
+		{
+			if (!_fld40[2])
+				break;
+			Free(_fld40);
+			_fld40 = (int*)(_fld40[2]);
+		}
+	}
+
+	SequentialSubAllocator::stub35();
+	*field_40 = NULL;
+	field_40[2] = NULL;
+	field_40[1] = field_30;
+}
+
+void FrameBasedSubAllocator::stub36()
+{
+	field_40 = (int*)field_30;
+	field_30 = field_30 + 12;
+	field_34 = field_30 + 12;
 }
 
 void FrameBasedSubAllocator::_47A120()
@@ -454,12 +537,66 @@ void BestFitAllocator::stub9()
 	return;
 }
 
+int SequentialSubAllocator::_47A4A0(int a1)
+{
+	return (~(a1 - 1) & (field_3C + field_30 + a1 - 1)) - field_3C;
+}
+
 SequentialSubAllocator::SequentialSubAllocator()
 {
 	MESSAGE_CLASS_CREATED(SequentialSubAllocator);
 
 	field_24 = field_28 = field_2C = NULL;
 	field_30 = field_34 = field_38 = field_3C = NULL;
+}
+
+void* SequentialSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
+{
+	if ((((size + 3) & 0xFFFFFFFC) +
+		(~(alignment - 1) & (field_30 + field_3C + alignment - 1)) +
+		field_3C) > field_2C)
+		return nullptr;
+
+	if (field_30 == field_34)
+		field_34 = (~(alignment - 1) & (field_30 + field_3C + alignment - 1)) - field_3C;
+	field_38 = (~(alignment - 1) & (field_30 + field_3C + alignment - 1)) - field_3C;
+	int result = ~(alignment - 1) & (field_30 + field_3C + alignment - 1);
+	field_30 = result + ((size + 3) & 0xFFFFFFFC);
+	++field_28;
+
+	return (void*)result;
+}
+
+void SequentialSubAllocator::Free(void* ptr)
+{
+	field_28--;
+
+	if ((int)ptr == field_38)
+		field_38 = NULL;
+
+	if (!field_28)
+		stub35();
+}
+
+void SequentialSubAllocator::SetNameAndAllocatedSpaceParams(void* _allocbufferptr, const char* _allocname, int _allocsize)
+{
+	Allocator::SetNameAndAllocatedSpaceParams(_allocbufferptr, _allocname, _allocsize);
+
+	field_2C = (int)&(((char*)_allocbufferptr)[_allocsize]);
+	field_34 = (int)_allocbufferptr;
+	field_30 = (int)_allocbufferptr;
+
+	stub36();
+}
+
+void SequentialSubAllocator::stub35()
+{
+	field_34 = (int)m_AllocatedSpacePtr;
+	field_30 = (int)m_AllocatedSpacePtr;
+	field_38 = NULL;
+	stub36();
+	field_24 = NULL;
+	field_28 = NULL;
 }
 
 PoolSubAllocator::PoolSubAllocator(int unk1, int unk2)

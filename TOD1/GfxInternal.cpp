@@ -41,7 +41,7 @@ ScreenProperties	g_ScreenProperties;	//	@A08810
 std::map<int, int>* Scene_Buffer68::MeshBuffersMap;
 
 #pragma message(TODO_IMPLEMENTATION)
-GfxInternal::GfxInternal(const Vector2<int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
+GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
 {
 	MESSAGE_CLASS_CREATED(GfxInternal);
 
@@ -156,14 +156,19 @@ void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const
 	g_GfxInternal_Dx9->DumpScreenShot(surf);
 }
 
-Vector2<int>& GfxInternal::GetScreenResolution(Vector2<int>& res) const
+Vector2<unsigned int>& GfxInternal::GetScreenResolution(Vector2<unsigned int>& res) const
 {
 	return (res = g_GfxInternal_Dx9->m_DisplayModeResolution, res);
 }
 
-bool GfxInternal::IsScreenResolutionAvailable(int width, int height) const
+bool GfxInternal::IsScreenResolutionAvailable(unsigned int width, unsigned int height) const
 {
 	return g_GfxInternal_Dx9->IsScreenResolutionAvailable(width, height, true) != false;
+}
+
+void GfxInternal::SetBufferRenderBufferPointerByIndex(unsigned int index, RenderBuffer92* buf)
+{
+	m_RenderBufferArray[index].m_RenderBuffer = buf;
 }
 
 bool GfxInternal::IsWideScreen()
@@ -184,7 +189,11 @@ void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, f
 #pragma message(TODO_IMPLEMENTATION)
 void ScreenProperties::AdjustWindowScalings()
 {
+#ifndef _EXE
 	(*(void(__thiscall*)(ScreenProperties*))0x420190)(this);
+#else
+	LogDump::LogA("ScreenProperties::AdjustWindowScalings is not implemented!\n");
+#endif
 }
 
 void ScreenProperties::SetSafeArea(float area)

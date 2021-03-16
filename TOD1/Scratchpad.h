@@ -1,5 +1,4 @@
 #pragma once
-
 #include "MemoryAllocators.h"
 
 #define SCRATCHPAD_CLASS_SIZE 1076
@@ -7,19 +6,10 @@
 class Scratchpad
 {
 private:
-	char	_pad[1076];
+	char	_pad[1076] = {};
 public:
-	Scratchpad()
-	{
-		MESSAGE_CLASS_CREATED(Scratchpad);
-
-		memset(&_pad, 0, sizeof(_pad));
-		patch(0xA3DE4C, this, 4);
-	}
-	~Scratchpad()
-	{
-		MESSAGE_CLASS_DESTROYED(Scratchpad);
-	}
+	Scratchpad();
+	~Scratchpad();
 
 	void* operator new (size_t size)
 	{
@@ -29,9 +19,10 @@ public:
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 };
 
 extern Scratchpad* g_Scratchpad;
 
-static_assert(sizeof(Scratchpad) == SCRATCHPAD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Scratchpad));
+ASSERT_CLASS_SIZE(Scratchpad, 1076);

@@ -58,19 +58,19 @@ public:
 	virtual int					stub21();
 	virtual int					GetAvailableMemory();
 	virtual void				Dump();
-	virtual int					stub23(int, int, int, int);
-	virtual int					stub24(int, int, int, int, int);
-	virtual int					stub25();
+	virtual int					stub24(int, int, int, int);
+	virtual int					stub25(int, int, int, int, int);
 	virtual int					stub26();
-	virtual int					stub27(int);
+	virtual int					stub27();
 	virtual int					stub28(int);
-	virtual char				stub29(int);
-	virtual char				stub30(int, int, int);
-	virtual int					stub31(int);
+	virtual int					stub29(int);
+	virtual char				stub30(int);
+	virtual char				stub31(int, int, int);
 	virtual int					stub32(int);
-	virtual char				stub33(int, int);
-	virtual void				stub34();
-
+	virtual int					stub33(int);
+	virtual char				stub34(int, int);
+	virtual void				stub35();
+	virtual void				stub36();
 };
 
 #define SYSTEMSUBALLOCATOR_CLASS_SIZE 40
@@ -129,8 +129,15 @@ protected:
 	int field_38;
 	int field_3C;
 
+	int							_47A4A0(int a1);	//	@47A4A0
+
 public:
 	SequentialSubAllocator();	//	@47A420
+
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;	//	@47A5B0
+	virtual void				Free(void* ptr) override;	//	@47A610
+	virtual void				SetNameAndAllocatedSpaceParams(void* _allocbufferptr, const char* _allocname, int _allocsize) override;
+	virtual void				stub35() override;	//	@47A570
 };
 
 #define FRAMEBASEDSUBALLOCATOR_CLASS_SIZE 68
@@ -145,12 +152,15 @@ public:
 
 	virtual void*				Allocate(size_t size, int filler, int unk) override;
 	virtual void*				Allocate_A(size_t size, int filler, int unk) override;
-	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;
-	virtual void				Free(void* ptr) override;
-	virtual void				FreeAligned(void* ptr) override;
+	virtual void*				AllocateAligned(size_t size, size_t alignment, int filler, int unk) override;	//	@479F60
+	virtual void				Free(void* ptr) override;	//	@479FF0
+	virtual void				FreeAligned(void* ptr) override;	//	@47A070
 	virtual void*				Realloc(void* oldptr, size_t newsize, int filler, int unk) override;
 	virtual int					stub8(int unk) override;
 	virtual void				stub9() override;
+	virtual void				SetNameAndAllocatedSpaceParams(void* _allocbufferptr, const char* _allocname, int _allocsize) override;	//	@479F20
+	virtual void				stub35() override;	//	@47A090
+	virtual void				stub36() override;	//	@479F10
 
 	void						_47A120();	//	@47A120
 };

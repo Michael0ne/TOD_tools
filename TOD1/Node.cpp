@@ -2,6 +2,7 @@
 #include "Fragment.h"
 #include "Blocks.h"
 #include "LogDump.h"
+#include "CollisionList.h"
 
 ScriptType_Entity* tNode;
 
@@ -63,10 +64,29 @@ Entity* Node::FindNode(const char* nodeName)
 	return (*(Entity * (__thiscall*)(Node*, const char*))0x88EED0)(this, nodeName);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Node::SetFlags(int unk)
+void Node::SetFlags(int flags)
 {
-	(*(void(__thiscall*)(Node*, int))0x88EC20)(this, unk);
+	if (!m_Flags.m_FlagBits.Volatile && (flags & 0x20) == 0 && flags != (m_Flags.m_Flags & 0xFFF))
+	{
+		unsigned int _flags = m_Flags.m_Flags & 0xFFF;
+		SetParam(2, &_flags, tINTEGER);
+	}
+
+	if (((flags ^ m_Flags.m_FlagBits.Dynamic) & 2) != 0)
+	{
+		if (m_QuadTree && m_QuadTree->field_38)
+		{
+			CollisionList* collst = _8A0810(this)->m_Owner->m_CollisionIgnoreList;
+			if (collst)
+				collst->field_78 |= 0x80000000;
+		}
+	}
+
+	m_Flags.m_Flags ^= (flags ^ (unsigned short)m_Flags.m_Flags) & 0xFFF;
+	_88E6A0(this);
+
+	if (m_QuadTree || (m_Parent && m_Parent->GetEntityQuadTreeOrParentQuadTree()))
+		m_Parent->GetEntityQuadTreeOrParentQuadTree()->m_Owner->m_Id |= 8;
 }
 
 void Node::RefreshQuadTree()
@@ -246,7 +266,7 @@ Vector4f* Node::GetPos(Vector4f& outVec)
 		return (outVec = Vector4f(), &outVec);
 }
 
-void Node::GetWorldMatrix(D3DXMATRIX& outMat)
+void Node::GetWorldMatrix(D3DXMATRIX& outMat) const
 {
 	if (m_Position)
 		m_Position->GetMatrixForNode(outMat);
@@ -326,6 +346,85 @@ const char* Node::GetFragment() const
 				return nullptr;
 	else
 		return nullptr;
+}
+
+void Node::ForceLodCalculation(unsigned int a1)
+{
+	if (m_QuadTree)
+		m_QuadTree->CalculateLodForAllChildren();
+	else
+		for (Node* chld = m_FirstChild; chld; chld = chld->m_NextSibling)
+			chld->ForceLodCalculation(a1);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_88E6A0(Node* node)
+{
+}
+
+AuxQuadTree* Node::GetEntityQuadTreeOrParentQuadTree() const
+{
+	if (m_QuadTree)
+		return m_QuadTree;
+
+	Node* parentnode = m_Parent;
+	while (true)
+	{
+		if (!parentnode)
+			break;
+		if (parentnode->m_QuadTree)
+			return parentnode->m_QuadTree;
+
+		parentnode = parentnode->m_Parent;
+	}
+
+	return nullptr;
+}
+
+AuxQuadTree* Node::_8A0810(Node* node)
+{
+	if (node->m_QuadTree)
+	{
+		AuxQuadTree* qdtr = node->m_QuadTree;
+		while (!qdtr->m_Owner->m_CollisionIgnoreList)
+		{
+			qdtr = qdtr->field_4;
+			if (!qdtr)
+				return node->m_QuadTree;
+		}
+
+		return qdtr;
+	}
+	else
+	{
+		Node* nd = node->m_Parent;
+		if (nd)
+		{
+			while (!nd->m_QuadTree)
+			{
+				nd = nd->m_Parent;
+				if (!nd)
+					return nullptr;
+			}
+
+			AuxQuadTree* qdtr = nd->m_QuadTree;
+			if (qdtr)
+			{
+				while (!qdtr->m_Owner->m_CollisionIgnoreList)
+				{
+					qdtr = qdtr->field_4;
+					if (!qdtr)
+						return nd->m_QuadTree;
+				}
+
+				return nd->m_QuadTree;
+			}
+		}
+		else
+			return nullptr;
+	}
+
+	return nullptr;
 }
 
 void Node::Register()

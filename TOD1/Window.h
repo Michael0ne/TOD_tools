@@ -48,8 +48,8 @@ public:
 	void			QuitGame() { m_QuitRequested = true; }	//	@43B930
 	bool			ProcessMessages();	//	@43B950
 	void			SetMenuClickCallback(int (__stdcall* callback)(WPARAM)) { m_MenuItemClickedCallback = callback; };	//	@43B9C0
-	void			SetWindowResolutionRaw(const Vector2<int>& resolution);	//	@43B9D0
-	void			SetWindowResolutionDontMove(const Vector2<int>& resolution);	//	@43B9F0
+	void			SetWindowResolutionRaw(const Vector2<unsigned int>& resolution);	//	@43B9D0
+	void			SetWindowResolutionDontMove(const Vector2<unsigned int>& resolution);	//	@43B9F0
 	void			_GetWindowRect(Vector2<LONG>& outRect);	//	@43BA70
 	void			GetTopCorner(Vector2<LONG>& outRect) const;	//	@43BAD0
 	void			GetWindowCenterRelative(Vector2<LONG>& outRect) const;	//	@43BB00

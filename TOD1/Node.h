@@ -154,12 +154,17 @@ public:
 	void				SetParam(const int index, const void* param, const ScriptType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
 	void				SetOrient(const Orientation& orient);	//	@88DB20
 	Vector4f*			GetPos(Vector4f& outVec);	//	@483620
-	void				GetWorldMatrix(D3DXMATRIX& outMat);	//	@4842C0
+	void				GetWorldMatrix(D3DXMATRIX& outMat) const;	//	@4842C0
 	void				SetParent(const Node* parent);	//	@88E9A0
 	void				DestroyAddon();	//	@88EB00	//	NOTE: actually unused.
 	void				SetName(const char*);	//	@88D610
 	void				SetPos(const Vector4f&);	//	@88D6C0
 	const char*			GetFragment() const;	//	@88DEA0
+	void				ForceLodCalculation(unsigned int);	//	@88D100
+	void				_88E6A0(Node* node);	//	@88E6A0
+	AuxQuadTree*		GetEntityQuadTreeOrParentQuadTree() const;	//	@88C260
+
+	static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
 
 	static void			Register();	//	@88FCD0
 	static Node*		Create(AllocatorIndex);	//	@88D680

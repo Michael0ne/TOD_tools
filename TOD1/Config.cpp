@@ -25,6 +25,7 @@
 #include "NodeSpatial.h"
 #include "NodeLogical.h"
 #include "Model.h"
+#include "CollisionProbe.h"
 
 namespace Script
 {
@@ -382,7 +383,7 @@ namespace GameConfig
 		m_Background.z = BackgroundSizeVec.z * (float)(1/255);
 		m_Background.a = 1.f;
 
-		Vector2<int> ScreenSize;
+		ScreenResolution ScreenSize;
 		if (m_ConfigurationVariables->IsVariableSet("screensize"))
 			m_ConfigurationVariables->GetParamValueVector2i(ScreenSize, "screensize", ',');
 
@@ -536,7 +537,7 @@ namespace GameConfig
 								break;
 						}
 						Scene::SceneInstance->m_GameCamera = sceneCamera;
-						Scene::SceneInstance->UpdateActiveCameraPosition();
+						Scene::SceneInstance->StoreGameCamera();
 					}
 					sceneCamera = (Camera*)sceneCamera->m_NextSibling;
 				} while (sceneCamera);
@@ -640,7 +641,9 @@ namespace GameConfig
 		ControlSetup::Register();
 		Control::Register();
 		Group::Register();
+		*/
 		CollisionProbe::Register();
+		/*
 		RigidBody::Register();
 		OverdoseVehicle::Register();
 		StretchModel::Register();
@@ -957,6 +960,22 @@ namespace GameConfig
 		char* delimpos = nullptr;
 		int* vecint = (int*)&outvec;
 		
+		//	TODO: bounds check.
+		while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
+			*vecint++ = atoi(delimpos);
+
+		return outvec;
+	}
+
+	Vector2<unsigned int>& ConfigVariables::GetParamValueVector2i(Vector2<unsigned int>& outvec, const char* variableName, char delimiter) const
+	{
+		if (!IsVariableSet(variableName))
+			return outvec;
+
+		char* const varval = m_KeyValueMap[variableName].m_szString;
+		char* delimpos = nullptr;
+		int* vecint = (int*)&outvec;
+
 		//	TODO: bounds check.
 		while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
 			*vecint++ = atoi(delimpos);

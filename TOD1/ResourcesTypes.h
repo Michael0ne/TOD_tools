@@ -52,17 +52,29 @@ namespace ResType
 		PLATFORM_XBOX = 2
 	};
 
-	//	NOTE: this is generic format for all generated source files (.model_pc, .texture_pc, etc.).
-	//		Files are little endian and crc check is not performed.
-	struct ResourceGenericHeader
+	enum ResourceBlockTypeNumber
 	{
-		unsigned int	m_EngineTimestamp;
-		unsigned int	m_ResourceInfoSize;	//	NOTE: this is used when parsing resource file to call Resource::Allocate.
-		unsigned int	m_ResourceDataSize;	//	NOTE: size for actual resource data. Both this and above are written to some structure that does other stuff.
-		unsigned int	m_CheckRegion;	//	NOTE: if it's set, then current region is compared to one written to the file.
-		unsigned int	m_RegionStringLength;
-		unsigned char	m_RegionString[4];	//	NOTE: this could be as well Pascal string... size is arbitrary and depends on field above.
+		RESTYPE_NONE = 0,
+		RESTYPE_MAP = 1,
+		RESTYPE_SUBMAP = 1,
+		RESTYPE_MISSION = 2,
+		RESTYPE_CUTSCENE = 3,
+		RESTYPE_PLAYERDATA = 4
 	};
+
+	enum BlockTypeNumber
+	{
+		UNKNOWN = -1,
+		NONE = 0,
+		MAP = 1,
+		SUBMAP = 2,
+		MISSION = 3,
+		CUTSCENE = 4,
+		PLAYERDATA = 5,
+		MAIN = 6
+	};
+
+	extern const char*	BlockTypeExtension[7];	//	@A11B64
 
 	class ResourceBase
 	{
@@ -80,11 +92,14 @@ namespace ResType
 		ResourceBase() {};
 		ResourceBase(const char*, Resource* (*)());	//	@852440
 
-		inline void		SetResourceAlignment(unsigned int size, unsigned int index);	//	@852160
+		void			SetResourceAlignment(unsigned int size, unsigned int index);	//	@852160
+
+		static void		AllocateResourceBlockBufferAligned(unsigned int pos, int** resBufStartPos, int** resBufSpace, BlockTypeNumber resblockid);	//	@852070
+		static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resblockid);	//	@851FE0
 	};
 
-	static unsigned int	ResourceAlignment[3];	//	@A3BE1C
-	static std::vector<ResourceBase*>	ResTypeList;	//	@A10F80
+	extern unsigned int	ResourceAlignment[3];	//	@A3BE1C
+	extern std::vector<ResourceBase*>	ResTypeList;	//	@A10F80
 
 	ASSERT_CLASS_SIZE(ResourceBase, 60);
 

@@ -28,7 +28,8 @@ bool Window::ProcessMessages()
 	if (!PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
 		return true;
 
-	while (Msg.message != WM_QUIT) {
+	while (Msg.message != WM_QUIT)
+	{
 		TranslateMessage(&Msg);
 		DispatchMessage(&Msg);
 
@@ -39,14 +40,14 @@ bool Window::ProcessMessages()
 	return false;
 }
 
-void Window::SetWindowResolutionRaw(const Vector2<int>& resolution)
+void Window::SetWindowResolutionRaw(const Vector2<unsigned int>& resolution)
 {
 	SetWindowPos(m_WindowHandle, 0, 0, 0, resolution.x, resolution.y, SWP_NOMOVE);
 }
 
-void Window::SetWindowResolutionDontMove(const Vector2<int>& resolution)
+void Window::SetWindowResolutionDontMove(const Vector2<unsigned int>& resolution)
 {
-	tagRECT		Rect = { 0, 0, resolution.x, resolution.y };
+	tagRECT		Rect = { 0, 0, (LONG)resolution.x, (LONG)resolution.y };
 	DWORD		dwMenuName = GetClassLongA(m_WindowHandle, GCL_MENUNAME);
 	DWORD		dwStyle = GetWindowLongA(m_WindowHandle, GWL_STYLE);
 
@@ -58,14 +59,16 @@ void Window::_GetWindowRect(Vector2<LONG>& outRect)
 {
 	tagRECT		WindowRect;
 
-	if (m_WindowHandle) {
+	if (m_WindowHandle)
+	{
 		GetWindowRect(m_WindowHandle, &WindowRect);
 
 		m_WindowLeft	= WindowRect.left;
 		m_WindowTop	= WindowRect.top;
 	}
 
-	if (m_WindowLeft < 0 || m_WindowTop < 0) {
+	if (m_WindowLeft < 0 || m_WindowTop < 0)
+	{
 		m_WindowLeft = 0;
 		m_WindowTop	= 0;
 	}
@@ -151,15 +154,15 @@ void Window::UpdateVisibility()
 	}
 }
 
-void Window::SetCursorReleased(bool bReleased)
+void Window::SetCursorReleased(bool released)
 {
-	m_CursorReleased = bReleased;
+	m_CursorReleased = released;
 
-	ShowCursor(bReleased);
+	ShowCursor(released);
 
-	if (bReleased) {
+	if (released)
+	{
 		ClipCursor(0);
-
 		return;
 	}
 
@@ -360,7 +363,8 @@ void IncompatibleMachineParameterError(ErrorMessageId messageID, char bWarningIc
 
 void SetAccessibilityFeatures(bool bCollect)
 {
-	if (bCollect) {
+	if (bCollect)
+	{
 		SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
 		SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
 		SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
@@ -368,17 +372,20 @@ void SetAccessibilityFeatures(bool bCollect)
 		return;
 	}
 
-	if (!(Window::StickyKeysFeature.dwFlags & SKF_STICKYKEYSON)) {
+	if (!(Window::StickyKeysFeature.dwFlags & SKF_STICKYKEYSON))
+	{
 		Window::StickyKeysFeature.dwFlags &= 0xFFFFFFF3;	//	SKF_STICKYKEYSON | SKF_AVAILABLE
 		SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
 	}
 
-	if (!(Window::ToggleKeysFeature.dwFlags & TKF_TOGGLEKEYSON)) {
+	if (!(Window::ToggleKeysFeature.dwFlags & TKF_TOGGLEKEYSON))
+	{
 		Window::ToggleKeysFeature.dwFlags &= 0xFFFFFFF3;	//	TKF_TOGGLEKEYSON | TKF_AVAILABLE
 		SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
 	}
 
-	if (!(Window::FilterKeysFeature.dwFlags & FKF_FILTERKEYSON)) {
+	if (!(Window::FilterKeysFeature.dwFlags & FKF_FILTERKEYSON))
+	{
 		Window::FilterKeysFeature.dwFlags &= 0xFFFFFFF3;	//	FKF_FILTERYSON | FKF_AVAILABLE
 		SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
 	}
@@ -499,15 +506,15 @@ void Window::Process(bool (*GameLoop)(void))
 	}
 }
 
-ATOM Window::RegisterWindowClass(UINT16 nMenuResourceId, UINT16 nIconResourceId)
+ATOM Window::RegisterWindowClass(UINT16 menuResId, UINT16 iconResId)
 {
 	WNDCLASSA WndClass;
 
-	LogDump::LogA("Creating menu with resource ID: %d\n", nMenuResourceId);
+	LogDump::LogA("Creating menu with resource ID: %d\n", menuResId);
 
 	WndClass.hCursor = 0;
-	WndClass.hIcon = LoadIcon(WindowInstanceHandle, MAKEINTRESOURCE(nIconResourceId));
-	WndClass.lpszMenuName = MAKEINTRESOURCE(nMenuResourceId);
+	WndClass.hIcon = LoadIcon(WindowInstanceHandle, MAKEINTRESOURCE(iconResId));
+	WndClass.lpszMenuName = MAKEINTRESOURCE(menuResId);
 	WndClass.lpszClassName = m_WindowTitle.m_szString;
 	WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	WndClass.hInstance = WindowInstanceHandle;
@@ -535,8 +542,7 @@ int CALLBACK MenuClickCallback(WPARAM wParam)
 }
 #endif
 
-//	NOTE: szFileSystem is passed in, but never used.
-Window::Window(const char* wndClassName, int flags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId)
+Window::Window(const char* wndClassName, int flags, UINT16 menuResId, char* fileSystem, UINT16 iconResId)
 {
 	MESSAGE_CLASS_CREATED(Window);
 
@@ -564,8 +570,8 @@ Window::Window(const char* wndClassName, int flags, UINT16 nMenuResourceId, char
 
 	m_UserDesktopPath = szDesktopPath;
 
-	RegisterWindowClass(nMenuResourceId, nIconResourceId);
-	_CreateWindow(nMenuResourceId);
+	RegisterWindowClass(menuResId, iconResId);
+	_CreateWindow(menuResId);
 
 	m_Cursor = LoadCursor(NULL, IDC_ARROW);
 
@@ -616,8 +622,33 @@ void SetGlobalCmdLinePtr(LPSTR cmdl)
 	Window::CmdLine = cmdl;
 }
 
+#ifdef _EXE
+static FILE* logfile;
+void debug(char* message, ...)
+{
+	if (!logfile)
+		return;
+	SYSTEMTIME	t;
+	GetLocalTime(&t);
+	fprintf(logfile, "%02d/%02d/%04d %02d:%02d:%02d.%03d ", t.wDay, t.wMonth, t.wYear, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
+	va_list	arg;
+	va_start(arg, message);
+	vfprintf(logfile, message, arg);
+	fflush(logfile);
+	va_end(arg);
+}
+#endif
+
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
+#ifdef _EXE
+	//	Begin tracing.
+	fopen_s(&logfile, "tod_trace.log", "ab");
+	if (!logfile)
+		return false;
+	debug("Log Started!\n");
+#endif
+
 	Performance::Init();
 	Sleep(10);
 	Performance::Calculate();
@@ -662,8 +693,16 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 		FileWrapper::FindGameDir();
 		GameConfig::InitialiseGame(lpCmdLine);
 	}
-	else
-		return NULL;
+
+#ifdef _EXE
+	//	Stop tracing.
+	if (logfile)
+	{
+		debug("Log Closed!\n\n");
+		fclose(logfile);
+		logfile = NULL;
+	}
+#endif
 
 	return NULL;
 }
@@ -709,33 +748,14 @@ const char* GetWarningString()
 		return NULL;
 }
 
+#ifndef _EXE
 inline void PATCH_WINDOW()
 {
 	void * dwFunc;
 
-	hook(0x4855D6, &GetSystemLanguageCode, PATCH_CALL);
-
-	_asm	mov		eax, offset Window::GetMessageBoxResultButton
-	_asm	mov		dwFunc, eax
-	//	Override GetMessageBoxResultButton function.
-	hook(0x470AF5, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::SetWindowResolutionDontMove
-	_asm	mov		dwFunc, eax
-	//	Override SetWindowResolutionDontMove function.
-	hook(0x45C02C, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::SetWindowResolutionRaw
-	_asm	mov		dwFunc, eax
-	//	Override SetWindowResolutionRaw function.
-	hook(0x45BE9A, dwFunc, PATCH_NOTHING);
-	hook(0x45C000, dwFunc, PATCH_NOTHING);
-	hook(0x45C154, dwFunc, PATCH_NOTHING);
-
 	_asm	mov		eax, offset Window::ProcessMessages
 	_asm	mov		dwFunc, eax
 	//	Override ShouldProcessMessages function.
-	hook(0x44D150, dwFunc, PATCH_NOTHING);
 	hook(0x46F7FB, dwFunc, PATCH_NOTHING);
 	hook(0x46FACF, dwFunc, PATCH_NOTHING);
 	hook(0x470A55, dwFunc, PATCH_NOTHING);
@@ -753,21 +773,7 @@ inline void PATCH_WINDOW()
 	//	Override QuitGame function.
 	hook(0x485666, dwFunc, PATCH_NOTHING);
 
-	_asm	mov		eax, offset Window::GetCoverdemoPlayMode
-	_asm	mov		dwFunc, eax
-	//	Override GetCoverdemoPlayMode function.
-	hook(0x485676, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::GetCoverdemoInactiveTimeoutSec
-	_asm	mov		dwFunc, eax
-	//	Override GetCoverdemoInactiveTimeoutSec function.
-	hook(0x485696, dwFunc, PATCH_NOTHING);
-
-	_asm	mov		eax, offset Window::GetCoverdemoGameplayTimeoutSec
-	_asm	mov		dwFunc, eax
-	//	Override GetCoverdemoGameplayTimeoutSec function.
-	hook(0x4856B6, dwFunc, PATCH_NOTHING);
-
 	//	Override WinMain function.
 	hook(0x95383F, &WinMain, PATCH_CALL);
 }
+#endif

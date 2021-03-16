@@ -38,6 +38,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
+    <EnableASAN>true</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -83,7 +84,7 @@
     <EmbedManifest>false</EmbedManifest>
     <TargetName>TOD1</TargetName>
     <IncludePath>$(SolutionDir)ThirdParty;$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)ThirdParty\libvorbis-1.1.0\lib\;$(SolutionDir)ThirdParty\libogg-1.1.2\lib\;$(SolutionDir)Debug\debugmenu\;$(DXSDK_DIR)Lib\x86\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)ThirdParty\libvorbis-1.1.0\lib\;$(SolutionDir)ThirdParty\libogg-1.1.2\lib\;$(SolutionDir)Debug\;$(DXSDK_DIR)Lib\x86\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -131,12 +132,13 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;TOD1_EXPORTS;INCLUDE_FIXES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;TOD1_EXPORTS;INCLUDE_FIXES;_EXE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,6 +148,9 @@
       <GenerateMapFile>true</GenerateMapFile>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <PostBuildEvent>
       <Command>call "$(SolutionDir)updateHookFile.bat" "$(SolutionDir)$(Configuration)\" "$(TargetFileName)" "$(TargetName).pdb"</Command>
@@ -249,6 +254,8 @@
   <ItemGroup>
     <ClInclude Include="AnimLayer.h" />
     <ClInclude Include="AnimSlot.h" />
+    <ClInclude Include="Buffer92.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ScriptThread.h" />
     <ClInclude Include="StreamedWAV.h" />
     <ClInclude Include="AuxQuadTree.h" />
@@ -367,6 +374,7 @@
   <ItemGroup>
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
+    <ClCompile Include="Buffer92.cpp" />
     <ClCompile Include="NodeLogical.cpp" />
     <ClCompile Include="ScriptThread.cpp" />
     <ClCompile Include="StreamedWAV.cpp" />
@@ -460,7 +468,7 @@
     <ClCompile Include="WeaponPlaceHolder.cpp" />
     <ClCompile Include="Wind.cpp" />
     <ClCompile Include="Window.cpp" />
-    <ClCompile Include="dllmain.cpp">
+    <ClCompile Include="main.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug DLL|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug EXE|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug DLL|Win32'">
@@ -484,6 +492,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="dinput_h.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TOD1.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Program Files\Eidos\Total Overdose\engine.ico" />
+    <Image Include="..\..\..\Program Files\Eidos\Total Overdose\debug.ico" />
+    <Image Include="..\..\..\Program Files\Eidos\Total Overdose\retail.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

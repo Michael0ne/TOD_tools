@@ -4,28 +4,6 @@
 #include "Entity.h"
 #include <vector>
 
-enum ResourceBlockTypeNumber
-{
-	RESTYPE_NONE = 0,
-	RESTYPE_MAP = 1,
-	RESTYPE_SUBMAP = 1,
-	RESTYPE_MISSION = 2,
-	RESTYPE_CUTSCENE = 3,
-	RESTYPE_PLAYERDATA = 4
-};
-
-enum BlockTypeNumber
-{
-	UNKNOWN = -1,
-	NONE = 0,
-	MAP = 1,
-	SUBMAP = 2,
-	MISSION = 3,
-	CUTSCENE = 4,
-	PLAYERDATA = 5,
-	MAIN = 6
-};
-
 struct FastFindInfo
 {
 	unsigned int	m_NodeNameCRC;	//	NOTE: CRC for Node name OR model name (if it's a model).
@@ -73,7 +51,7 @@ class Blocks
 	friend class Scene;
 protected:
 	unsigned char	field_0;
-	BlockTypeNumber m_BlockType;
+	ResType::BlockTypeNumber m_BlockType;
 	char			field_8[256];
 	int				field_108;
 	Allocator*		m_Defragmentator;
@@ -98,8 +76,6 @@ private:
 	void			AddTypesListItemAtPos(ResType::Resource* element, unsigned int index);	//	@8760C0
 	unsigned int	_875570(unsigned int );	//	@875570
 
-	static void		AllocateResourceBlockBufferAligned(unsigned int, int** resBufStartPos, int* resBufSpace, BlockTypeNumber);	//	@852070
-
 public:
 	Blocks(bool loadBlocks);	//	@876E20
 	~Blocks();	//	@877250
@@ -108,7 +84,17 @@ public:
 	{
 		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
+	void* operator new[](size_t size)
+	{
+		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
 	void operator delete(void* ptr)
+	{
+		if (ptr)
+			Allocators::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
+	}
+	void operator delete[](void* ptr)
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
@@ -131,15 +117,13 @@ public:
 	void			BuildFastFindNodeVector();	//	@877DA0
 	void			FillFastFindNodeVector(Node* _baseNode, FastFindInfo* _ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
 	ResType::ResourceBase*	LoadResourceFile(const char* _pathandname);	//	@878AB0
-	void*			LoadResourceBlock(class File*, void* resbufferptr, unsigned int* resdatasize, BlockTypeNumber resblockid);	//	@8759E0
+	void*			LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, ResType::BlockTypeNumber resblockid);	//	@8759E0
 	Entity*			_8755E0();	//	@8755E0
 	Entity*			_875610(Entity*);	//	@875610
 	int				GetRegionId() const;	//	@875440
 	
 	static void		GetPlatformSpecificResourcePath(String& outPath, const char* respath, GameConfig::CountryCodes region, ResType::PlatformId platform);	//	@876500
-	static ResourceBlockTypeNumber GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId);	//	@851FE0
 
-	static const char* BlockTypeExtension[];	//	@A11B64
 	static bool		ChecksumChecked;	//	@A3D7C9
 };
 
