@@ -4,6 +4,12 @@
 namespace ResType
 {
 	unsigned int Resource::LastOpenResourceIndex = NULL;
+	const char* BlockTypeExtension[7] =
+	{
+		".", "map", "submap", "mission", "cutscene", "playerdata", "main"
+	};
+	unsigned int	ResourceAlignment[3];
+	std::vector<ResourceBase*>	ResTypeList;
 
 	ResourceBase::ResourceBase(const char* type, Resource* (*creator)())
 	{
@@ -25,7 +31,7 @@ namespace ResType
 		delete res_;
 	}
 
-	inline void ResourceBase::SetResourceAlignment(unsigned int size, unsigned int index)
+	void ResourceBase::SetResourceAlignment(unsigned int size, unsigned int index)
 	{
 		m_Alignment[index] = size;
 
@@ -33,7 +39,33 @@ namespace ResType
 			ResourceAlignment[index] = size;
 	}
 
-	#pragma message(TODO_IMPLEMENTATION)
+	void ResourceBase::AllocateResourceBlockBufferAligned(unsigned int pos, int** resBufStartPos, int** resBufSpace, BlockTypeNumber resblockid)
+	{
+		int* allocspace = (int*)Allocators::AllocateByType(GetResourceBlockTypeNumber(resblockid), pos + ResType::ResourceAlignment[0]);
+		*resBufSpace = allocspace;
+		*resBufStartPos = (int*)(~(ResType::ResourceAlignment[0] - 1) & ((unsigned int)allocspace + ResType::ResourceAlignment[0] - 1));
+	}
+
+	ResourceBlockTypeNumber ResourceBase::GetResourceBlockTypeNumber(BlockTypeNumber resblockid)
+	{
+		if (!resblockid ||
+			memcmp(BlockTypeExtension[resblockid], "map", 4) ||
+			memcmp(BlockTypeExtension[resblockid], "submap", 7))
+			return RESTYPE_MAP;
+
+		if (!memcmp(BlockTypeExtension[resblockid], "mission", 8))
+			return RESTYPE_MISSION;
+
+		if (!memcmp(BlockTypeExtension[resblockid], "cutscene", 9))
+			return RESTYPE_CUTSCENE;
+
+		if (!memcmp(BlockTypeExtension[resblockid], "playerdata", 11))
+			return RESTYPE_PLAYERDATA;
+
+		return RESTYPE_NONE;
+	}
+
+#pragma message(TODO_IMPLEMENTATION)
 	void Resource::SetUnkFlag(unsigned char a1, int, int)
 	{
 		m_Flags ^= (m_Flags ^ (a1 << 18)) & 0x40000;

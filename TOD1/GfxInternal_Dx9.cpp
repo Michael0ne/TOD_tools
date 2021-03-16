@@ -33,13 +33,13 @@ const GfxInternal_Dx9_Vertex::VertexDeclaration GfxInternal_Dx9_Vertex::VertexDe
 };
 std::map<int, GfxInternal_Dx9_Vertex*>* GfxInternal_Dx9_Vertex::VertexBufferMap;
 
-void GfxInternal_Dx9::GetScreenResolution(Vector2<int>& outRes)
+void GfxInternal_Dx9::GetScreenResolution(Vector2<unsigned int>& outRes)
 {
 	outRes = g_GfxInternal_Dx9->m_DisplayModeResolution;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1)
+GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int unk1)
 {
 	MESSAGE_CLASS_CREATED(GfxInternal_Dx9);
 
@@ -111,7 +111,7 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<int>& resolution, unsigned int un
 	{
 		m_DisplayModeResolution = { 800, 600 };
 		m_ViewportResolution = { 800, 600 };
-		Vector2<int> res;
+		Vector2<unsigned int> res;
 
 		if (GetRegistryResolution(res) && m_DisplayModesList.size())
 			for (unsigned int i = 0; i < m_DisplayModesList.size(); i++)
@@ -284,7 +284,7 @@ void GfxInternal_Dx9::SetupWindowParams(unsigned int width, unsigned int height)
 	}
 }
 
-void GfxInternal_Dx9::SetupWindowParams_2(const Vector2<int> mode)
+void GfxInternal_Dx9::SetupWindowParams_2(const Vector2<unsigned int> mode)
 {
 	D3DDISPLAYMODE _mode;
 
@@ -307,7 +307,37 @@ void GfxInternal_Dx9::SetupWindowParams_2(const Vector2<int> mode)
 		MessageBoxA(g_Window->m_WindowHandle, Utils::GetErrorCodeDescription(result), "Couldn't get current display mode", NULL);
 }
 
-bool GfxInternal_Dx9::GetRegistryResolution(Vector2<int>& mode)
+bool GfxInternal_Dx9::SetScreenResolution(unsigned int width, unsigned int height)
+{
+	if (m_DisplayModeResolution.x != width || m_DisplayModeResolution.y != height)
+	{
+		if (m_Windowed)
+		{
+			const DisplayModeInfo* dispmode = IsScreenResolutionAvailable(width, height, true);
+			if (!dispmode)
+				return false;
+
+			m_DisplayModeResolution = { width, height };
+			m_DisplayModeFormat = (D3DFORMAT)dispmode->m_Format;
+			g_Window->SetWindowResolutionRaw(m_DisplayModeResolution);
+			m_PresentParameters.FullScreen_RefreshRateInHz = dispmode->m_RefreshRate;
+			m_PresentParameters.BackBufferFormat = (D3DFORMAT)dispmode->m_Format;
+		}
+		else
+		{
+			m_DisplayModeResolution = { width, height };
+			m_PresentParameters.BackBufferWidth = width;
+			m_PresentParameters.BackBufferHeight = height;
+			Reset();
+			RememberResolution();
+		}
+	}
+
+	g_ScreenProperties.SetWindowProperties((float)width, (float)height, GfxInternal::WideScreen ? (((float)width * 0.0625f) / ((float)height * 0.1111f)) : m_AspectRatio, 1.f);
+	return true;
+}
+
+bool GfxInternal_Dx9::GetRegistryResolution(Vector2<unsigned int>& mode)
 {
 	HKEY phkResult;
 	DWORD type;

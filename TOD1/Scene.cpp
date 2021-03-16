@@ -5,6 +5,10 @@
 #include "Progress.h"
 #include "ScriptDatabase.h"
 #include "SavePoint.h"
+#include "Buffer92.h"
+#include "CollisionProbe.h"
+#include "GfxInternal.h"
+#include "Camera.h"
 
 ScriptType_Entity* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
@@ -15,22 +19,92 @@ int Scene::GameTimeMs;
 int Scene::NextUpdateTime;
 int Scene::TotalFrames;
 int Scene::NewFrameNumber;
-bool Scene::IsRewindBufferInUse;
+bool Scene::IsRewindBufferInUse = true;
 bool Scene::LoadingAssetBlock;
+const unsigned int Scene::RewindBufferSize_1 = 204800;
+const unsigned int Scene::RewindBufferSize_2 = 309248;
+
 float Scene::FrameRate;
+UINT64 Scene::CreationTime;
+int Scene::_A3CEE4;
+int Scene::_A3CEE8;
+int Scene::_A3DA80[100];
+int Scene::_A3D8D8[100];
+int Scene::_A3DC38[4];
+
 int Scene::PreBlocksUnloadedCommand;
 int Scene::BlocksUnloadedCommand;
 int Scene::InvalidatePlaceholderModelCommand = -1;
 int Scene::RewindOrRetryFinishedCommand = -1;
 
-#pragma message(TODO_IMPLEMENTATION)
 Scene::Scene() : Folder_()
 {
 	MESSAGE_CLASS_CREATED(Scene);
 
+	m_PlayMode = 1;
+	m_NodesWithUpdateOrBlockingScripts = NULL;
+	m_Buffer_1 = new RenderBuffer92(0, 36, 2);
+	m_Buffer_2 = new RenderBuffer92(0, 36, 2);
+	m_SharedProbe = (CollisionProbe*)tCollisionProbe->CreateNode();
 	SceneInstance = this;
+	m_GameCamera = nullptr;
+	m_EditorCamera = nullptr;
+	m_QuadTreesAllocated = false;
+	StoreGameCamera();
+	m_CameraPosition = { 10000.f, -10000.f, 50000.f, 0.f };
+	m_SaveGameSize = NULL;
+	NextUpdateTime = NULL;
+	RealTimeMs = NULL;
+	GameTimeMs = NULL;
+	m_RewindResumeTimeMs = NULL;
+	m_InitMode = NULL;
+	CreationTime = Performance::GetMilliseconds();
+	m_TimeMultiplier = 1.f;
+	field_118 = 1.f;
+	m_RewindTimeMultiplier = 1.f;
+	m_FixedFramerate = false;
+	m_FixedFramerateVal = 0.039999999f;
 
+	for (unsigned int i = 0; i < 31; i++)
+	{
+		m_SceneBufferArray[i] = new RenderBuffer92(100, 20, 2);
+		g_GfxInternal->SetBufferRenderBufferPointerByIndex(i, m_SceneBufferArray[i]);
+	}
+
+	m_List_5.resize(1024);
+	m_RewindBuffer1 = nullptr;
+	m_RewindBuffer2 = nullptr;
+	_A3CEE4 = NULL;
+	_A3CEE8 = NULL;
+	field_C8 = NULL;
+	m_SaveLoadState = STATE_DONE;
+	m_SaveData = nullptr;
+	m_MemoryCards = nullptr;
+	m_WindMode = NULL;
+	field_1A8 = NULL;
+	m_WindPause = false;
+	field_1AA = NULL;
+	m_FlushRewindRequested = false;
+	m_SharedProbe->SetFlags(0x20);
+
+	for (unsigned int i = 0; i < 8; i++)
+	{
+		m_LoadedBlocks[i] = nullptr;
+		field_1D0[i] = NULL;
+	}
+
+	memset(_A3DA80, NULL, sizeof(_A3DA80));
+	memset(_A3D8D8, NULL, sizeof(_A3D8D8));
+	memset(_A3DC38, NULL, sizeof(_A3DC38));
+
+	field_268 = NULL;
+	m_ActiveCamera = nullptr;
+	
 	RewindOrRetryFinishedCommand = GetCommandByName("rewind_or_retry_finished(integer)");
+	BuildSceneTree();
+	AllocateRewindBuffer();
+
+	m_AssetBlockInfo = new AssetInfo();
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -47,7 +121,7 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 {
 	File assetfile(assetname, 161, true);
 
-	assetinfo->m_ResourceDataBufferPtr = g_Blocks->LoadResourceBlock(&assetfile, assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, NONE);
+	assetinfo->m_ResourceDataBufferPtr = g_Blocks->LoadResourceBlock(&assetfile, (int*)assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, ResType::BlockTypeNumber::NONE);
 	DWORD64 starttick = __rdtsc();
 
 	//g_Blocks->_878030();
@@ -193,19 +267,35 @@ void Scene::Load(const char* sceneName)
 		scene_path.Append(scene_fname);
 
 		String block_path_shared, block_path_localised;
-		Folder_::GetResourcePathRelative(block_path_shared, scene_path, NONE, 0);
-		Folder_::GetResourcePathRelative(block_path_localised, scene_path, NONE, Script::GetCurrentCountryCode());
+		Folder_::GetResourcePathRelative(block_path_shared, scene_path, ResType::BlockTypeNumber::NONE, 0);
+		Folder_::GetResourcePathRelative(block_path_localised, scene_path, ResType::BlockTypeNumber::NONE, Script::GetCurrentCountryCode());
+#ifdef INCLUDE_FIXES
+		if (!File::FindFileEverywhere(block_path_shared.m_szString))
+		{
+			LogDump::LogA("Asset shared block not found: \"%s\"!\n", block_path_shared.m_szString);
+			return;
+		}
+#else
 		File::FindFileEverywhere(block_path_shared.m_szString);
+#endif
+#ifdef INCLUDE_FIXES
+		if (!File::FindFileEverywhere(block_path_localised.m_szString))
+		{
+			LogDump::LogA("Asset localization block not found: \"%s\"!\n", block_path_shared.m_szString);
+			return;
+		}
+#else
 		File::FindFileEverywhere(block_path_localised.m_szString);
+#endif
 
 		int mainAssetAllocMem = Allocators::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
 		LogDump::LogA("asset block before: %0.1f Kb\n", mainAssetAllocMem * 0.0009765625f);
 
-		if (strcmp(Allocators::AllocatorsList[Blocks::GetResourceBlockTypeNumber(NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
-			((FrameBasedSubAllocator*)Allocators::AllocatorsList[Blocks::GetResourceBlockTypeNumber(NONE)])->_47A120();
+		if (strcmp(Allocators::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+			((FrameBasedSubAllocator*)Allocators::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->_47A120();
 		
 		LoadingAssetBlock = true;
-		Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = false;
+		//Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = false;
 		LoadResourceBlockIntoSceneBuffer(block_path_shared.m_szString, &m_AssetBlockInfo->m_AssetInfo_Shared);
 		LoadResourceBlockIntoSceneBuffer(block_path_localised.m_szString, &m_AssetBlockInfo->m_AssetInfo_Localised);
 		
@@ -233,16 +323,38 @@ void Scene::FinishCreation(const char* logTitle)
 	m_StartTimeMs = Performance::GetMilliseconds();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Scene::UpdateActiveCameraPosition()
+void Scene::StoreGameCamera()
 {
+	if (m_GameCamera && m_EditorCamera != nullptr && m_PlayMode != 1)
+		m_ActiveCamera = m_QuadTreesAllocated ? (Camera*)m_EditorCamera : m_GameCamera;
+	else
+		if (m_EditorCamera)
+			m_ActiveCamera = (Camera*)m_EditorCamera;
+		else
+			if (m_GameCamera)
+				m_ActiveCamera = m_GameCamera;
+			else
+				m_ActiveCamera = nullptr;
 
+	if (m_ActiveCamera)
+	{
+		Camera::StoreActiveCameraPosition();
+
+		if ((((m_CameraPosition.x - Camera::ActiveCameraPosition.x) * (m_CameraPosition.x - Camera::ActiveCameraPosition.x)) +
+			((m_CameraPosition.z - Camera::ActiveCameraPosition.z) * (m_CameraPosition.z - Camera::ActiveCameraPosition.z)) +
+			((m_CameraPosition.y - Camera::ActiveCameraPosition.y) * (m_CameraPosition.y - Camera::ActiveCameraPosition.y))) > 100.f)
+		{
+			LogDump::LogA("Camera has moved more than 10m. Forcing Lod-calculation\n");
+			ForceLodCalculation(0);
+		}
+
+		m_CameraPosition = Camera::ActiveCameraPosition;
+	}
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::EnumSceneCamerasAndUpdate()
 {
-
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -254,12 +366,45 @@ void Scene::UpdateLoadedBlocks(int unk1, Node* unk2)
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::_896810()
 {
-
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::AllocateRewindBuffer()
 {
+	if (IsRewindBufferInUse && !m_RewindBuffer1)
+	{
+		if (Allocators::AllocatorsList[CUTSCENE_OR_REWIND]->stub19() > 0)
+		{
+			LogDump::LogA("cannot allocate rewind buffer - memory block is in use!\n");
+			return;
+		}
+
+		LogDump::LogA("Allocate rewind buffer...\n");
+		m_RewindBuffer1 = new TransactionBuffer(RewindBufferSize_1);
+		m_RewindBuffer2 = new TransactionBuffer(RewindBufferSize_2);
+		field_268 = NULL;
+	}
+
+	m_RewindBuffer1->m_List_1.clear();
+	m_RewindBuffer1->field_1C = (void*)&(m_RewindBuffer1->m_List_1.begin());
+	m_RewindBuffer1->m_Size = NULL;
+	m_RewindBuffer1->field_20 = NULL;
+
+	m_RewindBuffer2->m_List_1.clear();
+	m_RewindBuffer2->field_1C = (void*)&(m_RewindBuffer2->m_List_1.begin());
+	m_RewindBuffer2->m_Size = NULL;
+	m_RewindBuffer2->field_20 = NULL;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::BuildSceneTree()
+{
+	if (SceneTree)
+		return;
+
+	/*g_Blocks->ResetSceneChildrenNodes(true);
+	AllocateQuadTrees();
+	AdjustNodesListsSize();*/
 
 }
 

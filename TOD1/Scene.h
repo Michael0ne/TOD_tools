@@ -27,10 +27,11 @@ enum SaveLoadState
 	STATE_LOAD_SUMMARY = 3
 };
 
-#pragma pack(4)
+//#pragma pack(4)
 class Scene : public Folder_
 {
 	friend class MemoryCards;
+	friend class Camera;
 protected:
 	ResType::MeshColor* m_StaticLighting;
 	int				m_PlayMode;	//	NOTE: 2 - menu.
@@ -64,7 +65,7 @@ protected:
 	int				m_NodesWithUpdateOrBlockingScripts;
 	char			m_InitMode;
 	float			m_TimeMultiplier;
-	float			m_f118;
+	float			field_118;
 	float			m_RewindTimeMultiplier;
 public:
 	bool			m_FixedFramerate;
@@ -89,15 +90,15 @@ protected:
 	bool			field_1AA;
 	bool			m_WindPause;
 	bool			m_FlushRewindRequested;
-	Node*			m_LoadedBlocks[6];
-	int				field_1C8;
-	int				field_1CC;
+	Node*			m_LoadedBlocks[8];
 	char			field_1D0[8];
-	class RenderBuffer*	m_SceneBufferArray[31];
-	class RenderBuffer*	m_Buffer_1;
-	class RenderBuffer*	m_Buffer_2;
+	class RenderBuffer92*	m_SceneBufferArray[31];
+	class RenderBuffer92*	m_Buffer_1;
+	class RenderBuffer92*	m_Buffer_2;
 public:
 	UINT64			m_StartTimeMs;
+protected:
+	int				field_268;
 
 public:
 	Scene();	//	@896D40
@@ -116,11 +117,12 @@ public:
 	void			Load(const char* sceneName);	//	@8980C0
 	void			RefreshChildNodes();	//	@88C2B0
 	void			FinishCreation(const char* logTitle);	//	@8935F0
-	void			UpdateActiveCameraPosition();	//	@893480
+	void			StoreGameCamera();	//	@893480
 	void			EnumSceneCamerasAndUpdate();	//	@893870
 	void			UpdateLoadedBlocks(int unk1, Node* unk2);	//	@8986E0
 	void			_896810();	//	@896810
 	void			AllocateRewindBuffer();	//	@894C50
+	void			BuildSceneTree();	//	@896BA0
 	void			FreeRewindBuffer();	//	@896CD0
 	void			ResetRewindBuffer(bool);	//	@894A80
 	void			ReleaseQuadTreeAndRenderlist();	//	@896C30
@@ -136,7 +138,15 @@ public:
 	static int		NewFrameNumber;	//	@A3DCE0
 	static bool		IsRewindBufferInUse;	//	@A1207C
 	static bool		LoadingAssetBlock;	//	@A3CE60
+	static const unsigned int RewindBufferSize_1;	//	@A12088
+	static const unsigned int RewindBufferSize_2;	//	@A1208C
 	static float	FrameRate;	//	@A3DCC0
+	static UINT64	CreationTime;	//	@A3DD00
+	static int		_A3CEE4;	//	@A3CEE4
+	static int		_A3CEE8;	//	@A3CEE8
+	static int		_A3DA80[100];	//	@A3DA80
+	static int		_A3D8D8[100];	//	@A3D8D8
+	static int		_A3DC38[4];	//	@A3DC38
 
 	static Scene*	SceneInstance;	//	@A3DCBC
 	static AuxQuadTree* SceneTree;	//	@A3DCE8
@@ -153,4 +163,4 @@ public:
 
 extern ScriptType_Entity* tScene;	//	@A3DCB8
 
-ASSERT_CLASS_SIZE(Scene, 612);	//	FIXME: actual size is 620.
+ASSERT_CLASS_SIZE(Scene, 616);	//	FIXME: actual size is 620 (0x26C).

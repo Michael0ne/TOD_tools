@@ -4,7 +4,7 @@
 RenderBuffer* g_RenderBuffer = nullptr;
 int RenderBuffer::Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE];
 
-RenderBuffer::RenderBuffer(int maxParams, AllocatorIndex allocatorType)
+RenderBuffer::RenderBuffer(unsigned int maxParams, AllocatorIndex allocatorType)
 {
 	MESSAGE_CLASS_CREATED(RenderBuffer);
 

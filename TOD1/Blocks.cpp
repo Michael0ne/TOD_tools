@@ -6,13 +6,11 @@
 #include "Progress.h"
 #include "ScriptDatabase.h"
 
-Blocks* g_Blocks = nullptr;
+Blocks* g_Blocks;
 
-const char* Blocks::BlockTypeExtension[] = {
-	".", "map", "submap", "mission", "cutscene", "playerdata", "main"
-};
-bool		Blocks::ChecksumChecked;
+bool Blocks::ChecksumChecked;
 
+#pragma message(TODO_IMPLEMENTATION)
 void Blocks::GetResourcePath(String& outStr, const char* path) const
 {
 	if (!path || !*path)
@@ -44,7 +42,7 @@ const char* Blocks::GetCurrentSceneName() const
 AllocatorIndex Blocks::GetAllocatorType() const
 {
 	if (m_LoadBlocks && m_BlockType >= NULL)
-		return (AllocatorIndex)GetResourceBlockTypeNumber(g_Blocks->m_BlockType);
+		return (AllocatorIndex)ResType::ResourceBase::GetResourceBlockTypeNumber(g_Blocks->m_BlockType);
 	else
 		return DEFAULT;
 }
@@ -100,7 +98,7 @@ void Blocks::GetPlatformSpecificPath(String& outStr, const char* respath, const 
 
 	strcat(buff, res_dir + 5);
 	strcat(buff, res_name);
-	
+
 	if (resext && strcmp(resext, ""))
 	{
 		strcat(buff, ".");
@@ -209,6 +207,7 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_4010C0(const char* key)
 
 void AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
 {
+	//	NOTE: this routine reverses bytes
 	unsigned int rounds = 2;
 	unsigned char v3 = field_24 & 1,
 		v7 = 0,
@@ -223,7 +222,7 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
 		v24 = field_28 & 1,
 		fld20 = field_20;
 
-	do 
+	do
 	{
 		if (fld20 & 1)
 		{
@@ -283,7 +282,7 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
 				field_28 = field_40 & (field_28 >> 1);
 			}
 		}
-		
+
 		v21 = (2 * v20) | v24 ^ v23;
 		if (v9 & 1)
 		{
@@ -351,10 +350,8 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned int* resdatasize, BlockTypeNumber resblockid)
+void* Blocks::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* resdatasize, ResType::BlockTypeNumber resblockid)
 {
-	return nullptr;
-	/*
 	AssetHeaderStruct_t assetHeaderStruct;
 
 	LogDump::LogA("Loading resource block with ID=%i...\n", resblockid);
@@ -397,12 +394,20 @@ void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned i
 		unsigned int checksum = NULL;
 		file->Read(&checksum, sizeof(checksum));
 
-		if (Script::GetGlobalPropertyListCRC() != checksum)
+		if (GetGlobalPropertyListChecksum() != checksum)
+#ifndef INCLUDE_FIXES
 			return nullptr;
+#else
+			LogDump::LogA("Properties checksum mismatch! Asset has %x, engine has %x\n", checksum, GlobalPropertyListChecksum);
+#endif
 
 		file->Read(&checksum, sizeof(checksum));
-		if (Script::GetGlobalCommandListCRC() != checksum)
+		if (GetGlobalCommandListChecksum() != checksum)
+#ifndef INCLUDE_FIXES	
 			return nullptr;
+#else
+			LogDump::LogA("Commands checksum mismatch! Asset has %x, engine has %x\n", checksum, GlobalCommandListChecksum);
+#endif
 
 		ChecksumChecked = true;
 	}
@@ -418,44 +423,59 @@ void* Blocks::LoadResourceBlock(class File* file, void* resbufferptr, unsigned i
 	file->Read(&resourceBufferSize, sizeof(resourceBufferSize));
 
 	*resdatasize = resourcesInfoSize;
-	AllocateResourceBlockBufferAligned(resourcesInfoSize, &resourcesInfoBuffer, (int*)resbufferptr, resblockid);
+	ResType::ResourceBase::AllocateResourceBlockBufferAligned(resourcesInfoSize, &resourcesInfoBuffer, &resbufferptr, resblockid);
 	resourceDataBuffer = (int*)Allocators::AllocateByType(RENDERLIST, resourceBufferSize);
 	g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
 	file->SetPosAligned(0);
-	file->Read(&resourcesInfoBuffer, resourcesInfoSize);
+	file->Read(resourcesInfoBuffer, resourcesInfoSize);
 
-	//	NOTE: list type is 'ResType'.
-	int ResList[4] =
-	{
-		NULL, NULL, NULL, 0x18B00
-	};
+	std::vector<int> ResList;
 
 	if (totalResources > 0)
-		ResList->SetCapacity(totalResources);
+		ResList.resize(totalResources);
 
 	time_t	fileTimestamp = File::GetFileTimestamp(file->GetFileName());
-	char*	resourcesDataSize = new char[16 * totalResources];	//	NOTE: intentionally make space for 4 ints so additional data can be written later.
+	char* resourcesDataSize = new char[16 * totalResources];	//	NOTE: intentionally make space for 4 ints so additional data can be written later.
 
 	file->SetPosAligned(0);
-	file->Read(resourcesDataSize, 4 * totalResources);	//	NOTE: array of actual sizes for buffers
+	file->Read(resourcesDataSize, 4 * totalResources);
 
 	if (totalResources > 0)
 	{
-		ResList
+		std::vector<int>::iterator it = ResList.begin();
+		unsigned int assetSize = (int)resourcesDataSize - *it;
+
+		for (unsigned int i = totalResources; i; i--)
+		{
+			Performance::GetMilliseconds();
+			g_Progress->UpdateProgressTime(NULL, __rdtsc());
+
+			assetSize = *(int*)(*it + assetSize);
+			if (assetSize > 0)
+			{
+				file->SetPosAligned(0);
+				file->Read(resourceDataBuffer, assetSize);
+			}
+
+			//	TODO: apply read resource data into an actual resource instance and put it into resources list.
+
+			*it = (int)resourcesInfoBuffer;
+
+			it++;
+		}
 	}
 
-	delete resourcesDataSize;
+	delete[] resourcesDataSize;
 
 	if (totalResources > 0)
 		for (unsigned int i = 0; i < totalResources; i++)
-			m_LoadedResourcesList.AddElement(ResList[0] + 4 * i);
+			m_AssetsList.push_back(ResList[i]);
 
 	LogDump::LogA("Done. Loading %d resource took %.2f secs.\n", totalResources, (Performance::GetMilliseconds() - timeStart) * 0.001f);
 	delete resourceDataBuffer;
 
 	return resourcesInfoBuffer;
-	*/
 }
 
 Entity* Blocks::_8755E0()
@@ -479,25 +499,6 @@ Entity* Blocks::_875610(Entity* node)
 int Blocks::GetRegionId() const
 {
 	return m_RegionId;
-}
-
-ResourceBlockTypeNumber Blocks::GetResourceBlockTypeNumber(BlockTypeNumber resourceBlockId)
-{
-	if (!resourceBlockId ||
-		memcmp(BlockTypeExtension[resourceBlockId], "map", 4) ||
-		memcmp(BlockTypeExtension[resourceBlockId], "submap", 7))
-		return RESTYPE_MAP;
-
-	if (!memcmp(BlockTypeExtension[resourceBlockId], "mission", 8))
-		return RESTYPE_MISSION;
-
-	if (!memcmp(BlockTypeExtension[resourceBlockId], "cutscene", 9))
-		return RESTYPE_CUTSCENE;
-
-	if (!memcmp(BlockTypeExtension[resourceBlockId], "playerdata", 11))
-		return RESTYPE_PLAYERDATA;
-
-	return RESTYPE_NONE;
 }
 
 void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
@@ -531,38 +532,20 @@ unsigned int Blocks::_875570(unsigned int id)
 	return i | ((block_id + 1) << 20);
 }
 
-void Blocks::AllocateResourceBlockBufferAligned(unsigned int pos, int** resBufStartPos, int* resBufSpace, BlockTypeNumber resBlockId)
-{
-	*resBufSpace = (int)Allocators::AllocateByType(GetResourceBlockTypeNumber(resBlockId), pos + ResType::ResourceAlignment[0]);
-	*resBufStartPos = (int*)(~(ResType::ResourceAlignment[0] - 1) & (*resBufSpace + ResType::ResourceAlignment[0] - 1));
-}
-
 Blocks::Blocks(bool loadBlocks)
 {
 	MESSAGE_CLASS_CREATED(Blocks);
 
 	m_Defragmentator = Allocators::_4777F0(DEFRAGMENTING);
-	m_UnkList_1;
-	m_FastFindNodeVector;
-	m_NodesList[0];
-	m_NodesList[1];
-	m_NodesList[2];
-	m_NodesList[3];
-	m_NodesList[4];
-	m_NodesList[5];
-	m_ResourcesInstancesList;
-	m_SceneNames;
-	m_AssetsList;
 	m_LoadBlocks = loadBlocks;
 
 	g_Blocks = this;
 
-	//m_NodesList[0].SetCapacityAndErase(11200);
-	//m_NodesList[1].SetCapacityAndErase(4100);
-	//m_NodesList[2].SetCapacityAndErase(6000);
-	//m_NodesList[3].SetCapacityAndErase(2800);
-	//m_NodesList[4];
-	//m_NodesList[5].SetCapacityAndErase(100);
+	m_NodesList[0].reserve(11200);
+	m_NodesList[1].reserve(4100);
+	m_NodesList[2].reserve(6000);
+	m_NodesList[3].reserve(2800);
+	m_NodesList[5].reserve(100);
 	field_0 = NULL;
 	m_RegionId = -1;
 	m_ResourcesInstancesList.reserve(1);
@@ -571,7 +554,7 @@ Blocks::Blocks(bool loadBlocks)
 	field_1D0 = nullptr;
 	m_CheckTimestamp = false;
 	m_EngineVersionTimestamp = NULL;
-	m_BlockType = UNKNOWN;
+	m_BlockType = ResType::BlockTypeNumber::UNKNOWN;
 	field_108 = 2;
 }
 
@@ -618,7 +601,7 @@ int Blocks::GetFreeResourceTypeListItem(unsigned int index)
 
 unsigned int Blocks::AddEntity(Entity* ent)
 {
-	unsigned int listind = m_BlockType == UNKNOWN ? 0 : m_BlockType;
+	unsigned int listind = m_BlockType == ResType::BlockTypeNumber::UNKNOWN ? 0 : m_BlockType;
 	unsigned int listcap;
 
 	if (field_1C8)

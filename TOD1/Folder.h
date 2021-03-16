@@ -9,12 +9,18 @@ struct AssetInfo
 {
 	struct ActualAssetInfo
 	{
-		void*		m_ResourceDataBufferPtr;	//	NOTE: actual resource data read from file written here.
-		void*		m_ResourceAllocatedAlignedBufferPtr;	//	NOTE: pointer to buffer with resource data size written here.
-		unsigned int m_ResourceDataBufferSize;
+		void*		m_ResourceDataBufferPtr = nullptr;	//	NOTE: actual resource data read from file written here.
+		void*		m_ResourceAllocatedAlignedBufferPtr = nullptr;	//	NOTE: pointer to buffer with resource data size written here.
+		unsigned int m_ResourceDataBufferSize = NULL;
 	};
 	ActualAssetInfo	m_AssetInfo_Shared;
 	ActualAssetInfo	m_AssetInfo_Localised;
+	
+	inline AssetInfo()	//	NOTE: constructor always inlined.
+		: m_AssetInfo_Shared(), m_AssetInfo_Localised()
+	{
+		MESSAGE_CLASS_CREATED(AssetInfo);
+	};
 };
 
 ASSERT_CLASS_SIZE(AssetInfo, 24);
@@ -25,7 +31,7 @@ protected:
 	int				m_BlockId;
 	AssetInfo*		m_AssetBlockInfo;
 
-	static void		GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
+	static void		GetResourcePathRelative(String& outPath, String resourceName, ResType::BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
 public:
 	Folder_();
 

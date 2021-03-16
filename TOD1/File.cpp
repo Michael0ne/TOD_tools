@@ -224,9 +224,7 @@ time_t File::GetFileTimestamp_Impl(const char* path)
 	SYSTEMTIME fileTimeSystem = {};
 	tm time_ = {};
 
-	FileWrapper::GetWorkingDirRelativePath(workingdir);
 	findHandle = FindFirstFile(workingdir.m_szString, &findData);
-
 	if (findHandle == INVALID_HANDLE_VALUE && FileWrapper::GameDiscFound)
 	{
 		workingdir = path;
@@ -277,8 +275,7 @@ bool File::WriteBuffers()
 int File::_vsnprintf(File* _f, const char* _format, ...)
 {
 	va_list va;
-	char buf[1024];
-	memset(&buf, NULL, sizeof(buf));
+	char buf[1024] = {};
 
 	va_start(va, _format);
 	int written = vsnprintf(buf, sizeof(buf), _format, va);
@@ -289,6 +286,7 @@ int File::_vsnprintf(File* _f, const char* _format, ...)
 	return written;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 int File::_scanf(File* _f, const char* _format, ...)
 {
 	va_list va;
@@ -302,8 +300,7 @@ int File::_scanf(File* _f, const char* _format, ...)
 
 int File::WriteFormattedVarlistDataToBuffer(char* _buf, va_list args)
 {
-	char buf[1024];
-	memset(&buf, NULL, sizeof(buf));
+	char buf[1024] = {};
 
 	int written = vsnprintf(buf, sizeof(buf), _buf, args);
 
@@ -316,8 +313,13 @@ int File::WriteFormattedVarlistDataToBuffer(char* _buf, va_list args)
 #pragma message(TODO_IMPLEMENTATION)
 int File::_scanf_impl(char* format, int* outArgs)
 {
+#ifndef _EXE
 	//	NOTE: this checks input string for formatting symbol and does something with it. Why is it here?
 	return (*(int(__thiscall*)(File*, const char*, int*))0x42F0A0)(this, format, outArgs);
+#else
+	LogDump::LogA("File::_scanf_impl is not implemented!\n");
+	return NULL;
+#endif
 }
 
 char File::ReadBlock()
@@ -463,7 +465,7 @@ char File::WriteFromBuffer()
 	return true;
 }
 
-int File::GetPosition()
+int File::GetPosition() const
 {
 	return m_ReadFromZip ? m_SeekPosition : m_FileHandle->GetPosition();
 }
@@ -710,6 +712,7 @@ void File::ExtractFilePath(const char* inFilePath, char* outDirectory, char* out
 	if (!inFilePath || !*inFilePath)
 		return;
 
+	const unsigned int pathlen = strlen(inFilePath);
 	const char* const lastdotpos = strrchr(inFilePath, '.');
 	const char* lastslashpos = strrchr(inFilePath, '/');
 	if (!lastslashpos)
@@ -720,7 +723,7 @@ void File::ExtractFilePath(const char* inFilePath, char* outDirectory, char* out
 	if (lastdotpos)
 		strcpy(outFileExtension, lastdotpos + 1);
 
-	strncpy(outFileName, lastslashpos + 1, lastdotpos - lastslashpos - 1);
+	strncpy(outFileName, lastslashpos + 1, lastdotpos ? (lastdotpos - lastslashpos - 1) : (inFilePath + pathlen - lastslashpos));
 	strncpy(outDirectory, inFilePath, lastslashpos - inFilePath + 1);
 }
 
@@ -891,7 +894,7 @@ int FileWrapper::ReadBlock()
 	}
 }
 
-int FileWrapper::GetPosition()
+int FileWrapper::GetPosition() const
 {
 	EnterCriticalSection(&m_CriticalSection);
 	int filepos = m_FilePosition;
@@ -1181,10 +1184,110 @@ void FileWrapper::ReadBlockFromOffset()
 	m_BufferBegin = m_Buffer + 19;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 int FileWrapper::Read(LPVOID _buf, int _numbytestoread)
 {
-	return (*(int(__thiscall*)(FileWrapper*, LPVOID, int))0x437230)(this, _buf, _numbytestoread);
+	EnterCriticalSection(&m_CriticalSection);
+	if (_numbytestoread <= FILE_BUFFER_SIZE)
+	{
+		int bytesread = 0;
+		if (m_ExecuteAttribute)
+		{
+			int buffersize = m_BufferEnd - m_BufferBegin;
+			if (buffersize >= _numbytestoread)
+			{
+				memcpy(_buf, m_BufferBegin, _numbytestoread);
+				m_FilePosition += _numbytestoread;
+				m_BufferBegin = &m_BufferBegin[_numbytestoread];
+
+				LeaveCriticalSection(&m_CriticalSection);
+				return _numbytestoread;
+			}
+
+			memcpy(_buf, m_BufferBegin, buffersize);
+			m_BufferBegin = m_BufferEnd;
+			ReadBlock_Internal();
+
+			if (m_BufferBegin == m_BufferEnd)
+			{
+				m_FilePosition += buffersize;
+				LeaveCriticalSection(&m_CriticalSection);
+
+				return buffersize;
+			}
+
+			int buffersize_1 = m_BufferEnd - m_BufferBegin;
+			if (buffersize_1 >= (_numbytestoread - buffersize))
+				buffersize_1 = _numbytestoread - buffersize;
+
+			memcpy((char*)_buf + buffersize, m_BufferBegin, buffersize_1);
+			m_BufferBegin = &m_BufferBegin[buffersize_1];
+			m_FilePosition += (buffersize_1 + buffersize);
+			bytesread = buffersize_1 + buffersize;
+		}
+		else
+		{
+			if (_numbytestoread > 0)
+			{
+				while (true)
+				{
+					int readchar = ReadBlock();
+					if (readchar == -1)
+						break;
+
+					*((char*)_buf + bytesread) = readchar;
+
+					if (++bytesread >= _numbytestoread)
+					{
+						LeaveCriticalSection(&m_CriticalSection);
+						return bytesread;
+					}
+				}
+			}
+		}
+
+		LeaveCriticalSection(&m_CriticalSection);
+		return bytesread;
+	}
+
+	if (m_Read)
+	{
+		if (m_BufferBegin != m_BufferEnd)
+			SetFilePointer(m_File, m_BufferBegin - m_BufferEnd, 0, SEEK_CUR);
+		m_BufferEnd = m_Buffer;
+		m_BufferBegin = m_Buffer;
+	}
+
+	DWORD filebytesread = NULL;
+	ReadFile(m_File, _buf, _numbytestoread, &filebytesread, nullptr);
+	m_FilePosition += filebytesread;
+
+	if (m_ExecuteAttribute)
+	{
+		LeaveCriticalSection(&m_CriticalSection);
+		return filebytesread;
+	}
+
+	int bytesread = 0;
+	for (unsigned int i = 0; i < filebytesread; ++i, ++bytesread)
+	{
+		if (!i && *((char*)_buf) == '\n')
+		{
+			i = 1;
+			if (filebytesread <= 1)
+				break;
+		}
+
+		if (*((char*)_buf + i) == '\r')
+		{
+			*((char*)_buf + bytesread) = '\n';
+			++i;
+		}
+		else
+			*((char*)_buf + bytesread) = *((char*)_buf + i);
+	}
+
+	LeaveCriticalSection(&m_CriticalSection);
+	return bytesread;
 }
 
 char FileWrapper::WriteFromBufferAndSetToEnd()

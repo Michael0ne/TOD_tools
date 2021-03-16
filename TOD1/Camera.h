@@ -14,6 +14,12 @@ protected:
 public:
 	Camera();	//	@87D8F0
 
+	void			GetMatrix(D3DXMATRIX& outmat) const;	//	@87BC60
+
+	static Vector4f	ActiveCameraPosition;	//	@A3D898
+
+	static void		StoreActiveCameraPosition();	//	@87E160
+
 	static void		Register();	//	@87E1E0
 	static Camera*	Create(AllocatorIndex);	//	@87E560
 };

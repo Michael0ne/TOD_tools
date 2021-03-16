@@ -3,9 +3,9 @@
 
 ScriptType_Entity*	tFolder;
 
-void Folder_::GetResourcePathRelative(String& outPath, String resourceName, BlockTypeNumber blockType, const char* languageCode)
+void Folder_::GetResourcePathRelative(String& outPath, String resourceName, ResType::BlockTypeNumber blockType, const char* languageCode)
 {
-	char	fileExt[8] = {};
+	char	fileExt[16] = {};
 	char	fileDir[1024] = {};
 	char	fileName[128] = {};
 
@@ -13,8 +13,8 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Bloc
 
 	if (languageCode)
 	{
-		strcat(fileDir, "/");
 		strcat(fileDir, languageCode);
+		strcat(fileDir, "/");
 	}else
 		strcat(fileDir, "shared/");
 
@@ -27,7 +27,7 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Bloc
 	}
 
 	strcat(fileDir, ".");
-	strcat(fileDir, blockType ? Blocks::BlockTypeExtension[blockType] : Blocks::BlockTypeExtension[MAIN]);
+	strcat(fileDir, blockType ? ResType::BlockTypeExtension[blockType] : ResType::BlockTypeExtension[ResType::BlockTypeNumber::MAIN]);
 
 	outPath = fileDir;
 }

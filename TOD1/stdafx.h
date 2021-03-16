@@ -133,10 +133,6 @@ static void hook (DWORD address, void * function, BYTE type) {
 //			*(char*)(patch + 1) = (char)((int)function - address);
 }
 
-#define patch(addr, data, size) _patch((void*)(addr), (DWORD)(data), (size))
-static void _patch(void* pAddress, DWORD data, DWORD iSize)
-{ memcpy(pAddress, &data, iSize); }
-
 extern void debug (char * message, ...);
 
 // --------------------------------------------------------

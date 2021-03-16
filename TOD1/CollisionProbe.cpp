@@ -1,27 +1,25 @@
 #include "CollisionProbe.h"
+#include "ScriptTypes.h"
 
-std::vector<CollisionProbe*> CollisionProbe::ProbesList;
 ScriptType_Entity* tCollisionProbe;
+std::vector<CollisionProbe*> CollisionProbe::ProbesList;
+unsigned int CollisionProbe::CachedProbes;
 
-CollisionProbe::CollisionProbe(int unk1, float unk2) : Node(NODE_MASK_POSITION)
+CollisionProbe::CollisionProbe(int, float) : Node(NODE_MASK_POSITION)
 {
 	MESSAGE_CLASS_CREATED(CollisionProbe);
 
-	m_TouchingNodes = nullptr;
-	m_Nodes = nullptr;
-
-	//m_List_1 = List<int>(0x1CB00);
-	//m_IgnoredNodes = List<Node>(0x1CB00);
-	//m_List_3 = List<int>(0x1CB00);
-
+	m_TouchingNodes = (Node*)Allocators::AllocatorsList[DEFRAGMENTING]->field_1C;
 	field_AC = 0x2007C00;
-	field_D0 = 0;
+	m_Nodes = (ScriptType_Entity*)Allocators::AllocatorsList[DEFRAGMENTING]->field_1C;
+	field_D0 = nullptr;
 
 	Reset();
 
-	field_FC = 1;
+	field_FC = true;
+
 	ProbesList.push_back(this);
-	field_D0 = 0;
+	field_D0 = nullptr;
 
 	Reset();
 }
@@ -29,5 +27,44 @@ CollisionProbe::CollisionProbe(int unk1, float unk2) : Node(NODE_MASK_POSITION)
 #pragma message(TODO_IMPLEMENTATION)
 void CollisionProbe::Reset()
 {
-	(*(void(__thiscall*)(CollisionProbe*))0x8B61D0)(this);
+	m_UserMask = -1;
+	m_CollisionMask = -1;
+	m_DynamicMask = NULL;
+	m_Angle = -1.f;
+	m_LineMode = NULL;
+	m_LineThickness = 0.f;
+	m_LineWidth = NULL;
+	m_LineHeight = NULL;
+	m_ClosestNode = nullptr;
+	m_ClosestCollisionVolume = NULL;
+	m_RealNode = nullptr;
+	m_IgnoredNodes.clear();
+	m_SurfaceID = -1;
+	m_MaterialID = -1;
+	m_HintNode = nullptr;
+	m_OptimisticMode = NULL;
+	field_AC = NULL;
+
+//	_A3DE18->8B3590();
+//	_A3DE18->8B4570(ScriptType_Builtin::ZeroVector);
+
+	ClearCache();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void CollisionProbe::ClearCache()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void CollisionProbe::Register()
+{
+	tCollisionProbe = new ScriptType_Entity("CollisionProbe");
+	tCollisionProbe->InheritFrom(tNode);
+	tCollisionProbe->SetCreator((ScriptType_Entity::CREATOR)Create);
+}
+
+CollisionProbe* CollisionProbe::Create()
+{
+	return new CollisionProbe();
 }

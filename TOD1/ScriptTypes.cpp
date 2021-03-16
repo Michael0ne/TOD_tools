@@ -982,7 +982,7 @@ void ScriptType_Builtin::SetScreenResolution(int* arg)
 
 void ScriptType_Builtin::GetScreenResolution(float* arg)
 {
-	Vector2<int> res;
+	ScreenResolution res;
 	g_GfxInternal->GetScreenResolution(res);
 
 	*arg = (float)res.x;

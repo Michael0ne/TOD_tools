@@ -65,6 +65,7 @@ namespace GameConfig
 		const int GetParamValueInt(const char* const variableName) const;	//	@410A30
 		const float GetParamValueFloat(const char* const variableName) const;	//	@410AC0
 		Vector2<int>& GetParamValueVector2i(Vector2<int>& outvec, const char* const variableName, const char delimiter) const;	//	@410B50
+		Vector2<unsigned int>& GetParamValueVector2i(Vector2<unsigned int>& outvec, const char* const variableName, const char delimiter) const;	//	@410B50
 		Vector2<float>& GetParamValueVector2f(Vector2<float>& outvec, const char* const variableName, const char delimiter) const;	//	@410BE0
 		Vector3<float>& GetParamValueVector3(Vector3<float>& outvec, const char* const variableName, const char delimiter) const;	//	@410C70
 		Vector4f& GetParamValueVector4(Vector4f& outvec, const char* const variableName, const char delimiter) const;	//	@410D90

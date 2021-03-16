@@ -6,8 +6,8 @@
 class AuxQuadTree
 {
 public:
-	class Entity*	m_Owner;
-	int				field_4;
+	class Node*		m_Owner;
+	AuxQuadTree*	field_4;
 	int				field_8;
 	AuxQuadTree*	m_FirstSibling;
 	short			field_10[4];
@@ -31,7 +31,7 @@ public:
 	int				m_LodDistance;
 
 public:
-	AuxQuadTree(class Entity* owner);	//	@89F430
+	AuxQuadTree(class Node* owner);	//	@89F430
 	~AuxQuadTree();
 
 	void			CalculateLodForAllChildren();	//	@8A3820

@@ -55,7 +55,11 @@ namespace Input
 
 		if (!ControllersCreated)
 		{
+#ifndef _EXE
 			DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
+#else
+			DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
+#endif
 			EnumGameControllers();
 		}
 

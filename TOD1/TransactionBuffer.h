@@ -3,6 +3,7 @@
 
 class TransactionBuffer
 {
+	friend class Scene;
 protected:
 	void*			m_Buffer;
 	int				m_Chunks;

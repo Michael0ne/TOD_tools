@@ -1,7 +1,7 @@
 #include "AuxQuadTree.h"
 
 #pragma message(TODO_IMPLEMENTATION)
-AuxQuadTree::AuxQuadTree(class Entity* owner)
+AuxQuadTree::AuxQuadTree(class Node* owner)
 {
 	MESSAGE_CLASS_CREATED(AuxQuadTree);
 }

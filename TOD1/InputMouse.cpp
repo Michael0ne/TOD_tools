@@ -36,7 +36,11 @@ namespace Input {
 
 		g_InputMouse = this;
 
+#ifndef _EXE
 		if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_DirectInputInterface, NULL)))
+#else
+		if (FAILED(DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_DirectInputInterface, NULL)))
+#endif
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
 		if (FAILED(m_DirectInputInterface->CreateDevice(GUID_SysMouse, &m_DirectInputDevice, NULL)))
@@ -202,7 +206,7 @@ namespace Input {
 		m_OldLocalPosition.x += mouseState->lX;
 		m_OldLocalPosition.y += mouseState->lY;
 		
-		Vector2<int> screenRes;
+		Vector2<unsigned int> screenRes;
 		GfxInternal_Dx9::GetScreenResolution(screenRes);
 
 		m_OldLocalPosition.x = m_OldLocalPosition.x < 0 ? 0 : screenRes.x - m_OldLocalPosition.x;

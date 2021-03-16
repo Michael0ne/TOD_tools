@@ -1,12 +1,11 @@
 #pragma once
 #include "GfxInternal_Dx9.h"
 
-
 class Buffer276
 {
 public:
 	Vector3f	m_BufferSize;
-	class Scene_Buffer*	m_RenderBuffer;
+	class RenderBuffer92*	m_RenderBuffer;
 	int*		field_10;
 	char		field_14;
 	D3DXMATRIX	m_ViewMatrix;
@@ -187,7 +186,7 @@ private:
 	__int64							m_RenderEndTime;
 
 public:
-	GfxInternal(const Vector2<int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
+	GfxInternal(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
 	~GfxInternal();	//	@421470
 
 	void* operator new (size_t size)
@@ -206,8 +205,9 @@ public:
 	void							SetRenderBufferIsEmpty(bool);	//	@420170
 	void							PrepareForNewLevel();	//	@420180
 	void							DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const;	//	@420100
-	Vector2<int>&					GetScreenResolution(Vector2<int>& res) const;	//	@41FD70
-	bool							IsScreenResolutionAvailable(int width, int height) const;	//	@485460
+	Vector2<unsigned int>&			GetScreenResolution(Vector2<unsigned int>& res) const;	//	@41FD70
+	bool							IsScreenResolutionAvailable(unsigned int width, unsigned int height) const;	//	@485460
+	void							SetBufferRenderBufferPointerByIndex(unsigned int index, class RenderBuffer92* buf);	//	@41F9B0
 
 	static bool						IsWideScreen();	//	@420120
 
