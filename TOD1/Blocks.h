@@ -1,7 +1,6 @@
 #pragma once
 #include "ResourcesTypes.h"
 #include "Config.h"
-#include "Entity.h"
 #include <vector>
 
 struct FastFindInfo
@@ -55,7 +54,7 @@ protected:
 	char			field_8[256];
 	int				field_108;
 	Allocator*		m_Defragmentator;
-	std::vector<int>m_UnkList_1;	//	NOTE: this seems to be related to Defragmentator object.
+	std::vector<int>m_DefragmentatorList;
 	std::vector<FastFindInfo>	m_FastFindNodeVector;
 	std::vector<class Entity*>	m_NodesList[6];
 public:
@@ -101,15 +100,15 @@ public:
 		ptr = nullptr;
 	}
 
-	void			SetSceneName(const char* szSceneName);	//	@877F40
+	void			SetSceneName(const char* scenename);	//	@877F40
 	void			RemoveLastSceneName();	//	@875650
-	int				GetFreeResourceTypeListItem(unsigned int index);	//	@875540
+	unsigned int	GetFreeResourceTypeListItem(unsigned int index);	//	@875540
 	unsigned int	AddEntity(class Entity* ent);	//	@875FA0	//	NOTE: returns index
-	void			SetRegionId(signed int id);	//	@875434
+	void			SetRegion(signed int id);	//	@875434
 	AllocatorIndex	GetAllocatorType() const;	//	@875360
 	int				InsertTypeListItem(void* res);	//	@877A90
 	void			GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform);	//	@8776B0
-	void			GetInternalFileName(String& outName, const char* str);	//	@8773A0
+	const char*		GetResourcePathSceneRelative(const char* const path);	//	@8773A0
 	void			GetResourcePath(String& outStr, const char* path) const;	//	@875770
 	void			IncreaseResourceReferenceCount(ResType::Resource*);	//	@875320
 	void			DecreaseResourceReferenceCount(ResType::Resource*);	//	@875330
@@ -120,9 +119,20 @@ public:
 	void*			LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, ResType::BlockTypeNumber resblockid);	//	@8759E0
 	Entity*			_8755E0();	//	@8755E0
 	Entity*			_875610(Entity*);	//	@875610
-	int				GetRegionId() const;	//	@875440
+	int				GetRegion() const;	//	@875440
+	String&			GetDataPath(String& outstr) const;	//	@8764E0
+	ResType::Resource*	FindFirstFreeResource() const;	//	@879E00
 	
-	static void		GetPlatformSpecificResourcePath(String& outPath, const char* respath, GameConfig::CountryCodes region, ResType::PlatformId platform);	//	@876500
+	enum RegionCode
+	{
+		REGION_NOT_SET = -1,
+		REGION_EUROPE = 0,
+		REGION_USA = 1,
+		REGION_ASIA = 2
+	};
+
+	static void		CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, ResType::PlatformId platform);	//	@876500
+	static RegionCode	GetRegionId(const String& region);	//	@875450
 
 	static bool		ChecksumChecked;	//	@A3D7C9
 };

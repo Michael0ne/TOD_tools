@@ -111,6 +111,7 @@ public:
 	{
 		if (ptr)
 			Allocators::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 
 	void			Start();	//	@89A100

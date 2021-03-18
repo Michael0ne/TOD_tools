@@ -77,14 +77,6 @@ namespace GameConfig
 
 	ASSERT_CLASS_SIZE(ConfigVariables, 104);
 
-	enum CountryCodes
-	{
-		COUNTRY_UNKNOWN = -1,
-		COUNTRY_EUROPE = 0,
-		COUNTRY_USA,
-		COUNTRY_ASIA
-	};
-
 	struct ConfigCallback
 	{
 	public:
@@ -151,7 +143,6 @@ namespace GameConfig
 
 	void					InitialiseGame(LPSTR cmdline);	//	@93F680
 
-	static CountryCodes		GetRegionId(String* regionStr);	//	@875450
 	static void				EnumMaterialsInCollmat();	//	@87D330
 	static void				EnumFaceColMaterials();	//	@87D100
 

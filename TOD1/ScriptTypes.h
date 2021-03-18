@@ -233,14 +233,18 @@ public:
 };
 
 //	TODO: rename to 'EntityType' as in original code.
+class Entity;
+typedef void* (Entity::* GETTER)() const;
+typedef void (Entity::* SETTER)(void*);
+
 class ScriptType_Entity : public ScriptType
 {
 	struct ScriptFuncDesc
 	{
-		void			(*m_ScriptProcPtr)(class Entity*, void* params);
-		int				field_4;
-		int				field_8;
-		int				field_C;
+		void			(*m_ScriptProcPtr)(class Entity*, void* params) = nullptr;
+		int				field_4 = NULL;
+		int				field_8 = NULL;
+		int				field_C = NULL;
 
 		ScriptFuncDesc() {};
 		ScriptFuncDesc(const void* const scriptprocptr, int a2, int a3, int a4);
@@ -248,28 +252,28 @@ class ScriptType_Entity : public ScriptType
 
 	struct ScriptMethodDesc
 	{
-		ScriptType*		m_ReturnType;
-		int*			field_4;
-		void*			(*m_Getter)();
-		unsigned int	field_C;
-		unsigned int	field_10;
-		unsigned int	field_14;
-		void			(*m_Setter)(void*);
-		unsigned int	field_1C;
-		unsigned int	field_20;
-		int				field_24;
-		unsigned int	field_28;	//	NOTE: some flags.
-		unsigned int	field_2C;
+		ScriptType*		m_ReturnType = nullptr;
+		int*			field_4 = nullptr;
+		GETTER			m_Getter = nullptr;
+		unsigned int	field_C = NULL;
+		unsigned int	field_10 = NULL;
+		unsigned int	field_14 = NULL;
+		SETTER			m_Setter = nullptr;
+		unsigned int	field_1C = NULL;
+		unsigned int	field_20 = NULL;
+		int				field_24 = NULL;
+		unsigned int	field_28 = NULL;	//	NOTE: some flags.
+		unsigned int	field_2C = NULL;
 
 		ScriptMethodDesc() {};
 
 		ScriptMethodDesc(const ScriptType* rettype,
 			int* a2,
-			const void* const getterprocptr,
+			GETTER getterprocptr,
 			unsigned int a4,
 			unsigned int a5,
 			unsigned int a6,
-			const void* const setterprocptr,
+			SETTER setterprocptr,
 			unsigned int a8,
 			unsigned int a9,
 			int a10,
@@ -312,11 +316,11 @@ public:
 		const char* const a7);	//	@86EC70
 	void	RegisterProperty(const ScriptType* returntype,
 		const char* const propertyname,
-		const void* getterprocptr,
+		void* (Entity::*getterprocptr)() const,
 		const int a4,
 		const int a5,
 		const int a6,
-		const void* setterprocptr,
+		void (Entity::*setterprocptr)(void*),
 		const int a8,
 		const int a9,
 		const int a10,

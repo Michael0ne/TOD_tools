@@ -405,7 +405,6 @@ void Scene::BuildSceneTree()
 	/*g_Blocks->ResetSceneChildrenNodes(true);
 	AllocateQuadTrees();
 	AdjustNodesListsSize();*/
-
 }
 
 void Scene::FreeRewindBuffer()
@@ -417,9 +416,6 @@ void Scene::FreeRewindBuffer()
 
 		delete m_RewindBuffer1;
 		delete m_RewindBuffer2;
-
-		m_RewindBuffer1 = nullptr;
-		m_RewindBuffer2 = nullptr;
 	}
 }
 
@@ -443,7 +439,7 @@ void Scene::Register()
 	tScene->InheritFrom(tNode);
 	tScene->SetCreator((ScriptType_Entity::CREATOR)Create);
 
-	//	TODO: ...
+	//	TODO: register properties/scripts.
 
 	PreBlocksUnloadedCommand = RegisterGlobalCommand("pre_blocks_unloaded", true);
 	BlocksUnloadedCommand = RegisterGlobalCommand("blocks_unloaded", true);

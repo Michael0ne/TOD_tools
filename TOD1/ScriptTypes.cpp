@@ -403,7 +403,7 @@ void ScriptType_Entity::RegisterScript(const char* const scriptname, const void*
 	m_ScriptsList[RegisterGlobalCommand(scriptname, true)] = { scriptprocptr, a3, a4, a5 };
 }
 
-void ScriptType_Entity::RegisterProperty(const ScriptType* returntype, const char* const propertyname, const void* getterprocptr, const int a4, const int a5, const int a6, const void* setterprocptr, const int a8, const int a9, const int a10, const char* const a11, const int a12, const int a13, const int argumentstotal)
+void ScriptType_Entity::RegisterProperty(const ScriptType* returntype, const char* const propertyname, void* (Entity::* getterprocptr)() const, const int a4, const int a5, const int a6, void (Entity::* setterprocptr)(void*), const int a8, const int a9, const int a10, const char* const a11, const int a12, const int a13, const int argumentstotal)
 {
 	char buf[26] = {};
 	sprintf(buf, "%s:%s", propertyname, returntype->m_TypeName.m_szString);
@@ -1137,7 +1137,7 @@ void ScriptType_Builtin::EditorSelectNode(int* arg)
 
 void ScriptType_Builtin::GetRegion(int* arg)
 {
-	*arg = g_Blocks->GetRegionId();
+	*arg = g_Blocks->GetRegion();
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -1245,15 +1245,15 @@ ScriptType_Entity::ScriptFuncDesc::ScriptFuncDesc(const void* const scriptprocpt
 	field_C = a4;
 }
 
-ScriptType_Entity::ScriptMethodDesc::ScriptMethodDesc(const ScriptType* rettype, int* a2, const void* const getterprocptr, unsigned int a4, unsigned int a5, unsigned int a6, const void* const setterprocptr, unsigned int a8, unsigned int a9, int a10, unsigned int a11, unsigned int a12)
+ScriptType_Entity::ScriptMethodDesc::ScriptMethodDesc(const ScriptType* rettype, int* a2, GETTER getterprocptr, unsigned int a4, unsigned int a5, unsigned int a6, SETTER setterprocptr, unsigned int a8, unsigned int a9, int a10, unsigned int a11, unsigned int a12)
 {
 	m_ReturnType = (ScriptType*)rettype;
 	field_4 = a2;
-	m_Getter = (void* (*)())getterprocptr;
+	m_Getter = getterprocptr;
 	field_C = a4;
 	field_10 = a5;
 	field_14 = a6;
-	m_Setter = (void (*)(void*))setterprocptr;
+	m_Setter = setterprocptr;
 	field_1C = a8;
 	field_20 = a9;
 	field_24 = a10;
