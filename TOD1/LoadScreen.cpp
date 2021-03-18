@@ -30,7 +30,7 @@ const char* LoadScreenNode::GetImageFile() const
 void LoadScreenNode::SetImageFile(const char* _fname)
 {
 	if (_fname && *_fname && g_Blocks)
-		g_Blocks->GetInternalFileName(m_ImageFile, _fname);
+		m_ImageFile = g_Blocks->GetResourcePathSceneRelative(_fname);
 }
 
 void LoadScreenNode::Activate()

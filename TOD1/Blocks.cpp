@@ -7,8 +7,114 @@
 #include "ScriptDatabase.h"
 
 Blocks* g_Blocks;
-
 bool Blocks::ChecksumChecked;
+
+void Blocks::CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, ResType::PlatformId platform)
+{
+	const char* const pcplatformdir = strstr(respath, "pc_lores");
+	if (!platform)
+	{
+		if (!pcplatformdir)
+		{
+			outPath = respath;
+			return;
+		}
+
+		char pathfinal[128] = {};
+;
+		strncpy(pathfinal, respath, pcplatformdir - respath);
+		strcat(pathfinal, "pc_lores");
+		strcat(pathfinal, &respath[pcplatformdir - respath + 8]);
+
+		outPath = pathfinal;
+		return;
+	}
+
+	if (platform != ResType::PLATFORM_PS2)
+	{
+		if (platform != ResType::PLATFORM_XBOX)
+		{
+			outPath = respath;
+			return;
+		}
+
+		if (!pcplatformdir)
+		{
+			outPath = respath;
+			return;
+		}
+
+		char pathfinal[128] = {};
+
+		strncpy(pathfinal, respath, pcplatformdir - respath);
+		
+		if (!region)
+		{
+			strcat(pathfinal, "xbox_ntsc");
+			strcat(pathfinal, &respath[pcplatformdir - respath + 8]);
+
+			outPath = pathfinal;
+			return;
+		}
+
+		if (region != REGION_USA)
+		{
+			outPath = pathfinal;
+			return;
+		}
+
+		strcat(pathfinal, "xbox_pal");
+		strcat(pathfinal, &respath[pcplatformdir - respath + 8]);
+
+		outPath = pathfinal;
+		return;
+	}
+
+	if (!pcplatformdir)
+	{
+		outPath = respath;
+		return;
+	}
+
+	const char* const pathsuffix = &respath[pcplatformdir - respath + 8];
+	char pathprefix[128] = {};
+
+	if (region)
+	{
+		if (region != REGION_USA)
+		{
+			//	TODO: check if this is correct.
+			outPath = respath;
+			outPath.Append(pathsuffix);
+			return;
+		}
+
+		strncpy(pathprefix, respath, pcplatformdir - respath);
+		outPath = pathprefix;
+		outPath.Append("ps2_pal");
+		outPath.Append(pathsuffix);
+		return;
+	}
+
+	strncpy(pathprefix, respath, pcplatformdir - respath);
+	outPath = pathprefix;
+	outPath.Append("ps2_ntsc");
+	outPath.Append(pathsuffix);
+}
+
+Blocks::RegionCode Blocks::GetRegionId(const String& region)
+{
+	if (region.Equal("europe"))
+		return REGION_EUROPE;
+	else
+		if (region.Equal("usa"))
+			return REGION_USA;
+		else
+			if (region.Equal("asia"))
+				return REGION_ASIA;
+			else
+				return REGION_NOT_SET;
+}
 
 #pragma message(TODO_IMPLEMENTATION)
 void Blocks::GetResourcePath(String& outStr, const char* path) const
@@ -108,54 +214,17 @@ void Blocks::GetPlatformSpecificPath(String& outStr, const char* respath, const 
 	outStr = buff;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Blocks::GetInternalFileName(String& outName, const char* str)
+const char* Blocks::GetResourcePathSceneRelative(const char* const path)
 {
-	char* _scenename = NULL;
-
-	if (m_SceneNames.size())
-		_scenename = m_SceneNames[m_SceneNames.size() - 1].m_szString;
-
-	if (String::EqualIgnoreCase(str, _scenename, strlen(_scenename)))
-	{
-		String _str(str);
-		_str.Substring(&outName, strlen(_scenename), _str.m_nLength - strlen(_scenename));
-
-		return;
-	}
-
-	const char* dataPath = "/data/";
-	unsigned char readBytes = NULL;
-	while (true)
-	{
-		if (!dataPath[str - "/data/"])
-			break;
-		if (!*dataPath ||
-			((dataPath[str - "/data/"] ^ *dataPath) & 223) != NULL)
-		{
-			outName = str;
-
-			return;
-		}
-		if (readBytes++ == 6)
-		{
-			String _str(str);
-			_str.Substring(&outName, 5, 0x7FFFFFFE);
-
-			return;
-		}
-		dataPath++;
-	}
-	if (!*dataPath)
-	{
-		String _str(str);
-		_str.Substring(&outName, 5, 0x7FFFFFFE);
-
-		return;
-	}
-	outName = str;
-
-	return;
+	const String& scenename = m_SceneNames.back();
+	if (strncmp(path, scenename.m_szString, scenename.m_nLength))
+		if (strstr(scenename.m_szString, "/data/") &&
+			strstr(path, "/data/"))
+			return path + 5;
+		else
+			return path;
+	else
+		return &path[scenename.m_nLength];
 }
 
 AssetHeaderStruct_t::AssetHeaderStruct_1::AssetHeaderStruct_1()
@@ -496,9 +565,27 @@ Entity* Blocks::_875610(Entity* node)
 		return nullptr;
 }
 
-int Blocks::GetRegionId() const
+int Blocks::GetRegion() const
 {
 	return m_RegionId;
+}
+
+String& Blocks::GetDataPath(String& outstr) const
+{
+	outstr = "/data/";
+	return outstr;
+}
+
+ResType::Resource* Blocks::FindFirstFreeResource() const
+{
+	if (m_ResourcesInstancesList.size() <= 1)
+		return nullptr;
+
+	for (unsigned int i = 0; i < m_ResourcesInstancesList.size(); ++i)
+		if (m_ResourcesInstancesList[i])
+			return m_ResourcesInstancesList[i];
+
+	return nullptr;
 }
 
 void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
@@ -562,12 +649,29 @@ Blocks::Blocks(bool loadBlocks)
 Blocks::~Blocks()
 {
 	MESSAGE_CLASS_DESTROYED(Blocks);
+
+	ResType::Resource* res = FindFirstFreeResource();
+	if (res)
+	{
+		//	TODO: finish this!
+	}
+
+	g_Blocks = nullptr;
+
+	m_AssetsList.clear();
+	m_SceneNames.clear();
+	m_ResourcesInstancesList.clear();
+
+	for (unsigned int i = 0; i < 6; i++)
+		m_NodesList[i].clear();
+
+	m_FastFindNodeVector.clear();
 }
 
-void Blocks::SetSceneName(const char* szSceneName)
+void Blocks::SetSceneName(const char* scenename)
 {
 	String sceneDir;
-	File::ExtractFileDir(sceneDir, szSceneName);
+	File::ExtractFileDir(sceneDir, scenename);
 
 	if (sceneDir.m_nLength > 0 && sceneDir.m_szString[sceneDir.m_nLength - 1] != '/')
 		sceneDir.Append("/");
@@ -575,26 +679,21 @@ void Blocks::SetSceneName(const char* szSceneName)
 	m_SceneNames.push_back(sceneDir);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Blocks::RemoveLastSceneName()
 {
+	if (m_SceneNames.size())
+		m_SceneNames.pop_back();
 }
 
-int Blocks::GetFreeResourceTypeListItem(unsigned int index)
-{
-	if (index + 1 >= m_ResourcesInstancesList.size())
+unsigned int Blocks::GetFreeResourceTypeListItem(unsigned int index)
+{	
+	unsigned int freeind = index + 1;
+	if (freeind >= m_ResourcesInstancesList.size())
 		return 0;
 
-	ResType::Resource** restype = &m_ResourcesInstancesList[index + 1];
-	unsigned int freeind = index + 1;
-
-	while (!*restype) {
-		restype++;
-		freeind++;
-
-		if (freeind >= m_ResourcesInstancesList.size())
+	for (const ResType::Resource* res = m_ResourcesInstancesList[freeind]; !res; res++)
+		if (++freeind >= m_ResourcesInstancesList.size())
 			return 0;
-	}
 
 	return freeind;
 }
@@ -622,7 +721,7 @@ unsigned int Blocks::AddEntity(Entity* ent)
 	return listcap | ((listind + 1) << 20);
 }
 
-void Blocks::SetRegionId(signed int id)
+void Blocks::SetRegion(signed int id)
 {
 	m_RegionId = id;
 }

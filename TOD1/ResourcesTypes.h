@@ -148,6 +148,8 @@ namespace ResType
 		const char*		AddResToOpenListAndReturnName();	//	@851720
 		void			_8513E0(unsigned char);	//	@8513E0
 		void			ApplyLoadedResource(ResourceHolder&);
+		void			EncodeCountryCode(const char* const countrycode);	//	@851480
+		const char* const	GetResourceCountryCode() const;	//	@851CC0
 		
 		static void		Destroy(Resource* res);	//	@851FC0
 

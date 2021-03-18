@@ -1,5 +1,6 @@
 #include "ResourcesTypes.h"
 #include "Blocks.h"
+#include "ScriptDatabase.h"
 
 namespace ResType
 {
@@ -132,10 +133,7 @@ namespace ResType
 		unsigned int _currresind = LastOpenResourceIndex;
 		LastOpenResourceIndex = (LastOpenResourceIndex + 1) % RESTYPE_MAX_OPEN_RESOURCES;
 
-		String resPath;
-		g_Blocks->GetInternalFileName(resPath, m_ResourcePath);
-
-		OpenResourcesList[_currresind] = resPath;
+		OpenResourcesList[_currresind] = g_Blocks->GetResourcePathSceneRelative(m_ResourcePath);
 
 		return OpenResourcesList[_currresind].m_szString;
 	}
@@ -148,6 +146,38 @@ namespace ResType
 	#pragma message(TODO_IMPLEMENTATION)
 	void Resource::ApplyLoadedResource(ResourceHolder&)
 	{
+	}
+
+	void Resource::EncodeCountryCode(const char* const countrycode)
+	{
+		if (countrycode)
+		{
+			const unsigned int countrycodestotal = sizeof(Script::CountryCodes) / sizeof(char*);
+			for (unsigned int i = 0; i < countrycodestotal; i++)
+				if (Script::CountryCodes[i][0] == *countrycode &&
+					Script::CountryCodes[i][1] == countrycode[1])
+				{
+					m_Flags ^= (m_Flags ^ (i << 20)) & 0xF00000;
+					return;
+				}
+		}
+		else
+			m_Flags = m_Flags & 0xFF6FFFFF | 0x600000;
+	}
+
+	const char* const Resource::GetResourceCountryCode() const
+	{
+		unsigned int countrycode = (m_Flags >> 20) & 15;
+		const unsigned int countrycodesarraycapacity = sizeof(Script::CountryCodes) / sizeof(char*);
+
+		//	NOTE: compiler complains about possible buffer overflow, because anything AND'ded with 15 is 15 maximum,
+		//		so maximum possible index for above statement is 15, but ContryCodes array is only 5 elements.
+		//		Possible solution is to check if this index is GREATER THAN maximum index for CountryCodes array.
+#ifdef INCLUDE_FIXES
+		return countrycode >= countrycodesarraycapacity ? nullptr : Script::CountryCodes[countrycode];
+#else
+		return countrycode == countrycodesarraycapacity ? nullptr : Script::CountryCodes[countrycode];
+#endif
 	}
 
 	void Resource::Destroy(Resource* res)

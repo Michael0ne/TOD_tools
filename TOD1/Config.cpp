@@ -436,7 +436,7 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("region"))
 			m_ConfigurationVariables->GetParamValueString(Script::Region, "region");
 
-		g_Blocks->SetRegionId(GetRegionId(&Script::Region));
+		g_Blocks->SetRegion(Blocks::GetRegionId(Script::Region));
 		LogDump::LogA("Using region: %s\n", Script::Region.m_szString);
 
 		if (m_ConfigurationVariables->IsVariableSet("virtual_hud_screensize"))
@@ -1059,20 +1059,6 @@ namespace GameConfig
 		g_Window->Process(Config::UpdateGame);
 
 		delete g_Config;
-	}
-
-	CountryCodes GetRegionId(String* regionStr)
-	{
-		if (regionStr->Equal("europe"))
-			return COUNTRY_EUROPE;
-
-		if (regionStr->Equal("usa"))
-			return COUNTRY_USA;
-
-		if (regionStr->Equal("asia"))
-			return COUNTRY_ASIA;
-
-		return COUNTRY_UNKNOWN;
 	}
 
 	void EnumMaterialsInCollmat()
