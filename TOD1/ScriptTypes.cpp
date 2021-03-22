@@ -398,19 +398,21 @@ void ScriptType_Entity::InheritFrom(ScriptType_Entity* from)
 	m_Parent = from;
 }
 
-void ScriptType_Entity::RegisterScript(const char* const scriptname, const void* const scriptprocptr, const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7)
+template <class C>
+void ScriptType_Entity::RegisterScript(const char* const scriptname, void (C::*scriptproc)(void*), const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7)
 {
-	m_ScriptsList[RegisterGlobalCommand(scriptname, true)] = { scriptprocptr, a3, a4, a5 };
+
 }
 
-void ScriptType_Entity::RegisterProperty(const ScriptType* returntype, const char* const propertyname, void* (Entity::* getterprocptr)() const, const int a4, const int a5, const int a6, void (Entity::* setterprocptr)(void*), const int a8, const int a9, const int a10, const char* const a11, const int a12, const int a13, const int argumentstotal)
+template <class C>
+void ScriptType_Entity::RegisterProperty(const ScriptType* returntype, const char* const propertyname, void* (C::* getter)(int) const, const int a4, const int a5, const int a6, void (C::* setter)(int), const int a8, const int a9, const int a10, const char* const a11, const int a12, const int a13, const int argumentstotal)
 {
 	char buf[26] = {};
 	sprintf(buf, "%s:%s", propertyname, returntype->m_TypeName.m_szString);
 	unsigned int propindmask = RegisterGlobalProperty(buf, true) | 0x7FFF0000;
 
 	if (argumentstotal < 0)
-		m_PropertiesList_1.emplace_back(returntype, nullptr, getterprocptr, a4, a5, a6, setterprocptr, a8, a9, a10, (propindmask ^ (0xFFFF0000 * (m_PropertiesList_1.size() + field_70))) & 0x7FFF0000 ^ propindmask, 0);
+		m_PropertiesList_1.emplace_back(returntype, nullptr, getter, a4, a5, a6, setter, a8, a9, a10, (propindmask ^ (0xFFFF0000 * (m_PropertiesList_1.size() + field_70))) & 0x7FFF0000 ^ propindmask, 0);
 	else
 	{
 		if (argumentstotal - field_6C >= m_PropertiesList.size())

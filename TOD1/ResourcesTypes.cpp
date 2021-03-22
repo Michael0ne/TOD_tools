@@ -42,7 +42,7 @@ namespace ResType
 
 	void ResourceBase::AllocateResourceBlockBufferAligned(unsigned int pos, int** resBufStartPos, int** resBufSpace, BlockTypeNumber resblockid)
 	{
-		int* allocspace = (int*)Allocators::AllocateByType(GetResourceBlockTypeNumber(resblockid), pos + ResType::ResourceAlignment[0]);
+		int* allocspace = (int*)MemoryManager::AllocateByType((AllocatorIndex)GetResourceBlockTypeNumber(resblockid), pos + ResType::ResourceAlignment[0]);
 		*resBufSpace = allocspace;
 		*resBufStartPos = (int*)(~(ResType::ResourceAlignment[0] - 1) & ((unsigned int)allocspace + ResType::ResourceAlignment[0] - 1));
 	}

@@ -95,9 +95,6 @@
     <ClInclude Include="StreamedSoundBuffers.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryAllocators.h">
-      <Filter>Header files\KapowSystems\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="File.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
@@ -431,6 +428,39 @@
     <ClInclude Include="resource.h">
       <Filter>Header files</Filter>
     </ClInclude>
+    <ClInclude Include="AllocatorBase.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemSubAllocator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="FirstFitSubAllocator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SequentialSubAllocator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBasedSubAllocator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="BestFitAllocator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="PoolSubAllocator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="StackBasedSubAllocator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SingletonSubAllocator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Defragmentator.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryManager.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -453,9 +483,6 @@
     </ClCompile>
     <ClCompile Include="InputMouse.cpp">
       <Filter>Source files\KapowSystems\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="MemoryAllocators.cpp">
-      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
     <ClCompile Include="StreamedSoundBuffers.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
@@ -744,6 +771,39 @@
     </ClCompile>
     <ClCompile Include="Buffer92.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="AllocatorBase.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemSubAllocator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="FirstFitSubAllocator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="SequentialSubAllocator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBasedSubAllocator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="BestFitAllocator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="PoolSubAllocator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="StackBasedSubAllocator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="SingletonSubAllocator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Defragmentator.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryManager.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

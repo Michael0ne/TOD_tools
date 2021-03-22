@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MemoryAllocators.h"
+#include "MemoryManager.h"
 #include "Types.h"
 
 class GfxInternal_Dx9_Surface
@@ -23,12 +23,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 	}
 
 	void			SetPixelColor(unsigned int x, unsigned int y, const ColorRGB& clr);	//	@42F8A0

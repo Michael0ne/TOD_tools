@@ -78,12 +78,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 
@@ -103,12 +103,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 };
@@ -120,12 +120,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 };
@@ -137,12 +137,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 };
@@ -154,12 +154,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 };
@@ -171,12 +171,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 };
@@ -188,12 +188,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 };
@@ -205,12 +205,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 };
@@ -222,12 +222,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete (void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 };
@@ -307,20 +307,26 @@ public:
 	{
 		m_Creator = creator;
 	}
+
+	template <class C>
 	void	RegisterScript(const char* const scriptname,
-		const void* const scriptprocptr,
+		void (C::*scriptproc)(void*),
 		const int a3,
 		const int a4,
 		const int a5,
 		const char* const editorcontrolstr,
 		const char* const a7);	//	@86EC70
+
+	template <class C>
 	void	RegisterProperty(const ScriptType* returntype,
 		const char* const propertyname,
-		void* (Entity::*getterprocptr)() const,
+		//void* (Entity::*getterprocptr)() const,
+		void* (C::*getter)(int) const,
 		const int a4,
 		const int a5,
 		const int a6,
-		void (Entity::*setterprocptr)(void*),
+		//void (Entity::*setterprocptr)(void*),
+		void (C::*setter)(int),
 		const int a8,
 		const int a9,
 		const int a10,

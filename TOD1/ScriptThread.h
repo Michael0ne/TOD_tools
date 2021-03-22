@@ -1,5 +1,6 @@
 #pragma once
 #include "ScriptDatabase.h"
+#include "Defragmentator.h"
 
 class IScriptThread
 {

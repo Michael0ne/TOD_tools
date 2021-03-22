@@ -1105,7 +1105,7 @@ int FileWrapper::WriteBuffer(const char* _buf, int _len)
 		else
 		{
 			int ind_ = NULL;
-			for (buf = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(_len * 2, NULL, NULL); ind_ < _len; ++ind_)
+			for (buf = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(_len * 2, NULL, NULL); ind_ < _len; ++ind_)
 			{
 				if (_buf[ind_] == '\n')
 				{

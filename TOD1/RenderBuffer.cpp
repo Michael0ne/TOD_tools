@@ -13,7 +13,7 @@ RenderBuffer::RenderBuffer(unsigned int maxParams, AllocatorIndex allocatorType)
 
 	if (maxParams)
 	{
-		m_ParamsArray = (int*)Allocators::AllocatorsList[allocatorType]->Allocate_A(4 * maxParams, NULL, NULL);
+		m_ParamsArray = (int*)MemoryManager::AllocatorsList[allocatorType]->Allocate_A(4 * maxParams, NULL, NULL);
 
 		if (!m_ParamsArray)
 		{
