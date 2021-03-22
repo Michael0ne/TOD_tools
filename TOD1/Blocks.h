@@ -53,8 +53,8 @@ protected:
 	ResType::BlockTypeNumber m_BlockType;
 	char			field_8[256];
 	int				field_108;
-	Allocator*		m_Defragmentator;
-	std::vector<int>m_DefragmentatorList;
+	DefragmentatorBase*	m_Defragmentator;
+	std::vector<int> m_DefragmentatorList;
 	std::vector<FastFindInfo>	m_FastFindNodeVector;
 	std::vector<class Entity*>	m_NodesList[6];
 public:
@@ -81,22 +81,22 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void* operator new[](size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 	void operator delete[](void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 

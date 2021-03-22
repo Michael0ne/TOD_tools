@@ -1,6 +1,6 @@
 #pragma once
 #include "Types.h"
-#include "MemoryAllocators.h"
+#include "MemoryManager.h"
 #include "GfxInternal_Dx9_Texture.h"
 #include "Light.h"
 #include <d3dx9math.h>
@@ -36,13 +36,13 @@ public:
 
 	void* operator new(size_t size)
 	{
-		if (!Allocators::Released)
-			return Allocators::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
+		if (!MemoryManager::Released)
+			return MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::AllocatorsList[DEFAULT]->Free(ptr);
+			MemoryManager::AllocatorsList[DEFAULT]->Free(ptr);
 		ptr = nullptr;
 	}
 
@@ -319,12 +319,12 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 

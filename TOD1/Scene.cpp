@@ -9,6 +9,7 @@
 #include "CollisionProbe.h"
 #include "GfxInternal.h"
 #include "Camera.h"
+#include "FrameBasedSubAllocator.h"
 
 ScriptType_Entity* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
@@ -288,11 +289,11 @@ void Scene::Load(const char* sceneName)
 		File::FindFileEverywhere(block_path_localised.m_szString);
 #endif
 
-		int mainAssetAllocMem = Allocators::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
+		int mainAssetAllocMem = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
 		LogDump::LogA("asset block before: %0.1f Kb\n", mainAssetAllocMem * 0.0009765625f);
 
-		if (strcmp(Allocators::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
-			((FrameBasedSubAllocator*)Allocators::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->_47A120();
+		if (strcmp(MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+			((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->_47A120();
 		
 		LoadingAssetBlock = true;
 		//Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = false;
@@ -301,7 +302,7 @@ void Scene::Load(const char* sceneName)
 		
 		m_BlockId = m_BlockId | 0x80000000;
 		LoadingAssetBlock = false;
-		LogDump::LogA("asset block took %0.1f Kb\n", (mainAssetAllocMem - Allocators::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations()) * 0.0009765625f);
+		LogDump::LogA("asset block took %0.1f Kb\n", (mainAssetAllocMem - MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations()) * 0.0009765625f);
 	}
 
 	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load main asset block", Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
@@ -373,7 +374,7 @@ void Scene::AllocateRewindBuffer()
 {
 	if (IsRewindBufferInUse && !m_RewindBuffer1)
 	{
-		if (Allocators::AllocatorsList[CUTSCENE_OR_REWIND]->stub19() > 0)
+		if (MemoryManager::AllocatorsList[CUTSCENE_OR_REWIND]->stub19() > 0)
 		{
 			LogDump::LogA("cannot allocate rewind buffer - memory block is in use!\n");
 			return;

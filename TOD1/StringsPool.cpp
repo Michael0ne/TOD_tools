@@ -12,7 +12,7 @@ String::String(const char* const str)
 
 	if (m_nLength >= 4)
 	{
-		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		m_szString = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 		strcpy_s(m_szString, m_nLength + 1, str);
 	}
 	else
@@ -31,7 +31,7 @@ String::String(const String& rhs)
 
 	if (m_nLength >= 4)
 	{
-		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		m_szString = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 		strcpy_s(m_szString, m_nLength + 1, rhs.m_szString);
 	}
 	else
@@ -50,7 +50,7 @@ String::String(String& rhs)
 
 	if (m_nLength >= 4)
 	{
-		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		m_szString = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 		strcpy_s(m_szString, m_nLength + 1, rhs.m_szString);
 	}
 	else
@@ -60,7 +60,7 @@ String::String(String& rhs)
 String& String::operator=(const String& _r)
 {
 	if (m_szString != &m_pEmpty && (m_nBitMask & STRING_BITMASK_DEFAULT) != NULL)
-		Allocators::ReleaseMemory(m_szString, 0);
+		MemoryManager::ReleaseMemory(m_szString, 0);
 
 	m_nLength = _r.m_nLength;
 	m_nBitMask = _r.m_nBitMask;
@@ -72,7 +72,7 @@ String& String::operator=(const String& _r)
 	
 	if (m_nLength >= 4)
 	{
-		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		m_szString = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 		strcpy_s(m_szString, m_nLength + 1, _r.m_szString);
 	}
 	else
@@ -96,13 +96,13 @@ String* String::Substring(String* outStr, unsigned int posStart, unsigned int le
 		outStr->m_nLength = length;
 		outStr->m_nBitMask = (STRING_BITMASK_DEFAULT ^ (length + (length >> 2))) & STRING_BITMASK_ONLY_SIZE ^ STRING_BITMASK_DEFAULT;
 		outStr->m_pEmpty = NULL;
-		outStr->m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(outStr->m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		outStr->m_szString = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(outStr->m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 		strncpy(outStr->m_szString, &m_szString[posStart], length);
 	}else{
 		outStr->m_nLength = m_nLength - posStart;
 		outStr->m_nBitMask = (STRING_BITMASK_DEFAULT ^ ((m_nLength - posStart) + ((m_nLength - posStart) >> 2))) & STRING_BITMASK_ONLY_SIZE ^ STRING_BITMASK_DEFAULT;
 		outStr->m_pEmpty = NULL;
-		outStr->m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(outStr->m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		outStr->m_szString = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(outStr->m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 		strncpy(outStr->m_szString, &m_szString[posStart], m_nLength - posStart);
 	}
 
@@ -142,7 +142,7 @@ void String::AllocateSpaceForString()
 	if (m_nLength >= 4)
 	{
 		m_nBitMask = (m_nBitMask ^ (m_nLength + (m_nLength >> 2))) & STRING_BITMASK_ONLY_SIZE ^ m_nBitMask;
-		m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate_A(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+		m_szString = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 	}
 	else
 	{
@@ -160,16 +160,16 @@ void String::AdjustBufferSize()
 		
 		if (m_szString == &m_pEmpty)
 		{
-			m_szString = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+			m_szString = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 			memcpy(m_szString, &m_pEmpty, sizeof(m_pEmpty));
 		}
 		else
 		{
-			char* str_ = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+			char* str_ = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(m_nBitMask & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
 			memcpy(str_, m_szString, lenOld);
 
 			if (m_nBitMask & STRING_BITMASK_DEFAULT)
-				Allocators::ReleaseMemory(m_szString, false);
+				MemoryManager::ReleaseMemory(m_szString, false);
 
 			m_szString = str_;
 			m_nBitMask = m_nBitMask | STRING_BITMASK_DEFAULT;

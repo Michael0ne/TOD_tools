@@ -32,22 +32,22 @@ protected:
 public:
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void* operator new[](size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, false);
+			MemoryManager::ReleaseMemory(ptr, false);
 		ptr = nullptr;
 	}
 	void operator delete[](void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, false);
+			MemoryManager::ReleaseMemory(ptr, false);
 		ptr = nullptr;
 	}
 
@@ -173,22 +173,22 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void* operator new[](size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, false);
+			MemoryManager::ReleaseMemory(ptr, false);
 		ptr = nullptr;
 	}
 	void operator delete[](void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, false);
+			MemoryManager::ReleaseMemory(ptr, false);
 		ptr = nullptr;
 	}
 

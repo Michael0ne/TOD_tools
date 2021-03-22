@@ -1,9 +1,8 @@
 #pragma once
-
-#include "MemoryAllocators.h"
+#include "MemoryManager.h"
 
 #define STRING_BITMASK_DEFAULT	0x80000000
-#define STRING_BITMASK_SHORT	0x80000004	//	TODO: right now, this is not used as it should be - wether string is short or long - the memory always gets allocated from the heap. Change that.
+#define STRING_BITMASK_SHORT	0x80000004
 #define STRING_BITMASK_ONLY_SIZE 0x7FFFFFFF
 
 class String
@@ -24,7 +23,7 @@ public:
 	inline ~String()
 	{
 		if (m_szString != &m_pEmpty && (m_nBitMask & STRING_BITMASK_DEFAULT) != NULL)
-			Allocators::ReleaseMemory(m_szString, 0);
+			MemoryManager::ReleaseMemory(m_szString, 0);
 	}
 
 	String& operator=(const String& _r);

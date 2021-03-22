@@ -318,13 +318,13 @@ void Node::DestroyAddon()
 void Node::SetName(const char* name)
 {
 	if (m_Name)
-		Allocators::ReleaseMemory(m_Name, false);
+		MemoryManager::ReleaseMemory(m_Name, false);
 
 	if (!name || *name == NULL)
 		m_Name = nullptr;
 	else
 	{
-		m_Name = (char*)Allocators::AllocatorsList[g_Blocks->GetAllocatorType()]->Allocate(strlen(name) + 1, NULL, NULL);
+		m_Name = (char*)MemoryManager::AllocatorsList[g_Blocks->GetAllocatorType()]->Allocate(strlen(name) + 1, NULL, NULL);
 		strcpy(m_Name, name);
 	}
 }

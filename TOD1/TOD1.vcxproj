@@ -252,11 +252,21 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AllocatorBase.h" />
     <ClInclude Include="AnimLayer.h" />
     <ClInclude Include="AnimSlot.h" />
+    <ClInclude Include="BestFitAllocator.h" />
     <ClInclude Include="Buffer92.h" />
+    <ClInclude Include="Defragmentator.h" />
+    <ClInclude Include="FirstFitSubAllocator.h" />
+    <ClInclude Include="FrameBasedSubAllocator.h" />
+    <ClInclude Include="MemoryManager.h" />
+    <ClInclude Include="PoolSubAllocator.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ScriptThread.h" />
+    <ClInclude Include="SequentialSubAllocator.h" />
+    <ClInclude Include="SingletonSubAllocator.h" />
+    <ClInclude Include="StackBasedSubAllocator.h" />
     <ClInclude Include="StreamedWAV.h" />
     <ClInclude Include="AuxQuadTree.h" />
     <ClInclude Include="Blocks.h" />
@@ -325,6 +335,7 @@
     <ClInclude Include="File.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
     <ClInclude Include="StreamedSound.h" />
+    <ClInclude Include="SystemSubAllocator.h" />
     <ClInclude Include="TransactionBuffer.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SavePoint.h" />
@@ -364,7 +375,6 @@
     <ClInclude Include="Wind.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Light.h" />
-    <ClInclude Include="MemoryAllocators.h" />
     <ClInclude Include="Performance.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="StreamedSoundBuffers.h" />
@@ -372,11 +382,21 @@
     <ClInclude Include="ZipArch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AllocatorBase.cpp" />
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
     <ClCompile Include="Buffer92.cpp" />
+    <ClCompile Include="Defragmentator.cpp" />
+    <ClCompile Include="FirstFitSubAllocator.cpp" />
+    <ClCompile Include="FrameBasedSubAllocator.cpp" />
+    <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="NodeLogical.cpp" />
+    <ClCompile Include="PoolSubAllocator.cpp" />
     <ClCompile Include="ScriptThread.cpp" />
+    <ClCompile Include="SequentialSubAllocator.cpp" />
+    <ClCompile Include="BestFitAllocator.cpp" />
+    <ClCompile Include="SingletonSubAllocator.cpp" />
+    <ClCompile Include="StackBasedSubAllocator.cpp" />
     <ClCompile Include="StreamedWAV.cpp" />
     <ClCompile Include="AuxQuadTree.cpp" />
     <ClCompile Include="Blocks.cpp" />
@@ -441,6 +461,7 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
     <ClCompile Include="StreamedSound.cpp" />
+    <ClCompile Include="SystemSubAllocator.cpp" />
     <ClCompile Include="TransactionBuffer.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SavePoint.cpp" />
@@ -483,7 +504,6 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Light.cpp" />
-    <ClCompile Include="MemoryAllocators.cpp" />
     <ClCompile Include="Performance.cpp" />
     <ClCompile Include="Properties.cpp" />
     <ClCompile Include="Scene.cpp" />

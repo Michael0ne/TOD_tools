@@ -493,7 +493,7 @@ void* Blocks::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* res
 
 	*resdatasize = resourcesInfoSize;
 	ResType::ResourceBase::AllocateResourceBlockBufferAligned(resourcesInfoSize, &resourcesInfoBuffer, &resbufferptr, resblockid);
-	resourceDataBuffer = (int*)Allocators::AllocateByType(RENDERLIST, resourceBufferSize);
+	resourceDataBuffer = (int*)MemoryManager::AllocateByType(RENDERLIST, resourceBufferSize);
 	g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
 	file->SetPosAligned(0);
@@ -623,7 +623,7 @@ Blocks::Blocks(bool loadBlocks)
 {
 	MESSAGE_CLASS_CREATED(Blocks);
 
-	m_Defragmentator = Allocators::_4777F0(DEFRAGMENTING);
+	m_Defragmentator = MemoryManager::_4777F0(DEFRAGMENTING);
 	m_LoadBlocks = loadBlocks;
 
 	g_Blocks = this;

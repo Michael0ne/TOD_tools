@@ -228,7 +228,7 @@ namespace Input
 		if (FAILED(m_DirectInputDeviceInterface->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 
-		*(int*)&m_DataBuffer = (int)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT, NULL, NULL);
+		*(int*)&m_DataBuffer = (int)MemoryManager::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT, NULL, NULL);
 		memset(m_DataBuffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT);
 
 		DIPROPDWORD diProperty;

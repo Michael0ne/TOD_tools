@@ -9,9 +9,9 @@ CollisionProbe::CollisionProbe(int, float) : Node(NODE_MASK_POSITION)
 {
 	MESSAGE_CLASS_CREATED(CollisionProbe);
 
-	m_TouchingNodes = (Node*)Allocators::AllocatorsList[DEFRAGMENTING]->field_1C;
+	m_TouchingNodes = (Node*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator;
 	field_AC = 0x2007C00;
-	m_Nodes = (ScriptType_Entity*)Allocators::AllocatorsList[DEFRAGMENTING]->field_1C;
+	m_Nodes = (ScriptType_Entity*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator;
 	field_D0 = nullptr;
 
 	Reset();

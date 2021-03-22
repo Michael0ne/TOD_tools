@@ -1,5 +1,5 @@
 #pragma once
-#include "MemoryAllocators.h"
+#include "MemoryManager.h"
 
 #define RENDERBUFFER_DEFAULT_BUFFER_SIZE 128
 #define RENDERBUFFER_MAX_PARAMS_SIZE 250

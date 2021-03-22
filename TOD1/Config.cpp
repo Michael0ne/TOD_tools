@@ -819,7 +819,7 @@ namespace GameConfig
 		file->WriteFromBuffer();
 		const unsigned int filesize = file->GetPosition();
 		file->_WriteBufferAndSetToStart();
-		char* const buffer = (char*)Allocators::AllocatorsList[DEFAULT]->Allocate(filesize, NULL, NULL);
+		char* const buffer = (char*)MemoryManager::AllocatorsList[DEFAULT]->Allocate(filesize, NULL, NULL);
 		memset(buffer, NULL, filesize);
 		const int bytesread = file->Read(buffer, filesize);
 

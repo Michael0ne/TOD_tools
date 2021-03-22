@@ -52,7 +52,7 @@ namespace Input {
 		if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
-		*(int*)&m_Buffer = (int)Allocators::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT, NULL, NULL);
+		*(int*)&m_Buffer = (int)MemoryManager::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT, NULL, NULL);
 		memset(m_Buffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT);
 
 		m_BufferSize = NULL;

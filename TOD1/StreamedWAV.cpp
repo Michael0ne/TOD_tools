@@ -140,16 +140,16 @@ void StreamedWAV::DestroySoundBuffers(bool unk)
 
 void* StreamedWAV::operator new(size_t size)
 {
-	if (!Allocators::Released)
-		return Allocators::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
+	if (!MemoryManager::Released)
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
 	else
 		return nullptr;
 }
 
 void* StreamedWAV::operator new[](size_t size)
 {
-	if (!Allocators::Released)
-		return Allocators::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
+	if (!MemoryManager::Released)
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
 	else
 		return nullptr;
 }
@@ -157,6 +157,6 @@ void* StreamedWAV::operator new[](size_t size)
 void StreamedWAV::operator delete(void* ptr)
 {
 	if (ptr)
-		Allocators::AllocatorsList[DEFAULT]->Free(ptr);
+		MemoryManager::AllocatorsList[DEFAULT]->Free(ptr);
 	ptr = nullptr;
 }

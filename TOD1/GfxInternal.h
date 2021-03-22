@@ -25,12 +25,12 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 	}
 };
 
@@ -77,12 +77,12 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, true);
+			MemoryManager::ReleaseMemory(ptr, true);
 	}
 
 	void	Init(unsigned int unk1, unsigned char unk2, unsigned int unk3);	//	@422330
@@ -121,12 +121,12 @@ public:
 
 	void* operator new(size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, true);
+			MemoryManager::ReleaseMemory(ptr, true);
 	}
 
 	void	Init(const Scene_Buffer108& buf, unsigned int unk);	//	@4617D0
@@ -191,12 +191,12 @@ public:
 
 	void* operator new (size_t size)
 	{
-		return Allocators::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
 	}
 	void operator delete(void* ptr)
 	{
 		if (ptr)
-			Allocators::ReleaseMemory(ptr, 0);
+			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
 
