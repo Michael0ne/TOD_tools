@@ -36,7 +36,7 @@ Bullet::Bullet()
 	for (unsigned int i = 0; i < m_BulletShellsTotal; i++)
 	{
 		BulletShell bulletshell;
-		bulletshell.m_Vec_5 = ScriptType_Builtin::ZeroVector;
+		bulletshell.m_Vec_5 = BuiltinType::ZeroVector;
 
 		//m_BulletShellsList.AddElement(&bulletshell);
 

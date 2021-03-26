@@ -85,7 +85,7 @@ namespace GameConfig
 
 	class Config
 	{
-		friend class ScriptType_Builtin;
+		friend class BuiltinType;
 	protected:
 		bool				m_Initialized;
 		String				m_GameName;
@@ -132,7 +132,8 @@ namespace GameConfig
 		void				UninitialiseGame();	//	@93CBC0
 		bool				OpenScene(const char* scene);	//	@93CE00
 		void				CreateUnknownMatricies();	//	@93D360
-		
+
+		static bool			CheckAssetChecksum(File& file, const unsigned int propertyChecksum, const unsigned int commandChecksum);	//	@93CB00
 		static bool			UpdateGame();	//	@93CEB0
 		static void			_93CDA0(const char* const str);	//	@93CDA0
 

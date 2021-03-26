@@ -3,7 +3,7 @@
 #include "LoadScreenInfo.h"
 #include "Progress.h"
 
-ScriptType_Entity* tLoadScreenNode;	//	@A3D7E4
+EntityType* tLoadScreenNode;	//	@A3D7E4
 
 void LoadScreenNode::Activate_Impl()
 {

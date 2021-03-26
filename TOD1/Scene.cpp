@@ -11,7 +11,7 @@
 #include "Camera.h"
 #include "FrameBasedSubAllocator.h"
 
-ScriptType_Entity* tScene = nullptr;
+EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
 AuxQuadTree* Scene::SceneTree;
 
@@ -436,9 +436,9 @@ void Scene::TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::Register()
 {
-	tScene = new ScriptType_Entity("Scene");
+	tScene = new EntityType("Scene");
 	tScene->InheritFrom(tNode);
-	tScene->SetCreator((ScriptType_Entity::CREATOR)Create);
+	tScene->SetCreator((EntityType::CREATOR)Create);
 
 	//	TODO: register properties/scripts.
 

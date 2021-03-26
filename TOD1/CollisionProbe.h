@@ -23,7 +23,7 @@ protected:
 	int			m_DynamicMask;
 	int			m_UserMask;
 	int*		field_D0;
-	class ScriptType_Entity* m_Nodes;
+	class EntityType* m_Nodes;
 	std::vector<int>	m_List_3;
 	int			m_CollisionMask;
 	int			m_LineMode;
@@ -52,6 +52,6 @@ public:
 	static CollisionProbe*	Create();	//	@8BDEA0
 };
 
-extern ScriptType_Entity* tCollisionProbe;	//	@A3DE38
+extern EntityType* tCollisionProbe;	//	@A3DE38
 
 ASSERT_CLASS_SIZE(CollisionProbe, 292);

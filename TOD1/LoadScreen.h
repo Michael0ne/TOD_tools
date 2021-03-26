@@ -26,6 +26,6 @@ public:
 	void		SetLoadbarSprite(class Sprite* _sprite);	//	@87C9E0
 };
 
-extern ScriptType_Entity* tLoadScreenNode;	//	@A3D7E4
+extern EntityType* tLoadScreenNode;	//	@A3D7E4
 
 static_assert(sizeof(LoadScreenNode) == LOAD_SCREEN_NODE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(LoadScreenNode));

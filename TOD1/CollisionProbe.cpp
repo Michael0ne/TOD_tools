@@ -1,7 +1,7 @@
 #include "CollisionProbe.h"
-#include "ScriptTypes.h"
+#include "EntityType.h"
 
-ScriptType_Entity* tCollisionProbe;
+EntityType* tCollisionProbe;
 std::vector<CollisionProbe*> CollisionProbe::ProbesList;
 unsigned int CollisionProbe::CachedProbes;
 
@@ -11,7 +11,7 @@ CollisionProbe::CollisionProbe(int, float) : Node(NODE_MASK_POSITION)
 
 	m_TouchingNodes = (Node*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator;
 	field_AC = 0x2007C00;
-	m_Nodes = (ScriptType_Entity*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator;
+	m_Nodes = (EntityType*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator;
 	field_D0 = nullptr;
 
 	Reset();
@@ -59,9 +59,9 @@ void CollisionProbe::ClearCache()
 #pragma message(TODO_IMPLEMENTATION)
 void CollisionProbe::Register()
 {
-	tCollisionProbe = new ScriptType_Entity("CollisionProbe");
+	tCollisionProbe = new EntityType("CollisionProbe");
 	tCollisionProbe->InheritFrom(tNode);
-	tCollisionProbe->SetCreator((ScriptType_Entity::CREATOR)Create);
+	tCollisionProbe->SetCreator((EntityType::CREATOR)Create);
 }
 
 CollisionProbe* CollisionProbe::Create()

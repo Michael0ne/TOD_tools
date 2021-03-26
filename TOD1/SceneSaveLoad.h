@@ -1,7 +1,6 @@
 #pragma once
-
 #include "MemoryManager.h"
-#include "ScriptTypes.h"
+#include "EntityType.h"
 #include "TransactionBuffer.h"
 
 #define SCENESAVELOAD_CLASS_SIZE 120
@@ -80,8 +79,8 @@ public:
 	void				ResetSavedPlayMode();	//	@873B90
 	bool				LoadSaveSummaryToBuffer(class SavePoint* savepoint, SaveInfo* saveinfo);	//	@874570
 	bool				LoadSaveSummary(class SavePoint* savepoint, const class Node* summarynode);	//	@874910
-	bool				LoadSavePointData(class SavePoint*, ScriptType_Entity*, class Node* readFinishedCb);	//	@874F40
-	bool				CompressAndWriteSaveData(class SavePoint*, ScriptType_Entity*);	//	@874A00
+	bool				LoadSavePointData(class SavePoint*, EntityType*, class Node* readFinishedCb);	//	@874F40
+	bool				CompressAndWriteSaveData(class SavePoint*, EntityType*);	//	@874A00
 	bool				ResetGame(class Node** loadedBlocksArray);	//	@874D00
 	
 	static bool			WriteDummySavePointData(class SavePoint* savepoint, unsigned int);	//	@8743F0

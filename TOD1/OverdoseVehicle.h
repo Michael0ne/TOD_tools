@@ -62,6 +62,6 @@ public:
 	OverdoseVehicle();	//	@92D3B0
 };
 
-extern ScriptType_Entity*	tOverdoseVehicle;	//	@A3E184
+extern EntityType*	tOverdoseVehicle;	//	@A3E184
 
 ASSERT_CLASS_SIZE(OverdoseVehicle, 980);

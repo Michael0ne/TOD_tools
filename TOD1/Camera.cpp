@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "Scene.h"
 
-ScriptType_Entity*	tCamera;
+EntityType*	tCamera;
 Vector4f Camera::ActiveCameraPosition;
 
 void Camera::StoreActiveCameraPosition()
@@ -25,7 +25,7 @@ Camera::Camera() : Node(NODE_MASK_POSITION)
 	m_NearClip = 1.f;
 	m_FarClip = 1000.f;
 	m_DynlightCullRange = 100.f;
-	field_4C = ScriptType_Builtin::ZeroVector;
+	field_4C = BuiltinType::ZeroVector;
 }
 
 void Camera::GetMatrix(D3DXMATRIX& outmat) const
@@ -54,9 +54,9 @@ void Camera::GetMatrix(D3DXMATRIX& outmat) const
 #pragma message(TODO_IMPLEMENTATION)
 void Camera::Register()
 {
-	tCamera = new ScriptType_Entity("Camera");
+	tCamera = new EntityType("Camera");
 	tCamera->InheritFrom(tNode);
-	tCamera->SetCreator((ScriptType_Entity::CREATOR)Create);
+	tCamera->SetCreator((EntityType::CREATOR)Create);
 }
 
 Camera* Camera::Create(AllocatorIndex)

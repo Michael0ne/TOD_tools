@@ -1,6 +1,6 @@
 #include "OverdoseVehicle.h"
 
-ScriptType_Entity* tOverdoseVehicle;
+EntityType* tOverdoseVehicle;
 
 #pragma message(TODO_IMPLEMENTATION)
 OverdoseVehicle::OverdoseVehicle() : RigidBody()

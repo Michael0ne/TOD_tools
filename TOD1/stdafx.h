@@ -83,7 +83,7 @@
 		static className* Create(AllocatorIndex); \
 	}; \
 	\
-	extern ScriptType_Entity* t##className; \
+	extern EntityType* t##className; \
 	\
 	ASSERT_CLASS_SIZE(className, classSize);
 

@@ -4,7 +4,7 @@
 #include "LogDump.h"
 #include "Scene.h"
 
-ScriptType_Entity* tMemoryCards = nullptr;
+EntityType* tMemoryCards = nullptr;
 
 MemoryCards::MemoryCards() : Node(NODE_MASK_EMPTY)
 {
@@ -55,7 +55,7 @@ String& MemoryCards::MakeSaveSlotString(String& outStr, unsigned int slotind) co
 #pragma message(TODO_IMPLEMENTATION)
 void MemoryCards::Register()
 {
-	tMemoryCards = new ScriptType_Entity("MemoryCards");
+	tMemoryCards = new EntityType("MemoryCards");
 	tMemoryCards->InheritFrom(tNode);
 	tMemoryCards->m_Creator = (void* (*)(AllocatorIndex))Create;
 
@@ -267,7 +267,7 @@ void MemoryCards::RestoreSavePoint(unsigned int memcardind, unsigned int slotind
 	Scene::SceneInstance->RestoreSavePoint(memcardind, slotind, MEMCARD_DEFAULT_SAVE_DIR, summarynode, this);
 }
 
-void MemoryCards::CreateSavePoint(unsigned int memcardind, unsigned int slotind, ScriptType_Entity* textbox, unsigned int, const char* const savedirectory, Node* summarynode) const
+void MemoryCards::CreateSavePoint(unsigned int memcardind, unsigned int slotind, EntityType* textbox, unsigned int, const char* const savedirectory, Node* summarynode) const
 {
 	Scene::SceneInstance->CreateSavePoint(memcardind, slotind, MEMCARD_DEFAULT_SAVE_DIR, summarynode, m_SaveFileSize);
 }

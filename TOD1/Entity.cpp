@@ -3,7 +3,7 @@
 #include "Globals.h"
 #include "MemoryCards.h"
 
-ScriptType_Entity* tEntity = nullptr;
+EntityType* tEntity;
 
 void Entity::Destroy()
 {
@@ -34,13 +34,13 @@ Entity::Entity()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-unsigned char Entity::SaveScriptDataToFile_Impl(ScriptType_Entity*, int, int, const char*)
+unsigned char Entity::SaveScriptDataToFile_Impl(EntityType*, int, int, const char*)
 {
 	return NULL;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-unsigned char Entity::LoadScriptDataFromFile_Impl(ScriptType_Entity*, int, int)
+unsigned char Entity::LoadScriptDataFromFile_Impl(EntityType*, int, int)
 {
 	return NULL;
 }
@@ -69,7 +69,7 @@ void Entity::SaveScriptDataToFile(int* params)
 		return;
 	}
 
-	ScriptType_Entity* memcard = (ScriptType_Entity*)(((MemoryCards*)params[1])->m_ScriptEntity);
+	EntityType* memcard = (EntityType*)(((MemoryCards*)params[1])->m_ScriptEntity);
 
 	while (tMemoryCards != memcard)
 	{
@@ -91,7 +91,7 @@ void Entity::LoadScriptDataFromFile(int* params)
 		return;
 	}
 
-	ScriptType_Entity* memcard = (ScriptType_Entity*)(((MemoryCards*)params[1])->m_ScriptEntity);
+	EntityType* memcard = (EntityType*)(((MemoryCards*)params[1])->m_ScriptEntity);
 
 	while (tMemoryCards != memcard)
 	{
@@ -106,7 +106,7 @@ void Entity::LoadScriptDataFromFile(int* params)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Entity::SetScript(ScriptType_Entity* script)
+void Entity::SetScript(const EntityType* script)
 {
 	//if (field_18)
 		//if (m_ScriptEntity)
@@ -121,18 +121,8 @@ void Entity::SetScript(ScriptType_Entity* script)
 #pragma message(TODO_IMPLEMENTATION)
 void Entity::Register()
 {
-	tEntity = new ScriptType_Entity("Entity");
-	tEntity->SetCreator((ScriptType_Entity::CREATOR)Create);
-
-	//tEntity->RegisterScript("getpropertyid(string):integer", GetPropertyId, NULL, NULL, NULL, NULL, "GetPropertyIDMSG");
-	//tEntity->RegisterScript("hasproperty(string):truth", HasProperty, NULL, NULL, NULL, NULL, "HasPropertyMSG");
-	//tEntity->RegisterScript("savescriptdatatofile(entity,integer,integer,string):truth", SaveScriptDataToFile, NULL, NULL, NULL, NULL, NULL);
-	//tEntity->RegisterScript("loadscriptdatafromfile(entity,integer,integer):integer", LoadScriptDataFromFile, NULL, NULL, NULL, NULL, NULL);
-	
-	//tEntity->RegisterProperty("id", tINTEGER, INT_GETTER(Entity::GetId), NULL, NULL, NULL, INT_SETTER(nullptr), NULL, NULL, -1, "control=string");
-	//tEntity->RegisterProperty("script_priority", tINTEGER, INT_GETTER(Entity::GetScriptPriority), NULL, NULL, NULL, INT_SETTER(Entity::SetScriptPriority), NULL, NULL, NULL, "control=string");
-
-	//tEntity->_86E9B0();
+	tEntity = new EntityType("Entity");
+	tEntity->SetCreator((EntityType::CREATOR)Create);
 }
 
 Entity* Entity::Create(AllocatorIndex)

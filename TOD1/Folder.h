@@ -39,6 +39,6 @@ public:
 	static Folder_* Create();	//	@87E730
 };
 
-extern ScriptType_Entity*	tFolder;	//	@A3D810
+extern EntityType*	tFolder;	//	@A3D810
 
 ASSERT_CLASS_SIZE(Folder_, 88);

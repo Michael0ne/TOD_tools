@@ -13,6 +13,6 @@ public:
 	static NodeSpatial*		Create(AllocatorIndex);	//	@892160
 };
 
-extern ScriptType_Entity*	tNodeSpatial;	//	@A3D888
+extern EntityType*	tNodeSpatial;	//	@A3D888
 
 ASSERT_CLASS_SIZE(NodeSpatial, 84);

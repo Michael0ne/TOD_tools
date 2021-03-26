@@ -1,5 +1,5 @@
 #pragma once
-#include "ScriptTypes.h"
+#include "EntityType.h"
 #include "ResourcesTypes.h"
 
 class Entity
@@ -8,7 +8,7 @@ class Entity
 	friend class Blocks;
 	friend class Fragment;
 protected:
-	ScriptType_Entity* m_ScriptEntity;
+	EntityType* m_ScriptEntity;
 	unsigned char	field_8[10];
 	short			m_Order;
 	//	NOTE: m_Id's highest bit contains block number associated with this entity (0-6).
@@ -17,8 +17,8 @@ protected:
 	int				field_1C;
 	int*			field_20;	//	NOTE: at field_20[1] is a pointer to ScriptThread. Maybe script thread that's attached to this entity (?)
 
-	unsigned char	SaveScriptDataToFile_Impl(ScriptType_Entity*, int, int, const char*);	//	@86B650
-	unsigned char	LoadScriptDataFromFile_Impl(ScriptType_Entity*, int, int);	//	@86B8B0
+	unsigned char	SaveScriptDataToFile_Impl(EntityType*, int, int, const char*);	//	@86B650
+	unsigned char	LoadScriptDataFromFile_Impl(EntityType*, int, int);	//	@86B8B0
 
 public:
 	virtual			~Entity();	//	@86C010
@@ -45,12 +45,12 @@ public:
 	void			SaveScriptDataToFile(int* params);	//	@86BBC0
 	void			LoadScriptDataFromFile(int* params);	//	@86BC20
 
-	void			SetScript(ScriptType_Entity*);	//	@869E20
+	void			SetScript(const EntityType*);	//	@869E20
 
 	static void		Register();	//	@86BC70
 	static Entity*	Create(AllocatorIndex);	//	@86C130
 };
 
-extern ScriptType_Entity* tEntity;	//	@A3CEE0
+extern EntityType* tEntity;	//	@A3CEE0
 
 ASSERT_CLASS_SIZE(Entity, 36);

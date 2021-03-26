@@ -22,7 +22,7 @@ struct GlobalProperty
 {
 	int							m_PropertyId = 0;
 	char*						m_PropertyName = nullptr;
-	class ScriptType*			m_PropertyType = nullptr;
+	class BaseType*				m_PropertyType = nullptr;
 
 	void						GetNameAndType(String& outStr) const;	//	@8731C0
 
@@ -40,10 +40,10 @@ protected:
 	struct CommandArgument
 	{
 		String					m_PropertyName;
-		class ScriptType*		m_ScriptType;
+		class BaseType*			m_ScriptType;
 		unsigned int			m_TotalSizeBytes;
 
-		CommandArgument(String& argname, const class ScriptType* argtype, unsigned int argsize);
+		CommandArgument(String& argname, const class BaseType* argtype, unsigned int argsize);
 	};
 
 	struct CommandArguments
@@ -60,7 +60,7 @@ protected:
 	const char*					m_CommandName;	//	NOTE: the name without arguments (only command name).
 
 private:
-	void						AddArgumentType(const ScriptType* argtype);	//	@862650
+	void						AddArgumentType(const BaseType* argtype);	//	@862650
 
 public:
 	GlobalCommand(const char* const commandname, const unsigned int commandind);	//	@871FE0
@@ -81,7 +81,7 @@ class GlobalScript
 		{
 			unsigned int		m_PropertyIndex;
 			const char*			m_PropertyName;
-			ScriptType*			m_PropertyType;
+			BaseType*			m_PropertyType;
 		}						m_GlobalProperty;
 		unsigned int			m_FieldOffset;
 		const char*				m_DefaultValue;
@@ -98,7 +98,7 @@ class GlobalScript
 	struct GlobalScriptParam
 	{
 		void					(* m_ProcPtr)(void*);
-		ScriptType*				m_ParamType;
+		BaseType*				m_ParamType;
 	};
 protected:
 	std::vector<GlobalScriptField>	m_FieldsList;
@@ -107,7 +107,7 @@ protected:
 	std::vector<GlobalScriptMethod>	m_MethodsList;
 	std::vector<GlobalScriptParam>		m_ParamsList;
 	int							field_44;
-	class ScriptType_Entity*	m_BaseEntity;
+	class EntityType*			m_BaseEntity;
 	String						m_Name;
 	int							field_5C;
 	void						(__cdecl* field_60)(int*);	//	NOTE: constructor (?)
@@ -117,7 +117,7 @@ public:
 
 	void						RegisterMember(unsigned int fieldId, const char* const defaultValue, unsigned int);	//	@48AF10
 
-	class ScriptType_Entity*	AssignScriptToEntity(const ScriptType_Entity* parent);	//	@48A3F0
+	class EntityType*	AssignScriptToEntity(const EntityType* parent);	//	@48A3F0
 
 	static GlobalScript*		GetGlobalScriptByName(const char* name);	//	@48C590
 	static std::vector<GlobalScript>	ScriptsList;	//	@A0B424
@@ -129,7 +129,7 @@ struct ScriptObject
 {
 protected:
 	GlobalScript*				m_ScriptInstance;
-	ScriptType*					m_Script;	//	NOTE: cast to appropriate type.
+	BaseType*					m_Script;	//	NOTE: cast to appropriate type.
 };
 
 static ScriptObject*			GlobalScriptsArray[205];	//	@A3B7A4

@@ -2,7 +2,7 @@
 #include "LogDump.h"
 #include "Performance.h"
 #include "Globals.h"
-#include "ScriptTypes.h"
+#include "EntityType.h"
 #include "Blocks.h"
 
 std::vector<GlobalProperty>		GlobalPropertiesList;	//	@A3CF20
@@ -127,7 +127,7 @@ int RegisterGlobalProperty(const char* const propertyname, bool existingProperty
 	}
 	else
 	{
-		ScriptType::LoadScript(proptype);
+		BaseType::LoadScript(proptype);
 
 		unsigned int propind = GlobalPropertiesList.size();
 		GlobalPropertiesList.emplace_back(propertyname, propind);
@@ -157,7 +157,7 @@ int RegisterGlobalCommand(const char* const commandname, bool existingCommand)
 	if (existingCommand && cmdid >= 0)
 	{
 		if (ddotpos)
-			ScriptType::GetTypeByName(ddotpos + 1);
+			BaseType::GetTypeByName(ddotpos + 1);
 
 #if defined INCLUDE_FIXES && defined VERBOSELOG
 		LogDump::LogA("Command \"%s\" already exists with id=%d!\n", commandname, cmdid);
@@ -290,7 +290,7 @@ GlobalProperty::GlobalProperty(const char* const propertyname, unsigned int ind)
 	strncpy(m_PropertyName, propertyname, propnamestrlen);
 	m_PropertyName[propnamestrlen] = NULL;
 
-	m_PropertyType = ScriptType::GetTypeByName(propertyname + propnamestrlen + 1);
+	m_PropertyType = BaseType::GetTypeByName(propertyname + propnamestrlen + 1);
 }
 
 GlobalProperty::~GlobalProperty()
@@ -299,7 +299,7 @@ GlobalProperty::~GlobalProperty()
 		delete[] m_PropertyName;
 }
 
-void GlobalCommand::AddArgumentType(const ScriptType* argtype)
+void GlobalCommand::AddArgumentType(const BaseType* argtype)
 {
 	String emptystr;
 	m_Arguments.m_ArgumentsList.emplace_back(emptystr, argtype, m_Arguments.m_TotalSizeBytes);
@@ -338,7 +338,7 @@ GlobalCommand::GlobalCommand(const char* const commandname, const unsigned int c
 	}
 	else
 	{
-		AddArgumentType(ScriptType::GetTypeByName(strchr(commandname, ':') + 1));
+		AddArgumentType(BaseType::GetTypeByName(strchr(commandname, ':') + 1));
 		*strchr(cmdname, ':') = NULL;
 	}
 
@@ -360,7 +360,7 @@ GlobalCommand::GlobalCommand(const char* const commandname, const unsigned int c
 			char* tok = strtok(args, ",");
 			while (tok)
 			{
-				ScriptType* argscripttype = ScriptType::LoadScript(tok);
+				BaseType* argscripttype = BaseType::LoadScript(tok);
 #ifdef INCLUDE_FIXES
 				//	NOTE: this should NOT happen!
 				if (!argscripttype)
@@ -391,7 +391,7 @@ GlobalCommand::~GlobalCommand()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-class ScriptType_Entity* GlobalScript::AssignScriptToEntity(const ScriptType_Entity* parent)
+class EntityType* GlobalScript::AssignScriptToEntity(const EntityType* parent)
 {
 	return nullptr;
 }
@@ -412,9 +412,9 @@ GlobalScript* GlobalScript::GetGlobalScriptByName(const char* name)
 	return nullptr;
 }
 
-GlobalCommand::CommandArgument::CommandArgument(String& argname, const ScriptType* argtype, unsigned int argsize)
+GlobalCommand::CommandArgument::CommandArgument(String& argname, const BaseType* argtype, unsigned int argsize)
 {
 	m_PropertyName = argname;
-	m_ScriptType = (ScriptType*)argtype;
+	m_ScriptType = (BaseType*)argtype;
 	m_TotalSizeBytes = argsize;
 }

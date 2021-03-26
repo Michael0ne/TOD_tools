@@ -736,7 +736,20 @@ namespace GameConfig
 	{	
 	}
 
-	#pragma message(TODO_IMPLEMENTATION)
+	bool Config::CheckAssetChecksum(File& file, const unsigned int propertyChecksum, const unsigned int commandChecksum)
+	{
+		unsigned int chksum;
+		if (file.Read(&chksum, sizeof(chksum)) != sizeof(chksum) || chksum != propertyChecksum)
+			return false;
+
+		if (file.Read(&chksum, sizeof(chksum)) != sizeof(chksum) || chksum != commandChecksum)
+			return false;
+
+		file.Read(&chksum, sizeof(chksum));
+		return true;
+	}
+
+#pragma message(TODO_IMPLEMENTATION)
 	bool Config::UpdateGame()
 	{
 		if (!Scene::SceneInstance)

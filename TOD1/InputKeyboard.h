@@ -7,7 +7,7 @@ namespace Input {
 
 	class Keyboard
 	{
-		friend class ScriptType_Builtin;
+		friend class BuiltinType;
 		friend class GfxInternal_Dx9;
 	protected:
 		unsigned char			m_ButtonStates[256];

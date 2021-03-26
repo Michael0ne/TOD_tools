@@ -1,6 +1,6 @@
 #include "NodeSpatial.h"
 
-ScriptType_Entity*	tNodeSpatial;
+EntityType*	tNodeSpatial;
 
 NodeSpatial::NodeSpatial() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
@@ -12,9 +12,9 @@ NodeSpatial::NodeSpatial() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 #pragma message(TODO_IMPLEMENTATION)
 void NodeSpatial::Register()
 {
-	tNodeSpatial = new ScriptType_Entity("NodeSpatial");
+	tNodeSpatial = new EntityType("NodeSpatial");
 	tNodeSpatial->InheritFrom(tNode);
-	tNodeSpatial->SetCreator((ScriptType_Entity::CREATOR)Create);
+	tNodeSpatial->SetCreator((EntityType::CREATOR)Create);
 }
 
 NodeSpatial* NodeSpatial::Create(AllocatorIndex)

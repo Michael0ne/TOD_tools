@@ -4,7 +4,7 @@
 #include "LogDump.h"
 #include "CollisionList.h"
 
-ScriptType_Entity* tNode;
+EntityType* tNode;
 
 Position::Position(Node* owner)
 {
@@ -235,7 +235,7 @@ unsigned int Node::GetFlags() const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Node::SetParam(const int index, const void* param, const ScriptType* type)
+void Node::SetParam(const int index, const void* param, const BaseType* type)
 {
 	if (!m_ScriptEntity)
 		return;
@@ -429,8 +429,8 @@ AuxQuadTree* Node::_8A0810(Node* node)
 
 void Node::Register()
 {
-	tNode = new ScriptType_Entity("Node");
-	tNode->SetCreator((ScriptType_Entity::CREATOR)Create);
+	tNode = new EntityType("Node");
+	tNode->SetCreator((EntityType::CREATOR)Create);
 }
 
 Node* Node::Create(AllocatorIndex)
