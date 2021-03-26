@@ -4,9 +4,6 @@
 #include "GfxInternal_Dx9_Texture.h"
 #include <vector>
 
-#define PROGRESS_CLASS_SIZE 112
-#define PROGRESS_BASE_CLASS_SIZE 72
-
 #pragma pack(4)
 struct ProgressStateInfo
 {
@@ -73,6 +70,7 @@ public:
 	{
 		if (ptr)
 			MemoryManager::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 
 	void			Complete();	//	@40E790

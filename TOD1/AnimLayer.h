@@ -11,14 +11,14 @@ protected:
 	Orientation					m_Orient_1;
 	Vector4f					m_Pos_1;
 	Node*						m_TargetAnim_Entity;
-	class ScriptType_Entity*	m_TargetAnim_Entity_2;
+	class EntityType*	m_TargetAnim_Entity_2;
 	unsigned int				m_Flags;
 	float						m_SpeedMultiplier;
 	float						m_CrossBlendFactor;
 	float						m_CrossBlendSpeed;
 	int							m_TargetAnim;
 	float						m_Weight;
-	class ScriptType_Entity*	m_MotionLayer;
+	class EntityType*	m_MotionLayer;
 	int							m_Event;
 	int							m_BlendFinishedEvent;
 	int							m_OverrideTarget;

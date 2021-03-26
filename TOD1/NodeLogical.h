@@ -15,6 +15,6 @@ public:
 	static NodeLogical* Create(AllocatorIndex);	//	@891CD0
 };
 
-extern ScriptType_Entity*	tNodeLogical;	//	@A3D88C
+extern EntityType*	tNodeLogical;	//	@A3D88C
 
 static_assert(sizeof(NodeLogical) == NODE_LOGICAL_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(NodeLogical));

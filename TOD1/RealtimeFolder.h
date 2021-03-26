@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Folder.h"
-
-#define REALTIME_FOLDER_CLASS_SIZE 88
 
 class RealtimeFolder : public Folder_
 {
@@ -15,3 +12,5 @@ public:
 };
 
 extern RealtimeFolder* tRealtimeFolder;
+
+ASSERT_CLASS_SIZE(RealtimeFolder, 88);

@@ -75,6 +75,18 @@
     <Filter Include="Resources\Icons">
       <UniqueIdentifier>{30ef79e1-ac7e-4241-b2d3-9f8dc48f59e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header files\KapowSystems\Scripting\Types">
+      <UniqueIdentifier>{26b44083-b909-46b6-8ad9-df62a8f14293}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\KapowSystems\Scripting\Types">
+      <UniqueIdentifier>{fdd7b477-d2be-4bd3-9bb8-29bff65de41a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\KapowSystems\Scripting\Entity">
+      <UniqueIdentifier>{9d7660be-4bce-432c-8b38-43046e287ae7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\KapowSystems\Scripting\Entity">
+      <UniqueIdentifier>{e7d45331-b339-498a-89cd-a13b25714000}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -101,71 +113,23 @@
     <ClInclude Include="Performance.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="AuxQuadTree.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionList.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Fragment.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Properties.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Header files\KapowSystems\System</Filter>
-    </ClInclude>
-    <ClInclude Include="StringsPool.h">
-      <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryCards.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="SavePoint.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="EditorCamera.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="TextBox.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="TextSlot.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundSlot.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="OverdoseVehicle.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidBody.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="GfxInternal_Dx9_Texture.h">
       <Filter>Header files\KapowSystems\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
     <ClInclude Include="Globals.h">
       <Filter>Header files\KapowSystems\System</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptTypes.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Scratchpad.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
@@ -176,173 +140,8 @@
     <ClInclude Include="DieselPowerSound.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadScreen.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionProbe.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="MoviePlayer.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="ZipArch.h">
       <Filter>Header files\KapowSystems\System</Filter>
-    </ClInclude>
-    <ClInclude Include="NodeSpatial.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="DecalManager.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="DynamicSurroundGeometry.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="GFXEffect.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="GEKeyFrame.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="ProfilerInput.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="NodeLogical.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Folder.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="MockupBox.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Bone.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimSlot.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="MotionAnimSlot.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimLayer.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="CutscenePlayer.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="MotionLayer.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionBox.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionSphere.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="WayPoint.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="TrackPoint.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Navigator.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="SignPost.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Track.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="ControlSetup.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Control.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Group.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="StretchModel.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyBox.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Fog.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Wind.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Cloth.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Shadow.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="LensFlare.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="LensFlareManager.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="SurroundGeometry.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="GuideBox.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Bullet.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundEmitter.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticLighting.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="GeometryEffect.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="RealtimeFolder.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="Placeholder.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterPlaceholder.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="HavocPlaceHolder.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="GoodiePlaceHolder.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="WeaponPlaceHolder.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="LoadScreenInfo.h">
       <Filter>Header files\KapowSystems\System</Filter>
@@ -358,9 +157,6 @@
     </ClInclude>
     <ClInclude Include="LogDump.h">
       <Filter>Header files\KapowSystems\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Progress.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\bink\bink.h">
       <Filter>Header files\ThirdParty\Bink</Filter>
@@ -392,17 +188,8 @@
     <ClInclude Include="ThirdParty\libvorbis-1.1.0\include\vorbisfile.h">
       <Filter>Header files\ThirdParty\libvorbis</Filter>
     </ClInclude>
-    <ClInclude Include="SceneSaveLoad.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysSystem.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="GfxInternal_Dx9_Surface.h">
       <Filter>Header files\KapowSystems\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="TransactionBuffer.h">
-      <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="GfxInternal.h">
       <Filter>Header files\KapowSystems\Render</Filter>
@@ -461,6 +248,270 @@
     <ClInclude Include="MemoryManager.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="BaseType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="StringsPool.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimLayer.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimSlot.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPlaceholder.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Cloth.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionBox.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionProbe.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSphere.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Control.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlSetup.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CutscenePlayer.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="DecalManager.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicSurroundGeometry.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorCamera.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Fog.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Folder.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Fragment.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="GEKeyFrame.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionList.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="AuxQuadTree.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryEffect.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="GFXEffect.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="GoodiePlaceHolder.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Group.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="GuideBox.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="HavocPlaceHolder.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="LensFlare.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="LensFlareManager.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadScreen.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryCards.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="MockupBox.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionAnimSlot.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionLayer.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="MoviePlayer.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Navigator.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeLogical.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeSpatial.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="OverdoseVehicle.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysSystem.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Placeholder.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="ProfilerInput.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Progress.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="RealtimeFolder.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSaveLoad.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Shadow.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="SignPost.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticLighting.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="StretchModel.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Track.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="WayPoint.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEmitter.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundSlot.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="SurroundGeometry.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Wind.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="TextSlot.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponPlaceHolder.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="TransactionBuffer.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="TrackPoint.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="TextBox.h">
+      <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="NothingType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="NumberType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="IntegerType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="TruthType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="QuaternionType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="StringType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ListType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="DictType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="DumpTable.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="BuiltinType.h">
+      <Filter>Header files\KapowSystems\Scripting\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -487,65 +538,17 @@
     <ClCompile Include="StreamedSoundBuffers.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="AuxQuadTree.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionList.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Fragment.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Properties.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
-    </ClCompile>
-    <ClCompile Include="StringsPool.cpp">
-      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
     <ClCompile Include="Config.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryCards.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="SavePoint.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="EditorCamera.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="TextBox.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="TextSlot.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundSlot.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="OverdoseVehicle.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="GfxInternal_Dx9_Texture.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptTypes.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Scratchpad.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
@@ -553,173 +556,11 @@
     <ClCompile Include="ResourcesTypes.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="LoadScreen.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionProbe.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="DieselPowerSound.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="MoviePlayer.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="ZipArch.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
-    </ClCompile>
-    <ClCompile Include="NodeSpatial.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="DecalManager.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="DynamicSurroundGeometry.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="GFXEffect.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="GEKeyFrame.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="ProfilerInput.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Node.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Folder.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="MockupBox.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Bone.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimSlot.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="MotionAnimSlot.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimLayer.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="CutscenePlayer.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="MotionLayer.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionBox.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionSphere.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="WayPoint.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="TrackPoint.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Navigator.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="SignPost.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Track.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="ControlSetup.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Control.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Group.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="StretchModel.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyBox.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Fog.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Wind.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Cloth.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Shadow.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="LensFlare.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="LensFlareManager.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="SurroundGeometry.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="GuideBox.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundEmitter.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticLighting.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="GeometryEffect.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="RealtimeFolder.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="Placeholder.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="CharacterPlaceholder.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="HavocPlaceHolder.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="GoodiePlaceHolder.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="WeaponPlaceHolder.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="LoadScreenInfo.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
@@ -733,20 +574,11 @@
     <ClCompile Include="RenderBuffer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Progress.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="LogDump.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="SceneSaveLoad.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="GfxInternal_Dx9_Surface.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="TransactionBuffer.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="GfxInternal.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
@@ -764,9 +596,6 @@
       <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
     <ClCompile Include="ScriptThread.cpp">
-      <Filter>Source files\KapowSystems\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="NodeLogical.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Buffer92.cpp">
@@ -804,6 +633,267 @@
     </ClCompile>
     <ClCompile Include="MemoryManager.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="StringsPool.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimLayer.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimSlot.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Cloth.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorCamera.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicSurroundGeometry.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="GFXEffect.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="GoodiePlaceHolder.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Group.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryEffect.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="GuideBox.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Folder.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Fog.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Control.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlSetup.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="MotionLayer.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="LensFlareManager.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="LensFlare.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="HavocPlaceHolder.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="GEKeyFrame.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="MoviePlayer.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="MockupBox.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="MotionAnimSlot.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterPlaceholder.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="AuxQuadTree.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionBox.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionList.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionProbe.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSphere.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="CutscenePlayer.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalManager.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Fragment.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadScreen.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryCards.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Navigator.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeLogical.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeSpatial.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="OverdoseVehicle.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Placeholder.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="ProfilerInput.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Progress.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="RealtimeFolder.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSaveLoad.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Shadow.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Track.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Wind.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponPlaceHolder.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="WayPoint.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="TrackPoint.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="TextSlot.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="TextBox.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="SurroundGeometry.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="StretchModel.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundSlot.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEmitter.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="SignPost.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="TransactionBuffer.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticLighting.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NothingType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="IntegerType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="TruthType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="QuaternionType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="StringType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ListType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="DictType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpTable.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="BuiltinType.cpp">
+      <Filter>Source files\KapowSystems\Scripting\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

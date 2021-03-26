@@ -138,7 +138,7 @@ public:
 
 class ScreenProperties
 {
-	friend class ScriptType_Builtin;
+	friend class BuiltinType;
 protected:
 	float m_fVirtualHudScreensizeWidth;
 	float m_fVirtualHudScreensizeHeight;

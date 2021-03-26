@@ -1,6 +1,6 @@
 #include "Model.h"
 
-ScriptType_Entity* tModel;
+EntityType* tModel;
 
 #pragma message(TODO_IMPLEMENTATION)
 Model::Model() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE | NODE_MASK_FRAGMENT)
@@ -38,9 +38,9 @@ Model::~Model()
 #pragma message(TODO_IMPLEMENTATION)
 void Model::Register()
 {
-	tModel = new ScriptType_Entity("Model");
+	tModel = new EntityType("Model");
 	tModel->InheritFrom(tNode);
-	tModel->SetCreator((ScriptType_Entity::CREATOR)Create);
+	tModel->SetCreator((EntityType::CREATOR)Create);
 }
 
 Model* Model::Create(AllocatorIndex)

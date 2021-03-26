@@ -24,6 +24,6 @@ public:
 	static Camera*	Create(AllocatorIndex);	//	@87E560
 };
 
-extern ScriptType_Entity*	tCamera;	//	@A3D80C
+extern EntityType*	tCamera;	//	@A3D80C
 
 ASSERT_CLASS_SIZE(Camera, 212);

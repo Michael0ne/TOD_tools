@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Entity.h"
 #include "AuxQuadTree.h"
 #include <d3dx9math.h>
@@ -151,7 +150,7 @@ public:
 	const char*			GetScript() const;	//	@86A230
 	unsigned int		GetFlags() const;	//	@495DB0
 
-	void				SetParam(const int index, const void* param, const ScriptType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
+	void				SetParam(const int index, const void* param, const BaseType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
 	void				SetOrient(const Orientation& orient);	//	@88DB20
 	Vector4f*			GetPos(Vector4f& outVec);	//	@483620
 	void				GetWorldMatrix(D3DXMATRIX& outMat) const;	//	@4842C0
@@ -170,6 +169,6 @@ public:
 	static Node*		Create(AllocatorIndex);	//	@88D680
 };
 
-extern ScriptType_Entity* tNode;	//	@A3D884
+extern EntityType* tNode;	//	@A3D884
 
 ASSERT_CLASS_SIZE(Node, 80);

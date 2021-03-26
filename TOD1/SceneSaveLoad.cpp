@@ -115,7 +115,7 @@ bool SceneSaveLoad::LoadSaveSummary(class SavePoint* savepoint, const class Node
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-bool SceneSaveLoad::LoadSavePointData(class SavePoint* sp, ScriptType_Entity* ent, class Node* readFinishedCb)
+bool SceneSaveLoad::LoadSavePointData(class SavePoint* sp, EntityType* ent, class Node* readFinishedCb)
 {
 	return false;
 }

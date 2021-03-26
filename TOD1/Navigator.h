@@ -8,7 +8,7 @@ protected:
 	Vector4f					m_NextTargetPoint;
 	float						m_f70;
 	float						m_f74;
-	class ScriptType_Entity*	m_MoveCtrl;
+	class EntityType*	m_MoveCtrl;
 	unsigned int				m_Flags;
 	float						m_MaxLookAhead;
 	float						m_f84;

@@ -17,7 +17,7 @@ class Bullet : public Model
 		Vector4f			m_Vec_5;
 		float				field_50;
 		float				field_54;
-		ScriptType_Entity*	m_IgnoredEntity;
+		EntityType*			m_IgnoredEntity;
 		char				field_5C;
 		char				field_5D;
 		char				field_5E;

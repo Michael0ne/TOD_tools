@@ -72,6 +72,6 @@ public:
 	static LightsListStruct	LightsList;		//	@A3D820
 };
 
-extern ScriptType_Entity*	tLight;	//	@A3D818
+extern EntityType*	tLight;	//	@A3D818
 
 ASSERT_CLASS_SIZE(Light, 228);

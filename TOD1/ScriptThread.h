@@ -45,7 +45,7 @@ class ScriptThread : public IScriptThread
 	};
 protected:
 	Defragmentator*				m_Defragmentator;
-	std::vector<ThreadList_1>	m_List_1;	//	NOTE: associated with defragmentator?
+	std::vector<ThreadList_1>	m_List_1;	//	NOTE: this is the list with a Defragmentator allocator attached to it.
 	Defragmentator*				m_Defragmentator_1;
 	std::vector<ThreadCallStack>m_CallStack;
 	int							m_SleepUntil;

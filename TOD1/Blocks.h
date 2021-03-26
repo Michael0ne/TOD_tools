@@ -122,13 +122,13 @@ public:
 	int				GetRegion() const;	//	@875440
 	String&			GetDataPath(String& outstr) const;	//	@8764E0
 	ResType::Resource*	FindFirstFreeResource() const;	//	@879E00
-	
+
 	enum RegionCode
 	{
-		REGION_NOT_SET = -1,
-		REGION_EUROPE = 0,
-		REGION_USA = 1,
-		REGION_ASIA = 2
+		REGION_NOT_SET	= -1,
+		REGION_EUROPE	= 0,
+		REGION_USA		= 1,
+		REGION_ASIA		= 2
 	};
 
 	static void		CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, ResType::PlatformId platform);	//	@876500

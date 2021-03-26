@@ -57,9 +57,6 @@ void MemoryManager::InitAllocator(Allocator& alloc, AllocatorIndex allocind, con
 	alloc.m_AllocatorIndex = allocind;
 	BuffersPtr[allocind] = alloc.m_SystemAllocators._malloc((allocsize + 64) & 0xFFFFFFC0);
 	alloc.SetNameAndAllocatedSpaceParams(BuffersPtr[allocind], allocname, allocsize);
-
-	if (alloc.m_Defragmentator)
-		delete alloc.m_Defragmentator;
 }
 
 void MemoryManager::InitAllocatorsBuffers()
@@ -174,6 +171,11 @@ void MemoryManager::ReleaseMemory(void* ptr, bool aligned)
 {
 	if (Released)
 		return;
+
+#ifdef INCLUDE_FIXES
+	if (!ptr)
+		return;
+#endif
 
 	EnterCriticalSection(&AllocatorsCriticalSection);
 

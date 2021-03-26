@@ -1,7 +1,7 @@
 #include "Folder.h"
 #include "File.h"
 
-ScriptType_Entity*	tFolder;
+EntityType*	tFolder;
 
 void Folder_::GetResourcePathRelative(String& outPath, String resourceName, ResType::BlockTypeNumber blockType, const char* languageCode)
 {
@@ -42,11 +42,9 @@ Folder_::Folder_() : Node(NODE_MASK_EMPTY)
 
 void Folder_::Register()
 {
-	tFolder = new ScriptType_Entity("Folder");
+	tFolder = new EntityType("Folder");
 	tFolder->InheritFrom(tNode);
-	tFolder->SetCreator((ScriptType_Entity::CREATOR)Create);
-
-	//tFolder->RegisterProperty(tINTEGER, "block_id", )
+	tFolder->SetCreator((EntityType::CREATOR)Create);
 
 	tFolder->_86E9B0();
 }

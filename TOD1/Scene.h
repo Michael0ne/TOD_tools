@@ -162,6 +162,6 @@ public:
 	static Scene*	Create(AllocatorIndex);	//	@89A7A0
 };
 
-extern ScriptType_Entity* tScene;	//	@A3DCB8
+extern EntityType* tScene;	//	@A3DCB8
 
 ASSERT_CLASS_SIZE(Scene, 616);	//	FIXME: actual size is 620 (0x26C).
