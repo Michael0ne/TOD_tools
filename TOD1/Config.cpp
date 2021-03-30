@@ -1,7 +1,7 @@
 #include "Config.h"
 
 #include "Blocks.h"
-#include "ScriptTypes.h"
+#include "BaseType.h"
 #include "Scratchpad.h"
 #include "SceneSaveLoad.h"
 #include "Light.h"
@@ -26,6 +26,7 @@
 #include "NodeLogical.h"
 #include "Model.h"
 #include "CollisionProbe.h"
+#include "VirtualHud.h"
 
 namespace Script
 {
@@ -128,7 +129,7 @@ namespace GameConfig
 
 		g_Blocks = new Blocks(Script::LoadBlocks);
 
-		InitScriptTypes();
+		BaseType::InitScriptTypes();
 
 		g_Scratchpad = new Scratchpad();
 
@@ -443,11 +444,11 @@ namespace GameConfig
 		{
 			Vector2<float> VirtualHudSize;
 			m_ConfigurationVariables->GetParamValueVector2f(VirtualHudSize, "virtual_hud_screensize", ',');
-			g_ScreenProperties.SetHudScreenSize(VirtualHudSize.x, VirtualHudSize.y, 1.0, 1.0);
+			VirtualHud::VirtualHudInstance.SetVirtualHudScreenSize(VirtualHudSize.x, VirtualHudSize.y, 1.0, 1.0);
 		}
 
 		if (m_ConfigurationVariables->IsVariableSet("screen_safe_area"))
-			g_ScreenProperties.SetSafeArea(m_ConfigurationVariables->GetParamValueFloat("screen_safe_area"));
+			VirtualHud::VirtualHudInstance.SetSafeArea(m_ConfigurationVariables->GetParamValueFloat("screen_safe_area"));
 
 		g_GfxInternal->SetClearColorForBufferIndex(*((ColorRGB*)&m_Background), -1);
 
@@ -497,7 +498,7 @@ namespace GameConfig
 
 		m_PropertiesLoadedChecksum = GetGlobalPropertyListChecksum();
 		m_CommandsLoadedChecksum = GetGlobalCommandListChecksum();
-		m_TypesLoadedChecksum = GetTypesChecksum();
+		m_TypesLoadedChecksum = BaseType::GetTypesChecksum();
 
 		//	Instantiate scene.
 		bool SceneSet = false;

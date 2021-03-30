@@ -11,6 +11,20 @@
 #include "LogDump.h"
 #include "Globals.h"
 
+class NothingType*		tNOTHING;	//	@A3CE94
+class NumberType*		tNUMBER;	//	@A3CEC0
+class IntegerType*		tINTEGER;	//	@A3CEB8
+class TruthType*		tTRUTH;	//	@A3CEC4
+class VectorType*		tVECTOR;	//	@A3CEB4
+class QuaternionType*	tQUATERNION;	//	@A3CE98
+class ColorType*		tCOLOR;	//	@A3CEA4
+class StringType*		tSTRING;	//	@A3CEB0
+
+bool					TypesListCRCCalculated;
+std::vector<BaseType*>	TypesList;
+unsigned int			TypesListCRC;
+float					_A3A064;
+
 BaseType::~BaseType()
 {
 	MESSAGE_CLASS_DESTROYED(BaseType);
@@ -245,27 +259,19 @@ int BaseType::ParseFloatNumberString(const char* const numberstr, float* const o
 		if (digitsread)
 			digitsread = intpart;
 		else
-			intpart = 0.f;
+			intpart = 0;
 
 		if (*lastcharpos == '.')
 		{
 			digitsread = ParseNumberString(lastcharpos + 1, &fractpart);
 			if (digitsread >= 0)
-			{
-				intpart = (float)fractpart / pow(10.f, digitsread) + intpart;
 				if (negativenum)
-					*outval = 0.f - intpart;
+					*outval = 0.f - ((float)fractpart / powf(10.f, digitsread) + intpart);
 				else
-					*outval = intpart;
-			}
+					*outval = (float)fractpart / powf(10.f, digitsread) + intpart;
 		}
 		else
-		{
-			if (negativenum)
-				*outval = -digitsread;
-			else
-				*outval = digitsread;
-		}
+			*outval = negativenum ? (float)-digitsread : (float)digitsread;
 	}
 	else
 		return -1;

@@ -37,7 +37,6 @@ GfxInternal::Renderer_Buffer2	GfxInternal::_A08704[28] =
 	{1, 27},
 	{1, 0}
 };	//	@A08704
-ScreenProperties	g_ScreenProperties;	//	@A08810
 std::map<int, int>* Scene_Buffer68::MeshBuffersMap;
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -174,46 +173,6 @@ void GfxInternal::SetBufferRenderBufferPointerByIndex(unsigned int index, Render
 bool GfxInternal::IsWideScreen()
 {
 	return WideScreen;
-}
-
-void ScreenProperties::SetHudScreenSize(float width, float height, float unk1, float unk2)
-{
-	field_8 = unk1;
-	field_C = unk2;
-	m_fVirtualHudScreensizeWidth = width;
-	m_fVirtualHudScreensizeHeight = height;
-
-	AdjustWindowScalings();
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-void ScreenProperties::AdjustWindowScalings()
-{
-#ifndef _EXE
-	(*(void(__thiscall*)(ScreenProperties*))0x420190)(this);
-#else
-	LogDump::LogA("ScreenProperties::AdjustWindowScalings is not implemented!\n");
-#endif
-}
-
-void ScreenProperties::SetSafeArea(float area)
-{
-	m_bSafeArea = true;
-	m_fScreenSafeArea = area;
-
-	AdjustWindowScalings();
-}
-
-void ScreenProperties::SetWindowProperties(float width, float height, float ratio, float safearea)
-{
-	m_fScreenWidth = width;
-	m_fScreenHeight = height;
-	m_fScreenRatio = ratio;
-	
-	if (!m_bSafeArea)
-		m_fScreenSafeArea = safearea;
-
-	AdjustWindowScalings();
 }
 
 Buffer276::Buffer276(const Vector3f& bufferSize)

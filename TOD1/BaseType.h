@@ -111,5 +111,6 @@ extern class StringType*		tSTRING;	//	@A3CEB0
 extern bool						TypesListCRCCalculated;		//	@A3CEC8
 extern std::vector<BaseType*>	TypesList;		//	@A3CECC
 extern unsigned int				TypesListCRC;				//	@A3CEDC
+extern float					_A3A064;	//	@A3A064
 
 ASSERT_CLASS_SIZE(BaseType, 32);

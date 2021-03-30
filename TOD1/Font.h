@@ -54,7 +54,7 @@ public:
 
 	static void		MakeCharactersMap(GlyphInfo& GlyphsInfo);	//	@938E10
 
-	static const float	_9B38D4;	//	@9B38D4
+	static const int	_9B38D4;	//	@9B38D4
 	static const float	_9B38D8;	//	@9B38D8
 	static GlyphInfo GlyphsInfo;	//	@A1B698
 };

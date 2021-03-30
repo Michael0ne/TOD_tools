@@ -92,15 +92,3 @@ struct Quaternion {
 };
 
 typedef Quaternion<float> Orientation;
-
-template <typename K, typename V>
-struct Map {
-	K	key;
-	V	value;
-
-	Map* next;
-
-	Map()
-		: key(NULL), value(NULL), next(nullptr)
-	{}
-};

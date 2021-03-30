@@ -71,6 +71,7 @@ struct GfxInternal_Dx9_IndexBuffer
 class GfxInternal_Dx9
 {
 	friend class GfxInternal;
+	friend class VirtualHud;
 	struct DisplayModeInfo
 	{
 		unsigned int	m_Width;

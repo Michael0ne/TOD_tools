@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Scene.h"
+#include "BuiltinType.h"
 
 EntityType*	tCamera;
 Vector4f Camera::ActiveCameraPosition;

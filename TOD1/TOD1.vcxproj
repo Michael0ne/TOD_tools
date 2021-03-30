@@ -384,6 +384,7 @@
     <ClInclude Include="TrackPoint.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="VectorType.h" />
+    <ClInclude Include="VirtualHud.h" />
     <ClInclude Include="WayPoint.h" />
     <ClInclude Include="WeaponPlaceHolder.h" />
     <ClInclude Include="Wind.h" />
@@ -512,6 +513,7 @@
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPoint.cpp" />
     <ClCompile Include="VectorType.cpp" />
+    <ClCompile Include="VirtualHud.cpp" />
     <ClCompile Include="WayPoint.cpp" />
     <ClCompile Include="WeaponPlaceHolder.cpp" />
     <ClCompile Include="Wind.cpp" />

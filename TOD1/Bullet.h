@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "CollisionProbe.h"
 #include "Light.h"
+#include "BuiltinType.h"
 
 class Bullet : public Model
 {
