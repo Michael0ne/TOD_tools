@@ -4,7 +4,7 @@
 class SignPost : public Node
 {
 protected:
-	ScriptType_List* m_ConnectionsList;
+	std::vector<int>* m_ConnectionsList;
 	int	m_Unknown_1[4];
 	int	m_Unknown_2[4];
 	int field_74;

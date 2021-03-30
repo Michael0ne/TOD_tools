@@ -3,7 +3,7 @@
 
 Font* g_Font;
 
-const float Font::_9B38D4 = (float)0x00008000;
+const int Font::_9B38D4 = 0x00008000;
 const float Font::_9B38D8 = (float)0xFFFF7F7F;
 GlyphInfo Font::GlyphsInfo =
 {

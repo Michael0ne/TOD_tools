@@ -136,36 +136,6 @@ public:
 	static std::map<int, int>*	MeshBuffersMap;	//	@A39F38
 };
 
-class ScreenProperties
-{
-	friend class BuiltinType;
-protected:
-	float m_fVirtualHudScreensizeWidth;
-	float m_fVirtualHudScreensizeHeight;
-	float field_8;	//	NOTE: scaleX?
-	float field_C;	//	NOTE: scaleY?
-	float m_fScreenWidth;
-	float m_fScreenHeight;
-	float m_fScreenRatio;
-	float m_fScreenSafeArea;
-	char m_bSafeArea;	//	NOTE: is this float?
-	char field_21;
-	float m_fVirtualHudScreensizeHalfWidth;
-	float m_fVirtualHudScreensizeHalfHeight;
-	float field_2C;
-	float field_30;
-	float m_fScreenWidthHalf;
-	float m_fScreenHeightHalf;
-	float field_3C;
-	float field_40;
-
-public:
-	void	SetHudScreenSize(float width, float height, float unk1, float unk2);	//	@420D60
-	void	AdjustWindowScalings();	//	@420190
-	void	SetSafeArea(float area);	//	@420DD0
-	void	SetWindowProperties(float width, float height, float ratio, float safearea);	//	@420D90
-};
-
 class GfxInternal
 {
 private:
@@ -224,7 +194,6 @@ public:
 	static Renderer_Buffer2			_A08704[28];	//	@A08704
 };
 
-extern ScreenProperties g_ScreenProperties;
 extern GfxInternal* g_GfxInternal;
 
 ASSERT_CLASS_SIZE(GfxInternal, 72);

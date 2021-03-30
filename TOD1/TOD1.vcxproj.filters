@@ -512,6 +512,9 @@
     <ClInclude Include="BuiltinType.h">
       <Filter>Header files\KapowSystems\Scripting\Types</Filter>
     </ClInclude>
+    <ClInclude Include="VirtualHud.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -894,6 +897,9 @@
     </ClCompile>
     <ClCompile Include="BuiltinType.cpp">
       <Filter>Source files\KapowSystems\Scripting\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualHud.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

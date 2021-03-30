@@ -232,51 +232,63 @@ void VectorType::stub18(int operationId, void* params) const
 	switch (operationId)
 	{
 	case 0:
+	{
 		float* firstvec = &((float*)params)[tVECTOR->m_Size];
 		float* secondvec = &((float*)params)[tVECTOR->m_Size + tVECTOR->m_Size];
 
 		*(float*)params = *firstvec + *secondvec;
 		*((float*)params + 1) = firstvec[1] + secondvec[1];
 		*((float*)params + 2) = firstvec[2] + secondvec[2];
-		break;
+	}
+	break;
 	case 1:
+	{
 		float* firstvec = &((float*)params)[tVECTOR->m_Size];
 		float* secondvec = &((float*)params)[tVECTOR->m_Size + tVECTOR->m_Size];
 
 		*(float*)params = *secondvec - *firstvec;
 		*((float*)params + 1) = secondvec[1] - firstvec[1];
 		*((float*)params + 2) = secondvec[2] - firstvec[2];
-		break;
+	}
+	break;
 	case 2:
+	{
 		float* firstvec = &((float*)params)[tNUMBER->m_Size];
 		float* secondvec = &((float*)params)[tNUMBER->m_Size + tVECTOR->m_Size];
 
 		*(float*)params = (*firstvec * *secondvec) + (firstvec[2] * secondvec[2]) + (firstvec[1] * secondvec[1]);
-		break;
+	}
+	break;
 	case 3:
+	{
 		float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
 		float mult = ((float*)params)[tVECTOR->m_Size];
 
 		*(float*)params = *secondvec * mult;
 		*((float*)params + 1) = secondvec[1] * mult;
 		*((float*)params + 2) = secondvec[2] * mult;
-		break;
+	}
+	break;
 	case 4:
+	{
 		float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
 		float delim = 1.f / *((float*)params + tVECTOR->m_Size);
 
 		*(float*)params = delim * *secondvec;
 		*((float*)params + 1) = delim * secondvec[1];
 		*((float*)params + 2) = delim * secondvec[2];
-		break;
+	}
+	break;
 	case 5:
+	{
 		float* secondvec = &((float*)params)[tVECTOR->m_Size];
 		float* thirdvec = &((float*)params)[tVECTOR->m_Size * 2];
 
 		*(float*)params = (secondvec[2] * thirdvec[1]) - (thirdvec[2] * secondvec[1]);
 		*((float*)params + 1) = (thirdvec[2] * *secondvec) - (secondvec[2] * *thirdvec);
 		*((float*)params + 2) = (secondvec[1] * *thirdvec) - (thirdvec[1] * *secondvec);
-		break;
+	}
+	break;
 	case 6:
 		*(bool*)params = stub15((float*)params + 4, (float*)params + 1);
 		break;
@@ -284,23 +296,30 @@ void VectorType::stub18(int operationId, void* params) const
 		*(bool*)params = stub16((float*)params + 4, (float*)params + 1);
 		break;
 	case 12:
+	{
 		float* secondvec = &((float*)params)[tVECTOR->m_Size];
 
 		*(float*)params = 0.f - *secondvec;
 		*((float*)params + 1) = 0.f - secondvec[1];
 		*((float*)params + 2) = 0.f - secondvec[2];
-		break;
+	}
+	break;
 	case 13:
+	{
 		float* secondvec = &((float*)params)[tNUMBER->m_Size];
-		*(float*)params = sqrt(*secondvec * *secondvec + secondvec[2] * secondvec[2] + secondvec[1] * secondvec[1]);
-		break;
+		*(float*)params = sqrtf(*secondvec * *secondvec + secondvec[2] * secondvec[2] + secondvec[1] * secondvec[1]);
+	}
+	break;
 	case 14:
+	{
 		float* secondvec = &((float*)params)[tNUMBER->m_Size];
 		*(float*)params = ((*secondvec * *secondvec) + (secondvec[2] * secondvec[2])) + (secondvec[1] * secondvec[1]);
-		break;
+	}
+	break;
 	case 15:
+	{
 		float* secondvec = &((float*)params)[tVECTOR->m_Size];
-		
+
 		if (((*secondvec * *secondvec) + (secondvec[1] * secondvec[1])) + (secondvec[2] * secondvec[2]) == 0.f)
 		{
 			*(float*)params = *secondvec;
@@ -309,45 +328,52 @@ void VectorType::stub18(int operationId, void* params) const
 		}
 		else
 		{
-			float inv = 1.f / sqrt(((*secondvec * *secondvec) + (secondvec[1] * secondvec[1])) + (secondvec[2] * secondvec[2]));
+			float inv = 1.f / sqrtf(((*secondvec * *secondvec) + (secondvec[1] * secondvec[1])) + (secondvec[2] * secondvec[2]));
 			*(float*)params = *secondvec / inv;
 			*((float*)params + 1) = secondvec[1] / inv;
 			*((float*)params + 2) = secondvec[2] / inv;
 		}
-		break;
+	}
+	break;
 	case 16:
 		*(float*)params = ((float*)params)[tNUMBER->m_Size];
 		break;
 	case 17:
+	{
 		float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
 		*secondvec = ((float*)params)[tVECTOR->m_Size];
 
 		*(float*)params = *secondvec;
 		*((float*)params + 1) = secondvec[1];
 		*((float*)params + 2) = secondvec[2];
-		break;
+	}
+	break;
 	case 18:
 		*(float*)params = ((float*)params)[tNUMBER->m_Size + 1];
 		break;
 	case 19:
+	{
 		float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
 		secondvec[1] = ((float*)params)[tVECTOR->m_Size];
 
 		*(float*)params = *secondvec;
 		*((float*)params + 1) = secondvec[1];
 		*((float*)params + 2) = secondvec[2];
-		break;
+	}
+	break;
 	case 20:
 		*(float*)params = ((float*)params)[tNUMBER->m_Size + 2];
 		break;
 	case 21:
+	{
 		float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
 		secondvec[2] = ((float*)params)[tVECTOR->m_Size];
 
 		*(float*)params = *secondvec;
 		*((float*)params + 1) = secondvec[1];
 		*((float*)params + 2) = secondvec[2];
-		break;
+	}
+	break;
 	default:
 		break;
 	}
@@ -356,6 +382,6 @@ void VectorType::stub18(int operationId, void* params) const
 bool VectorType::stub20(void* a1) const
 {
 	return	(!isnan(*(float*)a1)) &&
-			(!isnan(*((float*)a1 + 1))) &&
-			(!isnan(*((float*)a1 + 2)));
+		(!isnan(*((float*)a1 + 1))) &&
+		(!isnan(*((float*)a1 + 2)));
 }

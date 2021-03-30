@@ -4,6 +4,8 @@
 #include "VectorType.h"
 #include "NumberType.h"
 
+#include <d3dx9math.h>
+
 QuaternionType::QuaternionType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : BaseType(typeId, typeName, typeSize)
 {
 	MESSAGE_CLASS_CREATED(QuaternionType);
@@ -119,10 +121,10 @@ bool QuaternionType::stub16(void* a1, void* a2) const
 	float a = 0.f;
 	float b = 0.f;
 
-	float ab_w = fabs(*(float*)a1 - *(float*)a2);
-	float ab_x = fabs(*((float*)a1 + 1) - *((float*)a2 + 1));
-	float ab_y = fabs(*((float*)a1 + 2) - *((float*)a2 + 2));
-	float ab_z = fabs(*((float*)a1 + 3) - *((float*)a2 + 3));
+	float ab_w = fabsf(*(float*)a1 - *(float*)a2);
+	float ab_x = fabsf(*((float*)a1 + 1) - *((float*)a2 + 1));
+	float ab_y = fabsf(*((float*)a1 + 2) - *((float*)a2 + 2));
+	float ab_z = fabsf(*((float*)a1 + 3) - *((float*)a2 + 3));
 
 	if (ab_w >= 0.f)
 	{
@@ -146,7 +148,7 @@ bool QuaternionType::stub16(void* a1, void* a2) const
 		a = ab_z;
 
 	//	FIXME: value @A3A064 is never initialized!
-	return *(float*)0xA3A064 < a;
+	return _A3A064 < a;
 }
 
 void QuaternionType::stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const
@@ -307,65 +309,230 @@ void QuaternionType::stub17(const char* const operation, int* outopid, BaseType*
 #pragma message(TODO_IMPLEMENTATION)
 void QuaternionType::stub18(int operationId, void* params) const
 {
-	//	TODO: a lot of quaternions maths here, probably do it later.
 	switch (operationId)
 	{
 	case 0:
-		break;
+	{
+		Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+		Orientation* secondvec = (Orientation*)((float*)params + (tQUATERNION->m_Size * 2));
+
+		*((Orientation*)params) =
+		{
+			(secondvec->z * firstvec->x) + ((firstvec->y * secondvec->x) - (secondvec->y * firstvec->x)),
+			(firstvec->x * secondvec->z) + ((secondvec->x * firstvec->z) + ((secondvec->y * firstvec->w) - (firstvec->y * secondvec->w))),
+			((firstvec->y * secondvec->z) + ((secondvec->y * firstvec->z) + ((firstvec->x * secondvec->w) - (secondvec->x * firstvec->w)))),
+			((firstvec->z * secondvec->z) - (((firstvec->y * secondvec->y) + (firstvec->x * secondvec->x)) + (firstvec->w * secondvec->w)))
+		};
+	}
+	break;
 	case 1:
+		*(bool*)params = stub15((int*)params + 5, (int*)params + 1);
 		break;
 	case 2:
+		*(bool*)params = stub16((int*)params + 5, (int*)params + 1);
 		break;
 	case 3:
-		break;
+	{
+		Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+		*((Orientation*)params) = { 0.f - secondvec->w, 0.f - secondvec->x, 0.f - secondvec->y, 0.f - secondvec->z };
+	}
+	break;
 	case 4:
-		break;
+	{
+		//	NOTE: this was painful :( .
+		Orientation* firstvec = (Orientation*)((float*)params + tVECTOR->m_Size);
+		Orientation* secondvec = (Orientation*)((float*)params + tVECTOR->m_Size);
+		float delim = 1.f / sqrtf((secondvec->w * secondvec->w + secondvec->z * secondvec->z) + (secondvec->y * secondvec->y + secondvec->x * secondvec->x));
+		Orientation thirdvec =
+		{
+			((secondvec->z * delim) * firstvec->w) + ((firstvec->y * (0.f - (secondvec->x * delim))) - ((0.f - (secondvec->y * delim)) * firstvec->x)),
+			(firstvec->x * (secondvec->z * delim)) + ((0.f - (secondvec->y * delim) - (firstvec->y * (0.f - (secondvec->w * delim))))),
+			(firstvec->y * (secondvec->z * delim)) + ((firstvec->x * (0.f - (secondvec->w * delim))) - (0.f - (secondvec->x * delim) * firstvec->w)),
+			(0.f - ((firstvec->y * (0.f - (secondvec->y * delim)) + (firstvec->x * (0.f - (secondvec->x * delim)))) + (firstvec->w * (0.f - (secondvec->w * delim)))))
+		};
+
+		*(Vector3f*)params =
+		{
+			(thirdvec.z * secondvec->w) + ((secondvec->z * thirdvec.w) + ((thirdvec.x * secondvec->y) - (thirdvec.y * secondvec->x))),
+			(thirdvec.z * secondvec->x) + ((thirdvec.x * secondvec->z) + ((thirdvec.y * secondvec->w) - (secondvec->y * thirdvec.w))),
+			(thirdvec.z * secondvec->y) + ((thirdvec.y * secondvec->z) + ((secondvec->x * thirdvec.w) - (thirdvec.x * secondvec->w)))
+		};
+	}
+	break;
 	case 5:
-		break;
+	{
+		Orientation* firstvec = (Orientation*)((float*)params + tNUMBER->m_Size);
+
+		if (firstvec->z >= 1.f || firstvec->z <= -1.f)
+			*(float*)params = 0.f;
+		else
+			*(float*)params = acosf(firstvec->z) * 2;
+	}
+	break;
 	case 6:
-		break;
+	{
+		Orientation* firstvec = (Orientation*)((float*)params + tVECTOR->m_Size);
+		float inv = 1.f / sqrtf(1.f - firstvec->z * firstvec->z);
+
+		if (firstvec->z >= 1.f || firstvec->z <= -1.f)
+			*(Vector3f*)params = { 1.f, 0.f, 0.f };
+		else
+			*(Vector3f*)params = { firstvec->w * inv, firstvec->x * inv, firstvec->y * inv };
+	}
+	break;
 	case 7:
-		break;
+	{
+		Orientation* firstvec = (Orientation*)((float*)params + tNUMBER->m_Size);
+
+		*(float*)params = sqrtf(firstvec->w * firstvec->w + firstvec->z * firstvec->z + firstvec->y * firstvec->y + firstvec->x * firstvec->x);
+	}
+	break;
 	case 8:
-		break;
+	{
+		Orientation* firstvec = (Orientation*)((float*)params + tNUMBER->m_Size + 2 * tQUATERNION->m_Size);
+		Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+		float t = *((float*)params + tQUATERNION->m_Size * 2);
+		D3DXQUATERNION outquat;
+
+		D3DXQuaternionSlerp(&outquat, (D3DXQUATERNION*)firstvec, (D3DXQUATERNION*)secondvec, t);
+		*(Orientation*)params = { outquat.w, outquat.x, outquat.y, outquat.z };
+	}
+	break;
 	case 9:
-		break;
+	{
+		Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+		float delim = 1.f / sqrtf(secondvec->w * secondvec->w + secondvec->z * secondvec->z + secondvec->y * secondvec->y + secondvec->x * secondvec->x);
+
+		*(Orientation*)params = { secondvec->w * delim, secondvec->x * delim, secondvec->y * delim, secondvec->z * delim };
+	}
+	break;
 	case 10:
-		break;
+	{
+		Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size);
+		float t = *((float*)params + tQUATERNION->m_Size) * -0.5f;
+		float tcosf = cosf(t);
+		float tsinf = sinf(t);
+		float mul = fabsf(tsinf) >= std::numeric_limits<float>::epsilon() ? tsinf : 0.f;
+
+		*(Orientation*)params =
+		{
+			mul * firstvec->w,
+			mul * firstvec->x,
+			mul * firstvec->y,
+			fabsf(tcosf) >= std::numeric_limits<float>::epsilon() ? tcosf : 0.f
+		};
+	}
+	break;
 	case 11:
-		break;
+	{
+		Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+		Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size + tVECTOR->m_Size);
+		Orientation* thirdvec = (Orientation*)((float*)params + (tVECTOR->m_Size * 2) + tQUATERNION->m_Size);
+		D3DXMATRIX mat;
+
+		mat._11 = firstvec->w;
+		mat._12 = firstvec->x;
+		mat._13 = firstvec->y;
+		mat._14 = 0.f;
+
+		mat._21 = secondvec->w;
+		mat._22 = secondvec->x;
+		mat._23 = secondvec->y;
+		mat._24 = 0.f;
+
+		mat._31 = thirdvec->w;
+		mat._32 = thirdvec->x;
+		mat._33 = thirdvec->y;
+		mat._34 = 0.f;
+
+		mat._41 = 0.f;
+		mat._42 = 0.f;
+		mat._43 = 0.f;
+		mat._44 = 1.f;
+
+		D3DXQuaternionRotationMatrix((D3DXQUATERNION*)params, &mat);
+	}
+	break;
 	case 12:
+		*(Orientation*)params = { sinf(*((float*)params + tQUATERNION->m_Size) * -0.5f), 0.f, 0.f, cosf(*((float*)params + tQUATERNION->m_Size) * -0.5f) };
 		break;
 	case 13:
+		*(Orientation*)params = { 0.f, sinf(*((float*)params + tQUATERNION->m_Size) * -0.5f), 0.f, cosf(*((float*)params + tQUATERNION->m_Size) * -0.5f) };
 		break;
 	case 14:
+		*(Orientation*)params = { 0.f, 0.f, sinf(*((float*)params + tQUATERNION->m_Size) * -0.5f), cosf(*((float*)params + tQUATERNION->m_Size) * -0.5f) };
 		break;
 	case 15:
-		break;
+	{
+		Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+		float delim = 1.f / sqrtf(firstvec->w * firstvec->w + firstvec->y * firstvec->y + firstvec->x * firstvec->x);
+
+		if (delim * firstvec->x >= 0.99999899f || delim * firstvec->x <= -0.99999899f)
+			*(Orientation*)params = BuiltinType::Orient;
+		else
+		{
+			//	TODO: ...
+		}
+	}
+	break;
 	case 16:
+		//	TODO: ...
 		break;
 	case 17:
+		*(float*)params = *((float*)params + tNUMBER->m_Size + 3);
 		break;
 	case 18:
+		*(Orientation*)params =
+		{
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 1),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 2),
+			*((float*)params + tQUATERNION->m_Size)
+		};
 		break;
 	case 19:
+		*(float*)params = *((float*)params + tNUMBER->m_Size);
 		break;
 	case 20:
+		*(Orientation*)params =
+		{
+			*((float*)params + tQUATERNION->m_Size),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 1),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 2),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 3)
+		};
 		break;
 	case 21:
+		*(float*)params = *((float*)params + tNUMBER->m_Size + 1);
 		break;
 	case 22:
+		*(Orientation*)params =
+		{
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size),
+			*((float*)params + tQUATERNION->m_Size),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 2),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 3)
+		};
 		break;
 	case 23:
+		*(float*)params = *((float*)params + tNUMBER->m_Size + 2);
 		break;
-
+	case 24:
+		*(Orientation*)params =
+		{
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 1),
+			*((float*)params + tQUATERNION->m_Size),
+			*((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 3),
+		};
+		break;
 	}
 }
 
 bool QuaternionType::stub20(void* a1) const
 {
 	return	(!isnan(*(float*)a1)) &&
-			(!isnan(*((float*)a1 + 1))) &&
-			(!isnan(*((float*)a1 + 2))) &&
-			(!isnan(*((float*)a1 + 3)));
+		(!isnan(*((float*)a1 + 1))) &&
+		(!isnan(*((float*)a1 + 2))) &&
+		(!isnan(*((float*)a1 + 3)));
 }

@@ -169,15 +169,17 @@ void NumberType::stub18(int operationId, void* params) const
 		*(float*)params = *((float*)params + 2) / *((float*)params + 1);
 		break;
 	case 4:
-		*(float*)params = pow(*((float*)params + 2), *((float*)params + 1));
+		*(float*)params = powf(*((float*)params + 2), *((float*)params + 1));
 		break;
 	case 5:
+	{
 		int vecsize = tVECTOR->m_Size;
 
 		*(float*)params = ((float*)params)[vecsize] * ((float*)params)[vecsize * 2];
 		*(float*)((float*)params + 1) = ((float*)params)[vecsize + 1] * ((float*)params)[vecsize * 2];
 		*(float*)((float*)params + 2) = ((float*)params)[vecsize + 2] * ((float*)params)[vecsize * 2];
-		break;
+	}
+	break;
 	case 6:
 		*(float*)params = stub15((float*)params + 2, (float*)params + 1);
 		break;
