@@ -1,11 +1,10 @@
 #pragma once
-
 #include "MemoryManager.h"
 #include "Types.h"
 
 class GfxInternal_Dx9_Surface
 {
-protected:
+public:
 	unsigned int	m_BitsPerPixel;
 	int*			field_4;
 	unsigned int	m_Width;
@@ -15,6 +14,7 @@ protected:
 	char*			m_ColorPallette;
 	char*			m_Canvas;
 
+private:
 	void			SetupSurface(unsigned int width, unsigned int height);	//	@42FE00
 	void			CreateCanvasBuffer();	//	@42FD80
 
@@ -29,6 +29,7 @@ public:
 	{
 		if (ptr)
 			MemoryManager::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
 	}
 
 	void			SetPixelColor(unsigned int x, unsigned int y, const ColorRGB& clr);	//	@42F8A0
