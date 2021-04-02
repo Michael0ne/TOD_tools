@@ -97,6 +97,47 @@ class GfxInternal_Dx9
 		Light*	m_Light;
 	};
 
+	struct TextureProperties
+	{
+		int	field_0;
+		int	field_4;
+		int	field_8;
+		int	field_C;
+		int	field_10;
+		int	field_14;
+		int	field_18;
+		int	field_1C;
+		int	field_20;
+		char	field_24;
+		int	field_28;
+		int	field_2C;
+		int	field_30;
+		int	field_34;
+		int	field_38;
+		int	field_3C;
+		int	field_40;
+		int	field_44;
+		int	field_48;
+		char	field_4C;
+		int	field_50;
+		int	field_54;
+		int	field_58;
+		char	field_5C[4];
+		int	field_60;
+		int	field_64;
+		int	field_68;
+		char	field_6C[4];
+		char	field_70[4];
+		int	field_74;
+		int	field_78;
+		int	field_7C;
+		int	field_80;
+		int	field_84;
+		char	field_88[4];
+
+		TextureProperties();	//	@45FF40
+	};
+
 public:
 	IDirect3DDevice9*	m_Direct3DDevice;
 protected:
@@ -130,101 +171,11 @@ protected:
 	int			field_174;
 	D3DPRESENT_PARAMETERS	m_PresentParameters;
 	char		m_DeviceLost;
-	char		field_1B1;
+	char		m_ShouldCreateVerticies;
 	char		field_1B2;
 	char		field_1B3;
-
-	int			field_1B4;
-	int			field_1B8;
-	int			m_TextureBlendingOp;
-	int			field_1C0;
-	int			field_1C4;
-	int			field_1C8;
-	int			field_1CC;
-	int			field_1D0;
-	int			field_1D4;
-	char		field_1D8;
-	int			field_1DC;
-	int			field_1E0;
-	int			field_1E4;
-	int			field_1E8;
-	int			field_1EC;
-	int			field_1F0;
-	int			field_1F4;
-	int			field_1F8;
-	int			field_1FC;
-	char		field_200;
-	int			field_204;
-	int			field_208;
-	int			field_20C;
-	char		field_210;	//	NOTE: these 2 below are set when changing 'MipMapEnabled'.
-	char		field_211;
-	int			field_214;
-	int			field_218;
-	int			field_21C;
-	char		field_220;	//	NOTE: these 2 below are also set when changing 'MipMapEnabled'.
-	char		field_221;
-	bool		field_222;
-	bool		field_223;
-	bool		field_224;
-	bool		m_ZTestEnabled;
-	char		m_ZWriteEnabled;
-	int			field_228;
-	int			field_22C;
-	int			field_230;
-	int			field_234;
-	int			m_CullMode;
-	char		field_23C;
-	char		m_TextureBlendingEnabled;
-	char		field_23E;
-
-	int			m_TextureStageStateType;
-	int			field_244;
-	int			field_248;
-	int			field_24C;
-	int			field_250;
-	int			field_254;
-	int			field_258;
-	int			field_25C;
-	int			field_260;
-	char		field_264;
-	int			field_268;
-	int			field_26C;
-	int			field_270;
-	int			field_274;
-	int			field_278;
-	int			field_27C;
-	int			field_280;
-	int			field_284;
-	int			field_288;
-	char		field_28C;
-	int			field_290;
-	int			field_294;
-	int			field_298;
-	char		field_29C;
-	char		field_29D;
-	int			field_2A0;
-	int			field_2A4;
-	int			field_2A8;
-	char		field_2AC;
-	char		field_2AD;
-	char		field_2AE;
-	char		field_2AF;
-	char		field_2B0;
-	char		field_2B1;
-	char		field_2B2;
-	char		field_2B3;
-	int			field_2B4;
-	int			field_2B8;
-	int			field_2BC;
-	int			field_2C0;
-	int			field_2C4;
-	char		field_2C8;
-	char		field_2C9;
-	char		field_2CA;
-	char		field_2CB;
-	bool		m_FlushDirectly;	//	2CC
-
+	TextureProperties m_TexProperties[2];
+	bool		m_FlushDirectly;
 	IDirect3DTexture9*	m_TexturesArray[16];
 public:
 	bool		m_Windowed;
@@ -248,7 +199,7 @@ protected:
 	D3DXMATRIX	m_ProjectionMatrix;
 	D3DXMATRIX	m_ViewMatrix;
 	D3DXMATRIX	m_IdentityMatrix;
-	D3DXMATRIX	m_ModelMatrix;
+	D3DXMATRIX	m_WorldMatrix;
 	D3DXMATRIX	m_BoneMatrix;
 
 	int			field_56A4[4080];
@@ -258,7 +209,7 @@ protected:
 	int			m_WireframeColor;
 	int			field_9670;
 	int			field_9674;
-	float		m_Opacity;
+	float		m_EnvironmentMapOpacity;
 	float		m_EnvironmentMapCoefficient;
 	ColorRGB	m_EnvironmentMapColors;
 	char		m_AlphaChannelEnabled;
@@ -272,11 +223,11 @@ protected:
 	float		m_ZBias;
 	bool		m_FogEnabled;
 	float		m_AlphaTestThreshhold;
-	char		m_EnvironmentMap;
+	char		m_EnvironmentMapEnabled;
 	int			m_FVF;
 	IDirect3DVertexDeclaration9*	m_Direct3DVertexDeclaration;
 	void*		m_GameCameraMatrix;
-	int			m_RenderStateRop2Type;
+	int			m_FogMode;
 	float		m_FogStart;
 	float		m_FogEnd;
 	float		m_FogDensity;
@@ -287,8 +238,8 @@ protected:
 	int			field_9700;
 	int			field_9704;
 	char		m_TextureStages[2];
-	GfxInternal_Dx9_Texture*	m_RenderTargetTexture;
-	char		field_9710;
+	IDirect3DSurface9*	m_RenderTarget;
+	bool		m_SurfaceDoubleSized;
 	int			m_ActiveViewportSurfaceIndex;
 	GfxInternal_Dx9_Texture*	m_ViewportTexturesArray[4];
 	IDirect3DSurface9*	m_DepthStencilSurface;
@@ -303,7 +254,7 @@ protected:
 	float		field_9758;
 	int			field_975C;
 	std::vector<LightStatus>	m_SceneLights;
-	std::map<int, int>	field_9770;
+	std::map<int, int>	field_9770;	//	NOTE: related to lighting.
 	int			field_977C;
 	int			field_9780;
 	int			field_9784;
@@ -332,32 +283,32 @@ public:
 	void		RememberResolution();	//	@44CFF0
 	bool		GetRegistryResolution(Vector2<unsigned int>&);	//	@44D080
 	bool		ProcessGameInput();	//	@44D140
-	void		stub1();	//	@44D1A0
+	void		stub1() {};	//	@44D1A0
 	void		SetFVF(unsigned int);	//	@44D1B0
 	void		SetVertexDeclaration(IDirect3DVertexDeclaration9*);	//	@44D1F0
 	void		IssueDeviceReset();	//	@44D230
 	void		ProcessFramesyncQuery();	//	@44D260
 	void		EndScene();	//	@44D2A0
-	void		stub2();	//	@44D2D0
-	void		SetTExtureStage1TransformationMatrix();	//	@44D2E0
-	void		EnableEnvironmentMap();	//	@44D5D0
+	void		stub2() {};	//	@44D2D0
+	void		SetTextureStage1TransformationMatrix() const;	//	@44D2E0
+	void		ToggleEnvironmentMap(bool);	//	@44D5D0
 	void		SetEnvironmentMapCoef(float);	//	@44D8C0
 	void		LoadDDSTexture(unsigned int, const char*);	//	@44D920	//	NOTE: unused, but starting point for loading texture file.
-	HRESULT		SetCurrentTextureIndex(unsigned int);	//	@44D9B0
+	HRESULT		SetCurrentTextureIndex(unsigned int) const;	//	@44D9B0
 	void		EnableZTest(bool);	//	@44D9D0
 	void		EnableZWrite(bool);	//	@44DA10
 	void		EnableFog(bool);	//	@44DA50
-	void		GetFogParams(unsigned int* state, ColorRGB* color, float* start, float* end, float* density);	//	@44DA70
+	void		GetFogParams(unsigned int* state, ColorRGB* color, float* start, float* end, float* density) const;	//	@44DA70
 	void		EnableLighting(bool);	//	@44DAE0
 	void		SetMipMapBias(float);	//	@44DB20
 	void		SetMipMapping(bool);	//	@44DB50
 	void		SetFilterMode(unsigned int);	//	@44DBE0
-	void		SetViewport(Vector2<float>*, Vector2<float>*);	//	@44DCA0	//	NOTE: unused, but referenced.
-	void		GetProjectionParams(float*, float* aspectratio, float*, float* farplane);
+	void		SetViewport(Vector2<float>*, Vector2<float>*) const {};	//	@44DCA0	//	NOTE: unused, but referenced.
+	void		GetProjectionParams(float* fov, float* aspectratio, float* nearplane, float* farplane) const;	//	@44DCB0
 	void		SetRenderStateWireframe(bool);	//	@44DD00
-	void		SetUnknownColor(ColorRGB*);	//	@44DE80
+	void		SetWireFrameColor(const ColorRGB& clr);	//	@44DE80
 	void		SetWorldMatrix(D3DMATRIX*);	//	@44DEF0
-	void		SetOpacity(float);	//	@44DF90
+	void		SetEnvironmentMapOpacity(float);	//	@44DF90
 	void		EnableAlphaChannel(bool);	//	@44E090
 	void		SetBlendMode(unsigned int);	//	@44E160
 	void		EnableAlphaTest(bool);	//	@44E1A0
@@ -366,20 +317,20 @@ public:
 	void		TransformStateView(D3DMATRIX*);	//	@44E400
 	void		SetProjection(float fov, float aspectratio, float nearplane, float farplane);	//	@44E580
 	void		_44E680(const D3DMATRIX*, Vector2<float>*, unsigned int*);	//	@44E680
-	int			GetAvailableTextureMemory() const;	//	@44E960	//	NOTE: unused completely.
+	unsigned int	GetAvailableTextureMemory() const;	//	@44E960	//	NOTE: unused completely.
 	void		DumpScreenShot(class GfxInternal_Dx9_Surface* surf);	//	@44E970
 	void		SetTextureAddressMode(int, int ind);	//	@44EB30
 	void		SetCullMode(unsigned int);	//	@44EB80
 	HRESULT		GetDeviceCaps(IDirect3D9*, D3DCAPS9*);	//	@44EBC0
 	void		DestroySurfaces();	//	@44ED40
-	void		stub3(int);	//	@44EE30
-	void		_44EE40();	//	@44EE40	//	++field_9674;
+	void		stub3(int) {};	//	@44EE30
+	void		_44EE40();	//	@44EE40	//	NOTE: unused.
 	void		SetVertexBuffer(void*);	//	@44EE50	//	TODO: first param is some internal vertex class.
 	void		SetIndexBuffer(void*);	//	@44EE60	//	TODO: first param is some internal index class.
 	void		SetTextureScroll(float*, float);	//	@44EE70
 	void		SetTextureIndex(class Texture*, unsigned int);	//	@44EF70
 	void		BeginText(int, class Texture*, const ColorRGB&);	//	@44EFA0
-	void		RenderText(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, bool);	//	@44F050
+	void		RenderText(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, bool usingcolor);	//	@44F050
 	void		RenderText2(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, bool);	//	@44F310
 	void		BeginShadow(class Texture*);	//	@44F5B0
 	void		EndShadow();	//	@44F600
@@ -399,7 +350,7 @@ public:
 	void		SetZBias(unsigned int);	//	@44FAA0
 	void		SetFogProperties(unsigned int, const ColorRGB& color, float start, float end, float density);	//	@44FAE0
 	void		DrawIndexedPrimitive(unsigned int startindex, unsigned int, unsigned int minvertexindex, unsigned int);	//	@44FC40
-	void		SetupRenderer();	//	@44FD00
+	void		SetupRenderer();	//	@44FD00	//	NOTE: setup initial parameters for Direct 3D renderer.
 	void		CreateVertexBuffersObjects(unsigned int);	//	@450610
 	void		DestroyVertexBuffersObjects();	//	@450710
 	void		RenderSkinnedMeshBuffer(void* meshbuffer);	//	@4507B0
@@ -408,7 +359,7 @@ public:
 	void		EnumDisplayModes();	//	@4508F0
 	char		_4509F0(void*);	//	@4509F0
 	void		CreateSurfaces();	//	@450A30
-	void		_450DB0();	//	@450DB0
+	void		_450DB0();	//	@450DB0	//	NOTE: possibly 'ResetParticlesMeshBuffer'.
 	void		Reset();	//	@451020
 	bool		BeginScene();	//	@451080
 	void		CreateRenderDevice();	//	@451110
@@ -431,8 +382,8 @@ public:
 	void		DrawBrightness(float);	//	@45A9A0
 	void		DrawSaturation(float);	//	@45AC00
 	void		DrawVignette(const Texture*, const Vector3<float>&, float, float, float);	//	@45AE60
-	void		SetupWindowParams(unsigned int width, unsigned int height);	//	@45BE30
-	void		SetupWindowParams_2(const Vector2<unsigned int> resolution);	//	@45BEF0
+	void		SetupWindowParamsAntialiased(unsigned int width, unsigned int height);	//	@45BE30
+	void		SetupWindowParamsNoAntiAliasing(const ScreenResolution resolution);	//	@45BEF0
 	bool		SetScreenResolution(unsigned int width, unsigned int height);	//	@45BF90
 	bool		SetupScreenRes();	//	@45C0D0
 	void		RenderTriangle(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C250
@@ -444,7 +395,7 @@ public:
 	void		RenderTexturedQuad_1(const class Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C6D0
 	void		_45C790(float);	//	@45C790
 	void		DrawLightBleeding(unsigned int);	//	@45C9A0
-	void		RenderTexturedQuad2D_1(const class Texture*, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45D4A0
+	void		RenderTexturedQuad2D_1(const class Texture*, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB&);	//	@45D4A0
 	void		_45D5E0();	//	@45D5E0
 	void		RenderFullscreenTexture(const class Texture*);	//	@45D940
 	void		EnableLight(void*, unsigned int lightindex);	//	@45DBA0
@@ -453,11 +404,15 @@ public:
 	static std::map<int, int>	RenderedTexturesMap;	//	@A39F50
 	static const D3DMATRIX		IdentityMatrix;	//	@A0AD38
 	static bool					ProcessingInput;	//	@A39F10
+	static D3DCULL				CullModes[3];	//	@9B6674
+	static HMENU				WindowMenu;	//	@A39F28
+	static D3DFORMAT			SupportedFormats[];	//	@A0A99C
 
 	static void GetScreenResolution(Vector2<unsigned int>& outRes);	//	@41FD70
 };
 
 extern GfxInternal_Dx9* g_GfxInternal_Dx9;	//	@A39F14
+extern LPDIRECT3DDEVICE9 g_Direct3DDevice;	//	@A39F34
 
 ASSERT_CLASS_SIZE(GfxInternal_Dx9, 38816);
 ASSERT_CLASS_SIZE(GfxInternal_Dx9_Vertex, 40);

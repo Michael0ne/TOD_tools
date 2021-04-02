@@ -42,8 +42,8 @@ public:
 	float	GetScreenLeftInVirtualUnits() const;	//	@420340
 	float	GetScreenRightInVirtualUnits() const;	//	@420360
 	float	_420380() const;	//	@420380
-	void	SetVirtualHudScreenSize(const float width, const float height, const float, const float);	//	@420D60
-	void	SetHudProperties(const float width, const float height, const float ratio, const float safearea);	//	@420D90
+	void	SetVirtualHudScreenSize(const float width, const float height, const float ratio, const float safearea);	//	@420D60
+	void	SetHudProperties(const Vector2f res, const float ratio, const float safearea);	//	@420D90
 	void	SetSafeArea(const float area);	//	@420DD0
 	Vector4f&	LimitCoordsToScreen(Vector4f& outvec, const Vector4f& invec) const;	//	@420DF0	//	NOTE: or simply 3d coords to 2d coords, but doesn't seems to be it.
 

@@ -92,10 +92,10 @@ Vector4f& VirtualHud::LimitCoordsToScreen(Vector4f& outvec, const Vector4f& inve
 	return outvec;
 }
 
-void VirtualHud::SetHudProperties(const float width, const float height, const float ratio, const float safearea)
+void VirtualHud::SetHudProperties(const Vector2f res, const float ratio, const float safearea)
 {
-	m_ScreenWidth = width;
-	m_ScreenHeight = height;
+	m_ScreenWidth = res.x;
+	m_ScreenHeight = res.y;
 	m_ScreenRatio = ratio;
 
 	if (!m_SafeArea)
