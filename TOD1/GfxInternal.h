@@ -6,7 +6,7 @@ class Buffer276
 public:
 	Vector3f	m_BufferSize;
 	class RenderBuffer92*	m_RenderBuffer;
-	int*		field_10;
+	Buffer276*	field_10;
 	char		field_14;
 	D3DXMATRIX	m_ViewMatrix;
 	D3DXMATRIX	m_MatrixUnknown_1;
@@ -170,6 +170,8 @@ public:
 		ptr = nullptr;
 	}
 
+	void							Render(LPDIRECT3DSURFACE9 screenshotDumpSurface, const bool shouldRender, int a3, int a4);	//	@421B30
+	void							CallSceneCallback();	//	@420BA0
 	void							SetClearColorForBufferIndex(const ColorRGB& color, int index);	//	@41FDF0
 	void							SetClearFlagsForBufferIndex(const unsigned int flags, const int index);	//	@41FD90
 	void							SetRenderBufferIsEmpty(bool);	//	@420170

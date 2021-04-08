@@ -2,16 +2,28 @@
 #include "StringsPool.h"
 #include <vector>
 
-struct GlyphInfo
-{
-	unsigned int	field_0;
-	unsigned int	field_4;
-	char*			field_8;	//	NOTE: size of this is same as 'field_0'.
-	void*			field_C;
-};
-
 class Font
 {
+	struct Glyph
+	{
+		unsigned short m_Character;
+		float       m_X;
+		float       m_Y;
+		float       m_Width;
+		float       m_Height;
+		float       m_X1;
+		float       m_X2;
+		int         field_1C;
+	};
+
+	struct GlyphInfo
+	{
+		unsigned int m_TotalGlyphs;
+		unsigned int field_4;
+		Glyph*      m_ActualGlyphsArray;
+		void*       field_C;
+	};
+
 private:
 	int				field_0;
 	int				field_4;
@@ -54,9 +66,10 @@ public:
 
 	static void		MakeCharactersMap(GlyphInfo& GlyphsInfo);	//	@938E10
 
-	static const int	_9B38D4;	//	@9B38D4
-	static const float	_9B38D8;	//	@9B38D8
+	static const int _9B38D4;	//	@9B38D4
+	static const float _9B38D8;	//	@9B38D8
 	static GlyphInfo GlyphsInfo;	//	@A1B698
+	static Glyph    Glyphs[138];	//	@A5D5C0
 };
 
 extern Font* g_Font;

@@ -73,7 +73,7 @@ protected:
 
 private:
 	void			AddTypesListItemAtPos(ResType::Resource* element, unsigned int index);	//	@8760C0
-	unsigned int	_875570(unsigned int );	//	@875570
+	unsigned int	FindNodeById(unsigned int );	//	@875570
 
 public:
 	Blocks(bool loadBlocks);	//	@876E20

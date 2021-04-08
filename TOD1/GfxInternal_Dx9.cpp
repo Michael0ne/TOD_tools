@@ -59,7 +59,7 @@ GfxInternal_Dx9::GfxInternal_Dx9(const Vector2<unsigned int>& resolution, unsign
 	m_RenderingScene = false;
 	m_DeviceLost = false;
 	m_ShouldCreateVerticies = 1;
-	field_174 = resolution.x;	//	TODO: not sure about that...
+	m_FSAA = FSAA;
 	field_975C = -1;
 	m_FramesyncQuery = nullptr;
 	m_DeviceResetIssued = false;
@@ -210,11 +210,7 @@ void GfxInternal_Dx9::Clear(unsigned char flags, const ColorRGB& clearcolor)
 		flags_ |= 6;
 
 	UpdateTextureStage();
-	m_Direct3DDevice->Clear(0, nullptr, flags_, 
-		((unsigned char)(clearcolor.b * 255.f) << 8 |
-		((unsigned char)(clearcolor.g * 255.f) << 8 |
-		(((unsigned char)(clearcolor.a * 255.f) << 8) |
-		(unsigned char)(clearcolor.r * 255.f) << 8))), 1.f, 0);
+	m_Direct3DDevice->Clear(0, nullptr, flags_, COLOR_BGRA(clearcolor), 1.f, 0);
 }
 
 void GfxInternal_Dx9::SetZBias(unsigned int zbias)
@@ -228,11 +224,7 @@ void GfxInternal_Dx9::SetZBias(unsigned int zbias)
 
 void GfxInternal_Dx9::SetFogProperties(unsigned int fogmode, const ColorRGB& color, float start, float end, float density)
 {
-	m_Direct3DDevice->SetRenderState(D3DRS_FOGCOLOR, 
-		((unsigned char)(color.b * 255.f) << 8 |
-		((unsigned char)(color.g * 255.f) << 8 |
-		(((unsigned char)(color.a * 255.f) << 8) |
-		(unsigned char)(color.r * 255.f) << 8))));
+	m_Direct3DDevice->SetRenderState(D3DRS_FOGCOLOR, COLOR_BGRA(color));
 
 	if (fogmode)
 	{
@@ -334,7 +326,7 @@ void GfxInternal_Dx9::CreateSurfaces()
 
 	m_SurfaceDoubleSized = false;
 
-	if (field_174 & 0x200)
+	if (m_FSAA & 0x200)
 	{
 		m_SurfaceDoubleSized = true;
 		ScreenResolution res = { m_DisplayModeResolution.x * 2, m_DisplayModeResolution.y * 2 };
@@ -389,6 +381,21 @@ void GfxInternal_Dx9::CreateSurfaces()
 	SetupRenderer();	//	NOTE: finalize Direct 3D initialization.
 
 	m_ShouldCreateVerticies = false;
+}
+
+void GfxInternal_Dx9::EndParticleSystem(bool a1)
+{
+	if (a1)
+	{
+		m_ParticleRenderDisabled = true;
+		m_ParticleSystemEnded = a1;
+	}
+	else
+	{
+		m_ParticleRenderDisabled = false;
+		if (!m_ParticleMeshBuffer)
+			CreateParticleMeshBuffer();
+	}
 }
 
 void GfxInternal_Dx9::SetupWindowParamsAntialiased(unsigned int width, unsigned int height)
@@ -639,12 +646,7 @@ void GfxInternal_Dx9::ToggleEnvironmentMap(bool enable)
 {
 	if (enable)
 	{
-		m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR,
-			((unsigned char)(m_EnvironmentMapColors.b * 255.f) << 8 |
-			((unsigned char)(m_EnvironmentMapColors.g * 255.f) << 8 |
-			(((unsigned char)(m_EnvironmentMapColors.a * 255.f) << 8) |
-			(unsigned char)(m_EnvironmentMapColors.r * 255.f) << 8)))
-		);
+		m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR, COLOR_BGRA(m_EnvironmentMapColors));
 
 		m_TexProperties[0].field_34 = 1;
 		m_TexProperties[0].field_4C = 1;
@@ -718,7 +720,7 @@ void GfxInternal_Dx9::SetCullMode(unsigned int cullmode)
 #else
 	m_TexProperties[0].field_84 = cullmode;
 #endif
-	m_TexProperties[0].field_88[2] = 1;
+	m_TexProperties[0].field_8A = 1;
 
 	if (m_FlushDirectly)
 		g_Direct3DDevice->SetRenderState(D3DRS_CULLMODE, CullModes[cullmode]);
@@ -994,7 +996,8 @@ void GfxInternal_Dx9::SetProjection(float fov, float aspectratio, float nearplan
 
 void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath)
 {
-	if (m_TexturesArray[index]) {
+	if (m_TexturesArray[index])
+	{
 		(*m_TexturesArray)->Release();
 		*m_TexturesArray = nullptr;
 	}
@@ -1018,8 +1021,8 @@ HRESULT GfxInternal_Dx9::SetCurrentTextureIndex(unsigned int ind) const
 
 void GfxInternal_Dx9::EnableZTest(bool enabled)
 {
-	m_TexProperties[0].field_70[1] = enabled;
-	m_TexProperties[0].field_88[2] = 1;
+	m_TexProperties[0].m_LightingEnabled[1] = enabled;
+	m_TexProperties[0].field_8A = 1;
 
 	if (m_FlushDirectly)
 		g_Direct3DDevice->SetRenderState(D3DRS_ZENABLE, enabled);
@@ -1027,8 +1030,8 @@ void GfxInternal_Dx9::EnableZTest(bool enabled)
 
 void GfxInternal_Dx9::EnableZWrite(bool enabled)
 {
-	m_TexProperties[0].field_70[2] = enabled;
-	m_TexProperties[0].field_88[2] = 1;
+	m_TexProperties[0].m_LightingEnabled[2] = enabled;
+	m_TexProperties[0].field_8A = 1;
 
 	if (m_FlushDirectly)
 		g_Direct3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, enabled);
@@ -1061,8 +1064,8 @@ void GfxInternal_Dx9::GetFogParams(unsigned int* state, ColorRGB* color, float* 
 void GfxInternal_Dx9::EnableLighting(bool enabled)
 {
 	m_LightingEnabled = enabled;
-	m_TexProperties[0].field_70[0] = enabled;
-	m_TexProperties[0].field_88[2] = 1;
+	m_TexProperties[0].m_LightingEnabled[0] = enabled;
+	m_TexProperties[0].field_8A = 1;
 
 	if (m_FlushDirectly)
 		g_Direct3DDevice->SetRenderState(D3DRS_LIGHTING, enabled);
@@ -1166,14 +1169,10 @@ void GfxInternal_Dx9::SetRenderStateWireframe(bool enabled)
 
 void GfxInternal_Dx9::SetWireFrameColor(const ColorRGB& clr)
 {
-	m_WireframeColor =
-		((unsigned char)(clr.b * 255.f) << 8 |
-		((unsigned char)(clr.g * 255.f) << 8 |
-		(((unsigned char)(clr.a * 255.f) << 8) |
-		(unsigned char)(clr.r * 255.f) << 8)));
+	m_WireframeColor = COLOR_BGRA(clr);
 }
 
-void GfxInternal_Dx9::SetWorldMatrix(D3DMATRIX* worldmat)
+void GfxInternal_Dx9::SetWorldMatrix(const D3DMATRIX* worldmat)
 {
 	m_Direct3DDevice->SetTransform(D3DTS_WORLD, worldmat);
 	m_WorldMatrix = *worldmat;
@@ -1187,21 +1186,17 @@ void GfxInternal_Dx9::SetEnvironmentMapOpacity(float opacity)
 	m_EnvironmentMapColors = { m_EnvironmentMapCoefficient, m_EnvironmentMapCoefficient, m_EnvironmentMapCoefficient, opacity };
 	m_EnvironmentMapOpacity = opacity;
 
-	m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR,
-		((unsigned char)(m_EnvironmentMapColors.b * 255.f) << 8 |
-		((unsigned char)(m_EnvironmentMapColors.g * 255.f) << 8 |
-		(((unsigned char)(m_EnvironmentMapColors.a * 255.f) << 8) |
-		(unsigned char)(m_EnvironmentMapColors.r * 255.f) << 8))));
+	m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR, COLOR_BGRA(m_EnvironmentMapColors));
 }
 
 void GfxInternal_Dx9::EnableAlphaChannel(bool enabled)
 {
 	m_AlphaChannelEnabled = enabled;
-	m_TexProperties[0].field_88[2] = 1;
+	m_TexProperties[0].field_8A = 1;
 
 	if (enabled)
 	{
-		m_TexProperties[0].field_88[1] = true;
+		m_TexProperties[0].field_89 = true;
 		m_TexProperties[0].field_8 = 4;
 		m_TexProperties[0].field_24 = 1;
 
@@ -1213,7 +1208,7 @@ void GfxInternal_Dx9::EnableAlphaChannel(bool enabled)
 	}
 	else
 	{
-		m_TexProperties[0].field_88[1] = false;
+		m_TexProperties[0].field_89 = false;
 		m_TexProperties[0].field_8 = 3;
 		m_TexProperties[0].field_24 = 1;
 
@@ -1238,8 +1233,8 @@ void GfxInternal_Dx9::SetBlendMode(unsigned int mode)
 void GfxInternal_Dx9::EnableAlphaTest(bool enabled)
 {
 	m_AlphaTestEnabled = enabled;
-	m_TexProperties[0].field_88[0] = enabled;
-	m_TexProperties[0].field_88[2] = 1;
+	m_TexProperties[0].m_AlphaTest = enabled;
+	m_TexProperties[0].field_8A = 1;
 
 	if (m_FlushDirectly)
 		g_Direct3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, enabled);
@@ -1422,6 +1417,22 @@ GfxInternal_Dx9_Vertex::GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags
 	VertexBufferMap->insert({ 0, this });	//	TODO: is this correct?
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+GfxInternal_Dx9_Vertex::~GfxInternal_Dx9_Vertex()
+{
+	MESSAGE_CLASS_DESTROYED(GfxInternal_Dx9_Vertex);
+
+	//	TODO: remove this from 'VertexMap'.
+
+	if (m_Direct3DVertexBuffer)
+	{
+		m_Direct3DVertexBuffer->Release();
+		m_Direct3DVertexBuffer = nullptr;
+	}
+
+	delete[] m_BufferPtr;
+}
+
 void GfxInternal_Dx9_Vertex::CreateVertexBuffer()
 {
 	LPDIRECT3DVERTEXBUFFER9 vertbuff = nullptr;
@@ -1446,4 +1457,22 @@ GfxInternal_Dx9::TextureProperties::TextureProperties()
 	field_50 = NULL;
 	field_28 = 1;
 	field_60 = 1;
+}
+
+void GfxInternal_Dx9::TextureProperties::SetTextureAmbientColor(const ColorRGB& clr, bool flushdirectly)
+{
+	m_AmbientColor = clr;
+	field_8A = 1;
+
+	if (flushdirectly)
+		g_Direct3DDevice->SetRenderState(D3DRS_AMBIENT, COLOR_BGRA(clr));
+}
+
+void GfxInternal_Dx9::TextureProperties::ToggleLighting(bool enabled, bool flushdirectly)
+{
+	m_LightingEnabled = enabled;
+	field_8A = 1;
+
+	if (flushdirectly)
+		g_Direct3DDevice->SetRenderState(D3DRS_LIGHTING, enabled);
 }

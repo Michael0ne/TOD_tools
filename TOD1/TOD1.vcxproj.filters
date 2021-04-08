@@ -314,9 +314,6 @@
     <ClInclude Include="Folder.h">
       <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Header files\KapowSystems\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="Fragment.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
@@ -515,6 +512,9 @@
     <ClInclude Include="VirtualHud.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -687,9 +687,6 @@
     </ClCompile>
     <ClCompile Include="Fog.cpp">
       <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
     <ClCompile Include="Control.cpp">
       <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
@@ -900,6 +897,9 @@
     </ClCompile>
     <ClCompile Include="VirtualHud.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
