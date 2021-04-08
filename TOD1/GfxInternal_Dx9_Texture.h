@@ -62,6 +62,8 @@ public:
 	GfxInternal_Dx9_Texture(void*);	//	@463C60
 	~GfxInternal_Dx9_Texture();
 
+	unsigned int		GetSizeForLevel(const unsigned char lvl) const;	//	@4633D0
+
 	static void			DrawAllTextures();	//	@463850
 	static void			InitTexturesMap();	//	@464120
 

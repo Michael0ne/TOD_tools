@@ -100,6 +100,68 @@ GfxInternal::~GfxInternal()
 	delete m_RenderBufferArray;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal::Render(LPDIRECT3DSURFACE9 screenshotDumpSurface, const bool shouldRender, int a3, int a4)
+{
+	++m_FramesRendered;
+
+	a4 = a3 >= 0 ? a4 < 0 ? a3 : a4 : m_RenderBufferTotal - 1;
+	a3 = a3 < 0 ? 0 : a3;
+
+	bool frmclbckcalled = false;
+
+	if (shouldRender)
+	{
+		do
+		{
+			if (g_GfxInternal_Dx9->BeginScene())
+			{
+				if (field_20 < 0)
+				{
+					g_GfxInternal_Dx9->SetRenderTarget(nullptr);
+				}
+				else
+				{
+					//	TODO: ...
+					g_GfxInternal_Dx9->SetupViewportSurface();
+					ExecuteRenderBuffer(a3, field_20, 0);
+					g_GfxInternal_Dx9->_45D5E0();
+				}
+			}
+
+			ExecuteRenderBuffer(field_20 + 1, a4, 1);
+			g_GfxInternal_Dx9->EndScene();
+
+			if (screenshotDumpSurface)
+				g_GfxInternal_Dx9->DumpScreenShot(screenshotDumpSurface);
+
+			if (!frmclbckcalled)
+			{
+				CallSceneCallback();
+				frmclbckcalled = true;
+			}
+
+			g_GfxInternal_Dx9->HandleDeviceLost();
+			m_RenderEndTime = __rdtsc();
+		} while (g_GfxInternal_Dx9->ProcessGameInput());
+	}
+
+	_41F950();
+	m_TimeDelta = (Performance::GetMilliseconds() - m_TimeMilliseconds) * 0.001;
+	m_TimeMilliseconds = Performance::GetMilliseconds();
+
+	g_GfxInternal_Dx9->ResetStream();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal::CallSceneCallback()
+{
+	if (!m_SceneCallback)
+		return;
+
+	//	TODO: ...
+}
+
 void GfxInternal::SetClearColorForBufferIndex(const ColorRGB& color, int index)
 {
 	if (index != -1)

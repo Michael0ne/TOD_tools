@@ -25,7 +25,15 @@ void GfxInternal_Dx9_Texture::CreateDirect3DTexture(const ScreenResolution& res,
 	m_MipMapLevels = levels;
 	m_Levels = m_Levels & 0xFE03 | 2;
 
-	g_GfxInternal_Dx9->m_Direct3DDevice->CreateTexture(m_SurfaceResolution.x, m_SurfaceResolution.y, levels != 1, levels == 3 ? 1 : 0, SupportedTextureFormats[formatindex], levels ? D3DPOOL_MANAGED : D3DPOOL_DEFAULT, &m_Texture, nullptr);
+	g_GfxInternal_Dx9->m_Direct3DDevice->CreateTexture(
+		m_SurfaceResolution.x,
+		m_SurfaceResolution.y,
+		levels != 1,
+		levels == 3 ? 1 : 0,
+		SupportedTextureFormats[formatindex],
+		levels ? D3DPOOL_MANAGED : D3DPOOL_DEFAULT,
+		&m_Texture,
+		nullptr);
 	
 	D3DSURFACE_DESC surfdesc;
 	m_Texture->GetLevelDesc(0, &surfdesc);
@@ -78,35 +86,40 @@ GfxInternal_Dx9_Texture::~GfxInternal_Dx9_Texture()
 {
 }
 
+unsigned int GfxInternal_Dx9_Texture::GetSizeForLevel(const unsigned char lvl) const
+{
+	unsigned int widthn = m_SurfaceResolution.x >> lvl;
+	unsigned int heightn = m_SurfaceResolution.y >> lvl;
+
+	if (widthn < 1) widthn = 1;
+	if (heightn < 1) heightn = 1;
+
+	if (!(m_Levels & 1))
+		return (widthn * heightn * (*((char*)&field_20 + 2) & 63)) >> 3;
+	else
+		return (8 * (widthn / 4 >= 1 ? widthn / 4 : 1) * (heightn / 4 >= 1 ? heightn : 1));
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9_Texture::DrawAllTextures()
 {
-	/*
-	unsigned int memUsage = NULL;
-
+	unsigned int memoryusage = 0;
 	LogDump::LogA("rendering a frame with all (%i) textures!\n", TexturesMap->size());
 
 	if (TexturesMap->cbegin() != TexturesMap->cend())
 	{
-		for (unsigned int i = 0; i < TexturesMap->size(); i++)
+		for (std::map<unsigned int, GfxInternal_Dx9_Texture>::const_iterator it = TexturesMap->cbegin(); it != TexturesMap->cend(); ++it)
 		{
-			const GfxInternal_Dx9_Texture& tex = (GfxInternal_Dx9_Texture&)TexturesMap[i];
-			Vector2f size_1(2.f, 2.f);
-			Vector2f size_2;
-			ColorRGB clr(1.f, 1.f, 1.f, 1.f);
+			g_GfxInternal_Dx9->RenderTexturedQuad2D_1(it->second, {}, { 2.f, 2.f }, { 1.f, 1.f, 1.f, 1.f });
+			unsigned int levelsize = 0;
+			unsigned int texlevel = 0;
 
-			g_RendererDx->RenderTexturedQuad2D_1(&tex, size_1, size_2, clr);
-
-			unsigned int texSize = NULL, stageSize = NULL;
-
-			for (unsigned int j = tex.m_Levels >> 1; stageSize < j; texSize += tex.GetSizeForLevel(stageSize++));
-
-			memUsage += texSize;
+			for (unsigned int level = (unsigned int)it->second.m_Levels >> 1; texlevel < level; levelsize += it->second.GetSizeForLevel(texlevel++));
+			memoryusage += texlevel;
 		}
 	}
 
-	LogDump::LogA("Current texture memory usage = %i\n", memUsage);
-	*/
+	LogDump::LogA("Current texture memory usage = %i\n", memoryusage);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

@@ -549,7 +549,7 @@ void* Blocks::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* res
 
 Entity* Blocks::_8755E0()
 {
-	unsigned int nodeid = _875570(0x100000);
+	unsigned int nodeid = FindNodeById(0x100000);
 	if (nodeid)
 		return (m_NodesList[(nodeid >> 20) & 7][nodeid & 0xFF8FFFFF]);
 	else
@@ -558,7 +558,7 @@ Entity* Blocks::_8755E0()
 
 Entity* Blocks::_875610(Entity* node)
 {
-	unsigned int nodeid = _875570(node->m_Id >> 8);
+	unsigned int nodeid = FindNodeById(node->m_Id >> 8);
 	if (nodeid)
 		return (m_NodesList[(nodeid >> 20) & 7][nodeid & 0xFF8FFFFF]);
 	else
@@ -596,7 +596,7 @@ void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int inde
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-unsigned int Blocks::_875570(unsigned int id)
+unsigned int Blocks::FindNodeById(unsigned int id)
 {
 	unsigned int block_id;
 

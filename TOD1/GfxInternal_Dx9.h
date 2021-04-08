@@ -6,6 +6,8 @@
 #include <d3dx9math.h>
 #include <vector>
 
+#define COLOR_BGRA(clr) (DWORD)( ((unsigned char)(clr.b * 255.f) << 8 | ((unsigned char)(clr.g * 255.f) << 8 |(((unsigned char)(clr.r * 255.f) << 8) | (unsigned char)(clr.a * 255.f) << 8))))
+
 struct GfxInternal_Dx9_Vertex
 {
 	struct VertexDeclaration
@@ -99,44 +101,52 @@ class GfxInternal_Dx9
 
 	struct TextureProperties
 	{
-		int	field_0;
-		int	field_4;
-		int	field_8;
-		int	field_C;
-		int	field_10;
-		int	field_14;
-		int	field_18;
-		int	field_1C;
-		int	field_20;
-		char	field_24;
-		int	field_28;
-		int	field_2C;
-		int	field_30;
-		int	field_34;
-		int	field_38;
-		int	field_3C;
-		int	field_40;
-		int	field_44;
-		int	field_48;
-		char	field_4C;
-		int	field_50;
-		int	field_54;
-		int	field_58;
-		char	field_5C[4];
-		int	field_60;
-		int	field_64;
-		int	field_68;
-		char	field_6C[4];
-		char	field_70[4];
-		int	field_74;
-		int	field_78;
-		int	field_7C;
-		int	field_80;
-		int	field_84;
-		char	field_88[4];
+		int     field_0;
+		int     field_4;
+		int     field_8;
+		int     field_C;
+		int     field_10;
+		int     field_14;
+		int     field_18;
+		int     field_1C;
+		int     field_20;
+		char    field_24;
+		int     field_28;
+		int     field_2C;
+		int     field_30;
+		int     field_34;
+		int     field_38;
+		int     field_3C;
+		int     field_40;
+		int     field_44;
+		int     field_48;
+		char    field_4C;
+		int     field_50;
+		int     field_54;
+		int     field_58;
+		char    field_5C[4];
+		int     field_60;
+		int     field_64;
+		int     field_68;
+		char    field_6C[4];
+		char    m_LightingEnabled;
+		char    field_71;
+		char    field_72;
+		char    field_73;
+		ColorRGB m_AmbientColor;
+		int     field_84;
+		char    m_AlphaTest;
+		char    field_89;
+		char    field_8A;
+		char    field_8B;
 
 		TextureProperties();	//	@45FF40
+
+		void	SetTextureAmbientColor(const ColorRGB& clr, bool flushdirectly);	//	@45ED60
+		void	ToggleLighting(bool enabled, bool flushdirectly);	//	@45ED30
 	};
+
+	ASSERT_CLASS_SIZE(TextureProperties, 140);
 
 public:
 	IDirect3DDevice9*	m_Direct3DDevice;
@@ -168,7 +178,7 @@ protected:
 	unsigned char	m_SeparateAlphaBlend;
 	IDirect3D9*	m_Direct3DInterface;
 	D3DCAPS9	m_DeviceCaps;
-	int			field_174;
+	int			m_FSAA;
 	D3DPRESENT_PARAMETERS	m_PresentParameters;
 	char		m_DeviceLost;
 	char		m_ShouldCreateVerticies;
@@ -307,7 +317,7 @@ public:
 	void		GetProjectionParams(float* fov, float* aspectratio, float* nearplane, float* farplane) const;	//	@44DCB0
 	void		SetRenderStateWireframe(bool);	//	@44DD00
 	void		SetWireFrameColor(const ColorRGB& clr);	//	@44DE80
-	void		SetWorldMatrix(D3DMATRIX*);	//	@44DEF0
+	void		SetWorldMatrix(const D3DMATRIX*);	//	@44DEF0
 	void		SetEnvironmentMapOpacity(float);	//	@44DF90
 	void		EnableAlphaChannel(bool);	//	@44E090
 	void		SetBlendMode(unsigned int);	//	@44E160
@@ -354,12 +364,12 @@ public:
 	void		CreateVertexBuffersObjects(unsigned int);	//	@450610
 	void		DestroyVertexBuffersObjects();	//	@450710
 	void		RenderSkinnedMeshBuffer(void* meshbuffer);	//	@4507B0
-	void		ResetStreamTextures();	//	@450810
+	void		ResetStream();	//	@450810
 	DisplayModeInfo* IsScreenResolutionAvailable(unsigned int width, unsigned int height, bool dontignoreunavailable);	//	@450890
 	void		EnumDisplayModes();	//	@4508F0
 	char		_4509F0(void*);	//	@4509F0
 	void		CreateSurfaces();	//	@450A30
-	void		_450DB0();	//	@450DB0	//	NOTE: possibly 'ResetParticlesMeshBuffer'.
+	void		CreateParticleMeshBuffer();	//	@450DB0
 	void		Reset();	//	@451020
 	bool		BeginScene();	//	@451080
 	void		CreateRenderDevice();	//	@451110
