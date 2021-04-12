@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include "stdafx.h"
 #include "Types.h"
+#include "GfxInternal_Dx9_Surface.h"
 #include <map>
+#include <vector>
 
 #define GFX_TEXTURE_CLASS_SIZE 44
 
@@ -69,7 +71,7 @@ public:
 
 	static std::map<unsigned int, GfxInternal_Dx9_Texture>*	TexturesMap;	//	@A39F50
 	static D3DFORMAT	SupportedTextureFormats[];	//	@A0A5B0
-	static unsigned int	_A08980[];	//	@A08980
+	static unsigned int	_A08980[15];	//	@A08980
 };
 
 static_assert(sizeof(GfxInternal_Dx9_Texture) == GFX_TEXTURE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(GfxInternal_Dx9_Texture));

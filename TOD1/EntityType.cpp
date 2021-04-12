@@ -34,15 +34,3 @@ void EntityType::InheritFrom(EntityType* from)
 	m_Creator = from->m_Creator;
 	m_Parent = from;
 }
-
-EntityType* EntityType::GetScriptEntityByName(const char* name)
-{
-	if (!TypesList.size())
-		return nullptr;
-
-	for (std::vector<BaseType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
-		if (strncmp((*it)->m_TypeName.m_szString, name, strlen(name)) == NULL)
-			return (EntityType*)(*it);
-
-	return nullptr;
-}

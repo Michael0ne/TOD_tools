@@ -46,6 +46,7 @@
 #define KAPOW_ENGINE_VERSION_MINOR 7
 #define KAPOW_ENGINE_VERSION_BUILD 1925
 
+#define MESSAGE_NOT_IMPLEMENTED(x) debug(#x " is not implemented!\n")
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"
 #define MESSAGE_CLASS_CREATED(x) debug(#x " created at %X\n", this)
 #define MESSAGE_CLASS_DESTROYED(x) debug(#x " destroyed!\n")

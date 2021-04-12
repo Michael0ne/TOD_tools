@@ -97,6 +97,7 @@ public:
 	static bool		ParseVariableString(const char* variable, String& variableName, String& variableType);	//	@862F70
 	static void		InitScriptTypes();	//	@8634E0
 	static unsigned int	GetTypesChecksum();	//	@862CF0
+	static class EntityType* GetScriptEntityByName(const char* name);	//	@862C70
 };
 
 extern class NothingType*		tNOTHING;	//	@A3CE94

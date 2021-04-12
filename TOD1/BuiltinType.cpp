@@ -11,6 +11,8 @@
 #include "Window.h"
 #include "LoadScreenInfo.h"
 #include "Blocks.h"
+#include "VirtualHud.h"
+#include "DumpTable.h"
 
 BuiltinType* tBuiltin;
 
@@ -124,10 +126,9 @@ void BuiltinType::Rand_number(float* arg)
 	*arg = Random::Float();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::Get_facecoll_MaterialID(int* arg)
 {
-	//*arg = GetFacecollMaterialId((const char*)arg[1]);	//	FIXME: this is obnoxious.
+	*arg = GameConfig::GetCollmatMaterialId((const char*)*arg);
 }
 
 void BuiltinType::GetTime(float* arg)
@@ -485,38 +486,34 @@ void BuiltinType::IsWideScreen(int* arg)
 
 void BuiltinType::SetVirtualHudScreenSize(float* arg)
 {
-	g_ScreenProperties.SetHudScreenSize(*arg, arg[1], 1.f, 1.f);
+	VirtualHud::VirtualHudInstance.SetVirtualHudScreenSize(*arg, arg[1], 1.f, 1.f);
 }
 
 void BuiltinType::GetVirtualHudScreenSize(float* arg)
 {
-	*arg = g_ScreenProperties.m_fVirtualHudScreensizeWidth;
-	arg[1] = g_ScreenProperties.m_fVirtualHudScreensizeHeight;
+	*arg = VirtualHud::VirtualHudInstance.m_VirtualHudScreensizeWidth;
+	arg[1] = VirtualHud::VirtualHudInstance.m_VirtualHudScreensizeHeight;
 	arg[2] = 0.f;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::GetScreenTopInVirtualUnits(float* arg)
 {
-	//*arg = g_ScreenProperties.GetScreenTop();
+	*arg = VirtualHud::VirtualHudInstance.GetScreenTopInVirtualUnits();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::GetScreenBottomInVirtualUnits(float* arg)
 {
-	//*arg = g_ScreenProperties.GetScreenBottom();
+	*arg = VirtualHud::VirtualHudInstance.GetScreenBottomInVirtualUnits();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::GetScreenLeftInVirtualUnits(float* arg)
 {
-	//*arg = g_ScreenProperties.GetScreenLeft();
+	*arg = VirtualHud::VirtualHudInstance.GetScreenLeftInVirtualUnits();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::GetScreenRightInVirtualUnits(float* arg)
 {
-	//*arg = g_ScreenProperties.GetScreenRight();
+	*arg = VirtualHud::VirtualHudInstance.GetScreenRightInVirtualUnits();
 }
 
 void BuiltinType::DisableCurrentLoadScreen(int* arg)
@@ -533,9 +530,11 @@ void BuiltinType::GetEditorActive(bool* arg)
 	*arg = false;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableCreate(int* arg)
 {
+	*arg = DumpTable.size();
+
+	DumpTable.push_back(new DumpTableDescription);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -559,49 +558,54 @@ void BuiltinType::DumptableCreateFromFile(int* arg)
 	*/
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableAddIntegerColumn(int* arg)
 {
+	DumpTable[*arg]->AddIntegerColumn((const char*)arg[1], nullptr, 10, 0, 0);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableAddNumberColumn(int* arg)
 {
+	DumpTable[*arg]->AddNumberColumn((const char*)arg[1], nullptr, 10, -1, 0);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableAddStringColumn(int* arg)
 {
+	DumpTable[*arg]->AddStringColumn((const char*)arg[1], nullptr, 10, 0);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableSetNumRows(int* arg)
 {
+	DumpTable[*arg]->SetNumRows(arg[1]);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableSetIntegerValue(int* arg)
 {
+	DumpTable[*arg]->SetIntegerValue(arg[1], arg[2], arg[3]);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void BuiltinType::DumptableSetNumberValue(float* arg)
+void BuiltinType::DumptableSetNumberValue(int* arg)
 {
+	DumpTable[*arg]->SetNumberValue(arg[1], arg[2], (float)arg[3]);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableSetStringValue(int* arg)
 {
+	DumpTable[*arg]->SetStringValue(arg[1], arg[2], (const char*)arg[3]);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableWriteToFile(int* arg)
 {
+	String dumpstr;
+	DumpTable[*arg]->DumpContents(dumpstr, -1, -1, -1, 0);
+
+	File dumpfile((const char*)arg[1], 2, true);
+	dumpfile.WriteBuffer(dumpstr.m_szString);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DumptableClose(int* arg)
 {
+	if (DumpTable[*arg])
+		delete DumpTable[*arg];
 }
 
 void BuiltinType::EditorReloadAllAssets(int* arg)
@@ -623,10 +627,9 @@ void BuiltinType::GetRegion(int* arg)
 	*arg = g_Blocks->GetRegion();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::GetMessageId(int* arg)
 {
-	//*arg = Script::GetCommandId((const char*)arg[1]);
+	*arg = GetCommandByName((const char*)arg[1]);
 }
 
 void BuiltinType::QuitGame(int* arg)

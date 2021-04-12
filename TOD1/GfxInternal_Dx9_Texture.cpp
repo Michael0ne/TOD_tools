@@ -110,7 +110,7 @@ void GfxInternal_Dx9_Texture::DrawAllTextures()
 	{
 		for (std::map<unsigned int, GfxInternal_Dx9_Texture>::const_iterator it = TexturesMap->cbegin(); it != TexturesMap->cend(); ++it)
 		{
-			g_GfxInternal_Dx9->RenderTexturedQuad2D_1(it->second, {}, { 2.f, 2.f }, { 1.f, 1.f, 1.f, 1.f });
+			g_GfxInternal_Dx9->RenderTexturedQuad2D_1((const GfxInternal_Dx9_Texture*)&(it->second), {}, { 2.f, 2.f }, { 1.f, 1.f, 1.f, 1.f });
 			unsigned int levelsize = 0;
 			unsigned int texlevel = 0;
 

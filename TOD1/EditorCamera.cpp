@@ -1,4 +1,5 @@
 #include "EditorCamera.h"
+#include "NumberType.h"
 
 EditorCamera* tEditorCamera = nullptr;
 
@@ -19,8 +20,13 @@ EditorCamera::EditorCamera()
 
 	if (m_Parent)
 	{
+#ifdef _EXE
+		MESSAGE_NOT_IMPLEMENTED("Node::SetChildrenPositionToSame");
+		MESSAGE_NOT_IMPLEMENTED("Node::SetParent_Impl");
+#else
 		(*(void(__thiscall*)(Node*))0x88D3B0)(this);	//	Node::SetChildrenPositionToSame()	//	TODO: implementation!
 		(*(void(__thiscall*)(Node*, Node*))0x88E8A0)(this, m_Parent);	//	Node::SetParent_Impl()	//	TODO: implementation!
+#endif
 	}
 
 	field_108 = field_134 = 0;

@@ -1233,6 +1233,22 @@ namespace GameConfig
 		return true;
 	}
 
+	int GetCollmatMaterialId(const char* materialname)
+	{
+		if (!materialname || !*materialname)
+			return -1;
+
+		if (!FaceCollList.size())
+			return -1;
+
+		int matid = 0;
+		for (std::list<String>::const_iterator it = FaceCollList.cbegin(); it != FaceCollList.cend(); ++it, ++matid)
+			if (strncmp(it->m_szString, materialname, it->m_nLength) == NULL)
+				return matid;
+		
+		return -1;
+	}
+
 	void ConfigCallback::UninitialiseGameCallback(int)
 	{
 #ifdef INCLUDE_FIXES
