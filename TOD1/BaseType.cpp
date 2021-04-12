@@ -7,6 +7,9 @@
 #include "QuaternionType.h"
 #include "ColorType.h"
 #include "StringType.h"
+#include "DictType.h"
+#include "ListType.h"
+#include "ScriptDatabase.h"
 
 #include "LogDump.h"
 #include "Globals.h"
@@ -272,6 +275,8 @@ int BaseType::ParseFloatNumberString(const char* const numberstr, float* const o
 		}
 		else
 			*outval = negativenum ? (float)-digitsread : (float)digitsread;
+
+		return digitsread;	//	TODO: check this.
 	}
 	else
 		return -1;
@@ -376,7 +381,7 @@ BaseType* BaseType::LoadScript(const char* script)
 		BaseType* rettype = GetTypeByName(script_complete_name.m_szString);
 		if (!rettype)
 		{
-			rettype = EntityType::GetScriptEntityByName(script_type.m_szString);
+			rettype = (BaseType*)GetScriptEntityByName(script_type.m_szString);
 			if (!rettype)
 				return nullptr;
 
@@ -387,7 +392,7 @@ BaseType* BaseType::LoadScript(const char* script)
 				return nullptr;
 			}
 
-			rettype = glob_script->AssignScriptToEntity((EntityType*)rettype);
+			rettype = (BaseType*)glob_script->AssignScriptToEntity((EntityType*)rettype);
 		}
 
 		return rettype;
@@ -401,6 +406,18 @@ BaseType* BaseType::LoadScript(const char* script)
 		return new ListType(listelscript);
 	else
 		return nullptr;
+}
+
+EntityType* BaseType::GetScriptEntityByName(const char* name)
+{
+	if (!TypesList.size())
+		return nullptr;
+
+	for (std::vector<BaseType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
+		if ((*it)->m_TypeId == TYPE_ENTITY && strncmp((*it)->m_TypeName.m_szString, name, strlen(name)) == NULL)
+			return (EntityType*)(*it);
+
+	return nullptr;
 }
 
 bool BaseType::ParseVariableString(const char* variable, String& variableName, String& variableType)

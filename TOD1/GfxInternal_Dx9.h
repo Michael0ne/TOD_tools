@@ -398,16 +398,16 @@ public:
 	bool		SetupScreenRes();	//	@45C0D0
 	void		RenderTriangle(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C250
 	void		RenderQuad(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C270
-	void		RenderTexturedQuad2D_3(const class Texture*, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C2B0
-	void		RenderTexturedQuad_2(const class Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C2F0
+	void		RenderTexturedQuad2D_3(class GfxInternal_Dx9_Texture*, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C2B0
+	void		RenderTexturedQuad_2(class GfxInternal_Dx9_Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C2F0
 	void		DrawNoise(const Texture*, float, int);	//	@45C330
-	void		RenderTexturedQuad2D_2(const class Texture*, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C610
-	void		RenderTexturedQuad_1(const class Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C6D0
+	void		RenderTexturedQuad2D_2(class GfxInternal_Dx9_Texture*, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C610
+	void		RenderTexturedQuad_1(class GfxInternal_Dx9_Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C6D0
 	void		_45C790(float);	//	@45C790
 	void		DrawLightBleeding(unsigned int);	//	@45C9A0
-	void		RenderTexturedQuad2D_1(const class Texture*, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB&);	//	@45D4A0
+	void		RenderTexturedQuad2D_1(const class GfxInternal_Dx9_Texture*, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB&);	//	@45D4A0
 	void		_45D5E0();	//	@45D5E0
-	void		RenderFullscreenTexture(const class Texture*);	//	@45D940
+	void		RenderFullscreenTexture(class GfxInternal_Dx9_Texture*);	//	@45D940
 	void		EnableLight(void*, unsigned int lightindex);	//	@45DBA0
 	void		_45E5D0(LightStatus&);	//	@45E5D0	//	NOTE: toggle light from scene.
 

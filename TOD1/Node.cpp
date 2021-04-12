@@ -69,7 +69,7 @@ void Node::SetFlags(int flags)
 	if (!m_Flags.m_FlagBits.Volatile && (flags & 0x20) == 0 && flags != (m_Flags.m_Flags & 0xFFF))
 	{
 		unsigned int _flags = m_Flags.m_Flags & 0xFFF;
-		SetParam(2, &_flags, tINTEGER);
+		SetParam(2, &_flags, (BaseType*)tINTEGER);
 	}
 
 	if (((flags ^ m_Flags.m_FlagBits.Dynamic) & 2) != 0)
@@ -235,7 +235,7 @@ unsigned int Node::GetFlags() const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Node::SetParam(const int index, const void* param, const BaseType* type)
+void Node::SetParam(const int index, const void* param, BaseType* type)
 {
 	if (!m_ScriptEntity)
 		return;

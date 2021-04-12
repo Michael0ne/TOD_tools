@@ -149,6 +149,7 @@ namespace GameConfig
 
 	static void				GetInternalGameName(String& outStr);	//	@4098D0
 
+	//	TODO: move this to 'CollMat'.
 	enum FaceColl
 	{
 		FACECOLL_METAL = 1,
@@ -175,6 +176,7 @@ namespace GameConfig
 
 	static bool				OpenCollMatFile(const char* const fileName, String& materialName, int& materialProperties);	//	@87CE50
 	static bool				ReadAndParseCollMatMaterial(String& materialName, int& outMaterialProperties);	//	@87CC80
+	static int				GetCollmatMaterialId(const char* materialname);	//	@87CEB0
 
 	extern std::list<String>	FaceCollList;	//	@A3D7EC
 	extern File*			CollMatFile;	//	@A3D7E8

@@ -134,7 +134,7 @@ public:
 	void	DumptableAddStringColumn(int*);	//	@485920
 	void	DumptableSetNumRows(int*);	//	@485950
 	void	DumptableSetIntegerValue(int*);	//	@485970
-	void	DumptableSetNumberValue(float*);	//	@4859A0
+	void	DumptableSetNumberValue(int*);	//	@4859A0
 	void	DumptableSetStringValue(int*);	//	@4859D0
 	void	DumptableWriteToFile(int*);	//	@485A00
 	void	DumptableClose(int*);	//	@485A90

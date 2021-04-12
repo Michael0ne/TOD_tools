@@ -1,4 +1,5 @@
 #include "Navigator.h"
+#include "ScriptDatabase.h"
 
 #pragma message(TODO_IMPLEMENTATION)
 Navigator::Navigator() : Node(NODE_MASK_EMPTY)
@@ -14,7 +15,7 @@ Navigator::Navigator() : Node(NODE_MASK_EMPTY)
 	m_f74 = 0.5f;
 	m_PathFraction = 0.0f;
 	m_MoveCtrl = 0;
-	m_MoveCtrlCommand = (*(int (*)(const char*))0x872410)("command_run");
+	m_MoveCtrlCommand = GetCommandByName("command_run");
 	m_Flags = m_Flags & 0xFFFFFFFC;
 	m_ObstacleFound = 0;
 	m_NextObstacleCheckTime = 0;

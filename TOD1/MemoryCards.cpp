@@ -3,6 +3,7 @@
 #include "SavePoint.h"
 #include "LogDump.h"
 #include "Scene.h"
+#include "IntegerType.h"
 
 EntityType* tMemoryCards = nullptr;
 

@@ -56,8 +56,6 @@ public:
 	template <class C>
 	void				RegisterProperty(const BaseType* returntype, const char* const propertyname, void* (C::* getter)(int) const, const int a4, const int a5, const int a6, void (C::* setter)(int), const int a8, const int a9, const int a10, const char* const a11, const int a12, const int a13, const int argumentstotal);	//	@86D370
 	void				_86E9B0();	//	@86E9B0	//	NOTE: probably, this propagates all methods and properties from parent entity.
-
-	static EntityType*	GetScriptEntityByName(const char* name);	//	@862C70
 };
 
 ASSERT_CLASS_SIZE(EntityType, 120);
