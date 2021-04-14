@@ -135,8 +135,9 @@ namespace Input
 			return;
 
 		DWORD buffSize = INPUT_KEYBOARD_BUFFERS_COUNT;
-		if (HRESULT keybDevDataResult = m_DirectInputDeviceInterface->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), (LPDIDEVICEOBJECTDATA)m_DataBuffer, &buffSize, NULL))
-			if (keybDevDataResult == 1)
+		HRESULT keybDevDataResult = m_DirectInputDeviceInterface->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), m_DataBuffer, &buffSize, NULL);
+		if (SUCCEEDED(keybDevDataResult))
+			if (keybDevDataResult == DI_BUFFEROVERFLOW)
 				LogDump::LogA("WARNING: Keyboard buffer overflowed! (size %i, count %i)\n", INPUT_KEYBOARD_BUFFERS_COUNT, buffSize);
 			else
 				UnacquireAndResetKeyboard();
@@ -147,7 +148,7 @@ namespace Input
 				m_DataBufferSize = buffSize;
 
 			for (unsigned int ind = 0; ind < buffSize; ind++)
-				m_ButtonStates[m_DataBuffer[ind]->dwOfs] = ((m_DataBuffer[ind]->dwData >> 7) & 1) == 0 ? m_ButtonStates[m_DataBuffer[ind]->dwOfs] | 2 : m_ButtonStates[m_DataBuffer[ind]->dwOfs] | 1;
+				m_ButtonStates[m_DataBuffer[ind].dwOfs] = ((m_DataBuffer[ind].dwData >> 7) & 1) == 0 ? m_ButtonStates[m_DataBuffer[ind].dwOfs] | 2 : m_ButtonStates[m_DataBuffer[ind].dwOfs] | 1;
 		}
 
 		if (SUCCEEDED(m_DirectInputDeviceInterface->GetDeviceState(sizeof(m_ButtonStates_1), m_ButtonStates_1)))
@@ -228,8 +229,7 @@ namespace Input
 		if (FAILED(m_DirectInputDeviceInterface->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 
-		*(int*)&m_DataBuffer = (int)MemoryManager::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT, NULL, NULL);
-		memset(m_DataBuffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_KEYBOARD_BUFFERS_COUNT);
+		m_DataBuffer = new DIDEVICEOBJECTDATA[INPUT_KEYBOARD_BUFFERS_COUNT];
 
 		DIPROPDWORD diProperty;
 		diProperty.diph.dwSize = 20;
@@ -259,15 +259,12 @@ namespace Input
 
 		if (m_DirectInputDeviceInterface)
 		{
-			m_DirectInputDeviceInterface->Release();
-			m_DirectInputDeviceInterface = nullptr;
+			RELEASE_SAFE(m_DirectInputDeviceInterface);
 		}
 
 		if (m_DirectInputDevice)
 		{
-			m_DirectInputDevice->Release();
-			m_DirectInputDevice = nullptr;
+			RELEASE_SAFE(m_DirectInputDevice);
 		}
 	}
-
 }

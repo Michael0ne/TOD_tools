@@ -6,6 +6,7 @@
 #include <vector>
 
 #define STREAMEDSOUNDBUFFERS_MAX_CONCURRENT_SOUNDS 100
+#define STREAMEDSOUNDBUFFERS_PREALLOCATED_COUNT 7
 
 enum SoundSystemType
 {
@@ -92,6 +93,17 @@ public:
 	StreamedSoundBuffers(char channels, int sampleRate);	//	@43E080
 	~StreamedSoundBuffers();	//	@43E450
 
+	void* operator new (size_t size)
+	{
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			MemoryManager::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
+	}
+
 	static void					SetDefaultFxVolume(float vol);	//	@43CDA0
 	static void					SetDefaultAmbienceVolume(float vol);	//	@43CDB0
 	static void					SetDefaultMusicVolume(float vol);	//	@43CDC0
@@ -125,7 +137,7 @@ public:
 	bool						IsStreamBufferAlreadyExists(const StreamedSound& streamedsound) const;	//	@43E8B0
 	void						Dump() const;	//	@43EAD0
 	void						AddStreamBufferToList(const StreamedSound& streamedsound);	//	@43F240
-	void						PreallocateStreamBuffersPool();	//	@
+	void						PreallocateStreamBuffersPool();	//	@4462D0
 	void						CreateStaticStreamBuffer();	//	@
 
 	static std::vector<SoundBufferStatus>	vSoundBuffers;	//	@A09314

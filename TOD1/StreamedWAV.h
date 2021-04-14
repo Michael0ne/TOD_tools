@@ -17,7 +17,7 @@ enum AuxMonoStreamSoundFormat
 struct SoundBufferInfo
 {
 	bool			m_Used;
-	char* m_BufferPtr;
+	char*			m_BufferPtr;
 
 	SoundBufferInfo()
 		: m_Used(false), m_BufferPtr(nullptr)
@@ -30,6 +30,7 @@ struct SoundBufferInfo
 
 class StreamedWAV
 {
+	friend class SoundFile;
 protected:
 	AuxMonoStreamSoundFormat m_SoundFormat;
 	int				m_WavChunkSize;
@@ -48,10 +49,14 @@ protected:
 	File*			m_WavFile;
 	OggVorbis_File* m_OggInfo;
 	HANDLE			m_FileHandle;
-	char			m_ChunkId;
+	char			m_ChunkId[4];
 	int				m_SampleRate;
 
 	static SoundBufferInfo* CheckIfSoundBufferIsUsed(char*);	//	@40F600
+	static size_t	OggReadCallback(void* buff, size_t size, size_t nmemb, void* datasource);	//	@40F000
+	static int		OggSeekCallback(void* datasource, INT64 pos, int seektype);	//	@40F020
+	static int		OggCloseCallback(void* datasource);	//	@40F0A0
+	static long		OggTellCallback(void* datasource);	//	@40F0C0
 
 	static SoundBufferInfo EmptySoundBufferInfo;	//	@A35B8C
 
@@ -62,6 +67,9 @@ public:
 	StreamedWAV(unsigned int sampleRate, const char* soundFile);	//	@40FBA0
 
 	void			DestroySoundBuffers(bool);	//	@40F4C0
+	bool			OpenSoundFile(bool a1);	//	@40F470
+	bool			OpenOGG(bool createnew);	//	@40F0D0
+	bool			OpenWAV(bool createnew);	//	@40F200
 
 	void* operator new(size_t);
 	void* operator new[](size_t size);

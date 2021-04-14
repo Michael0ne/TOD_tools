@@ -54,6 +54,11 @@
 
 #define ALIGN_4BYTES(x) (x) & 0xFFFFFFFC
 
+//	To be used with DirectX interfaces.
+#define RELEASE_SAFE(p) \
+	p->Release(); \
+	p = nullptr; \
+
 #ifdef INCLUDE_FIXES
 #define	Stringify( L ) #L
 #define MakeString( M, L ) M(L)

@@ -18,6 +18,41 @@ SoundBufferInfo* StreamedWAV::CheckIfSoundBufferIsUsed(char* ptr)
 	return &SoundBuffersList[ind];
 }
 
+size_t StreamedWAV::OggReadCallback(void* buff, size_t size, size_t nmemb, void* datasource)
+{
+	return ((File*)datasource)->Read(buff, size * nmemb);
+}
+
+int StreamedWAV::OggSeekCallback(void* datasource, INT64 pos, int seektype)
+{
+	switch (seektype)
+	{
+	case 0:
+		((File*)datasource)->Seek(pos);
+		return 0;
+	case 1:
+		((File*)datasource)->Seek(((File*)datasource)->GetPosition() + pos);
+		return 0;
+	case 2:
+		((File*)datasource)->Seek(((File*)datasource)->GetSize() - pos);
+		return 0;
+	default:
+		LogDump::LogA("OggSeekCallBack - unknown seek-type (%i)\n", seektype);
+		return 0;
+	}
+}
+
+int StreamedWAV::OggCloseCallback(void* datasource)
+{
+	delete datasource;
+	return 0;
+}
+
+long StreamedWAV::OggTellCallback(void* datasource)
+{
+	return ((File*)datasource)->GetPosition();
+}
+
 StreamedWAV::StreamedWAV(unsigned int sampleRate)
 {
 	MESSAGE_CLASS_CREATED(StreamedWAV);
@@ -31,7 +66,7 @@ StreamedWAV::StreamedWAV(unsigned int sampleRate)
 	m_Samples = -1;
 	field_34 = -1;
 	m_BytesPerSample = 0.f;
-	m_ChunkId = NULL;
+	memset(m_ChunkId, 0, sizeof(m_ChunkId));
 	m_SoundFormat = FORMAT_UNSET;
 	m_Flags = 0 | 0xFFFFFFE8;
 	m_FileHandle = NULL;
@@ -120,7 +155,7 @@ void StreamedWAV::DestroySoundBuffers(bool unk)
 			ov_clear(m_OggInfo);
 			m_OggInfo = nullptr;
 			field_34 = -1;
-			m_ChunkId = NULL;
+			memset(m_ChunkId, 0, sizeof(m_ChunkId));
 			m_Flags = m_Flags & 0xFFFFFFF9;
 
 			return;
@@ -134,8 +169,132 @@ void StreamedWAV::DestroySoundBuffers(bool unk)
 			m_FileHandle = NULL;
 		}
 
-	m_ChunkId = NULL;
+	memset(m_ChunkId, 0, sizeof(m_ChunkId));
 	m_Flags = m_Flags & 0xFFFFFFF9;
+}
+
+bool StreamedWAV::OpenSoundFile(bool a1)
+{
+	if ((m_Flags & 16 == 0) ||
+		(m_Flags & 4 != 0) &&
+		(m_Flags & 1 != 0) &&
+		(m_Flags & 2 != 0) &&
+		(m_WavFile || m_OggInfo))
+		return true;
+
+	switch (m_SoundFormat)
+	{
+	case FORMAT_OGG:
+		return OpenOGG(a1);
+	case FORMAT_WAV:
+	case FORMAT_XBOX:
+		return OpenWAV(a1);
+	default:
+		return false;
+	}
+}
+
+bool StreamedWAV::OpenOGG(bool createnew)
+{
+	if (!createnew)
+		return true;
+
+	if (!m_OggInfo)
+	{
+		File* f = new File(m_FileName.m_szString, 0x21, true);
+
+		if (!f->IsFileOpen())
+		{
+			m_Flags &= 0xFFFFFFF9;
+			return false;
+		}
+
+		m_OggInfo = new OggVorbis_File;
+		ov_callbacks callbacks;
+		callbacks.close_func = OggCloseCallback;
+		callbacks.seek_func = OggSeekCallback;
+		callbacks.tell_func = OggTellCallback;
+		callbacks.read_func = OggReadCallback;
+
+		ov_open_callbacks(f, m_OggInfo, nullptr, NULL, callbacks);
+	}
+
+	vorbis_info* vi = ov_info(m_OggInfo, -1);
+	ogg_int64_t pcmt = ov_pcm_total(m_OggInfo, -1);
+
+	m_Channels = vi->channels;
+	m_SamplesPerSec = vi->rate;
+	m_Samples = pcmt;
+	m_BytesPerSample = 2.f;
+	m_BlockAlign = 0;
+	m_ChunkSize = m_Channels * 2 * pcmt;
+	field_C = m_ChunkSize;
+	m_Flags = m_Flags & 0xFFFFFFF7 | 7;
+
+	return true;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool StreamedWAV::OpenWAV(bool createnew)
+{
+	if (!m_WavFile)
+		m_WavFile = new File(m_FileName.m_szString, 0x61, false);
+
+	if (!createnew)
+		return true;
+
+	if (!m_WavFile->IsFileOpen() && m_WavFile->m_FileHandle)
+	{
+		m_FileHandle = m_WavFile->m_FileHandle->CreateFile_();
+		m_WavFile->m_FileHandle->SetFileHandle(m_FileHandle);
+
+		if (m_FileHandle)
+			m_WavFile->_WriteBufferAndSetToStart();
+	}
+
+	if (!m_WavFile->IsFileOpen())
+	{
+		ReleaseSemaphore(StreamedSoundBuffers::SemaphoreObject, 1, 0);
+		return false;
+	}
+
+	m_Flags &= 0xFFFFFFF7;
+
+	m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId));
+
+#ifdef INCLUDE_FIXES
+	if (strncmp(m_ChunkId, "RIFF", sizeof(m_ChunkId)))
+		return false;
+#else
+	strncmp(m_ChunkId, "RIFF", 4);
+#endif
+
+	m_WavChunkSize = m_WavFile->Read4BytesShiftLeft8();
+
+	m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId));
+
+#ifdef INCLUDE_FIXES
+	if (strncmp(m_ChunkId, "WAVE", sizeof(m_ChunkId)))
+		return false;
+#else
+	strncmp(m_ChunkId, "WAVE", sizeof(m_ChunkId));
+#endif
+
+	m_Flags &= 0xFFFFFFFD;
+	m_BlockAlign = 0;
+
+	if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
+	{
+		m_Samples = m_ChunkSize / (m_Channels * m_BytesPerSample);
+		m_Flags |= 4;
+
+		return true;
+	}
+
+	while (strncmp(m_ChunkId, "fmt", sizeof(m_ChunkId)) == NULL)
+	{
+		//	TODO: complete!
+	}
 }
 
 void* StreamedWAV::operator new(size_t size)

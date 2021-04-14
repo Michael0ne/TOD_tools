@@ -24,8 +24,8 @@ bool Scene::IsRewindBufferInUse = true;
 bool Scene::LoadingAssetBlock;
 const unsigned int Scene::RewindBufferSize_1 = 204800;
 const unsigned int Scene::RewindBufferSize_2 = 309248;
-
 float Scene::FrameRate;
+float Scene::FrameRate_1;
 UINT64 Scene::CreationTime;
 int Scene::_A3CEE4;
 int Scene::_A3CEE8;

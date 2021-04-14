@@ -35,7 +35,7 @@ namespace Input
 		LPDIRECTINPUT8			m_DirectInputInterface;
 		LPDIRECTINPUTDEVICE8	m_DirectInputDevice;
 		bool					m_Acquired;
-		DIDEVICEOBJECTDATA**	m_Buffer;
+		DIDEVICEOBJECTDATA*		m_Buffer;
 		unsigned int			m_BufferSize;
 
 	public:

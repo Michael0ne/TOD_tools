@@ -515,6 +515,9 @@
     <ClInclude Include="Font.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
+    <ClInclude Include="SoundFile.h">
+      <Filter>Header files\KapowSystems\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -900,6 +903,9 @@
     </ClCompile>
     <ClCompile Include="Font.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundFile.cpp">
+      <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

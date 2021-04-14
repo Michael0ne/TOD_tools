@@ -196,6 +196,7 @@ public:
 	bool			IsFileOpen() const;	//	@417CF0
 	char			ReadString(String& outStr);	//	@4180C0
 	void			SetPosAligned(unsigned char alignind);	//	@417DF0
+	int				Read4BytesShiftLeft8();	//	@417870	//	NOTE: possible name 'BigEndianToLittle'.
 
 	static void		AddDirectoryMappingsListEntry(const char* str1, const char* str2);	//	@418F90
 	static String&	GetPathFromDirectoryMappings(String& outStr, const char* path);	//	@41A360

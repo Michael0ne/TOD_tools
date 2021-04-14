@@ -29,7 +29,7 @@ namespace Input
 	LPDIENUMDEVICESCALLBACK Gamepad::EnumCallback;
 	int Gamepad::DirectInputGamepadsFound = -1;
 	Gamepad** Gamepad::GamepadsArray = nullptr;
-	LPDIRECTINPUT8 Gamepad::g_pDirectInput8Interface = nullptr;
+	LPDIRECTINPUT8 Gamepad::DirectInput8Interface = nullptr;
 	unsigned int Gamepad::_A08FD8[] =
 	{
 		8, 9, 10, 11
@@ -44,21 +44,21 @@ namespace Input
 		MESSAGE_CLASS_CREATED(Gamepad);
 
 		field_B4 = unk1;
-		m_bForceFeedbackAvailable = false;
-		m_bIsVibrating = false;
+		m_ForceFeedbackAvailable = false;
+		m_IsVibrating = false;
 		field_E1 = NULL;
-		m_pDirectInputEffect = nullptr;
+		m_DirectInputEffect = nullptr;
 		field_D4 = NULL;
-		m_fVibrationForceDefault = 0.0f;
-		m_fVibrationForce = 0.0f;
-		m_pDirectInputDevice = nullptr;
+		m_VibrationForceDefault = 0.0f;
+		m_VibrationForce = 0.0f;
+		m_DirectInputDevice = nullptr;
 
 		if (!ControllersCreated)
 		{
 #ifndef _EXE
-			DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
+			DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
 #else
-			DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
+			DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
 #endif
 			EnumGameControllers();
 		}
@@ -72,50 +72,49 @@ namespace Input
 		GamepadsArray = nullptr;
 
 		int _pvRef = controllerIndex;
-
 		if (Script::ForceFeedback &&
-			g_pDirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)&EnumControllersCallback, &_pvRef, DIEDFL_FORCEFEEDBACK | DIEDFL_ATTACHEDONLY) >= NULL &&
+			SUCCEEDED(DirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)&EnumControllersCallback, &_pvRef, DIEDFL_FORCEFEEDBACK | DIEDFL_ATTACHEDONLY)) &&
 			GamepadsArray)
 		{
 			LogDump::LogA("CONTROLLER: Found a force-feedback device!");
-			m_bForceFeedbackAvailable = true;
+			m_ForceFeedbackAvailable = true;
 
-			if (!m_pDirectInputDevice)
+			if (!m_DirectInputDevice)
 			{
 				LogDump::LogA("CONTROLLER: Error - could not create input device!");
 				return;
 			}
 		}
 
-		if (g_pDirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)&EnumControllersCallback, &_pvRef, DIEDFL_ALLDEVICES) >= NULL &&
-			GamepadsArray)
+		if (SUCCEEDED(DirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)&EnumControllersCallback, &_pvRef, DIEDFL_ALLDEVICES)) && GamepadsArray)
 		{
 			LogDump::LogA("CONTROLLER: Using standard game device");
 
-			if (!m_pDirectInputDevice)
+			if (!m_DirectInputDevice)
 			{
 				LogDump::LogA("CONTROLLER: Error - could not create input device!");
 				return;
 			}
 
-			m_pDirectInputDevice->Acquire();
+			m_DirectInputDevice->Acquire();
 
 			memset(&m_ButtonsStates, NULL, sizeof(m_ButtonsStates));
 
-			LogDump::LogA("CONTROLLER: Model of game device = %s", m_sModelName.m_szString);
+			LogDump::LogA("CONTROLLER: Model of game device = %s", m_ModelName.m_szString);
 
+#ifdef INCLUDE_FIXES
+			m_SmartJoyGamepad = strncmp(m_ModelName.m_szString, "SmartJoy", 8) == NULL;
+#else
+			//	NOTE: this is stupid, so disabled by default.
 			String sModelName;
-			AllocateGamepadNameStringBuffer(&sModelName, m_sModelName.m_szString, 8);
+			AllocateGamepadNameStringBuffer(&sModelName, m_ModelName.m_szString, 8);
 
-			if (strncmp(sModelName.m_szString, "SmartJoy", 8) == 0)
-				m_SmartJoyGamepad = 1;
-			else
-				m_SmartJoyGamepad = 0;
+			m_SmartJoyGamepad = strncmp(sModelName.m_szString, "SmartJoy", 8) == NULL;
+#endif
 
-			if (!m_bForceFeedbackAvailable)
+			if (!m_ForceFeedbackAvailable)
 				return;
 
-			//	Disable auto-center.
 			DIPROPDWORD DIPropAutoCenterDisable;
 
 			DIPropAutoCenterDisable.diph.dwSize = sizeof(DIPropAutoCenterDisable);
@@ -124,10 +123,9 @@ namespace Input
 			DIPropAutoCenterDisable.diph.dwHow = DIPH_DEVICE;
 			DIPropAutoCenterDisable.dwData = DIPROPAUTOCENTER_OFF;
 
-			if (FAILED(m_pDirectInputDevice->SetProperty(DIPROP_AUTOCENTER, &DIPropAutoCenterDisable.diph)))
+			if (FAILED(m_DirectInputDevice->SetProperty(DIPROP_AUTOCENTER, &DIPropAutoCenterDisable.diph)))
 				LogDump::LogA("CONTROLLER: Could not disable auto-center");
 
-			//	Create rumble effect.
 			//	TODO: these parameters are NOT what they are in exe.
 			DWORD dwAxes[2] = { DIJOFS_X, DIJOFS_Y };
 			long lDirection[2] = { NULL, NULL };
@@ -164,7 +162,7 @@ namespace Input
 
 			LPDIRECTINPUTEFFECT lpdiRumbleEffect;
 
-			if (FAILED(m_pDirectInputDevice->CreateEffect(GUID_RUMBLE_EFFECT, &diEffect, &lpdiRumbleEffect, NULL)))
+			if (FAILED(m_DirectInputDevice->CreateEffect(GUID_ConstantForce, &diEffect, &lpdiRumbleEffect, NULL)))
 				LogDump::LogA("CONTROLLER: Could not create rumble effect for some reason");
 
 			return;
@@ -179,23 +177,15 @@ namespace Input
 
 		--ControllersCreated;
 
-		if (m_pDirectInputDevice)
+		if (m_DirectInputDevice)
 		{
-			m_pDirectInputDevice->Unacquire();
-			if (m_pDirectInputDevice)
-			{
-				m_pDirectInputDevice->Release();
-				m_pDirectInputDevice = nullptr;
-			}
+			m_DirectInputDevice->Unacquire();
+			RELEASE_SAFE(m_DirectInputDevice);
 		}
 
-		if (!ControllersCreated)
+		if (!ControllersCreated && DirectInput8Interface)
 		{
-			if (g_pDirectInput8Interface)
-			{
-				g_pDirectInput8Interface->Release();
-				g_pDirectInput8Interface = nullptr;
-			}
+			RELEASE_SAFE(DirectInput8Interface);
 		}
 	}
 
@@ -243,7 +233,7 @@ namespace Input
 	void Gamepad::EnumGameControllers()
 	{
 		DirectInputGamepadsFound = NULL;
-		g_pDirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)DIEnumDevicesCallback, NULL, NULL);
+		DirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)DIEnumDevicesCallback, NULL, NULL);
 
 		//g_InputGamepad = (Gamepad**)(new unsigned int[DirectInputGamepadsFound]);
 	}
@@ -255,9 +245,9 @@ namespace Input
 
 		bool bInterfaceCreated = false;
 
-		if (!g_pDirectInput8Interface)
+		if (!DirectInput8Interface)
 		{
-			DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&g_pDirectInput8Interface, NULL);
+			DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
 			bInterfaceCreated = true;
 		}
 
@@ -265,10 +255,9 @@ namespace Input
 
 		if (bInterfaceCreated)
 		{
-			if (g_pDirectInput8Interface)
+			if (DirectInput8Interface)
 			{
-				g_pDirectInput8Interface->Release();
-				g_pDirectInput8Interface = nullptr;
+				RELEASE_SAFE(DirectInput8Interface);
 			}
 		}
 
@@ -278,16 +267,8 @@ namespace Input
 	void Gamepad::Process()
 	{
 		for (int ind = 0; ind < INPUT_GAMEPAD_MAX_GAMEPADS; ind++)
-		{
-			if (ind >= 0 && ind < INPUT_GAMEPAD_MAX_GAMEPADS && ind < DirectInputGamepadsFound)
-			{
-				if (g_InputGamepad[ind] &&
-					g_InputGamepad[ind]->m_pDirectInputDevice)
-				{
-					g_InputGamepad[ind]->ProcessController();
-				}
-			}
-		}
+			if (ind < DirectInputGamepadsFound && g_InputGamepad[ind] && g_InputGamepad[ind]->m_DirectInputDevice)
+				g_InputGamepad[ind]->ProcessController();
 	}
 
 	BOOL CALLBACK Gamepad::EnumControllersCallback(LPCDIDEVICEINSTANCE devInst, Gamepad** pvRef)
@@ -298,38 +279,35 @@ namespace Input
 			return DIENUM_CONTINUE;
 		}
 
-		pvRef[1]->m_nGUID.Data1 = devInst->guidInstance.Data1;
-		pvRef[1]->m_nGUID.Data2 = devInst->guidInstance.Data2;
-		*(int*)(pvRef[1]->m_nGUID.Data4) = *(int*)(devInst->guidInstance.Data4);
-		pvRef[1]->m_nGUID.Data4[4] = pvRef[1]->m_nGUID.Data4[4];
+		pvRef[1]->m_GUID.Data1 = devInst->guidInstance.Data1;
+		pvRef[1]->m_GUID.Data2 = devInst->guidInstance.Data2;
+		*(int*)(pvRef[1]->m_GUID.Data4) = *(int*)(devInst->guidInstance.Data4);
+		pvRef[1]->m_GUID.Data4[4] = pvRef[1]->m_GUID.Data4[4];
 
-		strcpy(pvRef[1]->m_sModelName.m_szString, devInst->tszProductName);
-		g_pDirectInput8Interface->CreateDevice(devInst->guidInstance, &pvRef[1]->m_pDirectInputDevice, NULL);
+		strcpy(pvRef[1]->m_ModelName.m_szString, devInst->tszProductName);
+		DirectInput8Interface->CreateDevice(devInst->guidInstance, &pvRef[1]->m_DirectInputDevice, NULL);
 
-		if (FAILED(pvRef[1]->m_pDirectInputDevice->SetDataFormat((LPCDIDATAFORMAT)&GUID_CONTROLLER_DATA_FORMAT)))
+		if (FAILED(pvRef[1]->m_DirectInputDevice->SetDataFormat(&c_dfDIJoystick)))
 		{
 			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
 
-			if (!pvRef[1]->m_pDirectInputDevice)
+			if (!pvRef[1]->m_DirectInputDevice)
 				return DIENUM_STOP;
-			pvRef[1]->m_pDirectInputDevice->Release();
-			pvRef[1]->m_pDirectInputDevice = nullptr;
+			RELEASE_SAFE(pvRef[1]->m_DirectInputDevice);
 
 			return DIENUM_STOP;
 		}
 
-		if (Script::ForceFeedback)
-			if (FAILED(pvRef[1]->m_pDirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
-			{
-				MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
+		if (Script::ForceFeedback && FAILED(pvRef[1]->m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
+		{
+			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
 
-				if (!pvRef[1]->m_pDirectInputDevice)
-					return DIENUM_STOP;
-				pvRef[1]->m_pDirectInputDevice->Release();
-				pvRef[1]->m_pDirectInputDevice = nullptr;
-
+			if (!pvRef[1]->m_DirectInputDevice)
 				return DIENUM_STOP;
-			}
+			RELEASE_SAFE(pvRef[1]->m_DirectInputDevice);
+
+			return DIENUM_STOP;
+		}
 
 		GamepadsArray++;
 
@@ -350,19 +328,19 @@ namespace Input
 
 	void Gamepad::_Acquire()
 	{
-		if (m_pDirectInputDevice)
-			m_pDirectInputDevice->Acquire();
+		if (m_DirectInputDevice)
+			m_DirectInputDevice->Acquire();
 	}
 
 	void Gamepad::_Unacquire()
 	{
-		if (m_pDirectInputDevice)
-			m_pDirectInputDevice->Unacquire();
+		if (m_DirectInputDevice)
+			m_DirectInputDevice->Unacquire();
 	}
 
 	Vector4f* Gamepad::GetAxisPosition(Vector4f* outPos, int axisNumber)
 	{
-		if (!m_pDirectInputDevice)
+		if (!m_DirectInputDevice)
 		{
 			outPos->x = outPos->y = outPos->z = outPos->a = 0.0f;
 			return outPos;
@@ -373,7 +351,7 @@ namespace Input
 		{
 			if (!axisNumber)
 			{
-				*outPos = m_vAxisPosition;
+				*outPos = m_AxisPosition;
 				return outPos;
 			}
 
@@ -389,11 +367,12 @@ namespace Input
 				return outPos;
 			}
 
-			outPos->y = m_vAxisRotation.z;
-			outPos->x = m_vAxisPosition.z;
-		}else{
-			outPos->y = m_vAxisPosition.y;
-			outPos->x = m_vAxisPosition.x;
+			outPos->y = m_AxisRotation.z;
+			outPos->x = m_AxisPosition.z;
+		}
+		else {
+			outPos->y = m_AxisPosition.y;
+			outPos->x = m_AxisPosition.x;
 		}
 
 		outPos->z = 0.0f;
@@ -403,7 +382,7 @@ namespace Input
 
 	Orientation* Gamepad::GetAxisRotation(Orientation* outRot, int unk2)
 	{
-		if (!m_pDirectInputDevice)
+		if (!m_DirectInputDevice)
 		{
 			outRot->x = outRot->y = outRot->z = outRot->w = 0.0f;
 			return outRot;
@@ -415,7 +394,7 @@ namespace Input
 			return outRot;
 		}
 
-		*outRot = m_vAxisRotation;
+		*outRot = m_AxisRotation;
 		return outRot;
 	}
 
@@ -441,7 +420,7 @@ namespace Input
 
 	bool Gamepad::_4398A0(int unk1)
 	{
-		if (!m_pDirectInputDevice)
+		if (!m_DirectInputDevice)
 			return false;
 
 		if (field_B4 != 1)
@@ -458,7 +437,7 @@ namespace Input
 
 	bool Gamepad::_439910(int unk1)
 	{
-		if (!m_pDirectInputDevice)
+		if (!m_DirectInputDevice)
 			return false;
 
 		if (field_B4 != 1)
@@ -475,7 +454,7 @@ namespace Input
 
 	char Gamepad::_439970(int unk1)
 	{
-		if (!m_pDirectInputDevice)
+		if (!m_DirectInputDevice)
 			return NULL;
 
 		if (field_B4 != 1)
@@ -498,7 +477,7 @@ namespace Input
 
 	bool Gamepad::IsDInputDeviceFound()
 	{
-		return m_pDirectInputDevice != nullptr;
+		return m_DirectInputDevice != nullptr;
 	}
 
 	bool Gamepad::IsControllerPresent(signed int controllerIndex)
@@ -510,7 +489,7 @@ namespace Input
 		if (controllerIndex < DirectInputGamepadsFound &&
 			g_InputGamepad &&
 			g_InputGamepad[controllerIndex] &&
-			GetGameControllerByIndex(controllerIndex)->m_pDirectInputDevice)
+			GetGameControllerByIndex(controllerIndex)->m_DirectInputDevice)
 			return true;
 
 		return false;
@@ -518,14 +497,15 @@ namespace Input
 
 	void Gamepad::SetControllerVibration(signed int controllerIndex, float force)
 	{
-		if (!m_bForceFeedbackAvailable)
+		if (!m_ForceFeedbackAvailable)
 		{
 			if (controllerIndex)
 			{
 				if (controllerIndex == 1)
-					m_fVibrationForce = force;
-			}else
-				m_fVibrationForceDefault = force;
+					m_VibrationForce = force;
+			}
+			else
+				m_VibrationForceDefault = force;
 
 			return;
 		}
@@ -545,68 +525,70 @@ namespace Input
 			if (controllerIndex)
 			{
 				if (controllerIndex == 1)
-					m_fVibrationForce = force;
-			}else
-				m_fVibrationForceDefault = force;
+					m_VibrationForce = force;
+			}
+			else
+				m_VibrationForceDefault = force;
 
 			return;
 		}
 
-		if (!m_pDirectInputEffect)
+		if (!m_DirectInputEffect)
 		{
 			if (controllerIndex)
 			{
 				if (controllerIndex == 1)
-					m_fVibrationForce = force;
-			}else
-				m_fVibrationForceDefault = force;
+					m_VibrationForce = force;
+			}
+			else
+				m_VibrationForceDefault = force;
 
 			return;
 		}
 
-		if (force > 0.0f && !m_bIsVibrating)
+		if (force > 0.0f && !m_IsVibrating)
 		{
-			m_pDirectInputEffect->Start(1, DIES_NODOWNLOAD);
-			m_bIsVibrating = true;
+			m_DirectInputEffect->Start(1, DIES_NODOWNLOAD);
+			m_IsVibrating = true;
 		}
 
 		if (force == 0.0f)
 		{
-			if (!m_bIsVibrating)
+			if (!m_IsVibrating)
 			{
 				if (controllerIndex)
 				{
 					if (controllerIndex == 1)
-						m_fVibrationForce = force;
+						m_VibrationForce = force;
 				}
 				else
-					m_fVibrationForceDefault = force;
+					m_VibrationForceDefault = force;
 
 				return;
 			}
 
-			m_pDirectInputEffect->Stop();
-			m_bIsVibrating = false;
+			m_DirectInputEffect->Stop();
+			m_IsVibrating = false;
 		}
 
-		if (m_bIsVibrating)
-			m_pDirectInputEffect->SetParameters(&dEffect, DIEP_TYPESPECIFICPARAMS);
+		if (m_IsVibrating)
+			m_DirectInputEffect->SetParameters(&dEffect, DIEP_TYPESPECIFICPARAMS);
 
 		if (controllerIndex)
 		{
 			if (controllerIndex == 1)
-				m_fVibrationForce = force;
+				m_VibrationForce = force;
 		}
 		else
-			m_fVibrationForceDefault = force;
+			m_VibrationForceDefault = force;
 	}
 
 	double Gamepad::GetControllerVibration(int unk1)
 	{
 		if (!unk1)
-			return m_fVibrationForceDefault;
+			return m_VibrationForceDefault;
 		if (unk1 == 1)
-			return m_fVibrationForce;
+			return m_VibrationForce;
 
 		return 0.0;
 	}
@@ -615,58 +597,56 @@ namespace Input
 	{
 		LogDump::LogA("rumble, rumble, rumble...\n");
 
-		if (m_pDirectInputEffect)
-			m_pDirectInputEffect->Start(1, DIES_NODOWNLOAD);
+		if (m_DirectInputEffect)
+			m_DirectInputEffect->Start(1, DIES_NODOWNLOAD);
 	}
 
-	const char* Gamepad::GetModelNameString()
+	const char* Gamepad::GetModelNameString() const
 	{
-		return m_sModelName.m_szString;
+		return m_ModelName.m_szString;
 	}
 
 	void Gamepad::ProcessController()
 	{
-		if (m_pDirectInputDevice)
+		if (m_DirectInputDevice)
 		{
 			DIJOYSTATE joyState;
 			memset(&joyState, NULL, sizeof(DIJOYSTATE));
 
-			m_pDirectInputDevice->Poll();
-			HRESULT devstate = m_pDirectInputDevice->GetDeviceState(sizeof(DIJOYSTATE), &joyState);
+			m_DirectInputDevice->Poll();
+			HRESULT devstate = m_DirectInputDevice->GetDeviceState(sizeof(DIJOYSTATE), &joyState);
 
 			if (devstate == DIERR_INPUTLOST || devstate == DIERR_NOTACQUIRED)
 				return;
-			if (m_pDirectInputDevice)
-				m_pDirectInputDevice->Acquire();
-			if (FAILED(m_pDirectInputDevice->GetDeviceState(sizeof(DIJOYSTATE), &joyState)))
+			if (m_DirectInputDevice)
+				m_DirectInputDevice->Acquire();
+			if (FAILED(m_DirectInputDevice->GetDeviceState(sizeof(DIJOYSTATE), &joyState)))
 				return;
 
 			//	TODO: poll device buttons and axis rotations and fill in structures.
 		}
 
-		if (FAILED(g_pDirectInput8Interface->CreateDevice(m_nGUID, &m_pDirectInputDevice, NULL)))
+		if (FAILED(DirectInput8Interface->CreateDevice(m_GUID, &m_DirectInputDevice, NULL)))
 		{
-			m_pDirectInputDevice = nullptr;
+			m_DirectInputDevice = nullptr;
 			return;
 		}
 
-		if (FAILED(m_pDirectInputDevice->SetDataFormat((LPCDIDATAFORMAT)&GUID_CONTROLLER_DATA_FORMAT)))
+		if (FAILED(m_DirectInputDevice->SetDataFormat(&c_dfDIJoystick)))
 		{
 			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
-			if (m_pDirectInputDevice)
+			if (m_DirectInputDevice)
 			{
-				m_pDirectInputDevice->Release();
-				m_pDirectInputDevice = nullptr;
+				RELEASE_SAFE(m_DirectInputDevice);
 			}
 		}
 
-		if (FAILED(m_pDirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
+		if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
 		{
 			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
-			if (m_pDirectInputDevice)
+			if (m_DirectInputDevice)
 			{
-				m_pDirectInputDevice->Release();
-				m_pDirectInputDevice = nullptr;
+				RELEASE_SAFE(m_DirectInputDevice);
 			}
 		}
 	}
