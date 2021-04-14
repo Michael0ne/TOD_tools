@@ -1,7 +1,8 @@
 #pragma once
 #include "MemoryManager.h"
 
-namespace Input {
+namespace Input
+{
 
 	#define INPUT_KEYBOARD_BUFFERS_COUNT 30
 
@@ -15,7 +16,7 @@ namespace Input {
 		bool					m_Acquired;
 		IDirectInputDevice8*	m_DirectInputDeviceInterface;
 		IDirectInput8*			m_DirectInputDevice;
-		DIDEVICEOBJECTDATA**	m_DataBuffer;	//	NOTE: judging by the code in exe, this is initialized with exact size, but because actual structure is much less, this more looks like an array of structures.
+		DIDEVICEOBJECTDATA*		m_DataBuffer;
 		unsigned int			m_DataBufferSize;
 
 	public:

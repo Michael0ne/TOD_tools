@@ -121,6 +121,17 @@ public:
 	virtual ~StreamedSound();	//	@446640
 	StreamedSound(class SoundFile* sndfile, int, int, int, char, char);	//	@445770
 
+	void* operator new (size_t size)
+	{
+		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+	}
+	void operator delete(void* ptr)
+	{
+		if (ptr)
+			MemoryManager::ReleaseMemory(ptr, 0);
+		ptr = nullptr;
+	}
+
 	virtual void			stub2();
 	virtual void			stub3();
 	virtual void			SetSampledData(void*);

@@ -40,8 +40,7 @@ public:
 
 	bool operator==(const String& _r) const
 	{
-		return m_szString == _r.m_szString &&
-			m_nLength == _r.m_nLength;
+		return strncmp(m_szString, _r.m_szString, m_nLength) == 0;
 	}
 
 	bool operator==(const char* const _r) const

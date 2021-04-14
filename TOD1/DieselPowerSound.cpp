@@ -141,7 +141,7 @@ namespace Audio
 		if (!versionMajor && !versionMinor && !versionBuild && !unk && !windowHandle && !unk1 && !unk2 && !unk3 ||
 			!InstanceAcquired)
 		{
-			g_DieselPower = (DieselPower*)FactoryFunction(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, DetectedVersion);
+			g_DieselPower = FactoryFunction(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, DetectedVersion);
 			InstanceAcquired = true;
 
 			if (!versionMajor && !versionMinor && !versionBuild && unk == 0.f && !windowHandle && !unk1 && !unk2 && !unk3)
@@ -155,7 +155,7 @@ namespace Audio
 
 		if (CheckDllVersion())
 		{
-			g_DieselPower = (DieselPower*)FactoryFunction(versionMajor, versionMinor, versionBuild, unk, windowHandle, unk1, unk2, NULL, NULL);
+			g_DieselPower = FactoryFunction(versionMajor, versionMinor, versionBuild, unk, windowHandle, unk1, unk2, NULL, NULL);
 			
 			ErrorCode = ERROR_SUCCESSFULLY_ACQUIRED;
 			ErrorMessageBuffer = (char*)DieselPowerErrorStrings[1];
@@ -193,7 +193,9 @@ namespace Audio
 			ErrorMessageBuffer = (char*)DieselPowerErrorStrings[4];
 
 			return NULL;
-		}else{
+		}
+		else
+		{
 			ErrorCode = ERROR_VERSION_LOWER;
 			ErrorMessageBuffer = (char*)DieselPowerErrorStrings[2];
 

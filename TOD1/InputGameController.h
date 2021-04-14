@@ -1,33 +1,30 @@
 #pragma once
 #include "Window.h"
 
-namespace Input {
-
-	static const GUID& GUID_RUMBLE_EFFECT = *(const GUID*)0x9D8694;
-	static const GUID& GUID_CONTROLLER_DATA_FORMAT = *(const GUID*)0x9D822C;
-
+namespace Input
+{
 #define INPUT_GAMEPAD_MAX_GAMEPADS 4
 #define INPUT_GAMEPAD_MAX_BUTTONS 16
 
 	class Gamepad
 	{
 	private:
-		IDirectInputDevice8*	m_pDirectInputDevice;
+		IDirectInputDevice8*	m_DirectInputDevice;
 		int						m_ButtonsStates[32];
-		String					m_sModelName;
-		Vector4f				m_vAxisPosition;
-		Orientation				m_vAxisRotation;
+		String					m_ModelName;
+		Vector4f				m_AxisPosition;
+		Orientation				m_AxisRotation;
 		int						field_B4;
 		int						m_SmartJoyGamepad;
-		GUID					m_nGUID;
-		bool					m_bForceFeedbackAvailable;
+		GUID					m_GUID;
+		bool					m_ForceFeedbackAvailable;
 		char					field_CD;
 		char					field_CE[2];
-		IDirectInputEffect*		m_pDirectInputEffect;
+		IDirectInputEffect*		m_DirectInputEffect;
 		int						field_D4;
-		float					m_fVibrationForceDefault;
-		float					m_fVibrationForce;
-		bool					m_bIsVibrating;
+		float					m_VibrationForceDefault;
+		float					m_VibrationForce;
+		bool					m_IsVibrating;
 		char					field_E1;
 		char					field_E2;
 		char					field_E3;
@@ -44,6 +41,7 @@ namespace Input {
 		{
 			if (ptr)
 				MemoryManager::ReleaseMemory(ptr, 0);
+			ptr = nullptr;
 		}
 
 		static Gamepad*			GetGameControllerByIndex(signed int controllerIndex);	//	@439660
@@ -73,14 +71,14 @@ namespace Input {
 		void					SetControllerVibration(signed int controllerIndex, float force);	//	@439B10
 		double					GetControllerVibration(int unk1);	//	@439C30
 		void					StartRumbleEffect();	//	@439C60	//	NOTE: unused.
-		const char*				GetModelNameString();	//	@439DF0	//	NOTE: unused.
+		const char*				GetModelNameString() const;	//	@439DF0	//	NOTE: unused.
 		void					ProcessController();	//	@439E00
 
 		static unsigned int		ControllersCreated;	//	@A35E74
 		static LPDIENUMDEVICESCALLBACK EnumCallback;	//	@43A1D0
 		static int				DirectInputGamepadsFound;	//	@A08FD0
 		static Gamepad**		GamepadsArray;	//	@A35E6C
-		static LPDIRECTINPUT8	g_pDirectInput8Interface;	//	@A35E78
+		static LPDIRECTINPUT8	DirectInput8Interface;	//	@A35E78
 		static unsigned int		_A08FD8[];	//	@A08FD8
 		static unsigned int		_A09018[];	//	@A09018
 	};

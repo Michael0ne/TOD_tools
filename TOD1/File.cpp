@@ -617,6 +617,15 @@ void File::SetPosAligned(unsigned char alignind)
 	Seek(~(AlignmentArray[alignind] - 1) & (AlignmentArray[alignind] + GetPosition() - 1));
 }
 
+int File::Read4BytesShiftLeft8()
+{
+	int b3 = ReadBlock();
+	int b1 = ReadBlock();
+	int b2 = ReadBlock();
+
+	return b3 + ((b1 + ((b2 + (ReadBlock() << 8)) << 8 ))<< 8);
+}
+
 void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
 {
 	DirectoryMappingsList.push_back({ str1, str2 });

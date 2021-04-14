@@ -257,6 +257,7 @@
     <ClInclude Include="AnimSlot.h" />
     <ClInclude Include="BaseType.h" />
     <ClInclude Include="BestFitAllocator.h" />
+    <ClInclude Include="SoundFile.h" />
     <ClInclude Include="TruthType.h" />
     <ClInclude Include="Buffer92.h" />
     <ClInclude Include="BuiltinType.h" />
@@ -400,6 +401,7 @@
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
     <ClCompile Include="BaseType.cpp" />
+    <ClCompile Include="SoundFile.cpp" />
     <ClCompile Include="TruthType.cpp" />
     <ClCompile Include="Buffer92.cpp" />
     <ClCompile Include="BuiltinType.cpp" />

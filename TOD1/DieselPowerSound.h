@@ -40,7 +40,7 @@ namespace Audio {
 		"DieselPower Level One DLL is not loaded."
 	};
 
-	typedef int (CALLBACK *DIESELPOWERCREATEPROC)(int, int, int, float, HWND, int, int, int, char*);
+	typedef class DieselPower* (CALLBACK *DIESELPOWERCREATEPROC)(int, int, int, float, HWND, int, int, int, char*);
 
 	class DieselPower
 	{
@@ -116,6 +116,7 @@ namespace Audio {
 		{
 			if (ptr)
 				MemoryManager::ReleaseMemory(ptr, 0);
+			ptr = nullptr;
 		}
 
 		static DieselPower* CallFactory(unsigned int versionMajor, unsigned int versionMinor, unsigned int versionBuild, float unk, HWND windowHandle, int unk1, int unk2, int unk3);	//	@940A70

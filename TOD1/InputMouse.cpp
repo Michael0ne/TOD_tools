@@ -52,8 +52,7 @@ namespace Input {
 		if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
-		*(int*)&m_Buffer = (int)MemoryManager::AllocatorsList[DEFAULT]->Allocate(sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT, NULL, NULL);
-		memset(m_Buffer, NULL, sizeof(DIDEVICEOBJECTDATA) * INPUT_MOUSE_BUFFERS_COUNT);
+		m_Buffer = new DIDEVICEOBJECTDATA[INPUT_MOUSE_BUFFERS_COUNT];
 
 		m_BufferSize = NULL;
 
@@ -149,11 +148,15 @@ namespace Input {
 
 	const char* Mouse::MousePositionTostr(unsigned int axis)
 	{
-		if (!axis)
+		switch (axis)
+		{
+		case 0:
 			return "MOUSE_POSITION_X";
-		if (axis == 1)
+		case 1:
 			return "MOUSE_POSITION_Y";
-		return nullptr;
+		default:
+			return nullptr;
+		}
 	}
 
 	void Mouse::Process()
@@ -234,15 +237,15 @@ namespace Input {
 			return;
 
 		for (unsigned int ind = 0; ind < buffSize; ind++)
-			switch (m_Buffer[ind]->dwOfs)
+			switch (m_Buffer[ind].dwOfs)
 			{
 			case 0:
 			case 4:
 				break;
 			case 8:
-				if (m_Buffer[ind]->dwData >= 0)
+				if (m_Buffer[ind].dwData >= 0)
 				{
-					if (m_Buffer[ind]->dwData > 0)
+					if (m_Buffer[ind].dwData > 0)
 						m_nMouseButtons[MOUSE_BUTTON_WHEEL_UP] |= 6;
 				}else
 					m_nMouseButtons[MOUSE_BUTTON_WHEEL_DOWN] |= 6;
@@ -255,10 +258,10 @@ namespace Input {
 			case 17:
 			case 18:
 			case 19:
-				m_nMouseButtons[m_Buffer[ind]->dwOfs - 12] |= (m_Buffer[ind]->dwData >> 7) & 1 ? 3 : ((m_nMouseButtons[m_Buffer[ind]->dwOfs - 12] & 0xFFFFFFFE) | 4);
+				m_nMouseButtons[m_Buffer[ind].dwOfs - 12] |= (m_Buffer[ind].dwData >> 7) & 1 ? 3 : ((m_nMouseButtons[m_Buffer[ind].dwOfs - 12] & 0xFFFFFFFE) | 4);
 				break;
 			default:
-				LogDump::LogA("WARNING: Invalid mousebutton %i!", m_Buffer[ind]->dwOfs);
+				LogDump::LogA("WARNING: Invalid mousebutton %i!", m_Buffer[ind].dwOfs);
 				break;
 			}
 	}

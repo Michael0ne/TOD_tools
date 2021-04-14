@@ -3,6 +3,9 @@
 #include "Window.h"
 #include "Performance.h"
 #include "LogDump.h"
+#include "Scene.h"
+#include "StreamedWAV.h"
+#include "SoundFile.h"
 
 StreamedSoundBuffers* g_StreamedSoundBuffers = nullptr;
 
@@ -214,14 +217,12 @@ StreamedSoundBuffers::~StreamedSoundBuffers()
 	{
 		if (m_DirectSoundBuffer_1)
 		{
-			m_DirectSoundBuffer_1->Release();
-			m_DirectSoundBuffer_1 = nullptr;
+			RELEASE_SAFE(m_DirectSoundBuffer_1);
 		}
 
 		if (m_DirectSound)
 		{
-			m_DirectSound->Release();
-			m_DirectSound = nullptr;
+			RELEASE_SAFE(m_DirectSound);
 		}
 	}
 	else
@@ -400,7 +401,7 @@ void StreamedSoundBuffers::InitDirectSound(char channels, int sampleRate)
 	LogDump::LogA("DirectSound created successfully\n");
 
 	DSCAPS dsCaps;
-	memset(&dsCaps, NULL, sizeof(DSCAPS));
+	ZeroMemory(&dsCaps, sizeof(DSCAPS));
 	dsCaps.dwSize = sizeof(DSCAPS);
 
 	if (FAILED(m_DirectSound->GetCaps(&dsCaps)))
@@ -418,8 +419,7 @@ void StreamedSoundBuffers::InitDirectSound(char channels, int sampleRate)
 		if (soundPriorityLevel == 5)
 		{
 			IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_SOUNDCARD, false);
-			m_DirectSound->Release();
-			m_DirectSound = nullptr;
+			RELEASE_SAFE(m_DirectSound);
 
 			return;
 		}
@@ -456,7 +456,7 @@ void StreamedSoundBuffers::InitDirectSound(char channels, int sampleRate)
 #pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffers::SetListener3DPos(const Vector4f& pos)
 {
-	float dist = *(float*)0xA3DCC4 >= 0.0099999998f ? *(float*)0xA3DCC4 : 0.0099999998f;
+	float dist = Scene::FrameRate_1 >= 0.0099999998f ? Scene::FrameRate_1 : 0.0099999998f;
 	Vector4f maxDistanceVec;
 	GetMaxDistance(maxDistanceVec);
 
@@ -471,7 +471,8 @@ void StreamedSoundBuffers::SetListener3DPos(const Vector4f& pos)
 		(*(void(__stdcall*)(float, float, float))(field_54 + 8))(maxDistanceVec.x * (1.0f / dist), maxDistanceVec.y * (1.0f / dist), maxDistanceVec.z * (1.0f / dist));
 		(*(void(__stdcall*)())(field_54 + 40))();
 	}
-	else {
+	else
+	{
 		m_DirectSound3DBuffer->SetConeOrientation(pos.x, pos.y, pos.z, 1);
 		HRESULT sposres = m_DirectSound3DBuffer->SetPosition(maxDistanceVec.x * (1.0f / dist), maxDistanceVec.y * (1.0f / dist), maxDistanceVec.z * (1.0f / dist), 1);
 		if (FAILED(sposres))
@@ -538,10 +539,26 @@ void StreamedSoundBuffers::StopAllSounds()
 		m_StreamDataBufferList[i]->_443E00();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffers::PreallocateStreamBuffersPool()
 {
+	LogDump::LogA(" ++ Preparing/pre-allocating %d Streambuffers to pool.\n", STREAMEDSOUNDBUFFERS_PREALLOCATED_COUNT);
+	std::vector<StreamedSound*> tempStreamedSoundVector(STREAMEDSOUNDBUFFERS_PREALLOCATED_COUNT);
 
+	for (unsigned int i = 0; i < STREAMEDSOUNDBUFFERS_PREALLOCATED_COUNT; ++i)
+	{
+		SoundFile sndfile;
+		tempStreamedSoundVector.push_back(new StreamedSound(&sndfile, 0, 0, 0, 1, 0));
+	}
+
+	tempStreamedSoundVector.clear();
+
+	LogDump::LogA(" ++ vSoundBuffers.size() = %d\n", vSoundBuffers.size());
+	LogDump::LogA(" ++ Clearing all pre-allocated Stream buffers to bInUse = false\n");
+
+	for (std::vector<SoundBufferStatus>::iterator it = vSoundBuffers.begin(); it != vSoundBuffers.end(); ++it)
+		it->m_InUse = false;
+
+	LogDump::LogA(" ++ Done.\n");
 }
 
 #pragma message(TODO_IMPLEMENTATION)

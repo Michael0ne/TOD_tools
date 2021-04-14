@@ -142,6 +142,7 @@ public:
 	static const unsigned int RewindBufferSize_1;	//	@A12088
 	static const unsigned int RewindBufferSize_2;	//	@A1208C
 	static float	FrameRate;	//	@A3DCC0
+	static float	FrameRate_1;	//	@A3DCC4
 	static UINT64	CreationTime;	//	@A3DD00
 	static int		_A3CEE4;	//	@A3CEE4
 	static int		_A3CEE8;	//	@A3CEE8
