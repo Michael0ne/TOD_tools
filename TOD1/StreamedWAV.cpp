@@ -175,10 +175,10 @@ void StreamedWAV::DestroySoundBuffers(bool unk)
 
 bool StreamedWAV::OpenSoundFile(bool a1)
 {
-	if ((m_Flags & 16 == 0) ||
-		(m_Flags & 4 != 0) &&
-		(m_Flags & 1 != 0) &&
-		(m_Flags & 2 != 0) &&
+	if ((m_Flags & 16) == 0 ||
+		(m_Flags & 4) != 0 &&
+		(m_Flags & 1) != 0 &&
+		(m_Flags & 2) != 0 &&
 		(m_WavFile || m_OggInfo))
 		return true;
 
@@ -192,6 +192,11 @@ bool StreamedWAV::OpenSoundFile(bool a1)
 	default:
 		return false;
 	}
+}
+
+bool StreamedWAV::TryLocateCurrentStreamFile() const
+{
+	return (m_WavFile || m_OggInfo) && File::FindFileEverywhere(m_FileName.m_szString);
 }
 
 bool StreamedWAV::OpenOGG(bool createnew)
@@ -234,7 +239,6 @@ bool StreamedWAV::OpenOGG(bool createnew)
 	return true;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 bool StreamedWAV::OpenWAV(bool createnew)
 {
 	if (!m_WavFile)
@@ -269,7 +273,7 @@ bool StreamedWAV::OpenWAV(bool createnew)
 	strncmp(m_ChunkId, "RIFF", 4);
 #endif
 
-	m_WavChunkSize = m_WavFile->Read4BytesShiftLeft8();
+	m_WavChunkSize = m_WavFile->ReadIntLittleToBigEndian();
 
 	m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId));
 
@@ -293,8 +297,62 @@ bool StreamedWAV::OpenWAV(bool createnew)
 
 	while (strncmp(m_ChunkId, "fmt", sizeof(m_ChunkId)) == NULL)
 	{
-		//	TODO: complete!
+		unsigned int pcm_chunksize = m_WavFile->ReadIntLittleToBigEndian();
+		unsigned short pcm_format_tag = m_WavFile->ReadShortLittleToBigEndian();
+		unsigned short pcm_channels = m_WavFile->ReadShortLittleToBigEndian();
+		unsigned int pcm_samplespersec = m_WavFile->ReadIntLittleToBigEndian();
+		unsigned int pcm_avbytespersec = m_WavFile->ReadIntLittleToBigEndian();
+		unsigned short pcm_align = m_WavFile->ReadShortLittleToBigEndian();
+		unsigned short pcm_bitspersample = m_WavFile->ReadShortLittleToBigEndian();
+
+		m_Channels = pcm_channels;
+		m_SamplesPerSec = pcm_samplespersec;
+		m_AverageBytesPerSec = pcm_avbytespersec;
+		m_BlockAlign = pcm_align;
+
+		if (pcm_format_tag == 105)
+		{
+			//	TODO: what is this tag?
+			m_BlockAlign = m_Channels * 36;
+			m_AverageBytesPerSec = (m_Channels * 36) * m_SamplesPerSec / 64;
+		}
+
+		m_BytesPerSample = pcm_format_tag == WAVE_FORMAT_PCM ? pcm_bitspersample / 8 : pcm_bitspersample * 0.125f;
+
+		for (unsigned int i = pcm_chunksize - 16; i > 0; --i)
+			m_WavFile->ReadBlock();
+
+		m_Flags |= 2;
+
+		if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
+		{
+			m_Samples = m_ChunkSize / (m_Channels * m_BytesPerSample);
+			m_Flags |= 4;
+
+			return true;
+		}
+
+		if (strncmp(m_ChunkId, "data", sizeof(m_ChunkId)))
+		{
+			for (unsigned int i = m_WavFile->ReadIntLittleToBigEndian(); i > 0; --i)
+				m_WavFile->ReadBlock();
+
+			if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
+			{
+				m_Samples = m_ChunkSize / (m_Channels * m_BytesPerSample);
+				m_Flags |= 4;
+
+				return true;
+			}
+		}
 	}
+
+	m_ChunkSize = m_WavFile->ReadIntLittleToBigEndian();
+	field_C = m_ChunkSize;
+	m_Samples = m_ChunkSize / (m_Channels * m_BytesPerSample);
+	m_Flags |= 4;
+
+	return true;
 }
 
 void* StreamedWAV::operator new(size_t size)

@@ -8,7 +8,7 @@
 
 #define COLOR_BGRA(clr) (DWORD)( ((unsigned char)(clr.b * 255.f) << 8 | ((unsigned char)(clr.g * 255.f) << 8 |(((unsigned char)(clr.r * 255.f) << 8) | (unsigned char)(clr.a * 255.f) << 8))))
 
-struct GfxInternal_Dx9_Vertex
+struct GfxInternal_Dx9_VertexBuffer
 {
 	struct VertexDeclaration
 	{
@@ -20,8 +20,8 @@ struct GfxInternal_Dx9_Vertex
 		{};
 	};
 
-	int							m_Verticies;
-	int							field_4;
+	int							m_InitialVerticiesCapacity;
+	int							m_VerticiesTotal;
 	int							m_FVF;
 	int							m_Length;
 	char*						m_BufferPtr;
@@ -33,8 +33,8 @@ struct GfxInternal_Dx9_Vertex
 	LPDIRECT3DVERTEXBUFFER9		m_Direct3DVertexBuffer;
 
 public:
-	GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags);	//	@464E70
-	~GfxInternal_Dx9_Vertex();	//	@465070
+	GfxInternal_Dx9_VertexBuffer(int FVFindex, int size, int flags);	//	@464E70
+	~GfxInternal_Dx9_VertexBuffer();	//	@465070
 
 	void* operator new(size_t size)
 	{
@@ -48,12 +48,13 @@ public:
 		ptr = nullptr;
 	}
 
+	int							SetData(const unsigned int verticies, const void* indata, void* outdata);	//	@464C00
 	void						CreateVertexBuffer();	//	@464CC0
 
 	static void					CreateVerticesMap();	//	@4651B0
 
 	static const VertexDeclaration	VertexDeclarations[];	//	@A0ABD0
-	static std::map<int, GfxInternal_Dx9_Vertex*>*	VertexBufferMap;	//	@A39F58
+	static std::map<int, GfxInternal_Dx9_VertexBuffer*>*	VertexBufferMap;	//	@A39F58
 };
 
 struct GfxInternal_Dx9_IndexBuffer
@@ -99,7 +100,7 @@ class GfxInternal_Dx9
 		Light*	m_Light;
 	};
 
-	struct TextureProperties
+	struct RenderProperties
 	{
 		int     field_0;
 		int     field_4;
@@ -129,24 +130,24 @@ class GfxInternal_Dx9
 		int     field_64;
 		int     field_68;
 		char    field_6C[4];
-		char    m_LightingEnabled;
-		char    field_71;
-		char    field_72;
+		bool    m_LightingEnabled;
+		bool    m_ZTest;
+		bool    m_ZWrite;
 		char    field_73;
 		ColorRGB m_AmbientColor;
-		int     field_84;
-		char    m_AlphaTest;
-		char    field_89;
+		int     m_CullMode;
+		bool    m_AlphaTest;
+		bool    m_AlphaBlend;
 		char    field_8A;
 		char    field_8B;
 
-		TextureProperties();	//	@45FF40
+		RenderProperties();	//	@45FF40
 
 		void	SetTextureAmbientColor(const ColorRGB& clr, bool flushdirectly);	//	@45ED60
 		void	ToggleLighting(bool enabled, bool flushdirectly);	//	@45ED30
 	};
 
-	ASSERT_CLASS_SIZE(TextureProperties, 140);
+	ASSERT_CLASS_SIZE(RenderProperties, 140);
 
 public:
 	IDirect3DDevice9*	m_Direct3DDevice;
@@ -155,7 +156,7 @@ protected:
 	char		m_DeviceResetIssued;
 	char		field_9;
 	char		field_A;
-	int			field_C;
+	int			m_TotalMeshesDrawn;
 	int			m_TotalPrimitivesDrawn;
 	int			m_TotalVerticiesDrawn;
 	std::vector<DisplayModeInfo>	m_DisplayModesList;
@@ -184,7 +185,7 @@ protected:
 	char		m_ShouldCreateVerticies;
 	char		field_1B2;
 	char		field_1B3;
-	TextureProperties m_TexProperties[2];
+	RenderProperties m_TexProperties[2];
 	bool		m_FlushDirectly;
 	IDirect3DTexture9*	m_TexturesArray[16];
 public:
@@ -205,7 +206,7 @@ protected:
 	float		m_AspectRatio;
 	float		m_NearPlane;
 	float		m_FarPlane;
-	GfxInternal_Dx9_Vertex*	m_VertexBuffer[4];
+	GfxInternal_Dx9_VertexBuffer*	m_VertexBuffer[4];
 	D3DXMATRIX	m_ProjectionMatrix;
 	D3DXMATRIX	m_ViewMatrix;
 	D3DXMATRIX	m_IdentityMatrix;
@@ -243,7 +244,7 @@ protected:
 	float		m_FogDensity;
 	ColorRGB	m_FogColor;
 	IDirect3DIndexBuffer9*	m_IndexBuffer;
-	GfxInternal_Dx9_Vertex*	m_CurrentVertexBuffer;
+	GfxInternal_Dx9_VertexBuffer*	m_CurrentVertexBuffer;
 	GfxInternal_Dx9_Texture*	m_TexturesArray_2[2];
 	int			field_9700;
 	int			field_9704;
@@ -417,6 +418,8 @@ public:
 	static D3DCULL				CullModes[3];	//	@9B6674
 	static HMENU				WindowMenu;	//	@A39F28
 	static D3DFORMAT			SupportedFormats[];	//	@A0A99C
+	static float				NoiseTime;	//	@A39F2C
+	static int					NoiseState;	//	@A39F30	//	NOTE: used when rendering noise.
 
 	static void GetScreenResolution(Vector2<unsigned int>& outRes);	//	@41FD70
 };
@@ -425,4 +428,4 @@ extern GfxInternal_Dx9* g_GfxInternal_Dx9;	//	@A39F14
 extern LPDIRECT3DDEVICE9 g_Direct3DDevice;	//	@A39F34
 
 ASSERT_CLASS_SIZE(GfxInternal_Dx9, 38816);
-ASSERT_CLASS_SIZE(GfxInternal_Dx9_Vertex, 40);
+ASSERT_CLASS_SIZE(GfxInternal_Dx9_VertexBuffer, 40);

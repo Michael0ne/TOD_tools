@@ -147,6 +147,7 @@ namespace GameConfig
 	static void				EnumMaterialsInCollmat();	//	@87D330
 	static void				EnumFaceColMaterials();	//	@87D100
 
+	static void				CreateDirectoriesRecursive(char* dir);	//	@4096E0
 	static void				GetInternalGameName(String& outStr);	//	@4098D0
 
 	//	TODO: move this to 'CollMat'.

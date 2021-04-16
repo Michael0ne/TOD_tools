@@ -617,13 +617,18 @@ void File::SetPosAligned(unsigned char alignind)
 	Seek(~(AlignmentArray[alignind] - 1) & (AlignmentArray[alignind] + GetPosition() - 1));
 }
 
-int File::Read4BytesShiftLeft8()
+int File::ReadIntLittleToBigEndian()
 {
-	int b3 = ReadBlock();
-	int b1 = ReadBlock();
-	int b2 = ReadBlock();
+	unsigned char b3 = ReadBlock();
+	unsigned char b1 = ReadBlock();
+	unsigned char b2 = ReadBlock();
 
-	return b3 + ((b1 + ((b2 + (ReadBlock() << 8)) << 8 ))<< 8);
+	return b3 + ((b1 + ((b2 + ((unsigned char)ReadBlock() << 8)) << 8)) << 8);
+}
+
+short File::ReadShortLittleToBigEndian()
+{
+	return ReadBlock() + ((unsigned char)ReadBlock() << 8);
 }
 
 void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
