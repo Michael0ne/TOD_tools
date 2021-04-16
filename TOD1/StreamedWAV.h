@@ -66,10 +66,11 @@ public:
 	StreamedWAV(unsigned int sampleRate);	//	@40FAB0
 	StreamedWAV(unsigned int sampleRate, const char* soundFile);	//	@40FBA0
 
-	void			DestroySoundBuffers(bool);	//	@40F4C0
-	bool			OpenSoundFile(bool a1);	//	@40F470
 	bool			OpenOGG(bool createnew);	//	@40F0D0
 	bool			OpenWAV(bool createnew);	//	@40F200
+	bool			OpenSoundFile(bool a1);	//	@40F470
+	void			DestroySoundBuffers(bool);	//	@40F4C0
+	bool			TryLocateCurrentStreamFile() const;	//	@40F5A0
 
 	void* operator new(size_t);
 	void* operator new[](size_t size);

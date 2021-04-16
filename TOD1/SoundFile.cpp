@@ -1,5 +1,7 @@
 #include "SoundFile.h"
 #include "StreamedSoundBuffers.h"
+#include "LogDump.h"
+#include "ScriptDatabase.h"
 
 SoundFile::SoundFile()
 {
@@ -55,9 +57,11 @@ void SoundFile::CopySoundPropertiesFromStreamedWav_1()
 		return;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void SoundFile::ReadStreamedSoundFile(bool a1)
 {
+	if (!a1 && (field_24 & 1) == 0)
+		a1 = true;
+
 	delete m_StreamedWAV;
 	m_StreamedWAV = new StreamedWAV(72000, m_FileName.m_szString);
 	
@@ -65,9 +69,44 @@ void SoundFile::ReadStreamedSoundFile(bool a1)
 
 	if (m_StreamedWAV->OpenSoundFile(a1))
 	{
-		ReleaseSemaphore(StreamedSoundBuffers::SemaphoreObject);
+		ReleaseSemaphore(StreamedSoundBuffers::SemaphoreObject, 1, 0);
 		m_StreamedWAV->DestroySoundBuffers(true);
 
-		//	TODO: complete!
+		if (a1)
+			CopySoundPropertiesFromStreamedWav();
+		else
+			CopySoundPropertiesFromStreamedWav_1();
+
+		field_24 |= 0x80000000;
 	}
+	else
+	{
+		LogDump::LogA("Could not open/find streamed sound called %s\n", m_FileName.m_szString);
+
+		delete m_StreamedWAV;
+		field_24 &= 0x7FFFFFFF;
+		ReleaseSemaphore(StreamedSoundBuffers::SemaphoreObject, 1, 0);
+	}
+}
+
+void SoundFile::Open(const char* const filename)
+{
+	delete m_StreamedWAV;
+	m_FileName = filename;
+
+	if (!filename || !*filename)
+		return;
+
+	char dir[1024] = {};
+	char fn[128] = {};
+	char finalname[1152] = {};
+	File::ExtractFilePath(m_FileName.m_szString, dir, fn, nullptr);
+
+	strcpy(finalname, dir);
+	strcat(finalname, fn);
+	strcat(finalname, ".");
+	strcat(finalname, Script::StreamedSoundExt.m_szString);
+
+	m_FileName = finalname;
+	ReadStreamedSoundFile(true);
 }

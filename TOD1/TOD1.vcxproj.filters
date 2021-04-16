@@ -518,6 +518,9 @@
     <ClInclude Include="SoundFile.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="MeshBuffer_Dx9.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -906,6 +909,9 @@
     </ClCompile>
     <ClCompile Include="SoundFile.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshBuffer_Dx9.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

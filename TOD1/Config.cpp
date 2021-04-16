@@ -152,7 +152,7 @@ namespace GameConfig
 		InitEntitiesDatabase();
 
 		Scene_Buffer68::CreateMeshBufferMap();
-		GfxInternal_Dx9_Vertex::CreateVerticesMap();
+		GfxInternal_Dx9_VertexBuffer::CreateVerticesMap();
 		GfxInternal_Dx9_Texture::InitTexturesMap();
 
 		RenderBuffer::CreateRenderBuffer();
@@ -298,7 +298,7 @@ namespace GameConfig
 				for (unsigned int i = 0; i < (sizeof(memcardFolders) / sizeof(char*)); i++)
 				{
 					MemoryCardInfo[i]->m_SaveFolderPath = memcardFolders[i];
-					Utils::CreateDirectoriesRecursive(memcardFolders[i]);
+					CreateDirectoriesRecursive(memcardFolders[i]);
 
 					if (!MemoryCardInfo[i]->IsFormatted())
 						MemoryCardInfo[i]->FormatCard();
@@ -306,7 +306,7 @@ namespace GameConfig
 			}
 
 			MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath = "/savegames/harddisk/";
-			Utils::CreateDirectoriesRecursive(MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath.m_szString);
+			CreateDirectoriesRecursive(MemoryCardInfo[SAVE_SLOT_8]->m_SaveFolderPath.m_szString);
 
 			if (!MemoryCardInfo[SAVE_SLOT_8]->IsFormatted())
 				MemoryCardInfo[SAVE_SLOT_8]->FormatCard();
@@ -1155,6 +1155,54 @@ namespace GameConfig
 			buffer.ToLowerCase();
 			FaceCollList.push_back(buffer);
 		}
+	}
+
+	void CreateDirectoriesRecursive(char* dir)
+	{
+		size_t slen = strlen(dir);
+		if (!slen)
+			return;
+
+		if (File::IsDirectoryValid(dir))
+			return;
+
+		char* lastslash = strrchr(dir, '/');
+		char* lastslashr = strrchr(dir, '\\');
+
+		if (lastslash)
+		{
+			*lastslash = NULL;
+			slen--;
+		}
+
+		if (lastslashr)
+		{
+			*lastslashr = NULL;
+			slen--;
+		}
+
+		if (slen - 1 >= 0)
+		{
+			while (true)
+			{
+				if (dir[slen] == '/' || dir[slen] == '\\')
+					break;
+
+				if (--slen < 0)
+				{
+					File::CreateNewDirectory(dir);
+					return;
+				}
+			}
+
+			char tmp[MAX_PATH] = {};
+			strncpy(tmp, dir, slen + 1);
+
+			if (slen >= 0)
+				CreateDirectoriesRecursive(tmp);
+		}
+
+		File::CreateNewDirectory(dir);
 	}
 
 	void GetInternalGameName(String& outStr)

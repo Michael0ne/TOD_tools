@@ -6,6 +6,7 @@
 #include "InputKeyboard.h"
 #include "VirtualHud.h"
 #include "GfxInternal_Dx9_Surface.h"
+#include <DxErr.h>
 
 GfxInternal_Dx9* g_GfxInternal_Dx9 = nullptr;
 LPDIRECT3DDEVICE9 g_Direct3DDevice = nullptr;
@@ -13,6 +14,9 @@ bool GfxInternal_Dx9::ProcessingInput;
 D3DCULL GfxInternal_Dx9::CullModes[3] = { D3DCULL_NONE, D3DCULL_CW, D3DCULL_CCW };
 HMENU GfxInternal_Dx9::WindowMenu;
 D3DFORMAT GfxInternal_Dx9::SupportedFormats[] = { D3DFMT_D24S8, D3DFMT_D24X8, D3DFMT_D24X4S4, D3DFMT_D16, D3DFMT_D32, D3DFMT_D15S1 };
+float GfxInternal_Dx9::NoiseTime;
+int GfxInternal_Dx9::NoiseState;
+
 std::map<int, int> GfxInternal_Dx9::RenderedTexturesMap;
 
 const D3DMATRIX GfxInternal_Dx9::IdentityMatrix =
@@ -23,7 +27,7 @@ const D3DMATRIX GfxInternal_Dx9::IdentityMatrix =
 	0.f, 0.f, 0.f, 1.f
 };
 
-const GfxInternal_Dx9_Vertex::VertexDeclaration GfxInternal_Dx9_Vertex::VertexDeclarations[] =
+const GfxInternal_Dx9_VertexBuffer::VertexDeclaration GfxInternal_Dx9_VertexBuffer::VertexDeclarations[] =
 {
 	{ 20, D3DFVF_DIFFUSE | D3DFVF_XYZRHW },
 	{ 24, D3DFVF_TEX1 | D3DFVF_XYZRHW},
@@ -38,7 +42,7 @@ const GfxInternal_Dx9_Vertex::VertexDeclaration GfxInternal_Dx9_Vertex::VertexDe
 	{ 48, D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ },
 	{ 40, D3DFVF_NORMAL | D3DFVF_XYZ }
 };
-std::map<int, GfxInternal_Dx9_Vertex*>* GfxInternal_Dx9_Vertex::VertexBufferMap;
+std::map<int, GfxInternal_Dx9_VertexBuffer*>* GfxInternal_Dx9_VertexBuffer::VertexBufferMap;
 
 void GfxInternal_Dx9::GetScreenResolution(Vector2<unsigned int>& outRes)
 {
@@ -442,7 +446,7 @@ void GfxInternal_Dx9::SetupWindowParamsNoAntiAliasing(const ScreenResolution mod
 		CreateRenderDevice();
 	}
 	else
-		MessageBoxA(g_Window->m_WindowHandle, Utils::GetErrorCodeDescription(result), "Couldn't get current display mode", NULL);
+		MessageBoxA(g_Window->m_WindowHandle, DXGetErrorString(result), "Couldn't get current display mode", NULL);
 }
 
 bool GfxInternal_Dx9::SetScreenResolution(unsigned int width, unsigned int height)
@@ -503,7 +507,7 @@ bool GfxInternal_Dx9::SetupScreenRes()
 		HRESULT dispmoderes = m_Direct3DInterface->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &dispmode);
 		if (FAILED(dispmoderes))
 		{
-			MessageBox(g_Window->m_WindowHandle, Utils::GetErrorCodeDescription(dispmoderes), "Couldn't get current display mode", MB_OK);
+			MessageBox(g_Window->m_WindowHandle, DXGetErrorString(dispmoderes), "Couldn't get current display mode", MB_OK);
 			return false;
 		}
 
@@ -716,9 +720,9 @@ void GfxInternal_Dx9::SetCullMode(unsigned int cullmode)
 {
 #ifdef INCLUDE_FIXES
 	//	NOTE: sanity check.
-	m_TexProperties[0].field_84 = cullmode > 2 ? 0 : cullmode;
+	m_TexProperties[0].m_CullMode = cullmode > 2 ? 0 : cullmode;
 #else
-	m_TexProperties[0].field_84 = cullmode;
+	m_TexProperties[0].m_CullMode = cullmode;
 #endif
 	m_TexProperties[0].field_8A = 1;
 
@@ -860,7 +864,7 @@ void GfxInternal_Dx9::Reset()
 		m_DeviceLost = false;
 	}
 	else
-		LogDump::LogA("%s: %s\n", "pd3dDevice->Reset", Utils::GetErrorCodeDescription(resetresult));
+		LogDump::LogA("%s: %s\n", "pd3dDevice->Reset", DXGetErrorString(resetresult));
 }
 
 bool GfxInternal_Dx9::BeginScene()
@@ -1196,7 +1200,7 @@ void GfxInternal_Dx9::EnableAlphaChannel(bool enabled)
 
 	if (enabled)
 	{
-		m_TexProperties[0].field_89 = true;
+		m_TexProperties[0].m_AlphaBlend = true;
 		m_TexProperties[0].field_8 = 4;
 		m_TexProperties[0].field_24 = 1;
 
@@ -1208,7 +1212,7 @@ void GfxInternal_Dx9::EnableAlphaChannel(bool enabled)
 	}
 	else
 	{
-		m_TexProperties[0].field_89 = false;
+		m_TexProperties[0].m_AlphaBlend = false;
 		m_TexProperties[0].field_8 = 3;
 		m_TexProperties[0].field_24 = 1;
 
@@ -1398,16 +1402,16 @@ void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface* surf)
 		backBufferSurface->Release();
 }
 
-GfxInternal_Dx9_Vertex::GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags)
+GfxInternal_Dx9_VertexBuffer::GfxInternal_Dx9_VertexBuffer(int FVFindex, int size, int flags)
 {
 	m_BufferPtr = nullptr;
 	m_Direct3DVertexBuffer = nullptr;
 	field_16 = NULL;
-	m_Verticies = size;
+	m_InitialVerticiesCapacity = size;
 	m_Stride = VertexDeclarations[FVFindex].m_Stride;
 	m_FVF = VertexDeclarations[FVFindex].m_FVF;
 	m_Length = size * m_Stride;
-	field_4 = NULL;
+	m_VerticiesTotal = NULL;
 	m_Flags = flags;
 	m_FVFIndex = FVFindex;
 	field_20 = NULL;
@@ -1418,9 +1422,9 @@ GfxInternal_Dx9_Vertex::GfxInternal_Dx9_Vertex(int FVFindex, int size, int flags
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-GfxInternal_Dx9_Vertex::~GfxInternal_Dx9_Vertex()
+GfxInternal_Dx9_VertexBuffer::~GfxInternal_Dx9_VertexBuffer()
 {
-	MESSAGE_CLASS_DESTROYED(GfxInternal_Dx9_Vertex);
+	MESSAGE_CLASS_DESTROYED(GfxInternal_Dx9_VertexBuffer);
 
 	//	TODO: remove this from 'VertexMap'.
 
@@ -1433,7 +1437,30 @@ GfxInternal_Dx9_Vertex::~GfxInternal_Dx9_Vertex()
 	delete[] m_BufferPtr;
 }
 
-void GfxInternal_Dx9_Vertex::CreateVertexBuffer()
+int GfxInternal_Dx9_VertexBuffer::SetData(const unsigned int verticies, const void* indata, void* outdata)
+{
+	if (m_VerticiesTotal + verticies >= m_InitialVerticiesCapacity)
+	{
+		if (outdata)
+			m_Direct3DVertexBuffer->Lock(0, verticies * m_Stride, &outdata, 4096);
+		else
+			m_Direct3DVertexBuffer->Lock(0, 0, &outdata, 8192);
+
+		m_VerticiesTotal = verticies;
+	}
+	else
+	{
+		m_Direct3DVertexBuffer->Lock(m_VerticiesTotal * m_Stride, verticies * m_Stride, &outdata, 4096);
+		m_VerticiesTotal += verticies;
+	}
+
+	memcpy(outdata, indata, verticies * m_Stride);
+	m_Direct3DVertexBuffer->Unlock();
+
+	return m_VerticiesTotal - verticies;
+}
+
+void GfxInternal_Dx9_VertexBuffer::CreateVertexBuffer()
 {
 	LPDIRECT3DVERTEXBUFFER9 vertbuff = nullptr;
 	g_GfxInternal_Dx9->m_Direct3DDevice->CreateVertexBuffer(m_Length, m_Flags & 1 ? D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY : D3DUSAGE_WRITEONLY, m_FVF, D3DPOOL_DEFAULT, &vertbuff, nullptr);
@@ -1444,14 +1471,14 @@ void GfxInternal_Dx9_Vertex::CreateVertexBuffer()
 	m_Direct3DVertexBuffer = vertbuff;
 }
 
-void GfxInternal_Dx9_Vertex::CreateVerticesMap()
+void GfxInternal_Dx9_VertexBuffer::CreateVerticesMap()
 {
-	VertexBufferMap = new std::map<int, GfxInternal_Dx9_Vertex*>();
+	VertexBufferMap = new std::map<int, GfxInternal_Dx9_VertexBuffer*>();
 }
 
-GfxInternal_Dx9::TextureProperties::TextureProperties()
+GfxInternal_Dx9::RenderProperties::RenderProperties()
 {
-	MESSAGE_CLASS_CREATED(TextureProperties);
+	MESSAGE_CLASS_CREATED(RenderProperties);
 
 	field_0 = NULL;
 	field_50 = NULL;
@@ -1459,7 +1486,7 @@ GfxInternal_Dx9::TextureProperties::TextureProperties()
 	field_60 = 1;
 }
 
-void GfxInternal_Dx9::TextureProperties::SetTextureAmbientColor(const ColorRGB& clr, bool flushdirectly)
+void GfxInternal_Dx9::RenderProperties::SetTextureAmbientColor(const ColorRGB& clr, bool flushdirectly)
 {
 	m_AmbientColor = clr;
 	field_8A = 1;
@@ -1468,7 +1495,7 @@ void GfxInternal_Dx9::TextureProperties::SetTextureAmbientColor(const ColorRGB& 
 		g_Direct3DDevice->SetRenderState(D3DRS_AMBIENT, COLOR_BGRA(clr));
 }
 
-void GfxInternal_Dx9::TextureProperties::ToggleLighting(bool enabled, bool flushdirectly)
+void GfxInternal_Dx9::RenderProperties::ToggleLighting(bool enabled, bool flushdirectly)
 {
 	m_LightingEnabled = enabled;
 	field_8A = 1;
