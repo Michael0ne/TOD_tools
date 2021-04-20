@@ -32,7 +32,7 @@ public:
 
 	CREATOR				m_Creator;
 	EntityType*			m_Parent;
-	int*				m_Script;
+	GlobalScript*		m_Script;
 protected:
 	std::map<unsigned short, ScriptFuncDescription>	m_ScriptsList;	//	NOTE: each 'derived' script derives it's parent scripts.
 	int					field_38;
@@ -49,7 +49,7 @@ public:
 	virtual ~EntityType();	//	@4886C0
 
 	void*				CreateNode() const;	//	@86C770
-	void				InheritFrom(EntityType* from);	//	@86CB40
+	void				InheritFrom(const EntityType* from);	//	@86CB40
 	inline void			SetCreator(CREATOR creator) { m_Creator = creator; }
 	template <class C>
 	void				RegisterScript(const char* const scriptname, void (C::* scriptproc)(void*), const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7);	//	@86EC70

@@ -178,7 +178,11 @@ int Blocks::InsertTypeListItem(void* res)
 	return ind;
 }
 
+#ifdef INCLUDE_FIXES
+void Blocks::GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, ResType::PlatformId platform)
+#else
 void Blocks::GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform)
+#endif
 {
 	char buff[1024] = {};
 
@@ -211,7 +215,11 @@ void Blocks::GetPlatformSpecificPath(String& outStr, const char* respath, const 
 		strcat(buff, resext);
 	}
 
+#ifdef INCLUDE_FIXES
+	strcpy(outStr, buff);
+#else
 	outStr = buff;
+#endif
 }
 
 const char* Blocks::GetResourcePathSceneRelative(const char* const path)

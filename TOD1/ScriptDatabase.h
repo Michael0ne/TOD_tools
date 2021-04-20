@@ -10,7 +10,10 @@
 
 	#define SCRIPT_PROPERTIES_BUILTIN_CRC 0xE99606BA
 	#define SCRIPT_PROPERTIES_DATABASE_CRC 0x24A37B21
-#else
+#endif
+#ifdef PLATFORM_XBOX
+#endif
+#ifdef PLATFORM_PC
 	#define SCRIPT_PROPERTIES_TOTAL 5994
 	#define SCRIPT_PROPERTIES_BUILTIN_TOTAL 711
 
@@ -20,15 +23,17 @@
 
 struct GlobalProperty
 {
-	int							m_PropertyId = 0;
-	char*						m_PropertyName = nullptr;
-	class BaseType*				m_PropertyType = nullptr;
-
-	void						GetNameAndType(String& outStr) const;	//	@8731C0
+	int                         m_PropertyId = 0;
+	char*                       m_PropertyName = nullptr;
+	class BaseType*             m_PropertyType = nullptr;
 
 	GlobalProperty() {};
 	GlobalProperty(const char* const propertyname, unsigned int ind);
 	~GlobalProperty();
+
+	void                        GetNameAndType(String& outStr) const;	//	@8731C0
+
+	static GlobalProperty&      GetById(unsigned int id);	//	@872FC0
 };
 
 extern std::vector<GlobalProperty>		GlobalPropertiesList;	//	@A3CF20
@@ -56,11 +61,11 @@ protected:
 	
 	CommandArguments			m_Arguments;	//	NOTE: element at index 0 is always return scripttype.
 	int							m_GlobalIndex;
-	const char*					m_ArgumentsString;	//	NOTE: full name with arguments.
-	const char*					m_CommandName;	//	NOTE: the name without arguments (only command name).
+	char*						m_ArgumentsString;	//	NOTE: full name with arguments.
+	char*						m_CommandName;	//	NOTE: the name without arguments (only command name).
 
 private:
-	void						AddArgumentType(const BaseType* argtype);	//	@862650
+	void						AddArgumentType(BaseType* argtype);	//	@862650
 
 public:
 	GlobalCommand(const char* const commandname, const unsigned int commandind);	//	@871FE0
@@ -72,67 +77,62 @@ public:
 extern std::vector<GlobalCommand>		GlobalCommandsList;	//	@A11470
 extern std::map<String, unsigned int>	GlobalCommandsMap;	//	@A3CF08
 
-//	NOTE: more appropriate name could be 'BuiltinScript' since they're baked in game. Essentially this is a representation of a class instance that can be used by scripts in game.
 class GlobalScript
 {
-	struct GlobalScriptField
+	struct Property
 	{
-		struct GlobalProperty
-		{
-			unsigned int		m_PropertyIndex;
-			const char*			m_PropertyName;
-			BaseType*			m_PropertyType;
-		}						m_GlobalProperty;
-		unsigned int			m_FieldOffset;
-		const char*				m_DefaultValue;
-		unsigned int			field_C;
+		GlobalProperty         *m_Info;
+		unsigned int            m_Offset;
+		char*                   m_DefaultValue;
+		unsigned int            field_C;
 	};
 
-	struct GlobalScriptMethod
+	struct Method
 	{
-		unsigned int			field_0;
-		unsigned int			field_4;
-		unsigned int			field_8;
+		unsigned short          m_Id;
+		unsigned short          m_PropertyBlockId;
+		void                    (* m_ThreadHandler)(class ScriptThread*);
+		void                    (* m_MethodPtr)(int* args);
 	};
 
-	struct GlobalScriptParam
+	struct Parameter
 	{
-		void					(* m_ProcPtr)(void*);
-		BaseType*				m_ParamType;
+		void                    (* m_ProcPtr)(void*);
+		BaseType*               m_ParamType;
 	};
+
 protected:
-	std::vector<GlobalScriptField>	m_FieldsList;
-	int							m_FieldsDefaultValues[4];	//	[field_id] = field_val
-	unsigned int				m_ScriptSizeBytes;
-	std::vector<GlobalScriptMethod>	m_MethodsList;
-	std::vector<GlobalScriptParam>		m_ParamsList;
-	int							field_44;
-	class EntityType*			m_BaseEntity;
-	String						m_Name;
-	int							field_5C;
-	void						(__cdecl* field_60)(int*);	//	NOTE: constructor (?)
+	std::vector<Property>       m_PropertiesList;
+	std::map<unsigned int, unsigned int> m_PropertiesValues;
+	unsigned int                field_1C;
+	unsigned int                m_ScriptSize;
+	std::vector<Method>         m_MethodsList;
+	std::vector<Parameter>      m_ParametersList;
+	unsigned int                m_PropertiesBlocksTotal;
+	EntityType                 *m_BaseEntity;
+	String                      m_Name;
+	char                        field_5C;
+	void                        (* field_60)(int*);
 
 public:
-	GlobalScript(const char* const scriptName, const char* const parentEntity, bool, bool);	//	@48A530
+	GlobalScript(const char* const scriptName, const char* const parentName, bool a3, bool a4);	//	@48A530
 
-	void						RegisterMember(unsigned int fieldId, const char* const defaultValue, unsigned int);	//	@48AF10
+	void                        AddStructElement(unsigned int fieldId, const char* const defaultValue, unsigned int);	//	@48AF10
+	void                        AddMethod(unsigned short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*));	//	@48A690
+	void                        CalculateSize();	//	@48AA60
 
-	class EntityType*	AssignScriptToEntity(const EntityType* parent);	//	@48A3F0
+	class EntityType*           AssignScriptToEntity(const EntityType* parent);	//	@48A3F0
 
-	static GlobalScript*		GetGlobalScriptByName(const char* name);	//	@48C590
-	static std::vector<GlobalScript>	ScriptsList;	//	@A0B424
+	static GlobalScript*        GetGlobalScriptByName(const char* name);	//	@48C590
+	static GlobalScript*        GetGlobalScriptById(const unsigned int id);	//	@48C580
+	static int                  GetScriptIdByName(const char* const name);	//	@48C910
+
+	static std::vector<GlobalScript*>	ScriptsList;	//	@A0B424
 };
+
+extern BaseType*                GlobalScriptsArray[410];	//	@A3B7A4	//	TODO: this could be just a global 'scripts space' where mixed objects are contained.
 
 ASSERT_CLASS_SIZE(GlobalScript, 100);
-
-struct ScriptObject
-{
-protected:
-	GlobalScript*				m_ScriptInstance;
-	BaseType*					m_Script;	//	NOTE: cast to appropriate type.
-};
-
-static ScriptObject*			GlobalScriptsArray[205];	//	@A3B7A4
 
 extern unsigned int	GlobalPropertyListChecksum;	//	@A3CF40
 extern bool			GlobalPropertyListChecksumObtained;	//	@A3CF1C
@@ -191,7 +191,6 @@ namespace Script
 	extern String ScriptsPath;	//	@A0B434
 	extern std::vector<StringTuple> DirectoryMappings;	//	@A35DE4
 
-	static bool IsRegionEurope() { return false; };	//	@420160
 	static const char* GetCurrentCountryCode() { return CountryCodes[LanguageStringsOffset]; };	//	@42E500
 	static void SetCountryCode(const char* const lang)	//	@42E530
 	{

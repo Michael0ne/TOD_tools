@@ -20,7 +20,6 @@
 #include "LogDump.h"
 #include "EditorCamera.h"
 #include "ZipArch.h"
-#include "ResourcesTypes.h"
 #include "ScriptDatabase.h"
 #include "NodeSpatial.h"
 #include "NodeLogical.h"
@@ -135,17 +134,17 @@ namespace GameConfig
 
 		g_SceneSaveLoad = new SceneSaveLoad();
 
-		ResType::Texture::CreateInstance();
-		ResType::Font::CreateInstance();
-		ResType::Text::CreateInstance();
-		ResType::Model::CreateInstance();
-		ResType::Fragment::CreateInstance();
-		ResType::Movie::CreateInstance();
-		ResType::Cutscene::CreateInstance();
-		ResType::Sound::CreateInstance();
-		ResType::StreamedSoundInfo::CreateInstance();
-		ResType::Animation::CreateInstance();
-		ResType::MeshColor::CreateInstance();
+		TextureAsset::CreateInstance();
+		FontAsset::CreateInstance();
+		TextAsset::CreateInstance();
+		ModelAsset::CreateInstance();
+		FragmentAsset::CreateInstance();
+		MovieAsset::CreateInstance();
+		CutsceneAsset::CreateInstance();
+		SoundAsset::CreateInstance();
+		StreamedSoundInfoAsset::CreateInstance();
+		AnimationAsset::CreateInstance();
+		MeshColorAsset::CreateInstance();
 
 		CreateUnknownMatricies();
 
@@ -289,7 +288,7 @@ namespace GameConfig
 
 			if (platform.Equal("PS2"))
 			{
-				const char* const memcardFolders[] =
+				char* memcardFolders[] =
 				{
 					"/savegames/memorycard0/",
 					"/savegames/memorycard1/"
@@ -432,7 +431,7 @@ namespace GameConfig
 
 		g_GfxInternal = new GfxInternal(ScreenSize, 32, 16, (Script::Fullscreen ? (GfxInternal::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
 
-		Script::Region = Script::IsRegionEurope() ? "europe" : "usa";
+		Script::Region = GfxInternal::GetRegion() ? "europe" : "usa";
 
 		if (m_ConfigurationVariables->IsVariableSet("region"))
 			m_ConfigurationVariables->GetParamValueString(Script::Region, "region");

@@ -87,6 +87,12 @@
     <Filter Include="Source files\KapowSystems\Scripting\Entity">
       <UniqueIdentifier>{e7d45331-b339-498a-89cd-a13b25714000}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header files\KapowSystems\System\Assets">
+      <UniqueIdentifier>{2b786ec4-8866-482b-8436-1aedf93f7ace}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\KapowSystems\System\Assets">
+      <UniqueIdentifier>{095819aa-1405-44cd-bca9-b407b461a65c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -133,9 +139,6 @@
     </ClInclude>
     <ClInclude Include="Scratchpad.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourcesTypes.h">
-      <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
     <ClInclude Include="DieselPowerSound.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
@@ -521,6 +524,51 @@
     <ClInclude Include="MeshBuffer_Dx9.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
+    <ClInclude Include="GfxInternal_Dx9_VertexBuffer.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxInternal_Dx9_IndexBuffer.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxInternal_OGL.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="FontAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="TextAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="FragmentAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="MovieAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshColorAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="CutsceneAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamedSoundInfoAsset.h">
+      <Filter>Header files\KapowSystems\System\Assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -561,9 +609,6 @@
     </ClCompile>
     <ClCompile Include="Scratchpad.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourcesTypes.cpp">
-      <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
     <ClCompile Include="DieselPowerSound.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
@@ -912,6 +957,51 @@
     </ClCompile>
     <ClCompile Include="MeshBuffer_Dx9.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxInternal_Dx9_VertexBuffer.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxInternal_Dx9_IndexBuffer.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxInternal_OGL.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="FontAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="TextAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="FragmentAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="MovieAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshColorAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="CutsceneAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamedSoundInfoAsset.cpp">
+      <Filter>Source files\KapowSystems\System\Assets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
