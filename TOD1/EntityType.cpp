@@ -27,10 +27,10 @@ void* EntityType::CreateNode() const
 	return (void*)newnode;
 }
 
-void EntityType::InheritFrom(EntityType* from)
+void EntityType::InheritFrom(const EntityType* from)
 {
 	field_6C = from->m_HasParent ? from->m_Parent->m_PropertiesList.size() + from->m_Parent->field_6C : from->m_PropertiesList.size() + from->field_6C;
 	field_70 = from->m_HasParent ? from->m_Parent->m_PropertiesList_1.size() + from->m_Parent->field_70 : from->m_PropertiesList_1.size() + from->field_70;
 	m_Creator = from->m_Creator;
-	m_Parent = from;
+	m_Parent = (EntityType*)from;
 }

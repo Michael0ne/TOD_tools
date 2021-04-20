@@ -1,5 +1,6 @@
 #pragma once
 #include "GfxInternal_Dx9.h"
+#include "Blocks.h"
 
 class Buffer276
 {
@@ -181,6 +182,7 @@ public:
 	bool							IsScreenResolutionAvailable(unsigned int width, unsigned int height) const;	//	@485460
 	void							SetBufferRenderBufferPointerByIndex(unsigned int index, class RenderBuffer92* buf);	//	@41F9B0
 
+	static Blocks::RegionCode		GetRegion();	//	@420160
 	static bool						IsWideScreen();	//	@420120
 
 	static bool						WideScreen;	//	@A39F12

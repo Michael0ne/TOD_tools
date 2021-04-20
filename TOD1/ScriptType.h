@@ -4,6 +4,7 @@
 //	NOTE: this is essentially a struct.
 class ScriptType : public BaseType
 {
+public:
 	struct ScriptField
 	{
 		String			m_Name;
@@ -20,6 +21,9 @@ class ScriptType : public BaseType
 
 		unsigned int	m_TotalSizeBytes = NULL;
 		unsigned int	m_TotalSize = NULL;
+
+		void            Add(const char* const fieldname, BaseType* fieldtype, unsigned int);	//	@862550
+		void            Clear();	//	@862540
 	};
 
 protected:
@@ -27,7 +31,9 @@ protected:
 	ScriptFieldsList	m_Fields;
 
 public:
-	ScriptType(const char* const name, const ScriptFieldsList& fields);	//	@7A1E90
+	ScriptType(const String& name, const ScriptFieldsList& fields);	//	@7A1E90
+
+	virtual ~ScriptType() override;	//	@7A1F20
 };
 
 ASSERT_CLASS_SIZE(ScriptType, 72);

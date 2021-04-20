@@ -98,6 +98,18 @@ public:
 		strcpy_s(m_szString, m_nLength, baseStr.m_szString);
 		strcat_s(m_szString, m_nLength, appendStr.m_szString);
 	}
+
+	inline void		Clear()
+	{
+		if (!m_nLength)
+			return;
+
+		m_nLength = NULL;
+		m_nBitMask = STRING_BITMASK_DEFAULT;
+		delete m_szString;
+		m_szString = &m_pEmpty;
+		memset(&m_pEmpty, 0, sizeof(m_pEmpty));
+	}
 private:
 	void			AllocateSpaceForString();	//	@4056E0
 	void			AdjustBufferSize();	//	@405610

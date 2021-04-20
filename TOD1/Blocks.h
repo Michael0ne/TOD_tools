@@ -107,14 +107,18 @@ public:
 	void			SetRegion(signed int id);	//	@875434
 	AllocatorIndex	GetAllocatorType() const;	//	@875360
 	int				InsertTypeListItem(void* res);	//	@877A90
+#ifdef INCLUDE_FIXES
+	void			GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, ResType::PlatformId platform);	//	@8776B0
+#else
 	void			GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform);	//	@8776B0
+#endif
 	const char*		GetResourcePathSceneRelative(const char* const path);	//	@8773A0
 	void			GetResourcePath(String& outStr, const char* path) const;	//	@875770
 	void			IncreaseResourceReferenceCount(ResType::Resource*);	//	@875320
 	void			DecreaseResourceReferenceCount(ResType::Resource*);	//	@875330
 	const char*		GetCurrentSceneName() const;
 	void			BuildFastFindNodeVector();	//	@877DA0
-	void			FillFastFindNodeVector(Node* _baseNode, FastFindInfo* _ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
+	void			FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
 	ResType::ResourceBase*	LoadResourceFile(const char* _pathandname);	//	@878AB0
 	void*			LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, ResType::BlockTypeNumber resblockid);	//	@8759E0
 	Entity*			_8755E0();	//	@8755E0

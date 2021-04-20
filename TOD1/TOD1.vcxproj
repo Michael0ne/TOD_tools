@@ -105,7 +105,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;TOD1_EXPORTS;INCLUDE_FIXES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;TOD1_EXPORTS;INCLUDE_FIXES;DIRECTX;PLATFORM_PC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -253,12 +253,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AllocatorBase.h" />
+    <ClInclude Include="AnimationAsset.h" />
     <ClInclude Include="AnimLayer.h" />
     <ClInclude Include="AnimSlot.h" />
+    <ClInclude Include="BaseAsset.h" />
     <ClInclude Include="BaseType.h" />
     <ClInclude Include="BestFitAllocator.h" />
+    <ClInclude Include="CutsceneAsset.h" />
+    <ClInclude Include="FontAsset.h" />
+    <ClInclude Include="FragmentAsset.h" />
+    <ClInclude Include="GfxInternal_Dx9_IndexBuffer.h" />
+    <ClInclude Include="GfxInternal_Dx9_VertexBuffer.h" />
+    <ClInclude Include="GfxInternal_OGL.h" />
     <ClInclude Include="MeshBuffer_Dx9.h" />
+    <ClInclude Include="MeshColorAsset.h" />
+    <ClInclude Include="ModelAsset.h" />
+    <ClInclude Include="MovieAsset.h" />
+    <ClInclude Include="SoundAsset.h" />
     <ClInclude Include="SoundFile.h" />
+    <ClInclude Include="StreamedSoundInfoAsset.h" />
+    <ClInclude Include="TextAsset.h" />
+    <ClInclude Include="TextureAsset.h" />
     <ClInclude Include="TruthType.h" />
     <ClInclude Include="Buffer92.h" />
     <ClInclude Include="BuiltinType.h" />
@@ -341,7 +356,6 @@
     <ClInclude Include="RealtimeFolder.h" />
     <ClInclude Include="RenderBuffer.h" />
     <ClInclude Include="GfxInternal.h" />
-    <ClInclude Include="ResourcesTypes.h" />
     <ClInclude Include="Fragment.h" />
     <ClInclude Include="InputGameController.h" />
     <ClInclude Include="InputKeyboard.h" />
@@ -399,11 +413,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AllocatorBase.cpp" />
+    <ClCompile Include="AnimationAsset.cpp" />
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
+    <ClCompile Include="BaseAsset.cpp" />
     <ClCompile Include="BaseType.cpp" />
+    <ClCompile Include="CutsceneAsset.cpp" />
+    <ClCompile Include="FontAsset.cpp" />
+    <ClCompile Include="FragmentAsset.cpp" />
+    <ClCompile Include="GfxInternal_Dx9_IndexBuffer.cpp" />
+    <ClCompile Include="GfxInternal_Dx9_VertexBuffer.cpp" />
+    <ClCompile Include="GfxInternal_OGL.cpp" />
     <ClCompile Include="MeshBuffer_Dx9.cpp" />
+    <ClCompile Include="MeshColorAsset.cpp" />
+    <ClCompile Include="ModelAsset.cpp" />
+    <ClCompile Include="MovieAsset.cpp" />
+    <ClCompile Include="SoundAsset.cpp" />
     <ClCompile Include="SoundFile.cpp" />
+    <ClCompile Include="StreamedSoundInfoAsset.cpp" />
+    <ClCompile Include="TextAsset.cpp" />
+    <ClCompile Include="TextureAsset.cpp" />
     <ClCompile Include="TruthType.cpp" />
     <ClCompile Include="Buffer92.cpp" />
     <ClCompile Include="BuiltinType.cpp" />
@@ -483,7 +512,6 @@
     <ClCompile Include="RealtimeFolder.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="GfxInternal.cpp" />
-    <ClCompile Include="ResourcesTypes.cpp" />
     <ClCompile Include="Fragment.cpp" />
     <ClCompile Include="InputGameController.cpp" />
     <ClCompile Include="InputKeyboard.cpp" />
