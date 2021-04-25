@@ -18,3 +18,11 @@ TransactionBuffer::~TransactionBuffer()
 {
 	MESSAGE_CLASS_DESTROYED(TransactionBuffer);
 }
+
+void TransactionBuffer::_8AA1F0(int** a1)
+{
+	**a1 = 0x80000000;
+	*a1++;
+	field_20 = (Entity*)(&(*a1)[-m_Size] - (int*)m_Buffer);
+	*a1 = (int*)m_Buffer;
+}

@@ -10,7 +10,7 @@
 #include "ScriptDatabase.h"
 #include "Window.h"
 #include "LoadScreenInfo.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "VirtualHud.h"
 #include "DumpTable.h"
 
@@ -624,7 +624,7 @@ void BuiltinType::EditorSelectNode(int* arg)
 
 void BuiltinType::GetRegion(int* arg)
 {
-	*arg = g_Blocks->GetRegion();
+	*arg = g_AssetManager->GetRegion();
 }
 
 void BuiltinType::GetMessageId(int* arg)

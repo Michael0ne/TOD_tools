@@ -1,7 +1,7 @@
 #include "LoadScreenInfo.h"
 #include "Performance.h"
 #include "LogDump.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "GfxInternal.h"
 #include "ScriptDatabase.h"
 

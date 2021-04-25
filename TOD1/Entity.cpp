@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "Globals.h"
 #include "MemoryCards.h"
 
@@ -30,7 +30,7 @@ Entity::Entity()
 
 	memset(field_8, NULL, sizeof(field_8));
 
-	m_Id = (g_Blocks->AddEntity(this) << 8) | m_Id;
+	m_Id = (g_AssetManager->AddEntity(this) << 8) | m_Id;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

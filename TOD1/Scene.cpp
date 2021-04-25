@@ -27,7 +27,7 @@ const unsigned int Scene::RewindBufferSize_2 = 309248;
 float Scene::FrameRate;
 float Scene::FrameRate_1;
 UINT64 Scene::CreationTime;
-int Scene::_A3CEE4;
+int* Scene::_A3CEE4;
 int Scene::_A3CEE8;
 int Scene::_A3DA80[100];
 int Scene::_A3D8D8[100];
@@ -122,7 +122,7 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 {
 	File assetfile(assetname, 161, true);
 
-	assetinfo->m_ResourceDataBufferPtr = g_Blocks->LoadResourceBlock(&assetfile, (int*)assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, ResType::BlockTypeNumber::NONE);
+	assetinfo->m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assetfile, (int*)assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, ResType::BlockTypeNumber::NONE);
 	DWORD64 starttick = __rdtsc();
 
 	//g_Blocks->_878030();
@@ -256,10 +256,10 @@ void Scene::Load(const char* sceneName)
 	g_Progress->AddLoadbarPhase("load scene", 25 * Performance::ClockGetCycles(), true);
 	g_Progress->_40E7F0(1, __rdtsc());
 
-	if (g_Blocks->m_LoadBlocks)
+	if (g_AssetManager->m_LoadBlocks)
 	{
 		String scene_path;
-		g_Blocks->GetPlatformSpecificPath(scene_path, sceneName, "", ResType::PLATFORM_PC);
+		g_AssetManager->GetPlatformSpecificPath(scene_path, sceneName, "", ResType::PLATFORM_PC);
 		scene_path.Append("/");
 
 		char pathdummy[1024] = {};

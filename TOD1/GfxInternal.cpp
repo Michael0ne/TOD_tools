@@ -232,9 +232,9 @@ void GfxInternal::SetBufferRenderBufferPointerByIndex(unsigned int index, Render
 	m_RenderBufferArray[index].m_RenderBuffer = buf;
 }
 
-Blocks::RegionCode GfxInternal::GetRegion()
+AssetManager::RegionCode GfxInternal::GetRegion()
 {
-	return Blocks::REGION_EUROPE;
+	return AssetManager::REGION_EUROPE;
 }
 
 bool GfxInternal::IsWideScreen()

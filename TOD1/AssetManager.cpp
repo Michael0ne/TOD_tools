@@ -1,4 +1,4 @@
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "Globals.h"
 #include "File.h"
 #include "LogDump.h"
@@ -6,10 +6,10 @@
 #include "Progress.h"
 #include "ScriptDatabase.h"
 
-Blocks* g_Blocks;
-bool Blocks::ChecksumChecked;
+AssetManager* g_AssetManager;
+bool AssetManager::ChecksumChecked;
 
-void Blocks::CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, ResType::PlatformId platform)
+void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, ResType::PlatformId platform)
 {
 	const char* const pcplatformdir = strstr(respath, "pc_lores");
 	if (!platform)
@@ -102,7 +102,7 @@ void Blocks::CorrectTextureResourcePath(String& outPath, const char* respath, Re
 	outPath.Append(pathsuffix);
 }
 
-Blocks::RegionCode Blocks::GetRegionId(const String& region)
+AssetManager::RegionCode AssetManager::RegionIdByName(const String& region)
 {
 	if (region.Equal("europe"))
 		return REGION_EUROPE;
@@ -117,7 +117,7 @@ Blocks::RegionCode Blocks::GetRegionId(const String& region)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Blocks::GetResourcePath(String& outStr, const char* path) const
+void AssetManager::GetResourcePath(String& outStr, const char* path) const
 {
 	if (!path || !*path)
 		return;
@@ -130,30 +130,30 @@ void Blocks::GetResourcePath(String& outStr, const char* path) const
 	outStr = path;
 }
 
-void Blocks::IncreaseResourceReferenceCount(ResType::Resource* _res)
+void AssetManager::IncreaseResourceReferenceCount(Asset* _res)
 {
 	++_res->m_Flags;
 }
 
-void Blocks::DecreaseResourceReferenceCount(ResType::Resource* _res)
+void AssetManager::DecreaseResourceReferenceCount(Asset* _res)
 {
 	--_res->m_Flags;
 }
 
-const char* Blocks::GetCurrentSceneName() const
+const char* AssetManager::GetCurrentSceneName() const
 {
 	return m_SceneNames.size() ? m_SceneNames.end()->m_szString : nullptr;
 }
 
-AllocatorIndex Blocks::GetAllocatorType() const
+AllocatorIndex AssetManager::GetAllocatorType() const
 {
 	if (m_LoadBlocks && m_BlockType >= NULL)
-		return (AllocatorIndex)ResType::ResourceBase::GetResourceBlockTypeNumber(g_Blocks->m_BlockType);
+		return (AllocatorIndex)ResType::ResourceBase::GetResourceBlockTypeNumber(g_AssetManager->m_BlockType);
 	else
 		return DEFAULT;
 }
 
-int Blocks::InsertTypeListItem(void* res)
+int AssetManager::InsertTypeListItem(void* res)
 {
 	field_0 = 1;
 
@@ -179,9 +179,9 @@ int Blocks::InsertTypeListItem(void* res)
 }
 
 #ifdef INCLUDE_FIXES
-void Blocks::GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, ResType::PlatformId platform)
+void AssetManager::GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, ResType::PlatformId platform)
 #else
-void Blocks::GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform)
+void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform)
 #endif
 {
 	char buff[1024] = {};
@@ -222,7 +222,7 @@ void Blocks::GetPlatformSpecificPath(String& outStr, const char* respath, const 
 #endif
 }
 
-const char* Blocks::GetResourcePathSceneRelative(const char* const path)
+const char* AssetManager::GetResourcePathSceneRelative(const char* const path)
 {
 	const String& scenename = m_SceneNames.back();
 	if (strncmp(path, scenename.m_szString, scenename.m_nLength))
@@ -427,7 +427,7 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void* Blocks::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* resdatasize, ResType::BlockTypeNumber resblockid)
+void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* resdatasize, ResType::BlockTypeNumber resblockid)
 {
 	AssetHeaderStruct_t assetHeaderStruct;
 
@@ -444,7 +444,7 @@ void* Blocks::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* res
 			keydatabuf[i] = file->ReadBlock();
 
 		assetHeaderStruct.field_38._401450("1E564E3B-D243-4ec5-AFB7", keydatabuf);
-		strcpy(field_8, keydatabuf);
+		strcpy(m_FingerprintKey, keydatabuf);
 
 		int buf_ = NULL;
 		file->Read(&buf_, sizeof(buf_));
@@ -555,7 +555,7 @@ void* Blocks::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* res
 	return resourcesInfoBuffer;
 }
 
-Entity* Blocks::_8755E0()
+Entity* AssetManager::_8755E0()
 {
 	unsigned int nodeid = FindNodeById(0x100000);
 	if (nodeid)
@@ -564,7 +564,7 @@ Entity* Blocks::_8755E0()
 		return nullptr;
 }
 
-Entity* Blocks::_875610(Entity* node)
+Entity* AssetManager::_875610(Entity* node)
 {
 	unsigned int nodeid = FindNodeById(node->m_Id >> 8);
 	if (nodeid)
@@ -573,18 +573,18 @@ Entity* Blocks::_875610(Entity* node)
 		return nullptr;
 }
 
-int Blocks::GetRegion() const
+AssetManager::RegionCode AssetManager::GetRegion() const
 {
 	return m_RegionId;
 }
 
-String& Blocks::GetDataPath(String& outstr) const
+String& AssetManager::GetDataPath(String& outstr) const
 {
 	outstr = "/data/";
 	return outstr;
 }
 
-ResType::Resource* Blocks::FindFirstFreeResource() const
+ResType::Resource* AssetManager::FindFirstFreeResource() const
 {
 	if (m_ResourcesInstancesList.size() <= 1)
 		return nullptr;
@@ -596,7 +596,7 @@ ResType::Resource* Blocks::FindFirstFreeResource() const
 	return nullptr;
 }
 
-void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
+void AssetManager::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
 {
 	m_ResourcesInstancesList.insert(m_ResourcesInstancesList.begin(), index, {});
 	m_ResourcesInstancesList.push_back(element);
@@ -604,7 +604,7 @@ void Blocks::AddTypesListItemAtPos(ResType::Resource* element, unsigned int inde
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-unsigned int Blocks::FindNodeById(unsigned int id)
+unsigned int AssetManager::FindNodeById(unsigned int id)
 {
 	unsigned int block_id;
 
@@ -627,14 +627,14 @@ unsigned int Blocks::FindNodeById(unsigned int id)
 	return i | ((block_id + 1) << 20);
 }
 
-Blocks::Blocks(bool loadBlocks)
+AssetManager::AssetManager(bool loadBlocks)
 {
-	MESSAGE_CLASS_CREATED(Blocks);
+	MESSAGE_CLASS_CREATED(AssetManager);
 
 	m_Defragmentator = MemoryManager::_4777F0(DEFRAGMENTING);
 	m_LoadBlocks = loadBlocks;
 
-	g_Blocks = this;
+	g_AssetManager = this;
 
 	m_NodesList[0].reserve(11200);
 	m_NodesList[1].reserve(4100);
@@ -654,9 +654,9 @@ Blocks::Blocks(bool loadBlocks)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-Blocks::~Blocks()
+AssetManager::~AssetManager()
 {
-	MESSAGE_CLASS_DESTROYED(Blocks);
+	MESSAGE_CLASS_DESTROYED(AssetManager);
 
 	ResType::Resource* res = FindFirstFreeResource();
 	if (res)
@@ -664,7 +664,7 @@ Blocks::~Blocks()
 		//	TODO: finish this!
 	}
 
-	g_Blocks = nullptr;
+	g_AssetManager = nullptr;
 
 	m_AssetsList.clear();
 	m_SceneNames.clear();
@@ -676,7 +676,7 @@ Blocks::~Blocks()
 	m_FastFindNodeVector.clear();
 }
 
-void Blocks::SetSceneName(const char* scenename)
+void AssetManager::SetSceneName(const char* scenename)
 {
 	String sceneDir;
 	File::ExtractFileDir(sceneDir, scenename);
@@ -687,13 +687,13 @@ void Blocks::SetSceneName(const char* scenename)
 	m_SceneNames.push_back(sceneDir);
 }
 
-void Blocks::RemoveLastSceneName()
+void AssetManager::RemoveLastSceneName()
 {
 	if (m_SceneNames.size())
 		m_SceneNames.pop_back();
 }
 
-unsigned int Blocks::GetFreeResourceTypeListItem(unsigned int index)
+unsigned int AssetManager::GetFreeResourceTypeListItem(unsigned int index)
 {	
 	unsigned int freeind = index + 1;
 	if (freeind >= m_ResourcesInstancesList.size())
@@ -706,7 +706,7 @@ unsigned int Blocks::GetFreeResourceTypeListItem(unsigned int index)
 	return freeind;
 }
 
-unsigned int Blocks::AddEntity(Entity* ent)
+unsigned int AssetManager::AddEntity(Entity* ent)
 {
 	unsigned int listind = m_BlockType == ResType::BlockTypeNumber::UNKNOWN ? 0 : m_BlockType;
 	unsigned int listcap;
@@ -729,7 +729,7 @@ unsigned int Blocks::AddEntity(Entity* ent)
 	return listcap | ((listind + 1) << 20);
 }
 
-void Blocks::SetRegion(signed int id)
+void AssetManager::SetRegion(signed int id)
 {
 	m_RegionId = id;
 }

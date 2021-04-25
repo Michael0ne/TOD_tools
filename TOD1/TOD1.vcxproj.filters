@@ -197,7 +197,7 @@
     <ClInclude Include="GfxInternal.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Blocks.h">
+    <ClInclude Include="AssetManager.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
     <ClInclude Include="MemoryCard.h">
@@ -637,7 +637,7 @@
     <ClCompile Include="GfxInternal.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Blocks.cpp">
+    <ClCompile Include="AssetManager.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
     <ClCompile Include="MemoryCard.cpp">

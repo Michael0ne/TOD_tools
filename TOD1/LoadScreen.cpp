@@ -1,5 +1,5 @@
 #include "LoadScreen.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "LoadScreenInfo.h"
 #include "Progress.h"
 
@@ -7,7 +7,7 @@ EntityType* tLoadScreenNode;	//	@A3D7E4
 
 void LoadScreenNode::Activate_Impl()
 {
-	g_Blocks->GetResourcePath(m_ImageFile, m_ImageFile.m_szString);
+	g_AssetManager->GetResourcePath(m_ImageFile, m_ImageFile.m_szString);
 	g_LoadScreenInfo->SetTexturePath(m_ImageFile.m_szString);
 	g_Progress->SetLoadScreenSprite(m_LoadBarSprite);
 	g_LoadScreenInfo->Enable(m_RenderOnTopNode);
@@ -29,8 +29,8 @@ const char* LoadScreenNode::GetImageFile() const
 
 void LoadScreenNode::SetImageFile(const char* _fname)
 {
-	if (_fname && *_fname && g_Blocks)
-		m_ImageFile = g_Blocks->GetResourcePathSceneRelative(_fname);
+	if (_fname && *_fname && g_AssetManager)
+		m_ImageFile = g_AssetManager->GetResourcePathSceneRelative(_fname);
 }
 
 void LoadScreenNode::Activate()

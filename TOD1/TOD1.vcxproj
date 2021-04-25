@@ -299,7 +299,7 @@
     <ClInclude Include="StackBasedSubAllocator.h" />
     <ClInclude Include="StreamedWAV.h" />
     <ClInclude Include="AuxQuadTree.h" />
-    <ClInclude Include="Blocks.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
@@ -459,7 +459,7 @@
     <ClCompile Include="StackBasedSubAllocator.cpp" />
     <ClCompile Include="StreamedWAV.cpp" />
     <ClCompile Include="AuxQuadTree.cpp" />
-    <ClCompile Include="Blocks.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />

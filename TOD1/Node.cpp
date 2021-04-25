@@ -1,26 +1,31 @@
 #include "Node.h"
 #include "Fragment.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "LogDump.h"
 #include "CollisionList.h"
+#include "Scene.h"
+#include "TransactionBuffer.h"
+#include "SceneSaveLoad.h"
+#include "VectorType.h"
+#include "Camera.h"
 
 EntityType* tNode;
 
-Position::Position(Node* owner)
+NodeMatrix::NodeMatrix(Node* owner)
 {
-	MESSAGE_CLASS_CREATED(Position);
+	MESSAGE_CLASS_CREATED(NodeMatrix);
 
 	m_Orientation = Orientation();
 	m_Position = Vector4f();
 	m_Owner = owner;
 }
 
-Position::~Position()
+NodeMatrix::~NodeMatrix()
 {
-	MESSAGE_CLASS_DESTROYED(Position);
+	MESSAGE_CLASS_DESTROYED(NodeMatrix);
 }
 
-void Position::GetMatrixForNode(D3DMATRIX& outMat)
+void NodeMatrix::GetMatrixForNode(D3DMATRIX& outMat)
 {
 	if (m_Owner->m_Id & NODE_MASK_QUADTREE)
 		ApplyMatrixFromQuadTree();
@@ -28,11 +33,11 @@ void Position::GetMatrixForNode(D3DMATRIX& outMat)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Position::ApplyMatrixFromQuadTree()
+void NodeMatrix::ApplyMatrixFromQuadTree()
 {
 }
 
-void Position::GetMatrix(D3DMATRIX& outMat) const
+void NodeMatrix::GetMatrix(D3DMATRIX& outMat) const
 {
 	*(Vector4f*)&(outMat._11) = m_RightVector;
 	*(Vector4f*)&(outMat._21) = m_UpVector;
@@ -40,7 +45,7 @@ void Position::GetMatrix(D3DMATRIX& outMat) const
 	*(Vector4f*)&(outMat._41) = m_PositionVector;
 }
 
-void Position::SetTransformationFromMatrix(const D3DMATRIX* mat)
+void NodeMatrix::SetTransformationFromMatrix(const D3DMATRIX* mat)
 {
 	m_RightVector = *(Vector4f*)&(mat->_11);
 	m_UpVector = *(Vector4f*)&(mat->_21);
@@ -190,7 +195,7 @@ Node::Node(unsigned char allocationBitmask)
 	m_NodePosition = new NodePosition();
 
 	if (allocationBitmask & NODE_MASK_POSITION)
-		m_Position = new Position(this);
+		m_Position = new NodeMatrix(this);
 
 	if (allocationBitmask & NODE_MASK_QUADTREE)
 		m_QuadTree = new AuxQuadTree(this);
@@ -219,14 +224,9 @@ const char* Node::GetTypename() const
 	return m_ScriptEntity->m_TypeName.m_szString;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 const char* Node::GetScript() const
 {
-	//if (m_ScriptEntity->m_ParentNode)
-		//return nullptr;//return m_ScriptEntity->m_ParentNode->m_NodeName.m_szString;
-	//else
-		//return NULL;
-	return nullptr;
+	return m_ScriptEntity->m_Script ? m_ScriptEntity->m_Script->m_Name.m_szString : nullptr;
 }
 
 unsigned int Node::GetFlags() const
@@ -234,7 +234,6 @@ unsigned int Node::GetFlags() const
 	return m_Flags.m_Flags & 0xFFF;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Node::SetParam(const int index, const void* param, BaseType* type)
 {
 	if (!m_ScriptEntity)
@@ -246,10 +245,10 @@ void Node::SetParam(const int index, const void* param, BaseType* type)
 	unsigned char paramInd = 1 << (index & 7);
 	char* paramsMap = (char*)this + index / 8;
 
-	//if ((paramInd & paramsMap[8]) == NULL)
-		//_869EC0(index, param, type);
-	//if ((paramInd & paramsMap[13]) == NULL)
-		//_869F80(index, param, type);
+	if ((paramInd & paramsMap[8]) == NULL)
+		_869EC0(index, param, *type);
+	if ((paramInd & paramsMap[13]) == NULL)
+		_869F80(index, param, *type);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -280,7 +279,7 @@ void Node::SetParent(const Node* parent)
 	if (m_Parent == parent)
 		return;
 
-	SetParam(PARAM_PARENT, &m_Parent, tEntity);
+	SetParam(1, &m_Parent, tEntity);
 
 	if (parent)
 	{
@@ -324,14 +323,104 @@ void Node::SetName(const char* name)
 		m_Name = nullptr;
 	else
 	{
-		m_Name = (char*)MemoryManager::AllocatorsList[g_Blocks->GetAllocatorType()]->Allocate(strlen(name) + 1, NULL, NULL);
+		m_Name = (char*)MemoryManager::AllocatorsList[g_AssetManager->GetAllocatorType()]->Allocate(strlen(name) + 1, NULL, NULL);
 		strcpy(m_Name, name);
 	}
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Node::SetPos(const Vector4f&)
+void Node::SetPos(const Vector4f& newpos)
 {
+	if (!m_Position)
+		return;
+
+	if (m_Position->m_Owner != this)
+		return;
+
+	if (m_Position->m_Position.x == newpos.x ||
+		m_Position->m_Position.y == newpos.y ||
+		m_Position->m_Position.z == newpos.z ||
+		Script::_A11C90 == 1.f)
+		return;
+
+	SetParam(3, &m_Position, tVECTOR);
+
+	if (m_CollisionIgnoreList)
+	{
+		if (Script::_A11C90 != 1.f)
+		{
+			float vecdiffx = newpos.x - m_CollisionIgnoreList->m_Position_1.x;
+			float vecdiffy = newpos.y - m_CollisionIgnoreList->m_Position_1.y;
+			float vecdiffz = newpos.z - m_CollisionIgnoreList->m_Position_1.z;
+			if ( ((vecdiffz * vecdiffz) + (vecdiffy * vecdiffy) + (vecdiffx * vecdiffx)) <= 100.f)
+			{
+				float negflt = 1.f - Script::_A11C90;
+				m_Position->m_Position =
+				{
+					(m_CollisionIgnoreList->m_Position_1.x * negflt) + (newpos.x * Script::_A11C90),
+					(m_CollisionIgnoreList->m_Position_1.y * negflt) + (newpos.y * Script::_A11C90),
+					(m_CollisionIgnoreList->m_Position_1.z * negflt) + (newpos.z * Script::_A11C90),
+					0.f
+				};
+
+				_484CC0(0);
+
+				if (m_QuadTree)
+					m_QuadTree->_8A3320();
+
+				for (Node* sibling = m_FirstChild; sibling; sibling = sibling->m_NextSibling)
+				{
+					sibling->_484CC0(0);
+					if (sibling->m_QuadTree)
+						sibling->m_QuadTree->_8A3320();
+
+					for (Node* siblingA = sibling->m_FirstChild; siblingA; siblingA = siblingA->m_NextSibling)
+					{
+						siblingA->_484CC0(0);
+						siblingA->_88D230(0);
+					}
+				}
+
+				if (m_QuadTree ||
+					(m_Parent && (m_QuadTree = m_Parent->GetEntityQuadTreeOrParentQuadTree())))
+					m_QuadTree->m_Owner->_484CC0(0);
+
+				return;
+			}
+		}
+
+		m_CollisionIgnoreList->m_Position_1 = { newpos.x, newpos.y, newpos.z };
+	}
+	else
+	{
+		if (Camera::PlayerPos && m_ScriptEntity == tBone)
+		{
+			//	TODO ...
+		}
+	}
+
+	m_Position->m_Position = newpos;
+	_484CC0(0);
+
+	if (m_QuadTree)
+		m_QuadTree->_8A3320();
+
+	for (Node* sibling = m_FirstChild; sibling; sibling = sibling->m_NextSibling)
+	{
+		sibling->_484CC0(0);
+		if (sibling->m_QuadTree)
+			sibling->m_QuadTree->_8A3320();
+
+		for (Node* siblingA = sibling->m_FirstChild; siblingA; siblingA = siblingA->m_NextSibling)
+		{
+			siblingA->_484CC0(0);
+			siblingA->_88D230(0);
+		}
+	}
+
+	if (m_QuadTree ||
+		(m_Parent && (m_QuadTree = m_Parent->GetEntityQuadTreeOrParentQuadTree())))
+		m_QuadTree->m_Owner->_484CC0(0);
 }
 
 const char* Node::GetFragment() const
@@ -379,6 +468,34 @@ AuxQuadTree* Node::GetEntityQuadTreeOrParentQuadTree() const
 	}
 
 	return nullptr;
+}
+
+void Node::_869EC0(const unsigned int paramind, const void* paramptr, BaseType& paramtype)
+{
+	if (!Scene::_A3CEE4)
+		return;
+
+	*Scene::_A3CEE4++ = paramind & 0xFFF | ((m_Id & 0x7FFF00) << 8) | (((short)m_Id & 0x7000) - 1) & 0xF000;
+	Scene::_A3CEE4 += paramtype.stub9((char*)paramptr, (char*)Scene::_A3CEE4);
+
+	TransactionBuffer* tb = Scene::SceneInstance->m_RewindBuffer1;
+	if (tb->m_Buffer[tb->m_Chunks - (int)Scene::_A3CEE4] < 1024)
+		tb->_8AA1F0(&Scene::_A3CEE4);
+
+	field_8[paramind / 8] |= 1 << (paramind & 7);
+}
+
+void Node::_869F80(const unsigned int paramind, const void* paramptr, BaseType& paramtype)
+{
+	int* v1 = g_SceneSaveLoad->_873BA0(m_Id >> 8);
+	if (v1)
+	{
+		*v1 = paramind & 0xFFF | ((m_Id & 0x7FFF00) << 8) | (((short)m_Id & 0x7000) - 1) & 0xF000;
+		v1++;
+		g_SceneSaveLoad->_873C00(m_Id >> 8, &v1[paramtype.stub9((char*)paramptr, (char*)v1)]);
+	}
+
+	field_8[paramind / 8 + 5] |= 1 << (paramind & 7);
 }
 
 AuxQuadTree* Node::_8A0810(Node* node)

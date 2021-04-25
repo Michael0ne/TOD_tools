@@ -32,8 +32,10 @@ class Scene : public Folder_
 {
 	friend class MemoryCards;
 	friend class Camera;
+	friend class Node;
+	friend class SceneSaveLoad;
 protected:
-	ResType::MeshColor* m_StaticLighting;
+	MeshColorAsset* m_StaticLighting;
 	int				m_PlayMode;	//	NOTE: 2 - menu.
 public:
 	class Camera*	m_GameCamera;
@@ -144,7 +146,7 @@ public:
 	static float	FrameRate;	//	@A3DCC0
 	static float	FrameRate_1;	//	@A3DCC4
 	static UINT64	CreationTime;	//	@A3DD00
-	static int		_A3CEE4;	//	@A3CEE4
+	static int     *_A3CEE4;	//	@A3CEE4
 	static int		_A3CEE8;	//	@A3CEE8
 	static int		_A3DA80[100];	//	@A3DA80
 	static int		_A3D8D8[100];	//	@A3D8D8

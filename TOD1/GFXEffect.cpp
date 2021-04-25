@@ -1,5 +1,5 @@
 #include "GFXEffect.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 
 int GFXEffect::TotalCreated;	//	@A3E050;
 
@@ -17,10 +17,10 @@ GFXEffect::~GFXEffect()
 
 void GFXEffectProperties::ClearEffectProperties()
 {
-	g_Blocks->DecreaseResourceReferenceCount(m_VignetteTexture);
+	g_AssetManager->DecreaseResourceReferenceCount(m_VignetteTexture);
 	delete m_VignetteTexture;
 
-	g_Blocks->DecreaseResourceReferenceCount(m_NoiseTexture);
+	g_AssetManager->DecreaseResourceReferenceCount(m_NoiseTexture);
 	delete m_NoiseTexture;
 }
 
