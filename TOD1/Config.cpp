@@ -1,6 +1,6 @@
 #include "Config.h"
 
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "BaseType.h"
 #include "Scratchpad.h"
 #include "SceneSaveLoad.h"
@@ -126,7 +126,7 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("loadblocks"))
 			Script::LoadBlocks = m_ConfigurationVariables->GetParamValueBool("loadblocks");
 
-		g_Blocks = new Blocks(Script::LoadBlocks);
+		g_AssetManager = new AssetManager(Script::LoadBlocks);
 
 		BaseType::InitScriptTypes();
 
@@ -436,7 +436,7 @@ namespace GameConfig
 		if (m_ConfigurationVariables->IsVariableSet("region"))
 			m_ConfigurationVariables->GetParamValueString(Script::Region, "region");
 
-		g_Blocks->SetRegion(Blocks::GetRegionId(Script::Region));
+		g_AssetManager->SetRegion(AssetManager::RegionIdByName(Script::Region));
 		LogDump::LogA("Using region: %s\n", Script::Region.m_szString);
 
 		if (m_ConfigurationVariables->IsVariableSet("virtual_hud_screensize"))
@@ -702,7 +702,7 @@ namespace GameConfig
 		g_Window->SetCursorReleased(true);
 
 		delete m_ConfigurationVariables;
-		delete g_Blocks;
+		delete g_AssetManager;
 		delete g_InputMouse;
 		delete g_InputKeyboard;
 		delete Input::Gamepad::GetGameControllerByIndex(0);
@@ -721,7 +721,7 @@ namespace GameConfig
 	bool Config::OpenScene(const char* scene)
 	{
 		tScene->CreateNode();	//	NOTE: this calls creator which essentially creates instance of class.
-		g_Blocks->SetSceneName(scene);
+		g_AssetManager->SetSceneName(scene);
 		Scene::SceneInstance->Load(scene);
 		Scene::SceneInstance->UpdateLoadedBlocks(0, 0);
 		Scene::SceneInstance->m_StartTimeMs = Performance::GetMilliseconds();

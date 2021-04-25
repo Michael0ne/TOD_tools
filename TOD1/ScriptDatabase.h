@@ -101,6 +101,7 @@ class GlobalScript
 		BaseType*               m_ParamType;
 	};
 
+	friend class Node;
 protected:
 	std::vector<Property>       m_PropertiesList;
 	std::map<unsigned int, unsigned int> m_PropertiesValues;
@@ -177,6 +178,7 @@ namespace Script
 	static bool Ps2PlayCtrl;	//	@A5D5B8
 	static bool CheckDanglingRefs;	//	@A3DC4C
 	static bool SimulateReleaseBuild;	//	@A3B584
+	static float _A11C90 = 1.f;	//	@A11C90
 
 	static bool LoadBlocks;
 	static bool Fullscreen;

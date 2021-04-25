@@ -3,19 +3,12 @@
 #include "AuxQuadTree.h"
 #include <d3dx9math.h>
 
-#define NODE_CLASS_SIZE 80
-
 #define NODE_MASK_EMPTY		0
 #define NODE_MASK_POSITION	1
 #define NODE_MASK_QUADTREE	2
 #define NODE_MASK_FRAGMENT	4
 
-enum NodeParamIndex
-{
-	PARAM_PARENT = 1
-};
-
-class NodePositionInterface
+class INodeMatrix
 {
 public:
 	virtual Vector4f*	GetPosition(Vector4f*) = 0;
@@ -24,7 +17,7 @@ public:
 	virtual Orientation* GetWorldRotation(Orientation*) = 0;
 };
 
-class NodePosition : NodePositionInterface
+class NodePosition : INodeMatrix
 {
 public:
 	virtual Vector4f*	GetPosition(Vector4f*) override;	//	@484CD0
@@ -33,9 +26,7 @@ public:
 	virtual Orientation* GetWorldRotation(Orientation*) override;	//	@484D80
 };
 
-#define POSITION_CLASS_SIZE 100
-
-class Position
+class NodeMatrix
 {
 public:
 	Orientation			m_Orientation;	//	NOTE: not sure this is orientation.
@@ -47,8 +38,8 @@ public:
 	class Node*			m_Owner;
 
 public:
-	Position(class Node* owner);	//	@892300
-	~Position();
+	NodeMatrix(class Node* owner);	//	@892300
+	~NodeMatrix();
 
 	void				GetMatrixForNode(D3DMATRIX& outMat);	//	@892940
 	void				ApplyMatrixFromQuadTree();	//	@8923A0
@@ -56,7 +47,7 @@ public:
 	void				SetTransformationFromMatrix(const D3DMATRIX* mat);	//	@892280
 };
 
-static_assert(sizeof(Position) == POSITION_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Position));
+ASSERT_CLASS_SIZE(NodeMatrix, 100);
 
 //	NOTE: this is actual base class for game 'entities'.
 class Node : public Entity
@@ -106,7 +97,7 @@ public:
 	AuxQuadTree*		m_QuadTree;
 	Node*				m_NextSibling;
 	class CollisionList* m_CollisionIgnoreList;
-	Position*			m_Position;
+	NodeMatrix*			m_Position;
 	Node*				m_Parent;
 	Node*				m_FirstChild;
 	Fragment*			m_Fragment;
@@ -162,6 +153,9 @@ public:
 	void				ForceLodCalculation(unsigned int);	//	@88D100
 	void				_88E6A0(Node* node);	//	@88E6A0
 	AuxQuadTree*		GetEntityQuadTreeOrParentQuadTree() const;	//	@88C260
+	void                _869EC0(const unsigned int paramind, const void* paramptr, BaseType& paramtype);	//	@869EC0
+	void                _869F80(const unsigned int paramind, const void* paramptr, BaseType& paramtype);	//	@869F80
+	void                Project_Impl(Vector2f& outvec, const Vector4f& invec);	//	@87DA10
 
 	static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
 

@@ -3,15 +3,14 @@
 
 class TransactionBuffer
 {
-	friend class Scene;
-protected:
-	void*			m_Buffer;
-	int				m_Chunks;
-	int				m_Size;
-	int				field_C;
-	std::list<int>	m_List_1;
-	void*			field_1C;
-	class Entity*	field_20;
+public:
+	char*           m_Buffer;
+	int             m_Chunks;
+	int             m_Size;
+	int             field_C;
+	std::list<int>  m_List_1;
+	void*           field_1C;
+	class Entity*   field_20;
 
 public:
 	TransactionBuffer(unsigned int bufferSize);	//	@8AADA0
@@ -27,6 +26,8 @@ public:
 			MemoryManager::ReleaseMemory(ptr, false);
 		ptr = nullptr;
 	}
+
+	void            _8AA1F0(int** a1);	//	@8AA1F0
 };
 
 ASSERT_CLASS_SIZE(TransactionBuffer, 36);

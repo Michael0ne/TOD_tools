@@ -4,6 +4,7 @@
 #include "SavePoint.h"
 #include "LogDump.h"
 #include "ScriptDatabase.h"
+#include "Scene.h"
 
 SceneSaveLoad* g_SceneSaveLoad = nullptr;
 
@@ -118,6 +119,27 @@ bool SceneSaveLoad::LoadSaveSummary(class SavePoint* savepoint, const class Node
 bool SceneSaveLoad::LoadSavePointData(class SavePoint* sp, EntityType* ent, class Node* readFinishedCb)
 {
 	return false;
+}
+
+int* SceneSaveLoad::_873BA0(const unsigned int nodeid)
+{
+	if (!Scene::SceneInstance)
+		return nullptr;
+
+	if (!Scene::SceneInstance->m_PlayMode || Scene::SceneInstance->m_PlayMode == 2)
+	{
+		switch (m_SavedPlayMode)
+		{
+		case 2:
+			return ((nodeid >> 20) & 7) == 1 ? field_0 : nullptr;
+		case 3:
+			return field_38[field_3C];
+		case 4:
+			return (int*)&m_SaveInfo_1.m_TransactionBuffer->m_Buffer[m_SaveInfo_1.m_TransactionBuffer->m_Size + field_74];
+		}
+	}
+
+	return nullptr;
 }
 
 bool SceneSaveLoad::WriteDummySavePointData(class SavePoint* savepoint, unsigned int pad)

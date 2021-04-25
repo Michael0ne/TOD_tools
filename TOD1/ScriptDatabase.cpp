@@ -3,7 +3,7 @@
 #include "Performance.h"
 #include "Globals.h"
 #include "EntityType.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "NothingType.h"
 #include "ScriptType.h"
 
@@ -714,11 +714,11 @@ void LoadScripts()
 
 #ifdef INCLUDE_FIXES
 	char path[1024] = {};
-	g_Blocks->GetPlatformSpecificPath(path, "/data/scripts/stable/Database.bin", "bin", ResType::PLATFORM_PC);
+	g_AssetManager->GetPlatformSpecificPath(path, "/data/scripts/stable/Database.bin", "bin", ResType::PLATFORM_PC);
 	ReadDatabaseFile(path);
 #else
 	String tmpstr;
-	g_Blocks->GetPlatformSpecificPath(tmpstr, "/data/scripts/stable/Database.bin", "bin", ResType::PLATFORM_PC);
+	g_AssetManager->GetPlatformSpecificPath(tmpstr, "/data/scripts/stable/Database.bin", "bin", ResType::PLATFORM_PC);
 	ReadDatabaseFile(tmpstr.m_szString);
 #endif
 

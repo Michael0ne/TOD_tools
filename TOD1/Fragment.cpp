@@ -1,6 +1,6 @@
 #include "Fragment.h"
 #include "Globals.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "Node.h"
 
 Fragment::Fragment(Node* owner)
@@ -30,15 +30,15 @@ void Fragment::LoadResourceFile(const char* fname)
 	m_FragmentRes->ApplyLoadedResource(reshld);
 
 	if (reshld.m_Resource)
-		g_Blocks->DecreaseResourceReferenceCount(reshld.m_Resource);
+		g_AssetManager->DecreaseResourceReferenceCount(reshld.m_Resource);
 }
 
 void Fragment::ApplyFragment() const
 {
 	if (m_FragmentRes && m_FragmentRes->m_ResourceTimestamp)
 	{
-		g_Blocks->SetSceneName(m_FragmentRes->m_ResourcePath);
+		g_AssetManager->SetSceneName(m_FragmentRes->m_ResourcePath);
 		m_FragmentRes->ApplyFragmentResource(m_Owner->m_Id >> 8, true);
-		g_Blocks->RemoveLastSceneName();
+		g_AssetManager->RemoveLastSceneName();
 	}
 }

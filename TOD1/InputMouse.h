@@ -26,8 +26,10 @@ namespace Input
 	private:
 		unsigned int			m_nMouseButtons[10];
 		int						m_Position_Z;
-		tagPOINT				m_NewLocalPosition;
-		tagPOINT				m_OldLocalPosition;
+	public:
+		tagPOINT				m_FullscreenMousePosition;
+		tagPOINT				m_WindowedMousePosition;
+	private:
 		int						m_Position_X;
 		int						m_Position_Y;
 		int						field_44;

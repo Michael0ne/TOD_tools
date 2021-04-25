@@ -1,5 +1,5 @@
 #include "TextBox.h"
-#include "Blocks.h"
+#include "AssetManager.h"
 #include "LogDump.h"
 
 TextBox::~TextBox()
@@ -59,7 +59,7 @@ void TextBox::SetFont(const char* fontName)
 	String fontPath;
 	ResType::ResourceHolder res;
 
-	g_Blocks->GetResourcePath(fontPath, fontName);
+	g_AssetManager->GetResourcePath(fontPath, fontName);
 
 	if (!_stricmp(fontPath.m_szString, "/data/fonts/screenfont_Headlines.font") ||
 		!_stricmp(fontPath.m_szString, "/data/fonts/InnerSanctumCondensed_Screenfont.font"))
@@ -80,7 +80,7 @@ void TextBox::SetFont(const char* fontName)
 		m_FontRes->ApplyLoadedResource(res);
 
 		if (res.m_Resource)
-			g_Blocks->DecreaseResourceReferenceCount(res.m_Resource);
+			g_AssetManager->DecreaseResourceReferenceCount(res.m_Resource);
 	}
 	else
 	{

@@ -1,6 +1,12 @@
 #include "Sprite.h"
+#include "GfxInternal.h"
+#include "GfxInternal_Dx9.h"
+#include "InputMouse.h"
 
 std::vector<Sprite*> Sprite::SpritesList;
+int Sprite::OnMouseEnter = -1;
+int Sprite::OnMouseExit = -1;
+int Sprite::OnMouseOver = -1;
 
 Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
@@ -9,19 +15,20 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	m_Texture = nullptr;
 	field_8C = 1;
 	m_SpriteSize_X = 64.0f;
-	m_Flags = m_Flags & 0xFEFEFC0F | 0x400;
+	m_SpriteFlags = m_SpriteFlags & 0xFEFEFC0F | 0x400;
 	field_94 = 0;
 	m_SpriteSize_Y = 64.0f;
-	m_Flags = m_Flags ^ (unsigned short)(m_Flags ^ *(short*)0xA3E0CC << 11) & 0xF800;
+	m_SpriteFlags = m_SpriteFlags ^ (unsigned short)(m_SpriteFlags ^ *(short*)0xA3E0CC << 11) & 0xF800;
 	m_Opacity = m_Opacity | 0xFF;
 	m_ConstSizeNear = 10;
 	m_ConstSizeFar = 10;
 	m_ColorRGB_1 = m_ColorRGB_2 = m_ColorRGB_3 = m_ColorRGB_4 = -1;
-	m_Flags = m_Flags & 0xFF81FFF0 | 0x800000;
+	m_SpriteFlags = m_SpriteFlags & 0xFF81FFF0 | 0x800000;
 	m_Angle = 0.0f;
 	m_ConstSizeFarShrink = 25;
-	m_EnableMouseInput.a = m_EnableMouseInput.b = m_EnableMouseInput.c = 0xFF;	//	TODO: not sure if this is correct.
-	m_EnableMouseInput.State = NULL;
+	m_SpriteState.MouseEventsEnabled = true;
+	m_SpriteState.MouseOver = false;
+	m_SpriteState.c = m_SpriteState.d = false;
 	m_v1u = m_v1v = 0.0f;
 	m_v2u = 0.0f; m_v2v = 1.0f;
 	m_v3u = m_v3v = 1.0f;
@@ -32,7 +39,53 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 	SpritesList.push_back(this);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Sprite::TriggerMouseCallbacks()
 {
+	if (OnMouseEnter == -1)
+		OnMouseEnter = GetCommandByName("OnMouseEnter");
+	if (OnMouseExit == -1)
+		OnMouseExit = GetCommandByName("OnMouseExit");
+	if (OnMouseOver == -1)
+		OnMouseOver = GetCommandByName("OnMouseOver");
+
+	tagPOINT mousepos = g_GfxInternal_Dx9->m_Windowed ? g_InputMouse->m_WindowedMousePosition : g_InputMouse->m_FullscreenMousePosition;
+	ScreenResolution screenres;
+	g_GfxInternal->GetScreenResolution(screenres);
+	screenres = { mousepos.x / (screenres.x * 0.00125f), mousepos.y / (screenres.y * 0.0016666667f) };
+
+	if (!SpritesList.size())
+		return;
+
+	for (std::vector<Sprite*>::const_iterator it = SpritesList.cbegin(); it != SpritesList.cend(); ++it)
+	{
+		if ((*it)->m_SpriteState.MouseEventsEnabled &&
+			((*it)->m_SpriteFlags & 0x10) == 0 && (((*it)->m_Flags.m_FlagBits.Disable | (*it)->m_Flags.m_FlagBits.Invisible) & 1) == 0)
+		{
+			Vector4f spritepos;
+			(*it)->GetPos(spritepos);
+
+			if (((*it)->m_SpriteFlags & 0x20) != 0)
+				mousepos = { screenres.x, screenres.y };
+
+			if (mousepos.x < spritepos.x || mousepos.y < mousepos.y ||
+				(mousepos.x + (*it)->m_SpriteSize_X) < mousepos.x || (mousepos.y + (*it)->m_SpriteSize_Y) < mousepos.y)
+			{
+				if ((*it)->m_SpriteState.MouseEventsEnabled && (*it)->m_SpriteState.MouseOver)
+				{
+					(*it)->TriggerGlobalScript(OnMouseExit, 0);
+					(*it)->m_SpriteState.MouseOver = false;
+				}
+			}
+			else
+			{
+				if ((*it)->m_SpriteState.MouseOver == false)
+				{
+					(*it)->TriggerGlobalScript(OnMouseEnter, 0);
+					(*it)->m_SpriteState.MouseOver = true;
+				}
+
+				(*it)->TriggerGlobalScript(OnMouseOver, 0);
+			}
+		}
+	}
 }

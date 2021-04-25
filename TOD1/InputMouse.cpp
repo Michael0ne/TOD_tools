@@ -26,9 +26,9 @@ namespace Input {
 		m_nMouseButtons[MOUSE_BUTTON_0] = NULL;
 		m_nMouseButtons[MOUSE_BUTTON_1] = NULL;
 		m_nMouseButtons[MOUSE_BUTTON_2] = NULL;
-		m_NewLocalPosition.x = m_NewLocalPosition.y = NULL;
+		m_FullscreenMousePosition.x = m_FullscreenMousePosition.y = NULL;
 		m_Position_X = m_Position_Y = m_Position_Z = NULL;
-		m_OldLocalPosition.x = m_OldLocalPosition.y = NULL;
+		m_WindowedMousePosition.x = m_WindowedMousePosition.y = NULL;
 		field_44 = NULL;
 		m_ShouldBeProcessed = true;
 		m_DirectInputInterface = nullptr;
@@ -74,7 +74,7 @@ namespace Input {
 		GetCursorPos(&clientPos);
 		ScreenToClient(g_Window->m_WindowHandle, &clientPos);
 
-		m_OldLocalPosition = clientPos;
+		m_WindowedMousePosition = clientPos;
 	}
 
 	Mouse::~Mouse()
@@ -166,7 +166,7 @@ namespace Input {
 		tagPOINT clientPos;
 		GetCursorPos(&clientPos);
 		ScreenToClient(g_Window->m_WindowHandle, &clientPos);
-		m_NewLocalPosition = clientPos;
+		m_FullscreenMousePosition = clientPos;
 
 		if (m_Acquired)
 		{
@@ -206,14 +206,14 @@ namespace Input {
 		m_Position_Y = mouseState->lY;
 		m_Position_Z = mouseState->lZ;
 
-		m_OldLocalPosition.x += mouseState->lX;
-		m_OldLocalPosition.y += mouseState->lY;
+		m_WindowedMousePosition.x += mouseState->lX;
+		m_WindowedMousePosition.y += mouseState->lY;
 		
 		Vector2<unsigned int> screenRes;
 		GfxInternal_Dx9::GetScreenResolution(screenRes);
 
-		m_OldLocalPosition.x = m_OldLocalPosition.x < 0 ? 0 : screenRes.x - m_OldLocalPosition.x;
-		m_OldLocalPosition.y = m_OldLocalPosition.y < 0 ? 0 : screenRes.y - m_OldLocalPosition.y;
+		m_WindowedMousePosition.x = m_WindowedMousePosition.x < 0 ? 0 : screenRes.x - m_WindowedMousePosition.x;
+		m_WindowedMousePosition.y = m_WindowedMousePosition.y < 0 ? 0 : screenRes.y - m_WindowedMousePosition.y;
 
 		DWORD buffSize = 30;
 		if (HRESULT msdevdatares = m_DirectInputDevice->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), (LPDIDEVICEOBJECTDATA)&m_Buffer, &buffSize, NULL))
