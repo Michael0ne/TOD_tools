@@ -714,11 +714,11 @@ void LoadScripts()
 
 #ifdef INCLUDE_FIXES
 	char path[1024] = {};
-	g_AssetManager->GetPlatformSpecificPath(path, "/data/scripts/stable/Database.bin", "bin", ResType::PLATFORM_PC);
+	g_AssetManager->GetPlatformSpecificPath(path, "/data/scripts/stable/Database.bin", "bin", Asset::PlatformId::PC);
 	ReadDatabaseFile(path);
 #else
 	String tmpstr;
-	g_AssetManager->GetPlatformSpecificPath(tmpstr, "/data/scripts/stable/Database.bin", "bin", ResType::PLATFORM_PC);
+	g_AssetManager->GetPlatformSpecificPath(tmpstr, "/data/scripts/stable/Database.bin", "bin", Asset::PlatformId::PC);
 	ReadDatabaseFile(tmpstr.m_szString);
 #endif
 
@@ -985,7 +985,7 @@ void GlobalScript::AddStructElement(unsigned int fieldId, const char* const defa
 
 void GlobalScript::AddMethod(unsigned short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*))
 {
-	m_MethodsList.push_back({ methodid, scriptthreadhandler, methodptr });
+	m_MethodsList.push_back({ methodid, 0, scriptthreadhandler, methodptr });
 }
 
 void GlobalScript::CalculateSize()
@@ -1018,6 +1018,12 @@ void GlobalScript::CalculateSize()
 			m_MethodsList[i + 1].m_PropertyBlockId = j;
 		}
 	}
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool GlobalScript::_48A7E0(Node* node, int scriptId, void* args)
+{
+	return true;
 }
 
 EntityType* GlobalScript::AssignScriptToEntity(const EntityType* parent)
@@ -1091,7 +1097,7 @@ int GlobalScript::GetScriptIdByName(const char* const name)
 		return -1;
 
 	for (unsigned int i = 0; i < ScriptsList.size(); ++i)
-		if ((ScriptsList[i]->field_5C & 1) != 0 && stricmp(ScriptsList[i]->m_Name.m_szString, name) == 0)
+		if ((ScriptsList[i]->field_5C & 1) != 0 && strcmp(ScriptsList[i]->m_Name.m_szString, name) == 0)
 			return i;
 
 	return -1;

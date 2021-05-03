@@ -1,18 +1,16 @@
 #pragma once
-
-#include "ResourcesTypes.h"
-
-#define FRAGMENT_CLASS_SIZE 24
+#include "FragmentAsset.h"
 
 class Fragment
 {
 	friend class Node;
+	friend class Folder_;
 protected:
-	class Node	*m_Owner;
-	ResType::Fragment* m_FragmentRes;
-	int				field_8;
-	char*			m_Name;
-	UINT64			m_UniqueId;
+	Node           *m_Owner;
+	FragmentAsset  *m_FragmentRes;
+	int             field_8;
+	char*           m_Name;
+	UINT64          m_UniqueId;
 
 public:
 	Fragment(class Node* owner);	//	@87F1E0
@@ -22,4 +20,4 @@ public:
 	void			ApplyFragment() const;	//	@87F190
 };
 
-static_assert(sizeof(Fragment) == FRAGMENT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Fragment));
+ASSERT_CLASS_SIZE(Fragment, 24);

@@ -9,7 +9,7 @@
 AssetManager* g_AssetManager;
 bool AssetManager::ChecksumChecked;
 
-void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, ResType::PlatformId platform)
+void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform)
 {
 	const char* const pcplatformdir = strstr(respath, "pc_lores");
 	if (!platform)
@@ -30,9 +30,9 @@ void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respa
 		return;
 	}
 
-	if (platform != ResType::PLATFORM_PS2)
+	if (platform != Asset::PlatformId::PS2)
 	{
-		if (platform != ResType::PLATFORM_XBOX)
+		if (platform != Asset::PlatformId::XBOX)
 		{
 			outPath = respath;
 			return;
@@ -132,12 +132,12 @@ void AssetManager::GetResourcePath(String& outStr, const char* path) const
 
 void AssetManager::IncreaseResourceReferenceCount(Asset* _res)
 {
-	++_res->m_Flags;
+	++_res->m_Flags.m_ReferenceCount;
 }
 
 void AssetManager::DecreaseResourceReferenceCount(Asset* _res)
 {
-	--_res->m_Flags;
+	--_res->m_Flags.m_ReferenceCount;
 }
 
 const char* AssetManager::GetCurrentSceneName() const
@@ -147,8 +147,8 @@ const char* AssetManager::GetCurrentSceneName() const
 
 AllocatorIndex AssetManager::GetAllocatorType() const
 {
-	if (m_LoadBlocks && m_BlockType >= NULL)
-		return (AllocatorIndex)ResType::ResourceBase::GetResourceBlockTypeNumber(g_AssetManager->m_BlockType);
+	if (m_LoadBlocks && m_ActiveBlockId >= NULL)
+		return Asset::AllocatorIndexByBlockType(g_AssetManager->m_ActiveBlockId);
 	else
 		return DEFAULT;
 }
@@ -160,7 +160,7 @@ int AssetManager::InsertTypeListItem(void* res)
 	if (m_ResourcesInstancesList.size() <= 1)
 	{
 		unsigned int _ind = m_ResourcesInstancesList.size();
-		AddTypesListItemAtPos((ResType::Resource*)res, _ind);
+		AddTypesListItemAtPos((Asset*)res, _ind);
 
 		return _ind;
 	}
@@ -173,28 +173,28 @@ int AssetManager::InsertTypeListItem(void* res)
 	if (!ind)
 		ind = m_ResourcesInstancesList.size();
 
-	AddTypesListItemAtPos((ResType::Resource*)res, ind);
+	AddTypesListItemAtPos((Asset*)res, ind);
 
 	return ind;
 }
 
 #ifdef INCLUDE_FIXES
-void AssetManager::GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, ResType::PlatformId platform)
+void AssetManager::GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, Asset::PlatformId platform)
 #else
-void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform)
+void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, Asset::PlatformId platform)
 #endif
 {
 	char buff[1024] = {};
 
 	switch (platform)
 	{
-	case ResType::PLATFORM_PC:
+	case Asset::PlatformId::PC:
 		strcpy(buff, "/data_pc");
 		break;
-	case ResType::PLATFORM_PS2:
+	case Asset::PlatformId::PS2:
 		strcpy(buff, "/data_ps2");
 		break;
-	case ResType::PLATFORM_XBOX:
+	case Asset::PlatformId::XBOX:
 		strcpy(buff, "/data_xbox");
 		break;
 	}
@@ -235,7 +235,7 @@ const char* AssetManager::GetResourcePathSceneRelative(const char* const path)
 		return &path[scenename.m_nLength];
 }
 
-AssetHeaderStruct_t::AssetHeaderStruct_1::AssetHeaderStruct_1()
+AssetHeaderStruct_t::Header_t::Header_t()
 {
 	field_20 = 0x13579BDF;
 	field_24 = 0x2468ACE0;
@@ -253,7 +253,7 @@ AssetHeaderStruct_t::AssetHeaderStruct_1::AssetHeaderStruct_1()
 	memset(m_OriginalKey, NULL, sizeof(m_OriginalKey));
 }
 
-void AssetHeaderStruct_t::AssetHeaderStruct_1::_401450(char* key, char* keydata)
+void AssetHeaderStruct_t::Header_t::_401450(char* key, char* keydata)
 {
 	_4010C0(key);
 
@@ -265,7 +265,7 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_401450(char* key, char* keydata)
 	}
 }
 
-void AssetHeaderStruct_t::AssetHeaderStruct_1::_4010C0(const char* key)
+void AssetHeaderStruct_t::Header_t::_4010C0(const char* key)
 {
 	strcpy(m_OriginalKey, key);
 
@@ -282,7 +282,7 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_4010C0(const char* key)
 		field_28 = 0xFDB97531;
 }
 
-void AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
+void AssetHeaderStruct_t::Header_t::_4011A0(char* key)
 {
 	//	NOTE: this routine reverses bytes
 	unsigned int rounds = 2;
@@ -427,7 +427,7 @@ void AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* resdatasize, ResType::BlockTypeNumber resblockid)
+void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid)
 {
 	AssetHeaderStruct_t assetHeaderStruct;
 
@@ -500,7 +500,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
 	file->Read(&resourceBufferSize, sizeof(resourceBufferSize));
 
 	*resdatasize = resourcesInfoSize;
-	ResType::ResourceBase::AllocateResourceBlockBufferAligned(resourcesInfoSize, &resourcesInfoBuffer, &resbufferptr, resblockid);
+	//Asset::AllocateResourceBlockBufferAligned(resourcesInfoSize, &resourcesInfoBuffer, &resbufferptr, resblockid);
 	resourceDataBuffer = (int*)MemoryManager::AllocateByType(RENDERLIST, resourceBufferSize);
 	g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
@@ -584,7 +584,7 @@ String& AssetManager::GetDataPath(String& outstr) const
 	return outstr;
 }
 
-ResType::Resource* AssetManager::FindFirstFreeResource() const
+Asset* AssetManager::FindFirstFreeResource() const
 {
 	if (m_ResourcesInstancesList.size() <= 1)
 		return nullptr;
@@ -596,7 +596,7 @@ ResType::Resource* AssetManager::FindFirstFreeResource() const
 	return nullptr;
 }
 
-void AssetManager::AddTypesListItemAtPos(ResType::Resource* element, unsigned int index)
+void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)
 {
 	m_ResourcesInstancesList.insert(m_ResourcesInstancesList.begin(), index, {});
 	m_ResourcesInstancesList.push_back(element);
@@ -642,14 +642,14 @@ AssetManager::AssetManager(bool loadBlocks)
 	m_NodesList[3].reserve(2800);
 	m_NodesList[5].reserve(100);
 	field_0 = NULL;
-	m_RegionId = -1;
+	m_RegionId = REGION_NOT_SET;
 	m_ResourcesInstancesList.reserve(1);
 	field_1C8 = NULL;
-	field_1CC = NULL;
+	m_BlocksUnloaded = NULL;
 	field_1D0 = nullptr;
 	m_CheckTimestamp = false;
 	m_EngineVersionTimestamp = NULL;
-	m_BlockType = ResType::BlockTypeNumber::UNKNOWN;
+	m_ActiveBlockId = -1;
 	field_108 = 2;
 }
 
@@ -658,7 +658,7 @@ AssetManager::~AssetManager()
 {
 	MESSAGE_CLASS_DESTROYED(AssetManager);
 
-	ResType::Resource* res = FindFirstFreeResource();
+	Asset* res = FindFirstFreeResource();
 	if (res)
 	{
 		//	TODO: finish this!
@@ -699,7 +699,7 @@ unsigned int AssetManager::GetFreeResourceTypeListItem(unsigned int index)
 	if (freeind >= m_ResourcesInstancesList.size())
 		return 0;
 
-	for (const ResType::Resource* res = m_ResourcesInstancesList[freeind]; !res; res++)
+	for (const Asset* res = m_ResourcesInstancesList[freeind]; !res; res++)
 		if (++freeind >= m_ResourcesInstancesList.size())
 			return 0;
 
@@ -708,7 +708,7 @@ unsigned int AssetManager::GetFreeResourceTypeListItem(unsigned int index)
 
 unsigned int AssetManager::AddEntity(Entity* ent)
 {
-	unsigned int listind = m_BlockType == ResType::BlockTypeNumber::UNKNOWN ? 0 : m_BlockType;
+	unsigned int listind = m_ActiveBlockId == -1 ? 0 : m_ActiveBlockId;
 	unsigned int listcap;
 
 	if (field_1C8)
@@ -729,7 +729,7 @@ unsigned int AssetManager::AddEntity(Entity* ent)
 	return listcap | ((listind + 1) << 20);
 }
 
-void AssetManager::SetRegion(signed int id)
+void AssetManager::SetRegion(RegionCode id)
 {
 	m_RegionId = id;
 }

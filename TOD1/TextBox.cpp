@@ -54,10 +54,11 @@ Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
 	return nullptr;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void TextBox::SetFont(const char* fontName)
 {
 	String fontPath;
-	ResType::ResourceHolder res;
+	//AssetTemplate res;
 
 	g_AssetManager->GetResourcePath(fontPath, fontName);
 
@@ -74,7 +75,7 @@ void TextBox::SetFont(const char* fontName)
 		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_szString);
 	}
 
-	if (fontName)
+	/*if (fontName)
 	{
 		res.LoadResourceFromBlock(fontPath.m_szString);
 		m_FontRes->ApplyLoadedResource(res);
@@ -86,7 +87,7 @@ void TextBox::SetFont(const char* fontName)
 	{
 		res.m_Resource = nullptr;
 		m_FontRes->ApplyLoadedResource(res);
-	}
+	}*/
 
 	m_Id |= 8;
 

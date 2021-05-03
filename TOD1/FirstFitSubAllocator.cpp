@@ -131,7 +131,7 @@ void FirstFitSubAllocator::Dump() const
 	LogDump::LogA("-----------------------------\n");
 
 	FirstFitElement* spaceel = m_Space;
-	for (unsigned int i = 0; i < (m_FreeRegions + m_UsedRegions); ++i)
+	for (int i = 0; i < (m_FreeRegions + m_UsedRegions); ++i)
 	{
 		int spacesize = (int)spaceel->m_Next;
 		if (spaceel->m_Next <= spaceel)

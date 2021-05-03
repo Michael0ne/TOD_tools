@@ -101,7 +101,7 @@ GfxInternal::~GfxInternal()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void GfxInternal::Render(LPDIRECT3DSURFACE9 screenshotDumpSurface, const bool shouldRender, int a3, int a4)
+void GfxInternal::Render(GfxInternal_Dx9_Surface& screenshotDumpSurface, const bool shouldRender, int a3, int a4)
 {
 	++m_FramesRendered;
 
@@ -132,7 +132,7 @@ void GfxInternal::Render(LPDIRECT3DSURFACE9 screenshotDumpSurface, const bool sh
 			ExecuteRenderBuffer(field_20 + 1, a4, 1);
 			g_GfxInternal_Dx9->EndScene();
 
-			if (screenshotDumpSurface)
+			if (&screenshotDumpSurface)
 				g_GfxInternal_Dx9->DumpScreenShot(screenshotDumpSurface);
 
 			if (!frmclbckcalled)
@@ -147,7 +147,7 @@ void GfxInternal::Render(LPDIRECT3DSURFACE9 screenshotDumpSurface, const bool sh
 	}
 
 	_41F950();
-	m_TimeDelta = (Performance::GetMilliseconds() - m_TimeMilliseconds) * 0.001;
+	m_TimeDelta = (float)(Performance::GetMilliseconds() - m_TimeMilliseconds) * 0.001f;
 	m_TimeMilliseconds = Performance::GetMilliseconds();
 
 	g_GfxInternal_Dx9->ResetStream();
@@ -212,12 +212,12 @@ void GfxInternal::PrepareForNewLevel()
 	*/
 }
 
-void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const
+void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface& surf) const
 {
 	g_GfxInternal_Dx9->DumpScreenShot(surf);
 }
 
-Vector2<unsigned int>& GfxInternal::GetScreenResolution(Vector2<unsigned int>& res) const
+ScreenResolution& GfxInternal::GetScreenResolution(ScreenResolution& res) const
 {
 	return (res = g_GfxInternal_Dx9->m_DisplayModeResolution, res);
 }
@@ -230,6 +230,16 @@ bool GfxInternal::IsScreenResolutionAvailable(unsigned int width, unsigned int h
 void GfxInternal::SetBufferRenderBufferPointerByIndex(unsigned int index, RenderBuffer92* buf)
 {
 	m_RenderBufferArray[index].m_RenderBuffer = buf;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal::_41F950()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
+{
 }
 
 AssetManager::RegionCode GfxInternal::GetRegion()

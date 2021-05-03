@@ -135,16 +135,16 @@ namespace GameConfig
 		g_SceneSaveLoad = new SceneSaveLoad();
 
 		TextureAsset::CreateInstance();
-		FontAsset::CreateInstance();
-		TextAsset::CreateInstance();
-		ModelAsset::CreateInstance();
-		FragmentAsset::CreateInstance();
-		MovieAsset::CreateInstance();
-		CutsceneAsset::CreateInstance();
-		SoundAsset::CreateInstance();
-		StreamedSoundInfoAsset::CreateInstance();
-		AnimationAsset::CreateInstance();
-		MeshColorAsset::CreateInstance();
+		//FontAsset::CreateInstance();
+		//TextAsset::CreateInstance();
+		//ModelAsset::CreateInstance();
+		//FragmentAsset::CreateInstance();
+		//MovieAsset::CreateInstance();
+		//CutsceneAsset::CreateInstance();
+		//SoundAsset::CreateInstance();
+		//StreamedSoundInfoAsset::CreateInstance();
+		//AnimationAsset::CreateInstance();
+		//MeshColorAsset::CreateInstance();
 
 		CreateUnknownMatricies();
 

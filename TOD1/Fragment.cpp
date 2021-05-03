@@ -23,14 +23,15 @@ void Fragment::SetFragmentName(const char* fragmentname)
 	strcpy(m_Name, fragmentname);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Fragment::LoadResourceFile(const char* fname)
 {
-	ResType::ResourceHolder reshld;
-	reshld.LoadResourceFromBlock(fname);
-	m_FragmentRes->ApplyLoadedResource(reshld);
+	//ResType::ResourceHolder reshld;
+	//reshld.LoadResourceFromBlock(fname);
+	//m_FragmentRes->ApplyLoadedResource(reshld);
 
-	if (reshld.m_Resource)
-		g_AssetManager->DecreaseResourceReferenceCount(reshld.m_Resource);
+	//if (reshld.m_Resource)
+		//g_AssetManager->DecreaseResourceReferenceCount(reshld.m_Resource);
 }
 
 void Fragment::ApplyFragment() const

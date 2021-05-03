@@ -166,8 +166,8 @@ void Camera::CameraMatrix::SetupMatrix(const Vector4f& pos, const Orientation& o
 
 	float orientdist = sqrtf(orient.w * orient.w + orient.x * orient.x + orient.y * orient.y + orient.z * orient.z);
 	float fovsinneg = -sinf(fov * 0.0087266462f);
-	float fovcosneg = -cos(fov * 0.0087266462f);
-	float fovcos = cos(fov * 0.0087266462f);
+	float fovcosneg = -cosf(fov * 0.0087266462f);
+	float fovcos = cosf(fov * 0.0087266462f);
 	Vector4f invorient = {
 		1.f / orientdist * orient.w,
 		1.f / orientdist * orient.x,

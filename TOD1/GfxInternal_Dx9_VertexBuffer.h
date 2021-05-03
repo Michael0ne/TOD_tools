@@ -14,7 +14,7 @@ struct GfxInternal_Dx9_VertexBuffer
 		{};
 	};
 
-	int							m_InitialVerticiesCapacity;
+	unsigned int				m_InitialVerticiesCapacity;
 	int							m_VerticiesTotal;
 	int							m_FVF;
 	int							m_Length;

@@ -269,9 +269,9 @@ int BaseType::ParseFloatNumberString(const char* const numberstr, float* const o
 			digitsread = ParseNumberString(lastcharpos + 1, &fractpart);
 			if (digitsread >= 0)
 				if (negativenum)
-					*outval = 0.f - ((float)fractpart / powf(10.f, digitsread) + intpart);
+					*outval = 0.f - ((float)fractpart / powf(10.f, (float)digitsread) + intpart);
 				else
-					*outval = (float)fractpart / powf(10.f, digitsread) + intpart;
+					*outval = (float)fractpart / powf(10.f, (float)digitsread) + intpart;
 		}
 		else
 			*outval = negativenum ? (float)-digitsread : (float)digitsread;
@@ -343,6 +343,9 @@ BaseType* BaseType::GetTypeByName(const char* name)
 		if (strncmp((*it)->m_TypeName.m_szString, name, strlen(name)) == NULL)
 			return (*it);
 
+#if defined(INCLUDE_FIXES) && defined(VERBOSELOG)
+	debug("GetTypeByName(\"%s\") FAILED!", name);
+#endif
 	return nullptr;
 }
 

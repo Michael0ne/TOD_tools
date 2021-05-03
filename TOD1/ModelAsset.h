@@ -24,7 +24,7 @@ private:
 	ModelAsset();
 
 public:
-	virtual Asset*     GetInstancePtr() const override;
+	virtual AssetInstance* GetInstancePtr() const override;
 
 	static void        CreateInstance();	//	@858210
 	static ModelAsset* Create();	//	@8581F0

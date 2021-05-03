@@ -2,20 +2,156 @@
 #include "RenderBuffer.h"
 #include <vector>
 
-//	TODO: what is this for?
+//	TODO: 'RenderQueue'?
 class RenderBuffer92
 {
+    enum RendererCommandsList
+    {
+        CMD_SETMODELMATRIX = 0,
+        CMD_SETCURRENTTEXTURE,
+        CMD_SETTEXTURESCROLL,
+        CMD_ENABLEENVIRONMENTMAP,
+        CMD_SETENVIRONMENTMAPCOEF,
+        CMD_SETBRIGHTNESS,
+        CMD_RENDERTRIANGLE,
+        CMD_RENDERTRIANGLE_2,
+        CMD_RENDERTEXTUREDTRIANGLE,
+        CMD_RENDERQUAD,
+        CMD_RENDERLINE,
+        CMD_RENDERLINE2D,
+        CMD_RENDERTRIANGLE2D,
+        CMD_RENDERQUAD2D,
+        CMD_RENDERQUAD2D_2,
+        CMD_RENDERFULLSCREENTEXTURE,
+        CMD_RENDERVERTEXBUFFER,
+        CMD_RENDERMESHBUFFER,
+        CMD_RENDERMESHCOLORBUFFER,
+        CMD_STARTCHARACTERRENDER,
+        CMD_ENDCHARACTERRENDER,
+        CMD_RENDERSKINNEDMESHBUFFER,
+        CMD_SETBONEMATRIX,
+        CMD_BEGINTEXT,
+        CMD_RENDERTEXT,
+        CMD_RENDERTEXT2,
+        CMD_ENDTEXT,
+        CMD_BEGINSHADOW,
+        CMD_RENDERSHADOW,
+        CMD_ENDSHADOW,
+        CMD_CALL,
+        CMD_ENABLELIGHTING,
+        CMD_ENABLELIGHT,
+        CMD_ENABLEZWRITE,
+        CMD_ENABLEZTEST,
+        CMD_ENABLEFOG,
+        CMD_SETFOGPROPERTIES,
+        CMD_SETFILTERMODE,
+        CMD_SETCULLMODE,
+        CMD_SETZBIAS,
+        CMD_SETBLENDMODE,
+        CMD_SETOPACITY,
+        CMD_SETVIEWPORT,
+        CMD_SETPROJECTION,
+        CMD_SETMIPMAPBIAS,
+        CMD_ENABLEMIPMAPPING,
+        CMD_SETTEXTUREADDRESSMODE,
+        CMD_SETRENDERTARGET,
+        CMD_RENDERTEXTUREDQUAD2D_1,
+        CMD_RENDERTEXTUREDQUAD2D_2,
+        CMD_RENDERTEXTUREDQUAD2D_3,
+        CMD_RENDERTEXTUREDQUAD2D_4,
+        CMD_RENDERTEXTUREDQUAD_1,
+        CMD_RENDERTEXTUREDQUAD_2,
+        CMD_RENDERTEXTUREDQUAD_3,
+        CMD_ENABLEALPHACHANNEL,
+        CMD_SETALPHATESTTHRESHHOLD,
+        CMD_ENABLEALPHATEST,
+        CMD_PS2_CALLDMA,
+        CMD_PS2_UPLOADVUCODE,
+        CMD_PS2_RELOADCAMERAMATRIX,
+        CMD_PS2_SETGUARDBAND,
+        CMD_SETAXISALIGN,
+        CMD_SETPARTICLE,
+        CMD_BEGINPARTICLESYSTEM,
+        CMD_ENDPARTICLESYSTEM,
+        CMD_SETPARTICLESIZE,
+        CMD_SETPARTICLEORIENT,
+        CMD_RENDERPARTICLE,
+        CMD_SETPARTICLEALIGN,
+        CMD_SETPARTICLECOLOR,
+        CMD_SETPARTICLEOPACITY,
+        CMD_SETMIPMAPLEVELS,
+        CMD_DRAWBRIGHTNESS,
+        CMD_DRAWSATURATION,
+        CMD_DRAWLIGHTBLEEDING,
+        CMD_DRAWVIGNETTE,
+        CMD_DRAWNOISE,
+        CMD_PUSH_MODELMATRIX,
+        CMD_PUSH_TEXTURE,
+        CMD_PUSH_ENVIRONMENTMAP,
+        CMD_PUSH_ENVIRONMENTMAPCOEF,
+        CMD_PUSH_BRIGHTNESS,
+        CMD_PUSH_ENABLELIGHTING,
+        CMD_PUSH_ENABLELIGHT,
+        CMD_PUSH_ZWRITE,
+        CMD_PUSH_ZTEST,
+        CMD_PUSH_FOG,
+        CMD_PUSH_FOGPROPERTIES,
+        CMD_PUSH_FILTER,
+        CMD_PUSH_CULLMODE,
+        CMD_PUSH_ZBIAS,
+        CMD_PUSH_BLENDMODE,
+        CMD_PUSH_OPACITY,
+        CMD_PUSH_VIEWPORT,
+        CMD_PUSH_PROJECTION,
+        CMD_PUSH_MIPMAPBIAS,
+        CMD_PUSH_MIPMAPPING,
+        CMD_PUSH_TEXTUREADDRESSMODE,
+        CMD_PUSH_RENDERTARGET,
+        CMD_PUSH_ALPHACHANNEL,
+        CMD_PUSH_SETALPHATESTTHRESHHOLD,
+        CMD_PUSH_ENABLEALPHATEST,
+        CMD_PUSH_PS2_SETGUARDBAND,
+        CMD_POP_MODELMATRIX,
+        CMD_POP_TEXTURE,
+        CMD_POP_ENVIRONMENTMAP,
+        CMD_POP_ENVIRONMENTMAPCOEF,
+        CMD_POP_BRIGHTNESS,
+        CMD_POP_ENABLELIGHTING,
+        CMD_POP_ENABLELIGHT,
+        CMD_POP_ZWRITE,
+        CMD_POP_ZTEST,
+        CMD_POP_FOG,
+        CMD_POP_FOGPROPERTIES,
+        CMD_POP_FILTER,
+        CMD_POP_CULLMODE,
+        CMD_POP_ZBIAS,
+        CMD_POP_BLENDMODE,
+        CMD_POP_OPACITY,
+        CMD_POP_VIEWPORT,
+        CMD_POP_PROJECTION,
+        CMD_POP_MIPMAPBIAS,
+        CMD_POP_MIPMAPPING,
+        CMD_POP_TEXTUREADDRESSMODE,
+        CMD_POP_RENDERTARGET,
+        CMD_POP_ALPHACHANNEL,
+        CMD_POP_SETALPHATESTTHRESHHOLD,
+        CMD_POP_ENABLEALPHATEST,
+        CMD_POP_PS2_SETGUARDBAND
+    };
+
 protected:
-	int					field_0;
-	std::vector<int>	List_1;
-	int					field_14;
-	RenderBuffer		m_RenderBuffer[3];
-	int					field_54;
-	int					field_58;
+    int                 field_0;
+    std::vector<int>    List_1;
+    int                 field_14;
+    RenderBuffer        m_RenderBuffer[3];
+    int                 field_54;
+    int                 field_58;
 
 public:
-	RenderBuffer92(unsigned int a1, unsigned char a2, unsigned int a3);	//	@436B00
-	~RenderBuffer92();	//	@4361E0
+    RenderBuffer92(unsigned int a1, unsigned char a2, unsigned int a3);	//	@436B00
+    ~RenderBuffer92();	//	@4361E0
+
+    void                ExecuteRenderCommand(RenderBuffer& buf) const;  //  @4342C0
 };
 
 ASSERT_CLASS_SIZE(RenderBuffer92, 92);

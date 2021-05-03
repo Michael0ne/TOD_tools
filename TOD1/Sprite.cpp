@@ -51,7 +51,11 @@ void Sprite::TriggerMouseCallbacks()
 	tagPOINT mousepos = g_GfxInternal_Dx9->m_Windowed ? g_InputMouse->m_WindowedMousePosition : g_InputMouse->m_FullscreenMousePosition;
 	ScreenResolution screenres;
 	g_GfxInternal->GetScreenResolution(screenres);
-	screenres = { mousepos.x / (screenres.x * 0.00125f), mousepos.y / (screenres.y * 0.0016666667f) };
+	screenres =
+	{
+		(unsigned int)((float)mousepos.x / ((float)screenres.x * 0.00125f)),
+		(unsigned int)((float)mousepos.y / ((float)screenres.y * 0.0016666667f))
+	};
 
 	if (!SpritesList.size())
 		return;
@@ -65,7 +69,7 @@ void Sprite::TriggerMouseCallbacks()
 			(*it)->GetPos(spritepos);
 
 			if (((*it)->m_SpriteFlags & 0x20) != 0)
-				mousepos = { screenres.x, screenres.y };
+				mousepos = { (LONG)screenres.x, (LONG)screenres.y };
 
 			if (mousepos.x < spritepos.x || mousepos.y < mousepos.y ||
 				(mousepos.x + (*it)->m_SpriteSize_X) < mousepos.x || (mousepos.y + (*it)->m_SpriteSize_Y) < mousepos.y)

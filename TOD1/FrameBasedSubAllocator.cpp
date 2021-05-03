@@ -1,4 +1,5 @@
 #include "FrameBasedSubAllocator.h"
+#include "LogDump.h"
 
 FrameBasedSubAllocator::FrameBasedSubAllocator()
 {
@@ -138,4 +139,18 @@ void FrameBasedSubAllocator::_47A120()
 	allocatedspace->m_PreviousRegionPtr = m_AllocSpaceInfo;
 
 	m_AllocSpaceInfo = allocatedspace;
+}
+
+void FrameBasedSubAllocator::_47A0E0()
+{
+	if (m_AllocSpaceInfo->field_0)
+		LogDump::LogA("Log output only enabled in debug builds.\n");
+
+	auto allocspaceinfo = m_AllocSpaceInfo;
+	m_AllocSpaceInfo = m_AllocSpaceInfo->m_PreviousRegionPtr;
+	
+	Free(allocspaceinfo);
+
+	if (m_RegionBegin != m_RegionBegin_1)
+		m_RegionBegin = allocspaceinfo->m_RegionPtr;
 }

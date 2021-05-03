@@ -103,7 +103,6 @@ void TextureResourceReader::PrintInfo() const
 	TextureResourceChunk* chnks_ = m_Chunks;
 	std::vector<unsigned int> emptychunksnum;
 
-	printf("\t\tID | HEX | INT\n");
 	for (unsigned int i = 0; i < m_TotalChunks; i++, chnks_++)
 	{
 		if ((int)(*chnks_->Chunk) == NULL ||
@@ -113,7 +112,15 @@ void TextureResourceReader::PrintInfo() const
 			continue;
 		}
 
-		printf("\t\t%u | %x %x %x %x ... | %u ...\n", i, chnks_->Chunk[0], chnks_->Chunk[1], chnks_->Chunk[2], chnks_->Chunk[3], (int)(*chnks_->Chunk));
+		printf("\t\tCHUNK %i\n", i);
+		int* chunkdata = (int*)&chnks_->Chunk;
+		int j = 0;
+		do
+		{
+			printf("\t\t%u | %x\n", i, *chunkdata);
+			if (j++ > 24)
+				break;
+		}while (chunkdata++);
 	}
 
 	printf("\tChunks that are empty:\n\t\t");

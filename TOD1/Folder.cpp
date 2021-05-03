@@ -1,9 +1,32 @@
 #include "Folder.h"
 #include "File.h"
+#include "IntegerType.h"
+#include "AssetManager.h"
+#include "Scene.h"
+#include "FrameBasedSubAllocator.h"
+#include "Node.h"
 
 EntityType*	tFolder;
 
-void Folder_::GetResourcePathRelative(String& outPath, String resourceName, ResType::BlockTypeNumber blockType, const char* languageCode)
+int Folder_::CurrentBlockId = -1;
+
+void Folder_::DestroyAllChildren()
+{
+	if (m_FirstChild)
+	{
+		Node* firstchild = m_FirstChild;
+		Node* nextsibling = firstchild->m_NextSibling;
+		do 
+		{
+			firstchild->Destroy();
+			firstchild = nextsibling;
+		} while (nextsibling);
+	}
+
+	m_FirstChild = nullptr;
+}
+
+void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Asset::BlockTypeNumber blockType, const char* languageCode)
 {
 	char	fileExt[16] = {};
 	char	fileDir[1024] = {};
@@ -27,7 +50,7 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, ResT
 	}
 
 	strcat(fileDir, ".");
-	strcat(fileDir, blockType ? ResType::BlockTypeExtension[blockType] : ResType::BlockTypeExtension[ResType::BlockTypeNumber::MAIN]);
+	strcat(fileDir, blockType ? Asset::BlockTypeExtension[blockType] : Asset::BlockTypeExtension[Asset::BlockTypeNumber::MAIN]);
 
 	outPath = fileDir;
 }
@@ -40,11 +63,94 @@ Folder_::Folder_() : Node(NODE_MASK_EMPTY)
 	m_AssetBlockInfo = nullptr;
 }
 
+void Folder_::UnloadBlocks()
+{
+	m_Flags.m_FlagBits.HasFragment = false;
+
+	if (m_Fragment)
+	{
+		if (!Scene::SceneInstance->m_PlayMode)
+			CurrentBlockId = (8 * m_BlockId) >> 3;
+
+		if (m_BlockId < 0)
+			g_AssetManager->m_BlocksUnloaded = 1;
+
+		delete m_Fragment->m_Name;
+		if (m_Fragment->m_FragmentRes->m_ResourcePath)
+		{
+			m_Fragment->m_Name = new char[52];
+			strcpy(m_Fragment->m_Name, m_Fragment->m_FragmentRes->m_ResourcePath);
+		}
+		else
+			m_Fragment->m_Name = nullptr;
+
+		m_Fragment->LoadResourceFile(nullptr);
+		DestroyAllChildren();
+
+		if ((m_BlockId & 0x80000000) != 0)
+			g_AssetManager->m_BlocksUnloaded = false;
+
+		CurrentBlockId = -1;
+	}
+
+	FrameBasedSubAllocator* framealloc = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType((8 * m_BlockId) >> 3)];
+	if (Scene::SceneInstance->m_PlayMode != 1)
+	{
+		LogDump::LogA("*** checking for dangling nodes ***\n");
+
+		while (true)
+		{
+			Node* loadednode = (Node*)g_AssetManager->_8755E0();
+			if (!loadednode)
+				break;
+
+			while ( ( (loadednode->m_Id >> 27) & 7 ) - 1 != ( (8 * m_BlockId) >> 3 ) )
+			{
+				loadednode = (Node*)g_AssetManager->_875610(loadednode);
+				if (!loadednode)
+				{
+					if (!strcmp(framealloc->GetAllocatorName(), "FrameBasedSubAllocator"))
+						framealloc->_47A0E0();
+
+					return;
+				}
+			}
+
+			LogDump::LogA("deleting dangling node %s (id=%d) from block %d\n", loadednode->m_Name ? loadednode->m_Name : "", loadednode->m_Id >> 8, ((loadednode->m_Id >> 28) & 7) - 1);
+		}
+	}
+
+	if (!strcmp(framealloc->GetAllocatorName(), "FrameBasedSubAllocator"))
+		framealloc->_47A0E0();
+}
+
+const int Folder_::GetBlockId() const
+{
+	return (8 * m_BlockId) >> 3;
+}
+
+void Folder_::SetBlockId(unsigned int blockid)
+{
+	if ((8 * m_BlockId) >> 3 == blockid)
+		return;
+
+	m_BlockId = m_BlockId ^ (blockid ^ m_BlockId) & 0x1FFFFFFF;
+	if (blockid)
+		m_Flags.m_FlagBits.HasFragment = false;
+
+	if ((m_BlockId & 0x1FFFFFFF) != 0)
+		m_AssetBlockInfo = new AssetInfo;
+	else
+		delete m_AssetBlockInfo;
+}
+
 void Folder_::Register()
 {
 	tFolder = new EntityType("Folder");
 	tFolder->InheritFrom(tNode);
 	tFolder->SetCreator((EntityType::CREATOR)Create);
+
+	tFolder->RegisterProperty(tINTEGER, "block_id", &GetBlockId, 0, 0, 0, &SetBlockId, 0, 0, 0, "control=dropdown|All=0|Map=1|Submap=2|Mission=3|Cutscene=4|Playerdata=5", 0, 0, -1);
 
 	tFolder->_86E9B0();
 }

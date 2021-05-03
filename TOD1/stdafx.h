@@ -12,6 +12,7 @@
  * 
  *	Preprocessor defines and their usage:
  *	INCLUDE_FIXES	-- includes fixes to obvious bugs and improvements;
+ *	VERBOSELOG		-- verbose logging for certain functions;
  *	PLATFORM_PS2	-- use PS2-specific code;
  *	PLATFORM_LINUX	-- use linux-specific code;
  *	If none of the 2 defined code compilation assumes Windows is being used as target platform.
@@ -36,6 +37,7 @@
 #include "time.h"			//	For time stuff.
 
 #include <WinUser.h>		//	For Windows-specific objects.
+//	TODO: replace all obsole d3dx9 stuff with DirectXMath header.
 #include <d3d9.h>			//	For all directX related stuff.
 #include <list>				//	For lists, obviously.
 #include <dinput.h>			//	For DirectInput stuff.
@@ -52,7 +54,7 @@
 #define MESSAGE_CLASS_DESTROYED(x) debug(#x " destroyed!\n")
 #define ASSERT_CLASS_SIZE(x, size) static_assert(sizeof(x) == size, MESSAGE_WRONG_CLASS_SIZE(x))
 
-#define ALIGN_4BYTES(x) (x) & 0xFFFFFFFC
+#define ALIGN_4BYTES(x) ((int)(x) & 0xFFFFFFFC)
 
 //	To be used with DirectX interfaces.
 #define RELEASE_SAFE(p) \

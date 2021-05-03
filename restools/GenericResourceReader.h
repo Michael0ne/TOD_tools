@@ -14,6 +14,13 @@
 class GenericResourceReader
 {
 protected:
+	enum PlatformDefinition
+	{
+		PC = 1,
+		PS2 = 2,
+		XBOX = 3
+	};
+protected:
 	FILE*				m_FilePtr = nullptr;
 	WIN32_FIND_DATA		m_FindInfo = {};
 	HANDLE				m_FindHandle = INVALID_HANDLE_VALUE;
@@ -24,7 +31,7 @@ protected:
 	long				m_ResourceFileSize = NULL;
 	long				m_ResourceFileSizeKb = NULL;
 	std::vector<std::string>	m_LastOpenFiles;
-	PlatformDefinition	m_WorkingPlatform = PLATFORM_PC;
+	PlatformDefinition	m_WorkingPlatform = PC;
 
 	bool				OpenFirstResourceFile();
 

@@ -77,6 +77,12 @@ namespace Utils
 		return sum;
 	}
 
+	static void GetDXErrorString(HRESULT hr, char* errorstr)
+	{
+		//	NOTE: this is a replacement over deprecated 'DXGetErrorString'.
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 0, (DWORD)hr, 0, errorstr, 0, 0);
+	}
+
 	static void (__cdecl* DeleteAllFilesInFolder)(const char* inPath) = (void (__cdecl*)(const char*))0x418B50;
 
 	//	TODO: is this correct?

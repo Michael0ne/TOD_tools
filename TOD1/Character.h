@@ -1,6 +1,6 @@
 #pragma once
 #include "Node.h"
-#include "ResourcesTypes.h"
+#include "ModelAsset.h"
 
 class Character : public Node
 {
@@ -62,7 +62,7 @@ protected:
 	float m_Opacity;
 	int	m_List_1[4];
 	int m_TextureSets;
-	ResType::Model* m_ModelRes;
+	ModelAsset* m_ModelRes;
 	int field_1D4;
 	int m_BonesList[4];
 	int m_List_3[4];

@@ -12,7 +12,7 @@ private:
 	inline FontAsset();	//	NOTE: always inlined.
 
 public:
-	virtual Asset*  GetInstancePtr() const override;
+	virtual AssetInstance* GetInstancePtr() const override;
 
 	static void     CreateInstance();	//	@85B460
 	static FontAsset* Create();	//	@85B350

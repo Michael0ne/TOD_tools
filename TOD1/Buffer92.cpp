@@ -10,7 +10,6 @@ RenderBuffer92::RenderBuffer92(unsigned int a1, unsigned char a2, unsigned int a
 	m_RenderBuffer[1] = { 0, ((field_14 & 0x40) != 0 ? RENDERLIST : DEFAULT) };
 	m_RenderBuffer[2] = { 0, ((field_14 & 0x40) != 0 ? RENDERLIST : DEFAULT) };
 
-	//	NOTE: wtf is this?
 	field_14 = field_14 & 0xFFFFFFF6 | a2 & 8 | ((a2 & 1) == 0);
 	field_14 = field_14 ^ ((unsigned char)field_14 ^ (unsigned char)(4 * (((a2 & 4) != 0) || ((field_14 & 8) != 0)))) & 4;
 	field_14 = field_14 & 0xFFFFFFCD | (2 * (((a2 & 2) != 0) || ((field_14 & 4) == 0)));
@@ -22,4 +21,9 @@ RenderBuffer92::RenderBuffer92(unsigned int a1, unsigned char a2, unsigned int a
 RenderBuffer92::~RenderBuffer92()
 {
 	MESSAGE_CLASS_DESTROYED(RenderBuffer92);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void RenderBuffer92::ExecuteRenderCommand(RenderBuffer& buf) const
+{
 }
