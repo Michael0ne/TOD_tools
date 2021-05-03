@@ -1,5 +1,7 @@
 #pragma once
 #include "StringsPool.h"
+#include "GfxInternal_Dx9_VertexBuffer.h"
+#include "GfxInternal_Dx9_IndexBuffer.h"
 #include <vector>
 
 //	TODO: this is inherited from another class, don't know what right now...

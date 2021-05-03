@@ -1,4 +1,5 @@
 #pragma once
+#include "Fragment.h"
 #include "Entity.h"
 #include "AuxQuadTree.h"
 #include <d3dx9math.h>
@@ -156,6 +157,7 @@ public:
 	void                _869EC0(const unsigned int paramind, const void* paramptr, BaseType& paramtype);	//	@869EC0
 	void                _869F80(const unsigned int paramind, const void* paramptr, BaseType& paramtype);	//	@869F80
 	void                Project_Impl(Vector2f& outvec, const Vector4f& invec);	//	@87DA10
+	void				TriggerGlobalScript(int scriptId, void* args);	//	@86A340
 
 	static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
 

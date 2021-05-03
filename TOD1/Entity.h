@@ -3,10 +3,7 @@
 
 class Entity
 {
-	friend class NodeMatrix;
-	friend class AssetManager;
-	friend class Fragment;
-protected:
+public:
 	EntityType*     m_ScriptEntity;
 	unsigned char   field_8[10];
 	short           m_Order;

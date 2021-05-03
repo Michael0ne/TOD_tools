@@ -17,7 +17,7 @@ private:
 	CutsceneAsset();	//	@916080
 
 public:
-	virtual Asset*        GetInstancePtr() const override;
+	virtual AssetInstance* GetInstancePtr() const override;
 
 	static void           CreateInstance();	//	@9164C0
 	static CutsceneAsset* Create();	//	@916100

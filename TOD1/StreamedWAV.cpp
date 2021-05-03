@@ -28,13 +28,13 @@ int StreamedWAV::OggSeekCallback(void* datasource, INT64 pos, int seektype)
 	switch (seektype)
 	{
 	case 0:
-		((File*)datasource)->Seek(pos);
+		((File*)datasource)->Seek((int)pos);
 		return 0;
 	case 1:
-		((File*)datasource)->Seek(((File*)datasource)->GetPosition() + pos);
+		((File*)datasource)->Seek(((File*)datasource)->GetPosition() + (int)pos);
 		return 0;
 	case 2:
-		((File*)datasource)->Seek(((File*)datasource)->GetSize() - pos);
+		((File*)datasource)->Seek(((File*)datasource)->GetSize() - (int)pos);
 		return 0;
 	default:
 		LogDump::LogA("OggSeekCallBack - unknown seek-type (%i)\n", seektype);
@@ -229,10 +229,10 @@ bool StreamedWAV::OpenOGG(bool createnew)
 
 	m_Channels = vi->channels;
 	m_SamplesPerSec = vi->rate;
-	m_Samples = pcmt;
+	m_Samples = (int)pcmt;
 	m_BytesPerSample = 2.f;
 	m_BlockAlign = 0;
-	m_ChunkSize = m_Channels * 2 * pcmt;
+	m_ChunkSize = m_Channels * 2 * (int)pcmt;
 	field_C = m_ChunkSize;
 	m_Flags = m_Flags & 0xFFFFFFF7 | 7;
 

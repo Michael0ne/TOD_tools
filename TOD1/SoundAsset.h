@@ -12,7 +12,7 @@ private:
 	SoundAsset();	//	@85C3C0
 
 public:
-	virtual Asset*     GetInstancePtr() const override;
+	virtual AssetInstance* GetInstancePtr() const override;
 
 	static void        CreateInstance();	//	@85C010
 	static SoundAsset* Create();	//	@85C430

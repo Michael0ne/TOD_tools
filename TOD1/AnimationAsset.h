@@ -20,7 +20,7 @@ private:
 	AnimationAsset();	//	@900080
 
 public:
-	virtual Asset*         GetInstancePtr() const override;
+	virtual AssetInstance* GetInstancePtr() const override;
 
 	static void            CreateInstance();	//	@900980
 	static AnimationAsset* Create();	//	@900EF0

@@ -1,8 +1,9 @@
 #pragma once
 #include "Node.h"
+#include "ModelAsset.h"
 
 DECLARE_SCRIPT_ENTITY_CLASS(Model, Node)
-	DECLARE_SCRIPT_ENTITY_PROPERTY(modelres, const char*, ResType::Model*)
+	DECLARE_SCRIPT_ENTITY_PROPERTY(modelres, const char*, ModelAsset*)
 protected:
 	int field_54;
 	int field_58;

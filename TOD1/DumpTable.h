@@ -13,7 +13,7 @@ struct DumpTableDescription
 
 	class Column
 	{
-		friend class DumpTableDescription;
+		friend struct DumpTableDescription;
 	protected:
 		unsigned int    m_Type;
 		bool            m_IsVisible;	//	NOTE: if false, it won't be in the dumped file.
@@ -33,7 +33,7 @@ struct DumpTableDescription
 
 	class IntegerColumn : public Column
 	{
-		friend class DumpTableDescription;
+		friend struct DumpTableDescription;
 	protected:
 		int             field_30;
 		int             field_34;
@@ -46,7 +46,7 @@ struct DumpTableDescription
 
 	class StringColumn : public Column
 	{
-		friend class DumpTableDescription;
+		friend struct DumpTableDescription;
 	protected:
 		int             field_30;
 		std::vector<String> m_Values;

@@ -7,6 +7,8 @@
 #include "Scene.h"
 
 SceneSaveLoad* g_SceneSaveLoad = nullptr;
+z_stream SceneSaveLoad::BufferStream;
+char SceneSaveLoad::CompressedSaveData[2048];
 
 SceneSaveLoad::SceneSaveLoad()
 {
@@ -140,6 +142,40 @@ int* SceneSaveLoad::_873BA0(const unsigned int nodeid)
 	}
 
 	return nullptr;
+}
+
+void SceneSaveLoad::_873C00(const unsigned int, const int* a2)
+{
+	switch (m_SavedPlayMode)
+	{
+	case MODE_3:
+	{
+		field_3C = ((char*)a2 - (char*)field_38) >> 2;
+		BufferStream.avail_in = field_3C * 4;
+		BufferStream.next_in = (Bytef*)field_38;
+		
+		if (field_3C * 4 >= 8192)
+		{
+			field_3C = 0;
+			while (BufferStream.avail_in)
+			{
+				BufferStream.avail_out = 2048;
+				BufferStream.next_out = (Bytef*)CompressedSaveData;
+				deflate(&BufferStream, 0);
+
+				if (m_SavePoint->WriteBufferWithSize(CompressedSaveData, 2048 - BufferStream.avail_out) != 2048 - BufferStream.avail_out)
+					field_44 = 0;
+			}
+		}
+		break;
+	}
+	case MODE_4:
+		field_74 += (char*)&a2[-field_74 - m_SaveInfo_1.m_TransactionBuffer->m_Size] - m_SaveInfo_1.m_TransactionBuffer->m_Buffer;
+		break;
+	default:
+		field_0 = (int*)a2;
+		break;
+	}
 }
 
 bool SceneSaveLoad::WriteDummySavePointData(class SavePoint* savepoint, unsigned int pad)

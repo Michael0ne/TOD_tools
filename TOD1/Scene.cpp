@@ -22,8 +22,6 @@ int Scene::TotalFrames;
 int Scene::NewFrameNumber;
 bool Scene::IsRewindBufferInUse = true;
 bool Scene::LoadingAssetBlock;
-const unsigned int Scene::RewindBufferSize_1 = 204800;
-const unsigned int Scene::RewindBufferSize_2 = 309248;
 float Scene::FrameRate;
 float Scene::FrameRate_1;
 UINT64 Scene::CreationTime;
@@ -122,7 +120,7 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 {
 	File assetfile(assetname, 161, true);
 
-	assetinfo->m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assetfile, (int*)assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, ResType::BlockTypeNumber::NONE);
+	assetinfo->m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assetfile, (int*)assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, Asset::BlockTypeNumber::NONE);
 	DWORD64 starttick = __rdtsc();
 
 	//g_Blocks->_878030();
@@ -258,18 +256,18 @@ void Scene::Load(const char* sceneName)
 
 	if (g_AssetManager->m_LoadBlocks)
 	{
-		String scene_path;
-		g_AssetManager->GetPlatformSpecificPath(scene_path, sceneName, "", ResType::PLATFORM_PC);
-		scene_path.Append("/");
+		char scene_path[1024] = {};
+		g_AssetManager->GetPlatformSpecificPath(scene_path, sceneName, "", Asset::PlatformId::PC);
+		strcat(scene_path, "/");
 
 		char pathdummy[1024] = {};
 		char scene_fname[128] = {};
 		File::ExtractFilePath(sceneName, pathdummy, scene_fname, pathdummy);
-		scene_path.Append(scene_fname);
+		strcat(scene_path, scene_fname);
 
 		String block_path_shared, block_path_localised;
-		Folder_::GetResourcePathRelative(block_path_shared, scene_path, ResType::BlockTypeNumber::NONE, 0);
-		Folder_::GetResourcePathRelative(block_path_localised, scene_path, ResType::BlockTypeNumber::NONE, Script::GetCurrentCountryCode());
+		Folder_::GetResourcePathRelative(block_path_shared, scene_path, Asset::BlockTypeNumber::NONE, 0);
+		Folder_::GetResourcePathRelative(block_path_localised, scene_path, Asset::BlockTypeNumber::NONE, Script::GetCurrentCountryCode());
 #ifdef INCLUDE_FIXES
 		if (!File::FindFileEverywhere(block_path_shared.m_szString))
 		{
@@ -292,8 +290,8 @@ void Scene::Load(const char* sceneName)
 		int mainAssetAllocMem = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
 		LogDump::LogA("asset block before: %0.1f Kb\n", mainAssetAllocMem * 0.0009765625f);
 
-		if (strcmp(MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
-			((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->_47A120();
+		//if (strcmp(MemoryManager::AllocatorsList[Asset::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+			//((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->_47A120();
 		
 		LoadingAssetBlock = true;
 		//Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = false;

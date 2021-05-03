@@ -77,6 +77,8 @@ public:
 extern std::vector<GlobalCommand>		GlobalCommandsList;	//	@A11470
 extern std::map<String, unsigned int>	GlobalCommandsMap;	//	@A3CF08
 
+class EntityType;
+
 class GlobalScript
 {
 	struct Property
@@ -121,6 +123,7 @@ public:
 	void                        AddStructElement(unsigned int fieldId, const char* const defaultValue, unsigned int);	//	@48AF10
 	void                        AddMethod(unsigned short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*));	//	@48A690
 	void                        CalculateSize();	//	@48AA60
+	bool						_48A7E0(Node* node, int scriptId, void* args);	//	@48A7E0
 
 	class EntityType*           AssignScriptToEntity(const EntityType* parent);	//	@48A3F0
 

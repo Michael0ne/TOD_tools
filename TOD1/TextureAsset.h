@@ -1,46 +1,65 @@
 #pragma once
 #include "BaseAsset.h"
+#include "GfxInternal_Dx9_Texture.h"
 
 class TextureAsset : public Asset
 {
-	struct Tex
-	{
-		unsigned int	field_0;
-		unsigned int	field_4;
-		unsigned short	field_8;
-		unsigned char	field_A;
-		String			field_E;
-		unsigned int	field_12;
-		unsigned int	field_16;
-		unsigned int	field_1A;
-		unsigned int	field_1E;
-		unsigned short	field_22;
-		unsigned int	field_26;
-		unsigned int	field_2A;
-		unsigned int	field_2E;
-		unsigned int	field_32;
-		unsigned int	field_36;
-		unsigned int	field_3A;
-		unsigned int	field_3E;
-		unsigned int	field_42;
-	};
+    struct Tex
+    {
+        String                  field_0;
+        String                  field_10;
+        int                     field_14;
+        int                     field_18;
+        int                     field_1C;
+        int                     field_20;
+        short                   field_24;
+        int                     field_28;
+        int                     field_2C;
+        int                     field_30;
+        int                     field_34;
+        int                     field_38;
+        int                     field_3C;
+        int                     field_40;
+        int                     field_44;
+        int                     field_48;
+        int                     field_4C;
+        int                     field_50;
+        int                     field_54;
+        int                     field_58;
+        int                     field_5C;
+        int                     field_60;
+        int                     field_64;
+        char                    field_68;
+        int                     field_6C;
+        int                     field_70;
+
+        ~Tex();	//	@853A90
+    };
 
 protected:
-	int             field_1C;
-	Tex*            field_20;
-	int				field_24;
-	int*            m_Texture;
-	int             field_2C;
+    int                         field_1C;
+    Tex                        *m_Texture;	//	NOTE: this pointer should be aligned by 4 bytes.
+    char                        field_24;
+    GfxInternal_Dx9_Texture    *m_Texture_1;	//	NOTE: this too.
+    int                         field_2C;
 
 private:
-	TextureAsset();	//	NOTE: always inlined.
+    TextureAsset();	//	NOTE: always inlined.
 
 public:
-	virtual ~TextureAsset() = default;
-	virtual Asset*  GetInstancePtr() const override;
+    virtual                    ~TextureAsset();	//	@853690
+    virtual AssetInstance*      GetInstancePtr() const override;	//	@853AE0
+    virtual void                stub5(int);	//	@853720
+    virtual void                GetResourcesDir(String& outDir, PlatformId platformId) const override;  //  @853240
+    virtual void                ApplyAssetData(int*);   //  @853930
+    virtual char                SetResourcePlaceholder();   //  @8537B0
 
-	void            GetTextureResolution(Vector2<int>& outRes);	//	@853650
+    ScreenResolution&           GetTextureResolution(ScreenResolution& outRes);	//	@853650
 
-	static void     CreateInstance();	//	@853870
-	static TextureAsset* Create();	//	@853830
+    static void                 CreateInstance();	//	@853870
+    static TextureAsset*        Create();	//	@853830
+
+    static AssetInstance*       Instance;	//	@A3BE28
 };
+
+ASSERT_CLASS_SIZE(TextureAsset, 48);

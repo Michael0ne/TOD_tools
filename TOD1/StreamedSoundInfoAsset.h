@@ -12,7 +12,7 @@ private:
 	StreamedSoundInfoAsset();	//	@85C7E0
 
 public:
-	virtual Asset*                 GetInstancePtr() const override;
+	virtual AssetInstance*         GetInstancePtr() const override;
 
 	static void                    CreateInstance();	//	@85C8D0
 	static StreamedSoundInfoAsset* Create();	//	@85CDA0

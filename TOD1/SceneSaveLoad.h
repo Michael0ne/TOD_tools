@@ -2,16 +2,7 @@
 #include "MemoryManager.h"
 #include "EntityType.h"
 #include "TransactionBuffer.h"
-
-#define SCENESAVELOAD_CLASS_SIZE 120
-
-enum ScenePlayMode
-{
-	MODE_NONE = 0,
-	MODE_1 = 1,
-	MODE_2 = 2,
-	MODE_3 = 3
-};
+#include "zlib121/zlib.h"
 
 //	NOTE: saveslot data is compressed using deflate (version 1.2.1, stream size = 56).
 struct SaveInfo
@@ -48,6 +39,15 @@ struct SaveFile
 
 class SceneSaveLoad
 {
+	enum ScenePlayMode
+	{
+		MODE_NONE = 0,
+		MODE_1 = 1,
+		MODE_2 = 2,
+		MODE_3 = 3,
+		MODE_4 = 4
+	};
+
 private:
 	int*				field_0;
 	SaveInfo			m_SaveInfo;	//	NOTE: this is used when WRITING savepoint data.
@@ -86,8 +86,11 @@ public:
 	void                _873C00(const unsigned int, const int* a2);	//	@873C00
 	
 	static bool			WriteDummySavePointData(class SavePoint* savepoint, unsigned int);	//	@8743F0
+
+	static z_stream		BufferStream;	//	@A3D748
+	static char			CompressedSaveData[2048];	//	@A3CF48
 };
 
 extern SceneSaveLoad* g_SceneSaveLoad;
 
-static_assert(sizeof(SceneSaveLoad) == SCENESAVELOAD_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(SceneSaveLoad));
+ASSERT_CLASS_SIZE(SceneSaveLoad, 120);

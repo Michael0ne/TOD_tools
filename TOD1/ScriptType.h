@@ -11,8 +11,12 @@ public:
 		BaseType*		m_Type = nullptr;
 		unsigned int	m_FieldOffset = NULL;
 
-		ScriptField(const char* name, BaseType* stype, unsigned int fldoffset);
-		ScriptField(const ScriptField& rhs);	//	@7A1D40
+		ScriptField(const char* name, BaseType* stype, unsigned int fldoffset)
+			: m_Name(name), m_Type(stype), m_FieldOffset(fldoffset)
+		{};
+		ScriptField(const ScriptField& rhs)	//	@7A1D40
+			: m_Name(rhs.m_Name), m_Type(rhs.m_Type), m_FieldOffset(rhs.m_FieldOffset)
+		{};
 	};
 
 	struct ScriptFieldsList

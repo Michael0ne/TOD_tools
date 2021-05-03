@@ -25,20 +25,30 @@ bool MemoryCard::IsFormatted() const
 	if (!Script::SavePlatformPS2)
 		return true;
 
-	if (m_SaveFolderPath.m_nLength) {
-		if (m_Formatted) {
-			if (File::IsDirectoryValid(m_SaveFolderPath.m_szString)) {
-				//	NOTE: original function uses String for this, but it requires heap allocation, don't really need that for string appending.
-				char temp[MAX_PATH];
+	if (m_SaveFolderPath.m_nLength)
+	{
+		if (m_Formatted)
+		{
+			if (File::IsDirectoryValid(m_SaveFolderPath.m_szString))
+			{
+#ifdef INCLUDE_FIXES
+				char temp[1024] = {};
 				strcpy(temp, m_SaveFolderPath.m_szString);
 				strcat(temp, "/Formatted.txt");
 
 				if (File::FindFileEverywhere(temp))
+#else
+				String temp = m_SaveFolderPath;
+				temp.Append("/Formatted.txt");
+				
+				if (File::FindFileEverywhere(temp.m_szString))
+#endif
+
 					return true;
 			}
 		}
 	}else
-		debug("Warning: Emulation dir not set. All operations will be ignored.");
+		LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.");
 
 	return false;
 }
@@ -48,15 +58,17 @@ bool MemoryCard::FormatCard()
 	if (!Script::SavePlatformPS2)
 		return true;
 
-	if (!m_SaveFolderPath.m_nLength) {
-		debug("Warning: Emulation dir not set. All operations will be ignored.");
-		debug("Warning: Memory Card not found.");
+	if (!m_SaveFolderPath.m_nLength)
+	{
+		LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.");
+		LogDump::LogA("Warning: Memory Card not found.");
 
 		return false;
 	}
 
-	if (!m_Formatted || !File::IsDirectoryValid(m_SaveFolderPath.m_szString)) {
-		debug("Warning: Memory Card not found.");
+	if (!m_Formatted || !File::IsDirectoryValid(m_SaveFolderPath.m_szString))
+	{
+		LogDump::LogA("Warning: Memory Card not found.");
 
 		return false;
 	}
@@ -64,11 +76,18 @@ bool MemoryCard::FormatCard()
 	Utils::DeleteAllFilesInFolder(m_SaveFolderPath.m_szString);
 	File::CreateNewDirectory(m_SaveFolderPath.m_szString);	//	NOTE: these above are not used outside this class, maybe just private static methods?
 
-	char temp[MAX_PATH];
+#ifdef INCLUDE_FIXES
+	char temp[1024] = {};
 	strcpy(temp, m_SaveFolderPath.m_szString);
 	strcat(temp, "Formatted.txt");
 
 	File formattedFile(temp, 2, true);
+#else
+	String temp = m_SaveFolderPath;
+	temp.Append("Formatted.txt");
+	
+	File formattedFile(temp.m_szString, 2, true);
+#endif
 
 	return true;
 }
@@ -77,13 +96,21 @@ bool MemoryCard::IsSaveDirPresent(const char* const directory) const
 {
 	if (IsFormatted())
 	{
+#ifdef INCLUDE_FIXES
+		char savePath[1024] = {};
+		strcpy(savePath, m_SaveFolderPath.m_szString);
+		strcat(savePath, "/");
+		strcat(savePath, directory);
+
+		return File::IsDirectoryValid(savePath);
+#else
 		String savePath = m_SaveFolderPath;
 		savePath.Append("/");
 		savePath.Append(directory);
-
+		
 		return File::IsDirectoryValid(savePath.m_szString);
+#endif
 	}
-
 
 	LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
 	return false;
@@ -93,7 +120,9 @@ bool MemoryCard::IsSaveFilePresent(const char* const directory, const char* cons
 {
 	if (IsFormatted())
 	{
-		String tempStr = GetFullSaveFolderPath(tempStr, directory, slot);
+		String tempStr;
+		GetFullSaveFolderPath(tempStr, directory, slot);
+
 		return File::FindFileEverywhere(tempStr.m_szString);
 	}
 	

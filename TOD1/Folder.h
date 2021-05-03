@@ -2,15 +2,12 @@
 #include "Node.h"
 #include "AssetManager.h"
 
-#define FOLDER_CLASS_SIZE 88
-#define FOLDER_ASSETINFO_SIZE 24
-
 struct AssetInfo
 {
 	struct ActualAssetInfo
 	{
-		void*		m_ResourceDataBufferPtr = nullptr;	//	NOTE: actual resource data read from file written here.
-		void*		m_ResourceAllocatedAlignedBufferPtr = nullptr;	//	NOTE: pointer to buffer with resource data size written here.
+		void*       m_ResourceDataBufferPtr = nullptr;	//	NOTE: actual resource data read from file written here.
+		void*       m_ResourceAllocatedAlignedBufferPtr = nullptr;	//	NOTE: pointer to buffer with resource data size written here.
 		unsigned int m_ResourceDataBufferSize = NULL;
 	};
 	ActualAssetInfo	m_AssetInfo_Shared;
@@ -28,15 +25,24 @@ ASSERT_CLASS_SIZE(AssetInfo, 24);
 class Folder_ : public Node
 {
 protected:
-	int				m_BlockId;
-	AssetInfo*		m_AssetBlockInfo;
+	int             m_BlockId;
+	AssetInfo      *m_AssetBlockInfo;
 
-	static void		GetResourcePathRelative(String& outPath, String resourceName, ResType::BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
+	void            DestroyAllChildren();	//	@88C1D0
+
+	static void     GetResourcePathRelative(String& outPath, String resourceName, Asset::BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
 public:
 	Folder_();
 
+	void            UnloadBlocks();	//	@87EE80
+
+	const int       GetBlockId() const;	//	@87E630
+	void            SetBlockId(unsigned int blockid);	//	@87E6A0
+
 	static void		Register();	//	@87E810
 	static Folder_* Create();	//	@87E730
+
+	static int      CurrentBlockId;	//	@A11A30
 };
 
 extern EntityType*	tFolder;	//	@A3D810

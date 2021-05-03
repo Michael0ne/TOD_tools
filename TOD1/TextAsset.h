@@ -15,7 +15,7 @@ private:
 	TextAsset();
 
 public:
-	virtual Asset*    GetInstancePtr() const override;
+	virtual AssetInstance* GetInstancePtr() const override;
 
 	static void       CreateInstance();	//	@861CE0
 	static TextAsset* Create();	//	@861BD0

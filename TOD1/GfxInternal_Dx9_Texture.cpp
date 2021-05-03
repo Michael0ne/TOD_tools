@@ -24,16 +24,25 @@ void GfxInternal_Dx9_Texture::CreateDirect3DTexture(const ScreenResolution& res,
 
 	m_MipMapLevels = levels;
 	m_Levels = m_Levels & 0xFE03 | 2;
+	m_Texture = nullptr;
 
-	g_GfxInternal_Dx9->m_Direct3DDevice->CreateTexture(
+	HRESULT hr = g_GfxInternal_Dx9->m_Direct3DDevice->CreateTexture(
 		m_SurfaceResolution.x,
 		m_SurfaceResolution.y,
 		levels != 1,
 		levels == 3 ? 1 : 0,
 		SupportedTextureFormats[formatindex],
-		levels ? D3DPOOL_MANAGED : D3DPOOL_DEFAULT,
+		levels == 3 ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED,
 		&m_Texture,
 		nullptr);
+
+#ifdef INCLUDE_FIXES
+	if (!m_Texture)
+	{
+		debug("CreateDirect3DTexture({ %i, %i }, %i, %i) FAILED (%i)!\n", res.x, res.y, formatindex, levels, hr);
+		return;
+	}
+#endif
 	
 	D3DSURFACE_DESC surfdesc;
 	m_Texture->GetLevelDesc(0, &surfdesc);
@@ -74,16 +83,19 @@ GfxInternal_Dx9_Texture::GfxInternal_Dx9_Texture(const ScreenResolution& resolut
 	m_TextureSurfaceBits = nullptr;
 	m_Levels = 0xFDFE;
 	CreateDirect3DTexture(resolution, 1, levels);
-	GfxInternal_Dx9::RenderedTexturesMap.emplace(this);
+	GfxInternal_Dx9::RenderedTexturesMap.insert({ GfxInternal_Dx9::RenderedTexturesMap.size(), this });
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 GfxInternal_Dx9_Texture::GfxInternal_Dx9_Texture(void*)
-{}
+{
+	MESSAGE_CLASS_CREATED(GfxInternal_Dx9_Texture);
+}
 
 #pragma message(TODO_IMPLEMENTATION)
 GfxInternal_Dx9_Texture::~GfxInternal_Dx9_Texture()
 {
+	MESSAGE_CLASS_DESTROYED(GfxInternal_Dx9_Texture);
 }
 
 unsigned int GfxInternal_Dx9_Texture::GetSizeForLevel(const unsigned char lvl) const
@@ -100,7 +112,11 @@ unsigned int GfxInternal_Dx9_Texture::GetSizeForLevel(const unsigned char lvl) c
 		return (8 * (widthn / 4 >= 1 ? widthn / 4 : 1) * (heightn / 4 >= 1 ? heightn : 1));
 }
 
-#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal_Dx9_Texture::SetTextureForStage(const unsigned int stage) const
+{
+	g_GfxInternal_Dx9->m_Direct3DDevice->SetTexture(stage, (LPDIRECT3DTEXTURE9)ALIGN_4BYTES(m_Texture));
+}
+
 void GfxInternal_Dx9_Texture::DrawAllTextures()
 {
 	unsigned int memoryusage = 0;
@@ -110,7 +126,7 @@ void GfxInternal_Dx9_Texture::DrawAllTextures()
 	{
 		for (std::map<unsigned int, GfxInternal_Dx9_Texture>::const_iterator it = TexturesMap->cbegin(); it != TexturesMap->cend(); ++it)
 		{
-			g_GfxInternal_Dx9->RenderTexturedQuad2D_1((const GfxInternal_Dx9_Texture*)&(it->second), {}, { 2.f, 2.f }, { 1.f, 1.f, 1.f, 1.f });
+			g_GfxInternal_Dx9->RenderTexturedQuad2D_1(it->second, {}, { 2.f, 2.f }, { 1.f, 1.f, 1.f, 1.f });
 			unsigned int levelsize = 0;
 			unsigned int texlevel = 0;
 

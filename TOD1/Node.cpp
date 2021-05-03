@@ -365,19 +365,19 @@ void Node::SetPos(const Vector4f& newpos)
 
 				_484CC0(0);
 
-				if (m_QuadTree)
-					m_QuadTree->_8A3320();
+				//if (m_QuadTree)
+					//m_QuadTree->_8A3320();
 
 				for (Node* sibling = m_FirstChild; sibling; sibling = sibling->m_NextSibling)
 				{
 					sibling->_484CC0(0);
-					if (sibling->m_QuadTree)
-						sibling->m_QuadTree->_8A3320();
+					//if (sibling->m_QuadTree)
+						//sibling->m_QuadTree->_8A3320();
 
 					for (Node* siblingA = sibling->m_FirstChild; siblingA; siblingA = siblingA->m_NextSibling)
 					{
 						siblingA->_484CC0(0);
-						siblingA->_88D230(0);
+						//siblingA->_88D230(0);
 					}
 				}
 
@@ -393,28 +393,28 @@ void Node::SetPos(const Vector4f& newpos)
 	}
 	else
 	{
-		if (Camera::PlayerPos && m_ScriptEntity == tBone)
-		{
+		//if (Camera::PlayerPos && m_ScriptEntity == tBone)
+		//{
 			//	TODO ...
-		}
+		//}
 	}
 
 	m_Position->m_Position = newpos;
 	_484CC0(0);
 
-	if (m_QuadTree)
-		m_QuadTree->_8A3320();
+	//if (m_QuadTree)
+		//m_QuadTree->_8A3320();
 
 	for (Node* sibling = m_FirstChild; sibling; sibling = sibling->m_NextSibling)
 	{
 		sibling->_484CC0(0);
-		if (sibling->m_QuadTree)
-			sibling->m_QuadTree->_8A3320();
+		//if (sibling->m_QuadTree)
+			//sibling->m_QuadTree->_8A3320();
 
 		for (Node* siblingA = sibling->m_FirstChild; siblingA; siblingA = siblingA->m_NextSibling)
 		{
 			siblingA->_484CC0(0);
-			siblingA->_88D230(0);
+			//siblingA->_88D230(0);
 		}
 	}
 
@@ -496,6 +496,26 @@ void Node::_869F80(const unsigned int paramind, const void* paramptr, BaseType& 
 	}
 
 	field_8[paramind / 8 + 5] |= 1 << (paramind & 7);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::Project_Impl(Vector2f& outvec, const Vector4f& invec)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::TriggerGlobalScript(int scriptId, void* args)
+{
+	if (!m_ScriptEntity->m_Script || !m_ScriptEntity->m_Script->_48A7E0(this, scriptId, args))
+	{
+		EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_HasParent ? &m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : &m_ScriptEntity->m_ScriptsList[scriptId];
+		if (scriptinfo)
+			if (scriptinfo->field_C)
+				//	TODO: some complex pointer maths going on here, fix this.
+				scriptinfo->m_ScriptPtr(this + scriptinfo->field_8 + scriptinfo->field_C + scriptinfo->field_4 + scriptinfo->field_8, args);
+			else
+				scriptinfo->m_ScriptPtr(this + scriptinfo->field_4, args);
+	}
 }
 
 AuxQuadTree* Node::_8A0810(Node* node)

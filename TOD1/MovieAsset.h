@@ -12,7 +12,7 @@ private:
 	MovieAsset();
 
 public:
-	virtual Asset*     GetInstancePtr() const override;
+	virtual AssetInstance* GetInstancePtr() const override;
 
 	static void        CreateInstance();	//	@85BC70
 	static MovieAsset* Create();	//	@85BC40

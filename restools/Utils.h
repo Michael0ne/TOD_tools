@@ -35,11 +35,3 @@ static void ConvertBackslashes(char* str)
 		else
 			str++;
 }
-
-enum PlatformDefinition
-{
-	PLATFORM_UNSPECIFIED = 0,
-	PLATFORM_PC = 1,
-	PLATFORM_PS2 = 2,
-	PLATFORM_XBOX = 3
-};
