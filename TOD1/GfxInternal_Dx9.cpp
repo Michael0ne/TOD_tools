@@ -9,6 +9,7 @@
 #include "VirtualHud.h"
 #include "GfxInternal_Dx9_Surface.h"
 #include "BuiltinType.h"
+#include <directxtex\include\DDSTextureLoader9.h>
 #include <DxErr.h>
 
 GfxInternal_Dx9* g_GfxInternal_Dx9 = nullptr;
@@ -20,7 +21,7 @@ D3DFORMAT GfxInternal_Dx9::SupportedFormats[] = { D3DFMT_D24S8, D3DFMT_D24X8, D3
 float GfxInternal_Dx9::NoiseTime;
 int GfxInternal_Dx9::NoiseState;
 std::map<int, GfxInternal_Dx9_Texture*> GfxInternal_Dx9::RenderedTexturesMap;
-const D3DMATRIX GfxInternal_Dx9::IdentityMatrix =
+const DirectX::XMMATRIX GfxInternal_Dx9::IdentityMatrix =
 {
     1.f, 0.f, 0.f, 0.f,
     0.f, 1.f, 0.f, 0.f,
@@ -850,29 +851,41 @@ void GfxInternal_Dx9::EndScene()
 
 void GfxInternal_Dx9::SetTextureStage1TransformationMatrix() const
 {
-    D3DXMATRIX mat;
+    DirectX::XMMATRIX mat;
 
-    mat._11 = (m_ViewMatrix._11 * -0.5f) + (m_ViewMatrix._14 * 0.5f);
-    mat._12 = (m_ViewMatrix._12 * -0.5f) + (m_ViewMatrix._14 * 0.5f);
-    mat._13 = 0.f;
-    mat._14 = 0.f;
+    mat.r[0] =
+    {
+        (m_ViewMatrix.r[0].m128_f32[0] * -0.5f) + (m_ViewMatrix.r[0].m128_f32[3] * 0.5f),
+        (m_ViewMatrix.r[0].m128_f32[1] * -0.5f) + (m_ViewMatrix.r[0].m128_f32[3] * 0.5f),
+        0,
+        0
+    };
 
-    mat._21 = (m_ViewMatrix._21 * -0.5f) + (m_ViewMatrix._24 * 0.5f);
-    mat._22 = (m_ViewMatrix._22 * -0.5f) + (m_ViewMatrix._24 * 0.5f);
-    mat._23 = 0.f;
-    mat._24 = 0.f;
+    mat.r[1] =
+    {
+        (m_ViewMatrix.r[1].m128_f32[0] * -0.5f) + (m_ViewMatrix.r[1].m128_f32[3] * 0.5f),
+        (m_ViewMatrix.r[1].m128_f32[1] * -0.5f) + (m_ViewMatrix.r[1].m128_f32[3] * 0.5f),
+        0,
+        0
+    };
 
-    mat._31 = (m_ViewMatrix._31 * -0.5f) + (m_ViewMatrix._34 * 0.5f);
-    mat._32 = (m_ViewMatrix._32 * -0.5f) + (m_ViewMatrix._34 * 0.5f);
-    mat._33 = 0.f;
-    mat._34 = 0.f;
+    mat.r[2] =
+    {
+        (m_ViewMatrix.r[2].m128_f32[0] * -0.5f) + (m_ViewMatrix.r[2].m128_f32[3] * 0.5f),
+        (m_ViewMatrix.r[2].m128_f32[1] * -0.5f) + (m_ViewMatrix.r[2].m128_f32[3] * 0.5f),
+        0,
+        0
+    };
 
-    mat._41 = (m_ViewMatrix._41 * -0.5f) + (m_ViewMatrix._44 * 0.5f);
-    mat._42 = (m_ViewMatrix._42 * -0.5f) + (m_ViewMatrix._44 * 0.5f);
-    mat._43 = 0.f;
-    mat._44 = 0.f;
+    mat.r[3] =
+    {
+        (m_ViewMatrix.r[3].m128_f32[0] * -0.5f) + (m_ViewMatrix.r[3].m128_f32[3] * 0.5f),
+        (m_ViewMatrix.r[3].m128_f32[1] * -0.5f) + (m_ViewMatrix.r[3].m128_f32[3] * 0.5f),
+        0,
+        0
+    };
 
-    m_Direct3DDevice->SetTransform(D3DTS_TEXTURE1, &mat);
+    m_Direct3DDevice->SetTransform(D3DTS_TEXTURE1, (const D3DMATRIX*)&mat);
 }
 
 void GfxInternal_Dx9::ToggleEnvironmentMap(bool enable)
@@ -919,9 +932,8 @@ void GfxInternal_Dx9::ToggleEnvironmentMap(bool enable)
         m_Direct3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
         m_Direct3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
         
-        D3DXMATRIX matident;
-        D3DXMatrixIdentity(&matident);
-        m_Direct3DDevice->SetTransform(D3DTS_TEXTURE1, &matident);
+        DirectX::XMMATRIX matident = DirectX::XMMatrixIdentity();
+        m_Direct3DDevice->SetTransform(D3DTS_TEXTURE1, (const D3DMATRIX*)&matident);
 
         m_EnvironmentMapEnabled = false;
     }
@@ -1030,11 +1042,10 @@ void GfxInternal_Dx9::SetTextureScroll(float* a1, float a2)
 {
     if (a2 != 0.f)
     {
-        D3DXMATRIX mat;
-        D3DXMatrixIdentity(&mat);
+        DirectX::XMMATRIX mat = DirectX::XMMatrixIdentity();
 
-        mat._32 = (*(a1 + 6) * a2) / *(a1 + 6);
-        m_Direct3DDevice->SetTransform(D3DTS_TEXTURE0, &mat);
+        mat.r[2].m128_f32[1] = (*(a1 + 6) * a2) / *(a1 + 6);
+        m_Direct3DDevice->SetTransform(D3DTS_TEXTURE0, (const D3DMATRIX*)&mat);
         m_Direct3DDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2);
     }
     else
@@ -1227,6 +1238,55 @@ void GfxInternal_Dx9::RenderTexturedQuad2D_2(const GfxInternal_Dx9_Texture& tex,
         );
 }
 
+void GfxInternal_Dx9::_45C790(float a1)
+{
+    if (a1 < 0.2f)
+        return;
+
+    m_TextureAddressModes[0] = 1;
+    m_TexProperties[0].field_54 = 1;
+    m_TexProperties[0].field_5C[1] = 1;
+    m_TexProperties[0].field_58 = 1;
+
+    if (m_FlushDirectly)
+    {
+        g_Direct3DDevice->SetSamplerState(m_TexProperties[0].field_50, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+        g_Direct3DDevice->SetSamplerState(m_TexProperties[0].field_50, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+    }
+
+    if (a1 >= 0.8f)
+        a1 = 0.8f;
+
+    m_Direct3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    m_Direct3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+    RenderTexturedQuad2D_2(
+        m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex],
+        { 0, 0 },
+        { 0, m_ViewportResolution.y },
+        { m_ViewportResolution.x, m_ViewportResolution.y },
+        { m_ViewportResolution.x, 0 },
+        { 1, 1, 1, powf(a1,g_GfxInternal->m_TimeDelta * 33.333336f) }
+    );
+
+    if (m_BlendMode == 1)
+    {
+        m_Direct3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+        m_Direct3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+    }
+
+    m_TextureAddressModes[0] = 0;
+    m_TexProperties[0].field_54 = 0;
+    m_TexProperties[0].field_58 = 0;
+    m_TexProperties[0].field_5C[1] = 1;
+
+    if (m_FlushDirectly)
+    {
+        g_Direct3DDevice->SetSamplerState(m_TexProperties[0].field_50, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+        g_Direct3DDevice->SetSamplerState(m_TexProperties[0].field_50, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+    }
+}
+
 void GfxInternal_Dx9::RenderTexturedQuad2D_1(const GfxInternal_Dx9_Texture& tex, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB& clr)
 {
     const bool ztest = m_TexProperties[0].m_ZTest;
@@ -1259,9 +1319,95 @@ void GfxInternal_Dx9::RenderTexturedQuad2D_1(const GfxInternal_Dx9_Texture& tex,
         g_Direct3DDevice->SetRenderState(D3DRS_ZENABLE, ztest);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void GfxInternal_Dx9::_45D5E0()
+void GfxInternal_Dx9::RenderViewport()
 {
+    if (field_9758 > 0.0099999998f)
+    {
+        m_AlphaChannelEnabled = true;
+        m_TexProperties[0].m_AlphaBlend = 1;
+        m_TexProperties[0].field_8A = 1;
+        m_TexProperties[0].field_8 = 4;
+        m_TexProperties[0].field_24 = 1;
+
+        if (m_FlushDirectly)
+        {
+            g_Direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+        }
+
+        _45C790(field_9758);
+
+        field_9758 = 0;
+        m_AlphaChannelEnabled = false;
+        m_TexProperties[0].m_AlphaBlend = 0;
+        m_TexProperties[0].field_8A = 1;
+        m_TexProperties[0].field_8 = 3;
+        m_TexProperties[0].field_24 = 1;
+
+        if (m_FlushDirectly)
+        {
+            g_Direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+        }
+    }
+
+    if (m_ViewportTexturesArray[0])
+    {
+        int filterMode = m_Filter;
+        SetRenderTarget(nullptr);
+
+        m_TextureAddressModes[0] = 1;
+        m_TexProperties[0].field_54 = 1;
+        m_TexProperties[0].field_58 = 1;
+        m_TexProperties[0].field_5C[1] = 1;
+
+        if (m_FlushDirectly)
+        {
+            g_Direct3DDevice->SetSamplerState(m_TexProperties[0].field_50, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_Direct3DDevice->SetSamplerState(m_TexProperties[0].field_50, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+        }
+
+        Vector2f top, bottom;
+        if (m_SurfaceDoubleSized)
+        {
+            if (m_Filter != 2)
+            {
+                m_Filter = 2;
+                m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+                m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+                m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+                m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+            }
+
+            bottom = { m_ViewportResolution.x, m_ViewportResolution.y };
+            top = { 0, 0 };
+        }
+        else
+        {
+            SetFilterMode(0);
+
+            top = { 0, 0 };
+            bottom = { 0, 0 };
+        }
+
+        RenderTexturedQuad2D_1(m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex], top, bottom, { 1, 1, 1, 1 });
+
+        m_TextureAddressModes[0] = 0;
+        m_TexProperties[0].field_54 = 0;
+        m_TexProperties[0].field_5C[1] = 1;
+        m_TexProperties[0].field_58 = 0;
+        
+        if (m_FlushDirectly)
+        {
+            g_Direct3DDevice->SetSamplerState(m_TexProperties[0].field_50, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+            g_Direct3DDevice->SetSamplerState(m_TexProperties[0].field_50, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+        }
+
+        SetFilterMode(filterMode);
+        m_ActiveViewportSurfaceIndex = 1 - m_ActiveViewportSurfaceIndex;
+    }
+
+    m_FVF = -1;
 }
 
 void GfxInternal_Dx9::RenderFullscreenTexture(const GfxInternal_Dx9_Texture& tex)
@@ -1307,11 +1453,11 @@ void GfxInternal_Dx9::SetProjection(float fov, float aspectratio, float nearplan
     FLOAT nearPlane = (float)(((m_ZBias * 0.001) + 1.0) * nearplane);
 
     if (GfxInternal::WideScreen)
-        D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fov_, (FLOAT)1.7777778, nearPlane, farplane);
+        m_ProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fov_, 1.7f, nearPlane, farplane);
     else
-        D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fov_, (m_ViewportResolution.x / m_ViewportResolution.y) / aspectratio, nearPlane, farplane);
+        m_ProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fov_, (m_ViewportResolution.x / m_ViewportResolution.y) / aspectratio, nearPlane, farplane);
 
-    m_Direct3DDevice->SetTransform(D3DTRANSFORMSTATETYPE::D3DTS_PROJECTION, &m_ProjectionMatrix);
+    m_Direct3DDevice->SetTransform(D3DTRANSFORMSTATETYPE::D3DTS_PROJECTION, (const D3DMATRIX*)&m_ProjectionMatrix);
 }
 
 void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath)
@@ -1329,8 +1475,7 @@ void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath
     char dummybuff[256];
     File::ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
 
-    if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) &&
-        FAILED(D3DXCreateTextureFromFileA(m_Direct3DDevice, texturePath, m_TexturesArray)))
+    if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) && FAILED(DirectX::CreateDDSTextureFromFile(m_Direct3DDevice, (const wchar_t*)texturePath, m_TexturesArray)) )
         *m_TexturesArray = nullptr;
 }
 
@@ -1421,17 +1566,17 @@ void GfxInternal_Dx9::SetFilterMode(unsigned int mode)
 
     if (mode > 0 && mode <= 2)
     {
-        m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, 2);
-        m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, 2);
-        m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MINFILTER, 2);
-        m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MAGFILTER, 2);
+        m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+        m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+        m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+        m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
     }
     else
     {
-        m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, 1);
-        m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, 1);
-        m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MINFILTER, 1);
-        m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MAGFILTER, 1);
+        m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+        m_Direct3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+        m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+        m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
     }
 }
 
@@ -1492,9 +1637,9 @@ void GfxInternal_Dx9::SetWireFrameColor(const ColorRGB& clr)
     m_WireframeColor = COLOR_BGRA(clr);
 }
 
-void GfxInternal_Dx9::SetWorldMatrix(const D3DMATRIX* worldmat)
+void GfxInternal_Dx9::SetWorldMatrix(const DirectX::XMMATRIX* worldmat)
 {
-    m_Direct3DDevice->SetTransform(D3DTS_WORLD, worldmat);
+    m_Direct3DDevice->SetTransform(D3DTS_WORLD, (const D3DMATRIX*)worldmat);
     m_WorldMatrix = *worldmat;
 }
 
@@ -1641,24 +1786,21 @@ void GfxInternal_Dx9::SetRenderTarget(IDirect3DSurface9* rt)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void GfxInternal_Dx9::TransformStateView(D3DMATRIX* mat)
+void GfxInternal_Dx9::TransformStateView(DirectX::XMMATRIX* mat)
 {
     m_IdentityMatrix = *mat;
     m_ViewMatrix = *mat;
 
-    m_ViewMatrix._14 = 0.f;
-    m_ViewMatrix._24 = 0.f;
-    m_ViewMatrix._34 = 0.f;
+    m_ViewMatrix.r[0].m128_f32[3] = 0;
+    m_ViewMatrix.r[1].m128_f32[3] = 0;
+    m_ViewMatrix.r[2].m128_f32[3] = 0;
     
-    m_ViewMatrix._41 = 0.f;
-    m_ViewMatrix._42 = 0.f;
-    m_ViewMatrix._43 = 0.f;
-    m_ViewMatrix._44 = 1.f;
+    m_ViewMatrix.r[3] = { 0, 0, 0, 1 };
 
-    D3DXMATRIX vmat;
+    DirectX::XMMATRIX vmat;
     //_4687D0(mat, vmat);
 
-    m_Direct3DDevice->SetTransform(D3DTS_VIEW, &vmat);
+    m_Direct3DDevice->SetTransform(D3DTS_VIEW, (const D3DMATRIX*)&vmat);
 
     if (m_EnvironmentMapEnabled)
         SetTextureStage1TransformationMatrix();

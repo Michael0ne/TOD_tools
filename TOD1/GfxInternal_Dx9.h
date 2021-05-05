@@ -5,14 +5,12 @@
 #include "GfxInternal_Dx9_Texture.h"
 #include "GfxInternal_Dx9_VertexBuffer.h"
 #include "Light.h"
-#include <d3dx9math.h>
+#include <directxmath\include\DirectXMath.h>
 #include <vector>
 
 #define COLOR_BGRA(clr) (DWORD)( ((unsigned char)(clr.b * 255.f) << 8 | ((unsigned char)(clr.g * 255.f) << 8 |(((unsigned char)(clr.r * 255.f) << 8) | (unsigned char)(clr.a * 255.f) << 8))))
 
-
 //	NOTE: main wrapper for game graphics (D3D9).
-//	TODO: as a future possibility - opengl version?
 class GfxInternal_Dx9
 {
     friend class GfxInternal;
@@ -149,11 +147,11 @@ protected:
     float		m_NearPlane;
     float		m_FarPlane;
     GfxInternal_Dx9_VertexBuffer*	m_VertexBuffer[4];
-    D3DXMATRIX	m_ProjectionMatrix;
-    D3DXMATRIX	m_ViewMatrix;
-    D3DXMATRIX	m_IdentityMatrix;
-    D3DXMATRIX	m_WorldMatrix;
-    D3DXMATRIX	m_BoneMatrix;
+    DirectX::XMMATRIX   m_ProjectionMatrix;
+    DirectX::XMMATRIX   m_ViewMatrix;
+    DirectX::XMMATRIX   m_IdentityMatrix;
+    DirectX::XMMATRIX   m_WorldMatrix;
+    DirectX::XMMATRIX   m_BoneMatrix;
 
     int			field_56A4[4080];
 
@@ -260,16 +258,16 @@ public:
     void		GetProjectionParams(float* fov, float* aspectratio, float* nearplane, float* farplane) const;	//	@44DCB0
     void		SetRenderStateWireframe(bool);	//	@44DD00
     void		SetWireFrameColor(const ColorRGB& clr);	//	@44DE80
-    void		SetWorldMatrix(const D3DMATRIX*);	//	@44DEF0
+    void		SetWorldMatrix(const DirectX::XMMATRIX*);	//	@44DEF0
     void		SetEnvironmentMapOpacity(float);	//	@44DF90
     void		EnableAlphaChannel(bool);	//	@44E090
     void		SetBlendMode(unsigned int);	//	@44E160
     void		EnableAlphaTest(bool);	//	@44E1A0
     void		SetAlphaTestThreshold(float);	//	@44E1E0
     void		SetRenderTarget(IDirect3DSurface9*);	//	@44E220
-    void		TransformStateView(D3DMATRIX*);	//	@44E400
+    void		TransformStateView(DirectX::XMMATRIX*);	//	@44E400
     void		SetProjection(float fov, float aspectratio, float nearplane, float farplane);	//	@44E580
-    void		_44E680(const D3DMATRIX*, Vector2<float>*, unsigned int*);	//	@44E680
+    void		_44E680(const DirectX::XMMATRIX*, Vector2<float>*, unsigned int*);	//	@44E680
     unsigned int	GetAvailableTextureMemory() const;	//	@44E960	//	NOTE: unused completely.
     void		DumpScreenShot(class GfxInternal_Dx9_Surface& surf);	//	@44E970
     void		SetTextureAddressMode(int, int ind);	//	@44EB30
@@ -287,7 +285,7 @@ public:
     void		RenderText2(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, bool);	//	@44F310
     void		BeginShadow(class Texture*);	//	@44F5B0
     void		EndShadow();	//	@44F600
-    void		SetBoneMatrix(unsigned int, const D3DMATRIX&);	//	@44F640
+    void		SetBoneMatrix(unsigned int, const DirectX::XMMATRIX&);	//	@44F640
     void		SetParticleSize(unsigned int);	//	@44F790
     void		SetParticleOrient(const Quaternion<float>&);	//	@44F7B0
     void		SetParticleAlign(unsigned int);	//	@44F7E0
@@ -349,13 +347,13 @@ public:
     void		_45C790(float);	//	@45C790
     void		DrawLightBleeding(unsigned int);	//	@45C9A0
     void		RenderTexturedQuad2D_1(const GfxInternal_Dx9_Texture& tex, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB&);	//	@45D4A0
-    void		_45D5E0();	//	@45D5E0
+    void		RenderViewport();	//	@45D5E0
     void		RenderFullscreenTexture(const GfxInternal_Dx9_Texture& tex);	//	@45D940
     void		EnableLight(void*, unsigned int lightindex);	//	@45DBA0
     void		_45E5D0(LightStatus&);	//	@45E5D0	//	NOTE: toggle light from scene.
 
     static std::map<int, GfxInternal_Dx9_Texture*>	RenderedTexturesMap;	//	@A39F50
-    static const D3DMATRIX		IdentityMatrix;	//	@A0AD38
+    static const DirectX::XMMATRIX		IdentityMatrix;	//	@A0AD38
     static bool					ProcessingInput;	//	@A39F10
     static D3DCULL				CullModes[3];	//	@9B6674
     static HMENU				WindowMenu;	//	@A39F28
@@ -369,5 +367,5 @@ public:
 extern GfxInternal_Dx9* g_GfxInternal_Dx9;	//	@A39F14
 extern LPDIRECT3DDEVICE9 g_Direct3DDevice;	//	@A39F34
 
-ASSERT_CLASS_SIZE(GfxInternal_Dx9, 38816);
+ASSERT_CLASS_SIZE(GfxInternal_Dx9, 38832);//38816);
 #endif

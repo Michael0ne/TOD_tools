@@ -37,7 +37,6 @@
 #include "time.h"			//	For time stuff.
 
 #include <WinUser.h>		//	For Windows-specific objects.
-//	TODO: replace all obsole d3dx9 stuff with DirectXMath header.
 #include <d3d9.h>			//	For all directX related stuff.
 #include <list>				//	For lists, obviously.
 #include <dinput.h>			//	For DirectInput stuff.
