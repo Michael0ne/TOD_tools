@@ -3,8 +3,7 @@
 #include "TruthType.h"
 #include "VectorType.h"
 #include "NumberType.h"
-
-#include <d3dx9math.h>
+#include <directxmath/include/DirectXMath.h>
 
 QuaternionType::QuaternionType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : BaseType(typeId, typeName, typeSize)
 {
@@ -389,13 +388,12 @@ void QuaternionType::stub18(int operationId, void* params) const
 	break;
 	case 8:
 	{
-		Orientation* firstvec = (Orientation*)((float*)params + tNUMBER->m_Size + 2 * tQUATERNION->m_Size);
-		Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+		DirectX::FXMVECTOR* firstvec = (DirectX::FXMVECTOR*)((float*)params + tNUMBER->m_Size + 2 * tQUATERNION->m_Size);
+		DirectX::FXMVECTOR* secondvec = (DirectX::FXMVECTOR*)((float*)params + tQUATERNION->m_Size);
 		float t = *((float*)params + tQUATERNION->m_Size * 2);
-		D3DXQUATERNION outquat;
+		DirectX::XMVECTOR outquat = DirectX::XMQuaternionSlerp(*firstvec, *secondvec, t);
 
-		D3DXQuaternionSlerp(&outquat, (D3DXQUATERNION*)firstvec, (D3DXQUATERNION*)secondvec, t);
-		*(Orientation*)params = { outquat.w, outquat.x, outquat.y, outquat.z };
+		*(Orientation*)params = { outquat.m128_f32[0], outquat.m128_f32[1], outquat.m128_f32[2], outquat.m128_f32[3] };
 	}
 	break;
 	case 9:
@@ -428,29 +426,15 @@ void QuaternionType::stub18(int operationId, void* params) const
 		Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
 		Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size + tVECTOR->m_Size);
 		Orientation* thirdvec = (Orientation*)((float*)params + (tVECTOR->m_Size * 2) + tQUATERNION->m_Size);
-		D3DXMATRIX mat;
+		DirectX::XMMATRIX mat =
+		{
+			{ firstvec->w, firstvec->x, firstvec->y, 0 },
+			{ secondvec->w, secondvec->x, secondvec->y, 0 },
+			{ thirdvec->w, thirdvec->x, thirdvec->y, 0 },
+			{ 0, 0, 0, 1 }
+		};
 
-		mat._11 = firstvec->w;
-		mat._12 = firstvec->x;
-		mat._13 = firstvec->y;
-		mat._14 = 0.f;
-
-		mat._21 = secondvec->w;
-		mat._22 = secondvec->x;
-		mat._23 = secondvec->y;
-		mat._24 = 0.f;
-
-		mat._31 = thirdvec->w;
-		mat._32 = thirdvec->x;
-		mat._33 = thirdvec->y;
-		mat._34 = 0.f;
-
-		mat._41 = 0.f;
-		mat._42 = 0.f;
-		mat._43 = 0.f;
-		mat._44 = 1.f;
-
-		D3DXQuaternionRotationMatrix((D3DXQUATERNION*)params, &mat);
+		*(DirectX::XMVECTOR*)&params = DirectX::XMQuaternionRotationMatrix(mat);
 	}
 	break;
 	case 12:

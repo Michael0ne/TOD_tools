@@ -28,7 +28,7 @@ protected:
 public:
 	Camera();	//	@87D8F0
 
-	void			GetMatrix(D3DXMATRIX& outmat) const;	//	@87BC60
+	void			GetMatrix(DirectX::XMMATRIX& outmat) const;	//	@87BC60
 
 	float           GetOffset() const;	//	@91CE60
 	void            SetOffset(const float offset);	//	@4843E0

@@ -8,10 +8,10 @@ Vector4f Camera::ActiveCameraPosition;
 
 void Camera::StoreActiveCameraPosition()
 {
-	D3DXMATRIX cameraMatrix;
+	DirectX::XMMATRIX cameraMatrix;
 	Scene::SceneInstance->m_ActiveCamera->GetMatrix(cameraMatrix);
 
-	ActiveCameraPosition = *(Vector4f*)&cameraMatrix._41;
+	ActiveCameraPosition = *(Vector4f*)&cameraMatrix.r[3];
 	ActiveCameraPosition.a = (float)tan((0.017453292 * Scene::SceneInstance->m_ActiveCamera->m_Fov) * 0.5f);
 }
 
@@ -27,27 +27,42 @@ Camera::Camera() : Node(NODE_MASK_POSITION)
 	field_4C = BuiltinType::ZeroVector;
 }
 
-void Camera::GetMatrix(D3DXMATRIX& outmat) const
+void Camera::GetMatrix(DirectX::XMMATRIX& outmat) const
 {
-	D3DXMATRIX nodeMatrix;
+	DirectX::XMMATRIX nodeMatrix;
 	GetWorldMatrix(nodeMatrix);
 
-	outmat._11 = (((nodeMatrix._41 * 0.f) + (nodeMatrix._31 * 0.f)) + (nodeMatrix._21 * 0.f)) + (nodeMatrix._11 * 0.f);
-	outmat._12 = (((nodeMatrix._42 * 0.f) + (nodeMatrix._32 * 0.f)) + (nodeMatrix._22 * 0.f)) + (nodeMatrix._12 * 0.f);
-	outmat._13 = (((nodeMatrix._23 * 0.f) + (nodeMatrix._43 * 0.f)) + (nodeMatrix._13 * 1.f)) + (nodeMatrix._33 * 0.f);
-	outmat._14 = (((nodeMatrix._24 * 0.f) + (nodeMatrix._14 * 1.f)) + (nodeMatrix._44 * 0.f)) + (nodeMatrix._34 * 0.f);
-	outmat._21 = (((0.f * nodeMatrix._11) + (0.f * nodeMatrix._41)) + (0.f * nodeMatrix._31)) + (1.f * nodeMatrix._21);
-	outmat._22 = (((0.f * nodeMatrix._32) + (1.f * nodeMatrix._22)) + (0.f * nodeMatrix._42)) + (0.f * nodeMatrix._12);
-	outmat._23 = (((0.f * nodeMatrix._33) + (1.f * nodeMatrix._23)) + (0.f * nodeMatrix._43)) + (0.f * nodeMatrix._13);
-	outmat._24 = (((0.f * nodeMatrix._34) + (1.f * nodeMatrix._24)) + (0.f * nodeMatrix._44)) + (0.f * nodeMatrix._14);
-	outmat._31 = (((0.f * nodeMatrix._11) + (0.f * nodeMatrix._41)) + (1.f * nodeMatrix._31)) + (0.f * nodeMatrix._21);
-	outmat._32 = (((0.f * nodeMatrix._22) + (1.f * nodeMatrix._32)) + (0.f * nodeMatrix._42)) + (0.f * nodeMatrix._12);
-	outmat._33 = (((0.f * nodeMatrix._23) + (1.f * nodeMatrix._33)) + (0.f * nodeMatrix._43)) + (0.f * nodeMatrix._13);
-	outmat._34 = (((0.f * nodeMatrix._24) + (1.f * nodeMatrix._34)) + (0.f * nodeMatrix._44)) + (0.f * nodeMatrix._14);
-	outmat._41 = (((0.f * nodeMatrix._11) + (1.f * nodeMatrix._41)) + ((0.f - m_Offset) * nodeMatrix._31)) + (0.f * nodeMatrix._21);
-	outmat._42 = (((0.f * nodeMatrix._22) + ((0.f - m_Offset) * nodeMatrix._32)) + (1.f * nodeMatrix._42)) + (0.f * nodeMatrix._12);
-	outmat._43 = (((0.f * nodeMatrix._23) + ((0.f - m_Offset) * nodeMatrix._33)) + (1.f * nodeMatrix._43)) + (0.f * nodeMatrix._13);
-	outmat._44 = (((0.f * nodeMatrix._24) + ((0.f - m_Offset) * nodeMatrix._34)) + (1.f * nodeMatrix._44)) + (0.f * nodeMatrix._14);
+	outmat.r[0] =
+	{
+		(((nodeMatrix.r[3].m128_f32[0] * 0) + (nodeMatrix.r[2].m128_f32[0] * 0)) + (nodeMatrix.r[1].m128_f32[0] * 0)) + (nodeMatrix.r[0].m128_f32[0] * 0),
+		(((nodeMatrix.r[3].m128_f32[1] * 0) + (nodeMatrix.r[2].m128_f32[1] * 0)) + (nodeMatrix.r[1].m128_f32[1] * 0)) + (nodeMatrix.r[0].m128_f32[1] * 0),
+		(((nodeMatrix.r[1].m128_f32[2] * 0) + (nodeMatrix.r[3].m128_f32[2] * 0)) + (nodeMatrix.r[0].m128_f32[2] * 1)) + (nodeMatrix.r[2].m128_f32[2] * 0),
+		(((nodeMatrix.r[1].m128_f32[3] * 0) + (nodeMatrix.r[0].m128_f32[3] * 1)) + (nodeMatrix.r[3].m128_f32[3] * 0)) + (nodeMatrix.r[2].m128_f32[3] * 0)
+	};
+
+	outmat.r[1] =
+	{
+		(((0 * nodeMatrix.r[0].m128_f32[0]) + (0 * nodeMatrix.r[3].m128_f32[0])) + (0 * nodeMatrix.r[2].m128_f32[0])) + (1 * nodeMatrix.r[1].m128_f32[0]),
+		(((0 * nodeMatrix.r[2].m128_f32[1]) + (1 * nodeMatrix.r[1].m128_f32[1])) + (0 * nodeMatrix.r[3].m128_f32[1])) + (0 * nodeMatrix.r[0].m128_f32[1]),
+		(((0 * nodeMatrix.r[2].m128_f32[2]) + (1 * nodeMatrix.r[1].m128_f32[2])) + (0 * nodeMatrix.r[3].m128_f32[2])) + (0 * nodeMatrix.r[0].m128_f32[2]),
+		(((0 * nodeMatrix.r[2].m128_f32[3]) + (1 * nodeMatrix.r[1].m128_f32[3])) + (0 * nodeMatrix.r[3].m128_f32[3])) + (0 * nodeMatrix.r[0].m128_f32[3])
+	};
+	
+	outmat.r[2] =
+	{
+		(((0 * nodeMatrix.r[0].m128_f32[0]) + (0 * nodeMatrix.r[3].m128_f32[0])) + (1 * nodeMatrix.r[2].m128_f32[0])) + (0 * nodeMatrix.r[1].m128_f32[0]),
+		(((0 * nodeMatrix.r[1].m128_f32[1]) + (1 * nodeMatrix.r[2].m128_f32[1])) + (0 * nodeMatrix.r[3].m128_f32[1])) + (0 * nodeMatrix.r[0].m128_f32[1]),
+		(((0 * nodeMatrix.r[1].m128_f32[2]) + (1 * nodeMatrix.r[2].m128_f32[2])) + (0 * nodeMatrix.r[3].m128_f32[2])) + (0 * nodeMatrix.r[0].m128_f32[2]),
+		(((0 * nodeMatrix.r[1].m128_f32[3]) + (1 * nodeMatrix.r[2].m128_f32[3])) + (0 * nodeMatrix.r[3].m128_f32[3])) + (0 * nodeMatrix.r[0].m128_f32[3])
+	};
+	
+	outmat.r[3] =
+	{
+		(((0 * nodeMatrix.r[0].m128_f32[0]) + (1 * nodeMatrix.r[3].m128_f32[0])) + ((0 - m_Offset) * nodeMatrix.r[2].m128_f32[0])) + (0 * nodeMatrix.r[1].m128_f32[0]),
+		(((0 * nodeMatrix.r[1].m128_f32[1]) + ((0 - m_Offset) * nodeMatrix.r[2].m128_f32[1])) + (1 * nodeMatrix.r[3].m128_f32[1])) + (0 * nodeMatrix.r[0].m128_f32[1]),
+		(((0 * nodeMatrix.r[1].m128_f32[2]) + ((0 - m_Offset) * nodeMatrix.r[2].m128_f32[2])) + (1 * nodeMatrix.r[3].m128_f32[2])) + (0 * nodeMatrix.r[0].m128_f32[2]),
+		(((0 * nodeMatrix.r[1].m128_f32[3]) + ((0 - m_Offset) * nodeMatrix.r[2].m128_f32[3])) + (1 * nodeMatrix.r[3].m128_f32[3])) + (0 * nodeMatrix.r[0].m128_f32[3])
+	};
 }
 
 float Camera::GetOffset() const
@@ -106,10 +121,10 @@ void Camera::SetDynlightCullRange(const float dynlightcullrange)
 
 void Camera::GetCameraPos(Vector3f* pos)
 {
-	D3DXMATRIX mat;
+	DirectX::XMMATRIX mat;
 	GetMatrix(mat);
 
-	*pos = { mat._41, mat._42, mat._43 };
+	*pos = { mat.r[3].m128_f32[0], mat.r[3].m128_f32[1], mat.r[3].m128_f32[2] };
 }
 
 void Camera::Project(float* params)

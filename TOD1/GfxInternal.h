@@ -9,10 +9,10 @@ public:
     class RenderBuffer92*	m_RenderBuffer;
     Buffer276*	field_10;
     char		field_14;
-    D3DXMATRIX	m_ViewMatrix;
-    D3DXMATRIX	m_MatrixUnknown_1;
+    DirectX::XMMATRIX	m_ViewMatrix;
+    DirectX::XMMATRIX	m_MatrixUnknown_1;
     int			field_98;
-    D3DXMATRIX	m_MatrixUnknown_2;
+    DirectX::XMMATRIX	m_MatrixUnknown_2;
     char		field_DC;
     Vector4f	m_ProjectionMatrixParams;	//	NOTE: fov, xy_ratio, near_clip, far_clip.
     Vector2f	m_ViewportDimensions_1;
@@ -140,6 +140,7 @@ public:
 class GfxInternal
 {
     friend class TextureAsset;
+    friend class GfxInternal_Dx9;
 protected:
     bool							m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
     std::vector<GfxInternal_Dx9_Texture*>	m_TexturesList;
@@ -155,7 +156,7 @@ protected:
     char							field_35;
     float							m_Time_1;
     char							(* m_SceneCallback)(int);
-    __int64							m_RenderEndTime;
+    __int64							m_FrameEndTime;
 
 public:
     GfxInternal(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
@@ -191,6 +192,7 @@ public:
     static bool                     WideScreen;	//	@A39F12
     static bool                     FSAA;
     static float                    RatioXY;	//	@A119F4
+    static float                    _A3A064;    //  @A3A064
     
     struct Renderer_Buffer2
     {

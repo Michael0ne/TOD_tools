@@ -2,7 +2,7 @@
 #include "Fragment.h"
 #include "Entity.h"
 #include "AuxQuadTree.h"
-#include <d3dx9math.h>
+#include <directxmath\include\DirectXMath.h>
 
 #define NODE_MASK_EMPTY		0
 #define NODE_MASK_POSITION	1
@@ -14,7 +14,7 @@ class INodeMatrix
 public:
 	virtual Vector4f*	GetPosition(Vector4f*) = 0;
 	virtual void		GetOrientation(Orientation*) = 0;
-	virtual void		CopyPositionToMatrix(D3DMATRIX*) = 0;
+	virtual void		CopyPositionToMatrix(DirectX::XMMATRIX*) = 0;
 	virtual Orientation* GetWorldRotation(Orientation*) = 0;
 };
 
@@ -23,7 +23,7 @@ class NodePosition : INodeMatrix
 public:
 	virtual Vector4f*	GetPosition(Vector4f*) override;	//	@484CD0
 	virtual void		GetOrientation(Orientation*) override;	//	@484CF0
-	virtual void		CopyPositionToMatrix(D3DMATRIX*) override;	//	@484D40
+	virtual void		CopyPositionToMatrix(DirectX::XMMATRIX*) override;	//	@484D40
 	virtual Orientation* GetWorldRotation(Orientation*) override;	//	@484D80
 };
 
@@ -42,10 +42,10 @@ public:
 	NodeMatrix(class Node* owner);	//	@892300
 	~NodeMatrix();
 
-	void				GetMatrixForNode(D3DMATRIX& outMat);	//	@892940
+	void				GetMatrixForNode(DirectX::XMMATRIX& outMat);	//	@892940
 	void				ApplyMatrixFromQuadTree();	//	@8923A0
-	void				GetMatrix(D3DMATRIX& outMat) const;	//	@88B910
-	void				SetTransformationFromMatrix(const D3DMATRIX* mat);	//	@892280
+	void				GetMatrix(DirectX::XMMATRIX& outMat) const;	//	@88B910
+	void				SetTransformationFromMatrix(const DirectX::XMMATRIX& mat);	//	@892280
 };
 
 ASSERT_CLASS_SIZE(NodeMatrix, 100);
@@ -145,7 +145,7 @@ public:
 	void				SetParam(const int index, const void* param, BaseType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
 	void				SetOrient(const Orientation& orient);	//	@88DB20
 	Vector4f*			GetPos(Vector4f& outVec);	//	@483620
-	void				GetWorldMatrix(D3DXMATRIX& outMat) const;	//	@4842C0
+	void				GetWorldMatrix(DirectX::XMMATRIX& outMat) const;	//	@4842C0
 	void				SetParent(const Node* parent);	//	@88E9A0
 	void				DestroyAddon();	//	@88EB00	//	NOTE: actually unused.
 	void				SetName(const char*);	//	@88D610
