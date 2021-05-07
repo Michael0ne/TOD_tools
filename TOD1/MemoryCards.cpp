@@ -4,6 +4,7 @@
 #include "LogDump.h"
 #include "Scene.h"
 #include "IntegerType.h"
+#include "StringType.h"
 
 EntityType* tMemoryCards = nullptr;
 
@@ -58,9 +59,32 @@ void MemoryCards::Register()
 {
 	tMemoryCards = new EntityType("MemoryCards");
 	tMemoryCards->InheritFrom(tNode);
-	tMemoryCards->m_Creator = (void* (*)(AllocatorIndex))Create;
+	tMemoryCards->SetCreator((EntityType::CREATOR)Create);
 
-	//	TODO: register a bunch of stuff here.
+	tMemoryCards->RegisterProperty(tSTRING, "gamename", &GetGamename, 0, 0, 0, &SetGamename, 0, 0, 0, "control=string", 0, 0, -1);
+	tMemoryCards->RegisterProperty(tSTRING, "ps2sleslicense", &GetPs2SlesLicense, 0, 0, 0, &SetPs2SlesLicense, 0, 0, 0, "control=string", 0, 0, -1);
+	tMemoryCards->RegisterProperty(tSTRING, "ps2sluslicense", &GetPs2SlusLicense, 0, 0, 0, &SetPs2SlusLicense, 0, 0, 0, "control=string", 0, 0, -1);
+	tMemoryCards->RegisterProperty(tINTEGER, "savefilesize", &GetSaveFileSize, 0, 0, 0, &SetSaveFileSize, 0, 0, 0, nullptr, 0, 0, 10);
+	
+	tMemoryCards->RegisterScript("ispresent(integer):truth", &IsPresent, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("createsavepoint(integer,integer,entity,integer,entity)", &CreateSavePoint, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("restoresavepoint(integer,integer,entity)", &RestoreSavePoint, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("loadsavepointsummary(integer,integer,entity)", &LoadSavePointSummary, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("deletesavepoint(integer,integer):truth", &DeleteSavePoint, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("savepointoperationerror:integer", &SavePointOperationError, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("savepointexists(integer,integer):truth", &SavePointExists, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("preparecardforsavegames(integer):truth", &PrepareCardForSavegames, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("unpreparecardforsavegames(integer):truth", &UnPrepareCardForSavegames, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("iscardprepared(integer):truth", &IsCardPrepared, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("isformatted(integer):truth", &IsFormatted, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("formatcard(integer):truth", &FormatCard, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("unformatcard(integer):truth", &UnformatCard, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("getfreespace(integer):integer", &GetCardFreeSpace, 0, 0, 0, nullptr, nullptr);
+	tMemoryCards->RegisterScript("getsavepointsize(integer,integer):integer", &GetSavePointSize, 0, 0, 0, nullptr, nullptr);
+	//	TODO: 'GetLastModifiedTime' methods here.
+	tMemoryCards->RegisterScript("hascardchanged(integer):truth", &HasCardChanged, 0, 0, 0, nullptr, nullptr);
+
+	tMemoryCards->_86E9B0();
 }
 
 MemoryCards* MemoryCards::Create(AllocatorIndex allocInd)
@@ -135,7 +159,7 @@ void MemoryCards::HasCardChanged(int* args) const
 	*args = NULL;
 }
 
-unsigned int MemoryCards::GetCardFreeSpace(unsigned int memcardind) const
+unsigned int MemoryCards::GetCardFreeSpace_Impl(unsigned int memcardind) const
 {
 	if (MemoryCardInfo[memcardind]->IsFormatted())
 		return File::GetStorageFreeSpace().LowPart;
@@ -145,9 +169,19 @@ unsigned int MemoryCards::GetCardFreeSpace(unsigned int memcardind) const
 	return NULL;
 }
 
+void MemoryCards::GetCardFreeSpace(int* args) const
+{
+	*args = GetCardFreeSpace_Impl(args[1]);
+}
+
 void MemoryCards::IsFormatted(int* args) const
 {
 	*args = MemoryCardInfo[args[1]]->IsFormatted();
+}
+
+void MemoryCards::IsCardPrepared(int* args) const
+{
+	*args = IsPrepared(args[1]);
 }
 
 void MemoryCards::IsPresent(int* args) const
@@ -171,6 +205,16 @@ bool MemoryCards::IsPrepared(unsigned int memcardind) const
 		return false;
 	else
 		return true;
+}
+
+void MemoryCards::FormatCard(int* args) const
+{
+	*args = MemoryCardInfo[args[1]]->FormatCard();
+}
+
+void MemoryCards::UnformatCard(int* args) const
+{
+	*args = MemoryCardInfo[args[1]]->UnformatCard();
 }
 
 void MemoryCards::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, Node* summarynode) const

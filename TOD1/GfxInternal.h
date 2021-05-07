@@ -1,24 +1,25 @@
 #pragma once
 #include "GfxInternal_Dx9.h"
 #include "AssetManager.h"
+#include "Buffer92.h"
 
 class Buffer276
 {
 public:
-    Vector3f	m_BufferSize;
-    class RenderBuffer92*	m_RenderBuffer;
-    Buffer276*	field_10;
-    char		field_14;
-    DirectX::XMMATRIX	m_ViewMatrix;
-    DirectX::XMMATRIX	m_MatrixUnknown_1;
-    int			field_98;
-    DirectX::XMMATRIX	m_MatrixUnknown_2;
-    char		field_DC;
-    Vector4f	m_ProjectionMatrixParams;	//	NOTE: fov, xy_ratio, near_clip, far_clip.
-    Vector2f	m_ViewportDimensions_1;
-    Vector2f	m_ViewportDimensions_2;
-    int			m_ClearFlags;
-    ColorRGB	m_ClearColor;
+    Vector3f            m_BufferSize;
+    RenderBuffer92     *m_RenderBuffer;
+    Buffer276          *field_10;
+    char                field_14;
+    DirectX::XMMATRIX   m_ViewMatrix;
+    DirectX::XMMATRIX   m_MatrixUnknown_1;
+    int                 field_98;
+    DirectX::XMMATRIX   m_MatrixUnknown_2;
+    char                field_DC;
+    Vector4f            m_ProjectionMatrixParams;	//	NOTE: fov, xy_ratio, near_clip, far_clip.
+    ScreenResolution    m_ViewportDimensions_1;
+    ScreenResolution    m_ViewportDimensions_2;
+    int                 m_ClearFlags;
+    ColorRGB            m_ClearColor;
 
 public:
     Buffer276() {};
@@ -32,6 +33,7 @@ public:
     {
         if (ptr)
             MemoryManager::ReleaseMemory(ptr, 0);
+        ptr = nullptr;
     }
 };
 
@@ -142,21 +144,21 @@ class GfxInternal
     friend class TextureAsset;
     friend class GfxInternal_Dx9;
 protected:
-    bool							m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
+    bool                            m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
     std::vector<GfxInternal_Dx9_Texture*>	m_TexturesList;
-    Scene_Buffer68*					m_Buffer68;
-    Scene_Buffer108*				m_Buffer108;
-    unsigned int					m_RenderBufferTotal;
-    int								field_20;
-    Buffer276*						m_RenderBufferArray;
-    float							m_TimeDelta;
-    int								m_TimeMilliseconds;
-    int								m_FramesRendered;
-    char							field_34;
-    char							field_35;
-    float							m_Time_1;
-    char							(* m_SceneCallback)(int);
-    __int64							m_FrameEndTime;
+    Scene_Buffer68                 *m_Buffer68;
+    Scene_Buffer108                *m_Buffer108;
+    unsigned int                    m_RenderBufferTotal;
+    int                             field_20;
+    Buffer276                      *m_RenderBufferArray;
+    float                           m_TimeDelta;
+    int                             m_TimeMilliseconds;
+    int                             m_FramesRendered;
+    char                            field_34;
+    char                            field_35;
+    float                           m_Time_1;
+    char                            (* m_SceneCallback)(int);
+    __int64                         m_FrameEndTime;
 
 public:
     GfxInternal(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens);	//	@421320
@@ -193,6 +195,7 @@ public:
     static bool                     FSAA;
     static float                    RatioXY;	//	@A119F4
     static float                    _A3A064;    //  @A3A064
+    static DirectX::XMMATRIX        _A3A268;    //  @A3A268
     
     struct Renderer_Buffer2
     {

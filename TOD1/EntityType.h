@@ -139,7 +139,7 @@ public:
             tmp.field_24 = a10;
             tmp.m_Flags.m_FlagsBits.GlobalIndex = ind;
 
-            if (propertyind - field_6C >= m_PropertiesList.size())
+            if (propertyind - field_6C >= (int)m_PropertiesList.size())
                 m_PropertiesList.resize(propertyind - field_6C + 1);
             m_PropertiesList.insert(m_PropertiesList.begin() + (propertyind - field_6C), tmp);
         }

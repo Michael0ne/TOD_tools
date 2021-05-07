@@ -566,7 +566,7 @@ void GfxInternal_Dx9::CreateSurfaces()
     //	NOTE: go through all supported formats and try to create first available depth surface.
     for (const D3DFORMAT* format = SupportedFormats; format; format++)
     {
-        LogDump::LogA("Creating depth surface of size (%i,%i)\n", m_ViewportTexturesArray[0]->m_SurfaceResolution.x, m_ViewportTexturesArray[0]->m_SurfaceResolution.y);
+        LogDump::LogA("Creating depth surface of size (%i,%i)\n", m_ViewportTexturesArray[0]->m_SurfaceSize.x, m_ViewportTexturesArray[0]->m_SurfaceSize.y);
 
         if (m_DepthStencilSurface)
         {
@@ -575,8 +575,8 @@ void GfxInternal_Dx9::CreateSurfaces()
         }
 
         if (SUCCEEDED(m_Direct3DDevice->CreateDepthStencilSurface(
-            m_ViewportTexturesArray[0]->m_SurfaceResolution.x,
-            m_ViewportTexturesArray[0]->m_SurfaceResolution.y,
+            m_ViewportTexturesArray[0]->m_SurfaceSize.x,
+            m_ViewportTexturesArray[0]->m_SurfaceSize.y,
             *format,
             D3DMULTISAMPLE_NONE,
             0,
@@ -1228,9 +1228,9 @@ void GfxInternal_Dx9::RenderTexturedQuad2D_2(const GfxInternal_Dx9_Texture& tex,
         bottomleft,
         bottomright,
         {0, 0},
-        {0, ((float)tex.m_Resolution.y / (float)tex.m_SurfaceResolution.y)},
-        {((float)tex.m_Resolution.x / (float)tex.m_SurfaceResolution.y), ((float)tex.m_Resolution.x / (float)tex.m_SurfaceResolution.y)},
-        {((float)tex.m_Resolution.x / (float)tex.m_SurfaceResolution.y), 0},
+        {0, ((float)tex.m_Resolution.y / (float)tex.m_SurfaceSize.y)},
+        {((float)tex.m_Resolution.x / (float)tex.m_SurfaceSize.y), ((float)tex.m_Resolution.x / (float)tex.m_SurfaceSize.y)},
+        {((float)tex.m_Resolution.x / (float)tex.m_SurfaceSize.y), 0},
         clr,
         clr,
         clr,
@@ -1263,9 +1263,9 @@ void GfxInternal_Dx9::_45C790(float a1)
     RenderTexturedQuad2D_2(
         m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex],
         { 0, 0 },
-        { 0, m_ViewportResolution.y },
-        { m_ViewportResolution.x, m_ViewportResolution.y },
-        { m_ViewportResolution.x, 0 },
+        { 0, (float)m_ViewportResolution.y },
+        { (float)m_ViewportResolution.x, (float)m_ViewportResolution.y },
+        { (float)m_ViewportResolution.x, 0 },
         { 1, 1, 1, powf(a1,g_GfxInternal->m_TimeDelta * 33.333336f) }
     );
 
@@ -1379,7 +1379,7 @@ void GfxInternal_Dx9::RenderViewport()
                 m_Direct3DDevice->SetSamplerState(1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
             }
 
-            bottom = { m_ViewportResolution.x, m_ViewportResolution.y };
+            bottom = { (float)m_ViewportResolution.x, (float)m_ViewportResolution.y };
             top = { 0, 0 };
         }
         else

@@ -995,10 +995,11 @@ void GlobalScript::CalculateSize()
 
 	if (m_PropertiesList.size() > 0)
 	{
-		for (unsigned int i = m_PropertiesList.size(), j = 0; i > 0; --i, ++j)
+		unsigned int j = 0;
+		for (unsigned int i = m_PropertiesList.size(); i > 0; --i)
 		{
 			m_PropertiesList[j].m_Offset = m_ScriptSize;
-			m_ScriptSize += m_PropertiesList[j + 1].m_Info->m_PropertyType->m_Size;
+			m_ScriptSize += m_PropertiesList[j++].m_Info->m_PropertyType->m_Size;
 		}
 	}
 
@@ -1100,6 +1101,34 @@ int GlobalScript::GetScriptIdByName(const char* const name)
 		if ((ScriptsList[i]->field_5C & 1) != 0 && strcmp(ScriptsList[i]->m_Name.m_szString, name) == 0)
 			return i;
 
+	return -1;
+}
+
+unsigned int GlobalScript::GetScriptIdByFullName(const char* const name)
+{
+	//	TODO: there's a trouble when looking for an Entity-specific properties. Take that into account?
+	const char* ddpos = strchr(name, ':');
+	char scriptname[256] = {};
+	size_t scriptnamelen = 0;
+	if (ddpos)
+	{
+		strncpy(scriptname, name, ddpos - name);
+		scriptname[ddpos - name] = NULL;
+		scriptnamelen = ddpos - name;
+
+		for (auto it = GlobalPropertiesList.cbegin(); it != GlobalPropertiesList.cend(); it++)
+			if (strncmp(it->m_PropertyName, scriptname, scriptnamelen) == NULL)
+				return it->m_PropertyId;
+	}
+	else
+	{
+		scriptnamelen = strlen(name);
+		for (auto it = GlobalPropertiesList.cbegin(); it != GlobalPropertiesList.cend(); it++)
+			if (strncmp(it->m_PropertyName, name, scriptnamelen) == NULL)
+				return it->m_PropertyId;
+	}
+
+	debug("GetScriptIdByFullName(\"%s\") FAILED!\n", name);
 	return -1;
 }
 

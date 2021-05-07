@@ -10,16 +10,16 @@ void GfxInternal_Dx9_Texture::CreateDirect3DTexture(const ScreenResolution& res,
 {
 	if (levels == 4 || levels == 3)
 	{
-		m_SurfaceResolution = res;
+		m_SurfaceSize = res;
 	}
 	else
 	{
-		m_SurfaceResolution = { 1, 1 };
+		m_SurfaceSize = { 1, 1 };
 
 		if (res.x > 1)
-			for (; m_SurfaceResolution.x < res.x; m_SurfaceResolution.x *= 2);
+			for (; m_SurfaceSize.x < res.x; m_SurfaceSize.x *= 2);
 		if (res.y > 1)
-			for (; m_SurfaceResolution.y < res.y; m_SurfaceResolution.y *= 2);
+			for (; m_SurfaceSize.y < res.y; m_SurfaceSize.y *= 2);
 	}
 
 	m_MipMapLevels = levels;
@@ -27,8 +27,8 @@ void GfxInternal_Dx9_Texture::CreateDirect3DTexture(const ScreenResolution& res,
 	m_Texture = nullptr;
 
 	HRESULT hr = g_GfxInternal_Dx9->m_Direct3DDevice->CreateTexture(
-		m_SurfaceResolution.x,
-		m_SurfaceResolution.y,
+		m_SurfaceSize.x,
+		m_SurfaceSize.y,
 		levels != 1,
 		levels == 3 ? 1 : 0,
 		SupportedTextureFormats[formatindex],
@@ -47,7 +47,7 @@ void GfxInternal_Dx9_Texture::CreateDirect3DTexture(const ScreenResolution& res,
 	D3DSURFACE_DESC surfdesc;
 	m_Texture->GetLevelDesc(0, &surfdesc);
 
-	m_SurfaceResolution = { surfdesc.Width, surfdesc.Height };
+	m_SurfaceSize = { surfdesc.Width, surfdesc.Height };
 	
 	switch (surfdesc.Format)
 	{
@@ -78,7 +78,7 @@ GfxInternal_Dx9_Texture::GfxInternal_Dx9_Texture(const ScreenResolution& resolut
 {
 	MESSAGE_CLASS_CREATED(GfxInternal_Dx9_Texture);
 
-	m_TextureInfo = nullptr;
+	m_Tex = nullptr;
 	m_Texture = nullptr;
 	m_TextureSurfaceBits = nullptr;
 	m_Levels = 0xFDFE;
@@ -100,8 +100,8 @@ GfxInternal_Dx9_Texture::~GfxInternal_Dx9_Texture()
 
 unsigned int GfxInternal_Dx9_Texture::GetSizeForLevel(const unsigned char lvl) const
 {
-	unsigned int widthn = m_SurfaceResolution.x >> lvl;
-	unsigned int heightn = m_SurfaceResolution.y >> lvl;
+	unsigned int widthn = m_SurfaceSize.x >> lvl;
+	unsigned int heightn = m_SurfaceSize.y >> lvl;
 
 	if (widthn < 1) widthn = 1;
 	if (heightn < 1) heightn = 1;
@@ -117,6 +117,7 @@ void GfxInternal_Dx9_Texture::SetTextureForStage(const unsigned int stage) const
 	g_GfxInternal_Dx9->m_Direct3DDevice->SetTexture(stage, (LPDIRECT3DTEXTURE9)ALIGN_4BYTES(m_Texture));
 }
 
+//	NOTE: disabling it doesn't seem to affect anything.
 void GfxInternal_Dx9_Texture::DrawAllTextures()
 {
 	unsigned int memoryusage = 0;

@@ -254,7 +254,7 @@ public:
     void		SetMipMapBias(float);	//	@44DB20
     void		SetMipMapping(bool);	//	@44DB50
     void		SetFilterMode(unsigned int);	//	@44DBE0
-    void		SetViewport(Vector2<float>*, Vector2<float>*) const {};	//	@44DCA0	//	NOTE: unused, but referenced.
+    void		SetViewport(const ScreenResolution&, const ScreenResolution&) const {};	//	@44DCA0	//	NOTE: unused, but referenced.
     void		GetProjectionParams(float* fov, float* aspectratio, float* nearplane, float* farplane) const;	//	@44DCB0
     void		SetRenderStateWireframe(bool);	//	@44DD00
     void		SetWireFrameColor(const ColorRGB& clr);	//	@44DE80
