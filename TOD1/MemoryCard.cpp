@@ -92,6 +92,26 @@ bool MemoryCard::FormatCard()
 	return true;
 }
 
+bool MemoryCard::UnformatCard()
+{
+	if (Script::SavePlatformPS2)
+	{
+		if (!m_SaveFolderPath.m_nLength)
+		{
+			LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.\n");
+			return false;
+		}
+
+		if (!m_Formatted || !File::IsDirectoryValid(m_SaveFolderPath.m_szString))
+			return false;
+
+		Utils::DeleteAllFilesInFolder(m_SaveFolderPath.m_szString);
+		File::CreateNewDirectory(m_SaveFolderPath.m_szString);
+	}
+
+	return true;
+}
+
 bool MemoryCard::IsSaveDirPresent(const char* const directory) const
 {
 	if (IsFormatted())

@@ -42,6 +42,7 @@ public:
 
 	bool			IsFormatted() const;	//	@43B0B0
 	bool			FormatCard();	//	@928840
+	bool			UnformatCard();	//	@928730
 	bool			IsSaveDirPresent(const char* const directory) const;	//	@928E40
 	bool			IsSaveFilePresent(const char* const directory, const char* const slot) const;	//	@928DC0
 	unsigned int	GetSavePointFileSize(const char* const directory, const char* const slotfilename) const;	//	@928F00

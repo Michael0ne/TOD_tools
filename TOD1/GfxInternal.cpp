@@ -2,13 +2,14 @@
 #include "Performance.h"
 #include "LogDump.h"
 
-GfxInternal*	g_GfxInternal = nullptr;
-bool		GfxInternal::WideScreen;	//	@A39F12
-bool		GfxInternal::FSAA;
-float		GfxInternal::RatioXY = 1.0f;	//	@A119F4
-float		GfxInternal::_A3A064;
+GfxInternal        *g_GfxInternal = nullptr;
+bool                GfxInternal::WideScreen;	//	@A39F12
+bool                GfxInternal::FSAA;
+float               GfxInternal::RatioXY = 1.0f;	//	@A119F4
+float               GfxInternal::_A3A064;
+DirectX::XMMATRIX   GfxInternal::_A3A268;
 
-GfxInternal::Renderer_Buffer2	GfxInternal::_A08704[28] =
+GfxInternal::Renderer_Buffer2   GfxInternal::_A08704[28] =
 {
     {0, 1},
     {0, 2},
@@ -39,7 +40,7 @@ GfxInternal::Renderer_Buffer2	GfxInternal::_A08704[28] =
     {1, 27},
     {1, 0}
 };	//	@A08704
-std::map<int, int>* Scene_Buffer68::MeshBuffersMap;
+std::map<int, int>  *Scene_Buffer68::MeshBuffersMap;
 
 #pragma message(TODO_IMPLEMENTATION)
 GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
@@ -66,8 +67,8 @@ GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int u
         {
             m_RenderBufferArray[i] = Buffer276(*buffersDimens++);
 
-            m_RenderBufferArray[i].m_ViewportDimensions_1 = { 0.f, 0.f };
-            m_RenderBufferArray[i].m_ViewportDimensions_2 = { (float)g_GfxInternal_Dx9->m_ViewportResolution.x, (float)g_GfxInternal_Dx9->m_ViewportResolution.y };
+            m_RenderBufferArray[i].m_ViewportDimensions_1 = { 0, 0 };
+            m_RenderBufferArray[i].m_ViewportDimensions_2 = { g_GfxInternal_Dx9->m_ViewportResolution.x, g_GfxInternal_Dx9->m_ViewportResolution.y };
         }
     }
 
@@ -257,7 +258,8 @@ void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
     if (a1 > a2)
         return;
 
-    for (unsigned int i = 0; i < a1; ++i)
+    DirectX::XMMATRIX mat = _A3A268;
+    for (int i = 0; i < a1; ++i)
     {
         Buffer276* buff = &m_RenderBufferArray[i];
         if (buff->field_10 || buff->m_ClearFlags)
@@ -266,7 +268,7 @@ void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
                 buff->m_ViewportDimensions_1.y != g_GfxInternal_Dx9->m_ViewportResolution_1.y ||
                 buff->m_ViewportDimensions_2.x != g_GfxInternal_Dx9->m_ViewportResolution.x ||
                 buff->m_ViewportDimensions_2.y != g_GfxInternal_Dx9->m_ViewportResolution.y)
-                g_GfxInternal_Dx9->SetViewport(&buff->m_ViewportDimensions_1, &buff->m_ViewportDimensions_2);
+                g_GfxInternal_Dx9->SetViewport(buff->m_ViewportDimensions_1, buff->m_ViewportDimensions_2);
 
             if (buff->m_ClearFlags)
                 g_GfxInternal_Dx9->Clear(buff->m_ClearFlags, buff->m_ClearColor);
@@ -275,6 +277,7 @@ void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
 
             //  TODO: something to with matricies, copy view matrix?
 
+            /*
             if (_A3A064 < )
             {
                 g_GfxInternal_Dx9->TransformStateView(&buff->m_ViewMatrix);
@@ -293,6 +296,7 @@ void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
 
             if (buff->m_RenderBuffer)
                 buff->m_RenderBuffer->ExecuteRenderCommand(buff->m_RenderBuffer->m_RenderBuffer[2]);
+            */
         }
     }
 }
