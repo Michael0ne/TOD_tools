@@ -310,7 +310,7 @@ void Scene::Load(const char* sceneName)
 
 void Scene::RefreshChildNodes()
 {
-	RefreshQuadTree();
+	Instantiate();
 	//	TODO: is type cast correct?
 	for (Scene* child = (Scene*)m_FirstChild; child; child = (Scene*)child->m_NextSibling)
 		child->RefreshChildNodes();

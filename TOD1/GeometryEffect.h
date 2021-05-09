@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Model.h"
-
-#define GEOMETRY_EFFECT_CLASS_SIZE 364
 
 struct GeometryEffect_120
 {

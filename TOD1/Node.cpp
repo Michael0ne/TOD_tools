@@ -94,7 +94,7 @@ void Node::SetFlags(int flags)
         m_Parent->GetEntityQuadTreeOrParentQuadTree()->m_Owner->m_Id |= 8;
 }
 
-void Node::RefreshQuadTree()
+void Node::Instantiate()
 {
     if (m_CollisionIgnoreList)
         *(int*)((int*)m_CollisionIgnoreList + 0x78) |= 0x80000000;
@@ -118,12 +118,12 @@ void Node::_88C300()
     *(char*)0xA3D890 = (char)1;
 }
 
-void Node::nullsub_2()
+void Node::Render()
 {
     return;
 }
 
-char Node::_484DB0(int, int)
+char Node::ProcessCollision(int, int)
 {
     return 0;
 }
