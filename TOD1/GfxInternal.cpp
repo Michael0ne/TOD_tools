@@ -54,7 +54,12 @@ GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int u
     m_TimeMilliseconds = Performance::GetMilliseconds();
     field_34 = 0;
 
+#ifdef OPENGL
+    g_GfxInternal_OGL = new GfxInternal_OGL(resolution, unused1, unused2, FSAA, NULL);
+#endif
+#ifdef DIRECTX
     g_GfxInternal_Dx9 = new GfxInternal_Dx9(resolution, unused1, unused2, FSAA, NULL);
+#endif
 
     field_20 = unk1;
     m_RenderBufferTotal = buffersCount;

@@ -1,5 +1,6 @@
 #include "GeometryEffect.h"
 
+#pragma message(TODO_IMPLEMENTATION)
 GeometryEffect::GeometryEffect() : Model()
 {
 	MESSAGE_CLASS_CREATED(GeometryEffect);
@@ -11,7 +12,6 @@ GeometryEffect::GeometryEffect() : Model()
 	field_148 = nullptr;
 	field_14C = nullptr;
 	field_100 = 0;
-	field_7C = 0;
 	field_134 = 0;
 	m_EffectFadeThreshold = 0.02f;
 	m_Flags = m_Flags & 0xFFFFFF7F;
@@ -19,6 +19,7 @@ GeometryEffect::GeometryEffect() : Model()
 	m_Flags &= 0xFFFF7FFF;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 GeometryEffect::~GeometryEffect()
 {
 	MESSAGE_CLASS_DESTROYED(GeometryEffect);

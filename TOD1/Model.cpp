@@ -6,27 +6,6 @@ EntityType* tModel;
 Model::Model() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE | NODE_MASK_FRAGMENT)
 {
 	MESSAGE_CLASS_CREATED(Model);
-
-	modelres = nullptr;
-	field_54 = 1;
-	field_58 = 0;
-	field_5C = 1;
-
-	//m_List_1 = List<int>(0x1A300);
-	//m_List_2 = List<int>(0x1A300);
-	//m_List_3 = List<int>(0x1FB00);
-	//m_List_4 = List<int>(0x1FB00);
-	//m_List_6 = List<int>(0x1A300);
-
-	field_E0 = 0;
-	field_E4 = 1;
-	field_E8 = -1;
-	m_ActiveTextureSet = 0;
-	field_7C = field_80 = field_84 = field_88 = field_8C = field_90 = 0;
-	field_60 = 0;
-	m_Flags = m_Flags & 0x806440FF | 0x640000;
-	field_70 = field_70 & 0xFF2FFFFF | 0xF200000;
-	field_74 = 0;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -41,6 +20,18 @@ void Model::Register()
 	tModel = new EntityType("Model");
 	tModel->InheritFrom(tNode);
 	tModel->SetCreator((EntityType::CREATOR)Create);
+}
+
+void Model::_884530()
+{
+	for (auto it = m_AttachedEffects.cbegin(); it != m_AttachedEffects.cend(); it++)
+	{
+		if (it->m_Node && it->m_Node->m_ScriptEntity == tNode && strcmp(it->m_Node->GetScript(), "") == NULL && it->m_Node->m_Flags.m_Flags != NULL)
+		{
+			it->m_Node->SetFlags(it->m_Node->m_Flags.m_Flags & 0xFFE);	//	NOTE: remove 'Disabled' flag.
+			it->m_Node->SetFlags(it->m_Node->m_Flags.m_Flags & 0xF7F | 0x80);	//	NOTE: set flag 'DER'.
+		}
+	}
 }
 
 Model* Model::Create(AllocatorIndex)
