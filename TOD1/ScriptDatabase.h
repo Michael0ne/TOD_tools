@@ -147,6 +147,8 @@ extern bool			GlobalCommandListChecksumObtained;	//	@A3CEF4
 
 extern unsigned int GetGlobalPropertyListChecksum();	//	@873440
 extern unsigned int GetGlobalCommandListChecksum();	//	@871DD0
+extern unsigned int GetGlobalPropertyListSize();    //  @872FB0
+extern unsigned int GetGlobalCommandListSize(); //  @871A20
 extern int	GetPropertyIdByName(const char* const propertyname);	//	@8732C0
 extern int	GetCommandByName_Impl(const char* const commandname);	//	@872360
 extern int	GetCommandByName(const char* const commandname);	//	@872410

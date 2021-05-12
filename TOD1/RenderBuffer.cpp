@@ -4,6 +4,39 @@
 RenderBuffer* g_RenderBuffer = nullptr;
 int RenderBuffer::Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE];
 
+void RenderBuffer::SetBufferSize(unsigned int size)
+{
+	if (!size)
+	{
+		delete m_ParamsArray;
+
+		m_CurrentParamIndex = 0;
+		m_MaxParams = 0;
+
+		return;
+	}
+
+	if (m_ParamsArray == Buffer || !m_ParamsArray)
+		m_ParamsArray = (int*)MemoryManager::AllocateByType(m_AllocatorId, 4 * size);
+	else
+		m_ParamsArray = (int*)MemoryManager::Realloc(m_ParamsArray, 4 * size, false);
+
+	if (m_ParamsArray)
+	{
+		m_MaxParams = size;
+		if (m_CurrentParamIndex > size)
+			m_CurrentParamIndex = size;
+	}
+	else
+	{
+		m_MaxParams = RENDERBUFFER_DEFAULT_BUFFER_SIZE;
+		m_CurrentParamIndex = 0;
+		m_ParamsArray = Buffer;
+
+		g_GfxInternal->SetRenderBufferIsEmpty(false);
+	}
+}
+
 RenderBuffer::RenderBuffer(unsigned int maxParams, AllocatorIndex allocatorType)
 {
 	MESSAGE_CLASS_CREATED(RenderBuffer);
@@ -30,6 +63,13 @@ RenderBuffer::RenderBuffer(unsigned int maxParams, AllocatorIndex allocatorType)
 
 	m_CurrentParamIndex = NULL;
 	m_PrevParamIndex = NULL;
+}
+
+void RenderBuffer::AdjustBufferSize(unsigned int size)
+{
+	unsigned int currentcapacity = (m_MaxParams * 3) >> 1;
+
+	SetBufferSize(currentcapacity <= size ? size : currentcapacity);
 }
 
 void RenderBuffer::CreateRenderBuffer()

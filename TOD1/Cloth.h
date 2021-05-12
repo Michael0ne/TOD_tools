@@ -34,6 +34,9 @@ public:
 			MemoryManager::ReleaseMemory(ptr, 0);
 		ptr = nullptr;
 	}
+
+private:
+	void		ApplyImpulse(const Vector4f& v1, const Vector4f& v2, const float force);	//	@929E60
 };
 
 ASSERT_CLASS_SIZE(Cloth, 180);

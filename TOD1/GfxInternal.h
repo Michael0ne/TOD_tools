@@ -1,13 +1,15 @@
 #pragma once
 #include "GfxInternal_Dx9.h"
 #include "AssetManager.h"
-#include "Buffer92.h"
+#include "FrameBuffer.h"
+#include "MeshBuffer_Dx9.h"
 
+//  TODO: move this out here.
 class Buffer276
 {
 public:
     Vector3f            m_BufferSize;
-    RenderBuffer92     *m_RenderBuffer;
+    FrameBuffer        *m_RenderBuffer;
     Buffer276          *field_10;
     char                field_14;
     DirectX::XMMATRIX   m_ViewMatrix;
@@ -37,6 +39,7 @@ public:
     }
 };
 
+//  TODO: move this out here.
 struct Scene_Buffer108
 {
 private:
@@ -91,54 +94,6 @@ public:
     void	Init(unsigned int unk1, unsigned char unk2, unsigned int unk3);	//	@422330
 };
 
-struct Scene_Buffer68
-{
-private:
-    int	field_0;
-    int	field_4;
-    int	field_8;
-    int	field_C;
-    int	field_10;
-    int	field_14;
-    int	field_18;
-    int	field_1C;
-    int	field_20;
-    int	field_24;
-    int	field_28;
-    int	field_2C;
-    int	field_30;
-    int	field_34;
-    int	field_38;
-    int	field_3C;
-    int	field_40;
-
-public:
-    Scene_Buffer68()
-    {
-        MESSAGE_CLASS_CREATED(Scene_Buffer68);
-    }
-    ~Scene_Buffer68()
-    {
-        MESSAGE_CLASS_DESTROYED(Scene_Buffer68);
-    }
-
-    void* operator new(size_t size)
-    {
-        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-    }
-    void operator delete(void* ptr)
-    {
-        if (ptr)
-            MemoryManager::ReleaseMemory(ptr, true);
-    }
-
-    void	Init(const Scene_Buffer108& buf, unsigned int unk);	//	@4617D0
-
-    static void		CreateMeshBufferMap();	//	@460AB0
-    
-    static std::map<int, int>*	MeshBuffersMap;	//	@A39F38
-};
-
 class GfxInternal
 {
     friend class TextureAsset;
@@ -146,7 +101,7 @@ class GfxInternal
 protected:
     bool                            m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
     std::vector<GfxInternal_Dx9_Texture*>	m_TexturesList;
-    Scene_Buffer68                 *m_Buffer68;
+    MeshBuffer_Dx9                 *m_MeshBuffer;
     Scene_Buffer108                *m_Buffer108;
     unsigned int                    m_RenderBufferTotal;
     int                             field_20;
@@ -175,18 +130,19 @@ public:
         ptr = nullptr;
     }
 
-    void                            Render(GfxInternal_Dx9_Surface& screenshotDumpSurface, const bool shouldRender, int a3, int a4);	//	@421B30
+    void                            Render(GfxInternal_Dx9_Surface* screenshotDumpSurface, const bool shouldRender, int a3, int a4);	//	@421B30
     void                            CallSceneCallback();	//	@420BA0
     void                            SetClearColorForBufferIndex(const ColorRGB& color, int index);	//	@41FDF0
     void                            SetClearFlagsForBufferIndex(const unsigned int flags, const int index);	//	@41FD90
     void                            SetRenderBufferIsEmpty(bool);	//	@420170
     void                            PrepareForNewLevel();	//	@420180
-    void                            DumpScreenShot(class GfxInternal_Dx9_Surface& surf) const;	//	@420100
+    void                            DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const;	//	@420100
     ScreenResolution&               GetScreenResolution(ScreenResolution& res) const;	//	@41FD70
     bool                            IsScreenResolutionAvailable(unsigned int width, unsigned int height) const;	//	@485460
-    void                            SetBufferRenderBufferPointerByIndex(unsigned int index, class RenderBuffer92* buf);	//	@41F9B0
+    void                            SetBufferRenderBufferPointerByIndex(unsigned int index, FrameBuffer* buf);	//	@41F9B0
     void                            _41F950();	//	@41F950
     void                            ExecuteRenderBuffer(int a1, int a2, int a3);    //  @421530
+    FrameBuffer*                    _41F8F0(FrameBuffer* fb, unsigned int index);   //  @41F8F0
 
     static AssetManager::RegionCode		GetRegion();	//	@420160
     static bool                     IsWideScreen();	//	@420120

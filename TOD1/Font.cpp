@@ -25,13 +25,13 @@ Font::Font(const GlyphInfo& glyphsInfo)
 		g_Font = this;
 
 	field_10 = -1;
-	field_14 = NULL;
-	field_18 = 0.f;
-	field_20 = 0.f;
+	m_HorizontalSpacing = NULL;
+	m_VerticalSpacing = 0.f;
+	m_ScaleY = 0.f;
 	field_30 = _9B38D4;
 	field_8 = NULL;
 	field_C = NULL;
-	field_1C = 1.f;
+	m_ScaleX = 1.f;
 	field_34 = _9B38D8;
 
 	CreateBakedFont(glyphsInfo);

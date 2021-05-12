@@ -3,32 +3,41 @@
 
 class SkyBox : public Model
 {
-	//	NOTE: possible name 'Mesh'.
-	struct SkyBoxStructUnknown
-	{
-		void*	field_0;
-		unsigned short field_4;
-		unsigned int field_8;
-		void*	field_C;
-		void*	field_10;
-		String	field_14;
-		float	field_18;
-		float	field_1C;
-		float	field_20;
-		float	field_24;
-		float	field_28;
-		float	field_2C;
-		float	field_30;
-		float	field_34;
-	};
+    struct Vector8f
+    {
+        Vector4f                m_Vec_1;
+        Vector4f                m_Vec_2;
+    };
+
+    struct SkyBoxMesh
+    {
+        Vector8f                m_Pos_1;
+        Vector8f                m_Pos_2;
+        Vector8f                m_Pos_3;
+        Vector8f                m_Pos_4;
+    };
 
 protected:
-	int		field_104;
+    int                         field_100;
 
 public:
-	SkyBox();	//	NOTE: constructor inlined.
+    SkyBox();
+    virtual ~SkyBox();	//	@8F2300
 
-	static	SkyBoxStructUnknown*	_A3E0B0[5];	//	@A3E0B0
+    virtual void                Render();   //  @8F1E10
+
+    static void                 Register();	//	@8F22A0
+
+private:
+    void			            CreateStaticMesh() const;	//	@8F20B0
+
+    static int                 *StaticMesh[5];	//	@A3E0B0
+    static const SkyBoxMesh     StaticMeshInfo[5]; //  @A12BC4
+    static const unsigned short StaticMeshIndicies[12]; //  @A12E28
+
+    static SkyBox*              Create(AllocatorIndex);	//	@8F23B0
 };
+
+extern EntityType* tSkyBox;	//	@A3E0AC
 
 ASSERT_CLASS_SIZE(SkyBox, 260);

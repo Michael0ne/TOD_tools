@@ -212,7 +212,7 @@
     <ClInclude Include="ScriptThread.h">
       <Filter>Header files\KapowSystems\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="Buffer92.h">
+    <ClInclude Include="FrameBuffer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -569,6 +569,9 @@
     <ClInclude Include="StreamedSoundInfoAsset.h">
       <Filter>Header files\KapowSystems\System\Assets</Filter>
     </ClInclude>
+    <ClInclude Include="MeshBuffer.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -652,7 +655,7 @@
     <ClCompile Include="ScriptThread.cpp">
       <Filter>Source files\KapowSystems\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer92.cpp">
+    <ClCompile Include="FrameBuffer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="AllocatorBase.cpp">

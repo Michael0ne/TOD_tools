@@ -4,6 +4,8 @@
 #include "AssetManager.h"
 #include "GfxInternal.h"
 #include "ScriptDatabase.h"
+#include "Camera.h"
+#include "Scene.h"
 
 LoadScreenInfo* g_LoadScreenInfo = nullptr;
 unsigned int LoadScreenInfo::AllocatorIdForTextureResourceLoading;
@@ -58,11 +60,51 @@ void LoadScreenInfo::Enable(void* topNode)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void LoadScreenInfo::Show(void* topNode)
+void LoadScreenInfo::Show(Node* topNode)
 {
-	DWORD startTime = Performance::GetMilliseconds();
-	//_ResetSceneChildrenNodes(1);
+	DWORD timestart = Performance::GetMilliseconds();
+	int f9758 = g_GfxInternal_Dx9->field_9758;
+
+	g_AssetManager->ResetSceneChildrenNodes(true);
 	LoadTexture();
+
+	FrameBuffer* fb = new FrameBuffer(50, 4, 2);
+	for (unsigned int i = 3; i; i--)
+	{
+		fb->Reset();
+		fb->SubmitRenderFullscreenTextureCommand(m_TextureResource->m_Texture_1);
+		fb->_436BF0();
+		fb->_436040(23, 0);
+
+		if (topNode)
+		{
+			CameraMatrix* cammat = new CameraMatrix;
+
+			DirectX::XMMATRIX actcammat;
+			Scene::SceneInstance->m_ActiveCamera->GetMatrix(actcammat);
+
+			cammat->m_Vec_1 = *(Vector4f*)&(actcammat.r[0]);
+			cammat->m_Vec_2 = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_1;
+			cammat->m_Vec_2 = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_2;
+			cammat->m_Vec_2 = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_3;
+			cammat->m_Vec_2 = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_4;
+			cammat->m_Pos = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_5;
+
+			topNode->_88C310(cammat);
+
+			delete cammat;
+		}
+
+		g_GfxInternal->Render(nullptr, true, 23, 28);
+	}
+
+	g_GfxInternal_Dx9->field_9758 += f9758;
+	delete fb;
+
+	g_AssetManager->DestroyResourceTexture(m_TextureResource);
+	Asset::Destroy(m_TextureResource);
+
+	LogDump::LogA("LoadScreen::Show (%s) took %ims\n", m_TexturePath.m_szString, Performance::GetMilliseconds() - timestart);
 }
 
 void LoadScreenInfo::Deactivate()

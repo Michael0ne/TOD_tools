@@ -198,6 +198,7 @@ public:
 	void			SetPosAligned(unsigned char alignind);	//	@417DF0
 	int				ReadIntLittleToBigEndian();	//	@417870
 	short			ReadShortLittleToBigEndian();	//	@4178C0
+	HANDLE			GetFileHandle();	//	@417FD0
 
 	static void		AddDirectoryMappingsListEntry(const char* str1, const char* str2);	//	@418F90
 	static String&	GetPathFromDirectoryMappings(String& outStr, const char* path);	//	@41A360

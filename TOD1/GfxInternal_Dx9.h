@@ -202,7 +202,9 @@ protected:
     int			m_ParticleColor;
     int*		m_ParticleMeshBuffer;	//	TODO: is this correct name?
     int			m_ParticleSystemEnded;
+public:
     float		field_9758;
+protected:
     int			field_975C;
     std::vector<LightStatus>	m_SceneLights;
     std::map<int, int>	field_9770;	//	NOTE: related to lighting.
@@ -269,7 +271,7 @@ public:
     void		SetProjection(float fov, float aspectratio, float nearplane, float farplane);	//	@44E580
     void		_44E680(const DirectX::XMMATRIX*, Vector2<float>*, unsigned int*);	//	@44E680
     unsigned int	GetAvailableTextureMemory() const;	//	@44E960	//	NOTE: unused completely.
-    void		DumpScreenShot(class GfxInternal_Dx9_Surface& surf);	//	@44E970
+    void		DumpScreenShot(class GfxInternal_Dx9_Surface* surf);	//	@44E970
     void		SetTextureAddressMode(int, int ind);	//	@44EB30
     void		SetCullMode(unsigned int);	//	@44EB80
     HRESULT		GetDeviceCaps(IDirect3D9*, D3DCAPS9*);	//	@44EBC0

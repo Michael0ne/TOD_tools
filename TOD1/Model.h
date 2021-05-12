@@ -2,7 +2,7 @@
 #include "Node.h"
 #include "ModelAsset.h"
 #include "MeshColorAsset.h"
-#include "Buffer92.h"
+#include "FrameBuffer.h"
 
 class Model : public Node
 {
@@ -56,7 +56,7 @@ protected:
     int                 field_70;
     int                *field_74;
     int                 field_78;
-    RenderBuffer92     *m_SceneBuffer;
+    FrameBuffer     *m_FrameBuffer;
     int                 field_80;
     int                 field_84;
     int                 field_88;

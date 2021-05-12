@@ -463,7 +463,7 @@ void BaseType::InitScriptTypes()
 	tSTRING = tyString;
 }
 
-unsigned int BaseType::GetTypesChecksum()
+unsigned int BaseType::GetTypesListChecksum()
 {
 	if (TypesListCRCCalculated)
 		return TypesListCRC;
@@ -497,4 +497,9 @@ unsigned int BaseType::GetTypesChecksum()
 	TypesListCRC = Utils::CalcCRC32(checksum_str, checksum_str_len);
 	TypesListCRCCalculated = true;
 	return TypesListCRC;
+}
+
+unsigned int BaseType::GetTypesListSize()
+{
+	return TypesList.size();
 }

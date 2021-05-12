@@ -631,6 +631,23 @@ short File::ReadShortLittleToBigEndian()
 	return ReadBlock() + ((unsigned char)ReadBlock() << 8);
 }
 
+HANDLE File::GetFileHandle()
+{
+	if (!m_ReadFromZip)
+		if (m_FileHandle)
+			return m_FileHandle->m_File;
+		else
+			return NULL;
+
+	if (m_ZipSlot == -1 || m_OffsetInZip == -1 || !FileWrapper::ZipFilesArray[m_ZipSlot])
+		return NULL;
+
+	m_ZipFileHandle = new FileWrapper(ZipArch::ZipNames[m_ZipSlot].m_szString, 0x21, true);
+	m_ZipFileHandle->Seek(m_OffsetInZip);
+
+	return m_ZipFileHandle->m_File;
+}
+
 void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
 {
 	DirectoryMappingsList.push_back({ str1, str2 });

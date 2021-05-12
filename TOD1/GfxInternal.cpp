@@ -39,8 +39,7 @@ GfxInternal::Renderer_Buffer2   GfxInternal::_A08704[28] =
     {1, 26},
     {1, 27},
     {1, 0}
-};	//	@A08704
-std::map<int, int>  *Scene_Buffer68::MeshBuffersMap;
+};
 
 #pragma message(TODO_IMPLEMENTATION)
 GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
@@ -100,7 +99,7 @@ GfxInternal::~GfxInternal()
 {
     MESSAGE_CLASS_DESTROYED(GfxInternal);
 
-    delete m_Buffer68;
+    delete m_MeshBuffer;
     delete m_Buffer108;
 
     delete g_GfxInternal_Dx9;
@@ -108,7 +107,7 @@ GfxInternal::~GfxInternal()
     delete m_RenderBufferArray;
 }
 
-void GfxInternal::Render(GfxInternal_Dx9_Surface& screenshotDumpSurface, const bool shouldRender, int a3, int a4)
+void GfxInternal::Render(GfxInternal_Dx9_Surface* screenshotDumpSurface, const bool shouldRender, int a3, int a4)
 {
     ++m_FramesRendered;
 
@@ -155,7 +154,7 @@ void GfxInternal::Render(GfxInternal_Dx9_Surface& screenshotDumpSurface, const b
             ExecuteRenderBuffer(field_20 + 1, a4, 1);
             g_GfxInternal_Dx9->EndScene();
 
-            if (&screenshotDumpSurface)
+            if (screenshotDumpSurface)
                 g_GfxInternal_Dx9->DumpScreenShot(screenshotDumpSurface);
 
             if (!frmclbckcalled)
@@ -232,7 +231,7 @@ void GfxInternal::PrepareForNewLevel()
     }
 }
 
-void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface& surf) const
+void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const
 {
     g_GfxInternal_Dx9->DumpScreenShot(surf);
 }
@@ -247,7 +246,7 @@ bool GfxInternal::IsScreenResolutionAvailable(unsigned int width, unsigned int h
     return g_GfxInternal_Dx9->IsScreenResolutionAvailable(width, height, true) != false;
 }
 
-void GfxInternal::SetBufferRenderBufferPointerByIndex(unsigned int index, RenderBuffer92* buf)
+void GfxInternal::SetBufferRenderBufferPointerByIndex(unsigned int index, FrameBuffer* buf)
 {
     m_RenderBufferArray[index].m_RenderBuffer = buf;
 }
@@ -306,6 +305,15 @@ void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
     }
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+FrameBuffer* GfxInternal::_41F8F0(FrameBuffer* fb, unsigned int index)
+{
+    FrameBuffer* ret = (FrameBuffer*)m_RenderBufferArray[index].field_10;
+    m_RenderBufferArray[index].field_10 = (Buffer276*)fb;
+
+    return ret;
+}
+
 AssetManager::RegionCode GfxInternal::GetRegion()
 {
     return AssetManager::REGION_EUROPE;
@@ -331,9 +339,4 @@ Buffer276::Buffer276(const Vector3f& bufferSize)
 
     m_ProjectionMatrixParams = { 70.f, 1.f, 1.f, 1000.f };
     m_ClearColor = { 0.f, 0.f, 0.f, 1.f };
-}
-
-void Scene_Buffer68::CreateMeshBufferMap()
-{
-    MeshBuffersMap = new std::map<int, int>();
 }

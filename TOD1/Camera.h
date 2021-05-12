@@ -1,23 +1,23 @@
 #pragma once
 #include "Node.h"
 
+struct CameraMatrix
+{
+	Vector4f    m_Vec_1;
+	Vector4f    m_Vec_2;
+	Vector4f    m_Vec_3;
+	Vector4f    m_Vec_4;
+	Vector4f    m_Vec_5;
+	Vector4f    m_Pos;
+
+	CameraMatrix();	//	@4087C0
+
+	void        SetupMatrix(const Vector4f& pos, const Orientation& orient, const float fov, const float nearclip, const float farclip);	//	@406E60
+};
+
 class Camera : public Node
 {
-	struct CameraMatrix
-	{
-		Vector4f    m_Vec_1;
-		Vector4f    m_Vec_2;
-		Vector4f    m_Vec_3;
-		Vector4f    m_Vec_4;
-		Vector4f    m_Vec_5;
-		Vector4f    m_Pos;
-
-		CameraMatrix();	//	@4087C0
-
-		void        SetupMatrix(const Vector4f& pos, const Orientation& orient, const float fov, const float nearclip, const float farclip);	//	@406E60
-	};
-
-protected:
+public:
 	CameraMatrix    m_CameraMatrix;
 	float           m_Offset;
 	float           m_Fov;

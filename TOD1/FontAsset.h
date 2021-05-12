@@ -1,21 +1,22 @@
 #pragma once
 #include "BaseAsset.h"
+#include "Font.h"
 
 class FontAsset : public Asset
 {
 protected:
-	int				field_1C;
-	int				field_20;
-	int				field_24;
+    int             field_1C;
+    int             field_20;
+    Font		   *m_Font;
 
 private:
-	inline FontAsset();	//	NOTE: always inlined.
+    inline FontAsset();	//	NOTE: always inlined.
 
 public:
-	virtual AssetInstance* GetInstancePtr() const override;
+    virtual AssetInstance* GetInstancePtr() const override;
 
-	static void     CreateInstance();	//	@85B460
-	static FontAsset* Create();	//	@85B350
+    static void     CreateInstance();	//	@85B460
+    static FontAsset* Create();	//	@85B350
 };
 
 ASSERT_CLASS_SIZE(FontAsset, 40);

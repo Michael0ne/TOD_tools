@@ -26,6 +26,8 @@
 #include "Model.h"
 #include "CollisionProbe.h"
 #include "VirtualHud.h"
+#include "LoadScreen.h"
+#include "SkyBox.h"
 
 namespace Script
 {
@@ -150,7 +152,7 @@ namespace GameConfig
 
 		InitEntitiesDatabase();
 
-		Scene_Buffer68::CreateMeshBufferMap();
+		GfxInternal_Dx9_IndexBuffer::CreateIndexBufferMap();
 		GfxInternal_Dx9_VertexBuffer::CreateVerticesMap();
 		GfxInternal_Dx9_Texture::InitTexturesMap();
 
@@ -497,7 +499,7 @@ namespace GameConfig
 
 		m_PropertiesLoadedChecksum = GetGlobalPropertyListChecksum();
 		m_CommandsLoadedChecksum = GetGlobalCommandListChecksum();
-		m_TypesLoadedChecksum = BaseType::GetTypesChecksum();
+		m_TypesLoadedChecksum = BaseType::GetTypesListChecksum();
 
 		//	Instantiate scene.
 		bool SceneSet = false;
@@ -647,7 +649,9 @@ namespace GameConfig
 		RigidBody::Register();
 		OverdoseVehicle::Register();
 		StretchModel::Register();
+		*/
 		SkyBox::Register();
+		/*
 		Fog::Register();
 		Wind::Register();
 		Cloth::Register();
@@ -680,16 +684,16 @@ namespace GameConfig
 		GoodiePlaceHolder::Register();
 		WeaponPlaceHolder::Register();
 		MemoryCards::Register();
+		*/
 		LoadScreenNode::Register();
 
-		m_nGlobalPropertiesListCRC = (*(int (*)())0x873440)();
-		m_nGlobalCommandsListCRC = (*(int (*)())0x871DD0)();
-		m_nTypesListCRC = (*(int (*)())0x862CF0)();
+		m_PropertiesBuiltinChecksum = GetGlobalPropertyListChecksum();
+		m_CommandsBuiltinChecksum = GetGlobalCommandListChecksum();
+		m_TypesBuiltinChecksum = BaseType::GetTypesListChecksum();
 
-		m_TotalGlobalProperties = (*(int (*)())0x872FB0)();
-		m_TotalGlobalCommands = (*(int (*)())0x871A20)();
-		m_TotalTypes = (*(int (*)())0x862B30)();
-		*/
+		m_PropertiesTotal = GetGlobalPropertyListSize();
+		m_CommandsTotal = GetGlobalCommandListSize();
+		m_TypesTotal = BaseType::GetTypesListSize();
 	}
 
 	#pragma message(TODO_IMPLEMENTATION)
@@ -720,12 +724,12 @@ namespace GameConfig
 
 	bool Config::OpenScene(const char* scene)
 	{
-		tScene->CreateNode();	//	NOTE: this calls creator which essentially creates instance of class.
+		tScene->CreateNode();
 		g_AssetManager->SetSceneName(scene);
 		Scene::SceneInstance->Load(scene);
 		Scene::SceneInstance->UpdateLoadedBlocks(0, 0);
 		Scene::SceneInstance->m_StartTimeMs = Performance::GetMilliseconds();
-		Scene::SceneInstance->RefreshChildNodes();
+		Scene::SceneInstance->InstantiateAllChildren();
 		Scene::SceneInstance->FinishCreation("Scene instantiate all completed.");
 
 		return true;

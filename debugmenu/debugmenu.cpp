@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+//	TODO: potentially, make this a DLL instead of compile-time library dependency.
 HINSTANCE WindowInstance;
 HWND WindowHandle;
 

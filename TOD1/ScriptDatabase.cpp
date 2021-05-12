@@ -64,6 +64,16 @@ unsigned int GetGlobalCommandListChecksum()
 	return GlobalCommandListChecksum;
 }
 
+extern unsigned int GetGlobalPropertyListSize()
+{
+	return GlobalPropertiesList.size();
+}
+
+extern unsigned int GetGlobalCommandListSize()
+{
+	return GlobalCommandsList.size();
+}
+
 int GetPropertyIdByName(const char* const propertyname)
 {
 	char propname[64] = {};
@@ -890,8 +900,18 @@ void GlobalCommand::GetReturnTypeString(String& outStr)
 
 	if (m_Arguments.m_ArgumentsList[0].m_ScriptType->m_Size)
 	{
-		strcat(m_ArgumentsString, ":");
-		strcat(m_ArgumentsString, m_Arguments.m_ArgumentsList[0].m_ScriptType->m_TypeName.m_szString);
+		char buf[256] = {};
+
+		strcpy(buf, m_ArgumentsString);
+		strcat(buf, ":");
+		strcat(buf, m_Arguments.m_ArgumentsList[0].m_ScriptType->m_TypeName.m_szString);
+		
+		size_t buflen = strlen(buf);
+
+		delete[] m_ArgumentsString;
+		m_ArgumentsString = new char[buflen + 1];
+
+		strcpy(m_ArgumentsString, buf);
 	}
 }
 
