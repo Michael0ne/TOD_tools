@@ -36,7 +36,7 @@ class TextureAsset : public Asset
         ~Tex();	//	@853A90
     };
 
-protected:
+public:
     int                         field_1C;
     Tex                        *m_Texture;	//	NOTE: this pointer should be aligned by 4 bytes.
     char                        field_24;

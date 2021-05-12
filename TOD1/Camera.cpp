@@ -167,7 +167,7 @@ Camera* Camera::Create(AllocatorIndex)
 	return new Camera();
 }
 
-Camera::CameraMatrix::CameraMatrix()
+CameraMatrix::CameraMatrix()
 {
 	MESSAGE_CLASS_CREATED(CameraMatrix);
 
@@ -175,7 +175,7 @@ Camera::CameraMatrix::CameraMatrix()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Camera::CameraMatrix::SetupMatrix(const Vector4f& pos, const Orientation& orient, const float fov, const float nearclip, const float farclip)
+void CameraMatrix::SetupMatrix(const Vector4f& pos, const Orientation& orient, const float fov, const float nearclip, const float farclip)
 {
 	m_Pos = pos;
 

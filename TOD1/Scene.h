@@ -1,50 +1,45 @@
 #pragma once
 #include "Folder.h"
 #include "MeshColorAsset.h"
+#include "Camera.h"
 #include <vector>
-
-enum PlayMode
-{
-    MODE_PLAY = 0,
-    MODE_UNKNOWN_1 = 1,
-    MODE_PAUSE = 2,
-    MODE_UNKNOWN_3 = 3
-};
-
-enum SaveOperationStatus
-{
-    STATUS_OK = 0,
-    STATUS_CANT_OPEN_FILE = 1,
-    STATUS_CHECKSUM_MISMATCH = 2,
-    STATUS_SAVEDIR_NOT_READY = 3,
-    STATUS_CANT_READ_SAVE_DATA = 4
-};
-
-enum SaveLoadState
-{
-    STATE_DONE = 0,
-    STATE_SAVE = 1,
-    STATE_LOAD = 2,
-    STATE_LOAD_SUMMARY = 3
-};
 
 //#pragma pack(4)
 class Scene : public Folder_
 {
-    friend class MemoryCards;
-    friend class Camera;
-    friend class Node;
-    friend class SceneSaveLoad;
-    friend class Folder_;
-protected:
-    MeshColorAsset* m_StaticLighting;
-    int             m_PlayMode;	//	NOTE: 2 - menu.
 public:
-    class Camera*   m_GameCamera;
+    enum PlayMode
+    {
+        MODE_INGAME = 0,
+        MODE_UNKNOWN_1 = 1,
+        MODE_PAUSED = 2,
+        MODE_UNKNOWN_3 = 3
+    };
+
+    enum SaveOperationStatus
+    {
+        STATUS_OK = 0,
+        STATUS_CANT_OPEN_FILE = 1,
+        STATUS_CHECKSUM_MISMATCH = 2,
+        STATUS_SAVEDIR_NOT_READY = 3,
+        STATUS_CANT_READ_SAVE_DATA = 4
+    };
+
+    enum SaveLoadState
+    {
+        STATE_DONE = 0,
+        STATE_SAVE = 1,
+        STATE_LOAD = 2,
+        STATE_LOAD_SUMMARY = 3
+    };
+
+public:
+    MeshColorAsset* m_StaticLighting;
+    PlayMode        m_PlayMode;
+    Camera*         m_GameCamera;
     class EditorCamera* m_EditorCamera;
-protected:
     char            m_QuadTreesAllocated;
-    class Camera*   m_ActiveCamera;
+    Camera*         m_ActiveCamera;
     Node*           m_ClosestNode;
     float           m_CollisionProbeMinDistance;
     Vector4f        m_CollisionPos_1;
@@ -71,10 +66,8 @@ protected:
     float           m_TimeMultiplier;
     float           field_118;
     float           m_RewindTimeMultiplier;
-public:
     bool            m_FixedFramerate;
     float           m_FixedFramerateVal;
-protected:
     int             field_128;
     std::vector<int>    m_List_5;
     std::vector<int>    m_List_6;
@@ -96,12 +89,10 @@ protected:
     bool            m_FlushRewindRequested;
     Node*           m_LoadedBlocks[8];
     char            field_1D0[8];
-    class RenderBuffer92*   m_SceneBufferArray[31];
-    class RenderBuffer92*   m_Buffer_1;
-    class RenderBuffer92*   m_Buffer_2;
-public:
+    class FrameBuffer*   m_FrameBuffers[31];
+    class FrameBuffer*   m_Buffer_1;
+    class FrameBuffer*   m_Buffer_2;
     UINT64          m_StartTimeMs;
-protected:
     int             field_268;
 
 public:
@@ -120,7 +111,6 @@ public:
 
     void            Start();	//	@89A100
     void            Load(const char* sceneName);	//	@8980C0
-    void            RefreshChildNodes();	//	@88C2B0
     void            FinishCreation(const char* logTitle);	//	@8935F0
     void            StoreGameCamera();	//	@893480
     void            EnumSceneCamerasAndUpdate();	//	@893870
@@ -130,6 +120,7 @@ public:
     void            BuildSceneTree();	//	@896BA0
     void            FreeRewindBuffer();	//	@896CD0
     void            ResetRewindBuffer(bool);	//	@894A80
+    void            _896BA0();  //  @896BA0
     void            ReleaseQuadTreeAndRenderlist();	//	@896C30
     void            LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo);	//	@892E40
     void            CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, unsigned int savesize);	//	@895B80
@@ -162,7 +153,7 @@ public:
     static int      InvalidatePlaceholderModelCommand;	//	@A12098
     static int      RewindOrRetryFinishedCommand;	//	@A1209C
 
-    static void     TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk);	//	@892F10
+    static void     TriggerScriptForAllChildren(int scriptId, Node* node, int* args);	//	@892F10
     static void     Register();	//	@899CC0
     static Scene*   Create(AllocatorIndex);	//	@89A7A0
 };

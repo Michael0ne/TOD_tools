@@ -4,72 +4,72 @@
 
 class Font
 {
-	struct Glyph
-	{
-		unsigned short m_Character;
-		float       m_X;
-		float       m_Y;
-		float       m_Width;
-		float       m_Height;
-		float       m_X1;
-		float       m_X2;
-		int         field_1C;
-	};
+    struct Glyph
+    {
+        unsigned short m_Character;
+        float       m_X;
+        float       m_Y;
+        float       m_Width;
+        float       m_Height;
+        float       m_X1;
+        float       m_X2;
+        int         field_1C;
+    };
 
-	struct GlyphInfo
-	{
-		unsigned int m_TotalGlyphs;
-		unsigned int field_4;
-		Glyph*      m_ActualGlyphsArray;
-		void*       field_C;
-	};
+    struct GlyphInfo
+    {
+        unsigned int m_TotalGlyphs;
+        unsigned int field_4;
+        Glyph*      m_ActualGlyphsArray;
+        void*       field_C;
+    };
 
 private:
-	int				field_0;
-	int				field_4;
-	int				field_8;
-	int				field_C;
-	int				field_10;
-	int				field_14;
-	float			field_18;
-	float			field_1C;
-	float			field_20;
-	float			field_24;
-	float			field_28;
-	float			field_2C;
-	int				field_30;
-	float			field_34;
-	int				field_38;
-	int				field_3C;
-	std::vector<String>	m_GlyphsList;
-	int				field_50;
-	int				field_54;
-	float			field_58;
-	float			field_5C;
-	float			field_60;
+    int				field_0;
+    int				field_4;
+    int				field_8;
+    int				field_C;
+    int				field_10;
+    float			m_HorizontalSpacing;
+    float			m_VerticalSpacing;
+    float			m_ScaleX;
+    float			m_ScaleY;
+    float			field_24;
+    float			field_28;
+    float			field_2C;
+    int				field_30;
+    float			field_34;
+    int				field_38;
+    int				field_3C;
+    std::vector<String>	m_GlyphsList;
+    int				field_50;
+    int				field_54;
+    float			field_58;
+    float			field_5C;
+    float			field_60;
 
 public:
-	Font(const GlyphInfo& GlyphsInfo);	//	@41EA80
+    Font(const GlyphInfo& GlyphsInfo);	//	@41EA80
 
-	void* operator new (size_t size)
-	{
-		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-	}
-	void operator delete(void* ptr)
-	{
-		if (ptr)
-			MemoryManager::ReleaseMemory(ptr, false);
-		ptr = nullptr;
-	}
+    void* operator new (size_t size)
+    {
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, false);
+        ptr = nullptr;
+    }
 
-	void			CreateBakedFont(const GlyphInfo& GlyphsInfo);	//	@41E6D0
+    void			CreateBakedFont(const GlyphInfo& GlyphsInfo);	//	@41E6D0
 
-	static void		MakeCharactersMap(GlyphInfo& GlyphsInfo);	//	@938E10
+    static void		MakeCharactersMap(GlyphInfo& GlyphsInfo);	//	@938E10
 
-	static const int _9B38D4;	//	@9B38D4
-	static const float _9B38D8;	//	@9B38D8
-	static GlyphInfo GlyphsInfo;	//	@A1B698
-	static Glyph    Glyphs[138];	//	@A5D5C0
+    static const int _9B38D4;	//	@9B38D4
+    static const float _9B38D8;	//	@9B38D8
+    static GlyphInfo GlyphsInfo;	//	@A1B698
+    static Glyph    Glyphs[138];	//	@A5D5C0
 };
 
 extern Font* g_Font;

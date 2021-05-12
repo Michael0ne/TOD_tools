@@ -518,6 +518,19 @@ void Node::TriggerGlobalScript(int scriptId, void* args)
     }
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_88C310(CameraMatrix* cammat)
+{
+}
+
+void Node::InstantiateAllChildren()
+{
+    Instantiate();
+
+    for (Node* n = m_FirstChild; n; n = n->m_NextSibling)
+        n->InstantiateAllChildren();
+}
+
 AuxQuadTree* Node::_8A0810(Node* node)
 {
     if (node->m_QuadTree)

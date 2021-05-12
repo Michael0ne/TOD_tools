@@ -96,7 +96,8 @@ public:
 	static BaseType* LoadScript(const char* script);	//	@863070
 	static bool		ParseVariableString(const char* variable, String& variableName, String& variableType);	//	@862F70
 	static void		InitScriptTypes();	//	@8634E0
-	static unsigned int	GetTypesChecksum();	//	@862CF0
+	static unsigned int	GetTypesListChecksum();	//	@862CF0
+	static unsigned int GetTypesListSize();	//	@862B30
 	static class EntityType* GetScriptEntityByName(const char* name);	//	@862C70
 };
 

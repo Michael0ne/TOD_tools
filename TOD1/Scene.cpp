@@ -5,7 +5,7 @@
 #include "Progress.h"
 #include "ScriptDatabase.h"
 #include "SavePoint.h"
-#include "Buffer92.h"
+#include "FrameBuffer.h"
 #include "CollisionProbe.h"
 #include "GfxInternal.h"
 #include "Camera.h"
@@ -40,10 +40,10 @@ Scene::Scene() : Folder_()
 {
 	MESSAGE_CLASS_CREATED(Scene);
 
-	m_PlayMode = 1;
+	m_PlayMode = MODE_UNKNOWN_1;
 	m_NodesWithUpdateOrBlockingScripts = NULL;
-	m_Buffer_1 = new RenderBuffer92(0, 36, 2);
-	m_Buffer_2 = new RenderBuffer92(0, 36, 2);
+	m_Buffer_1 = new FrameBuffer(0, 36, 2);
+	m_Buffer_2 = new FrameBuffer(0, 36, 2);
 	m_SharedProbe = (CollisionProbe*)tCollisionProbe->CreateNode();
 	SceneInstance = this;
 	m_GameCamera = nullptr;
@@ -66,8 +66,8 @@ Scene::Scene() : Folder_()
 
 	for (unsigned int i = 0; i < 31; i++)
 	{
-		m_SceneBufferArray[i] = new RenderBuffer92(100, 20, 2);
-		g_GfxInternal->SetBufferRenderBufferPointerByIndex(i, m_SceneBufferArray[i]);
+		m_FrameBuffers[i] = new FrameBuffer(100, 20, 2);
+		g_GfxInternal->SetBufferRenderBufferPointerByIndex(i, m_FrameBuffers[i]);
 	}
 
 	m_List_5.resize(1024);
@@ -208,10 +208,10 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::Start()
 {
-	if (m_PlayMode != 1)
+	if (m_PlayMode != MODE_UNKNOWN_1)
 		return;
 
-	m_PlayMode = 0;
+	m_PlayMode = MODE_INGAME;
 	UpdateLoadedBlocks(1, 0);
 	EnumSceneCamerasAndUpdate();
 	RealTimeMs = NULL;
@@ -306,14 +306,6 @@ void Scene::Load(const char* sceneName)
 	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load main asset block", Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
 
 	m_StartTimeMs = Performance::GetMilliseconds();
-}
-
-void Scene::RefreshChildNodes()
-{
-	Instantiate();
-	//	TODO: is type cast correct?
-	for (Scene* child = (Scene*)m_FirstChild; child; child = (Scene*)child->m_NextSibling)
-		child->RefreshChildNodes();
 }
 
 void Scene::FinishCreation(const char* logTitle)
@@ -424,11 +416,16 @@ void Scene::ResetRewindBuffer(bool)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Scene::TriggerScriptForAllChildren(int scriptId, Scene* sceneNode, int* unk)
+void Scene::_896BA0()
 {
-	//TriggerGlobalScript(scriptId, unk);
-	//for (Node* children = sceneNode->m_FirstChild; children; children = children->m_NextSibling)
-		//TriggerScriptForAllChildren(scriptId, children, unk);
+}
+
+void Scene::TriggerScriptForAllChildren(int scriptId, Node* node, int* args)
+{
+	node->TriggerGlobalScript(scriptId, args);
+
+	for (Node* n = node->m_FirstChild; n; n = n->m_NextSibling)
+		TriggerScriptForAllChildren(scriptId, n, args);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

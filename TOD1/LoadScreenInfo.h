@@ -1,6 +1,7 @@
 #pragma once
 #include "StringsPool.h"
 #include "TextureAsset.h"
+#include "Node.h"
 
 #define LOADSCREEN_DEFAULT_TEXTURE "/data/Textures/Hud/LoadScreens/default_loadscreen.bmp"
 
@@ -19,7 +20,7 @@ public:
 
     void                SetTexturePath(const char*);	//	@87C2A0
     void                Enable(void* topNode);	//	@87C6A0
-    void                Show(void* topNode);	//	@87C430
+    void                Show(Node* topNode);	//	@87C430
     void                Deactivate();	//	@87C1F0
 
     static unsigned int AllocatorIdForTextureResourceLoading;	//	@A3BE18

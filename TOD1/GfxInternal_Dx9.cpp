@@ -1811,7 +1811,7 @@ unsigned int GfxInternal_Dx9::GetAvailableTextureMemory() const
     return m_Direct3DDevice->GetAvailableTextureMem();
 }
 
-void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface& surf)
+void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface* surf)
 {
     LogDump::LogA("Dumping screenshot!\n");
 
@@ -1823,7 +1823,7 @@ void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface& surf)
     backBufferSurface->GetDesc(&backBufferSurfaceDesc);
     backBufferSurface->LockRect(&backBufferRect, nullptr, D3DLOCK_READONLY);
 
-    LogDump::LogA("copying from surface (%i,%i) --> (%i,%i)\n", backBufferSurfaceDesc.Width, backBufferSurfaceDesc.Height, surf.m_Width, surf.m_Height);
+    LogDump::LogA("copying from surface (%i,%i) --> (%i,%i)\n", backBufferSurfaceDesc.Width, backBufferSurfaceDesc.Height, surf->m_Width, surf->m_Height);
 
     ColorRGB clr;
     for (unsigned int x = 0; x < backBufferSurfaceDesc.Width; x++)
@@ -1851,7 +1851,7 @@ void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface& surf)
             }
 
             clr = { dwclr[3] * 0.0039215689f, dwclr[2] * 0.0039215689f, dwclr[1] * 0.0039215689f, 1.f };
-            surf.SetPixelColor(x, y, clr);
+            surf->SetPixelColor(x, y, clr);
         }
     }
 

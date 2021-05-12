@@ -158,6 +158,8 @@ public:
     void                _869F80(const unsigned int paramind, const void* paramptr, BaseType& paramtype);	//	@869F80
     void                Project_Impl(Vector2f& outvec, const Vector4f& invec);	//	@87DA10
     void				TriggerGlobalScript(int scriptId, void* args);	//	@86A340
+    void                _88C310(struct CameraMatrix* cammat);  //  @88C310
+    void                InstantiateAllChildren();   //  @88C2B0
 
     static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
 

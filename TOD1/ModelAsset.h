@@ -3,6 +3,7 @@
 
 class ModelAsset : public Asset
 {
+public:
     struct TextureReference
     {
         TextureAsset   *m_TextureResource;
