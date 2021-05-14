@@ -534,6 +534,18 @@ void GfxInternal_Dx9::EnumDisplayModes()
             m_DisplayModesList[i].m_Available);
 }
 
+char GfxInternal_Dx9::GetLightStatus(const LightStatus* lightptr) const
+{
+    if (m_SceneLights.size() <= 0)
+        return NULL;
+
+    for (unsigned int i = 0; i < m_SceneLights.size(); ++i)
+        if (&m_SceneLights[i] == lightptr)
+            return m_SceneLights[i].m_Enabled;
+
+    return NULL;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::CreateSurfaces()
 {

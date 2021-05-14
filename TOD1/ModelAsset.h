@@ -1,5 +1,6 @@
 #pragma once
 #include "TextureAsset.h"
+#include "SkinnedMeshBuffer.h"
 
 class ModelAsset : public Asset
 {
@@ -11,7 +12,7 @@ public:
         char           *m_TexturePath;
     };
 
-    struct Pivot
+    struct Mesh
     {
         Vector3f        m_Position;
         float           field_C;
@@ -20,8 +21,8 @@ public:
         float           field_18;
         char           *m_Name;
         char           *field_20;
-        char           *field_24;
-        int             field_28;
+        SkinnedMeshBuffer *m_SkinnedMeshBuffer;   //  NOTE: possibly 'SkinnedMeshBuffer'.
+        int             m_TotalMeshes;
         int             field_2C;
         int             field_30;
         char           *field_34;
@@ -48,7 +49,7 @@ public:
 protected:
     int                 field_1C;
     std::vector<TextureReference> m_TextureResources;
-    std::vector<Pivot>  m_PivotList;
+    std::vector<Mesh>  m_MeshList;
     int                *field_40;
     Vector4f            m_BoundingRadius;
     int                *field_54;
@@ -66,4 +67,4 @@ public:
 };
 
 ASSERT_CLASS_SIZE(ModelAsset, 96);
-ASSERT_CLASS_SIZE(ModelAsset::Pivot, 124);
+ASSERT_CLASS_SIZE(ModelAsset::Mesh, 124);

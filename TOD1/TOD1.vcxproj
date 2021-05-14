@@ -270,6 +270,7 @@
     <ClInclude Include="MeshColorAsset.h" />
     <ClInclude Include="ModelAsset.h" />
     <ClInclude Include="MovieAsset.h" />
+    <ClInclude Include="SkinnedMeshBuffer.h" />
     <ClInclude Include="SoundAsset.h" />
     <ClInclude Include="SoundFile.h" />
     <ClInclude Include="StreamedSoundInfoAsset.h" />
@@ -425,10 +426,12 @@
     <ClCompile Include="GfxInternal_Dx9_IndexBuffer.cpp" />
     <ClCompile Include="GfxInternal_Dx9_VertexBuffer.cpp" />
     <ClCompile Include="GfxInternal_OGL.cpp" />
+    <ClCompile Include="MeshBuffer.cpp" />
     <ClCompile Include="MeshBuffer_Dx9.cpp" />
     <ClCompile Include="MeshColorAsset.cpp" />
     <ClCompile Include="ModelAsset.cpp" />
     <ClCompile Include="MovieAsset.cpp" />
+    <ClCompile Include="SkinnedMeshBuffer.cpp" />
     <ClCompile Include="SoundAsset.cpp" />
     <ClCompile Include="SoundFile.cpp" />
     <ClCompile Include="StreamedSoundInfoAsset.cpp" />

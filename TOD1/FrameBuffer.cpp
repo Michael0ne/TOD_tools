@@ -56,6 +56,16 @@ bool FrameBuffer::_436030()
     return true;
 }
 
+void FrameBuffer::_431510()
+{
+    m_Flags.m_FlagBits._4 = 1;
+}
+
+void FrameBuffer::_4315A0(const DirectX::XMMATRIX& mat, const unsigned int index)
+{
+    m_RenderBuffer[0].PushMatrix(mat, index);
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void FrameBuffer::ExecuteRenderCommand(RenderBuffer& buf) const
 {
@@ -335,6 +345,383 @@ void FrameBuffer::SubmitRenderMeshBufferCommand(void* meshbuffer, const float op
     m_RenderBuffer[0].push_back((int)meshbuffer);
 }
 
+void FrameBuffer::SubmitRenderMeshBufferCommand_1(const MeshBuffer_Dx9* mesh)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERMESHBUFFER);
+    m_RenderBuffer[0].push_back(mesh);
+}
+
+void FrameBuffer::SubmitRenderTriangleCommand(const Vector3f& pos1, const Vector3f& pos2, const Vector3f& pos3, const ColorRGB& clr)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTRIANGLE);
+    
+    m_RenderBuffer[0].push_back(pos1.x);
+    m_RenderBuffer[0].push_back(pos1.y);
+    m_RenderBuffer[0].push_back(pos1.z);
+
+    m_RenderBuffer[0].push_back(pos2.x);
+    m_RenderBuffer[0].push_back(pos2.y);
+    m_RenderBuffer[0].push_back(pos2.z);
+
+    m_RenderBuffer[0].push_back(pos3.x);
+    m_RenderBuffer[0].push_back(pos3.y);
+    m_RenderBuffer[0].push_back(pos3.z);
+
+    m_RenderBuffer[0].push_back(clr.r);
+    m_RenderBuffer[0].push_back(clr.g);
+    m_RenderBuffer[0].push_back(clr.b);
+    m_RenderBuffer[0].push_back(clr.a);
+}
+
+void FrameBuffer::SubmitRenderTriangleCommand(const Vector3f& pos1, const Vector3f& pos2, const Vector3f& pos3, const ColorRGB& clr1, const ColorRGB& clr2, const ColorRGB& clr3)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTRIANGLE);
+
+    m_RenderBuffer[0].push_back(pos1.x);
+    m_RenderBuffer[0].push_back(pos1.y);
+    m_RenderBuffer[0].push_back(pos1.z);
+
+    m_RenderBuffer[0].push_back(pos2.x);
+    m_RenderBuffer[0].push_back(pos2.y);
+    m_RenderBuffer[0].push_back(pos2.z);
+
+    m_RenderBuffer[0].push_back(pos3.x);
+    m_RenderBuffer[0].push_back(pos3.y);
+    m_RenderBuffer[0].push_back(pos3.z);
+
+    m_RenderBuffer[0].push_back(clr1.r);
+    m_RenderBuffer[0].push_back(clr1.g);
+    m_RenderBuffer[0].push_back(clr1.b);
+    m_RenderBuffer[0].push_back(clr1.a);
+
+    m_RenderBuffer[0].push_back(clr2.r);
+    m_RenderBuffer[0].push_back(clr2.g);
+    m_RenderBuffer[0].push_back(clr2.b);
+    m_RenderBuffer[0].push_back(clr2.a);
+
+    m_RenderBuffer[0].push_back(clr3.r);
+    m_RenderBuffer[0].push_back(clr3.g);
+    m_RenderBuffer[0].push_back(clr3.b);
+    m_RenderBuffer[0].push_back(clr3.a);
+}
+
+void FrameBuffer::SubmitRenderLineCommand(const Vector3f& start, const Vector3f& end, const ColorRGB& clr)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERLINE);
+
+    m_RenderBuffer[0].push_back(start.x);
+    m_RenderBuffer[0].push_back(start.y);
+    m_RenderBuffer[0].push_back(start.z);
+
+    m_RenderBuffer[0].push_back(end.x);
+    m_RenderBuffer[0].push_back(end.y);
+    m_RenderBuffer[0].push_back(end.z);
+
+    m_RenderBuffer[0].push_back(clr.r);
+    m_RenderBuffer[0].push_back(clr.g);
+    m_RenderBuffer[0].push_back(clr.b);
+    m_RenderBuffer[0].push_back(clr.a);
+}
+
+void FrameBuffer::SubmitRenderLine2DCommand(const Vector2f& start, const Vector2f& end, const ColorRGB& clr)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERLINE2D);
+
+    m_RenderBuffer[0].push_back(start.x);
+    m_RenderBuffer[0].push_back(start.y);
+
+    m_RenderBuffer[0].push_back(end.x);
+    m_RenderBuffer[0].push_back(end.y);
+
+    m_RenderBuffer[0].push_back(clr.r);
+    m_RenderBuffer[0].push_back(clr.g);
+    m_RenderBuffer[0].push_back(clr.b);
+    m_RenderBuffer[0].push_back(clr.a);
+}
+
+void FrameBuffer::SubmitRenderTriangle2DCommand(const Vector2f& x, const Vector2f& y, const Vector2f& z, const ColorRGB& clr)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTRIANGLE2D);
+
+    m_RenderBuffer[0].push_back(x.x);
+    m_RenderBuffer[0].push_back(x.y);
+
+    m_RenderBuffer[0].push_back(y.x);
+    m_RenderBuffer[0].push_back(y.y);
+
+    m_RenderBuffer[0].push_back(z.y);
+    m_RenderBuffer[0].push_back(z.y);
+
+    m_RenderBuffer[0].push_back(clr.r);
+    m_RenderBuffer[0].push_back(clr.g);
+    m_RenderBuffer[0].push_back(clr.b);
+    m_RenderBuffer[0].push_back(clr.a);
+}
+
+void FrameBuffer::SubmitRenderQuad2D_2Command(const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr1, const ColorRGB& clr2, const ColorRGB& clr3, const ColorRGB& clr4)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERQUAD2D_2);
+
+    m_RenderBuffer[0].push_back(topleft.x);
+    m_RenderBuffer[0].push_back(topleft.y);
+
+    m_RenderBuffer[0].push_back(bottomleft.x);
+    m_RenderBuffer[0].push_back(bottomleft.y);
+
+    m_RenderBuffer[0].push_back(topright.x);
+    m_RenderBuffer[0].push_back(topright.y);
+
+    m_RenderBuffer[0].push_back(bottomright.x);
+    m_RenderBuffer[0].push_back(bottomright.y);
+
+    m_RenderBuffer[0].push_back(clr1.r);
+    m_RenderBuffer[0].push_back(clr1.g);
+    m_RenderBuffer[0].push_back(clr1.b);
+    m_RenderBuffer[0].push_back(clr1.a);
+
+    m_RenderBuffer[0].push_back(clr2.r);
+    m_RenderBuffer[0].push_back(clr2.g);
+    m_RenderBuffer[0].push_back(clr2.b);
+    m_RenderBuffer[0].push_back(clr2.a);
+
+    m_RenderBuffer[0].push_back(clr3.r);
+    m_RenderBuffer[0].push_back(clr3.g);
+    m_RenderBuffer[0].push_back(clr3.b);
+    m_RenderBuffer[0].push_back(clr3.a);
+
+    m_RenderBuffer[0].push_back(clr4.r);
+    m_RenderBuffer[0].push_back(clr4.g);
+    m_RenderBuffer[0].push_back(clr4.b);
+    m_RenderBuffer[0].push_back(clr4.a);
+}
+
+void FrameBuffer::SubmitRenderQuad2D_Command(const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERQUAD2D);
+
+    m_RenderBuffer[0].push_back(topleft.x);
+    m_RenderBuffer[0].push_back(topleft.y);
+
+    m_RenderBuffer[0].push_back(bottomleft.x);
+    m_RenderBuffer[0].push_back(bottomleft.y);
+
+    m_RenderBuffer[0].push_back(topright.x);
+    m_RenderBuffer[0].push_back(topright.y);
+
+    m_RenderBuffer[0].push_back(bottomright.x);
+    m_RenderBuffer[0].push_back(bottomright.y);
+
+    m_RenderBuffer[0].push_back(clr.r);
+    m_RenderBuffer[0].push_back(clr.g);
+    m_RenderBuffer[0].push_back(clr.b);
+    m_RenderBuffer[0].push_back(clr.a);
+}
+
+void FrameBuffer::SubmitRenderTexturedQuad2D_3Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const Vector2f& a6, const Vector2f& a7, const Vector2f& a8, const Vector2f& a9, const ColorRGB& clr)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_3);
+
+    m_RenderBuffer[0].push_back(tex);
+
+    m_RenderBuffer[0].push_back(topleft.x);
+    m_RenderBuffer[0].push_back(topleft.y);
+
+    m_RenderBuffer[0].push_back(bottomleft.x);
+    m_RenderBuffer[0].push_back(bottomleft.y);
+
+    m_RenderBuffer[0].push_back(topright.x);
+    m_RenderBuffer[0].push_back(topright.y);
+
+    m_RenderBuffer[0].push_back(bottomright.x);
+    m_RenderBuffer[0].push_back(bottomright.y);
+
+    m_RenderBuffer[0].push_back(a6.x);
+    m_RenderBuffer[0].push_back(a6.y);
+
+    m_RenderBuffer[0].push_back(a7.x);
+    m_RenderBuffer[0].push_back(a7.y);
+
+    m_RenderBuffer[0].push_back(a8.x);
+    m_RenderBuffer[0].push_back(a8.y);
+
+    m_RenderBuffer[0].push_back(a9.x);
+    m_RenderBuffer[0].push_back(a9.y);
+
+    m_RenderBuffer[0].push_back(clr.r);
+    m_RenderBuffer[0].push_back(clr.g);
+    m_RenderBuffer[0].push_back(clr.b);
+    m_RenderBuffer[0].push_back(clr.a);
+}
+
+void FrameBuffer::SubmitRenderVertexBufferCommand(const void* vb, const int a2, const int a3)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERVERTEXBUFFER);
+    m_RenderBuffer[0].push_back(vb);
+    m_RenderBuffer[0].push_back(a2);
+    m_RenderBuffer[0].push_back(a3);
+}
+
+void FrameBuffer::SubmitRenderMeshColorBufferCommand(const MeshBuffer_Dx9* mesh)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERMESHCOLORBUFFER);
+    m_RenderBuffer[0].push_back(mesh);
+}
+
+void FrameBuffer::SubmitStartCharacterRenderCommand()
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_STARTCHARACTERRENDER);
+}
+
+void FrameBuffer::SubmitSetBoneMatrixCommand(const int boneid, DirectX::XMMATRIX& mat)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_SETBONEMATRIX);
+    m_RenderBuffer[0].push_back(boneid);
+
+    m_RenderBuffer[0].PushModelMatrix(mat);
+}
+
+void FrameBuffer::SubmitBeginTextCommand(const int textlen, const void* textprop, const Vector4f& textdimens)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_BEGINTEXT);
+
+    m_RenderBuffer[0].push_back(textlen);
+    m_RenderBuffer[0].push_back(textprop);
+
+    m_RenderBuffer[0].push_back(textdimens.x);
+    m_RenderBuffer[0].push_back(textdimens.y);
+    m_RenderBuffer[0].push_back(textdimens.z);
+    m_RenderBuffer[0].push_back(textdimens.a);
+}
+
+void FrameBuffer::SubmitRenderTextCommand(const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const bool a5)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTEXT);
+
+    m_RenderBuffer[0].push_back(topleft.x);
+    m_RenderBuffer[0].push_back(topleft.y);
+
+    m_RenderBuffer[0].push_back(bottomleft.x);
+    m_RenderBuffer[0].push_back(bottomleft.y);
+
+    m_RenderBuffer[0].push_back(topright.x);
+    m_RenderBuffer[0].push_back(topright.y);
+
+    m_RenderBuffer[0].push_back(bottomright.x);
+    m_RenderBuffer[0].push_back(bottomright.y);
+
+    m_RenderBuffer[0].push_back(a5 != false);
+}
+
+void FrameBuffer::SubmitRenderText2Command(const Vector2f& p1, const Vector2f& p2, const Vector2f& p3, const Vector2f& p4, const Vector2f& p5, const Vector2f& p6, const Vector2f& p7, const Vector2f& p8, const bool a9)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTEXT2);
+
+    m_RenderBuffer[0].push_back(p1.x);
+    m_RenderBuffer[0].push_back(p1.y);
+
+    m_RenderBuffer[0].push_back(p2.x);
+    m_RenderBuffer[0].push_back(p2.y);
+
+    m_RenderBuffer[0].push_back(p3.x);
+    m_RenderBuffer[0].push_back(p3.y);
+
+    m_RenderBuffer[0].push_back(p4.x);
+    m_RenderBuffer[0].push_back(p4.y);
+
+    m_RenderBuffer[0].push_back(p5.x);
+    m_RenderBuffer[0].push_back(p5.y);
+
+    m_RenderBuffer[0].push_back(p6.x);
+    m_RenderBuffer[0].push_back(p6.y);
+
+    m_RenderBuffer[0].push_back(p7.x);
+    m_RenderBuffer[0].push_back(p7.y);
+
+    m_RenderBuffer[0].push_back(p8.x);
+    m_RenderBuffer[0].push_back(p8.y);
+
+    m_RenderBuffer[0].push_back(a9 != false);
+}
+
+void FrameBuffer::SubmitRenderSkinnedMeshBufferCommand(const SkinnedMeshBuffer* skinnedmeshbuf)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERSKINNEDMESHBUFFER);
+    m_RenderBuffer[0].push_back(skinnedmeshbuf);
+}
+
+void FrameBuffer::SubmitEndCharacterRenderCommand()
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_ENDCHARACTERRENDER);
+}
+
+void FrameBuffer::SubmitUpdateSpritePositionCommand(int a1, const int, const Vector2f& p1, const Vector2f& p2, const Vector2f& p3, const Vector2f& p4)
+{
+    *(float*)&m_RenderBuffer[0].m_ParamsArray[a1++] = p1.x;
+    *(float*)&m_RenderBuffer[0].m_ParamsArray[a1++] = p1.y;
+
+    *(float*)&m_RenderBuffer[0].m_ParamsArray[a1++] = p2.x;
+    *(float*)&m_RenderBuffer[0].m_ParamsArray[a1++] = p2.y;
+
+    *(float*)&m_RenderBuffer[0].m_ParamsArray[a1++] = p3.x;
+    *(float*)&m_RenderBuffer[0].m_ParamsArray[a1++] = p3.y;
+
+    *(float*)&m_RenderBuffer[0].m_ParamsArray[a1++] = p4.x;
+    *(float*)&m_RenderBuffer[0].m_ParamsArray[a1] = p4.y;
+}
+
+void FrameBuffer::SubmitRenderTexturedQuad2D_2Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_2);
+
+    m_RenderBuffer[0].push_back(tex);
+
+    m_RenderBuffer[0].push_back(topleft.x);
+    m_RenderBuffer[0].push_back(topleft.y);
+
+    m_RenderBuffer[0].push_back(bottomleft.x);
+    m_RenderBuffer[0].push_back(bottomleft.y);
+
+    m_RenderBuffer[0].push_back(topright.x);
+    m_RenderBuffer[0].push_back(topright.y);
+
+    m_RenderBuffer[0].push_back(bottomright.x);
+    m_RenderBuffer[0].push_back(bottomright.y);
+
+    m_RenderBuffer[0].push_back(clr.r);
+    m_RenderBuffer[0].push_back(clr.g);
+    m_RenderBuffer[0].push_back(clr.b);
+    m_RenderBuffer[0].push_back(clr.a);
+}
+
+void FrameBuffer::SubmitRenderTexturedQuad2D_1Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& top, const Vector2f& bottom, const ColorRGB& clr)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_1);
+
+    m_RenderBuffer[0].push_back(tex);
+
+    m_RenderBuffer[0].push_back(top.x);
+    m_RenderBuffer[0].push_back(top.y);
+
+    m_RenderBuffer[0].push_back(bottom.x);
+    m_RenderBuffer[0].push_back(bottom.y);
+
+    m_RenderBuffer[0].push_back(clr.r);
+    m_RenderBuffer[0].push_back(clr.g);
+    m_RenderBuffer[0].push_back(clr.b);
+    m_RenderBuffer[0].push_back(clr.a);
+}
+
+unsigned int FrameBuffer::SubmitSetModelMatrixCommand(const DirectX::XMMATRIX& mat)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_SETMODELMATRIX);
+    unsigned int ret = m_RenderBuffer[0].m_CurrentParamIndex;
+    m_RenderBuffer[0].PushModelMatrix(mat);
+
+    field_0 ^= ((unsigned char)field_0 ^ (GfxInternal::_A08704[0].field_0 == 1)) & 1;
+
+    return ret;
+}
+
 void FrameBuffer::SubmitEnableEnvironmentMapCommand(const bool enabled)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_ENABLEENVIRONMENTMAP);
@@ -379,12 +766,74 @@ void FrameBuffer::SubmitCallCommand(const int callcmd)
     m_RenderBuffer[0].push_back(callcmd);
 }
 
+void FrameBuffer::SubmitBeginShadowCommand(GfxInternal_Dx9_Texture* tex)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_BEGINSHADOW);
+    m_RenderBuffer[0].push_back(tex);
+}
+
+void FrameBuffer::SubmitRenderShadowCommand(const Vector4f& pos1, const Vector4f& pos2, const Vector4f& pos3, const Vector2f& uv1, const Vector2f& uv2, const Vector2f& uv3, const float rot1, const float rot2, const float rot3)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERSHADOW);
+
+    m_RenderBuffer[0].push_back(pos1.x);
+    m_RenderBuffer[0].push_back(pos1.y);
+    m_RenderBuffer[0].push_back(pos1.z);
+
+    m_RenderBuffer[0].push_back(pos2.x);
+    m_RenderBuffer[0].push_back(pos2.y);
+    m_RenderBuffer[0].push_back(pos2.z);
+
+    m_RenderBuffer[0].push_back(pos3.x);
+    m_RenderBuffer[0].push_back(pos3.y);
+    m_RenderBuffer[0].push_back(pos3.z);
+
+    m_RenderBuffer[0].push_back(uv1.x);
+    m_RenderBuffer[0].push_back(uv1.y);
+
+    m_RenderBuffer[0].push_back(uv2.x);
+    m_RenderBuffer[0].push_back(uv2.y);
+
+    m_RenderBuffer[0].push_back(uv3.x);
+    m_RenderBuffer[0].push_back(uv3.y);
+
+    m_RenderBuffer[0].push_back(rot1);
+    m_RenderBuffer[0].push_back(rot2);
+    m_RenderBuffer[0].push_back(rot3);
+}
+
 void FrameBuffer::SubmitEndShadowCommand()
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_ENDSHADOW);
 }
 
+void FrameBuffer::SubmitEndTextCommand()
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_ENDTEXT);
+}
+
+void FrameBuffer::SubmitSetCurrentTextureCommand(const GfxInternal_Dx9_Texture* tex, const int stage)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_SETCURRENTTEXTURE);
+    m_RenderBuffer[0].push_back(tex);
+    m_RenderBuffer[0].push_back(stage);
+
+    field_0 ^= ((unsigned char)field_0 ^ (unsigned char)(2 * (GfxInternal::_A08704[1].field_0 == 1))) & 2;
+}
+
+void FrameBuffer::SubmitSetTextureScrollCommand(const float a1, const int a2)
+{
+    m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_SETTEXTURESCROLL);
+    m_RenderBuffer[0].push_back(a1);
+    m_RenderBuffer[0].push_back(a2);
+}
+
 void FrameBuffer::SubmitIndexedParam(const void* param, const int index)
 {
     m_RenderBuffer[0].m_ParamsArray[index] = (int)param;
+}
+
+void FrameBuffer::SetRenderBufferSize(const unsigned int size)
+{
+    m_RenderBuffer[0].SetBufferSize(size);
 }

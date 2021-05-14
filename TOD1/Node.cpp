@@ -531,6 +531,15 @@ void Node::InstantiateAllChildren()
         n->InstantiateAllChildren();
 }
 
+void Node::DestroyChildren()
+{
+    for (Node* child = m_FirstChild; child; child = child->m_NextSibling)
+    {
+        child->nullsub_5();
+        child->DestroyChildren();
+    }
+}
+
 AuxQuadTree* Node::_8A0810(Node* node)
 {
     if (node->m_QuadTree)

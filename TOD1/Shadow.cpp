@@ -4,7 +4,7 @@
 
 int Shadow::TotalShadows;
 Vector4f Shadow::_A12B70 = { 1000, 1000, 1000, 0 };
-std::vector<int> Shadow::_A12B60;
+std::vector<Vector4f> Shadow::_A12B60;
 std::vector<int> Shadow::_A3E09C;
 int* Shadow::_A3E090;
 

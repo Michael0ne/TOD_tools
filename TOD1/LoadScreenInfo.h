@@ -19,7 +19,7 @@ public:
     LoadScreenInfo(const char* texturePath);	//	@87C230
 
     void                SetTexturePath(const char*);	//	@87C2A0
-    void                Enable(void* topNode);	//	@87C6A0
+    void                Enable(Node* topNode);	//	@87C6A0
     void                Show(Node* topNode);	//	@87C430
     void                Deactivate();	//	@87C1F0
 

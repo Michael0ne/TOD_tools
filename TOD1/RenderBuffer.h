@@ -1,11 +1,14 @@
 #pragma once
+#include "Types.h"
 #include "MemoryManager.h"
+#include "directxmath/include/DirectXMath.h"
 
 #define RENDERBUFFER_DEFAULT_BUFFER_SIZE 128
 #define RENDERBUFFER_MAX_PARAMS_SIZE 250
 
 class RenderBuffer
 {
+    friend class FrameBuffer;
 public:
     enum RenderCommand
     {
@@ -148,7 +151,7 @@ public:
     int             m_PrevParamIndex;
     AllocatorIndex  m_AllocatorId;
 
-private:
+protected:
     void            SetBufferSize(unsigned int size);	//	@415350
 
 public:
@@ -156,14 +159,30 @@ public:
     RenderBuffer() {};
 
     void            AdjustBufferSize(unsigned int size);	//	@415510
-    inline void     push_back(int val)	//	NOTE: this does not exist in original code as-is, because it's always inlined.
+    template <typename T>
+    inline void     push_back(T val)	//	NOTE: this does not exist in original code as-is, because it's always inlined.
     {
         //  TODO: unoptimised variant. In most cases we know how much parameters are being submitted, re-write and take it into account.
         if (m_MaxParams < m_CurrentParamIndex + 1)
             AdjustBufferSize(m_CurrentParamIndex + 1);
 
-        m_ParamsArray[m_CurrentParamIndex++] = val;
+        *(T*)&m_ParamsArray[m_CurrentParamIndex++] = val;
     }
+    void            PopMatrix(DirectX::XMMATRIX& mat); //  @431430
+    void            PopVector2i(Vector2<int>& vec);    //  @431400
+    void            PopVector4f(Vector4f& vec); //  @431390
+    void            PopFloat(float& f); //  @431320
+    void            PopBool(bool& b);   //  @431290
+    void            PopQuaternion(Orientation& q);    //  @430CD0
+
+    void            PushVector4i(const Vector4<int>& vec);  //  @431340
+    void            PushFloat(const float& f);  //  @4312F0
+    void            PushInt(const int& i);  //  @4312C0
+    void            PushBool(const bool& b);    //  @431260
+    void            PushVector2i(const Vector2<int>& vec);  //  @431200
+    void            PushVector2f(const Vector2f& vec);  //  @431180
+    void            PushMatrix(const DirectX::XMMATRIX& mat, const unsigned int ind);   //  @430F80
+    void            PushModelMatrix(const DirectX::XMMATRIX& mat);  //  @430D60
 
     static void     CreateRenderBuffer();	//	@436070
 

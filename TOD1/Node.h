@@ -160,6 +160,7 @@ public:
     void				TriggerGlobalScript(int scriptId, void* args);	//	@86A340
     void                _88C310(struct CameraMatrix* cammat);  //  @88C310
     void                InstantiateAllChildren();   //  @88C2B0
+    void                DestroyChildren();  //  @8752A0
 
     static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
 

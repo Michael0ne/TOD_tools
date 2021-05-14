@@ -28,7 +28,7 @@ public:
 		ptr = nullptr;
 	}
 
-	static std::map<int, GfxInternal_Dx9_IndexBuffer*>	IndexBufferMap;	//	@A39F38
+	static std::map<int, GfxInternal_Dx9_IndexBuffer>*	IndexBufferMap;	//	@A39F38
 
 	static void		CreateIndexBufferMap();	//	@460AB0
 };
