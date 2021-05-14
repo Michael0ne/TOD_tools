@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseAsset.h"
+#include "TextureAsset.h"
 #include "Config.h"
 #include <vector>
 
@@ -138,9 +139,11 @@ public:
     void*                       LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid);	//	@8759E0
     Entity*                     _8755E0();	//	@8755E0
     Entity*                     _875610(Entity*);	//	@875610
+    void                        ResetSceneChildrenNodes(const int);  //  @875390
     RegionCode                  GetRegion() const;	//	@875440
     String&                     GetDataPath(String& outstr) const;	//	@8764E0
     Asset*                      FindFirstFreeResource() const;	//	@879E00
+    void                        DestroyTextureAsset(TextureAsset& ass); //  @875340
 
     static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform);	//	@876500
     static RegionCode           RegionIdByName(const String& region);	//	@875450

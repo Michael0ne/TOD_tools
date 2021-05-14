@@ -46,7 +46,7 @@ void LoadScreenInfo::SetTexturePath(const char* _path)
 	m_TexturePath = _path;
 }
 
-void LoadScreenInfo::Enable(void* topNode)
+void LoadScreenInfo::Enable(Node* topNode)
 {
 	if (m_Enabled)
 		return;
@@ -63,7 +63,7 @@ void LoadScreenInfo::Enable(void* topNode)
 void LoadScreenInfo::Show(Node* topNode)
 {
 	DWORD timestart = Performance::GetMilliseconds();
-	int f9758 = g_GfxInternal_Dx9->field_9758;
+	float f9758 = g_GfxInternal_Dx9->field_9758;
 
 	g_AssetManager->ResetSceneChildrenNodes(true);
 	LoadTexture();
@@ -101,7 +101,7 @@ void LoadScreenInfo::Show(Node* topNode)
 	g_GfxInternal_Dx9->field_9758 += f9758;
 	delete fb;
 
-	g_AssetManager->DestroyResourceTexture(m_TextureResource);
+	g_AssetManager->DestroyTextureAsset(*m_TextureResource);
 	Asset::Destroy(m_TextureResource);
 
 	LogDump::LogA("LoadScreen::Show (%s) took %ims\n", m_TexturePath.m_szString, Performance::GetMilliseconds() - timestart);

@@ -126,6 +126,7 @@ public:
     void            CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, unsigned int savesize);	//	@895B80
     void            RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, const MemoryCards* memcards);	//	@895C00
     void            LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode);	//	@895CB0
+    void            ProfileMemory(const int);   //  @893460
 
     static int      RealTimeMs;	//	@A3DCCC
     static int      GameTimeMs;	//	@A3DCD4

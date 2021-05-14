@@ -2,7 +2,6 @@
 #include "StringsPool.h"
 #include "GfxInternal_Dx9_VertexBuffer.h"
 #include "GfxInternal_Dx9_IndexBuffer.h"
-#include <map>
 
 class MeshBuffer
 {

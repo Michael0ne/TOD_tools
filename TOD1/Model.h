@@ -15,7 +15,7 @@ class Model : public Node
 protected:
     ModelAsset         *m_ModelRes;
     int                 field_54;
-    MeshColorAsset     *m_LightingRes;
+    MeshColorAsset     *m_ModelLighting;
     int                 field_5C;
     Folder_            *m_AssocFolder;
     short               m_ActiveTextureSet;
@@ -56,7 +56,7 @@ protected:
     int                 field_70;
     int                *field_74;
     int                 field_78;
-    FrameBuffer     *m_FrameBuffer;
+    FrameBuffer        *m_FrameBuffer;
     int                 field_80;
     int                 field_84;
     int                 field_88;

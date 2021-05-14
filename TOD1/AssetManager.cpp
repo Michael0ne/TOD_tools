@@ -5,6 +5,8 @@
 #include "Performance.h"
 #include "Progress.h"
 #include "ScriptDatabase.h"
+#include "GfxInternal.h"
+#include "Scene.h"
 
 AssetManager* g_AssetManager;
 bool AssetManager::ChecksumChecked;
@@ -573,6 +575,30 @@ Entity* AssetManager::_875610(Entity* node)
 		return nullptr;
 }
 
+void AssetManager::ResetSceneChildrenNodes(const int)
+{
+	g_GfxInternal->Render(nullptr, false, -1, -1);
+	MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->stub19();
+	MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->GetTotalAllocations();
+
+	if (Scene::SceneInstance)
+	{
+		for (Node* child = Scene::SceneInstance->m_FirstChild; child; child = child->m_NextSibling)
+		{
+			child->nullsub_5();
+			child->DestroyChildren();
+		}
+	}
+
+	int alloc = MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->stub19();
+	MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->GetTotalAllocations();
+
+	if (alloc > 4 && Scene::SceneInstance)
+		Scene::SceneInstance->ProfileMemory(0);
+
+	g_GfxInternal->SetRenderBufferIsEmpty(false);
+}
+
 AssetManager::RegionCode AssetManager::GetRegion() const
 {
 	return m_RegionId;
@@ -594,6 +620,12 @@ Asset* AssetManager::FindFirstFreeResource() const
 			return m_ResourcesInstancesList[i];
 
 	return nullptr;
+}
+
+void AssetManager::DestroyTextureAsset(TextureAsset& ass)
+{
+	ass.DestroyResource();
+	field_0 = 1;
 }
 
 void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)

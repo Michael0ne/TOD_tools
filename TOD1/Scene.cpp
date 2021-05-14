@@ -206,6 +206,13 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
 }
 
 #pragma message(TODO_IMPLEMENTATION)
+void Scene::ProfileMemory(const int)
+{
+	LogDump::LogA("(memory profiler is not available in this build)\n");
+	//	TODO: calls profiler method of MemoryManager class.
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::Start()
 {
 	if (m_PlayMode != MODE_UNKNOWN_1)

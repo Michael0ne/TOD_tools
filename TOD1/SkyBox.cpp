@@ -1,6 +1,7 @@
 #include "SkyBox.h"
 
 EntityType* tSkyBox;
+int* SkyBox::StaticMesh[5];
 const SkyBox::SkyBoxMesh SkyBox::StaticMeshInfo[5] =
 {
   {
@@ -54,6 +55,11 @@ SkyBox::~SkyBox()
 	MESSAGE_CLASS_DESTROYED(SkyBox);
 
 	delete m_FrameBuffer;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void SkyBox::Render()
+{
 }
 
 void SkyBox::Register()

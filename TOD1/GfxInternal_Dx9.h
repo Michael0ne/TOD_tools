@@ -310,7 +310,7 @@ public:
     void		ResetStream();	//	@450810
     DisplayModeInfo* IsScreenResolutionAvailable(unsigned int width, unsigned int height, bool dontignoreunavailable);	//	@450890
     void		EnumDisplayModes();	//	@4508F0
-    char		_4509F0(void*);	//	@4509F0
+    char		GetLightStatus(const LightStatus*) const;	//	@4509F0
     void		CreateSurfaces();	//	@450A30
     void		CreateParticleMeshBuffer();	//	@450DB0
     void		Reset();	//	@451020
