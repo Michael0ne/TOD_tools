@@ -15,6 +15,12 @@ StreamedSound::StreamedSound(class SoundFile* sndfile, int, int, int, char, char
 }
 
 #pragma message(TODO_IMPLEMENTATION)
+StreamedSound::StreamedSound(bool a2, unsigned int totalchunks, int channels, unsigned int isstereo, float bytespersec, unsigned int frequency, bool ismonosound, unsigned int a9, char a10, const char* filepath)
+{
+	MESSAGE_CLASS_CREATED(StreamedSound);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 void StreamedSound::stub2()
 {
 }

@@ -16,7 +16,7 @@ Font::Font(const GlyphInfo& glyphsInfo)
 	MESSAGE_CLASS_CREATED(Font);
 
 	field_0 = NULL;
-	field_3C = NULL;
+	m_FontTexture = nullptr;
 	m_GlyphsList = {};
 	field_54 = NULL;
 	field_50 = NULL;

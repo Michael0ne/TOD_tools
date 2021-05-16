@@ -120,6 +120,7 @@ protected:
 public:
 	virtual ~StreamedSound();	//	@446640
 	StreamedSound(class SoundFile* sndfile, int, int, int, char, char);	//	@445770
+	StreamedSound(bool a2, unsigned int totalchunks, int channels, unsigned int isstereo, float bytespersec, unsigned int frequency, bool ismonosound, unsigned int a9, char a10, const char* filepath);	//	@441A10
 
 	void* operator new (size_t size)
 	{

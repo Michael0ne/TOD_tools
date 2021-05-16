@@ -1,5 +1,6 @@
 #pragma once
 #include "StringsPool.h"
+#include "GfxInternal_Dx9_Texture.h"
 #include <vector>
 
 class Font
@@ -40,8 +41,8 @@ private:
     int				field_30;
     float			field_34;
     int				field_38;
-    int				field_3C;
-    std::vector<String>	m_GlyphsList;
+    GfxInternal_Dx9_Texture*    m_FontTexture;
+    std::vector<Glyph>	m_GlyphsList;
     int				field_50;
     int				field_54;
     float			field_58;
