@@ -35,6 +35,8 @@ public:
 
     static unsigned int AssetAlignment[3];  //  @A3BE1C
     static std::vector<AssetInstance*> Assets;  //  @A10F80
+
+    static AssetInstance*   GetAssetInstanceByName(const char* const asspath);  //  @852220
 };
 
 //	NOTE: this class is actually inherited from another class, but parent doesn't seem to do anything important, so skipping it now.
@@ -74,13 +76,13 @@ public:
     typedef Asset* (*CREATOR)();
 
 public:
-    const char*      m_ResourcePath;
-    int              m_GlobalResourceId;	//	NOTE: this is an index for Blocks global 'ResourceTypeList'.
-    int              field_C;
-    UINT64           m_ResourceTimestamp;
+    const char*         m_ResourcePath;
+    int                 m_GlobalResourceId;	//	NOTE: this is an index for Blocks global 'ResourceTypeList'.
+    int                 field_C;
+    UINT64              m_ResourceTimestamp;
     union
     {
-        unsigned short m_ReferenceCount;
+        unsigned short  m_ReferenceCount;
         struct
         {
             unsigned _0 : 8;
@@ -108,23 +110,23 @@ public:
             unsigned _29 : 1;
             unsigned _30 : 1;
             unsigned _31 : 1;
-        }            m_FlagBits;
-        unsigned int m_Flags;
-    }                m_Flags;
+        }               m_FlagBits;
+        unsigned int    m_Flags;
+    }                   m_Flags;
 
 public:
-    virtual          ~Asset();	//	@8516C0
+    virtual             ~Asset();	//	@8516C0
     virtual AssetInstance* GetInstancePtr() const = 0;
-    virtual bool     stub3(unsigned char a1, int, int);    //  @851400
-    virtual bool     stub4() const; //  @851E80
-    virtual void     stub5(int);
-    virtual void     GetResourcesDir(String& outDir, PlatformId platformId) const;    //  @851EC0
-    virtual void     ApplyAssetData(int*);
-    virtual char     SetResourcePlaceholder();  //  @42F4F0
-    virtual int      stub9() const;   //  @851EA0
-    virtual void     GetResourceName(String& outName, int a2);  //  @851DB0
-    virtual void     LoadResource(const char* const resPath);
-    virtual void     DestroyResource(); //  @851E90
+    virtual bool        stub3(unsigned char a1, int, int);    //  @851400
+    virtual bool        stub4() const; //  @851E80
+    virtual void        stub5(int);
+    virtual void        GetResourcesDir(String& outDir, PlatformId platformId) const;    //  @851EC0
+    virtual void        ApplyAssetData(int*);
+    virtual char        SetResourcePlaceholder();  //  @42F4F0
+    virtual int         stub9() const;   //  @851EA0
+    virtual void        GetResourceName(String& outName, int a2);  //  @851DB0
+    virtual void        LoadResource(const char* const resPath);
+    virtual void        DestroyResource(); //  @851E90
 
     Asset(bool dontmakeglobal);	//	@851D00
 
@@ -141,15 +143,16 @@ public:
         ptr = nullptr;
     }
 
-    const char*      AddResToOpenListAndReturnName() const;	//	@851720
-    void             _851800(String& outstr, const char* inpath, bool a3, bool a4) const;	//	@851800
-    void             SetReferenceCount(unsigned char count);	//	@8513E0
-    void             EncodeCountryCode(const char* const countrycode);	//	@851480
-    const char* const GetResourceCountryCode() const;	//	@851CC0
+    const char*         AddResToOpenListAndReturnName() const;	//	@851720
+    void                _851800(String& outstr, const char* inpath, bool a3, bool a4) const;	//	@851800
+    void                SetReferenceCount(unsigned char count);	//	@8513E0
+    void                EncodeCountryCode(const char* const countrycode);	//	@851480
+    const char* const   GetResourceCountryCode() const;	//	@851CC0
+    void                SetResourcePath(const char* const respath); //  @851DF0
 
     static AllocatorIndex AllocatorIndexByBlockType(unsigned int blocktype);   //  @851FE0
-    static void      Destroy(Asset* res);	//	@851FC0
-    static Asset*    CreateInstance(size_t classsize);  //  @852100
+    static void         Destroy(Asset* res);	//	@851FC0
+    static Asset*       CreateInstance(size_t classsize);  //  @852100
 
     static const char* const BlockTypeExtension[];  //  @A11B64
     static std::vector<String> OpenResourcesList;	//	@A10F00

@@ -98,6 +98,7 @@ class GfxInternal
 {
     friend class TextureAsset;
     friend class GfxInternal_Dx9;
+    friend class LoadScreenInfo;
 protected:
     bool                            m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
     std::vector<GfxInternal_Dx9_Texture*>	m_TexturesList;

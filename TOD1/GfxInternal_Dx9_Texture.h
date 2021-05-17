@@ -3,7 +3,9 @@
 #include "Types.h"
 #include "GfxInternal_Dx9_Surface.h"
 #include <map>
+#include <vector>
 
+#pragma pack(4)
 class GfxInternal_Dx9_Texture
 {
     enum TextureFormat
@@ -15,11 +17,22 @@ class GfxInternal_Dx9_Texture
         DXT5 = 11
     };
 
-    struct Texture
+    struct Texture2
     {
         int             field_0;
         int             field_4;
-        int             m_Levels;
+        int             field_8;
+        int             field_C;
+        int             field_10;
+        int             field_14;
+        int            *field_18;
+        int             field_1C;
+    };
+
+    struct Texture
+    {
+        unsigned char   field_0;
+        std::vector<Texture2*> field_4;
     };
 
 public:
@@ -31,7 +44,8 @@ public:
     TextureFormat       m_Format;
     int                 field_20;
     unsigned short      m_Levels;
-    int                 m_MipMapLevels;
+    unsigned short      field_26;   //  NOTE: not used, only here for alignment.
+    unsigned char       m_MipMapLevels;
 
 private:
     void                CreateDirect3DTexture(const ScreenResolution& res, unsigned int formatindex, unsigned int levels);	//	@463530
@@ -39,7 +53,7 @@ private:
 public:
     GfxInternal_Dx9_Texture(const ScreenResolution& resolution, unsigned int, unsigned int levels);	//	@463BA0
     GfxInternal_Dx9_Texture(void*);	//	@463C60
-    ~GfxInternal_Dx9_Texture();
+    ~GfxInternal_Dx9_Texture(); //  @463D20
 
     unsigned int        GetSizeForLevel(const unsigned char lvl) const;	//	@4633D0
     void                SetTextureForStage(const unsigned int stage) const; //  @4634B0
