@@ -11,6 +11,26 @@ const char* const Asset::BlockTypeExtension[] = { ".", "map", "submap", "mission
 unsigned int AssetInstance::AssetAlignment[3];
 std::vector<AssetInstance*> AssetInstance::Assets;
 
+AssetInstance* AssetInstance::GetAssetInstanceByName(const char* const asspath)
+{
+    if (Assets.size() <= 0)
+        return nullptr;
+
+    char* asspath_ = (char*)asspath;
+    String::ToLowerCase(asspath_);
+    asspath_ = strrchr(asspath_, '.') + 1;
+
+    for (auto it = Assets.cbegin(); it != Assets.cend(); it++)
+        if ((*it)->m_FileExtensions.size() <= 0)
+            continue;
+        else
+            for (auto ext = (*it)->m_FileExtensions.cbegin(); ext != (*it)->m_FileExtensions.cend(); ext++)
+                if (strcmp(ext->m_szString, asspath_) == 0)
+                    return *it;
+
+    return nullptr;
+}
+
 Asset::~Asset()
 {
     MESSAGE_CLASS_DESTROYED(Asset);
@@ -220,4 +240,14 @@ AllocatorIndex Asset::AllocatorIndexByBlockType(unsigned int blocktype)
         return PLAYER_DATA;
 
     return DEFAULT;
+}
+
+void Asset::SetResourcePath(const char* const respath)
+{
+    if (m_ResourcePath)
+        delete[] m_ResourcePath;
+
+    size_t respathlen = strlen(respath);
+    m_ResourcePath = new char[respathlen + 1];
+    strncpy((char*)m_ResourcePath, respath, respathlen);
 }

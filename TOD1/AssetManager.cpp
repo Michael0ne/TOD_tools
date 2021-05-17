@@ -10,6 +10,7 @@
 
 AssetManager* g_AssetManager;
 bool AssetManager::ChecksumChecked;
+bool AssetManager::_A3D7C0;
 
 void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform)
 {
@@ -426,6 +427,30 @@ void AssetHeaderStruct_t::Header_t::_4011A0(char* key)
 	*key ^= v17;
 	if (v17 == *key)
 		*key = v17;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Asset* AssetManager::LoadResourceFile(const char* const respath)
+{
+	size_t respathlen = strlen(respath);
+	if (!respath || !*respath || !respathlen)
+		return nullptr;
+
+	AssetInstance* assinst = AssetInstance::GetAssetInstanceByName(respath);
+	if (_A3D7C0 && assinst == TextureAsset::Instance)
+	{
+		TextureAsset* texass = (TextureAsset*)TextureAsset::Instance->m_Creator();
+		if (texass->SetResourcePlaceholder())
+		{
+			texass->m_ResourceTimestamp = NULL;
+			texass->m_Flags.m_ReferenceCount |= 0x20000;
+		}
+
+		texass->SetResourcePath(respath);
+		return texass;
+	}
+
+	//	NOTE: actually load asset from a specified path.
 }
 
 #pragma message(TODO_IMPLEMENTATION)

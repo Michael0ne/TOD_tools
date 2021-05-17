@@ -11,7 +11,6 @@ LoadScreenInfo* g_LoadScreenInfo = nullptr;
 unsigned int LoadScreenInfo::AllocatorIdForTextureResourceLoading;
 bool LoadScreenInfo::IsLoadingLoadScreenTexture;
 
-#pragma message(TODO_IMPLEMENTATION)
 void LoadScreenInfo::LoadTexture()
 {
 	if (m_TexturePath.Empty())
@@ -20,14 +19,14 @@ void LoadScreenInfo::LoadTexture()
 	AllocatorIdForTextureResourceLoading = RENDERLIST;
 	IsLoadingLoadScreenTexture = true;
 
-	//String respath;
-	//Blocks::GetPlatformSpecificResourcePath(respath, m_TexturePath.m_szString, Script::IsRegionEurope() ? GameConfig::CountryCodes::COUNTRY_USA : GameConfig::CountryCodes::COUNTRY_EUROPE, ResType::PlatformId::PLATFORM_PC);
+	String respath;
+	AssetManager::CorrectTextureResourcePath(respath, m_TexturePath.m_szString, GfxInternal::GetRegion(), Asset::PlatformId::PC);
 
-	//LogDump::LogA("LoadScreen:%s\n", respath.m_szString);
-	//m_TextureResource = g_Blocks->LoadResourceFile(respath.m_szString);
+	LogDump::LogA("LoadScreen:%s\n", respath.m_szString);
+	m_TextureResource = (TextureAsset*)g_AssetManager->LoadResourceFile(respath.m_szString);
 
-	//if (*g_Renderer->m_TexturesList.m_Elements == m_TextureResource->m_Texture)	//	NOTE: 'm_TexturesList' is probably 'm_PlaceholderTextures'.
-		//LogDump::LogA("TEXTURE NOT FOUND!!!!!\n");
+	if (g_GfxInternal->m_TexturesList[0] == m_TextureResource->m_Texture_1)
+		LogDump::LogA("TEXTURE NOT FOUND!!!!!\n");
 
 	IsLoadingLoadScreenTexture = false;
 	AllocatorIdForTextureResourceLoading = DEFAULT;

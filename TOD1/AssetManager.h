@@ -135,7 +135,7 @@ public:
     const char*                 GetCurrentSceneName() const;
     void                        BuildFastFindNodeVector();	//	@877DA0
     void                        FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
-    AssetInstance*              LoadResourceFile(const char* _pathandname);	//	@878AB0
+    Asset*                      LoadResourceFile(const char* const respath);	//	@878AB0
     void*                       LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid);	//	@8759E0
     Entity*                     _8755E0();	//	@8755E0
     Entity*                     _875610(Entity*);	//	@875610
@@ -149,6 +149,7 @@ public:
     static RegionCode           RegionIdByName(const String& region);	//	@875450
 
     static bool                 ChecksumChecked;	//	@A3D7C9
+    static bool                 _A3D7C0;    //  @A3D7C0
 };
 
 extern AssetManager            *g_AssetManager;
