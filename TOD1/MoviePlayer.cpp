@@ -221,7 +221,7 @@ void MoviePlayer::FrameInfo::OpenMovie()
 			BinkGetError();
 	}
 
-	m_CurrentFrameTexture = new GfxInternal_Dx9_Texture({ BinkHandle->Width, BinkHandle->Height }, 1, 4);
+	m_CurrentFrameTexture = new Texture({ BinkHandle->Width, BinkHandle->Height }, 1, 4);
 }
 
 bool MoviePlayer::FrameInfo::_442A70() const

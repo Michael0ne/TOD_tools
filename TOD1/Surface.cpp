@@ -1,6 +1,7 @@
-#include "GfxInternal_Dx9_Surface.h"
+#include "Surface.h"
+#include "LogDump.h"
 
-void GfxInternal_Dx9_Surface::SetupSurface(unsigned int width, unsigned int height)
+void Surface::SetupSurface(unsigned int width, unsigned int height)
 {
 	m_Width = width;
 	m_Height = height;
@@ -25,15 +26,15 @@ void GfxInternal_Dx9_Surface::SetupSurface(unsigned int width, unsigned int heig
 	memset(m_ColorPallette, NULL, totalColors);
 }
 
-void GfxInternal_Dx9_Surface::CreateCanvasBuffer()
+void Surface::CreateCanvasBuffer()
 {
 	m_Canvas = new char[1024];
 	ZeroMemory(m_Canvas, sizeof(m_Canvas));
 }
 
-GfxInternal_Dx9_Surface::GfxInternal_Dx9_Surface(unsigned int width, unsigned int height)
+Surface::Surface(unsigned int width, unsigned int height)
 {
-	MESSAGE_CLASS_CREATED(GfxInternal_Dx9_Surface);
+	MESSAGE_CLASS_CREATED(Surface);
 
 	m_ColorPallette = nullptr;
 	m_Canvas = nullptr;
@@ -47,7 +48,15 @@ GfxInternal_Dx9_Surface::GfxInternal_Dx9_Surface(unsigned int width, unsigned in
 	SetupSurface(width, height);
 }
 
-void GfxInternal_Dx9_Surface::SetPixelColor(unsigned int x, unsigned int y, const ColorRGB& clr)
+Surface::~Surface()
+{
+	MESSAGE_CLASS_DESTROYED(Surface);
+
+	delete m_Canvas;
+	delete m_ColorPallette;
+}
+
+void Surface::SetPixelColor(unsigned int x, unsigned int y, const ColorRGB& clr)
 {
 	//	TODO: is this conversion correct?
 	unsigned int i = 4 * (x + y * m_WidthPowerOf2);
@@ -55,4 +64,32 @@ void GfxInternal_Dx9_Surface::SetPixelColor(unsigned int x, unsigned int y, cons
 	m_ColorPallette[i++]	= (char)(clr.r * 255.f);
 	m_ColorPallette[i++]	= (char)(clr.g * 255.f);
 	m_ColorPallette[i]		= (char)(clr.b * 255.f);
+}
+
+void Surface::ConvertColorsToPS2()
+{
+	if (m_BitsPerPixel == 32)
+	{
+		LogDump::LogA("NOTE: Converting a 32bit image to PS2 colors - this might be slow!!\n");
+		if (m_Width > 0)
+		{
+			for (unsigned int x = 0; x < m_Width; ++x)
+				for (unsigned int y = 0; y < m_Height; y++)
+				{
+					//	TODO: go through 'ColorPallette' and convert colors.
+				}
+		}
+	}
+	else
+	{
+		for (unsigned int j = 0; j < (int)field_4; ++j)
+		{
+			//	TODO: go through 'Canvas' and convert colors.
+		}
+	}
+}
+
+unsigned int Surface::GetTotalSurfaceColors() const
+{
+	return (m_BitsPerPixel * m_WidthPowerOf2 * m_HeightPowerOf2 + 7) / 8;
 }

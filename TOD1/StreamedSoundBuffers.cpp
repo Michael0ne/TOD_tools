@@ -215,15 +215,8 @@ StreamedSoundBuffers::~StreamedSoundBuffers()
 
 	if (m_SoundSystem == SOUND_SYSTEM_DSOUND)
 	{
-		if (m_DirectSoundBuffer_1)
-		{
-			RELEASE_SAFE(m_DirectSoundBuffer_1);
-		}
-
-		if (m_DirectSound)
-		{
-			RELEASE_SAFE(m_DirectSound);
-		}
+		RELEASE_SAFE(m_DirectSoundBuffer_1);
+		RELEASE_SAFE(m_DirectSound);
 	}
 	else
 	{

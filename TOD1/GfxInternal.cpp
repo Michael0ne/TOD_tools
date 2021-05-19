@@ -1,6 +1,7 @@
 #include "GfxInternal.h"
 #include "Performance.h"
 #include "LogDump.h"
+#include "BuiltinType.h"
 
 GfxInternal        *g_GfxInternal = nullptr;
 bool                GfxInternal::WideScreen;	//	@A39F12
@@ -78,8 +79,7 @@ GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int u
 
     m_RenderBufferEmpty = false;
 
-    //	Allocate textures list.
-    //(*(void(__thiscall*)(Renderer*))0x4210E0)(this);
+    CreateCheckerboardTextures();
     //	Allocate something
     //(*(void(__thiscall*)(Renderer*))0x420390)(this);
 
@@ -107,7 +107,7 @@ GfxInternal::~GfxInternal()
     delete m_RenderBufferArray;
 }
 
-void GfxInternal::Render(GfxInternal_Dx9_Surface* screenshotDumpSurface, const bool shouldRender, int a3, int a4)
+void GfxInternal::Render(Surface* screenshotDumpSurface, const bool shouldRender, int a3, int a4)
 {
     ++m_FramesRendered;
 
@@ -219,7 +219,7 @@ void GfxInternal::PrepareForNewLevel()
         if (g_GfxInternal_Dx9->BeginScene())
         {
             g_GfxInternal_Dx9->SetRenderTarget(nullptr);
-            GfxInternal_Dx9_Texture::DrawAllTextures();
+            Texture::DrawAllTextures();
             
             if (g_GfxInternal_Dx9->m_RenderingScene)
                 g_GfxInternal_Dx9->m_Direct3DDevice->EndScene();
@@ -231,7 +231,7 @@ void GfxInternal::PrepareForNewLevel()
     }
 }
 
-void GfxInternal::DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const
+void GfxInternal::DumpScreenShot(class Surface* surf) const
 {
     g_GfxInternal_Dx9->DumpScreenShot(surf);
 }
@@ -312,6 +312,36 @@ FrameBuffer* GfxInternal::_41F8F0(FrameBuffer* fb, unsigned int index)
     m_RenderBufferArray[index].field_10 = (Buffer276*)fb;
 
     return ret;
+}
+
+void GfxInternal::CreateCheckerboardTextures()
+{
+    if (m_CheckerboardTextures.size() < 2)
+        m_CheckerboardTextures.reserve(2);
+    
+    m_CheckerboardTextures.clear();
+
+    //  NOTE: black & white checkerboard texture.
+    Surface* bwtexsurf = new Surface(64, 64);
+
+    for (unsigned int x = 0; x < 64; ++x)
+        for (unsigned int y = 0; y < 64; ++y)
+            bwtexsurf->SetPixelColor(x, y, !(x % 16) || !(y % 16) ? BuiltinType::ColorWhite : BuiltinType::ColorBlack );
+
+    SurfaceMutable* bwtexsurfmut = new SurfaceMutable(bwtexsurf);
+    m_CheckerboardTextures.push_back(new Texture(bwtexsurfmut));
+    delete bwtexsurfmut;
+
+    //  NOTE: pink & yellow checkerboard texture.
+    Surface* pytexsurf = new Surface(64, 64);
+
+    for (unsigned int x = 0; x < 64; ++x)
+        for (unsigned int y = 0; y < 64; ++y)
+            pytexsurf->SetPixelColor(x, y, (x % 16 < 8) || (y % 16 < 8) ? BuiltinType::ColorPink : BuiltinType::ColorYellow );
+
+    SurfaceMutable* pytexsurfmut = new SurfaceMutable(pytexsurf);
+    m_CheckerboardTextures.push_back(new Texture(pytexsurfmut));
+    delete pytexsurfmut;
 }
 
 AssetManager::RegionCode GfxInternal::GetRegion()

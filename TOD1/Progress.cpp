@@ -1,6 +1,7 @@
 #include "Progress.h"
 #include "LogDump.h"
-#include "GfxInternal_Dx9_Surface.h"
+#include "Surface.h"
+#include "BuiltinType.h"
 
 Progress* g_Progress = nullptr;
 ProgressBase* g_ProgressBase = nullptr;
@@ -26,7 +27,6 @@ void Progress::UpdateProgress(float time, bool unk)
 	//	TODO: figure out loading bar sprite dimensions and put them into render buffer, then render.
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 Progress::Progress() : ProgressBase(Performance::ClockGetCycles() / 5)
 {
 	MESSAGE_CLASS_CREATED(Progress);
@@ -36,20 +36,15 @@ Progress::Progress() : ProgressBase(Performance::ClockGetCycles() / 5)
 	m_LoadScreenSprite = nullptr;
 	m_Enabled = false;
 
-	GfxInternal_Dx9_Surface* surf = new GfxInternal_Dx9_Surface(8, 8);
+	Surface* spsurf = new Surface(8, 8);
 
-	for (unsigned char x = NULL; x < 8; x++)
-		for (unsigned char y = NULL; y < 8; y++)
-			surf->SetPixelColor(x, y, { 1.f, 1.f, 1.f, 1.f });
-	
-	//	TODO: one more constructor here, but it's class is not done yet.
-	void* unk = new char[20];
+	for (unsigned int x = 0; x < 8; ++x)
+		for (unsigned int y = 0; y < 8; ++y)
+			spsurf->SetPixelColor(x, y, BuiltinType::ColorWhite);
 
-	m_LoadBarTexture = new GfxInternal_Dx9_Texture(unk);
-
-	//	FIXME: unk needs class definitions and destructor call here, surf doesn't get deleted here. Where?
-	delete[] unk;
-	delete surf;
+	SurfaceMutable* spsurfmut = new SurfaceMutable(spsurf);
+	m_LoadBarTexture = new Texture(spsurfmut);
+	delete spsurfmut;
 }
 
 void Progress::Complete()

@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseAsset.h"
-#include "GfxInternal_Dx9_Texture.h"
+#include "Texture.h"
 
 class TextureAsset : public Asset
 {
@@ -40,7 +40,7 @@ public:
     int                         field_1C;
     Tex                        *m_Texture;	//	NOTE: this pointer should be aligned by 4 bytes.
     char                        field_24;
-    GfxInternal_Dx9_Texture    *m_Texture_1;	//	NOTE: this too.
+    Texture                    *m_Texture_1;	//	NOTE: this too.
     int                         field_2C;
 
 private:

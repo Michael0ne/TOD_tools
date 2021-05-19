@@ -257,14 +257,7 @@ namespace Input
 
 		UnacquireAndResetKeyboard();
 
-		if (m_DirectInputDeviceInterface)
-		{
-			RELEASE_SAFE(m_DirectInputDeviceInterface);
-		}
-
-		if (m_DirectInputDevice)
-		{
-			RELEASE_SAFE(m_DirectInputDevice);
-		}
+		RELEASE_SAFE(m_DirectInputDeviceInterface);
+		RELEASE_SAFE(m_DirectInputDevice);
 	}
 }

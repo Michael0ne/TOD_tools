@@ -1,7 +1,7 @@
 #pragma once
 #include "Node.h"
 #include "FrameBuffer.h"
-#include "GfxInternal_Dx9_Texture.h"
+#include "Texture.h"
 #include "bink/bink.h"
 
 class MoviePlayer : public Node
@@ -22,7 +22,7 @@ class MoviePlayer : public Node
         float               field_34;
         float               field_38;
         float               field_3C;
-        GfxInternal_Dx9_Texture*m_CurrentFrameTexture;
+        Texture            *m_CurrentFrameTexture;
         File               *m_MovieFile;
 
         FrameInfo();	//	@442F00

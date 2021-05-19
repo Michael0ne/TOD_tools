@@ -128,7 +128,7 @@
     <ClInclude Include="SavePoint.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="GfxInternal_Dx9_Texture.h">
+    <ClInclude Include="Texture.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
     <ClInclude Include="Types.h">
@@ -191,7 +191,7 @@
     <ClInclude Include="ThirdParty\libvorbis-1.1.0\include\vorbisfile.h">
       <Filter>Header files\ThirdParty\libvorbis</Filter>
     </ClInclude>
-    <ClInclude Include="GfxInternal_Dx9_Surface.h">
+    <ClInclude Include="Surface.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
     <ClInclude Include="GfxInternal.h">
@@ -524,10 +524,10 @@
     <ClInclude Include="MeshBuffer_Dx9.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
-    <ClInclude Include="GfxInternal_Dx9_VertexBuffer.h">
+    <ClInclude Include="VertexBuffer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
-    <ClInclude Include="GfxInternal_Dx9_IndexBuffer.h">
+    <ClInclude Include="IndexBuffer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
     <ClInclude Include="GfxInternal_OGL.h">
@@ -575,6 +575,9 @@
     <ClInclude Include="SkinnedMeshBuffer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
+    <ClInclude Include="SurfaceMutable.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -610,7 +613,7 @@
     <ClCompile Include="SavePoint.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="GfxInternal_Dx9_Texture.cpp">
+    <ClCompile Include="Texture.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="Scratchpad.cpp">
@@ -637,7 +640,7 @@
     <ClCompile Include="LogDump.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="GfxInternal_Dx9_Surface.cpp">
+    <ClCompile Include="Surface.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="GfxInternal.cpp">
@@ -964,10 +967,10 @@
     <ClCompile Include="MeshBuffer_Dx9.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
-    <ClCompile Include="GfxInternal_Dx9_VertexBuffer.cpp">
+    <ClCompile Include="VertexBuffer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
-    <ClCompile Include="GfxInternal_Dx9_IndexBuffer.cpp">
+    <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="GfxInternal_OGL.cpp">
@@ -1013,6 +1016,9 @@
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="SkinnedMeshBuffer.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="SurfaceMutable.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
   </ItemGroup>

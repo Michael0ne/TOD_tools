@@ -262,8 +262,8 @@
     <ClInclude Include="CutsceneAsset.h" />
     <ClInclude Include="FontAsset.h" />
     <ClInclude Include="FragmentAsset.h" />
-    <ClInclude Include="GfxInternal_Dx9_IndexBuffer.h" />
-    <ClInclude Include="GfxInternal_Dx9_VertexBuffer.h" />
+    <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="GfxInternal_OGL.h" />
     <ClInclude Include="MeshBuffer.h" />
     <ClInclude Include="MeshBuffer_Dx9.h" />
@@ -274,6 +274,7 @@
     <ClInclude Include="SoundAsset.h" />
     <ClInclude Include="SoundFile.h" />
     <ClInclude Include="StreamedSoundInfoAsset.h" />
+    <ClInclude Include="SurfaceMutable.h" />
     <ClInclude Include="TextAsset.h" />
     <ClInclude Include="TextureAsset.h" />
     <ClInclude Include="TruthType.h" />
@@ -326,8 +327,8 @@
     <ClInclude Include="GEKeyFrame.h" />
     <ClInclude Include="GeometryEffect.h" />
     <ClInclude Include="GFXEffect.h" />
-    <ClInclude Include="GfxInternal_Dx9_Surface.h" />
-    <ClInclude Include="GfxInternal_Dx9_Texture.h" />
+    <ClInclude Include="Surface.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="GoodiePlaceHolder.h" />
     <ClInclude Include="Group.h" />
@@ -423,8 +424,8 @@
     <ClCompile Include="CutsceneAsset.cpp" />
     <ClCompile Include="FontAsset.cpp" />
     <ClCompile Include="FragmentAsset.cpp" />
-    <ClCompile Include="GfxInternal_Dx9_IndexBuffer.cpp" />
-    <ClCompile Include="GfxInternal_Dx9_VertexBuffer.cpp" />
+    <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="GfxInternal_OGL.cpp" />
     <ClCompile Include="MeshBuffer.cpp" />
     <ClCompile Include="MeshBuffer_Dx9.cpp" />
@@ -435,6 +436,7 @@
     <ClCompile Include="SoundAsset.cpp" />
     <ClCompile Include="SoundFile.cpp" />
     <ClCompile Include="StreamedSoundInfoAsset.cpp" />
+    <ClCompile Include="SurfaceMutable.cpp" />
     <ClCompile Include="TextAsset.cpp" />
     <ClCompile Include="TextureAsset.cpp" />
     <ClCompile Include="TruthType.cpp" />
@@ -488,8 +490,8 @@
     <ClCompile Include="GEKeyFrame.cpp" />
     <ClCompile Include="GeometryEffect.cpp" />
     <ClCompile Include="GFXEffect.cpp" />
-    <ClCompile Include="GfxInternal_Dx9_Surface.cpp" />
-    <ClCompile Include="GfxInternal_Dx9_Texture.cpp" />
+    <ClCompile Include="Surface.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="GoodiePlaceHolder.cpp" />
     <ClCompile Include="Group.cpp" />
     <ClCompile Include="GuideBox.cpp" />

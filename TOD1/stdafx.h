@@ -57,8 +57,11 @@
 
 //	To be used with DirectX interfaces.
 #define RELEASE_SAFE(p) \
+if (p) \
+{ \
 	p->Release(); \
 	p = nullptr; \
+} \
 
 #ifdef INCLUDE_FIXES
 #define	Stringify( L ) #L

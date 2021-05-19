@@ -110,20 +110,20 @@ void FrameBuffer::Reset()
     m_LightsList.clear();
 }
 
-void FrameBuffer::SubmitRenderFullscreenTextureCommand(GfxInternal_Dx9_Texture* tex)
+void FrameBuffer::SubmitRenderFullscreenTextureCommand(Texture* tex)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERFULLSCREENTEXTURE);
     m_RenderBuffer[0].push_back((int)tex);
 }
 
-void FrameBuffer::SubmitDrawNoiseCommand(GfxInternal_Dx9_Texture* tex, const float intensity, const int blendmode)
+void FrameBuffer::SubmitDrawNoiseCommand(Texture* tex, const float intensity, const int blendmode)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_DRAWNOISE);
     m_RenderBuffer[0].push_back(intensity);
     m_RenderBuffer[0].push_back(blendmode);
 }
 
-void FrameBuffer::SubmitDrawVignetteCommand(GfxInternal_Dx9_Texture* tex, const ColorRGB& clr, const float intensity, const float shape, const float size)
+void FrameBuffer::SubmitDrawVignetteCommand(Texture* tex, const ColorRGB& clr, const float intensity, const float shape, const float size)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_DRAWVIGNETTE);
     m_RenderBuffer[0].push_back(intensity);
@@ -517,7 +517,7 @@ void FrameBuffer::SubmitRenderQuad2D_Command(const Vector2f& topleft, const Vect
     m_RenderBuffer[0].push_back(clr.a);
 }
 
-void FrameBuffer::SubmitRenderTexturedQuad2D_3Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const Vector2f& a6, const Vector2f& a7, const Vector2f& a8, const Vector2f& a9, const ColorRGB& clr)
+void FrameBuffer::SubmitRenderTexturedQuad2D_3Command(const Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const Vector2f& a6, const Vector2f& a7, const Vector2f& a8, const Vector2f& a9, const ColorRGB& clr)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_3);
 
@@ -669,7 +669,7 @@ void FrameBuffer::SubmitUpdateSpritePositionCommand(int a1, const int, const Vec
     *(float*)&m_RenderBuffer[0].m_ParamsArray[a1] = p4.y;
 }
 
-void FrameBuffer::SubmitRenderTexturedQuad2D_2Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr)
+void FrameBuffer::SubmitRenderTexturedQuad2D_2Command(const Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_2);
 
@@ -693,7 +693,7 @@ void FrameBuffer::SubmitRenderTexturedQuad2D_2Command(const GfxInternal_Dx9_Text
     m_RenderBuffer[0].push_back(clr.a);
 }
 
-void FrameBuffer::SubmitRenderTexturedQuad2D_1Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& top, const Vector2f& bottom, const ColorRGB& clr)
+void FrameBuffer::SubmitRenderTexturedQuad2D_1Command(const Texture* tex, const Vector2f& top, const Vector2f& bottom, const ColorRGB& clr)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_1);
 
@@ -766,7 +766,7 @@ void FrameBuffer::SubmitCallCommand(const int callcmd)
     m_RenderBuffer[0].push_back(callcmd);
 }
 
-void FrameBuffer::SubmitBeginShadowCommand(GfxInternal_Dx9_Texture* tex)
+void FrameBuffer::SubmitBeginShadowCommand(Texture* tex)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_BEGINSHADOW);
     m_RenderBuffer[0].push_back(tex);
@@ -812,7 +812,7 @@ void FrameBuffer::SubmitEndTextCommand()
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_ENDTEXT);
 }
 
-void FrameBuffer::SubmitSetCurrentTextureCommand(const GfxInternal_Dx9_Texture* tex, const int stage)
+void FrameBuffer::SubmitSetCurrentTextureCommand(const Texture* tex, const int stage)
 {
     m_RenderBuffer[0].push_back(RenderBuffer::RenderCommand::CMD_SETCURRENTTEXTURE);
     m_RenderBuffer[0].push_back(tex);
