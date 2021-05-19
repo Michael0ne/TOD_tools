@@ -152,9 +152,9 @@ namespace GameConfig
 
 		InitEntitiesDatabase();
 
-		GfxInternal_Dx9_IndexBuffer::CreateIndexBufferMap();
-		GfxInternal_Dx9_VertexBuffer::CreateVerticesMap();
-		GfxInternal_Dx9_Texture::InitTexturesMap();
+		IndexBuffer::CreateIndexBufferMap();
+		VertexBuffer::CreateVerticesMap();
+		Texture::InitTexturesMap();
 
 		RenderBuffer::CreateRenderBuffer();
 

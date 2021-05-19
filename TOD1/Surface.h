@@ -2,7 +2,7 @@
 #include "MemoryManager.h"
 #include "Types.h"
 
-class GfxInternal_Dx9_Surface
+class Surface
 {
 public:
     unsigned char   m_BitsPerPixel;
@@ -19,7 +19,8 @@ private:
     void            CreateCanvasBuffer();	//	@42FD80
 
 public:
-    GfxInternal_Dx9_Surface(unsigned int width, unsigned int height);	//	@430450
+    Surface(unsigned int width, unsigned int height);	//	@430450
+    ~Surface(); //  @42FA40
 
     void* operator new (size_t size)
     {
@@ -33,4 +34,6 @@ public:
     }
 
     void            SetPixelColor(unsigned int x, unsigned int y, const ColorRGB& clr);	//	@42F8A0
+    void            ConvertColorsToPS2();   //  @42FBA0
+    unsigned int    GetTotalSurfaceColors() const;  //  @42F820
 };

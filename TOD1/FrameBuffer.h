@@ -1,6 +1,6 @@
 #pragma once
 #include "RenderBuffer.h"
-#include "GfxInternal_Dx9_Texture.h"
+#include "Texture.h"
 #include "MeshBuffer_Dx9.h"
 #include "SkinnedMeshBuffer.h"
 #include <vector>
@@ -77,9 +77,9 @@ public:
     void                ExecuteRenderCommand(RenderBuffer& buf) const;  //  @4342C0
     void                CmdCall();  //  @434290
     void                Reset();    //  @436AE0
-    void                SubmitRenderFullscreenTextureCommand(GfxInternal_Dx9_Texture* tex);   //  @4320E0
-    void                SubmitDrawNoiseCommand(GfxInternal_Dx9_Texture* tex, const float intensity, const int blendmode); //  @4341F0
-    void                SubmitDrawVignetteCommand(GfxInternal_Dx9_Texture* tex, const ColorRGB& clr, const float intensity, const float shape, const float size);    //  @4340E0
+    void                SubmitRenderFullscreenTextureCommand(Texture* tex);   //  @4320E0
+    void                SubmitDrawNoiseCommand(Texture* tex, const float intensity, const int blendmode); //  @4341F0
+    void                SubmitDrawVignetteCommand(Texture* tex, const ColorRGB& clr, const float intensity, const float shape, const float size);    //  @4340E0
     void                SubmitDrawLightBleedingCommand(const float lightbleeding);  //  @434080
     void                SubmitDrawSaturationCommand(const float saturation);    //  @434020
     void                SubmitDrawBrightnessCommand(const float brightness);    //  @433FC0
@@ -113,11 +113,11 @@ public:
     void                SubmitSetFogPropertiesCommand(const int fogtype, const ColorRGB& fogcolor, const float fogstart, const float fogend, const float fogdensity);  //  @433440
     void                SubmitEnableFogCommand(const bool enabled); //  @4333C0
     void                SubmitCallCommand(const int callcmd);   //  @433270
-    void                SubmitBeginShadowCommand(GfxInternal_Dx9_Texture* tex); //  @433080
+    void                SubmitBeginShadowCommand(Texture* tex); //  @433080
     void                SubmitRenderShadowCommand(const Vector4f& pos1, const Vector4f& pos2, const Vector4f& pos3, const Vector2f& uv1, const Vector2f& uv2, const Vector2f& uv3, const float rot1, const float rot2, const float rot3);    //  @4330D0
     void                SubmitEndShadowCommand();   //  @433240
     void                SubmitEndTextCommand(); //  @433050
-    void                SubmitSetCurrentTextureCommand(const GfxInternal_Dx9_Texture* tex, const int stage);    //  @431660
+    void                SubmitSetCurrentTextureCommand(const Texture* tex, const int stage);    //  @431660
     void                SubmitSetTextureScrollCommand(const float a1, const int a2);  //  @4315E0
     void                SubmitRenderMeshBufferCommand_1(const MeshBuffer_Dx9* mesh);    //  @432C70
     void                SubmitRenderTriangleCommand(const Vector3f& pos1, const Vector3f& pos2, const Vector3f& pos3, const ColorRGB& clr); //  @431700
@@ -127,7 +127,7 @@ public:
     void                SubmitRenderTriangle2DCommand(const Vector2f& x, const Vector2f& y, const Vector2f& z, const ColorRGB& clr);    //  @431E50
     void                SubmitRenderQuad2D_2Command(const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr1, const ColorRGB& clr2, const ColorRGB& clr3, const ColorRGB& clr4);  //  @431EE0
     void                SubmitRenderQuad2D_Command(const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr);   //  @432040
-    void                SubmitRenderTexturedQuad2D_3Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const Vector2f& a6, const Vector2f& a7, const Vector2f& a8, const Vector2f& a9, const ColorRGB& clr);   //  @4322A0
+    void                SubmitRenderTexturedQuad2D_3Command(const Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const Vector2f& a6, const Vector2f& a7, const Vector2f& a8, const Vector2f& a9, const ColorRGB& clr);   //  @4322A0
     void                SubmitRenderVertexBufferCommand(const void* vb, const int a2, const int a3);  //  @432BD0
     void                SubmitRenderMeshColorBufferCommand(const MeshBuffer_Dx9* mesh);    //  @432CC0
     void                SubmitStartCharacterRenderCommand();   //  @432D10
@@ -138,8 +138,8 @@ public:
     void                SubmitRenderSkinnedMeshBufferCommand(const SkinnedMeshBuffer* skinnedmeshbuf);  //  @432D70
     void                SubmitEndCharacterRenderCommand(); //  @432D40
     void                SubmitUpdateSpritePositionCommand(int a1, const int, const Vector2f& p1, const Vector2f& p2, const Vector2f& p3, const Vector2f& p4); //  @432560
-    void                SubmitRenderTexturedQuad2D_2Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr);  //  @4321E0
-    void                SubmitRenderTexturedQuad2D_1Command(const GfxInternal_Dx9_Texture* tex, const Vector2f& top, const Vector2f& bottom, const ColorRGB& clr);  //  @432130
+    void                SubmitRenderTexturedQuad2D_2Command(const Texture* tex, const Vector2f& topleft, const Vector2f& bottomleft, const Vector2f& topright, const Vector2f& bottomright, const ColorRGB& clr);  //  @4321E0
+    void                SubmitRenderTexturedQuad2D_1Command(const Texture* tex, const Vector2f& top, const Vector2f& bottom, const ColorRGB& clr);  //  @432130
     unsigned int        SubmitSetModelMatrixCommand(const DirectX::XMMATRIX& mat);  //  @431540
 
     void                SubmitIndexedParam(const void* param, const int index); //  @4337E0

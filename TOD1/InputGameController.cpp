@@ -255,10 +255,7 @@ namespace Input
 
 		if (bInterfaceCreated)
 		{
-			if (DirectInput8Interface)
-			{
-				RELEASE_SAFE(DirectInput8Interface);
-			}
+			RELEASE_SAFE(DirectInput8Interface);
 		}
 
 		return DirectInputGamepadsFound;
@@ -635,19 +632,13 @@ namespace Input
 		if (FAILED(m_DirectInputDevice->SetDataFormat(&c_dfDIJoystick)))
 		{
 			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
-			if (m_DirectInputDevice)
-			{
-				RELEASE_SAFE(m_DirectInputDevice);
-			}
+			RELEASE_SAFE(m_DirectInputDevice);
 		}
 
 		if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
 		{
 			MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
-			if (m_DirectInputDevice)
-			{
-				RELEASE_SAFE(m_DirectInputDevice);
-			}
+			RELEASE_SAFE(m_DirectInputDevice);
 		}
 	}
 }

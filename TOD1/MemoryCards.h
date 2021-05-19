@@ -25,7 +25,7 @@ protected:
     String          m_GameName;
     unsigned int    m_SaveFileSize;
 
-    String         &MakeSaveSlotString(String& outStr, unsigned int slotind) const;	//	@926540
+    String&         MakeSaveSlotString(String& outStr, unsigned int slotind) const;	//	@926540
 
     static void     Register();	//	@9281B0
 

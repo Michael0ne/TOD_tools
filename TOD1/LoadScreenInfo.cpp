@@ -25,7 +25,7 @@ void LoadScreenInfo::LoadTexture()
 	LogDump::LogA("LoadScreen:%s\n", respath.m_szString);
 	m_TextureResource = (TextureAsset*)g_AssetManager->LoadResourceFile(respath.m_szString);
 
-	if (g_GfxInternal->m_TexturesList[0] == m_TextureResource->m_Texture_1)
+	if (g_GfxInternal->m_CheckerboardTextures[0] == m_TextureResource->m_Texture_1)
 		LogDump::LogA("TEXTURE NOT FOUND!!!!!\n");
 
 	IsLoadingLoadScreenTexture = false;

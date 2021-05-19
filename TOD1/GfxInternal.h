@@ -101,7 +101,7 @@ class GfxInternal
     friend class LoadScreenInfo;
 protected:
     bool                            m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
-    std::vector<GfxInternal_Dx9_Texture*>	m_TexturesList;
+    std::vector<Texture*>           m_CheckerboardTextures;
     MeshBuffer_Dx9                 *m_MeshBuffer;
     Scene_Buffer108                *m_Buffer108;
     unsigned int                    m_RenderBufferTotal;
@@ -131,19 +131,20 @@ public:
         ptr = nullptr;
     }
 
-    void                            Render(GfxInternal_Dx9_Surface* screenshotDumpSurface, const bool shouldRender, int a3, int a4);	//	@421B30
+    void                            Render(Surface* screenshotDumpSurface, const bool shouldRender, int a3, int a4);	//	@421B30
     void                            CallSceneCallback();	//	@420BA0
     void                            SetClearColorForBufferIndex(const ColorRGB& color, int index);	//	@41FDF0
     void                            SetClearFlagsForBufferIndex(const unsigned int flags, const int index);	//	@41FD90
     void                            SetRenderBufferIsEmpty(bool);	//	@420170
     void                            PrepareForNewLevel();	//	@420180
-    void                            DumpScreenShot(class GfxInternal_Dx9_Surface* surf) const;	//	@420100
+    void                            DumpScreenShot(class Surface* surf) const;	//	@420100
     ScreenResolution&               GetScreenResolution(ScreenResolution& res) const;	//	@41FD70
     bool                            IsScreenResolutionAvailable(unsigned int width, unsigned int height) const;	//	@485460
     void                            SetBufferRenderBufferPointerByIndex(unsigned int index, FrameBuffer* buf);	//	@41F9B0
     void                            _41F950();	//	@41F950
     void                            ExecuteRenderBuffer(int a1, int a2, int a3);    //  @421530
     FrameBuffer*                    _41F8F0(FrameBuffer* fb, unsigned int index);   //  @41F8F0
+    void                            CreateCheckerboardTextures();    //  @4210E0
 
     static AssetManager::RegionCode		GetRegion();	//	@420160
     static bool                     IsWideScreen();	//	@420120

@@ -7,7 +7,7 @@
 #include "LogDump.h"
 #include "InputKeyboard.h"
 #include "VirtualHud.h"
-#include "GfxInternal_Dx9_Surface.h"
+#include "Surface.h"
 #include "BuiltinType.h"
 #include <directxtex\include\DDSTextureLoader9.h>
 #include <DxErr.h>
@@ -20,7 +20,7 @@ HMENU GfxInternal_Dx9::WindowMenu;
 D3DFORMAT GfxInternal_Dx9::SupportedFormats[] = { D3DFMT_D24S8, D3DFMT_D24X8, D3DFMT_D24X4S4, D3DFMT_D16, D3DFMT_D32, D3DFMT_D15S1 };
 float GfxInternal_Dx9::NoiseTime;
 int GfxInternal_Dx9::NoiseState;
-std::map<int, GfxInternal_Dx9_Texture*> GfxInternal_Dx9::RenderedTexturesMap;
+std::map<int, Texture*> GfxInternal_Dx9::RenderedTexturesMap;
 const DirectX::XMMATRIX GfxInternal_Dx9::IdentityMatrix =
 {
     1.f, 0.f, 0.f, 0.f,
@@ -132,11 +132,7 @@ GfxInternal_Dx9::~GfxInternal_Dx9()
     m_Direct3DDevice->GetDepthStencilSurface(&depthsurf);
     depthsurf->Release();
 
-    if (m_DepthStencilSurface)
-    {
-        m_DepthStencilSurface->Release();
-        m_DepthStencilSurface = nullptr;
-    }
+    RELEASE_SAFE(m_DepthStencilSurface);
 
     for (unsigned int i = 0; i < (sizeof(m_ViewportTexturesArray) / sizeof(m_ViewportTexturesArray[0])); ++i)
         if (m_ViewportTexturesArray[i])
@@ -153,11 +149,8 @@ GfxInternal_Dx9::~GfxInternal_Dx9()
 
     DestroyVertexBuffersObjects();
     
-    m_Direct3DDevice->Release();
-    m_Direct3DDevice = nullptr;
-
-    m_Direct3DInterface->Release();
-    m_Direct3DInterface = nullptr;
+    RELEASE_SAFE(m_Direct3DDevice);
+    RELEASE_SAFE(m_Direct3DInterface);
 
     delete m_ParticleMeshBuffer;
     g_GfxInternal_Dx9 = nullptr;
@@ -241,6 +234,40 @@ void GfxInternal_Dx9::SetFogProperties(unsigned int fogmode, const ColorRGB& col
     m_FogEnd = end;
     m_FogColor = color;
     m_FogMode = fogmode;
+}
+
+void GfxInternal_Dx9::DrawIndexedPrimitive(int startindex, const int a2, int minvertexindex, const int a4)
+{
+    int numvert, primtotal;
+
+    if (a2 < 0)
+    {
+        numvert = m_CurrentVertexBuffer->m_InitialVerticiesCapacity;
+        primtotal = m_IndexBuffer->m_TotalIndicies;
+        minvertexindex = 0;
+        startindex = 0;
+    }
+    else
+    {
+        numvert = a4;
+        primtotal = a2;
+    }
+
+    primtotal = m_IndexBuffer->m_PrimitiveTypeIndex ? primtotal / 3 : primtotal - 2;
+
+    ResetTextures();
+
+    if (FAILED(m_Direct3DDevice->DrawIndexedPrimitive(m_IndexBuffer->m_PrimitiveType, 0, minvertexindex, numvert, startindex, primtotal)))
+        LogDump::LogA("RenderIndexedGeometry::DrawIndexedPrimitive(%i, 0, %i, %i, %i, %i) FAILED\n", 
+            m_IndexBuffer->m_PrimitiveType,
+            minvertexindex,
+            numvert,
+            startindex,
+            primtotal);
+
+    ++m_TotalMeshesDrawn;
+    m_TotalVerticiesDrawn += numvert;
+    m_TotalPrimitivesDrawn += primtotal;
 }
 
 void GfxInternal_Dx9::SetupRenderer()
@@ -439,11 +466,34 @@ void GfxInternal_Dx9::SetupRenderer()
     ToggleEnvironmentMap(false);
 }
 
+void GfxInternal_Dx9::CreateVertexBuffersObjects(const unsigned int size)
+{
+    m_VertexBuffer[0] = new VertexBuffer(0, size, 1);
+    m_VertexBuffer[1] = new VertexBuffer(4, size, 1);
+    m_VertexBuffer[2] = new VertexBuffer(8, size, 1);
+    m_VertexBuffer[3] = new VertexBuffer(2, size, 1);
+}
+
 void GfxInternal_Dx9::DestroyVertexBuffersObjects()
 {
     for (unsigned int i = 0; i < 4; ++i)
         if (m_VertexBuffer[i])
             delete m_VertexBuffer[i];
+}
+
+void GfxInternal_Dx9::RenderIndexedGeometry(MeshBuffer_Dx9* meshbuffer)
+{
+    meshbuffer->SetMeshDataAsCurrent();
+    meshbuffer->SWSkin();
+
+    if (m_FVF != (D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ))
+    {
+        m_Direct3DDevice->SetFVF(D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ);
+        m_FVF = D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ;
+        m_Direct3DVertexDeclaration = nullptr;
+    }
+
+    DrawIndexedPrimitive(-1, -1, -1, -1);
 }
 
 void GfxInternal_Dx9::ResetStream()
@@ -546,7 +596,6 @@ char GfxInternal_Dx9::GetLightStatus(const LightStatus* lightptr) const
     return NULL;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::CreateSurfaces()
 {
     if (!m_ShouldCreateVerticies)
@@ -558,19 +607,19 @@ void GfxInternal_Dx9::CreateSurfaces()
     {
         m_SurfaceDoubleSized = true;
         ScreenResolution res = { m_DisplayModeResolution.x * 2, m_DisplayModeResolution.y * 2 };
-        m_ViewportTexturesArray[0] = new GfxInternal_Dx9_Texture(res, 1, 3);
-        m_ViewportTexturesArray[1] = new GfxInternal_Dx9_Texture(res, 1, 3);
-        m_ViewportTexturesArray[2] = new GfxInternal_Dx9_Texture(m_DisplayModeResolution, 1, 3);
-        m_ViewportTexturesArray[3] = new GfxInternal_Dx9_Texture(m_DisplayModeResolution, 1, 3);
+        m_ViewportTexturesArray[0] = new Texture(res, 1, 3);
+        m_ViewportTexturesArray[1] = new Texture(res, 1, 3);
+        m_ViewportTexturesArray[2] = new Texture(m_DisplayModeResolution, 1, 3);
+        m_ViewportTexturesArray[3] = new Texture(m_DisplayModeResolution, 1, 3);
     }
     else
     {
         m_SurfaceDoubleSized = false;
         ScreenResolution res = { m_DisplayModeResolution.x / 2, m_DisplayModeResolution.y / 2 };
-        m_ViewportTexturesArray[0] = new GfxInternal_Dx9_Texture(m_DisplayModeResolution, 1, 3);
-        m_ViewportTexturesArray[1] = new GfxInternal_Dx9_Texture(m_DisplayModeResolution, 1, 3);
-        m_ViewportTexturesArray[2] = new GfxInternal_Dx9_Texture(res, 1, 3);
-        m_ViewportTexturesArray[3] = new GfxInternal_Dx9_Texture(res, 1, 3);
+        m_ViewportTexturesArray[0] = new Texture(m_DisplayModeResolution, 1, 3);
+        m_ViewportTexturesArray[1] = new Texture(m_DisplayModeResolution, 1, 3);
+        m_ViewportTexturesArray[2] = new Texture(res, 1, 3);
+        m_ViewportTexturesArray[3] = new Texture(res, 1, 3);
     }
 
     m_DepthStencilSurface = nullptr;
@@ -580,11 +629,7 @@ void GfxInternal_Dx9::CreateSurfaces()
     {
         LogDump::LogA("Creating depth surface of size (%i,%i)\n", m_ViewportTexturesArray[0]->m_SurfaceSize.x, m_ViewportTexturesArray[0]->m_SurfaceSize.y);
 
-        if (m_DepthStencilSurface)
-        {
-            m_DepthStencilSurface->Release();
-            m_DepthStencilSurface = nullptr;
-        }
+        RELEASE_SAFE(m_DepthStencilSurface);
 
         if (SUCCEEDED(m_Direct3DDevice->CreateDepthStencilSurface(
             m_ViewportTexturesArray[0]->m_SurfaceSize.x,
@@ -604,9 +649,9 @@ void GfxInternal_Dx9::CreateSurfaces()
         m_FramesyncQuery = nullptr;
     }
 
-    //_464DC0();	//	NOTE: fills vertex map with empty verticies?
-    //_4606D0();	//	NOTE: fills yet another vertex map with empty verticies.
-    SetupRenderer();	//	NOTE: finalize Direct 3D initialization.
+    VertexBuffer::FillMapFromBuffer();
+    IndexBuffer::FillMapFromBuffer();
+    SetupRenderer();
 
     m_ShouldCreateVerticies = false;
 }
@@ -617,7 +662,7 @@ void GfxInternal_Dx9::CreateParticleMeshBuffer()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void GfxInternal_Dx9::RenderTexturedQuad2D_4(const GfxInternal_Dx9_Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&)
+void GfxInternal_Dx9::RenderTexturedQuad2D_4(const Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&)
 {
 }
 
@@ -1037,8 +1082,8 @@ void GfxInternal_Dx9::DestroySurfaces()
         m_FramesyncQuery = nullptr;
     }
 
-    //_464D60();
-    //_460670();
+    VertexBuffer::DestroyVertexBufferMap();
+    IndexBuffer::DestroyIndexBufferMap();
 
     m_FVF = -1;
     m_Direct3DVertexDeclaration = nullptr;
@@ -1048,6 +1093,16 @@ void GfxInternal_Dx9::DestroySurfaces()
 void GfxInternal_Dx9::_44EE40()
 {
     ++field_9674;
+}
+
+void GfxInternal_Dx9::SetVertexBuffer(VertexBuffer* vb)
+{
+    m_CurrentVertexBuffer = vb;
+}
+
+void GfxInternal_Dx9::SetIndexBuffer(IndexBuffer* ib)
+{
+    m_IndexBuffer = ib;
 }
 
 void GfxInternal_Dx9::SetTextureScroll(float* a1, float a2)
@@ -1062,6 +1117,52 @@ void GfxInternal_Dx9::SetTextureScroll(float* a1, float a2)
     }
     else
         m_Direct3DDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+}
+
+void GfxInternal_Dx9::SetTextureIndex(Texture* tex, const unsigned int index)
+{
+    if (m_TexturesArray_2[index] != tex)
+    {
+        m_TextureStages[index] = 1;
+        m_TexturesArray_2[index] = tex;
+    }
+}
+
+void GfxInternal_Dx9::BeginText(const unsigned int, Texture* tex, const ColorRGB& clr)
+{
+    if (m_TexturesArray_2[0] != tex)
+    {
+        m_TextureStages[0] = 1;
+        m_TexturesArray_2[0] = tex;
+    }
+
+    m_ActiveTextureColor = D3DCOLOR_RGBA((int)clr.r, (int)clr.g, (int)clr.b, (int)clr.a);
+    m_DrawingText = true;
+    m_ActiveTextRenderBuffer = NULL;
+}
+
+void GfxInternal_Dx9::BeginShadow(Texture* tex)
+{
+    if (m_TexturesArray_2[0] != tex)
+    {
+        m_TextureStages[0] = 1;
+        m_TexturesArray_2[0] = tex;
+    }
+
+    m_TexProperties[0].field_20 = 0;
+    m_TexProperties[0].field_24 = 1;
+
+    if (m_FlushDirectly)
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+}
+
+void GfxInternal_Dx9::EndShadow()
+{
+    m_TexProperties[0].field_20 = 3;
+    m_TexProperties[0].field_24 = 1;
+
+    if (m_FlushDirectly)
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 }
 
 void GfxInternal_Dx9::SetParticleSize(unsigned int size)
@@ -1220,7 +1321,7 @@ void GfxInternal_Dx9::CreateRenderDevice()
     m_ShouldCreateVerticies = 1;
 
     CreateSurfaces();
-    //CreateVertexBufferObjects(1024);
+    CreateVertexBuffersObjects(1024);
     CreateParticleMeshBuffer();
 
     const Vector2f res = { (float)m_ViewportResolution.x, (float)m_ViewportResolution.y };
@@ -1231,7 +1332,7 @@ void GfxInternal_Dx9::CreateRenderDevice()
         VirtualHud::VirtualHudInstance.SetHudProperties(res, m_AspectRatio, 1.0f);
 }
 
-void GfxInternal_Dx9::RenderTexturedQuad2D_2(const GfxInternal_Dx9_Texture& tex, const Vector2<float>& topleft, const Vector2<float>& topright, const Vector2<float>& bottomleft, const Vector2<float>& bottomright, const ColorRGB& clr)
+void GfxInternal_Dx9::RenderTexturedQuad2D_2(const Texture& tex, const Vector2<float>& topleft, const Vector2<float>& topright, const Vector2<float>& bottomleft, const Vector2<float>& bottomright, const ColorRGB& clr)
 {
     RenderTexturedQuad2D_4(
         tex,
@@ -1273,7 +1374,7 @@ void GfxInternal_Dx9::_45C790(float a1)
     m_Direct3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
     RenderTexturedQuad2D_2(
-        m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex],
+        *m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex],
         { 0, 0 },
         { 0, (float)m_ViewportResolution.y },
         { (float)m_ViewportResolution.x, (float)m_ViewportResolution.y },
@@ -1299,7 +1400,7 @@ void GfxInternal_Dx9::_45C790(float a1)
     }
 }
 
-void GfxInternal_Dx9::RenderTexturedQuad2D_1(const GfxInternal_Dx9_Texture& tex, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB& clr)
+void GfxInternal_Dx9::RenderTexturedQuad2D_1(const Texture& tex, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB& clr)
 {
     const bool ztest = m_TexProperties[0].m_ZTest;
     Vector2f topRight, bottomLeft, bottomRight;
@@ -1402,7 +1503,7 @@ void GfxInternal_Dx9::RenderViewport()
             bottom = { 0, 0 };
         }
 
-        RenderTexturedQuad2D_1(m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex], top, bottom, { 1, 1, 1, 1 });
+        RenderTexturedQuad2D_1(*m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex], top, bottom, { 1, 1, 1, 1 });
 
         m_TextureAddressModes[0] = 0;
         m_TexProperties[0].field_54 = 0;
@@ -1422,7 +1523,7 @@ void GfxInternal_Dx9::RenderViewport()
     m_FVF = -1;
 }
 
-void GfxInternal_Dx9::RenderFullscreenTexture(const GfxInternal_Dx9_Texture& tex)
+void GfxInternal_Dx9::RenderFullscreenTexture(const Texture& tex)
 {
     Vector2f top =
     {
@@ -1723,77 +1824,73 @@ void GfxInternal_Dx9::SetAlphaTestThreshold(float threshold)
     m_Direct3DDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)(threshold * 255.f));
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void GfxInternal_Dx9::SetRenderTarget(IDirect3DSurface9* rt)
+void GfxInternal_Dx9::SetRenderTarget(Texture* tex)
 {
-    m_RenderTarget = rt;
+    m_RenderTarget = tex;
 
-    if (!rt)
+    if (!tex)
     {
-        m_Direct3DDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &rt);
-
+        LPDIRECT3DSURFACE9 bb = nullptr;
+        m_Direct3DDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &bb);
         if (m_DepthStencilSurface)
         {
-            m_Direct3DDevice->SetRenderTarget(0, rt);
+            m_Direct3DDevice->SetRenderTarget(0, bb);
             m_Direct3DDevice->SetDepthStencilSurface(m_DepthStencilSurface);
         }
         else
         {
-            IDirect3DSurface9* dss = nullptr;
+            LPDIRECT3DSURFACE9 dss = nullptr;
             m_Direct3DDevice->GetDepthStencilSurface(&dss);
-            m_Direct3DDevice->SetRenderTarget(0, rt);
+            m_Direct3DDevice->SetRenderTarget(0, bb);
             m_Direct3DDevice->SetDepthStencilSurface(dss);
 
-            if (dss)
-                dss->Release();
+            RELEASE_SAFE(dss);
         }
 
         m_ViewportResolution = m_DisplayModeResolution;
 
-        D3DVIEWPORT9 viewport;
+        D3DVIEWPORT9 vp;
+        vp.Width = m_DisplayModeResolution.x;
+        vp.Height = m_DisplayModeResolution.y;
+        vp.MinZ = 0;
+        vp.MaxZ = 1;
+        vp.X = 0;
+        vp.Y = 0;
 
-        viewport.Width = m_DisplayModeResolution.x;
-        viewport.Height = m_DisplayModeResolution.y;
-        viewport.X = 0;
-        viewport.Y = 0;
-        viewport.MinZ = 0.f;
-        viewport.MaxZ = 1.f;
-
-        m_Direct3DDevice->SetViewport(&viewport);
-        rt->Release();
+        m_Direct3DDevice->SetViewport(&vp);
+        RELEASE_SAFE(bb);
     }
     else
     {
-        //	TODO: once GfxSurface is complete - uncomment.
-        //	GfxSurface surface;
-        //	surface.CreateDirect3DSurface(nullptr);
-
+        LPDIRECT3DSURFACE9 texs = tex->GetSurfaceLevel(0);
         if (m_DepthStencilSurface)
         {
-            //m_Direct3DDevice->SetRenderTarget(0, surface);
+            m_Direct3DDevice->SetRenderTarget(0, texs);
             m_Direct3DDevice->SetDepthStencilSurface(m_DepthStencilSurface);
         }
         else
         {
-            IDirect3DSurface9* dss = nullptr;
+            LPDIRECT3DSURFACE9 dss = nullptr;
             m_Direct3DDevice->GetDepthStencilSurface(&dss);
-            //m_Direct3DDevice->SetRenderTarget(0, surface);
+            m_Direct3DDevice->SetRenderTarget(0, texs);
             m_Direct3DDevice->SetDepthStencilSurface(dss);
 
-            if (dss)
-                dss->Release();
+            RELEASE_SAFE(dss);
         }
 
-        D3DVIEWPORT9 viewport;
+        RELEASE_SAFE(texs);
 
-        //viewport.Width = surface.m_Width;
-        //viewport.Height = surface.m_Height;
-        viewport.X = 0;
-        viewport.Y = 0;
-        viewport.MinZ = 0.f;
-        viewport.MaxZ = 1.f;
+        m_ViewportResolution = tex->m_SurfaceSize;
 
-        m_Direct3DDevice->SetViewport(&viewport);
+        D3DVIEWPORT9 vp;
+        vp.Width = tex->m_SurfaceSize.x;
+        vp.Height = tex->m_SurfaceSize.y;
+        vp.MinZ = 0;
+        vp.MaxZ = 1;
+        vp.X = 0;
+        vp.Y = 0;
+
+        m_Direct3DDevice->SetViewport(&vp);
     }
 }
 
@@ -1823,7 +1920,7 @@ unsigned int GfxInternal_Dx9::GetAvailableTextureMemory() const
     return m_Direct3DDevice->GetAvailableTextureMem();
 }
 
-void GfxInternal_Dx9::DumpScreenShot(GfxInternal_Dx9_Surface* surf)
+void GfxInternal_Dx9::DumpScreenShot(Surface* surf)
 {
     LogDump::LogA("Dumping screenshot!\n");
 
