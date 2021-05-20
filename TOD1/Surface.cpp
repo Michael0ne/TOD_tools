@@ -82,7 +82,7 @@ void Surface::ConvertColorsToPS2()
 	}
 	else
 	{
-		for (unsigned int j = 0; j < (int)field_4; ++j)
+		for (unsigned int j = 0; j < (unsigned int)field_4; ++j)
 		{
 			//	TODO: go through 'Canvas' and convert colors.
 		}

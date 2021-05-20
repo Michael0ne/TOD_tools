@@ -289,7 +289,7 @@ bool StreamedWAV::OpenWAV(bool createnew)
 
 	if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
 	{
-		m_Samples = m_ChunkSize / (m_Channels * m_BytesPerSample);
+		m_Samples = m_ChunkSize / (int)(m_Channels * m_BytesPerSample);
 		m_Flags |= 4;
 
 		return true;
@@ -326,7 +326,7 @@ bool StreamedWAV::OpenWAV(bool createnew)
 
 		if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
 		{
-			m_Samples = m_ChunkSize / (m_Channels * m_BytesPerSample);
+			m_Samples = m_ChunkSize / (int)(m_Channels * m_BytesPerSample);
 			m_Flags |= 4;
 
 			return true;
@@ -339,7 +339,7 @@ bool StreamedWAV::OpenWAV(bool createnew)
 
 			if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
 			{
-				m_Samples = m_ChunkSize / (m_Channels * m_BytesPerSample);
+				m_Samples = m_ChunkSize / (int)(m_Channels * m_BytesPerSample);
 				m_Flags |= 4;
 
 				return true;
@@ -349,7 +349,7 @@ bool StreamedWAV::OpenWAV(bool createnew)
 
 	m_ChunkSize = m_WavFile->ReadIntLittleToBigEndian();
 	field_C = m_ChunkSize;
-	m_Samples = m_ChunkSize / (m_Channels * m_BytesPerSample);
+	m_Samples = m_ChunkSize / (int)(m_Channels * m_BytesPerSample);
 	m_Flags |= 4;
 
 	return true;

@@ -66,7 +66,6 @@ void FrameBuffer::_4315A0(const DirectX::XMMATRIX& mat, const unsigned int index
     m_RenderBuffer[0].PushMatrix(mat, index);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void FrameBuffer::ExecuteRenderCommand(RenderBuffer& buf) const
 {
     if (!buf.m_CurrentParamIndex)
@@ -77,7 +76,934 @@ void FrameBuffer::ExecuteRenderCommand(RenderBuffer& buf) const
     {
         switch ((RenderBuffer::RenderCommand)buf.m_ParamsArray[buf.m_PrevParamIndex++])
         {
-            //  TODO: handle all possible commands here.
+        case RenderBuffer::RenderCommand::CMD_SETMODELMATRIX:
+            {
+                DirectX::XMMATRIX mat;
+                buf.PopMatrix(mat);
+                g_GfxInternal_Dx9->SetWorldMatrix(&mat);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETCURRENTTEXTURE:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                int texind = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                if (texind < 0 || texind > 1)
+                    return;
+
+                g_GfxInternal_Dx9->SetTextureIndex(tex, texind);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETTEXTURESCROLL:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                float sy = (float)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                g_GfxInternal_Dx9->SetTextureScroll(tex, sy);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLEENVIRONMENTMAP:
+            {
+                bool envmap;
+                buf.PopBool(envmap);
+                g_GfxInternal_Dx9->ToggleEnvironmentMap(envmap);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETENVIRONMENTMAPCOEF:
+            g_GfxInternal_Dx9->SetEnvironmentMapCoef((float)buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTRIANGLE:
+            {
+                Vector3f top, btmleft, btmright;
+                ColorRGB clr;
+            
+                buf.PopVector3f(top);
+                buf.PopVector3f(btmleft);
+                buf.PopVector3f(btmright);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderTriangle(top, btmleft, btmright, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTRIANGLE_2:
+            {
+                Vector3f top, btmleft, btmright;
+                ColorRGB clrtop, clrbtml, clrbtmr;
+
+                buf.PopVector3f(top);
+                buf.PopVector3f(btmleft);
+                buf.PopVector3f(btmright);
+                buf.PopColor(clrtop);
+                buf.PopColor(clrbtml);
+                buf.PopColor(clrbtmr);
+
+                g_GfxInternal_Dx9->RenderTriangle_2(top, btmleft, btmright, clrtop, clrbtml, clrbtmr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDTRIANGLE:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Vector3f top, btmleft, btmright;
+                Vector2f topuv, btmleftuv, btmrightuv;
+                ColorRGB clrtop, clrbtml, clrbtmr;
+
+                buf.PopVector3f(top);
+                buf.PopVector3f(btmleft);
+                buf.PopVector3f(btmright);
+                buf.PopVector2f(topuv);
+                buf.PopVector2f(btmleftuv);
+                buf.PopVector2f(btmrightuv);
+                buf.PopColor(clrtop);
+                buf.PopColor(clrbtml);
+                buf.PopColor(clrbtmr);
+
+                g_GfxInternal_Dx9->RenderTexturedTriangle(tex, top, btmleft, btmright, topuv, btmleftuv, btmrightuv, clrtop, clrbtml, clrbtmr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERQUAD:
+            {
+                Vector3f topleft, topright, bottomleft, bottomright;
+                ColorRGB clr;
+
+                buf.PopVector3f(topleft);
+                buf.PopVector3f(bottomleft);
+                buf.PopVector3f(topright);
+                buf.PopVector3f(bottomright);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderQuad(topleft, bottomleft, topright, bottomright, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERLINE:
+            {
+                Vector3f start, end;
+                ColorRGB clr;
+
+                buf.PopVector3f(start);
+                buf.PopVector3f(end);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderLine(start, end, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERLINE2D:
+            {
+                Vector2f start, end;
+                ColorRGB clr;
+
+                buf.PopVector2f(start);
+                buf.PopVector2f(end);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderLine2D(start, end, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTRIANGLE2D:
+            {
+                Vector2f top, bottomleft, bottomright;
+                ColorRGB clr;
+
+                buf.PopVector2f(top);
+                buf.PopVector2f(bottomleft);
+                buf.PopVector2f(bottomright);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderTriangle2D(top, bottomleft, bottomright, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERQUAD2D:
+            {
+                Vector2f topleft, topright, bottomleft, bottomright;
+                ColorRGB clr;
+
+                buf.PopVector2f(topleft);
+                buf.PopVector2f(bottomleft);
+                buf.PopVector2f(topright);
+                buf.PopVector2f(bottomright);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderQuad2D(topleft, bottomleft, topright, bottomright, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERQUAD2D_2:
+            {
+                Vector2f topleft, topright, bottomleft, bottomright;
+                ColorRGB clrtopleft, clrtopright, clrbottomleft, clrbottomright;
+
+                buf.PopVector2f(topleft);
+                buf.PopVector2f(bottomleft);
+                buf.PopVector2f(topright);
+                buf.PopVector2f(bottomright);
+                buf.PopColor(clrtopleft);
+                buf.PopColor(clrbottomleft);
+                buf.PopColor(clrtopright);
+                buf.PopColor(clrbottomright);
+
+                //  NOTE: not used.
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERFULLSCREENTEXTURE:
+            g_GfxInternal_Dx9->RenderFullscreenTexture(*(Texture*)&buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERVERTEXBUFFER:
+            {
+                VertexBuffer   *vb = (VertexBuffer*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                unsigned int    startvert = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                unsigned int    primcount = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                g_GfxInternal_Dx9->RenderVertexBuffer(vb, startvert, primcount);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERMESHBUFFER:
+            {
+                MeshBuffer_Dx9* mb = (MeshBuffer_Dx9*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                RenderBuffer::MeshBuffersDrawn++;
+
+                g_GfxInternal_Dx9->RenderMeshBuffer(mb);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERMESHCOLORBUFFER:
+            {
+                int* mcb = (int*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                g_GfxInternal_Dx9->RenderMeshColorBuffer(mcb);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERSKINNEDMESHBUFFER:
+            {
+                MeshBuffer_Dx9* smb = (MeshBuffer_Dx9*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                g_GfxInternal_Dx9->RenderIndexedGeometry(smb);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETBONEMATRIX:
+            {
+                int boneid = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                DirectX::XMMATRIX mat;
+            
+                buf.PopMatrix(mat);
+
+                g_GfxInternal_Dx9->SetBoneMatrix(boneid, mat);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_BEGINTEXT:
+            {
+                unsigned int len = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                ColorRGB clr;
+
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->BeginText(len, tex, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXT:
+            {
+                Vector2f topleft, topright, bottomleft, bottomright;
+                bool b;
+
+                buf.PopVector2f(topleft);
+                buf.PopVector2f(bottomleft);
+                buf.PopVector2f(topright);
+                buf.PopVector2f(bottomright);
+                buf.PopBool(b);
+
+                g_GfxInternal_Dx9->RenderText(topleft, bottomleft, topright, bottomright, b);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXT2:
+            {
+                Vector2f v[8];
+                bool b;
+
+                for (unsigned int i = 0; i < 8; ++i)
+                    buf.PopVector2f(v[i]);
+                buf.PopBool(b);
+
+                g_GfxInternal_Dx9->RenderText2(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], b);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENDTEXT:
+            {
+                unsigned int a1, a2;
+
+                a1 = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                a2 = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                g_GfxInternal_Dx9->EndText(a1, a2);
+                g_GfxInternal_Dx9->SetMipMapping(true);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_BEGINSHADOW:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                g_GfxInternal_Dx9->BeginShadow(tex);
+                g_GfxInternal_Dx9->SetMipMapping(false);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERSHADOW:
+            {
+                Vector3f top, bottomleft, bottomright;
+                Vector2f topuv, bottomleftuv, bottomrightuv;
+                Vector3f clr;
+
+                buf.PopVector3f(top);
+                buf.PopVector3f(bottomleft);
+                buf.PopVector3f(bottomright);
+                buf.PopVector2f(topuv);
+                buf.PopVector2f(bottomleftuv);
+                buf.PopVector2f(bottomrightuv);
+                buf.PopVector3f(clr);
+
+                g_GfxInternal_Dx9->RenderShadow(top, bottomleft, bottomright, topuv, bottomleftuv, bottomrightuv, clr.x, clr.y, clr.z);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENDSHADOW:
+            g_GfxInternal_Dx9->EndShadow();
+            g_GfxInternal_Dx9->SetMipMapping(true);
+            break;
+        case RenderBuffer::RenderCommand::CMD_CALL:
+            ((FrameBuffer*)(buf.m_ParamsArray[buf.m_PrevParamIndex++]))->CmdCall();
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLELIGHTING:
+            {
+                bool l;
+                buf.PopBool(l);
+
+                g_GfxInternal_Dx9->EnableLighting(l);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLELIGHT:
+            {
+                void* light = (void*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                bool enabled;
+
+                buf.PopBool(enabled);
+
+                g_GfxInternal_Dx9->EnableLight(light, enabled);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLEZWRITE:
+            {
+                bool enabled;
+
+                buf.PopBool(enabled);
+
+                g_GfxInternal_Dx9->EnableZWrite(enabled);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLEZTEST:
+            {
+                bool enabled;
+
+                buf.PopBool(enabled);
+
+                g_GfxInternal_Dx9->EnableZTest(enabled);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLEFOG:
+            {
+                bool enabled;
+            
+                buf.PopBool(enabled);
+
+                g_GfxInternal_Dx9->EnableFog(enabled);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETFOGPROPERTIES:
+            {
+                int fogmode = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                ColorRGB fogclr;
+                buf.PopColor(fogclr);
+                float fogstart = *(float*)&buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                float fogend = *(float*)&buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                g_GfxInternal_Dx9->SetFogProperties(fogmode, fogclr, fogstart, fogend, 0);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETFILTERMODE:
+            g_GfxInternal_Dx9->SetFilterMode(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETCULLMODE:
+            g_GfxInternal_Dx9->SetCullMode(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETZBIAS:
+            g_GfxInternal_Dx9->SetZBias(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETBLENDMODE:
+            g_GfxInternal_Dx9->SetBlendMode(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETOPACITY:
+            g_GfxInternal_Dx9->SetEnvironmentMapOpacity((float)buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETVIEWPORT:
+            {
+                ScreenResolution left, right;
+
+                buf.PopVector2i(left);
+                buf.PopVector2i(right);
+
+                g_GfxInternal_Dx9->SetViewport(left, right);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETPROJECTION:
+            {
+                float fov, aspectratio, nearplane, farplane;
+
+                buf.PopFloat(fov);
+                buf.PopFloat(aspectratio);
+                buf.PopFloat(nearplane);
+                buf.PopFloat(farplane);
+
+                g_GfxInternal_Dx9->SetProjection(fov, aspectratio, nearplane, farplane);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETMIPMAPBIAS:
+            {
+                float bias;
+            
+                buf.PopFloat(bias);
+
+                g_GfxInternal_Dx9->SetMipMapBias(bias);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLEMIPMAPPING:
+            {
+                bool mipmapping;
+            
+                buf.PopBool(mipmapping);
+
+                g_GfxInternal_Dx9->SetMipMapping(mipmapping);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETTEXTUREADDRESSMODE:
+            {
+                int u, v;
+                u = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                v = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+
+                g_GfxInternal_Dx9->SetTextureAddressMode(u, v);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETRENDERTARGET:
+            g_GfxInternal_Dx9->SetRenderTarget((Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_1:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Vector2f top, bottom;
+                ColorRGB clr;
+
+                buf.PopVector2f(top);
+                buf.PopVector2f(bottom);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderTexturedQuad2D_1(*tex, top, bottom, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_2:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Vector2f topleft, topright, bottomleft, bottomright;
+                ColorRGB clr;
+
+                buf.PopVector2f(topleft);
+                buf.PopVector2f(bottomleft);
+                buf.PopVector2f(topright);
+                buf.PopVector2f(bottomright);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderTexturedQuad2D_2(*tex, topleft, bottomleft, topright, bottomright, clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_3:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Vector2f v[8];
+                ColorRGB clr;
+
+                for (unsigned int i = 0; i < 8; ++i)
+                    buf.PopVector2f(v[i]);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderTexturedQuad2D_3(*tex, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD2D_4:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Vector2f v[8];
+                ColorRGB clr[4];
+
+                for (unsigned int i = 0; i < 8; ++i)
+                    buf.PopVector2f(v[i]);
+
+                buf.PopColor(clr[0]);
+                buf.PopColor(clr[1]);
+                buf.PopColor(clr[2]);
+                buf.PopColor(clr[3]);
+
+                g_GfxInternal_Dx9->RenderTexturedQuad2D_4(*tex, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], clr[0], clr[1], clr[2], clr[3]);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD_1:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Vector3f v[4];
+                ColorRGB clr;
+
+                buf.PopVector3f(v[0]);
+                buf.PopVector3f(v[1]);
+                buf.PopVector3f(v[2]);
+                buf.PopVector3f(v[3]);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderTexturedQuad_1(tex, v[0], v[1], v[2], v[3], clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD_2:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Vector3f v[4];
+                Vector2f v2[4];
+                ColorRGB clr;
+
+                buf.PopVector3f(v[0]);
+                buf.PopVector3f(v[1]);
+                buf.PopVector3f(v[2]);
+                buf.PopVector3f(v[3]);
+                buf.PopVector2f(v2[0]);
+                buf.PopVector2f(v2[1]);
+                buf.PopVector2f(v2[2]);
+                buf.PopVector2f(v2[3]);
+                buf.PopColor(clr);
+
+                g_GfxInternal_Dx9->RenderTexturedQuad_2(*tex, v[0], v[1], v[2], v[3], v2[0], v2[1], v2[2], v2[3], clr);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERTEXTUREDQUAD_3:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                Vector3f v[4];
+                Vector2f v2[4];
+                ColorRGB clr[4];
+
+                buf.PopVector3f(v[0]);
+                buf.PopVector3f(v[1]);
+                buf.PopVector3f(v[2]);
+                buf.PopVector3f(v[3]);
+                buf.PopVector2f(v2[0]);
+                buf.PopVector2f(v2[1]);
+                buf.PopVector2f(v2[2]);
+                buf.PopVector2f(v2[3]);
+                buf.PopColor(clr[0]);
+                buf.PopColor(clr[1]);
+                buf.PopColor(clr[2]);
+                buf.PopColor(clr[3]);
+
+                g_GfxInternal_Dx9->RenderTexturedQuad_3(tex, v[0], v[1], v[2], v[3], v2[0], v2[1], v2[2], v2[3], clr[0], clr[1], clr[2], clr[3]);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLEALPHACHANNEL:
+            {
+                bool b;
+            
+                buf.PopBool(b);
+
+                g_GfxInternal_Dx9->EnableAlphaChannel(b);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETALPHATESTTHRESHHOLD:
+            {
+                float t;
+            
+                buf.PopFloat(t);
+
+                g_GfxInternal_Dx9->SetAlphaTestThreshold(t);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENABLEALPHATEST:
+            {
+                bool b;
+            
+                buf.PopBool(b);
+
+                g_GfxInternal_Dx9->EnableAlphaTest(b);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETAXISALIGN:
+            g_GfxInternal_Dx9->m_AxisAlign = buf.m_ParamsArray[buf.m_PrevParamIndex++];
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETPARTICLE:
+            buf.m_PrevParamIndex++;
+            g_GfxInternal_Dx9->SetMipMapping(false);
+            break;
+        case RenderBuffer::RenderCommand::CMD_BEGINPARTICLESYSTEM:
+            g_GfxInternal_Dx9->SetMipMapping(true);
+            break;
+        case RenderBuffer::RenderCommand::CMD_ENDPARTICLESYSTEM:
+            g_GfxInternal_Dx9->EndParticleSystem(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETPARTICLESIZE:
+            g_GfxInternal_Dx9->SetParticleSize(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETPARTICLEORIENT:
+            {
+                Orientation orient;
+
+                buf.PopQuaternion(orient);
+
+                g_GfxInternal_Dx9->SetParticleOrient(orient);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_RENDERPARTICLE:
+            {
+                Vector3f pos;
+
+                buf.PopVector3f(pos);
+
+                g_GfxInternal_Dx9->RenderParticle(pos);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETPARTICLEALIGN:
+            g_GfxInternal_Dx9->SetParticleAlign(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_SETPARTICLECOLOR:
+            g_GfxInternal_Dx9->SetParticleColor(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_DRAWBRIGHTNESS:
+            g_GfxInternal_Dx9->SetMipMapping(false);
+            g_GfxInternal_Dx9->DrawBrightness((float)buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            g_GfxInternal_Dx9->SetMipMapping(true);
+            break;
+        case RenderBuffer::RenderCommand::CMD_DRAWSATURATION:
+            g_GfxInternal_Dx9->SetMipMapping(false);
+            g_GfxInternal_Dx9->DrawSaturation((float)buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            g_GfxInternal_Dx9->SetMipMapping(true);
+            break;
+        case RenderBuffer::RenderCommand::CMD_DRAWLIGHTBLEEDING:
+            g_GfxInternal_Dx9->SetMipMapping(false);
+            g_GfxInternal_Dx9->DrawLightBleeding(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            g_GfxInternal_Dx9->SetMipMapping(true);
+            break;
+        case RenderBuffer::RenderCommand::CMD_DRAWVIGNETTE:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                float a3, a4, a5;
+                Vector3f v;
+                buf.PopFloat(a3);
+                buf.PopVector3f(v);
+                buf.PopFloat(a4);
+                buf.PopFloat(a5);
+
+                g_GfxInternal_Dx9->DrawVignette(tex, v, a3, a4, a5);
+                g_GfxInternal_Dx9->SetMipMapping(true);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_DRAWNOISE:
+            {
+                Texture* tex = (Texture*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                float a2;
+                int a3;
+                buf.PopFloat(a2);
+                buf.PopInt(a3);
+
+                g_GfxInternal_Dx9->SetMipMapping(false);
+                g_GfxInternal_Dx9->DrawNoise(tex, a2, a3);
+                g_GfxInternal_Dx9->SetMipMapping(true);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_MODELMATRIX:
+            {
+                DirectX::XMMATRIX mat;
+                g_GfxInternal_Dx9->GetModelMatrix(mat);
+                g_RenderBuffer->PushModelMatrix(mat);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_TEXTURE:
+            g_RenderBuffer->PushInt((int)g_GfxInternal_Dx9->m_TexturesArray_2[0]);
+            g_RenderBuffer->PushInt((int)g_GfxInternal_Dx9->m_TexturesArray_2[1]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ENVIRONMENTMAP:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->m_EnvironmentMapEnabled);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ENVIRONMENTMAPCOEF:
+            g_RenderBuffer->PushFloat(g_GfxInternal_Dx9->m_EnvironmentMapCoefficient);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ENABLELIGHTING:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->m_LightingEnabled);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ENABLELIGHT:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->GetLightStatus((const GfxInternal_Dx9::LightStatus*)buf.m_ParamsArray[buf.m_PrevParamIndex++]));
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ZWRITE:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->m_TexProperties[0].m_ZWrite);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ZTEST:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->m_TexProperties[0].m_ZTest);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_FOG:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->m_FogEnabled);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_FOGPROPERTIES:
+            {
+                unsigned int mode;
+                ColorRGB clr;
+                float start, end, density;
+                g_GfxInternal_Dx9->GetFogParams(&mode, &clr, &start, &end, &density);
+
+                g_RenderBuffer->PushInt(mode);
+                g_RenderBuffer->PushColor(clr);
+                g_RenderBuffer->PushFloat(start);
+                g_RenderBuffer->PushFloat(end);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_FILTER:
+            g_RenderBuffer->PushInt(g_GfxInternal_Dx9->m_Filter);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_CULLMODE:
+            g_RenderBuffer->PushInt(g_GfxInternal_Dx9->m_TexProperties[0].m_CullMode);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ZBIAS:
+            g_RenderBuffer->PushInt(g_GfxInternal_Dx9->m_ZBias);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_BLENDMODE:
+            break;
+            g_RenderBuffer->PushInt(g_GfxInternal_Dx9->m_BlendMode);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_OPACITY:
+            g_RenderBuffer->PushFloat(g_GfxInternal_Dx9->m_EnvironmentMapOpacity);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_VIEWPORT:
+            g_RenderBuffer->PushVector2i(g_GfxInternal_Dx9->m_ViewportResolution_1);
+            g_RenderBuffer->PushVector2i(g_GfxInternal_Dx9->m_ViewportResolution);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_PROJECTION:
+            float fov, aspectratio, nearplane, farplane;
+            g_GfxInternal_Dx9->GetProjectionParams(&fov, &aspectratio, &nearplane, &farplane);
+
+            g_RenderBuffer->PushFloat(fov);
+            g_RenderBuffer->PushFloat(aspectratio);
+            g_RenderBuffer->PushFloat(nearplane);
+            g_RenderBuffer->PushFloat(farplane);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_MIPMAPBIAS:
+            g_RenderBuffer->PushFloat(g_GfxInternal_Dx9->m_MipMapBias);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_MIPMAPPING:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->m_MipMappingEnabled);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_TEXTUREADDRESSMODE:
+            g_RenderBuffer->PushInt(g_GfxInternal_Dx9->m_TextureAddressModes[0]);
+            g_RenderBuffer->PushInt(g_GfxInternal_Dx9->m_TextureAddressModes[1]);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_RENDERTARGET:
+            g_RenderBuffer->PushInt((int)g_GfxInternal_Dx9->m_RenderTarget);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ALPHACHANNEL:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->m_AlphaChannelEnabled);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_SETALPHATESTTHRESHHOLD:
+            g_RenderBuffer->PushFloat(g_GfxInternal_Dx9->m_AlphaTestThreshhold);
+            break;
+        case RenderBuffer::RenderCommand::CMD_PUSH_ENABLEALPHATEST:
+            g_RenderBuffer->PushBool(g_GfxInternal_Dx9->m_AlphaTestEnabled);
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_MODELMATRIX:
+            {
+                DirectX::XMMATRIX mat;
+                g_RenderBuffer->PopMatrix(mat);
+                g_GfxInternal_Dx9->SetWorldMatrix(&mat);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_TEXTURE:
+            {
+                int tex1, tex2;
+                g_RenderBuffer->PopInt(tex1);
+                g_RenderBuffer->PopInt(tex2);
+
+                g_GfxInternal_Dx9->SetTextureIndex((Texture*)tex1, 1);
+                g_GfxInternal_Dx9->SetTextureIndex((Texture*)tex2, 0);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ENVIRONMENTMAP:
+            {
+                bool b;
+                g_RenderBuffer->PopBool(b);
+                g_GfxInternal_Dx9->ToggleEnvironmentMap(b);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ENVIRONMENTMAPCOEF:
+            {
+                float c;
+                g_RenderBuffer->PopFloat(c);
+                g_GfxInternal_Dx9->SetEnvironmentMapCoef(c);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ENABLELIGHTING:
+            {
+                bool b;
+                g_RenderBuffer->PopBool(b);
+                g_GfxInternal_Dx9->EnableLighting(b);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ENABLELIGHT:
+            {
+                void* l = (void*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
+                bool b;
+                g_RenderBuffer->PopBool(b);
+                g_GfxInternal_Dx9->EnableLight(l, b);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ZWRITE:
+            {
+                bool zw;
+                g_RenderBuffer->PopBool(zw);
+                g_GfxInternal_Dx9->EnableZWrite(zw);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ZTEST:
+            {
+                bool zt;
+                g_RenderBuffer->PopBool(zt);
+                g_GfxInternal_Dx9->EnableZTest(zt);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_FOG:
+            {
+                bool fe;
+                g_RenderBuffer->PopBool(fe);
+                if (g_GfxInternal_Dx9->m_RenderingScene)
+                    g_GfxInternal_Dx9->EnableFog(fe);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_FOGPROPERTIES:
+            {
+                float fe, fs;
+                int fm;
+                ColorRGB fc;
+
+                g_RenderBuffer->PopFloat(fe);
+                g_RenderBuffer->PopFloat(fs);
+                g_RenderBuffer->PopColor(fc);
+                g_RenderBuffer->PopInt(fm);
+
+                if (g_GfxInternal_Dx9->m_RenderingScene)
+                    g_GfxInternal_Dx9->SetFogProperties(fm, fc, fs, fe, 0);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_FILTER:
+            {
+                int m;
+                g_RenderBuffer->PopInt(m);
+
+                g_GfxInternal_Dx9->SetFilterMode(m);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_CULLMODE:
+            {
+                int cm;
+                g_RenderBuffer->PopInt(cm);
+
+                g_GfxInternal_Dx9->SetCullMode(cm);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ZBIAS:
+            {
+                unsigned int zb;
+                g_RenderBuffer->PopInt(zb);
+
+                g_GfxInternal_Dx9->SetZBias(zb);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_BLENDMODE:
+            {
+                unsigned int bm;
+                g_RenderBuffer->PopInt(bm);
+
+                g_GfxInternal_Dx9->SetBlendMode(bm);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_OPACITY:
+            {
+                float op;
+                g_RenderBuffer->PopFloat(op);
+                g_GfxInternal_Dx9->SetEnvironmentMapOpacity(op);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_VIEWPORT:
+            {
+                ScreenResolution sr1, sr2;
+                g_RenderBuffer->PopVector2i(sr1);
+                g_RenderBuffer->PopVector2i(sr2);
+
+                g_GfxInternal_Dx9->SetViewport(sr2, sr1);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_PROJECTION:
+            {
+                float fov, aspectratio, nearplane, farplane;
+                g_RenderBuffer->PopFloat(farplane);
+                g_RenderBuffer->PopFloat(nearplane);
+                g_RenderBuffer->PopFloat(aspectratio);
+                g_RenderBuffer->PopFloat(fov);
+
+                g_GfxInternal_Dx9->SetProjection(fov, aspectratio, nearplane, farplane);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_MIPMAPBIAS:
+            {
+                float mb;
+                g_RenderBuffer->PopFloat(mb);
+                g_GfxInternal_Dx9->SetMipMapBias(mb);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_MIPMAPPING:
+            {
+                bool me;
+                g_RenderBuffer->PopBool(me);
+                g_GfxInternal_Dx9->SetMipMapping(me);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_TEXTUREADDRESSMODE:
+            {
+                unsigned int am1, am2;
+                g_RenderBuffer->PopInt(am1);
+                g_RenderBuffer->PopInt(am2);
+
+                g_GfxInternal_Dx9->SetTextureAddressMode(am1, 1);
+                g_GfxInternal_Dx9->SetTextureAddressMode(am2, 0);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_RENDERTARGET:
+            {
+                int rt;
+                g_RenderBuffer->PopInt(rt);
+                g_GfxInternal_Dx9->SetRenderTarget((Texture*)rt);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ALPHACHANNEL:
+            {
+                bool ac;
+                g_RenderBuffer->PopBool(ac);
+                g_GfxInternal_Dx9->EnableAlphaChannel(ac);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_SETALPHATESTTHRESHHOLD:
+            {
+                float att;
+                g_RenderBuffer->PopFloat(att);
+                g_GfxInternal_Dx9->SetAlphaTestThreshold(att);
+            }
+            break;
+        case RenderBuffer::RenderCommand::CMD_POP_ENABLEALPHATEST:
+            {
+                bool alte;
+                g_RenderBuffer->PopBool(alte);
+                g_GfxInternal_Dx9->EnableAlphaTest(alte);
+            }
+            break;
         default:
             break;
         }

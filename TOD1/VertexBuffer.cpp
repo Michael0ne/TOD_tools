@@ -109,7 +109,7 @@ void VertexBuffer::CreateDirect3DBuffer()
 	g_GfxInternal_Dx9->m_Direct3DDevice->CreateVertexBuffer(m_Length, m_Flags & 1 ? D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY : D3DUSAGE_WRITEONLY, m_FVF, D3DPOOL_DEFAULT, &vertbuff, nullptr);
 
 	if (vertbuff != m_Direct3DVertexBuffer)
-		m_Direct3DVertexBuffer->Release();
+		RELEASE_SAFE(m_Direct3DVertexBuffer);
 
 	m_Direct3DVertexBuffer = vertbuff;
 }

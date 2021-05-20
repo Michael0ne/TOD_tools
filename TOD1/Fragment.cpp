@@ -8,7 +8,7 @@ Fragment::Fragment(Node* owner)
 	MESSAGE_CLASS_CREATED(Fragment);
 
 	m_FragmentRes = nullptr;
-	field_8 = 1;
+	field_8 = nullptr;
 	Utils::CreateUniqueId(m_UniqueId);
 	m_Owner = owner;
 	m_Name = nullptr;

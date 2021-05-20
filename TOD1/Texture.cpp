@@ -175,7 +175,7 @@ void Texture::AdjustColors()
 
 	if ((m_Levels & 510) != 0)
 	{
-		for (unsigned int level = 0; level < (m_Levels >> 1); ++level)
+		for (unsigned int level = 0; level < (unsigned int)(m_Levels >> 1); ++level)
 		{
 			D3DSURFACE_DESC surfdesc;
 			D3DLOCKED_RECT surfrect;

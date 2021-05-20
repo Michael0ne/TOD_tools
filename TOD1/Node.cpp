@@ -10,6 +10,8 @@
 #include "Camera.h"
 
 EntityType* tNode;
+std::vector<Node::NodeInfo> Node::NodesWithUpdateOrBlockingScripts;
+std::vector<Node::NodePosInfo> Node::NodesList;
 
 NodeMatrix::NodeMatrix(Node* owner)
 {
@@ -56,6 +58,35 @@ void NodeMatrix::SetTransformationFromMatrix(const DirectX::XMMATRIX& mat)
 #pragma message(TODO_IMPLEMENTATION)
 void Node::Destroy()
 {
+    if (m_FirstChild)
+        for (auto child = m_FirstChild->m_NextSibling; child; child = child->m_NextSibling)
+            child->Destroy();
+    m_FirstChild = nullptr;
+
+    SetParent(nullptr);
+
+    delete m_Fragment;
+    
+    if (m_Position && m_Position->m_Owner == this)
+        delete m_Position;
+
+    delete m_QuadTree;
+    delete m_CollisionIgnoreList;
+    delete[] m_Name;
+
+    if (m_GlobalIdInBlockigList >= 0)
+    {
+        NodesWithUpdateOrBlockingScripts[m_GlobalIdInBlockigList].m_Enabled = false;
+        m_GlobalIdInBlockigList = -1;
+    }
+
+    if (m_GlobalIdInSceneList >= 0)
+    {
+        NodesList[m_GlobalIdInSceneList].m_PosZ = 0;
+        m_GlobalIdInSceneList = -1;
+    }
+
+    (*(void(__thiscall*)(Entity*, bool))(*(int*)this))(this, true);
 }
 
 void Node::_484CC0(int)
@@ -66,7 +97,11 @@ void Node::_484CC0(int)
 #pragma message(TODO_IMPLEMENTATION)
 Entity* Node::FindNode(const char* nodeName)
 {
+#ifdef _EXE
+    LogDump::LogA("Node::FindNode NOT IMPLEMENTED!\n");
+#else
     return (*(Entity * (__thiscall*)(Node*, const char*))0x88EED0)(this, nodeName);
+#endif
 }
 
 void Node::SetFlags(int flags)
@@ -254,7 +289,11 @@ void Node::SetParam(const int index, const void* param, BaseType* type)
 #pragma message(TODO_IMPLEMENTATION)
 void Node::SetOrient(const Orientation& orient)
 {
+#ifdef _EXE
+    LogDump::LogA("Node::SetOrient NOT IMPLEMENTED!\n");
+#else
     (*(void(__thiscall*)(Node*, const Orientation&))0x88DB20)(this, orient);
+#endif
 }
 
 Vector4f* Node::GetPos(Vector4f& outVec)

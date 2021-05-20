@@ -344,6 +344,11 @@ void GfxInternal::CreateCheckerboardTextures()
     delete pytexsurfmut;
 }
 
+void GfxInternal::GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsigned int ind) const
+{
+    mat = m_RenderBufferArray[ind].m_ViewMatrix;
+}
+
 AssetManager::RegionCode GfxInternal::GetRegion()
 {
     return AssetManager::REGION_EUROPE;
@@ -357,10 +362,10 @@ bool GfxInternal::IsWideScreen()
 Buffer276::Buffer276(const Vector3f& bufferSize)
 {
     m_BufferSize = bufferSize;
-    field_14 = 1;
+    field_14[0] = 1;
     field_10 = NULL;
     m_RenderBuffer = NULL;
-    field_DC = NULL;
+    field_DC[0] = NULL;
     m_ClearFlags = NULL;
     
     m_ViewMatrix = DirectX::XMMatrixIdentity();
