@@ -26,7 +26,7 @@ void* SingletonSubAllocator::AllocateAligned(size_t size, size_t alignment, int 
 	m_InstancePtr = alignedspaceptr;
 	m_Instantiated = true;
 
-	if (size > ((char*)m_AllocatedSpacePtr + m_AllocatedSpaceSize - (char*)alignedspaceptr))
+	if (size > (size_t)((char*)m_AllocatedSpacePtr + m_AllocatedSpaceSize - (char*)alignedspaceptr))
 		return nullptr;
 	else
 		return alignedspaceptr;
@@ -46,7 +46,7 @@ void SingletonSubAllocator::FreeAligned(void* ptr)
 
 void* SingletonSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
 {
-	if (newsize <= (m_AllocatedSpaceSize + (char*)m_AllocatedSpacePtr - (char*)m_InstancePtr))
+	if (newsize <= (size_t)(m_AllocatedSpaceSize + (char*)m_AllocatedSpacePtr - (char*)m_InstancePtr))
 		return oldptr;
 
 	if (newsize > m_AllocatedSpaceSize)

@@ -35,7 +35,7 @@ SurfaceMutable::~SurfaceMutable()
 	MESSAGE_CLASS_DESTROYED(SurfaceMutable);
 }
 
-void SurfaceMutable::EmplaceSurfaceAtIndex(Surface* surf, int ind)
+void SurfaceMutable::EmplaceSurfaceAtIndex(Surface* surf, const unsigned int ind)
 {
 	if (ind >= m_Surfaces.size())
 		m_Surfaces.resize(ind + 1);
@@ -43,7 +43,7 @@ void SurfaceMutable::EmplaceSurfaceAtIndex(Surface* surf, int ind)
 	m_Surfaces[ind] = surf;
 }
 
-Surface* ::SurfaceMutable::GetSurfaceByIndex(const int ind) const
+Surface* ::SurfaceMutable::GetSurfaceByIndex(const unsigned int ind) const
 {
 	if (ind >= m_Surfaces.size())
 		return nullptr;

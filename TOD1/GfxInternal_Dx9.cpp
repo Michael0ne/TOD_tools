@@ -66,10 +66,10 @@ GfxInternal_Dx9::GfxInternal_Dx9(const ScreenResolution& resolution, unsigned in
     m_TexturesArray_2[1] = 0;
     field_9700 = 0;
     field_9704 = 0;
-    m_TextureStages[0] = 0;
-    m_TextureStages[1] = 0;
-    m_TextureStages[2] = 0;
-    m_TextureStages[3] = 0;
+    m_TextureStageActive[0] = 0;
+    m_TextureStageActive[1] = 0;
+    m_TextureStageActive[2] = 0;
+    m_TextureStageActive[3] = 0;
     m_IndexBuffer = nullptr;
     m_CurrentVertexBuffer = nullptr;
     field_9670 = -1;
@@ -451,13 +451,13 @@ void GfxInternal_Dx9::SetupRenderer()
 
     if (m_TexturesArray_2[0])
     {
-        m_TextureStages[0] = 1;
+        m_TextureStageActive[0] = 1;
         m_TexturesArray_2[0] = 0;
     }
 
     if (m_TexturesArray_2[1])
     {
-        m_TextureStages[1] = 1;
+        m_TextureStageActive[1] = 1;
         m_TexturesArray_2[1] = 0;
     }
 
@@ -507,13 +507,13 @@ void GfxInternal_Dx9::ResetStream()
 
     if (m_TexturesArray_2[0])
     {
-        m_TextureStages[0] = 1;
+        m_TextureStageActive[0] = 1;
         m_TexturesArray_2[0] = 0;
     }
 
     if (m_TexturesArray_2[1])
     {
-        m_TextureStages[1] = 1;
+        m_TextureStageActive[1] = 1;
         m_TexturesArray_2[1] = 0;
     }
 
@@ -662,6 +662,11 @@ void GfxInternal_Dx9::CreateParticleMeshBuffer()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
+void GfxInternal_Dx9::RenderTriangle_2(const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const ColorRGB& clrtop, const ColorRGB& clrbtml, const ColorRGB& clrbtmr)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::RenderTexturedQuad2D_4(const Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&)
 {
 }
@@ -688,7 +693,7 @@ void GfxInternal_Dx9::SetupWindowParamsAntialiased(unsigned int width, unsigned 
     if (mode || (mode = IsScreenResolutionAvailable(640, 480, true)) != 0)
     {
         m_Windowed = true;
-        m_DisplayModeFormat = (D3DFORMAT)mode->m_Format;	//	D3DFORMAT is just a enum
+        m_DisplayModeFormat = (D3DFORMAT)mode->m_Format;
         m_DisplayModeResolution.x = mode->m_Width;
         m_DisplayModeResolution.y = mode->m_Height;
 
@@ -712,7 +717,6 @@ void GfxInternal_Dx9::SetupWindowParamsNoAntiAliasing(const ScreenResolution mod
     m_Windowed = false;
     g_Window->SetWindowResolutionDontMove(mode);
 
-    char* errorstr = nullptr;
     HRESULT result = m_Direct3DInterface->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &_mode);
     if (SUCCEEDED(result))
     {
@@ -727,6 +731,7 @@ void GfxInternal_Dx9::SetupWindowParamsNoAntiAliasing(const ScreenResolution mod
     }
     else
     {
+        char* errorstr = nullptr;
         Utils::GetDXErrorString(result, errorstr);
         MessageBoxA(g_Window->m_WindowHandle, errorstr, "Couldn't get current display mode", NULL);
     }
@@ -815,6 +820,11 @@ bool GfxInternal_Dx9::SetupScreenRes()
     Reset();
 
     return true;
+}
+
+void GfxInternal_Dx9::RenderTriangle(const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const ColorRGB& color)
+{
+    RenderTriangle_2(top, bottomleft, bottomright, color, color, color);
 }
 
 bool GfxInternal_Dx9::GetRegistryResolution(Vector2<unsigned int>& mode)
@@ -1061,26 +1071,17 @@ HRESULT GfxInternal_Dx9::GetDeviceCaps(IDirect3D9* d3d, D3DCAPS9* d3dcaps)
     return d3d->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, NULL, D3DRTYPE_TEXTURE, D3DFMT_DXT1);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::DestroySurfaces()
 {
     if (m_ShouldCreateVerticies)
         return;
 
-    if (m_DepthStencilSurface)
-    {
-        m_DepthStencilSurface->Release();
-        m_DepthStencilSurface = nullptr;
-    }
+    RELEASE_SAFE(m_DepthStencilSurface);
 
     for (unsigned int i = 0; i < (sizeof(m_ViewportTexturesArray) / sizeof(m_ViewportTexturesArray[0])); ++i)
         delete m_ViewportTexturesArray[i];
 
-    if (m_FramesyncQuery)
-    {
-        m_FramesyncQuery->Release();
-        m_FramesyncQuery = nullptr;
-    }
+    RELEASE_SAFE(m_FramesyncQuery);
 
     VertexBuffer::DestroyVertexBufferMap();
     IndexBuffer::DestroyIndexBufferMap();
@@ -1105,13 +1106,13 @@ void GfxInternal_Dx9::SetIndexBuffer(IndexBuffer* ib)
     m_IndexBuffer = ib;
 }
 
-void GfxInternal_Dx9::SetTextureScroll(float* a1, float a2)
+void GfxInternal_Dx9::SetTextureScroll(const Texture* tex, const float scroll)
 {
-    if (a2 != 0.f)
+    if (scroll != 0)
     {
         DirectX::XMMATRIX mat = DirectX::XMMatrixIdentity();
 
-        mat.r[2].m128_f32[1] = (*(a1 + 6) * a2) / *(a1 + 6);
+        mat.r[2].m128_f32[1] = (tex->m_SurfaceSize.y * scroll) / tex->m_SurfaceSize.y;
         m_Direct3DDevice->SetTransform(D3DTS_TEXTURE0, (const D3DMATRIX*)&mat);
         m_Direct3DDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2);
     }
@@ -1123,7 +1124,7 @@ void GfxInternal_Dx9::SetTextureIndex(Texture* tex, const unsigned int index)
 {
     if (m_TexturesArray_2[index] != tex)
     {
-        m_TextureStages[index] = 1;
+        m_TextureStageActive[index] = 1;
         m_TexturesArray_2[index] = tex;
     }
 }
@@ -1132,7 +1133,7 @@ void GfxInternal_Dx9::BeginText(const unsigned int, Texture* tex, const ColorRGB
 {
     if (m_TexturesArray_2[0] != tex)
     {
-        m_TextureStages[0] = 1;
+        m_TextureStageActive[0] = 1;
         m_TexturesArray_2[0] = tex;
     }
 
@@ -1145,7 +1146,7 @@ void GfxInternal_Dx9::BeginShadow(Texture* tex)
 {
     if (m_TexturesArray_2[0] != tex)
     {
-        m_TextureStages[0] = 1;
+        m_TextureStageActive[0] = 1;
         m_TexturesArray_2[0] = tex;
     }
 
@@ -1207,14 +1208,14 @@ void GfxInternal_Dx9::ResetTextures()
 {
     for (unsigned int i = 0; i < 2; ++i)
     {
-        if (m_TextureStages[i] == 1)
+        if (m_TextureStageActive[i] == 1)
         {
             if (m_TexturesArray_2[i])
                 m_TexturesArray_2[i]->SetTextureForStage(i);
             else
                 m_Direct3DDevice->SetTexture(i, nullptr);
             
-            m_TextureStages[i] = 0;
+            m_TextureStageActive[i] = 0;
         }
     }
 
@@ -1275,7 +1276,6 @@ bool GfxInternal_Dx9::BeginScene()
     return m_RenderingScene;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::CreateRenderDevice()
 {
     int behaviourFlags;
@@ -1293,11 +1293,7 @@ void GfxInternal_Dx9::CreateRenderDevice()
         field_1B2 = 0;
     }
 
-    if (m_Direct3DDevice)
-    {
-        m_Direct3DDevice->Release();
-        m_Direct3DDevice = nullptr;
-    }
+    RELEASE_SAFE(m_Direct3DDevice);
 
     if (m_DeviceCaps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
     {
@@ -1541,18 +1537,25 @@ void GfxInternal_Dx9::RenderFullscreenTexture(const Texture& tex)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void GfxInternal_Dx9::EnableLight(void*, unsigned int lightindex)
+void GfxInternal_Dx9::EnableLight(void*, const bool status)
 {
 }
 
 void GfxInternal_Dx9::_45E5D0(LightStatus& light)
 {
     for (unsigned int i = 0; i < m_SceneLights.size(); i++)
+    {
         if (&m_SceneLights[i] == &light)
         {
             EnableLight((void*)&light, 0);
             m_SceneLights[i].m_Enabled = false;
         }
+    }
+}
+
+void GfxInternal_Dx9::GetModelMatrix(DirectX::XMMATRIX& mat) const
+{
+    mat = m_WorldMatrix;
 }
 
 void GfxInternal_Dx9::SetProjection(float fov, float aspectratio, float nearplane, float farplane)
@@ -1575,11 +1578,7 @@ void GfxInternal_Dx9::SetProjection(float fov, float aspectratio, float nearplan
 
 void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath)
 {
-    if (m_TexturesArray[index])
-    {
-        (*m_TexturesArray)->Release();
-        *m_TexturesArray = nullptr;
-    }
+    RELEASE_SAFE(m_TexturesArray[index]);
 
     if (!texturePath || !(*texturePath))
         return;
@@ -1946,15 +1945,15 @@ void GfxInternal_Dx9::DumpScreenShot(Surface* surf)
             {
             case D3DFMT_X8R8G8B8:
             case D3DFMT_A8R8G8B8:
-                *(int*)&dwclr = (int)((char*)backBufferRect.pBits + 4 * x + y * backBufferRect.Pitch);
+                *(int*)&dwclr = (int)*((char*)backBufferRect.pBits + 4 * x + y * backBufferRect.Pitch);
                 break;
             case D3DFMT_R5G6B5:
-                *(short*)&dwclr = (short)((char*)backBufferRect.pBits + 4 * x + y * backBufferRect.Pitch);
+                *(short*)&dwclr = (short)*((char*)backBufferRect.pBits + 4 * x + y * backBufferRect.Pitch);
                 *(int*)&dwclr = 8 * (*(short*)&dwclr & 0x1F | (4 * (*(short*)&dwclr & 0x7E0 | (8 * (*(short*)&dwclr & 0xF800)))));
                 break;
             case D3DFMT_X1R5G5B5:
             case D3DFMT_A1R5G5B5:
-                *(short*)&dwclr = (short)((char*)backBufferRect.pBits + 4 * x + y * backBufferRect.Pitch);
+                *(short*)&dwclr = (short)*((char*)backBufferRect.pBits + 4 * x + y * backBufferRect.Pitch);
                 *(int*)&dwclr = 8 * (*(short*)&dwclr & 0x1F | (8 * (*(short*)&dwclr & 0x3E0 | (8 * (*(short*)&dwclr & 0x7C00)))));
                 break;
             }

@@ -166,6 +166,23 @@ public:
 
     static void			Register();	//	@88FCD0
     static Node*		Create(AllocatorIndex);	//	@88D680
+
+    struct NodeInfo
+    {
+        Node           *m_Node;
+        bool            m_Enabled;
+    };
+
+    struct NodePosInfo
+    {
+        short           m_PosX;
+        short           m_PosY;
+        short           m_PosZ;
+        short           m_PosW;
+    };
+
+    static std::vector<NodeInfo>    NodesWithUpdateOrBlockingScripts;   //  @A11CC0
+    static std::vector<NodePosInfo> NodesList;  //  @A3D8B0
 };
 
 extern EntityType* tNode;	//	@A3D884

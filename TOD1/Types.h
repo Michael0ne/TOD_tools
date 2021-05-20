@@ -48,6 +48,11 @@ struct Vector4 {
 	Vector4()
 		: x(0), y(0), z(0), a(0)
 	{}
+
+	explicit operator Vector3<T>() const
+	{
+		return { x, y, z };
+	}
 };
 
 struct ColorRGB {

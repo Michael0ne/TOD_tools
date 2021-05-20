@@ -13,8 +13,8 @@ struct SurfaceMutable
     SurfaceMutable();  //  @424110  //  NOTE: unused.
     ~SurfaceMutable(); //  @424140
 
-    void						EmplaceSurfaceAtIndex(Surface* surf, int ind);   //  @4242D0
-    Surface*    GetSurfaceByIndex(const int ind) const; //  @423D80
+    void						EmplaceSurfaceAtIndex(Surface* surf, const unsigned int ind);   //  @4242D0
+    Surface*                    GetSurfaceByIndex(const unsigned int ind) const; //  @423D80
     ScreenResolution&           GetSurfaceResolution(ScreenResolution& resolution, const int ind) const;    //  @423D60
     ScreenResolution&           GetSurfaceResolutionNormalised(ScreenResolution& resolution, const int ind) const;    //  @423D40
     void                        ReduceColors(const int colors); //  @423DA0

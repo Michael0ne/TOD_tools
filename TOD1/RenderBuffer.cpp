@@ -3,8 +3,9 @@
 
 RenderBuffer* g_RenderBuffer = nullptr;
 int RenderBuffer::Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE];
+int RenderBuffer::MeshBuffersDrawn = 0;
 
-void RenderBuffer::SetBufferSize(unsigned int size)
+void RenderBuffer::SetBufferSize(const unsigned int size)
 {
 	if (!size)
 	{
@@ -37,7 +38,7 @@ void RenderBuffer::SetBufferSize(unsigned int size)
 	}
 }
 
-RenderBuffer::RenderBuffer(unsigned int maxParams, AllocatorIndex allocatorType)
+RenderBuffer::RenderBuffer(const unsigned int maxParams, AllocatorIndex allocatorType)
 {
 	MESSAGE_CLASS_CREATED(RenderBuffer);
 
@@ -65,7 +66,7 @@ RenderBuffer::RenderBuffer(unsigned int maxParams, AllocatorIndex allocatorType)
 	m_PrevParamIndex = NULL;
 }
 
-void RenderBuffer::AdjustBufferSize(unsigned int size)
+void RenderBuffer::AdjustBufferSize(const unsigned int size)
 {
 	unsigned int currentcapacity = (m_MaxParams * 3) >> 1;
 
@@ -80,7 +81,7 @@ void RenderBuffer::PushModelMatrix(const DirectX::XMMATRIX& mat)
 
 	for (unsigned int r = 0; r < 4; ++r)
 		for (unsigned int c = 0; c < 3; ++c)
-			m_ParamsArray[m_CurrentParamIndex++] = mat.r[r].m128_f32[c];
+			*(float*)&m_ParamsArray[m_CurrentParamIndex++] = mat.r[r].m128_f32[c];
 }
 
 void RenderBuffer::PopMatrix(DirectX::XMMATRIX& mat)
@@ -106,6 +107,29 @@ void RenderBuffer::PopVector2i(Vector2<int>& vec)
 
 	m_PrevParamIndex += vecargsize;
 	m_CurrentParamIndex -= vecargsize;
+}
+
+void RenderBuffer::PopVector2i(Vector2<unsigned int>& vec)
+{
+	constexpr size_t vecargsize = sizeof(vec) / 4;
+	m_PrevParamIndex = m_CurrentParamIndex - vecargsize;
+	vec = *(Vector2<unsigned int>*) & m_ParamsArray[m_PrevParamIndex];
+
+	m_PrevParamIndex += vecargsize;
+	m_CurrentParamIndex -= vecargsize;
+}
+
+void RenderBuffer::PopVector2f(Vector2f& vec)
+{
+	vec = *(Vector2f*)&m_ParamsArray[m_PrevParamIndex];
+	m_PrevParamIndex += (sizeof(vec) / 4);
+}
+
+void RenderBuffer::PopVector3f(Vector3f& vec)
+{
+	vec = *(Vector3f*)&m_ParamsArray[m_PrevParamIndex];
+
+	m_PrevParamIndex += (sizeof(vec) / 4);
 }
 
 void RenderBuffer::PopVector4f(Vector4f& vec)
@@ -142,15 +166,21 @@ void RenderBuffer::PopQuaternion(Orientation& q)
 	m_PrevParamIndex += sizeof(q) / 4;
 }
 
-void RenderBuffer::PushVector4i(const Vector4<int>& vec)
+void RenderBuffer::PopColor(ColorRGB& clr)
 {
-	if (m_MaxParams < m_CurrentParamIndex + sizeof(vec))
-		AdjustBufferSize(m_CurrentParamIndex + sizeof(vec));
+	clr = *(ColorRGB*)&m_ParamsArray[m_PrevParamIndex];
+	m_PrevParamIndex += sizeof(clr) / 4;
+}
 
-	m_ParamsArray[m_CurrentParamIndex++] = vec.x;
-	m_ParamsArray[m_CurrentParamIndex++] = vec.y;
-	m_ParamsArray[m_CurrentParamIndex++] = vec.z;
-	m_ParamsArray[m_CurrentParamIndex++] = vec.a;
+void RenderBuffer::PushColor(const ColorRGB& clr)
+{
+	if (m_MaxParams < m_CurrentParamIndex + sizeof(clr))
+		AdjustBufferSize(m_CurrentParamIndex + sizeof(clr));
+
+	*(float*)&m_ParamsArray[m_CurrentParamIndex++] = clr.r;
+	*(float*)&m_ParamsArray[m_CurrentParamIndex++] = clr.g;
+	*(float*)&m_ParamsArray[m_CurrentParamIndex++] = clr.b;
+	*(float*)&m_ParamsArray[m_CurrentParamIndex++] = clr.a;
 }
 
 void RenderBuffer::PushFloat(const float& f)
@@ -185,6 +215,16 @@ void RenderBuffer::PushVector2i(const Vector2<int>& vec)
 
 	m_ParamsArray[m_CurrentParamIndex++] = vec.x;
 	m_ParamsArray[m_CurrentParamIndex++] = vec.y;
+}
+
+void RenderBuffer::PushVector2i(const ScreenResolution& vec)
+{
+	constexpr size_t vecargsize = sizeof(vec) / 4;
+	if (m_MaxParams < m_CurrentParamIndex + vecargsize)
+		AdjustBufferSize(m_CurrentParamIndex + vecargsize);
+
+	*(unsigned int*)&m_ParamsArray[m_CurrentParamIndex++] = vec.x;
+	*(unsigned int*)&m_ParamsArray[m_CurrentParamIndex++] = vec.y;
 }
 
 void RenderBuffer::PushVector2f(const Vector2f& vec)

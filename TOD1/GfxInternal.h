@@ -11,12 +11,12 @@ public:
     Vector3f            m_BufferSize;
     FrameBuffer        *m_RenderBuffer;
     Buffer276          *field_10;
-    char                field_14;
+    char                field_14[4];
     DirectX::XMMATRIX   m_ViewMatrix;
     DirectX::XMMATRIX   m_MatrixUnknown_1;
     int                 field_98;
     DirectX::XMMATRIX   m_MatrixUnknown_2;
-    char                field_DC;
+    char                field_DC[4];
     Vector4f            m_ProjectionMatrixParams;	//	NOTE: fov, xy_ratio, near_clip, far_clip.
     ScreenResolution    m_ViewportDimensions_1;
     ScreenResolution    m_ViewportDimensions_2;
@@ -145,6 +145,7 @@ public:
     void                            ExecuteRenderBuffer(int a1, int a2, int a3);    //  @421530
     FrameBuffer*                    _41F8F0(FrameBuffer* fb, unsigned int index);   //  @41F8F0
     void                            CreateCheckerboardTextures();    //  @4210E0
+    void                            GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsigned int ind) const;  //  @45EE30
 
     static AssetManager::RegionCode		GetRegion();	//	@420160
     static bool                     IsWideScreen();	//	@420120

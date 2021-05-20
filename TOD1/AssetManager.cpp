@@ -450,7 +450,8 @@ Asset* AssetManager::LoadResourceFile(const char* const respath)
 		return texass;
 	}
 
-	//	NOTE: actually load asset from a specified path.
+	//	TODO: actually load asset from a specified path.
+	return nullptr;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

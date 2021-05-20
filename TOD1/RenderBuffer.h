@@ -145,20 +145,20 @@ public:
     };
 
 public:
-    int             m_MaxParams;
+    unsigned int    m_MaxParams;
     int            *m_ParamsArray;  //  NOTE: parameter at index 0 is always a 'RenderCommand' enum id.
-    int             m_CurrentParamIndex;
-    int             m_PrevParamIndex;
+    unsigned int    m_CurrentParamIndex;
+    unsigned int    m_PrevParamIndex;
     AllocatorIndex  m_AllocatorId;
 
 protected:
-    void            SetBufferSize(unsigned int size);	//	@415350
+    void            SetBufferSize(const unsigned int size);	//	@415350
 
 public:
-    RenderBuffer(unsigned int maxParams, AllocatorIndex allocatorType);	//	@415400
+    RenderBuffer(const unsigned int maxParams, AllocatorIndex allocatorType);	//	@415400
     RenderBuffer() {};
 
-    void            AdjustBufferSize(unsigned int size);	//	@415510
+    void            AdjustBufferSize(const unsigned int size);	//	@415510
     template <typename T>
     inline void     push_back(T val)	//	NOTE: this does not exist in original code as-is, because it's always inlined.
     {
@@ -170,16 +170,35 @@ public:
     }
     void            PopMatrix(DirectX::XMMATRIX& mat); //  @431430
     void            PopVector2i(Vector2<int>& vec);    //  @431400
+    void            PopVector2i(Vector2<unsigned int>& vec);
+    void            PopVector2f(Vector2f& vec); //  @42E870
+    void            PopVector3f(Vector3f& vec); //  @42E770
     void            PopVector4f(Vector4f& vec); //  @431390
+    inline void     PopInt(int& i)
+    {
+        m_PrevParamIndex = m_CurrentParamIndex - 1;
+        i = m_ParamsArray[m_PrevParamIndex];
+        m_PrevParamIndex = m_CurrentParamIndex;
+        m_CurrentParamIndex--;
+    };
+    inline void     PopInt(unsigned int& i)
+    {
+        m_PrevParamIndex = m_CurrentParamIndex - 1;
+        i = *(unsigned int*)&m_ParamsArray[m_PrevParamIndex];
+        m_PrevParamIndex = m_CurrentParamIndex;
+        m_CurrentParamIndex--;
+    }
     void            PopFloat(float& f); //  @431320
     void            PopBool(bool& b);   //  @431290
     void            PopQuaternion(Orientation& q);    //  @430CD0
+    void            PopColor(ColorRGB& clr); //  @42E700
 
-    void            PushVector4i(const Vector4<int>& vec);  //  @431340
+    void            PushColor(const ColorRGB& clr);  //  @431340
     void            PushFloat(const float& f);  //  @4312F0
     void            PushInt(const int& i);  //  @4312C0
     void            PushBool(const bool& b);    //  @431260
     void            PushVector2i(const Vector2<int>& vec);  //  @431200
+    void            PushVector2i(const ScreenResolution& vec);
     void            PushVector2f(const Vector2f& vec);  //  @431180
     void            PushMatrix(const DirectX::XMMATRIX& mat, const unsigned int ind);   //  @430F80
     void            PushModelMatrix(const DirectX::XMMATRIX& mat);  //  @430D60
@@ -187,8 +206,9 @@ public:
     static void     CreateRenderBuffer();	//	@436070
 
     static int      Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE];	//	@A35B98
+    static int      MeshBuffersDrawn;   //  @A35E64
 };
 
-extern RenderBuffer*g_RenderBuffer;	//	@A35E60
+extern RenderBuffer*    g_RenderBuffer;	//	@A35E60
 
 ASSERT_CLASS_SIZE(RenderBuffer, 20);

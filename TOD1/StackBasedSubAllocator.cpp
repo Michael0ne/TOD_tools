@@ -19,7 +19,7 @@ void* StackBasedSubAllocator::Allocate_A(size_t size, int filler, int unk)
 void* StackBasedSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
 {
 	char* alignedspace = (char*)(~(alignment - 1) & (int)((char*)m_StackSpace->m_ActualSpacePtr + alignment - 1));
-	if ((char*)m_StackEndPtr - alignedspace < size)
+	if ((size_t)((char*)m_StackEndPtr - alignedspace) < size)
 		return nullptr;
 
 	StackElement* newelement = (StackElement*)(alignedspace + (int)m_StackSpace - (char*)m_StackSpace->m_ActualSpacePtr);
