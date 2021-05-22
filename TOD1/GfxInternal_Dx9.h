@@ -18,77 +18,102 @@ class GfxInternal_Dx9
     friend class VirtualHud;
     friend class FrameBuffer;
 
+    struct VertexData2D
+    {
+        Vector2f                    m_Start;
+        float                       field_8;
+        float                       field_C;
+        D3DCOLOR                    m_ColorStart;
+        Vector2f                    m_End;
+        float                       field_1C;
+        float                       field_20;
+        D3DCOLOR                    m_ColorEnd;
+    };
+
+    struct VertexData3D
+    {
+        Vector3f                    m_Start;
+        D3DCOLOR                    m_ColorStart;
+        Vector3f                    m_End;
+        D3DCOLOR                    m_ColorEnd;
+    };
+
     struct DisplayModeInfo
     {
-        unsigned int	m_Width;
-        unsigned int	m_Height;
-        bool			m_Available;
-        unsigned int	m_RefreshRate;
-        int				m_Format;
+        unsigned int	            m_Width;
+        unsigned int	            m_Height;
+        bool			            m_Available;
+        unsigned int	            m_RefreshRate;
+        int				            m_Format;
     };
 
     struct VerticesBuffer
     {
-        float	field_0;
-        float	field_4;
-        float	field_8;
-        float	field_C;
-        int		field_10;
-        Vector2f field_14;
+        float	                    field_0;
+        float	                    field_4;
+        float	                    field_8;
+        float	                    field_C;
+        int		                    field_10;
+        Vector2f                    field_14;
     };
 
     struct LightStatus
     {
-        bool	m_Enabled;
-        Light*	m_Light;
+        bool	                    m_Enabled;
+        Light                      *m_Light;
+    };
+
+    struct Sampler
+    {
+        int                         m_Sampler;
+        int                         m_AddressModeU;
+        int                         m_AddressModeV;
+        char                        m_MipMapped;
+        char                        field_D;
+
+        void                        SetAddressUMode(const unsigned int mode, const bool immediatechange);   //  @45EC50
+        void                        SetAddressVMode(const unsigned int mode, const bool immediatechange);  //  @45ECC0
     };
 
     struct RenderProperties
     {
-        int     field_0;
-        int     field_4;
-        int     field_8;
-        int     field_C;
-        int     field_10;
-        int     field_14;
-        int     field_18;
-        int     field_1C;
-        int     field_20;
-        char    field_24;
-        int     field_28;
-        int     field_2C;
-        int     field_30;
-        int     field_34;
-        int     field_38;
-        int     field_3C;
-        int     field_40;
-        int     field_44;
-        int     field_48;
-        char    field_4C;
-        int     field_50;
-        int     field_54;
-        int     field_58;
-        char    field_5C[4];
-        int     field_60;
-        int     field_64;
-        int     field_68;
-        char    field_6C[4];
-        bool    m_LightingEnabled;
-        bool    m_ZTest;
-        bool    m_ZWrite;
-        char    field_73;
-        ColorRGB m_AmbientColor;
-        int     m_CullMode;
-        bool    m_AlphaTest;
-        bool    m_AlphaBlend;
-        char    field_8A;
-        char    field_8B;
+        int                         field_0;
+        int                         field_4;
+        int                         field_8;
+        int                         field_C;
+        int                         field_10;
+        int                         field_14;
+        int                         field_18;
+        int                         field_1C;
+        int                         field_20;
+        char                        field_24;
+        int                         field_28;
+        int                         field_2C;
+        int                         field_30;
+        int                         field_34;
+        int                         field_38;
+        int                         field_3C;
+        int                         field_40;
+        int                         field_44;
+        int                         field_48;
+        char                        field_4C;
+        Sampler                     m_Sampler[2];
+        bool                        m_LightingEnabled;
+        bool                        m_ZTest;
+        bool                        m_ZWrite;
+        char                        field_73;
+        ColorRGB                    m_AmbientColor;
+        int                         m_CullMode;
+        bool                        m_AlphaTest;
+        bool                        m_AlphaBlend;
+        char                        field_8A;
+        char                        field_8B;
 
         RenderProperties();	//	@45FF40
         RenderProperties(const RenderProperties& rhs);	//	@460150
 
-        void	SetTextureAmbientColor(const ColorRGB& clr, bool flushdirectly);	//	@45ED60
-        void	ToggleLighting(bool enabled, bool flushdirectly);	//	@45ED30
+        void	                    SetTextureAmbientColor(const ColorRGB& clr, bool flushdirectly);	//	@45ED60
+        void	                    ToggleLighting(bool enabled, bool flushdirectly);	//	@45ED30
     };
 
     ASSERT_CLASS_SIZE(RenderProperties, 140);
@@ -143,7 +168,7 @@ protected:
 
     VerticesBuffer                  m_VerticesBuffer[750];
     bool                            m_DrawingText;
-    int                             m_ActiveTextRenderBuffer;
+    int                             m_VerticiesToDrawTotal;
     int                             m_ActiveTextureColor;
     float                           m_FOV;
     float                           m_AspectRatio;
@@ -154,9 +179,9 @@ protected:
     DirectX::XMMATRIX               m_ViewMatrix;
     DirectX::XMMATRIX               m_IdentityMatrix;
     DirectX::XMMATRIX               m_WorldMatrix;
-    DirectX::XMMATRIX               m_BoneMatrix;
+    DirectX::XMMATRIX               m_MatrixUnknown;
 
-    int                             field_56A4[4080];   //  NOTE: possibly 'MeshBuffer'. In a way that this is an actual buffer for the raw mesh buffer data.
+    DirectX::XMMATRIX               m_BoneMatrix[255];
 
     char                            field_9664;
     int                             field_9668;
@@ -180,7 +205,7 @@ protected:
     bool                            m_EnvironmentMapEnabled;
     int                             m_FVF;
     IDirect3DVertexDeclaration9    *m_Direct3DVertexDeclaration;
-    void                           *m_GameCameraMatrix;
+    CameraMatrix                   *m_GameCameraMatrix;
     int                             m_FogMode;
     float                           m_FogStart;
     float                           m_FogEnd;
@@ -198,7 +223,7 @@ protected:
     Texture                        *m_ViewportTexturesArray[4];
     IDirect3DSurface9              *m_DepthStencilSurface;
     int                             m_AxisAlign;
-    char                            m_ParticleRenderDisabled;
+    char                            m_DontColorParticles;
     int                             m_ParticleSize;
     Vector4f                        m_ParticleOrient;
     int                             m_ParticleAlign;
@@ -275,7 +300,7 @@ public:
     void                            _44E680(const DirectX::XMMATRIX*, Vector2<float>*, unsigned int*);	//	@44E680
     unsigned int                    GetAvailableTextureMemory() const;	//	@44E960	//	NOTE: unused completely.
     void                            DumpScreenShot(class Surface* surf);	//	@44E970
-    void                            SetTextureAddressMode(int, int ind);	//	@44EB30
+    void                            SetTextureAddressMode(const unsigned int mode, const unsigned int ind);	//	@44EB30
     void                            SetCullMode(unsigned int);	//	@44EB80
     HRESULT                         GetDeviceCaps(IDirect3D9*, D3DCAPS9*);	//	@44EBC0
     void                            DestroySurfaces();	//	@44ED40
@@ -290,7 +315,7 @@ public:
     void                            RenderText2(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, bool);	//	@44F310
     void                            BeginShadow(Texture*);	//	@44F5B0
     void                            EndShadow();	//	@44F600
-    void                            SetBoneMatrix(unsigned int, const DirectX::XMMATRIX&);	//	@44F640
+    void                            SetBoneMatrix(const unsigned int index, const DirectX::XMMATRIX&);	//	@44F640
     void                            SetParticleSize(unsigned int);	//	@44F790
     void                            SetParticleOrient(const Quaternion<float>&);	//	@44F7B0
     void                            SetParticleAlign(unsigned int);	//	@44F7E0
@@ -319,8 +344,8 @@ public:
     void                            Reset();	//	@451020
     bool                            BeginScene();	//	@451080
     void                            CreateRenderDevice();	//	@451110
-    void                            RenderLine2D(const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@451270
-    void                            RenderLine(const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@4514B0
+    void                            RenderLine2D(const Vector2<float>& start, const Vector2<float>& end, const ColorRGB& clr);	//	@451270
+    void                            RenderLine(const Vector3<float>& start, const Vector3<float>& end, const ColorRGB& clr);	//	@4514B0
     void                            _4516A0(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector3<float>&, unsigned int, unsigned int);	//	@4516A0
     void                            RenderTriangle2D(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@451920
     void                            RenderTriangle_2(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&);	//	@451BC0
@@ -328,29 +353,29 @@ public:
     void                            RenderQuad2D(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@452220
     void                            RenderTexturedQuad2D_4(const Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&);	//	@452260
     void                            RenderTexturedQuad_3(const Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&);	//	@452750
-    void                            EndText(unsigned int, unsigned int);	//	@453D60
+    void                            EndText();	//	@453D60
     void                            RenderShadow(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, float r, float g, float b);	//	@453F20
     void                            RenderMeshBuffer(const MeshBuffer_Dx9* meshbuffer);	//	@4540E0
     void                            RenderMeshColorBuffer(const void* meshcolorbuffer);	//	@454660
-    void                            RenderVertexBuffer(const VertexBuffer*, unsigned int startvertex, unsigned int primitivecount);	//	@454C80
+    void                            RenderVertexBuffer(const VertexBuffer* vb, unsigned int startvertex, unsigned int primitivecount);	//	@454C80
     void                            EndParticleSystem(bool);	//	@454D40
-    void                            RenderParticle(const Vector3<float>&);	//	@454D70
-    void                            DrawBrightness(float);	//	@45A9A0
-    void                            DrawSaturation(float);	//	@45AC00
+    void                            RenderParticle(const Vector3f& pos);	//	@454D70
+    void                            DrawBrightness(const float brightness);	//	@45A9A0
+    void                            DrawSaturation(const float sat);	//	@45AC00
     void                            DrawVignette(const Texture*, const Vector3<float>&, float, float, float);	//	@45AE60
     void                            SetupWindowParamsAntialiased(unsigned int width, unsigned int height);	//	@45BE30
     void                            SetupWindowParamsNoAntiAliasing(const ScreenResolution resolution);	//	@45BEF0
     bool                            SetScreenResolution(unsigned int width, unsigned int height);	//	@45BF90
     bool                            SetupScreenRes();	//	@45C0D0
     void                            RenderTriangle(const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const ColorRGB& color);	//	@45C250
-    void                            RenderQuad(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C270
+    void                            RenderQuad(const Vector3<float>& tl, const Vector3<float>& bl, const Vector3<float>& tr, const Vector3<float>& br, const ColorRGB& clr);	//	@45C270
     void                            RenderTexturedQuad2D_3(const Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C2B0
     void                            RenderTexturedQuad_2(const Texture&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C2F0
-    void                            DrawNoise(const Texture*, float, int);	//	@45C330
+    void                            DrawNoise(const Texture*, const float opacity, const unsigned int blend);	//	@45C330
     void                            RenderTexturedQuad2D_2(const Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@45C610
-    void                            RenderTexturedQuad_1(const Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&);	//	@45C6D0
+    void                            RenderTexturedQuad_1(const Texture* tex, const Vector3<float>& tl, const Vector3<float>& bl, const Vector3<float>& tr, const Vector3<float>& br, const ColorRGB& clr);	//	@45C6D0
     void                            _45C790(float);	//	@45C790
-    void                            DrawLightBleeding(unsigned int);	//	@45C9A0
+    void                            DrawLightBleeding(const float clr);	//	@45C9A0
     void                            RenderTexturedQuad2D_1(const Texture& tex, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB&);	//	@45D4A0
     void                            RenderViewport();	//	@45D5E0
     void                            RenderFullscreenTexture(const Texture& tex);	//	@45D940
@@ -366,6 +391,7 @@ public:
     static D3DFORMAT                SupportedFormats[];	//	@A0A99C
     static float                    NoiseTime;	//	@A39F2C
     static int                      NoiseState;	//	@A39F30	//	NOTE: used when rendering noise.
+    static bool                     ParticlesEnabled;   //  @A0A99B
 
     static void                     GetScreenResolution(ScreenResolution& outRes);	//	@41FD70
 };
