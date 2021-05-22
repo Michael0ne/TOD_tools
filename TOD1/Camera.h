@@ -3,12 +3,7 @@
 
 struct CameraMatrix
 {
-	Vector4f    m_Vec_1;
-	Vector4f    m_Vec_2;
-	Vector4f    m_Vec_3;
-	Vector4f    m_Vec_4;
-	Vector4f    m_Vec_5;
-	Vector4f    m_Pos;
+	Vector4f    m_Vec[6];
 
 	CameraMatrix();	//	@4087C0
 

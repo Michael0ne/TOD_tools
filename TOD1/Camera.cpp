@@ -177,7 +177,7 @@ CameraMatrix::CameraMatrix()
 #pragma message(TODO_IMPLEMENTATION)
 void CameraMatrix::SetupMatrix(const Vector4f& pos, const Orientation& orient, const float fov, const float nearclip, const float farclip)
 {
-	m_Pos = pos;
+	m_Vec[5] = pos;
 
 	float orientdist = sqrtf(orient.w * orient.w + orient.x * orient.x + orient.y * orient.y + orient.z * orient.z);
 	float fovsinneg = -sinf(fov * 0.0087266462f);

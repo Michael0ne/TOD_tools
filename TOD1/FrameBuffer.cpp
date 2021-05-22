@@ -325,12 +325,7 @@ void FrameBuffer::ExecuteRenderCommand(RenderBuffer& buf) const
             break;
         case RenderBuffer::RenderCommand::CMD_ENDTEXT:
             {
-                unsigned int a1, a2;
-
-                a1 = buf.m_ParamsArray[buf.m_PrevParamIndex++];
-                a2 = buf.m_ParamsArray[buf.m_PrevParamIndex++];
-
-                g_GfxInternal_Dx9->EndText(a1, a2);
+                g_GfxInternal_Dx9->EndText();
                 g_GfxInternal_Dx9->SetMipMapping(true);
             }
             break;
@@ -684,7 +679,7 @@ void FrameBuffer::ExecuteRenderCommand(RenderBuffer& buf) const
             break;
         case RenderBuffer::RenderCommand::CMD_DRAWLIGHTBLEEDING:
             g_GfxInternal_Dx9->SetMipMapping(false);
-            g_GfxInternal_Dx9->DrawLightBleeding(buf.m_ParamsArray[buf.m_PrevParamIndex++]);
+            g_GfxInternal_Dx9->DrawLightBleeding(*(float*)&buf.m_ParamsArray[buf.m_PrevParamIndex++]);
             g_GfxInternal_Dx9->SetMipMapping(true);
             break;
         case RenderBuffer::RenderCommand::CMD_DRAWVIGNETTE:

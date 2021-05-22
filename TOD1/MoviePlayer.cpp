@@ -136,12 +136,12 @@ void MoviePlayer::Render()
 	if (m_SubtitleNode)
 	{
 		CameraMatrix* cammat = new CameraMatrix;
-		cammat->m_Vec_1 = Camera::ActiveCameraPosition;
-		cammat->m_Vec_2 = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_1;
-		cammat->m_Vec_3 = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_2;
-		cammat->m_Vec_4 = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_3;
-		cammat->m_Vec_5 = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_4;
-		cammat->m_Pos = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec_5;
+		cammat->m_Vec[0] = Camera::ActiveCameraPosition;
+		cammat->m_Vec[1] = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec[0];
+		cammat->m_Vec[2] = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec[1];
+		cammat->m_Vec[3] = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec[2];
+		cammat->m_Vec[4] = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec[3];
+		cammat->m_Vec[5] = Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix.m_Vec[4];
 
 		m_SubtitleNode->_88C310(cammat);
 		delete cammat;
