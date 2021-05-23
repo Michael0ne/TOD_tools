@@ -33,6 +33,8 @@ struct GlobalProperty
 
     void                        GetNameAndType(String& outStr) const;	//	@8731C0
 
+    static void                 ClearGlobalProperties();    //  @873650
+
     static GlobalProperty&      GetById(unsigned int id);	//	@872FC0
 };
 
@@ -72,6 +74,8 @@ public:
     ~GlobalCommand();
 
     void						GetReturnTypeString(String& outStr);	//	@871A90
+
+    static void                 ClearGlobalCommands();  //  @8724E0
 };
 
 extern std::vector<GlobalCommand>		GlobalCommandsList;	//	@A11470

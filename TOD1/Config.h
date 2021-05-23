@@ -132,6 +132,7 @@ namespace GameConfig
         void				UninitialiseGame();	//	@93CBC0
         bool				OpenScene(const char* scene);	//	@93CE00
         void				CreateUnknownMatricies();	//	@93D360
+        void                ReloadScripts();    //  @93D0D0
 
         static bool			CheckAssetChecksum(File& file, const unsigned int propertyChecksum, const unsigned int commandChecksum);	//	@93CB00
         static bool			UpdateGame();	//	@93CEB0

@@ -663,13 +663,143 @@ void GfxInternal_Dx9::CreateParticleMeshBuffer()
 {
 }
 
+void GfxInternal_Dx9::RenderTriangle2D(const Vector2<float>& top, const Vector2<float>& bottomleft, const Vector2<float>& bottomright, const ColorRGB& clr)
+{
+    const unsigned int dclr = (D3DCOLOR_DWORD(clr.r, clr.g, clr.b, clr.a) & 0xFFFFFF) | ((unsigned int)((float)D3DCOLOR_DWORD(clr.r, clr.g, clr.b, clr.a) * m_EnvironmentMapOpacity) << 24);
+    Triangle2D tr;
+
+    tr.m_Top = top;
+    tr.m_TopUV = { 0, 1 };
+    tr.m_TopColor = dclr;
+
+    tr.m_BottomLeft = bottomleft;
+    tr.m_BottomLeftUV = { 0, 1 };
+    tr.m_BottomLeftColor = dclr;
+
+    tr.m_BottomRight = bottomright;
+    tr.m_BottomRightUV = { 0, 1 };
+    tr.m_BottomRightColor = dclr;
+
+    m_VertexBuffer[0]->SetData(Triangle2D::VerticesTotal, &tr, nullptr);
+
+    if (m_TexturesArray_2[0])
+    {
+        m_TextureStageActive[0] = true;
+        m_TexturesArray_2[0] = nullptr;
+    }
+
+    const bool ztest = m_TexProperties[0].m_ZTest;
+    const int startvert = g_GfxInternal_Dx9->m_Direct3DDevice->SetStreamSource(0, m_VertexBuffer[0]->m_Direct3DVertexBuffer, 0, m_VertexBuffer[0]->m_Stride);
+
+    if (g_GfxInternal_Dx9->m_FVF != m_VertexBuffer[0]->m_FVF)
+    {
+        g_GfxInternal_Dx9->m_Direct3DDevice->SetFVF(m_VertexBuffer[0]->m_FVF);
+        g_GfxInternal_Dx9->m_FVF = m_VertexBuffer[0]->m_FVF;
+        g_GfxInternal_Dx9->m_Direct3DVertexDeclaration = nullptr;
+    }
+
+    g_GfxInternal_Dx9->m_CurrentVertexBuffer = m_VertexBuffer[0];
+
+    m_TexProperties[0].m_LightingEnabled = false;
+    m_TexProperties[0].m_ZTest = false;
+    m_TexProperties[0].field_8A = 1;
+
+    if (m_FlushDirectly)
+    {
+        g_Direct3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+        g_Direct3DDevice->SetRenderState(D3DRS_ZENABLE , FALSE);
+    }
+
+    ResetTextures();
+    m_Direct3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, startvert, 1);
+
+    m_TexProperties[0].m_LightingEnabled = m_LightingEnabled;
+    m_TexProperties[0].m_ZTest = ztest;
+    m_TexProperties[0].field_8A = 1;
+
+    if (m_FlushDirectly)
+    {
+        g_Direct3DDevice->SetRenderState(D3DRS_LIGHTING, m_LightingEnabled);
+        g_Direct3DDevice->SetRenderState(D3DRS_ZENABLE, ztest);
+    }
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::RenderTriangle_2(const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const ColorRGB& clrtop, const ColorRGB& clrbtml, const ColorRGB& clrbtmr)
 {
 }
 
+void GfxInternal_Dx9::RenderTexturedTriangle(const Texture* tex, const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const Vector2<float>& textop, const Vector2<float>& texbottomleft, const Vector2<float>& texbottomright, const ColorRGB& clrtop, const ColorRGB& clrbottomleft, const ColorRGB& clrbottomright)
+{
+    const unsigned int colors[3] =
+    {
+        (unsigned int)((float)D3DCOLOR_DWORD(clrtop.r, clrtop.g, clrtop.b, clrtop.a) * m_EnvironmentMapOpacity) << 24,
+        (unsigned int)((float)D3DCOLOR_DWORD(clrbottomleft.r, clrbottomleft.g, clrbottomleft.b, clrbottomleft.a) * m_EnvironmentMapOpacity) << 24,
+        (unsigned int)((float)D3DCOLOR_DWORD(clrbottomright.r, clrbottomright.g, clrbottomright.b, clrbottomright.a) * m_EnvironmentMapOpacity) << 24
+    };
+
+    TriangleTextured3D tr;
+
+    tr.m_Top = top;
+    tr.m_TopColor = colors[0];
+    tr.m_TopUV = textop;
+
+    tr.m_BottomLeft = bottomleft;
+    tr.m_BottomLeftColor = colors[1];
+    tr.m_BottomLeftUV = texbottomleft;
+
+    tr.m_BottomRight = bottomright;
+    tr.m_BottomRightColor = colors[2];
+    tr.m_BottomRightUV = texbottomright;
+
+    const int vertstart = m_VertexBuffer[2]->SetData(TriangleTextured3D::VerticesTotal, &tr, nullptr);
+
+    if (m_TexturesArray_2[0] != tex)
+    {
+        m_TextureStageActive[0] = true;
+        m_TexturesArray_2[0] = (Texture*)tex;
+    }
+
+    g_GfxInternal_Dx9->m_Direct3DDevice->SetStreamSource(0, m_VertexBuffer[2]->m_Direct3DVertexBuffer, 0, m_VertexBuffer[2]->m_Stride);
+
+    if (g_GfxInternal_Dx9->m_FVF != m_VertexBuffer[2]->m_FVF)
+    {
+        g_GfxInternal_Dx9->m_Direct3DDevice->SetFVF(m_VertexBuffer[2]->m_FVF);
+        g_GfxInternal_Dx9->m_FVF = m_VertexBuffer[2]->m_FVF;
+        g_GfxInternal_Dx9->m_Direct3DVertexDeclaration = nullptr;
+    }
+
+    g_GfxInternal_Dx9->m_CurrentVertexBuffer = m_VertexBuffer[2];
+
+    m_TexProperties[0].field_20 = 0;
+    m_TexProperties[0].field_24 = 1;
+
+    if (m_FlushDirectly)
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+
+    ResetTextures();
+    m_Direct3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, vertstart, 1);
+
+    m_TexProperties[0].field_20 = 3;
+    m_TexProperties[0].field_24 = 1;
+
+    if (m_FlushDirectly)
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+}
+
+void GfxInternal_Dx9::RenderQuad2D(const Vector2<float>& tl, const Vector2<float>& bl, const Vector2<float>& tr, const Vector2<float>& br, const ColorRGB& clr)
+{
+    RenderTriangle2D(tl, bl, tr, clr);
+    RenderTriangle2D(tl, tr, br, clr);
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::RenderTexturedQuad2D_4(const Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal_Dx9::RenderTexturedQuad_3(const Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&)
 {
 }
 
@@ -719,6 +849,39 @@ void GfxInternal_Dx9::EndText()
         g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
         g_Direct3DDevice->SetRenderState(D3DRS_ZENABLE, ztest);
     }
+}
+
+void GfxInternal_Dx9::RenderShadow(const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const Vector2<float>& textop, const Vector2<float>& texbottomleft, const Vector2<float>& texbottomright, float r, float g, float b)
+{
+    TriangleTextured3D tr;
+
+    tr.m_Top = top;
+    tr.m_TopColor = ((unsigned int)(r * 255.0) << 24) | 0xFFFFFF;
+    tr.m_TopUV = textop;
+
+    tr.m_BottomLeft = bottomleft;
+    tr.m_BottomLeftColor = ((unsigned int)(g * 255.0) << 24) | 0xFFFFFF;
+    tr.m_BottomLeftUV = texbottomleft;
+
+    tr.m_BottomRight = bottomright;
+    tr.m_BottomRightColor = ((unsigned int)(b * 255.0) << 24) | 0xFFFFFF;
+    tr.m_BottomRightUV = texbottomright;
+
+    const int vertstart = m_VertexBuffer[2]->SetData(TriangleTextured3D::VerticesTotal, &tr, nullptr);
+
+    g_GfxInternal_Dx9->m_Direct3DDevice->SetStreamSource(0, m_VertexBuffer[2]->m_Direct3DVertexBuffer, 0, m_VertexBuffer[2]->m_Stride);
+
+    if (g_GfxInternal_Dx9->m_FVF != m_VertexBuffer[2]->m_FVF)
+    {
+        g_GfxInternal_Dx9->m_Direct3DDevice->SetFVF(m_VertexBuffer[2]->m_FVF);
+        g_GfxInternal_Dx9->m_FVF = m_VertexBuffer[2]->m_FVF;
+        g_GfxInternal_Dx9->m_Direct3DVertexDeclaration = nullptr;
+    }
+
+    g_GfxInternal_Dx9->m_CurrentVertexBuffer = m_VertexBuffer[2];
+
+    ResetTextures();
+    m_Direct3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, vertstart, 1);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -1531,7 +1694,7 @@ void GfxInternal_Dx9::RenderLine2D(const Vector2<float>& start, const Vector2<fl
 {
     const bool ztestenabled = m_TexProperties[0].m_ZTest;
 
-    VertexData2D vd;
+    Line2D vd;
     vd.m_Start = start;
     vd.field_8 = 0;
     vd.field_C = 1;
@@ -1542,7 +1705,7 @@ void GfxInternal_Dx9::RenderLine2D(const Vector2<float>& start, const Vector2<fl
     vd.field_20 = 1;
     vd.m_ColorEnd = D3DCOLOR_XRGB((int)clr.r, (int)clr.g, (int)clr.b);
 
-    int d = m_VertexBuffer[0]->SetData(2, &vd, nullptr);
+    int d = m_VertexBuffer[0]->SetData(Line2D::VerticesTotal, &vd, nullptr);
 
     if (m_TexturesArray_2[0])
     {
@@ -1588,13 +1751,13 @@ void GfxInternal_Dx9::RenderLine2D(const Vector2<float>& start, const Vector2<fl
 
 void GfxInternal_Dx9::RenderLine(const Vector3<float>& start, const Vector3<float>& end, const ColorRGB& clr)
 {
-    VertexData3D vd;
+    Line3D vd;
     vd.m_Start = start;
     vd.m_ColorStart = D3DCOLOR_XRGB((int)clr.r, (int)clr.g, (int)clr.b);
     vd.m_End = end;
     vd.m_ColorEnd = D3DCOLOR_XRGB((int)clr.r, (int)clr.g, (int)clr.b);
 
-    const int startvert = m_VertexBuffer[1]->SetData(2, &vd, nullptr);
+    const int startvert = m_VertexBuffer[1]->SetData(Line3D::VerticesTotal, &vd, nullptr);
     Texture* tex = m_TexturesArray_2[0];
 
     if (tex)
@@ -1864,23 +2027,27 @@ void GfxInternal_Dx9::RenderFullscreenTexture(const Texture& tex)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void GfxInternal_Dx9::EnableLight(void*, const bool status)
+void GfxInternal_Dx9::ToggleLight(Light_Properties* l, const bool enabled)
 {
 }
 
-void GfxInternal_Dx9::_45E5D0(LightStatus& light)
+void GfxInternal_Dx9::RemoveLightFromScene(Light_Properties* l)
 {
-    for (unsigned int i = 0; i < m_SceneLights.size(); i++)
+    if (m_SceneLights.size() <= 0)
+        return;
+
+    for (unsigned int i = 0; i < m_SceneLights.size(); ++i)
     {
-        if (&m_SceneLights[i] == &light)
+        if (&m_SceneLights[i].m_Light->m_LightProperties == l)
         {
-            EnableLight((void*)&light, 0);
+            ToggleLight(l, false);
             m_SceneLights[i].m_Enabled = false;
+            break;
         }
     }
 }
 
-void GfxInternal_Dx9::GetModelMatrix(DirectX::XMMATRIX& mat) const
+void GfxInternal_Dx9::GetWorldMatrix(DirectX::XMMATRIX& mat) const
 {
     mat = m_WorldMatrix;
 }

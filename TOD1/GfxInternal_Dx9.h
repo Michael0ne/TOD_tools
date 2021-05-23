@@ -18,24 +18,65 @@ class GfxInternal_Dx9
     friend class VirtualHud;
     friend class FrameBuffer;
 
-    struct VertexData2D
+    struct Line2D
     {
         Vector2f                    m_Start;
         float                       field_8;
         float                       field_C;
         D3DCOLOR                    m_ColorStart;
+
         Vector2f                    m_End;
         float                       field_1C;
         float                       field_20;
         D3DCOLOR                    m_ColorEnd;
+
+        static const unsigned int   VerticesTotal = 2;
     };
 
-    struct VertexData3D
+    struct Line3D
     {
         Vector3f                    m_Start;
         D3DCOLOR                    m_ColorStart;
+
         Vector3f                    m_End;
         D3DCOLOR                    m_ColorEnd;
+
+        static const unsigned int   VerticesTotal = 2;
+    };
+
+    struct Triangle2D
+    {
+        Vector2f                    m_Top;
+        Vector2f                    m_TopUV;
+        int                         m_TopColor;
+
+        Vector2f                    m_BottomLeft;
+        Vector2f                    m_BottomLeftUV;
+        int                         m_BottomLeftColor;
+
+        Vector2f                    m_BottomRight;
+        Vector2f                    m_BottomRightUV;
+        int                         m_BottomRightColor;
+
+        static const unsigned int   VerticesTotal = 3;
+    };
+
+    struct TriangleTextured3D
+    {
+        Vector3f                    m_Top;
+        int                         m_TopColor;
+        Vector2f                    m_TopUV;
+
+        Vector3f                    m_BottomLeft;
+        int                         m_BottomLeftColor;
+        Vector2f                    m_BottomLeftUV;
+
+        Vector3f                    m_BottomRight;
+        int                         m_BottomRightColor;
+        Vector2f                    m_BottomRightUV;
+
+        static const unsigned int   VerticesTotal = 3;
+
     };
 
     struct DisplayModeInfo
@@ -347,14 +388,14 @@ public:
     void                            RenderLine2D(const Vector2<float>& start, const Vector2<float>& end, const ColorRGB& clr);	//	@451270
     void                            RenderLine(const Vector3<float>& start, const Vector3<float>& end, const ColorRGB& clr);	//	@4514B0
     void                            _4516A0(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector3<float>&, unsigned int, unsigned int);	//	@4516A0
-    void                            RenderTriangle2D(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@451920
+    void                            RenderTriangle2D(const Vector2<float>& top, const Vector2<float>& bottomleft, const Vector2<float>& bottomright, const ColorRGB& clr);	//	@451920
     void                            RenderTriangle_2(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&);	//	@451BC0
-    void                            RenderTexturedTriangle(const Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&);	//	@451E90
-    void                            RenderQuad2D(const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&);	//	@452220
+    void                            RenderTexturedTriangle(const Texture* tex, const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const Vector2<float>& textop, const Vector2<float>& texbottomleft, const Vector2<float>& texbottomright, const ColorRGB& clrtop, const ColorRGB& clrbottomleft, const ColorRGB& clrbottomright);	//	@451E90
+    void                            RenderQuad2D(const Vector2<float>& tl, const Vector2<float>& bl, const Vector2<float>& tr, const Vector2<float>& br, const ColorRGB& clr);	//	@452220
     void                            RenderTexturedQuad2D_4(const Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&);	//	@452260
     void                            RenderTexturedQuad_3(const Texture*, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&);	//	@452750
     void                            EndText();	//	@453D60
-    void                            RenderShadow(const Vector3<float>&, const Vector3<float>&, const Vector3<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, float r, float g, float b);	//	@453F20
+    void                            RenderShadow(const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const Vector2<float>& textop, const Vector2<float>& texbottomleft, const Vector2<float>& texbottomright, float r, float g, float b);	//	@453F20
     void                            RenderMeshBuffer(const MeshBuffer_Dx9* meshbuffer);	//	@4540E0
     void                            RenderMeshColorBuffer(const void* meshcolorbuffer);	//	@454660
     void                            RenderVertexBuffer(const VertexBuffer* vb, unsigned int startvertex, unsigned int primitivecount);	//	@454C80
@@ -379,9 +420,9 @@ public:
     void                            RenderTexturedQuad2D_1(const Texture& tex, const Vector2<float>& top, const Vector2<float>& bottom, const ColorRGB&);	//	@45D4A0
     void                            RenderViewport();	//	@45D5E0
     void                            RenderFullscreenTexture(const Texture& tex);	//	@45D940
-    void                            EnableLight(void*, const bool);	//	@45DBA0
-    void                            _45E5D0(LightStatus&);	//	@45E5D0	//	NOTE: toggle light from scene.
-    void                            GetModelMatrix(DirectX::XMMATRIX& mat) const;   //  @430C50
+    void                            ToggleLight(Light_Properties* l, const bool enabled);	//	@45DBA0
+    void                            RemoveLightFromScene(Light_Properties* l);	//	@45E5D0
+    void                            GetWorldMatrix(DirectX::XMMATRIX& mat) const;   //  @430C50
 
     static std::map<int, Texture*>  RenderedTexturesMap;	//	@A39F50
     static const DirectX::XMMATRIX  IdentityMatrix;	//	@A0AD38

@@ -662,7 +662,9 @@ namespace GameConfig
 		DecalManager::Register();
 		SurroundGeometry::Register();
 		DynamicSurroundGeometry::Register();
+		*/
 		Light::Register();
+		/*
 		Sprite::Register();
 		TextBox::Register();
 		TextSlot::Register();
@@ -696,11 +698,10 @@ namespace GameConfig
 		m_TypesTotal = BaseType::GetTypesListSize();
 	}
 
-	#pragma message(TODO_IMPLEMENTATION)
 	void Config::UninitialiseGame()
 	{
-		//Scene::SceneInstance->Destroy();
-		//ClearScriptLists();	//	@863380
+		Scene::SceneInstance->Destroy();
+		BaseType::ClearScriptLists();
 		Light::ClearLightsList();
 
 		g_Window->SetCursorReleased(true);

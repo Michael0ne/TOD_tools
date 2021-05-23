@@ -376,7 +376,7 @@ void FrameBuffer::ExecuteRenderCommand(RenderBuffer& buf) const
 
                 buf.PopBool(enabled);
 
-                g_GfxInternal_Dx9->EnableLight(light, enabled);
+                g_GfxInternal_Dx9->ToggleLight((Light_Properties*)light, enabled);
             }
             break;
         case RenderBuffer::RenderCommand::CMD_ENABLEZWRITE:
@@ -712,7 +712,7 @@ void FrameBuffer::ExecuteRenderCommand(RenderBuffer& buf) const
         case RenderBuffer::RenderCommand::CMD_PUSH_MODELMATRIX:
             {
                 DirectX::XMMATRIX mat;
-                g_GfxInternal_Dx9->GetModelMatrix(mat);
+                g_GfxInternal_Dx9->GetWorldMatrix(mat);
                 g_RenderBuffer->PushModelMatrix(mat);
             }
             break;
@@ -848,7 +848,7 @@ void FrameBuffer::ExecuteRenderCommand(RenderBuffer& buf) const
                 void* l = (void*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
                 bool b;
                 g_RenderBuffer->PopBool(b);
-                g_GfxInternal_Dx9->EnableLight(l, b);
+                g_GfxInternal_Dx9->ToggleLight((Light_Properties*)l, b);
             }
             break;
         case RenderBuffer::RenderCommand::CMD_POP_ZWRITE:

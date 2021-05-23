@@ -3,7 +3,7 @@
 ## Summary
 
 TOD Tools - this is a reverse engineered engine and game code project for Total Overdose and possibly, other games that use this version of Kapow Engine.
-Original game & engine are by Eidos interactive. You MUST to own a game copy to use these tools.
+Original game & engine are by Deadline Games. You MUST to own a game copy to use these tools.
 
 There are 3 'subprojects' you can see:
 
