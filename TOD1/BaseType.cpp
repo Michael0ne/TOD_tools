@@ -463,6 +463,21 @@ void BaseType::InitScriptTypes()
 	tSTRING = tyString;
 }
 
+void BaseType::ClearScriptLists()
+{
+	ClearGlobalScriptList();
+	GlobalCommand::ClearGlobalCommands();
+	GlobalProperty::ClearGlobalProperties();
+
+	TypesList.clear();
+	TypesListCRCCalculated = false;
+}
+
+void BaseType::ClearGlobalScriptList()
+{
+	GlobalScript::ScriptsList.clear();
+}
+
 unsigned int BaseType::GetTypesListChecksum()
 {
 	if (TypesListCRCCalculated)

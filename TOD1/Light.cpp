@@ -1,10 +1,11 @@
 #include "Light.h"
 #include "GfxInternal_Dx9.h"
 
-Light* Light::LightType1;
-Light* Light::LightType2;
+Light* Light::AmbientLight;
+Light* Light::DirectionalLight;
 unsigned int Light::TotalLights;
-LightsListStruct Light::LightsList;
+Light::LightsList* Light::GlobalList;
+
 EntityType* tLight;
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -13,29 +14,10 @@ Light::~Light()
 	MESSAGE_CLASS_DESTROYED(Light);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 Light::Light() : Node(NODE_MASK_POSITION)
 {
 	MESSAGE_CLASS_CREATED(Light);
-
-	m_LightProperties = Light_Properties();
-	m_Flags = m_Flags & 0xFFFFFFFB | 3;
-
-	if (m_LightProperties.field_24 & 31)
-		m_LightProperties.field_24 = m_LightProperties.field_24 & 0xFFFFFFE0 | 32;
-
-	m_Flags = m_Flags & 0xFFFFFFEF | 72;
-	m_LightColor = ColorRGB(1.0f, 1.0f, 1.0f, 1.0f);
-	m_StaticColor = ColorRGB(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Flags = m_Flags & 0xFFFFFF7F;
-	m_Flags = m_Flags & 0xFFFFFFDF;
-
-	m_Vec_1 = Vector4f();
-	m_Vec_2 = Vector4f(0.0f, 1.0f, 0.0f, 0.0f);
-	field_C8 = 0x10000000;
-
-	AddLightToList(&LightsList, this);
-
-	++TotalLights;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -58,42 +40,64 @@ void Light::OverrideLights(bool unk)
 {
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Light::InitLightsList()
 {
-	/*
-	LightsList = new List<Light>;
-	LightType1 = (Light*)tLight->CreateNode();
-	LightType2 = (Light*)tLight->CreateNode();
+	GlobalList = new LightsList;
 
-	LightType1->SetLightType(LIGHT_TYPE_1);
-	LightType1->SetLightColorRGB({ .6f, .6f, .6f, 1.f });
-	LightType2->SetLightType(LIGHT_TYPE_2);
-	LightType2->SetLightColorRGB({ 1.f, 1.f, 1.f, 1.f });
-	LightType2->SetOrient({ .85f, -0.13f, -0.37f, -0.32f });
-	LightType2->SetPos({ 0.f, 0.f, 0.f, 0.f });
+	AmbientLight = (Light*)tLight->CreateNode();
+	DirectionalLight = (Light*)tLight->CreateNode();
 
-	LightsList->AddElement(LightType1);
-	LightsList->AddElement(LightType2);
-	*/
+	AmbientLight->SetLightType(AMBIENT);
+	AmbientLight->SetLightColorRGB({ 0.64999998, 0.64999998, 0.64999998, 1 });
+
+	DirectionalLight->SetLightType(DIRECTIONAL);
+	DirectionalLight->SetLightColorRGB({ 0.64999998, 0.64999998, 0.64999998, 1 });
+	DirectionalLight->SetOrient({ 0.85898501, -0.139645, -0.37349701, -0.321161 });
+	DirectionalLight->SetPos({});
+
+	GlobalList->m_StaticLights.push_back(AmbientLight);
+	GlobalList->m_StaticLights.push_back(DirectionalLight);
 }
 
 void Light::ClearLightsList()
 {
-	//delete LightsList;
+	delete GlobalList;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Light::Register()
+{
+	tLight = new EntityType("Light");
+	tLight->InheritFrom(tNode);
+	tLight->SetCreator((EntityType::CREATOR)Create);
+
+	tLight->_86E9B0();
+}
+
+Light* Light::Create(AllocatorIndex)
+{
+	return new Light;
 }
 
 Light_Properties::Light_Properties()
 {
-	m_Vec_1;
-	m_Vec_2 = Vector3f(0.0f, 0.0f, 1.0f);
-	field_0 = -1;
-	m_Range = 100.0f;
-	m_Brightness = 1.0f;
-	field_24 = NULL & 0xFFFFFFE2 | 34;
+	MESSAGE_CLASS_CREATED(Light_Properties);
+
+	m_Position = { 0, 0, 0 };
+	m_Direction = { 0, 0, 1 };
+	m_Color = -1;
+	m_Range = 100;
+	m_Brightness = 1;
+	m_Flags = m_Flags & 0xFFFFFFE2 | 34;
 }
 
 Light_Properties::~Light_Properties()
 {
-	//g_GfxInternal_Dx9->_45E5D0(*this);
+	g_GfxInternal_Dx9->RemoveLightFromScene(this);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Light::LightsList::LightsList()
+{
+	MESSAGE_CLASS_CREATED(LightsList);
 }

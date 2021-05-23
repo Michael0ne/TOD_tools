@@ -863,6 +863,14 @@ void GlobalProperty::GetNameAndType(String& outStr) const
 		outStr = m_PropertyName;
 }
 
+void GlobalProperty::ClearGlobalProperties()
+{
+	GlobalPropertiesList.clear();
+	GlobalPropertiesMap.clear();
+
+	GlobalPropertyListChecksumObtained = false;
+}
+
 GlobalProperty& GlobalProperty::GetById(unsigned int id)
 {
 	return GlobalPropertiesList[id];
@@ -913,6 +921,14 @@ void GlobalCommand::GetReturnTypeString(String& outStr)
 
 		strcpy(m_ArgumentsString, buf);
 	}
+}
+
+void GlobalCommand::ClearGlobalCommands()
+{
+	GlobalCommandsList.clear();
+	GlobalCommandsMap.clear();
+
+	GlobalCommandListChecksumObtained = false;
 }
 
 GlobalCommand::GlobalCommand(const char* const commandname, const unsigned int commandind)
