@@ -100,7 +100,7 @@ GfxInternal::~GfxInternal()
     MESSAGE_CLASS_DESTROYED(GfxInternal);
 
     delete m_MeshBuffer;
-    delete m_Buffer108;
+    delete m_Mesh;
 
     delete g_GfxInternal_Dx9;
 
