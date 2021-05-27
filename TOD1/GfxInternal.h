@@ -3,6 +3,7 @@
 #include "AssetManager.h"
 #include "FrameBuffer.h"
 #include "MeshBuffer_Dx9.h"
+#include "Mesh.h"
 
 //  TODO: move this out here.
 class Buffer276
@@ -39,61 +40,6 @@ public:
     }
 };
 
-//  TODO: move this out here.
-struct Scene_Buffer108
-{
-private:
-    int	field_0;
-    int	field_4;
-    int	field_8;
-    int	field_C;
-    int	field_10;
-    int	field_14;
-    int	field_18;
-    int	field_1C;
-    int	field_20;
-    int	field_24;
-    int	field_28;
-    int	field_2C;
-    int	field_30;
-    int	field_34;
-    int	field_38;
-    int	field_3C;
-    int	field_40;
-    int	field_44;
-    int	field_48;
-    int	field_4C;
-    int	field_50;
-    int	field_54;
-    int	field_58;
-    int	field_5C;
-    int	field_60;
-    int	field_64;
-    int	field_68;
-
-public:
-    Scene_Buffer108()
-    {
-        MESSAGE_CLASS_CREATED(Scene_Buffer108);
-    }
-    ~Scene_Buffer108()
-    {
-        MESSAGE_CLASS_DESTROYED(Scene_Buffer108);
-    }
-
-    void* operator new(size_t size)
-    {
-        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-    }
-    void operator delete(void* ptr)
-    {
-        if (ptr)
-            MemoryManager::ReleaseMemory(ptr, true);
-    }
-
-    void	Init(unsigned int unk1, unsigned char unk2, unsigned int unk3);	//	@422330
-};
-
 class GfxInternal
 {
     friend class TextureAsset;
@@ -103,7 +49,7 @@ protected:
     bool                            m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
     std::vector<Texture*>           m_CheckerboardTextures;
     MeshBuffer_Dx9                 *m_MeshBuffer;
-    Scene_Buffer108                *m_Buffer108;
+    Mesh                           *m_Mesh;
     unsigned int                    m_RenderBufferTotal;
     int                             field_20;
     Buffer276                      *m_RenderBufferArray;

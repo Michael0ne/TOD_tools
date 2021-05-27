@@ -263,6 +263,7 @@
     <ClInclude Include="FontAsset.h" />
     <ClInclude Include="FragmentAsset.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="GfxInternal_OGL.h" />
     <ClInclude Include="MeshBuffer.h" />
@@ -425,6 +426,7 @@
     <ClCompile Include="FontAsset.cpp" />
     <ClCompile Include="FragmentAsset.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="GfxInternal_OGL.cpp" />
     <ClCompile Include="MeshBuffer.cpp" />

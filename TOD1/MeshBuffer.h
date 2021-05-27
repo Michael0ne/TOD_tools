@@ -2,6 +2,7 @@
 #include "StringsPool.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "Mesh.h"
 
 class MeshBuffer
 {
@@ -22,7 +23,7 @@ protected:
 	float	field_40;
 
 public:
-	MeshBuffer();	//	@
+	MeshBuffer(const Mesh& mutablemesh);	//	@4617D0
 	~MeshBuffer();	//	@4616F0
 
 	void* operator new(size_t size)

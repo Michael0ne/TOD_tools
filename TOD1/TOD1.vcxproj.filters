@@ -578,6 +578,9 @@
     <ClInclude Include="SurfaceMutable.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1019,6 +1022,9 @@
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="SurfaceMutable.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
   </ItemGroup>
