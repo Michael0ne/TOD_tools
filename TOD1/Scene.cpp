@@ -10,6 +10,7 @@
 #include "GfxInternal.h"
 #include "Camera.h"
 #include "FrameBasedSubAllocator.h"
+#include "ModelAsset.h"
 
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
@@ -30,6 +31,8 @@ int Scene::_A3CEE8;
 int Scene::_A3DA80[100];
 int Scene::_A3D8D8[100];
 int Scene::_A3DC38[4];
+int Scene::UpdateOrBlockingListSize;
+bool Scene::_A3D858;
 
 int Scene::PreBlocksUnloadedCommand;
 int Scene::BlocksUnloadedCommand;
@@ -114,8 +117,21 @@ void Scene::ReleaseQuadTreeAndRenderlist()
 		LogDump::LogA("quadtrees and renderlists not allocated\n");
 		return;
 	}
+
+	ClearNodesLists();
+	g_GfxInternal->SetRenderBufferIsEmpty(true);
+	g_AssetManager->ResetSceneChildrenNodes(0);
+	const unsigned int resind = g_AssetManager->GetFreeResourceTypeListItem(0);
+
+	if (resind)
+		for (Asset* a = g_AssetManager->m_ResourcesInstancesList[resind]; a; a = g_AssetManager->GetAssetIfExists(a))
+			if (a->GetInstancePtr() == ModelAsset::Instance)
+				((ModelAsset*)a)->_856E60();
+
+	_895F50();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo)
 {
 	File assetfile(assetname, 161, true);
@@ -135,7 +151,7 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 		LogDump::LogA("Asset file could not be loaded: %s\n", assetname);
 }
 
-void Scene::CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, unsigned int savesize)
+void Scene::CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, unsigned int savesize)
 {
 	LogDump::LogA("save point creation pending!\n");
 	if (savesize)
@@ -146,31 +162,31 @@ void Scene::CreateSavePoint(unsigned int memcardind, unsigned int slotind, const
 		m_SavePointOperationError = STATUS_OK;
 		m_SaveDir = savedirectory;
 		m_SaveGameSize = savesize;
-		m_SaveData = (Node*)summarynode;
+		m_SaveData = summarynode;
 	}
 	else
 		LogDump::LogA("Trying to create empty savepoint??? Bailing out.\n");
 }
 
-void Scene::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, const MemoryCards* memcards)
+void Scene::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, MemoryCards* memcards)
 {
 	m_SaveLoadState = STATE_LOAD;
 	m_MemoryCardIndex = memcardind;
 	m_SaveSlotIndex = slotind;
 	m_SavePointOperationError = STATUS_OK;
 	m_SaveDir = savedirectory;
-	m_SaveData = (Node*)summarynode;
-	m_MemoryCards = (MemoryCards*)memcards;
+	m_SaveData = summarynode;
+	m_MemoryCards = memcards;
 }
 
-void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode)
+void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode)
 {
 	m_SaveLoadState = STATE_LOAD_SUMMARY;
 	m_MemoryCardIndex = memcardind;
 	m_SaveSlotIndex = slotind;
 	m_SavePointOperationError = STATUS_OK;
 	m_SaveDir = savedirectory;
-	m_SaveData = (Node*)summarynode;
+	m_SaveData = summarynode;
 
 	char slotstr[10] = {};
 	sprintf(slotstr, "Slot%02d", m_SaveSlotIndex);
@@ -212,6 +228,43 @@ void Scene::ProfileMemory(const int)
 	//	TODO: calls profiler method of MemoryManager class.
 }
 
+void Scene::ClearNodesLists()
+{
+	UpdateOrBlockingListSize = NodesWithUpdateOrBlockingScripts.size();
+
+	for (unsigned int i = 0; i < NodesWithUpdateOrBlockingScripts.size(); ++i)
+		NodesWithUpdateOrBlockingScripts[i].m_Node->ClearFromBlockingList();
+
+	NodesWithUpdateOrBlockingScripts.clear();
+
+	m_NodesWithUpdateOrBlockingScripts = NULL;
+
+	for (unsigned int i = 0; i < NodesList.size(); ++i)
+		NodesList[i].m_QuadTree->m_Owner->ClearFromSceneList();
+
+	NodesList.clear();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::_895F50()
+{
+}
+
+Folder_* Scene::GetFolderByIndex(const unsigned int index) const
+{
+	return (Folder_*)m_LoadedBlocks[index];
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::LoadSceneSession(void) const
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::InstantiateAssetsToLists()
+{
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::Start()
 {
@@ -251,6 +304,7 @@ void Scene::Start()
 void Scene::Load(const char* sceneName)
 {
 	m_StartTimeMs = Performance::GetMilliseconds();
+	int alloctotalbefore;
 
 	FreeRewindBuffer();
 	ReleaseQuadTreeAndRenderlist();
@@ -307,12 +361,74 @@ void Scene::Load(const char* sceneName)
 		
 		m_BlockId = m_BlockId | 0x80000000;
 		LoadingAssetBlock = false;
+		alloctotalbefore = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
 		LogDump::LogA("asset block took %0.1f Kb\n", (mainAssetAllocMem - MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations()) * 0.0009765625f);
 	}
 
 	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load main asset block", Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
 
 	m_StartTimeMs = Performance::GetMilliseconds();
+
+	g_AssetManager->m_ActiveBlockId = (8 * m_BlockId) >> 3;
+	_A3D858 = 1;
+
+	//if (strcmp(MemoryManager::AllocatorsList[Asset::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+			//((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->_47A120();
+
+	UINT64 fragmentloadstarttime = __rdtsc();
+	g_AssetManager->_878030();
+	SetFragment(sceneName);
+	g_AssetManager->_877AE0();
+	LogDump::LogA("Timings: SetFragment: %f\n", (__rdtsc() - fragmentloadstarttime) / Performance::ClockGetCycles());
+	const int alloctotal = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
+	LogDump::LogA("Scene graph took %0.1f KB\n", (alloctotal - alloctotalbefore) * 0.0009765625f);
+	LogDump::LogA("Asset block after: %0.1f KB\n", alloctotal * 0.0009765625f);
+	
+	const int freeassetind = g_AssetManager->GetFreeResourceTypeListItem(0);
+	if (freeassetind)
+	{
+		for (FragmentAsset* frgm = (FragmentAsset*)g_AssetManager->m_ResourcesInstancesList[freeassetind]; frgm; frgm = (FragmentAsset*)g_AssetManager->GetAssetIfExists(frgm))
+		{
+			if (frgm->GetInstancePtr() == FragmentAsset::Instance)
+			{
+				if ((frgm->field_24 & 1) == 0)
+				{
+					LogDump::LogA("NOT UNLOADING FRAGMENT: %s\n", frgm->m_ResourcePath);
+					continue;
+				}
+
+				if (!frgm->field_20)
+				{
+					frgm->field_20 = nullptr;
+					continue;
+				}
+
+				delete frgm->field_20;
+			}
+		}
+	}
+
+	//Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = true;
+	_A3D858 = false;
+	g_AssetManager->m_ActiveBlockId = -1;
+	_896BA0();
+	AllocateRewindBuffer();
+	DWORD currtimems = Performance::GetMilliseconds();
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Scene load and apply", currtimems - m_StartTimeMs, currtimems - m_StartTimeMs);
+	m_StartTimeMs = currtimems;
+	LoadSceneSession();
+	currtimems = Performance::GetMilliseconds();
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load current asset blocks", currtimems - m_StartTimeMs, currtimems - m_StartTimeMs);
+	m_StartTimeMs = currtimems;
+	currtimems = Performance::GetMilliseconds();
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Compile 'test' folder scripts", currtimems - m_StartTimeMs, currtimems - m_StartTimeMs);
+	m_StartTimeMs = currtimems;
+	GlobalScript::InstantiateGlobalScripts();
+	EnumSceneCamerasAndUpdate();
+	TotalFrames = 0;
+	NewFrameNumber = 0;
+	InstantiateAssetsToLists();
+	g_Progress->Complete();
 }
 
 void Scene::FinishCreation(const char* logTitle)
@@ -350,9 +466,32 @@ void Scene::StoreGameCamera()
 	}
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Scene::EnumSceneCamerasAndUpdate()
 {
+	m_EditorCamera = nullptr;
+	m_GameCamera = nullptr;
+
+	for (Node* n = m_FirstChild; n; n = n->m_NextSibling)
+	{
+		EntityType* scent = n->m_ScriptEntity;
+		if (!scent)
+			continue;
+
+		while (tCamera != scent)
+		{
+			scent = scent->m_Parent;
+			if (!scent)
+				break;
+		}
+
+		if (!m_EditorCamera && strcmp(n->m_Name, "editorcamera") == NULL)
+			m_EditorCamera = (EditorCamera*)n;
+
+		if (!m_GameCamera && strcmp(n->m_Name, "gamecamera") == NULL)
+			m_GameCamera = (Camera*)n;
+	}
+
+	StoreGameCamera();
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -383,12 +522,12 @@ void Scene::AllocateRewindBuffer()
 		field_268 = NULL;
 	}
 
-	m_RewindBuffer1->m_List_1.clear();
+	m_RewindBuffer1->m_List_1.resize(1);
 	m_RewindBuffer1->field_1C = (void*)&(m_RewindBuffer1->m_List_1.begin());
 	m_RewindBuffer1->m_Size = NULL;
 	m_RewindBuffer1->field_20 = NULL;
 
-	m_RewindBuffer2->m_List_1.clear();
+	m_RewindBuffer2->m_List_1.resize(1);
 	m_RewindBuffer2->field_1C = (void*)&(m_RewindBuffer2->m_List_1.begin());
 	m_RewindBuffer2->m_Size = NULL;
 	m_RewindBuffer2->field_20 = NULL;

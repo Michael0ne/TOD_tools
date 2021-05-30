@@ -1,5 +1,6 @@
 #pragma once
 #include "EntityType.h"
+#include "Defragmentator.h"
 
 class Entity
 {
@@ -9,8 +10,8 @@ public:
 	short           m_Order;
 	//	NOTE: m_Id's highest bit contains block number associated with this entity (0-6).
 	int             m_Id;		//	NOTE: actual id is m_Id >> 8 - lower 3 bytes.
-	int            *m_Parameters;	//	NOTE: raw array of entity parameters, seems like it.
-	int             field_1C;
+	int            *m_Parameters;	//	NOTE: an array of properties values.
+	Defragmentator *m_Defragmentator;
 	int            *field_20;	//	NOTE: at field_20[1] is a pointer to ScriptThread. Maybe script thread that's attached to this entity (?)
 
 	unsigned char   SaveScriptDataToFile_Impl(EntityType*, int, int, const char*);	//	@86B650

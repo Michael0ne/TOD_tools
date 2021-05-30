@@ -156,7 +156,18 @@ protected:
 
 public:
     RenderBuffer(const unsigned int maxParams, AllocatorIndex allocatorType);	//	@415400
-    RenderBuffer() {};
+    RenderBuffer();
+
+    void* operator new(size_t size)
+    {
+        return MemoryManager::Released ? nullptr : MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(size, NULL, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::AllocatorsList[DEFAULT]->Free(ptr);
+        ptr = nullptr;
+    }
 
     void            AdjustBufferSize(const unsigned int size);	//	@415510
     template <typename T>

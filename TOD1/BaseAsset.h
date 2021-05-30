@@ -153,6 +153,7 @@ public:
     static AllocatorIndex AllocatorIndexByBlockType(unsigned int blocktype);   //  @851FE0
     static void         Destroy(Asset* res);	//	@851FC0
     static Asset*       CreateInstance(size_t classsize);  //  @852100
+    static void         AllocateResourceForBlockLoad(const unsigned int size, int** bufaligned, int* buf, const unsigned int blockid);  //  @852070
 
     static const char* const BlockTypeExtension[];  //  @A11B64
     static std::vector<String> OpenResourcesList;	//	@A10F00

@@ -44,7 +44,7 @@ struct AssetHeaderStruct_t
 
 class AssetManager
 {
-protected:
+public:
     enum RegionCode
     {
         REGION_NOT_SET = -1,
@@ -60,11 +60,7 @@ protected:
         Node                   *m_Node;
     };
 
-    friend class Scene;
-    friend class Folder_;
-    friend class GfxInternal;
-
-protected:
+public:
     unsigned char               field_0;
     int                         m_ActiveBlockId;
     char                        m_FingerprintKey[256];	//	NOTE: default value is 'THIS IS THE DEFAULT FINGERPRINT KEY, PLEASE CHANGE IT!". LOLZ.
@@ -73,9 +69,7 @@ protected:
     std::vector<int>            m_DefragmentatorList;
     std::vector<FastFindInfo>   m_FastFindNodeVector;
     std::vector<Entity*>        m_NodesList[6];
-public:
     std::vector<Asset*>         m_ResourcesInstancesList;
-protected:
     std::vector<String>         m_SceneNames;
     int                         m_NodesInNodeList[6];
     int                         field_1C8;
@@ -137,13 +131,16 @@ public:
     void                        FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
     Asset*                      LoadResourceFile(const char* const respath);	//	@878AB0
     void*                       LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid);	//	@8759E0
-    Entity*                     _8755E0();	//	@8755E0
-    Entity*                     _875610(Entity*);	//	@875610
+    Entity*                     FindFirstEntity();	//	@8755E0
+    Entity*                     FindNextEntity(Entity*);	//	@875610
     void                        ResetSceneChildrenNodes(const int);  //  @875390
     RegionCode                  GetRegion() const;	//	@875440
     String&                     GetDataPath(String& outstr) const;	//	@8764E0
     Asset*                      FindFirstFreeResource() const;	//	@879E00
     void                        DestroyTextureAsset(TextureAsset& ass); //  @875340
+    Asset*                      GetAssetIfExists(const Asset* a) const; //  @875720
+    void                        _878030();  //  @878030
+    void                        _877AE0();  //  @877AE0
 
     static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform);	//	@876500
     static RegionCode           RegionIdByName(const String& region);	//	@875450

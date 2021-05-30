@@ -39,7 +39,8 @@ When compiling using 'Release EXE' or 'Debug EXE' you get 'TOD1.exe' file that's
 
 ## Dependencies
 
-* DirectX 9 SDK (set your environment variable 'DXSDK_DIR' to point to SDK directory).
+* DirectX 9 SDK (set your environment variable 'DXSDK_DIR' to point to SDK directory). (deprecated and will be removed in near future)
+* DirectXMath (included).
 * libvorbis 1.1.0 (included).
 * libogg 1.1.2 (included).
 * libpng 1.0.5 (included).
@@ -49,7 +50,7 @@ Included libraries can be found under 'TOD_tools\ThirdParty'.
 
 ## Process for Windows
 
-I use Visual Studio 2019 (16.9.1) to build this project.
+I use Visual Studio 2019 (16.10.0) to build this project.
 It's always a good idea to re-compile provided third party libraries under your specific machine and link against them when compiling the rest.
 After the build a batch file is executed to copy output file into game directory (updateHookFile.bat), you should edit this batch file to replace game path to where your actual game is.
 

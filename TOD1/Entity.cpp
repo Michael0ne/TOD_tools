@@ -15,13 +15,30 @@ void Entity::Destroy()
 Entity::~Entity()
 {
 	MESSAGE_CLASS_DESTROYED(Entity);
+
+	if (field_20 && field_20[1])
+	{
+		//m_Defragmentator->stub4((field_20 - m_Defragmentator->m_AllocatedSpace) / 12);
+		field_20 = nullptr;
+	}
+
+	if (m_Parameters)
+		m_ScriptEntity->m_Script->ClearEntityProperties(this);
+
+	const unsigned int blockid = ( (m_Id >> 28) & 7 ) - 1;
+	const int entindd = (m_Id >> 8) & 0xFF8FFFFF;
+	
+	g_AssetManager->m_NodesList[blockid][entindd] = nullptr;
+
+	if (g_AssetManager->m_NodesInNodeList[blockid] > entindd)
+		g_AssetManager->m_NodesInNodeList[blockid] = entindd;
 }
 
 Entity::Entity()
 {
 	MESSAGE_CLASS_CREATED(Entity);
 
-	field_1C = NULL;
+	m_Defragmentator = NULL;
 	field_20 = nullptr;
 	m_Id = m_Id | 255;
 	m_ScriptEntity = nullptr;

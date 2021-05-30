@@ -528,7 +528,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
 	file->Read(&resourceBufferSize, sizeof(resourceBufferSize));
 
 	*resdatasize = resourcesInfoSize;
-	//Asset::AllocateResourceBlockBufferAligned(resourcesInfoSize, &resourcesInfoBuffer, &resbufferptr, resblockid);
+	Asset::AllocateResourceForBlockLoad(resourcesInfoSize, &resourcesInfoBuffer, resbufferptr, resblockid);
 	resourceDataBuffer = (int*)MemoryManager::AllocateByType(RENDERLIST, resourceBufferSize);
 	g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
@@ -583,7 +583,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
 	return resourcesInfoBuffer;
 }
 
-Entity* AssetManager::_8755E0()
+Entity* AssetManager::FindFirstEntity()
 {
 	unsigned int nodeid = FindNodeById(0x100000);
 	if (nodeid)
@@ -592,7 +592,7 @@ Entity* AssetManager::_8755E0()
 		return nullptr;
 }
 
-Entity* AssetManager::_875610(Entity* node)
+Entity* AssetManager::FindNextEntity(Entity* node)
 {
 	unsigned int nodeid = FindNodeById(node->m_Id >> 8);
 	if (nodeid)
@@ -641,7 +641,7 @@ Asset* AssetManager::FindFirstFreeResource() const
 	if (m_ResourcesInstancesList.size() <= 1)
 		return nullptr;
 
-	for (unsigned int i = 0; i < m_ResourcesInstancesList.size(); ++i)
+	for (unsigned int i = 1; i < m_ResourcesInstancesList.size(); ++i)
 		if (m_ResourcesInstancesList[i])
 			return m_ResourcesInstancesList[i];
 
@@ -652,6 +652,34 @@ void AssetManager::DestroyTextureAsset(TextureAsset& ass)
 {
 	ass.DestroyResource();
 	field_0 = 1;
+}
+
+Asset* AssetManager::GetAssetIfExists(const Asset* a) const
+{
+	unsigned int i = a->m_GlobalResourceId + 1;
+	if (i >= m_ResourcesInstancesList.size())
+		return m_ResourcesInstancesList[0];
+
+	for (Asset* ass = m_ResourcesInstancesList[i]; !ass; i++);
+
+	if (i + 1 >= m_ResourcesInstancesList.size())
+		return m_ResourcesInstancesList[0];
+	else
+		return m_ResourcesInstancesList[i];
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void AssetManager::_878030()
+{
+	if (!m_LoadBlocks)
+		return;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void AssetManager::_877AE0()
+{
+	if (!m_LoadBlocks)
+		return;
 }
 
 void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)
@@ -699,6 +727,12 @@ AssetManager::AssetManager(bool loadBlocks)
 	m_NodesList[2].reserve(6000);
 	m_NodesList[3].reserve(2800);
 	m_NodesList[5].reserve(100);
+	m_NodesInNodeList[0] = 1;
+	m_NodesInNodeList[1] = 1;
+	m_NodesInNodeList[2] = 1;
+	m_NodesInNodeList[3] = 1;
+	m_NodesInNodeList[4] = 1;
+	m_NodesInNodeList[5] = 1;
 	field_0 = NULL;
 	m_RegionId = REGION_NOT_SET;
 	m_ResourcesInstancesList.reserve(1);

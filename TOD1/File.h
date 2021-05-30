@@ -95,6 +95,7 @@ public:
 	static void		SetGameWorkingDir(const char* const str);	//	@438560
 	static void		GetWorkingDirRelativePath(String& path);	//	@437A70
 	static void		GetGameWorkingDirRelativePath(String& path);	//	@437B80
+	static bool		FindFileRecursive(const char* const dir, const char* const fname, String& outfullpath);	//	@438660
 
 	static String	WorkingDirectory;	//	@A08FA0
 	static String	GameWorkingDirectory;	//	@A08FB0
@@ -218,6 +219,7 @@ public:
 	static void		CreateNewDirectory(const char* const dir);	//	@4186F0
 	static void		RemoveDirectory_(const char* const dir);	//	@418740
 	static void		SetFileAttrib(const char* const file, unsigned int attrib, char unk);	//	@417D50
+	static bool		SearchScriptFile(const char* const searchpath, const char* const scriptfilename, String& zipname);	//	@418210
 
 	static unsigned int FilesOpen;	//	@A35DD8
 	static HANDLE	FilesSemaphoreArray[FILE_MAX_ZIP_FILES];	//	@A35D98

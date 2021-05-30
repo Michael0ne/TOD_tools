@@ -6,6 +6,8 @@
 #include "AssetManager.h"
 #include "NothingType.h"
 #include "ScriptType.h"
+#include "Entity.h"
+#include "Scene.h"
 
 std::vector<GlobalProperty>		GlobalPropertiesList;	//	@A3CF20
 std::map<String, unsigned int>	GlobalPropertiesMap;	//	@A3CF30
@@ -244,6 +246,21 @@ void ReadDatabaseFile(const char* path)
 #ifdef INCLUDE_FIXES
 	LogDump::LogA("Read %d properties and %d commands\n", totalProperties, totalCommands);
 #endif
+}
+
+bool FindScript(const char* const scriptname, String& zipname)
+{
+	if (Script::ScriptsPath.m_nLength == NULL)
+		return false;
+
+	char scriptnamefull[256] = {};
+	sprintf(scriptnamefull, "%s.script", scriptname);
+
+	if (File::SearchScriptFile(Script::ScriptsPath.m_szString, scriptnamefull, zipname))
+		return true;
+
+	LogDump::LogA("Script '%s.script' not found (search path is '%s')\n", scriptname, Script::ScriptsPath.m_szString);
+	return false;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -1015,6 +1032,13 @@ GlobalScript::GlobalScript(const char* const scriptName, const char* const paren
 
 void GlobalScript::AddStructElement(unsigned int fieldId, const char* const defaultValue, unsigned int a3)
 {
+#ifdef INCLUDE_FIXES
+	if (fieldId == 0xFFFFFFFF)
+	{
+		LogDump::LogA("GlobalScript::AddStructElement(%d, \"%s\", %d) FAILED!\n", fieldId, defaultValue, a3);
+		return;
+	}
+#endif
 	m_PropertiesValues[fieldId] = m_PropertiesList.size();
 	m_PropertiesList.push_back({ &GlobalProperty::GetById(fieldId), m_PropertiesValues.size(), (char*)defaultValue, a3 });
 }
@@ -1063,6 +1087,17 @@ bool GlobalScript::_48A7E0(Node* node, int scriptId, void* args)
 	return true;
 }
 
+void GlobalScript::ClearEntityProperties(Entity* ent)
+{
+	if (m_PropertiesList.size())
+	{
+		for (unsigned int i = 0; i < m_PropertiesList.size(); ++i)
+			m_PropertiesList[i].m_Info->m_PropertyType->stub4((char*)&ent->m_Parameters[m_PropertiesList[i].m_Offset]);
+
+		delete ent->m_Parameters;
+	}
+}
+
 EntityType* GlobalScript::AssignScriptToEntity(const EntityType* parent)
 {
 	if (!m_BaseEntity)
@@ -1070,12 +1105,19 @@ EntityType* GlobalScript::AssignScriptToEntity(const EntityType* parent)
 
 	if (!parent)
 	{
-		//	FIXME: 'parent' is nullptr but yet trying to de-reference it. Wtf?
 		LogDump::LogA("'%s' do not descent from '%s', script '%s' cannot be used on a '%s'\n",
+#ifdef INCLUDE_FIXES
+			"(null)",
+#else
 			parent->m_TypeName.m_szString,
+#endif
 			m_BaseEntity->m_TypeName.m_szString,
 			m_Name.m_szString,
+#ifdef INCLUDE_FIXES
+			"(null)");
+#else
 			parent->m_TypeName.m_szString);
+#endif
 
 		return nullptr;
 	}
@@ -1138,6 +1180,28 @@ int GlobalScript::GetScriptIdByName(const char* const name)
 			return i;
 
 	return -1;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void GlobalScript::InstantiateGlobalScripts()
+{
+	if (!Scene::SceneInstance)
+		return;
+
+	for (unsigned int i = 0; i < ScriptsList.size(); ++i)
+	{
+		if (!ScriptsList[i]->field_5C & 1)
+			continue;
+
+		if (Scene::SceneInstance->m_FirstChild)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
 }
 
 unsigned int GlobalScript::GetScriptIdByFullName(const char* const name)

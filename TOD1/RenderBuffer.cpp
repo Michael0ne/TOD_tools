@@ -66,6 +66,11 @@ RenderBuffer::RenderBuffer(const unsigned int maxParams, AllocatorIndex allocato
 	m_PrevParamIndex = NULL;
 }
 
+RenderBuffer::RenderBuffer()
+{
+	MESSAGE_CLASS_CREATED(RenderBuffer);
+}
+
 void RenderBuffer::AdjustBufferSize(const unsigned int size)
 {
 	unsigned int currentcapacity = (m_MaxParams * 3) >> 1;
