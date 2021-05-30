@@ -123,10 +123,15 @@ public:
     void            _896BA0();  //  @896BA0
     void            ReleaseQuadTreeAndRenderlist();	//	@896C30
     void            LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo);	//	@892E40
-    void            CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, unsigned int savesize);	//	@895B80
-    void            RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode, const MemoryCards* memcards);	//	@895C00
-    void            LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, const Node* summarynode);	//	@895CB0
+    void            CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, unsigned int savesize);	//	@895B80
+    void            RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, MemoryCards* memcards);	//	@895C00
+    void            LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode);	//	@895CB0
     void            ProfileMemory(const int);   //  @893460
+    void            ClearNodesLists();  //  @894950
+    void            _895F50();  //  @895F50
+    Folder_*        GetFolderByIndex(const unsigned int index) const;   //  @893290
+    void            LoadSceneSession(void) const;   //  @8956D0
+    void            InstantiateAssetsToLists(); //  @896810
 
     static int      RealTimeMs;	//	@A3DCCC
     static int      GameTimeMs;	//	@A3DCD4
@@ -145,6 +150,8 @@ public:
     static int      _A3DA80[100];	//	@A3DA80
     static int      _A3D8D8[100];	//	@A3D8D8
     static int      _A3DC38[4];	//	@A3DC38
+    static int      UpdateOrBlockingListSize;   //  @A3DD08
+    static bool     _A3D858;    //  @A3D858
 
     static Scene   *SceneInstance;	//	@A3DCBC
     static AuxQuadTree* SceneTree;	//	@A3DCE8

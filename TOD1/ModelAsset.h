@@ -62,9 +62,14 @@ private:
 public:
     virtual AssetInstance* GetInstancePtr() const override;
 
+    void                _856E60();  //  @856E60
+
     static void         CreateInstance();	//	@858210
     static ModelAsset*  Create();	//	@8581F0
+
+    static AssetInstance*   Instance;   //  @A3BE30
 };
+
 
 ASSERT_CLASS_SIZE(ModelAsset, 96);
 ASSERT_CLASS_SIZE(ModelAsset::Mesh, 124);

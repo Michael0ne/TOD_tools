@@ -178,6 +178,19 @@ void SceneSaveLoad::_873C00(const unsigned int, const int* a2)
 	}
 }
 
+void SceneSaveLoad::Adapt()
+{
+	for (unsigned int i = 1; i < 6; ++i)
+	{
+		Folder_* fldr = Scene::SceneInstance->GetFolderByIndex(i - 1);
+		if (m_SaveInfo.m_LoadedFolders[i] != fldr)
+		{
+			m_SaveInfo.m_LoadedFolders[i] = fldr;
+			LogDump::LogA("Adapt: CurrentUndo loaded blocks %d = %s\n", i, fldr && fldr->m_Name ? fldr->m_Name : "<null>");
+		}
+	}
+}
+
 bool SceneSaveLoad::WriteDummySavePointData(class SavePoint* savepoint, unsigned int pad)
 {
 	if (savepoint->m_Status != STATUS_CLOSED)

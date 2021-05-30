@@ -6,7 +6,7 @@ std::vector<String> Asset::OpenResourcesList;
 unsigned int Asset::TotalResourcesCreated;
 unsigned int Asset::LastOpenResourceIndex;
 unsigned int Asset::TextureAssetAllocatorId;
-const char* const Asset::BlockTypeExtension[] = { ".", "map", "submap", "mission", "cutscene", "playerdata", "", "" };
+const char* const Asset::BlockTypeExtension[] = { ".", "map", "submap", "mission", "cutscene", "playerdata", "main", "" };
 
 unsigned int AssetInstance::AssetAlignment[3];
 std::vector<AssetInstance*> AssetInstance::Assets;
@@ -148,6 +148,14 @@ Asset* Asset::CreateInstance(size_t classsize)
     return a;
 }
 
+void Asset::AllocateResourceForBlockLoad(const unsigned int size, int** bufaligned, int* buf, const unsigned int blockid)
+{
+    int* bufblock = (int*)MemoryManager::AllocateByType(AllocatorIndexByBlockType(blockid), AssetInstance::AssetAlignment[0] + size);
+
+    buf = bufblock;
+    *bufaligned = (int*)( ~(AssetInstance::AssetAlignment[0] - 1) & ((int)bufblock + AssetInstance::AssetAlignment[0] - 1) );
+}
+
 void Asset::SetReferenceCount(unsigned char count)
 {
     m_Flags.m_ReferenceCount = count;
@@ -174,7 +182,7 @@ void Asset::EncodeCountryCode(const char* const countrycode)
 
 const char* const Asset::GetResourceCountryCode() const
 {
-    unsigned int countrycode = m_Flags.m_FlagBits.AssetRegion & 15;
+    const unsigned int countrycode = m_Flags.m_FlagBits.AssetRegion & 15;
 
     //	NOTE: obvious fix - original code assumes that asset country code cannot be tampered with, since it's validated when loading.
 #ifdef INCLUDE_FIXES

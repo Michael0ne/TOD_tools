@@ -99,6 +99,16 @@ public:
 		strcat_s(m_szString, m_nLength, appendStr.m_szString);
 	}
 
+	inline bool		EndsWith(const char ch) const
+	{
+		return m_nLength == 0 || m_szString == nullptr || (m_szString != nullptr && *m_szString == NULL) ? false : m_szString[m_nLength - 1] == ch;
+	}
+
+	inline bool		StartsWith(const char ch) const
+	{
+		return m_nLength == 0 || m_szString == nullptr || (m_szString != nullptr && *m_szString == NULL) ? false : m_szString[0] == ch;
+	}
+
 	inline void		Clear()
 	{
 		if (!m_nLength)

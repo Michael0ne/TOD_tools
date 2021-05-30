@@ -1455,6 +1455,27 @@ void File::SetFileAttrib(const char* const file, unsigned int attrib, char unk)
 	FileWrapper::SetFileAttrib(file, attrib, unk);
 }
 
+bool File::SearchScriptFile(const char* const searchpath, const char* const scriptfilename, String& zipname)
+{
+	if (ZipArch::SlotId > 0)
+	{
+		int slotind;
+		ZipArch::FileInfo zipfileinfo;
+		char path[512] = {};
+
+		strcpy(path, searchpath);
+		strcat(path, scriptfilename);
+
+		if (ZipArch::FindFile(path, zipfileinfo, &slotind))
+			return true;
+	}
+
+	String mappedpath;
+	GetPathFromDirectoryMappings(mappedpath, searchpath);
+
+	return FileWrapper::FindFileRecursive(mappedpath.m_szString, scriptfilename, zipname);
+}
+
 bool File::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)
 {
 	String dirStr;
@@ -1610,6 +1631,79 @@ void FileWrapper::GetGameWorkingDirRelativePath(String& path)
 		strcat(buffer, path.m_szString);
 
 	path = buffer;
+}
+
+bool FileWrapper::FindFileRecursive(const char* const dir, const char* const fname, String& outfullpath)
+{
+	String fpath = dir;
+	GetWorkingDirRelativePath(fpath);
+
+	if (!fpath.EndsWith('/'))
+	{
+		LogDump::LogA("'%s' must end with '/'\n", fpath.m_szString);
+		return false;
+	}
+
+	if (!IsDirectoryValid(fpath.m_szString))
+	{
+		LogDump::LogA("'%s' is not a valid directory\n");
+		return false;
+	}
+
+	char fpathsearch[512] = {};
+	strcpy(fpathsearch, fpath.m_szString);
+	strcat(fpathsearch, "*.*");
+
+	WIN32_FIND_DATA searchdata;
+	HANDLE searchhndl = FindFirstFile(fpathsearch, &searchdata);
+
+	if (searchhndl == INVALID_HANDLE_VALUE)
+		return false;
+
+	while (true)
+	{
+		if (searchdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			if (strcmp(searchdata.cFileName, "..") == NULL ||
+				strcmp(searchdata.cFileName, ".") == NULL)
+			{
+				if (!FindNextFile(searchhndl, &searchdata))
+				{
+					FindClose(searchhndl);
+					return false;
+				}
+
+				continue;
+			}
+
+			char incdir[1024] = {};
+
+			strcpy(incdir, dir);
+			strcat(incdir, searchdata.cFileName);
+			strcat(incdir, "/");
+
+			if (FindFileRecursive(incdir, fname, outfullpath))
+			{
+				FindClose(searchhndl);
+				return true;
+			}
+		}
+
+		if (_stricmp(searchdata.cFileName, fname) == NULL)
+			break;
+
+		if (!FindNextFile(searchhndl, &searchdata))
+		{
+			FindClose(searchhndl);
+			return false;
+		}
+	}
+
+	outfullpath = dir;
+	outfullpath.Append(fname);
+
+	FindClose(searchhndl);
+	return true;
 }
 
 IFile::~IFile()

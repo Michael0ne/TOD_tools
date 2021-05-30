@@ -307,7 +307,7 @@ bool MemoryCards::UnPrepareCardForSavegames_Impl(unsigned int memcardind)
 	return false;
 }
 
-void MemoryCards::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, Node* summarynode) const
+void MemoryCards::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, Node* summarynode)
 {
 	Scene::SceneInstance->RestoreSavePoint(memcardind, slotind, MEMCARD_DEFAULT_SAVE_DIR, summarynode, this);
 }

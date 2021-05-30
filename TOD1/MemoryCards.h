@@ -42,7 +42,7 @@ private:
     void            SetSaveFileSize(unsigned int savesize);	//	@9262C0
     void            IsPresent(int* args) const;	//	@9287E0
     void            CreateSavePoint(unsigned int memcardind, unsigned int slotind, EntityType* textbox, unsigned int, const char* const savedirectory, Node* summarynode) const;	//	@926C70
-    void            RestoreSavePoint(unsigned int memcardind, unsigned int slotind, Node* summarynode) const;	//	@926CE0
+    void            RestoreSavePoint(unsigned int memcardind, unsigned int slotind, Node* summarynode);	//	@926CE0
     void            LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, Node* summarynode) const;	//	@926D40
     void            DeleteSavePoint(int* args);	//	@929260
     bool            DeleteSavePoint_Impl(unsigned int memcardind, unsigned int slotind);	//	@926B60

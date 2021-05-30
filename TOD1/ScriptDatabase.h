@@ -82,6 +82,7 @@ extern std::vector<GlobalCommand>		GlobalCommandsList;	//	@A11470
 extern std::map<String, unsigned int>	GlobalCommandsMap;	//	@A3CF08
 
 class EntityType;
+class Entity;
 
 class GlobalScript
 {
@@ -128,12 +129,14 @@ public:
     void                        AddMethod(unsigned short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*));	//	@48A690
     void                        CalculateSize();	//	@48AA60
     bool						_48A7E0(Node* node, int scriptId, void* args);	//	@48A7E0
+    void                        ClearEntityProperties(Entity* ent); //  @489C90
 
     class EntityType*           AssignScriptToEntity(const EntityType* parent);	//	@48A3F0
 
     static GlobalScript*        GetGlobalScriptByName(const char* name);	//	@48C590
     static GlobalScript*        GetGlobalScriptById(const unsigned int id);	//	@48C580
     static int                  GetScriptIdByName(const char* const name);	//	@48C910
+    static void                 InstantiateGlobalScripts();  //  @48C960
 
     static unsigned int			GetScriptIdByFullName(const char* const name);  //  NOTE: a special version of 'GetTypeByName' to be used when loading game-specific scripts. Not in original code.
 
@@ -161,6 +164,7 @@ extern int	RegisterGlobalCommand(const char* const commandname, bool existingCom
 
 extern void	ReadDatabaseFile(const char* path);	//	@48C400
 extern void	LoadScripts();	//	@7A1F60
+extern bool FindScript(const char* const scriptname, String& zipname);   //  @48C680
 
 namespace Script
 {

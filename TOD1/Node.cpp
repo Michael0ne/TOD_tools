@@ -82,7 +82,7 @@ void Node::Destroy()
 
     if (m_GlobalIdInSceneList >= 0)
     {
-        NodesList[m_GlobalIdInSceneList].m_PosZ = 0;
+        NodesList[m_GlobalIdInSceneList].m_QuadTree = 0;
         m_GlobalIdInSceneList = -1;
     }
 
@@ -579,6 +579,79 @@ void Node::DestroyChildren()
     }
 }
 
+void Node::ClearFromBlockingList()
+{
+    if (m_GlobalIdInBlockigList >= 0)
+    {
+        NodesWithUpdateOrBlockingScripts[m_GlobalIdInBlockigList].m_Node = nullptr;
+        m_GlobalIdInBlockigList = -1;
+    }
+}
+
+void Node::ClearFromSceneList()
+{
+    if (m_GlobalIdInSceneList >= 0)
+    {
+        NodesList[m_GlobalIdInSceneList].m_QuadTree = 0;
+        m_GlobalIdInSceneList = -1;
+    }
+}
+
+void Node::_86A190()
+{
+    field_8[5] = NULL;
+    field_8[6] = NULL;
+    field_8[7] = NULL;
+    field_8[8] = NULL;
+    field_8[9] = NULL;
+}
+
+void Node::SetFragment(const char* const fragmentpath)
+{
+    Node* child = m_FirstChild;
+    if (child)
+    {
+        Node* sibling;
+        do 
+        {
+            sibling = child->m_NextSibling;
+            child->Destroy();
+            child = sibling;
+        } while (sibling);
+    }
+
+    delete m_Fragment;
+
+    if (!fragmentpath)
+        return;
+
+    if (!m_Fragment)
+        m_Fragment = new Fragment(this);
+
+    String respath;
+    String fullfragmpath;
+    g_AssetManager->GetResourcePath(respath, fragmentpath);
+    _891E70(respath, fullfragmpath);
+
+    const size_t tstscrpathlen = strlen("/data/scripts/testing/fragments");
+    if (strncmp(respath.m_szString, "/data/scripts/testing/fragments", tstscrpathlen))
+    {
+        fullfragmpath = "/data/scripts/fragments";
+        fullfragmpath.Append(&respath.m_szString[tstscrpathlen]);
+    }
+
+    if (strcmp(fullfragmpath.m_szString, fragmentpath))
+        LogDump::LogA("unmapped %s -> %s\n", fragmentpath, fullfragmpath.m_szString);
+
+    if (m_Flags.m_FlagBits.HasFragment)
+    {
+        m_Fragment->LoadResourceFile(fullfragmpath.m_szString);
+        m_Fragment->ApplyFragment();
+    }
+    else
+        m_Fragment->SetFragmentName(fullfragmpath.m_szString);
+}
+
 AuxQuadTree* Node::_8A0810(Node* node)
 {
     if (node->m_QuadTree)
@@ -623,6 +696,26 @@ AuxQuadTree* Node::_8A0810(Node* node)
     }
 
     return nullptr;
+}
+
+void Node::_891E70(const String& s, String& outs)
+{
+    if (File::DirectoryMappingsList.size() <= 0)
+    {
+        outs = s;
+        return;
+    }
+
+    for (unsigned int i = 0; i < File::DirectoryMappingsList.size(); ++i)
+    {
+        if (strncmp(s.m_szString, File::DirectoryMappingsList[i].m_String_1.m_szString, File::DirectoryMappingsList[i].m_String_1.m_nLength) == NULL)
+        {
+            outs = File::DirectoryMappingsList[i].m_String_2.m_szString;
+            outs.Append(&s.m_szString[File::DirectoryMappingsList[i].m_String_1.m_nLength]);
+        }
+    }
+
+    outs = s;
 }
 
 void Node::Register()

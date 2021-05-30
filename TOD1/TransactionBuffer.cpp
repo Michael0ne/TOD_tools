@@ -6,17 +6,19 @@ TransactionBuffer::TransactionBuffer(unsigned int bufferSize)
 	MESSAGE_CLASS_CREATED(TransactionBuffer);
 
 	m_Chunks = bufferSize / 4;
-	m_Buffer = (char*)MemoryManager::AllocatorsList[MemoryManager::GetAllocatorByMemoryPointer(this)->m_AllocatorIndex]->Allocate(4 * m_Chunks, NULL, NULL);
+	m_Buffer = (char*)MemoryManager::AllocatorsList[MemoryManager::GetAllocatorByMemoryPointer(this)->m_AllocatorIndex]->Allocate(bufferSize, NULL, NULL);
 	field_C = 0;
 	m_Size = 0;
 	field_20 = 0;
-	field_1C = (void*)&m_List_1.cbegin();
+	m_List_1.resize(1);
+	field_1C = (void*)&m_List_1.begin();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 TransactionBuffer::~TransactionBuffer()
 {
 	MESSAGE_CLASS_DESTROYED(TransactionBuffer);
+
+	MemoryManager::AllocatorsList[MemoryManager::GetAllocatorByMemoryPointer(this)->m_AllocatorIndex]->Free(m_Buffer);
 }
 
 void TransactionBuffer::_8AA1F0(int** a1)

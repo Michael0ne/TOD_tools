@@ -84,6 +84,7 @@ public:
 	bool				ResetGame(class Node** loadedBlocksArray);	//	@874D00
 	int*                _873BA0(const unsigned int nodeid);	//	@873BA0
 	void                _873C00(const unsigned int, const int* a2);	//	@873C00
+	void				Adapt();	//	@873D30
 	
 	static bool			WriteDummySavePointData(class SavePoint* savepoint, unsigned int);	//	@8743F0
 

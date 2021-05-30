@@ -100,13 +100,13 @@ void Folder_::UnloadBlocks()
 
 		while (true)
 		{
-			Node* loadednode = (Node*)g_AssetManager->_8755E0();
+			Node* loadednode = (Node*)g_AssetManager->FindFirstEntity();
 			if (!loadednode)
 				break;
 
 			while ( ( (loadednode->m_Id >> 27) & 7 ) - 1 != ( (8 * m_BlockId) >> 3 ) )
 			{
-				loadednode = (Node*)g_AssetManager->_875610(loadednode);
+				loadednode = (Node*)g_AssetManager->FindNextEntity(loadednode);
 				if (!loadednode)
 				{
 					if (!strcmp(framealloc->GetAllocatorName(), "FrameBasedSubAllocator"))

@@ -23,7 +23,7 @@ private:
     int                *field_80;
     unsigned int        m_Flags;
     Vector4f            m_Dimensions;
-    std::vector<int>    m_List_1;
+    std::vector<int>    m_LightsList;
     std::vector<int>    m_List_2;
     int				    field_B8;
     int				    field_BC;
@@ -32,6 +32,7 @@ public:
     MockupBox();	//	@8CF870
     virtual            ~MockupBox();   //  @8D1170
     virtual void        GetBounds(Vector4f& bounds);   //  @8CE330
+    virtual void        Render();   //  @8CE930
 
     static unsigned int TotalCreated;	//	@A3DFD8
     static MeshBuffer* MeshBufferPtr;   //  @A3DFD4

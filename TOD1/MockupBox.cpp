@@ -50,11 +50,40 @@ MockupBox::MockupBox() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 MockupBox::~MockupBox()
 {
 	MESSAGE_CLASS_DESTROYED(MockupBox);
+
+	TotalCreated--;
+
+	delete m_FrameBuffer;
+
+	if (!TotalCreated)
+		delete MeshBufferPtr;
+
+	delete m_MeshBuffer;
+	delete field_80;
+
+	if (m_Texture)
+		g_AssetManager->DecreaseResourceReferenceCount(m_Texture);
+
+	delete field_68;
 }
 
 void MockupBox::GetBounds(Vector4f& bounds)
 {
 	bounds = MeshBufferPtr ? m_Dimensions : Vector4f();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void MockupBox::Render()
+{
+	if (!m_QuadTree || m_QuadTree->m_Lod >= 6 || (m_QuadTree->m_LodFade * (float)(1 / 255)) == 0)
+	{
+		delete m_FrameBuffer;
+
+		m_Id |= 8;
+		return;
+	}
+
+	//	TODO: actually submit commands to render buffer.
 }
 
 void MockupBox::CalculateDimensions()

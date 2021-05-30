@@ -161,8 +161,13 @@ public:
     void                _88C310(struct CameraMatrix* cammat);  //  @88C310
     void                InstantiateAllChildren();   //  @88C2B0
     void                DestroyChildren();  //  @8752A0
+    void                ClearFromBlockingList();    //  @88E950
+    void                ClearFromSceneList();   //  @88E980
+    void                _86A190();  //  @86A190
+    void                SetFragment(const char* const fragmentpath);    //  @88F8A0
 
     static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
+    static void         _891E70(const String& s, String& sout); //  @891E70
 
     static void			Register();	//	@88FCD0
     static Node*		Create(AllocatorIndex);	//	@88D680
@@ -175,10 +180,9 @@ public:
 
     struct NodePosInfo
     {
-        short           m_PosX;
-        short           m_PosY;
-        short           m_PosZ;
-        short           m_PosW;
+        int             field_0;
+        int             field_4;
+        AuxQuadTree    *m_QuadTree;
     };
 
     static std::vector<NodeInfo>    NodesWithUpdateOrBlockingScripts;   //  @A11CC0
