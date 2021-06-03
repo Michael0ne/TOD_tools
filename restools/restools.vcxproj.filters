@@ -27,7 +27,7 @@
     <ClInclude Include="SaveResourceReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MapResourceReader.h">
+    <ClInclude Include="AssetBlockReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -50,7 +50,7 @@
     <ClCompile Include="SaveResourceReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MapResourceReader.cpp">
+    <ClCompile Include="AssetBlockReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ScriptDatabaseReader.cpp">

@@ -64,6 +64,11 @@ void Light::ClearLightsList()
 	delete GlobalList;
 }
 
+Light::LightsList* Light::GetGlobalList()
+{
+	return GlobalList;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void Light::Register()
 {

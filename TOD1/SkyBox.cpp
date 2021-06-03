@@ -54,7 +54,8 @@ SkyBox::~SkyBox()
 {
 	MESSAGE_CLASS_DESTROYED(SkyBox);
 
-	delete m_FrameBuffer;
+	for (unsigned int i = 0; i < 6; ++i)
+		delete m_FrameBuffer[i];
 }
 
 #pragma message(TODO_IMPLEMENTATION)

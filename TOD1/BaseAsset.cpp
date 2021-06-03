@@ -112,7 +112,7 @@ Asset::Asset(bool dontmakeglobal)
     if (dontmakeglobal)
         m_GlobalResourceId = NULL;
     else
-        m_GlobalResourceId = g_AssetManager->InsertTypeListItem(this);
+        m_GlobalResourceId = g_AssetManager->AddAssetReference(this);
 
     m_Flags.m_Flags = 0;
     m_Flags.m_FlagBits.NotUsed = m_Flags.m_FlagBits._17 = m_Flags.m_FlagBits._18 = m_Flags.m_FlagBits._19 = 1;

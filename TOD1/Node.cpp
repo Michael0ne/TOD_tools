@@ -652,6 +652,14 @@ void Node::SetFragment(const char* const fragmentpath)
         m_Fragment->SetFragmentName(fullfragmpath.m_szString);
 }
 
+void Node::TryInstantiate()
+{
+    if (m_GlobalIdInBlockigList < 0)
+        m_Id |= 1;
+    else
+        Instantiate();
+}
+
 AuxQuadTree* Node::_8A0810(Node* node)
 {
     if (node->m_QuadTree)

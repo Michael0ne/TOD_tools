@@ -144,7 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GenericResourceReader.h" />
-    <ClInclude Include="MapResourceReader.h" />
+    <ClInclude Include="AssetBlockReader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SaveResourceReader.h" />
     <ClInclude Include="ScriptDatabaseReader.h" />
@@ -154,7 +154,7 @@
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="GenericResourceReader.cpp" />
-    <ClCompile Include="MapResourceReader.cpp" />
+    <ClCompile Include="AssetBlockReader.cpp" />
     <ClCompile Include="SaveResourceReader.cpp" />
     <ClCompile Include="ScriptDatabaseReader.cpp" />
     <ClCompile Include="TextureResourceReader.cpp" />

@@ -1,7 +1,7 @@
 #pragma once
 #include "GenericResourceReader.h"
 
-class MapResourceReader : public GenericResourceReader
+class AssetBlockReader : public GenericResourceReader
 {
 private:
 	struct AssetHeaderStruct_t
@@ -38,25 +38,44 @@ private:
 		} field_38;
 	};
 
-	AssetHeaderStruct_t		m_HeaderStruct;
-	char					m_DataDeciphered[256] = {};
-	char					m_CypherKey[32] = {};
-	UINT					field_1A8 = NULL;
-	UINT					m_TotalResources = NULL;
-	UINT					m_EngineTimestamp = NULL;
-	UINT					m_PropertyCRC = NULL;
-	UINT					m_CommandsCRC = NULL;
+	//	TODO: fill rest of types. Can't be bothered right now...
+	enum AssetTypeIndex
+	{
+		TEXTURE = 0,
+		TYPE_1,
+		TYPE_2,
+		MODEL,
+		FRAGMENT,
+		TYPE_5,
+		TYPE_6,
+		TYPE_7,
+		STREAMEDSOUND,
+		ANIMATION
+	};
 
-	UINT					m_ResInFile = NULL;
-	UINT					m_ResElemSize = NULL;
-	UINT					m_ResBuffSize = NULL;
-	PCHAR					m_ResBuffer = nullptr;
-	PCHAR					m_ResTable = nullptr;
+	static const char*	AssetTypeIndexString[];
+
+	struct AssetHeaderShared
+	{
+		unsigned int	m_EngineTimestamp;
+		unsigned int	m_PropertyChecksum;
+		unsigned int	m_CommandsChecksum;
+		int				m_ResourcesTotal;
+		unsigned int	m_AssetsHeaderSize;
+		unsigned int	m_AssetsBufferSize;
+	};
+
+	AssetHeaderShared	m_SharedHeader;
+	char*				m_AssetsInfoBuffer;
+	char**				m_AssetsDataBuffer;
+	char**				m_AssetsNames;
+	int*				m_AssetsSizes;
 
 public:
-	MapResourceReader(LPCSTR filename);
-	~MapResourceReader();
+	AssetBlockReader(LPCSTR filename);
+	~AssetBlockReader();
 
 	virtual void	ReadInfo() override;
 	virtual void	PrintInfo() const override;
+	virtual void	DumpData() const override;
 };

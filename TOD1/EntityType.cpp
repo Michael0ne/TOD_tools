@@ -39,3 +39,22 @@ void EntityType::InheritFrom(const EntityType* from)
 void EntityType::_86E9B0()
 {
 }
+
+Entity* EntityType::IsParentOf(EntityType* ett, Entity* ent)
+{
+    if (!ent)
+        return nullptr;
+
+    if (!ent->m_ScriptEntity)
+        return nullptr;
+
+    EntityType* entscript = ent->m_ScriptEntity;
+    while (ett != entscript)
+    {
+        entscript = entscript->m_Parent;
+        if (!entscript)
+            return nullptr;
+    }
+
+    return ent;
+}

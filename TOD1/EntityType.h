@@ -145,6 +145,8 @@ public:
         }
     }
     void				_86E9B0();	//	@86E9B0	//	NOTE: probably, this propagates all methods and properties from parent entity.
+
+    static Entity*      IsParentOf(EntityType* ett, Entity* ent);   //  @48C3B0
 };
 
 ASSERT_CLASS_SIZE(EntityType, 120);
