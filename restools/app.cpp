@@ -1,4 +1,4 @@
-#include "MapResourceReader.h"
+#include "AssetBlockReader.h"
 #include "TextureResourceReader.h"
 #include "SaveResourceReader.h"
 #include "ScriptDatabaseReader.h"
@@ -54,8 +54,8 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
 		strcmp(argv[1], "scriptdb") == NULL)
 		resreader = new ScriptDatabaseReader(lastslashpos + 1);
 
-	if (*argv[1] == 'm' && argv[1][1] == 'a' && argv[1][2] == 'p')
-		resreader = new MapResourceReader(lastslashpos + 1);
+	if (*argv[1] == 'a' && argv[1][1] == 's' && argv[1][2] == 's' && argv[1][3] == 'e' && argv[1][4] == 't')
+		resreader = new AssetBlockReader(lastslashpos + 1);
 
 	if (resreader == nullptr)
 	{

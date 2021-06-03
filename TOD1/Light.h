@@ -73,6 +73,7 @@ public:
     static void			OverrideLights(bool unk);	//	@880DC0
     static void			InitLightsList();	//	@881070
     static void			ClearLightsList();	//	@881260
+    static LightsList*  GetGlobalList(); //  @880D80
     static void         Register(); //  @8801F0
     static Light*       Create(AllocatorIndex);   //  @880640
 

@@ -4,6 +4,7 @@
 
 class ModelAsset : public Asset
 {
+    friend class Model;
 public:
     struct TextureReference
     {
@@ -58,11 +59,11 @@ protected:
 
 private:
     ModelAsset();
-
 public:
     virtual AssetInstance* GetInstancePtr() const override;
 
     void                _856E60();  //  @856E60
+    int                 PivotIndexByName(const char* const pivotname) const;    //  @88A060
 
     static void         CreateInstance();	//	@858210
     static ModelAsset*  Create();	//	@8581F0

@@ -21,6 +21,7 @@ protected:
     short               m_ActiveTextureSet;
     short               m_SoloPivot;
     char                field_68[4];
+
     union
     {
         struct
@@ -53,15 +54,21 @@ protected:
         }               m_FlagBits;
         unsigned int    m_Flags;
     }                   m_ModelFlags;
-    int                 field_70;
-    int                *field_74;
+
+    union
+    {
+        struct
+        {
+            unsigned    _0 : 19;    //  NOTE: unused?
+            unsigned    HardAlphaFactor : 8;
+            unsigned    _28 : 4;
+        }               m_FlagBits;
+        unsigned int    m_AlphaFlags;
+    }                   m_AlphaFlags;
+
+    int                *field_74;   //  NOTE: sizeof = 94, ctor at 0x88A2C0.
     int                 field_78;
-    FrameBuffer        *m_FrameBuffer;
-    int                 field_80;
-    int                 field_84;
-    int                 field_88;
-    int                 field_8C;
-    int                 field_90;
+    FrameBuffer        *m_FrameBuffer[6];
     int                 field_94;
     int                 field_98;
     int                 field_9C;
@@ -72,19 +79,58 @@ protected:
     int                 field_E0;
     int                 field_E4;
     int                 field_E8;
-    int                 field_EC;
-    std::vector<int>    m_PivotHideList;
+    int                 m_PivotHideList[5];
 
 public:
     Model();    //  @884BA0
 
     virtual ~Model();   //  @884D70
+    virtual void        SetStaticLightingEnabled(const bool enabled);   //  @884190
 
-    static void         Register(); //  @
+    static void         Register(); //  @889800
 
 private:
+    void                SetModelAsset(Model* model);    //  @888F80
     void                _884530();  //  @884530
-    static Model*       Create(AllocatorIndex);   //  @
+    void                FindPivot(int* args) const; //  @88A110
+    void                SetModelResFromModel(int* args);  //  @88AAB0
+    void                ForceInstantiate();   //  @883EB0
+    const char*         GetModelRes() const;    //  @884350
+    const float         GetOpacity() const; //  @883F90
+    void                SetOpacity(float op); //  @883FB0
+    void                SetAddBlend(const bool enabled);    //  @883D40
+    const bool          GetAddBlend() const;    //  @883D30
+    void                SetZWriteDisabled(const bool disabled); //  @883D80
+    const bool          GetZWriteDisabled() const;  //  @883D70
+    void                SetUseHardAlphaFactor(const bool enabled);  //  @883D00
+    const bool          GetUseHardAlphaFactor() const;  //  @883CF0
+    void                SetHardAlphaFactor(const float fac);    //  @884050
+    const float         GetHardAlphaFactor() const; //  @884030
+    void                SetActiveTextureSet(const unsigned int set);    //  @884150
+    const short         GetActiveTextureSet() const;    //  @884140
+    const int           GetNumberOfTextureSets() const; //  @8844F0
+    const short         GetSoloPivot() const;   //  @883DB0
+    void                SetSoloPivot(const short piv);  //  @883ED0
+    void                SetPlaceInHud(const bool place);    //  @883DC0
+    const bool          GetPlaceInHud() const;  //  @883DF0
+    void                SetUseVirtualHud(const bool use);   //  @883E00
+    const bool          GetUseVirtualHud() const;   //  @883E30
+    void                SetDynamicallyLit(const bool lit);    //  @8840B0
+    const bool          GetDynamicallyLit() const;  //  @8840A0
+    void                SetStaticallyLit(const bool lit);  //  @65D3A0
+    const bool          GetStaticallyLit() const;   //  @884100
+    void                SetBacksideTransparent(const bool tr);  //  @884120
+    const bool          GetBacksideTransparent() const; //  @884110
+    void                SetSingleColorMode(const bool enabled); //  @883EF0
+    const bool          GetSingleColorMode() const; //  @883E70
+    void                SetBlocksStaticLight(const bool enabled);   //  @883E80
+    const bool          GetBlocksStaticLight() const;   //  @883EA0
+    void                SetPivotHideList(int* list);  //  @888DD0
+    const int*          GetPivotHideList();    //  @67B890
+    void                SetDepthSorted(const bool enabled); //  @883E40
+    const bool          GetDepthSorted() const; //  @883E60
+
+    static Model*       Create(AllocatorIndex);   //  @88AA70
 };
 
 extern EntityType* tModel;  //  @

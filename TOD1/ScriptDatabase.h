@@ -130,6 +130,7 @@ public:
     void                        CalculateSize();	//	@48AA60
     bool						_48A7E0(Node* node, int scriptId, void* args);	//	@48A7E0
     void                        ClearEntityProperties(Entity* ent); //  @489C90
+    class EntityType*           GetScriptEntity() const;  //  @489AE0
 
     class EntityType*           AssignScriptToEntity(const EntityType* parent);	//	@48A3F0
 
@@ -137,13 +138,20 @@ public:
     static GlobalScript*        GetGlobalScriptById(const unsigned int id);	//	@48C580
     static int                  GetScriptIdByName(const char* const name);	//	@48C910
     static void                 InstantiateGlobalScripts();  //  @48C960
+    static void                 AssignCommonNodes();    //  @48C7D0
 
     static unsigned int			GetScriptIdByFullName(const char* const name);  //  NOTE: a special version of 'GetTypeByName' to be used when loading game-specific scripts. Not in original code.
 
     static std::vector<GlobalScript*>	ScriptsList;	//	@A0B424
+    static std::vector<Node*>           SceneScriptEntitiesList;    //  @A3B5A4
 };
 
 extern BaseType*                GlobalScriptsArray[410];	//	@A3B7A4	//	TODO: this could be just a global 'scripts space' where mixed objects are contained.
+extern Node*                    CacheScriptNode;    //  @A3B58C
+extern Node*                    CommonScriptNode;   //  @A3B590
+extern Node*                    CommonAnimSlotScriptNode;   //  @A3B594
+extern Node*                    CommonTriggerScriptNode;    //  @A3B598
+extern Node*                    IntroCommonScriptNode;  //  @A3B59C
 
 ASSERT_CLASS_SIZE(GlobalScript, 100);
 

@@ -760,58 +760,6 @@ namespace GameConfig
 		if (!Scene::SceneInstance)
 			return true;
 
-		/*
-		Scene::SceneInstance->m_Buffer_1->Reset();
-		Scene::SceneInstance->m_Buffer_2->Reset();
-		Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->DefragmentIfNecessary();
-		UINT64 startTime = __rdtsc();
-		Scene::SceneInstance->Update();
-		g_GfxInternal->SetClearFlagsForBufferIndex(3, 0);
-		if (!g_LoadScreenInfo->m_Enabled)
-			Scene::SceneInstance->nullsub_2();	//	@896370	//	NOTE: 'Render' method?
-		++Scene::TotalFrames;
-		Scene::SceneInstance->m_StartTimeMs = __rdtsc() - startTime;
-
-		if (g_StreamedSoundBuffers && Scene::SceneInstance->m_ActiveCamera)
-		{
-			Vector4f cameraPos;
-			D3DXMATRIX cameraMatrix;
-			Quaternion cameraOrient;
-
-			Scene::SceneInstance->m_ActiveCamera->GetPos(cameraPos);
-			g_StreamedSoundBuffers->SetListener3DPos(cameraPos);
-			Scene::SceneInstance->m_ActiveCamera->GetWorldMatrix(cameraMatrix);
-			GetRotationFromWorldMatrix(cameraPos, cameraOrient);
-			g_StreamedSoundBuffers->SetListener3DOrientation(cameraOrient);
-			SoundSlot::UpdateSoundGroups(Scene::FrameRate);	//	@89D120
-			g_StreamedSoundBuffers->WaitForSoftPause();
-		}
-
-		if (!g_LoadScreenInfo->m_Enabled)
-		{
-			Scene::SceneInstance->m_Buffer_1->_436BF0();
-			Scene::SceneInstance->m_Buffer_2->_436BF0();
-			Scene::SceneInstance->m_Buffer_1->_436040(19, 0);
-			Scene::SceneInstance->m_Buffer_2->_436040(29, 0);
-
-			if (g_GfxInternal->m_RenderBufferEmpty)
-				g_Blocks->ResetSceneChildrenNodes(1);	//	@875390
-			else
-				g_GfxInternal->Render(0, 1, 0xFFFFFFFF, 0xFFFFFFFF);
-		}
-
-		if (g_Config->m_SceneName.Equal("") || g_Config->m_SceneName.m_nLength == 0)
-			return true;
-
-		Scene::SceneInstance->Reset();	//	@89A1A0
-		Scene::SceneInstance->Destroy();
-		g_Progress->Enable();
-		g_Config->OpenScene(g_Config->m_SceneName.m_szString);
-		g_Progress->Disable();
-		g_Config->m_SceneName = "";
-		Scene::SceneInstance->Start();
-		*/
-
 		return true;
 	}
 

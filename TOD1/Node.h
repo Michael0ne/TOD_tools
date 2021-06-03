@@ -165,6 +165,7 @@ public:
     void                ClearFromSceneList();   //  @88E980
     void                _86A190();  //  @86A190
     void                SetFragment(const char* const fragmentpath);    //  @88F8A0
+    void                TryInstantiate(); //   @88C2D0
 
     static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
     static void         _891E70(const String& s, String& sout); //  @891E70

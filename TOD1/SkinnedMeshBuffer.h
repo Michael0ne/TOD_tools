@@ -3,11 +3,12 @@
 
 class SkinnedMeshBuffer
 {
+    friend class Model;
 protected:
     int field_0;
     int field_4;
     int* field_8;
-    int field_C;
+    int m_TextureSets;
     int field_10;
     int field_14;
     int field_18;

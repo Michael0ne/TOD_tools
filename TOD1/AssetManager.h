@@ -36,11 +36,45 @@ struct AssetHeaderStruct_t
 
         Header_t();	//	@401050
 
-        void                    _401450(char* key, char* keydata);	//	@401450
+        void                    DecodeFingerprintKey(char* key, char* keydata);	//	@401450
         void                    _4010C0(const char* key);	//	@4010C0
         void                    _4011A0(char* key);	//	@4011A0
     } field_38;
 };
+
+struct CompiledAssetInfo
+{
+    enum AssetType
+    {
+        ZERO = 0,
+        ONE,
+        TWO,
+        COMPILED
+    }                   m_AssetType;
+    int                 field_4;
+    int                 field_8;
+    int                 m_Alignment;
+    std::vector<int>    field_10;
+    char               *field_20;
+    char               *field_24;
+    char               *field_28;
+    char               *field_2C;
+    int                 field_30;
+    bool                field_34;
+    bool                field_35;
+
+    CompiledAssetInfo(const AssetType asstype, const char* assetinstanceinfo, const char* assetdata, const int alignment, const int a5, const int a6); //  @40CCD0
+    inline ~CompiledAssetInfo() //  NOTE: always inlined.
+    {
+        MESSAGE_CLASS_DESTROYED(CompiledAssetInfo);
+    }
+
+    void                ParseAssetData(int* assetdataptr, int* a2, int a3, int a4); //  @40D0C0
+
+    static void         InstantiateAsset(CompiledAssetInfo* compassinfo, int* assetinstanceinfo);    //  @851510
+};
+
+ASSERT_CLASS_SIZE(CompiledAssetInfo, 56);
 
 class AssetManager
 {
@@ -78,7 +112,7 @@ public:
     int                         m_EngineVersionTimestamp;
     RegionCode                  m_RegionId;
     bool                        m_CheckTimestamp;
-    std::vector<int>            m_AssetsList;
+    std::vector<Asset*>         m_AssetsList;
     bool                        m_LoadBlocks;
 
 private:
@@ -116,7 +150,7 @@ public:
     unsigned int                AddEntity(class Entity* ent);	//	@875FA0	//	NOTE: returns index
     void                        SetRegion(RegionCode id);	//	@875434
     AllocatorIndex              GetAllocatorType() const;	//	@875360
-    int                         InsertTypeListItem(void* res);	//	@877A90
+    int                         AddAssetReference(Asset* a);	//	@877A90
 #ifdef INCLUDE_FIXES
     void                        GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, Asset::PlatformId platform);	//	@8776B0
 #else
