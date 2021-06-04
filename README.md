@@ -21,9 +21,11 @@ When compiling using 'Release EXE' or 'Debug EXE' you get 'TOD1.exe' file that's
 * Is this project a cheat for the game of some sort?
   * No, the goal of this project is completely different, see summary. For 'how to use cheats' see wiki page.
 * Are there any tools to extract game assets?
-  * To convert and unpack 'NAZ' archives use 'naztozip' tool by 'CTPAX-X Team'. To read information about already extracted assets (that are supported by the tool), use 'restools' found in appropriate folder.
+  * To convert and unpack 'NAZ' archives use 'naztozip' tool by 'CTPAX-X Team' (included in this project). Once unpacked, a 'restools' program can be used to read and extract some assets. Right now, there is ability to read '.main' files that are assets blocks essentially, and extract assets contained.
 * Is this modified RenderWare?
   * No, this is completely different engine.
+* Can it be built for Linux/PS2/Xbox/etc.?
+  * Of course! See the appropriate section of this README for more information.
 
 # Current TODO list (important at top):
 
@@ -48,19 +50,19 @@ When compiling using 'Release EXE' or 'Debug EXE' you get 'TOD1.exe' file that's
 
 Included libraries can be found under 'TOD_tools\ThirdParty'.
 
-## Process for Windows
+## Building for Windows
 
-I use Visual Studio 2019 (16.10.0) to build this project.
+I use Visual Studio 2019 (16.10.0) to build this project for Windows.
 It's always a good idea to re-compile provided third party libraries under your specific machine and link against them when compiling the rest.
-After the build a batch file is executed to copy output file into game directory (updateHookFile.bat), you should edit this batch file to replace game path to where your actual game is.
+After the build a batch file is executed to copy output file into game directory (updateHookFile.bat), you should edit this batch file to replace game path to where your actual game is. Please, do not rely on this batch file too much, because it will be removed in near future, once cmake/premake project generation is implemented.
 
-## Process for Linux/PS2/etc...
+## Building for Linux/PS2/etc...
 
-If you want to build for Linux/PS2/coffepot/etc, then you can't do that right away without tinkering with code. As stated in comments (see contibuting section below), a good idea would be to wrap platform-specific code around 'PLATFORM_<platform>'.
+If you want to build for Linux/PS2/Xbox/PS5/etc, then you can't do that right away without tinkering with code. As stated in comments (see contibuting section below), a good idea would be to wrap platform-specific code with ifdef's 'PLATFORM_<platform>'.
 
-Check these classes: 'File', 'Window', 'GfxInternal' ('GfxInternal_Dx9' is an abstraction for DirectX 9 code, so good idea is to create 'GfxInternal_OpenGL' and do stuff there).
+Check these classes: 'File', 'Window', 'GfxInternal' ('GfxInternal_Dx9' is an abstraction for DirectX 9 code, so use 'GfxInternal_OGL' for OpenGL related stuff).
 
-As for project itself - right now I'm using Visual Studio to build code, but see no problem to use premake/cmake/etc to generate project for specific target.
+The provided files only include Visual Studio-specific "solution" file that is used to build the project. In some near future, it will be replaced with premake/cmake configuration files to build project for your build environment.
 
 # Contributing
 
