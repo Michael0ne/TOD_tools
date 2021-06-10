@@ -37,7 +37,7 @@ class TextureAsset : public Asset
     };
 
 public:
-    int                         field_1C;
+    int                         m_BitsPerPixel;
     Tex                        *m_Texture;	//	NOTE: this pointer should be aligned by 4 bytes.
     char                        field_24;
     Texture                    *m_Texture_1;	//	NOTE: this too.

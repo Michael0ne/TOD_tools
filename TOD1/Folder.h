@@ -29,6 +29,7 @@ protected:
 	AssetInfo      *m_AssetBlockInfo;
 
 	void            DestroyAllChildren();	//	@88C1D0
+	void			ReadAssetBlockFile(AssetInfo& assinfo, const char* const assfname) const;	//	@87E790
 
 	static void     GetResourcePathRelative(String& outPath, String resourceName, Asset::BlockTypeNumber blockType, const char* languageCode);	//	@882DF0
 public:

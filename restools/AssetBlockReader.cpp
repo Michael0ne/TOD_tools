@@ -1,208 +1,66 @@
 #include "AssetBlockReader.h"
+#include <stdlib.h>
 
 const char* AssetBlockReader::AssetTypeIndexString[] =
 {
-	"Texture",
-	"#1",
-	"#2",
-	"Model",
-	"Fragment",
-	"#5",
-	"#6",
-	"#7",
-	"StreamedSound",
-	"Animation"
+	"TEXTURE",
+	"FONT",
+	"TEXT",
+	"MODEL",
+	"FRAGMENT",
+	"MOVIE",
+	"CUTSCENE",
+	"SOUND",
+	"STREAMEDSOUNDINFO",
+	"ANIMATION",
+	"MESHCOLOR"
 };
 
-AssetBlockReader::AssetHeaderStruct_t::AssetHeaderStruct_1::AssetHeaderStruct_1()
+unsigned int AssetBlockReader::AssetInstanceSize[] =
 {
-	field_20 = 0x13579BDF;
-	field_24 = 0x2468ACE0;
-	field_28 = 0xFDB97531;
-	field_2C = 0x80000062;
-	field_30 = 0x40000020;
-	field_34 = 0x10000002;
-	field_38 = 0x7FFFFFFF;
-	field_3C = 0x3FFFFFFF;
-	field_40 = 0xFFFFFFF;
-	field_44 = 0x80000000;
-	field_48 = 0xC0000000;
-	field_4C = 0xF0000000;
+	48,	//	texture
+	40,	//	font
+	88,	//	text
+	96,	//	model
+	40,	//	fragment
+	40,	//	movie
+	96,	//	cutscene
+	40,	//	sound
+	40,	//	streamedsoundinfo
+	104,	//	animation
+	80	//	meshcolor
+};
 
-	memset(m_OriginalKey, NULL, sizeof(m_OriginalKey));
-}
-
-void AssetBlockReader::AssetHeaderStruct_t::AssetHeaderStruct_1::_401450(char* key, char* keydata)
+unsigned int AssetBlockReader::AssetTypeAlignment[][3] =
 {
-	_4010C0(key);
+	{ 16, 16, 128}, //	texture
+	{ 16, 16, 128},	//	font
+	{ 16, 16, 16 },	//	text
+	{ 16, 16, 16 },	//	model
+	{ 16, 16, 16 },	//	fragment
+	{ 16, 16, 16 },	//	movie
+	{ 16, 16, 16 },	//	cutscene
+	{ 16, 16, 16 },	//	sound
+	{ 16, 16, 16 },	//	streamedsoundinfo
+	{ 16, 16, 16 },	//	animation
+	{ 16, 16, 16}	//	meshcolor
+};
 
-	for (unsigned int i = 0; i < strlen(keydata); i++)
-	{
-		*key = keydata[i];
-		_4011A0(key);
-		keydata[i] = *key;
-	}
-}
-
-void AssetBlockReader::AssetHeaderStruct_t::AssetHeaderStruct_1::_4010C0(const char* key)
+const char* const AssetBlockReader::CompiledTextureAsset::TextureFormatString[] =
 {
-	strcpy(m_OriginalKey, key);
-
-	field_20 = key[3] | ((key[2] | ((key[1] | (0x0000 | (key[0] << 8))) << 8)) << 8);
-	if (!field_20)
-		field_20 = 0x13579BDF;
-
-	field_24 = key[7] | ((key[6] | ((key[5] | (key[4] << 8)) << 8)) << 8);
-	if (!field_24)
-		field_24 = 0x2468ACE0;
-
-	field_28 = key[11] | ((key[10] | ((key[9] | (key[8] << 8)) << 8)) << 8);
-	if (!field_28)
-		field_28 = 0xFDB97531;
-}
-
-void AssetBlockReader::AssetHeaderStruct_t::AssetHeaderStruct_1::_4011A0(char* key)
-{
-	unsigned int rounds = 2;
-	unsigned char v3 = field_24 & 1,
-		v7 = 0,
-		v9 = 0,
-		v12 = 0,
-		v17 = 0,
-		v19 = 0,
-		v20 = 0,
-		v21 = 0,
-		v22 = 0,
-		v23 = field_24 & 1,
-		v24 = field_28 & 1,
-		fld20 = field_20;
-
-	do
-	{
-		if (fld20 & 1)
-		{
-			v7 = field_44 | ((fld20 ^ field_2C) >> 1);
-			if (field_24 & 1)
-			{
-				v3 = v23 = 1;
-				field_24 = field_48 | ((field_24 ^ field_30) >> 1);
-			}
-			else
-			{
-				v3 = v23 = 0;
-				field_24 = field_3C & (field_24 >> 1);
-			}
-		}
-		else
-		{
-			v7 = field_38 & (fld20 >> 1);
-			if (field_28 & 1)
-			{
-				v24 = 1;
-				field_28 = field_4C | ((field_28 ^ field_34) >> 1);
-			}
-			else
-			{
-				v24 = 0;
-				field_28 = field_40 & (field_28 >> 1);
-			}
-		}
-
-		v20 = (2 * v19) | v24 ^ v3;
-		if (v7 & 1)
-		{
-			v9 = field_44 | ((v7 ^ field_2C) >> 1);
-			if (field_24 & 1)
-			{
-				v23 = 1;
-				field_24 = field_48 | ((field_24 ^ field_30) >> 1);
-			}
-			else
-			{
-				v23 = 0;
-				field_24 = field_3C & (field_24 >> 1);
-			}
-		}
-		else
-		{
-			v9 = field_38 & (v7 >> 1);
-			if (field_28 & 1)
-			{
-				v24 = 1;
-				field_28 = field_4C | ((field_28 ^ field_34) >> 1);
-			}
-			else
-			{
-				v24 = 0;
-				field_28 = field_40 & (field_28 >> 1);
-			}
-		}
-
-		v21 = (2 * v20) | v24 ^ v23;
-		if (v9 & 1)
-		{
-			v12 = field_44 | ((v9 ^ field_2C) >> 1);
-			if (field_24 & 1)
-			{
-				v23 = 1;
-				field_24 = field_48 | ((field_24 ^ field_30) >> 1);
-			}
-		}
-		else
-		{
-			v12 = field_38 & (v9 >> 1);
-			if (field_28 & 1)
-			{
-				v24 = 1;
-				field_28 = field_4C | ((field_28 ^ field_34) >> 1);
-			}
-			else
-			{
-				v24 = 0;
-				field_28 = field_40 & (field_28 >> 1);
-			}
-		}
-
-		v22 = (2 * v21) | v24 & v23;
-		if (v12 & 1)
-		{
-			fld20 = field_44 | ((v12 ^ field_2C) >> 1);
-			if (field_24 & 1)
-			{
-				v23 = 1;
-				field_24 = field_48 | ((field_24 ^ field_30) >> 1);
-			}
-			else
-			{
-				v23 = 0;
-				field_24 = field_3C & (field_24 >> 1);
-			}
-		}
-		else
-		{
-			fld20 = field_38 & (v12 >> 1);
-			if (field_28 & 1)
-			{
-				v24 = 1;
-				field_28 = field_4C | ((field_28 ^ field_34) >> 1);
-			}
-			else
-			{
-				v24 = 0;
-				field_28 = field_40 & (field_28 >> 1);
-			}
-		}
-
-		v19 = v17 = (2 * v22) | v24 ^ v23;
-		v3 = v23;
-
-	} while (--rounds);
-
-	field_20 = fld20;
-	*key ^= v17;
-	if (v17 == *key)
-		*key = v17;
-}
+	nullptr,
+	nullptr,
+	nullptr,
+	nullptr,
+	nullptr,
+	nullptr,
+	nullptr,
+	"DXT1",
+	"DXT2",
+	"DXT3",
+	"DXT4",
+	"DXT5"
+};
 
 AssetBlockReader::AssetBlockReader(LPCSTR filename)
 {
@@ -217,6 +75,8 @@ AssetBlockReader::~AssetBlockReader()
 	for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
 		delete[] m_AssetsDataBuffer[i];
 	delete[] m_AssetsSizes;
+	for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
+		delete[] m_AssetsNames[i];
 }
 
 void AssetBlockReader::ReadInfo()
@@ -249,55 +109,68 @@ void AssetBlockReader::PrintInfo() const
 	printf("\tCommands checksum:\t%X\n", m_SharedHeader.m_CommandsChecksum);
 	printf("\tResources in block:\t%d\n", m_SharedHeader.m_ResourcesTotal);
 	printf("\tResources info header size:\t%d\n", m_SharedHeader.m_AssetsHeaderSize);
-	printf("\tResources data buffer size:\t%d\n", m_SharedHeader.m_AssetsBufferSize);
+	printf("\tResources data buffer size:\t%d\n", m_SharedHeader.m_MaxBufferSize);
 
 	if (m_SharedHeader.m_ResourcesTotal == -1)
 		return;
 
-	printf("******************\n");
+	unsigned char* infobuffer = (unsigned char*)m_AssetsInfoBuffer;
 	for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
 	{
-		const int	asstypeind = *(int*)m_AssetsInfoBuffer;
-		const char* asstypename = AssetTypeIndexString[asstypeind];
-		const int	assnameoffset = *((int*)m_AssetsInfoBuffer + 1);
+		printf("\t\t#%i\n", i);
 
-		if (assnameoffset == -1)
+		CompiledAsset* asset = nullptr;
+		const AssetType assettype = *(AssetType*)infobuffer;
+
+		switch (assettype)
 		{
-			printf("\tAsset has no name! Skipped!\n");
-			continue;
+		case TEXTURE:
+			asset = new CompiledTextureAsset(&infobuffer);
+			break;
+		case FONT:
+			asset = new CompiledFontAsset(&infobuffer);
+			break;
+		case TEXT:
+			asset = new CompiledTextAsset(&infobuffer);
+			break;
+		case MODEL:
+			asset = new CompiledModelAsset(&infobuffer);
+			break;
+		case FRAGMENT:
+			asset = new CompiledFragmentAsset(&infobuffer);
+			break;
+		case MOVIE:
+			//asset = new CompiledMovieAsset(&infobuffer);
+			break;
+		case CUTSCENE:
+			//asset = new CompiledCutsceneAsset(&infobuffer);
+			break;
+		case SOUND:
+			asset = new CompiledSoundAsset(&infobuffer);
+			break;
+		case STREAMEDSOUNDINFO:
+			asset = new CompiledStreamedSoundInfoAsset(&infobuffer);
+			break;
+		case ANIMATION:
+			//asset = new CompiledAnimationAsset(&infobuffer);
+			break;
+		case MESHCOLOR:
+			//asset = new CompiledMeshColorAsset(&infobuffer);
+			break;
 		}
 
-		*(int*)&m_AssetsInfoBuffer = (int)(m_AssetsInfoBuffer + assnameoffset + 4);
-		const char* assname = m_AssetsInfoBuffer;
-		m_AssetsNames[i] = m_AssetsInfoBuffer;
-		const size_t assnamelen = strlen(assname);
+		if (asset == nullptr)
+		{
+			printf("\tERROR: unsupported asset type: %d!\n", assettype);
+			throw;
+		}
 
-		printf("\tAsset index:\t%d\n", i);
-		printf("\tType:\t%s (%d)\n", asstypename, asstypeind);
-		printf("\tSize:\t%d bytes\n", m_AssetsSizes[i]);
-		printf("\tPath:\t%s\n", assname);
+		asset->PrintInfo();
 
-		//	NOTE: skip reading name.
-		*(int*)&m_AssetsInfoBuffer = (int)(m_AssetsInfoBuffer + assnamelen + 1);
+		m_AssetsNames[i] = new char[strlen(asset->m_AssetName) + 1];
+		strcpy(m_AssetsNames[i], asset->m_AssetName);
 
-		while (*m_AssetsInfoBuffer != NULL)
-			*(int*)&m_AssetsInfoBuffer = (int)(m_AssetsInfoBuffer + 1);
-
-		//	TODO: add proper handling for reading each type.
-		if (asstypeind == AssetTypeIndex::FRAGMENT)
-			continue;
-
-		if (asstypeind == AssetTypeIndex::TEXTURE)
-			*(int*)&m_AssetsInfoBuffer = (int)(m_AssetsInfoBuffer + 128);
-
-		if (asstypeind == AssetTypeIndex::STREAMEDSOUND)
-			*(int*)&m_AssetsInfoBuffer = (int)(m_AssetsInfoBuffer + 124);
-
-		if (asstypeind == AssetTypeIndex::MODEL)
-			*(int*)&m_AssetsInfoBuffer = (int)(m_AssetsInfoBuffer + 13068);
-
-		if (asstypeind == AssetTypeIndex::ANIMATION)
-			*(int*)&m_AssetsInfoBuffer = (int)(m_AssetsInfoBuffer + 627);
+		delete asset;
 	}
 }
 
@@ -326,4 +199,394 @@ void AssetBlockReader::DumpData() const
 
 		printf("Saved asset dump: %s\n", assname);
 	}
+}
+
+AssetBlockReader::CompiledAsset::CompiledAsset(unsigned char** infobuffer)
+{
+	m_AssetType = **(AssetType**)infobuffer;
+	*infobuffer += sizeof(AssetType);
+	
+	m_AssetName = (char*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(unsigned int);
+	
+	m_AssetGlobalId = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+	
+	field_C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+	
+	m_EngineTimestamp = **(UINT64**)infobuffer;
+	*infobuffer += sizeof(UINT64);
+
+	m_Flags = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+}
+
+void AssetBlockReader::CompiledAsset::PrintInfo() const
+{
+	printf("\tType:\t%s\n", AssetTypeIndexString[m_AssetType]);
+	printf("\tPath:\t\"%s\"\n", m_AssetName);
+	printf("\tGlobal id:\t%d\n", m_AssetGlobalId);
+	printf("\tfield_C:\t%x\n", field_C);
+	printf("\tEngine timestamp:\t%llu\n", m_EngineTimestamp);
+	printf("\tFlags:\t%X\n", m_Flags);
+}
+
+void AssetBlockReader::CompiledAsset::SkipNameRead(unsigned char** infobuffer)
+{
+	*infobuffer += strlen(m_AssetName) + 1;
+
+	if (**infobuffer != 0xAB)
+		return;
+
+	while (**infobuffer == 0xAB)
+		*infobuffer += (char)1;
+}
+
+void AssetBlockReader::CompiledAsset::SkipAlignment(unsigned char** infobuffer)
+{
+	if (**infobuffer == NULL)
+		return;
+
+	while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D)
+		*infobuffer += (char)1;
+}
+
+AssetBlockReader::CompiledTextureAsset::CompiledTextureAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
+{
+	m_BitsPerPixel = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_TextureInfo = (TextureInfo*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(TextureInfo*);
+
+	field_24 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_GfxTexture = (GfxTexture*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(GfxTexture*);
+
+	field_2C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	SkipNameRead(infobuffer);
+	SkipAlignment(infobuffer);
+	SkipSpecificData(infobuffer);
+}
+
+void AssetBlockReader::CompiledTextureAsset::PrintInfo() const
+{
+	CompiledAsset::PrintInfo();
+
+	printf("\tBits per pixel:\t%d\n", m_BitsPerPixel);
+	printf("\tGFX texture:\n");
+	printf("\tResolution:\t%dx%d\n", m_GfxTexture->m_Resolution[0], m_GfxTexture->m_Resolution[1]);
+	printf("\tSurface res.:\t%dx%d\n", m_GfxTexture->m_SurfaceSize[0], m_GfxTexture->m_SurfaceSize[1]);
+	printf("\tFormat:\t%s\n", TextureFormatString[m_GfxTexture->m_Format]);
+	printf("\tfield_24:\t%x\n", field_24);
+	printf("\tfield_2C:\t%x\n", field_2C);
+}
+
+void AssetBlockReader::CompiledTextureAsset::SkipSpecificData(unsigned char** infobuffer)
+{
+	*infobuffer += sizeof(TextureInfo) + sizeof(GfxTexture);
+}
+
+AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
+{
+	field_1C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_20 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_24 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	SkipNameRead(infobuffer);
+	SkipAlignment(infobuffer);
+}
+
+void AssetBlockReader::CompiledFragmentAsset::PrintInfo() const
+{
+	CompiledAsset::PrintInfo();
+
+	printf("\tfield_1C:\t%d\n", field_1C);
+	printf("\tfield_20:\t%d\n", field_20);
+	printf("\tfield_24:\t%d\n", field_24);
+}
+
+void AssetBlockReader::CompiledFragmentAsset::SkipSpecificData(unsigned char** infobuffer)
+{
+	return;
+}
+
+AssetBlockReader::CompiledStreamedSoundInfoAsset::CompiledStreamedSoundInfoAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
+{
+	field_1C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_SoundFile = (SoundFile*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(unsigned int);
+
+	field_24 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	SkipNameRead(infobuffer);
+	SkipAlignment(infobuffer);
+	SkipSpecificData(infobuffer);
+}
+
+void AssetBlockReader::CompiledStreamedSoundInfoAsset::PrintInfo() const
+{
+	CompiledAsset::PrintInfo();
+
+	printf("\tfield_1C:\t%x\n", field_1C);
+	printf("\tSound file info:\n");
+	printf("\t\tWAV chunk size:\t%d\n", m_SoundFile->m_WavChunkSize);
+	printf("\t\tfield_4:\t%x\n", m_SoundFile->field_4);
+	printf("\t\tSamples:\t%d\n", m_SoundFile->m_Samples);
+	printf("\t\tBytes per sample:\t%f\n", m_SoundFile->m_BytesPerSample);
+	printf("\t\tAverage bytes per sec.:\t%d\n", m_SoundFile->m_AverageBytesPerSec);
+	printf("\t\tBlock align:\t%d\n", m_SoundFile->m_BlockAlign);
+	printf("\t\tFrequency:\t%d\n", m_SoundFile->m_Frequency);
+	printf("\t\tChunk size:\t%d\n", m_SoundFile->m_ChunkSize);
+	printf("\t\tSound format:\t%d\n", m_SoundFile->m_SoundFormat);
+	printf("\t\tfield_24:\t%d\n", m_SoundFile->field_24);
+	printf("\t\tFilename:\t\"%s\"\n", (const char*)((unsigned int)m_SoundFile + offsetof(SoundFile, m_FileName) + offsetof(String, m_String)) + (unsigned int)m_SoundFile->m_FileName.m_String);
+	printf("\tfield_24:\t%x\n", field_24);
+}
+
+void AssetBlockReader::CompiledStreamedSoundInfoAsset::SkipSpecificData(unsigned char** infobuffer)
+{
+	*infobuffer += sizeof(SoundFile);
+	*infobuffer += m_SoundFile->m_FileName.m_Length + 1;
+
+	CompiledAsset::SkipAlignment(infobuffer);
+}
+
+void AssetBlockReader::CompiledStreamedSoundInfoAsset::SkipAlignment(unsigned char** infobuffer)
+{
+	while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D)
+		if (*infobuffer == (unsigned char*)m_SoundFile)
+			break;
+		else
+			*infobuffer += (char)1;
+}
+
+AssetBlockReader::CompiledFontAsset::CompiledFontAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
+{
+	field_1C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_20 = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(unsigned int);
+
+	m_FontInfo = (Font*)(*infobuffer + **infobuffer);
+	m_FontInfo->m_FontTexture = (CompiledTextureAsset::GfxTexture*)((unsigned int)m_FontInfo + offsetof(Font, m_FontTexture) + (unsigned int)m_FontInfo->m_FontTexture);
+	m_FontInfo->m_GlyphsList = (Glyph*)((unsigned int)m_FontInfo + offsetof(Font, m_GlyphsList) + (unsigned int)m_FontInfo->m_GlyphsList);
+	*infobuffer += sizeof(Font*);
+
+	SkipNameRead(infobuffer);
+	SkipAlignment(infobuffer);
+	SkipSpecificData(infobuffer);
+}
+
+void AssetBlockReader::CompiledFontAsset::PrintInfo() const
+{
+	CompiledAsset::PrintInfo();
+
+	printf("\tfield_1C:\t%d\n", field_1C);
+	printf("\tfield_20:\t%p\n", field_20);
+	printf("\tFont info:\n");
+	printf("\t\tGlyphs total:\t%d\n", m_FontInfo->m_GlyphsInList);
+	printf("\t\tHorizontal spacing:\t%f\n", m_FontInfo->m_HorizontalSpacing);
+	printf("\t\tVertical spacing:\t%f\n", m_FontInfo->m_VerticalSpacing);
+	printf("\t\tScale X:\t%f\n", m_FontInfo->m_ScaleX);
+	printf("\t\tScale Y:\t%f\n", m_FontInfo->m_ScaleY);
+}
+
+void AssetBlockReader::CompiledFontAsset::SkipAlignment(unsigned char** infobuffer)
+{
+	while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D)
+		if (*infobuffer == (unsigned char*)m_FontInfo)
+			break;
+		else
+			*infobuffer += (char)1;
+}
+
+void AssetBlockReader::CompiledFontAsset::SkipSpecificData(unsigned char** infobuffer)
+{
+	*infobuffer += sizeof(Font);
+
+	do 
+	{
+		if (*infobuffer == (unsigned char*)m_FontInfo->m_FontTexture)
+			break;
+
+		*infobuffer += (char)1;
+	} while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D);
+
+	*infobuffer += sizeof(CompiledTextureAsset::GfxTexture);
+	*infobuffer += sizeof(Glyph) * m_FontInfo->m_GlyphsInList;
+	*infobuffer += 12;	//	TODO: what is this?
+
+	SkipAlignment(infobuffer);
+}
+
+AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
+{
+	field_1C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_List_1_Elements = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(int);
+	m_List_1_Size = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+	field_28[0] = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+	field_28[1] = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+
+	m_TextIndicies_Elements = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(int);
+	m_TextIndicies_Size = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+	field_38[0] = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+	field_38[1] = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+
+	m_List_3_Elements = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(int);
+	m_List_3_Size = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+	field_48[0] = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+	field_48[1] = **(int**)infobuffer;
+	*infobuffer += sizeof(int);
+
+	field_50 = (Dictionary*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(unsigned int);
+
+	field_54 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	SkipNameRead(infobuffer);
+	SkipAlignment(infobuffer);
+	SkipSpecificData(infobuffer);
+}
+
+void AssetBlockReader::CompiledTextAsset::PrintInfo() const
+{
+	CompiledAsset::PrintInfo();
+
+	printf("\tfield_1C:\t%d\n", field_1C);
+	printf("\tList 1 size:\t%d\n", m_List_1_Size);
+	printf("\tText indicies list size:\t%d\n", m_TextIndicies_Size);
+	printf("\tText 3 size:\t%d\n", m_List_3_Size);
+	printf("\tfield_50:\t%p\n", field_50);
+	printf("\tfield_54:\t%d\n", field_54);
+}
+
+void AssetBlockReader::CompiledTextAsset::SkipAlignment(unsigned char** infobuffer)
+{
+	while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D)
+		if (*infobuffer == (unsigned char*)field_50)
+			break;
+		else
+			*infobuffer += (char)1;
+}
+
+void AssetBlockReader::CompiledTextAsset::SkipSpecificData(unsigned char** infobuffer)
+{
+	//	NOTE: there are 3 structs and their position could be in any order. Figure out biggest address out of 3, and skip there.
+	unsigned int maxstructaddr = max((unsigned int)m_List_1_Elements, (unsigned int)m_TextIndicies_Elements);
+	maxstructaddr = max((unsigned int)m_List_3_Elements, maxstructaddr);
+
+	while ((unsigned int)*infobuffer != maxstructaddr)
+		*infobuffer += (char)1;
+
+	//	NOTE: once biggest address is reached - figure out what structure it is exactly and skip it.
+	bool readfinished = false;
+	if ((unsigned int)*infobuffer == (unsigned int)m_List_1_Elements && m_List_1_Size > 0)
+	{
+		*infobuffer += sizeof(unsigned int) * m_List_1_Size;
+		readfinished = true;
+	}
+
+	if ((unsigned int)*infobuffer == (unsigned int)m_TextIndicies_Elements && m_TextIndicies_Size > 0 && readfinished == false)
+	{
+		*infobuffer += sizeof(unsigned short) * m_TextIndicies_Size;
+		readfinished = true;
+	}
+
+	if ((unsigned int)*infobuffer == (unsigned int)m_List_3_Elements && m_List_3_Size > 0 && readfinished == false)
+	{
+		*infobuffer += sizeof(unsigned int) * m_List_3_Size;
+		readfinished = true;
+	}
+
+	//	NOTE: none of the 3 structs are at that address - then algorithm is bugged!
+	if (readfinished == false)
+	{
+		printf("\tERROR: none of the structs are at that address!\n");
+		throw;
+	}
+
+	SkipAlignment(infobuffer);
+}
+
+AssetBlockReader::CompiledSoundAsset::CompiledSoundAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
+{
+	field_1C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_StreamBuffer = (StreamBuffer*)(*infobuffer + **(unsigned int**)infobuffer);
+	m_StreamBuffer->m_SampledData = (char*)((unsigned int)m_StreamBuffer + offsetof(StreamBuffer, m_SampledData) + (unsigned int)m_StreamBuffer->m_SampledData);
+	m_StreamBuffer->m_SoundName = (String*)((unsigned int)m_StreamBuffer + offsetof(StreamBuffer, m_SoundName) + (unsigned int)m_StreamBuffer->m_SoundName);
+	m_StreamBuffer->m_SoundName->m_String = (char*)((unsigned int)m_StreamBuffer->m_SoundName + offsetof(String, m_String) + (unsigned int)m_StreamBuffer->m_SoundName->m_String);
+	*infobuffer += sizeof(StreamBuffer*);
+
+	field_24 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	SkipNameRead(infobuffer);
+	SkipAlignment(infobuffer);
+	SkipSpecificData(infobuffer);
+}
+
+void AssetBlockReader::CompiledSoundAsset::PrintInfo() const
+{
+	CompiledAsset::PrintInfo();
+
+	printf("\tfield_1C:\t%d\n", field_1C);
+	printf("\tStreamBuffer:\n");
+	printf("\t\tSamples per sec.:\t%d\n", m_StreamBuffer->m_SamplesPerSec);
+	printf("\t\tChannels:\t%d\n", m_StreamBuffer->m_Channels);
+	printf("\t\tTotal chunks:\t%d\n", m_StreamBuffer->m_TotalChunks);
+	printf("\t\tSampled data size:\t%d\n", m_StreamBuffer->m_SampledDataSize);
+	printf("\t\tBytes per sec.:\t%f\n", m_StreamBuffer->m_BytesPerSec);
+	printf("\t\tSound name:\t\"%s\"\n", m_StreamBuffer->m_SoundName->m_String);
+	printf("\t\tAuxMonoStream:\t%p\n", m_StreamBuffer->m_AuxMonoStream);
+}
+
+void AssetBlockReader::CompiledSoundAsset::SkipSpecificData(unsigned char** infobuffer)
+{
+	*infobuffer += sizeof(StreamBuffer);
+	*infobuffer += (char)4;
+	*infobuffer += m_StreamBuffer->m_SampledDataSize;
+	*infobuffer += sizeof(String);
+	*infobuffer += m_StreamBuffer->m_SoundName->m_Length + 1;
+
+	SkipAlignment(infobuffer);
+}
+
+void AssetBlockReader::CompiledSoundAsset::SkipAlignment(unsigned char** infobuffer)
+{
+	while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D)
+		if (*infobuffer == (unsigned char*)m_StreamBuffer)
+			break;
+		else
+			*infobuffer += (char)1;
 }

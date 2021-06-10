@@ -51,7 +51,7 @@ struct CompiledAssetInfo
         TWO,
         COMPILED
     }                   m_AssetType;
-    int                 field_4;
+    int                 m_AssetSize;
     int                 field_8;
     int                 m_Alignment;
     std::vector<int>    field_10;
@@ -70,6 +70,8 @@ struct CompiledAssetInfo
     }
 
     void                ParseAssetData(int* assetdataptr, int* a2, int a3, int a4); //  @40D0C0
+    int                 GetAssetSize() const;   //  @40CB00
+    void                AlignDataOrSize(unsigned int alignment, unsigned char flags, int a3);  //  @40CC10
 
     static void         InstantiateAsset(CompiledAssetInfo* compassinfo, int* assetinstanceinfo);    //  @851510
 };

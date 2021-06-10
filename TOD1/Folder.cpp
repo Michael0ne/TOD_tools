@@ -26,6 +26,17 @@ void Folder_::DestroyAllChildren()
 	m_FirstChild = nullptr;
 }
 
+void Folder_::ReadAssetBlockFile(AssetInfo& assinfo, const char* const assfname) const
+{
+	File assfile(assfname, 161, true);
+	assinfo.m_AssetInfo_Shared.m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assfile, (int*)assinfo.m_AssetInfo_Shared.m_ResourceAllocatedAlignedBufferPtr, &assinfo.m_AssetInfo_Shared.m_ResourceDataBufferSize, (m_BlockId * 8) >> 3);
+
+	if (assinfo.m_AssetInfo_Shared.m_ResourceDataBufferPtr)
+		LogDump::LogA("Read asset block file: %s\n", assfname);
+	else
+		LogDump::LogA("Could not read the asset block file; probably due to checksums: %s\n", assfname);
+}
+
 void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Asset::BlockTypeNumber blockType, const char* languageCode)
 {
 	char	fileExt[16] = {};
