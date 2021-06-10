@@ -464,6 +464,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
 
     if (resblockid == 1)
     {
+        //  NOTE: ID 1 used for 'map/submap'.
         char keydatabuf[256] = {};
 
         for (unsigned int i = 0; i < 36; i++)
@@ -519,17 +520,17 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
 
     unsigned int	totalResources = NULL;
     unsigned int	resourcesInfoSize = NULL;
-    unsigned int	resourceBufferSize = NULL;
-    int*			resourcesInfoBuffer = nullptr;
-    int*			resourceDataBuffer = nullptr;
+    unsigned int	maximumAssetSize = NULL;
+    char*			resourcesInfoBuffer = nullptr;
+    char*			resourceDataBuffer = nullptr;
 
     file->Read(&totalResources, sizeof(totalResources));
     file->Read(&resourcesInfoSize, sizeof(resourcesInfoSize));
-    file->Read(&resourceBufferSize, sizeof(resourceBufferSize));
+    file->Read(&maximumAssetSize, sizeof(maximumAssetSize));
 
     *resdatasize = resourcesInfoSize;
-    Asset::AllocateResourceForBlockLoad(resourcesInfoSize, &resourcesInfoBuffer, resbufferptr, resblockid);
-    resourceDataBuffer = (int*)MemoryManager::AllocateByType(RENDERLIST, resourceBufferSize);
+    Asset::AllocateResourceForBlockLoad(resourcesInfoSize, (int**)&resourcesInfoBuffer, resbufferptr, resblockid);
+    resourceDataBuffer = (char*)MemoryManager::AllocateByType(RENDERLIST, maximumAssetSize);
     g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
     file->SetPosAligned(0);
@@ -541,34 +542,46 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
         ResList.resize(totalResources);
 
     time_t	fileTimestamp = File::GetFileTimestamp(file->GetFileName());
-    char* resourcesDataSize = new char[16 * totalResources];	//	NOTE: intentionally make space for 4 ints so additional data can be written later.
+    int* resDataSizeTable = new int[totalResources];    //  NOTE: original code has this value multiplied by 4, don't know why really.
 
     file->SetPosAligned(0);
-    file->Read(resourcesDataSize, 4 * totalResources);
+    file->Read(resDataSizeTable, totalResources);
 
     if (totalResources > 0)
     {
-        unsigned int i = 0;
-        Asset* it = ResList[i++];
-        int assetSize = (int)resourcesDataSize - (int)((int*)it);
-
-        for (unsigned int i = totalResources; i; i--)
+        auto it = ResList.begin();
+        for (unsigned int i = totalResources, j = 0; i; i--, j++)
         {
             Performance::GetMilliseconds();
             g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
-            assetSize = *(int*)((int*)it + assetSize);
+            const unsigned int assetSize = resDataSizeTable[j];
             if (assetSize > 0)
             {
                 file->SetPosAligned(0);
                 file->Read(resourceDataBuffer, assetSize);
             }
 
+            CompiledAssetInfo compasset(CompiledAssetInfo::AssetType::COMPILED, resourcesInfoBuffer, resourceDataBuffer, 0, 2, -1);
+            CompiledAssetInfo::InstantiateAsset(&compasset, (int*)resourcesInfoBuffer);
+
+            Asset* currasset = (Asset*)resourcesInfoBuffer;
+            *it = currasset;
+
+            CompiledAssetInfo readyasset(CompiledAssetInfo::AssetType::ZERO, nullptr, nullptr, 0, 2, -1);
+            currasset->ApplyAssetData((int*)&readyasset);
+
+            resourcesInfoBuffer += readyasset.GetAssetSize() + AssetInstance::AssetAlignment[0] - 1;
+            *(int*)&resourcesInfoBuffer &= ~(AssetInstance::AssetAlignment[0] - 1);
+
+            currasset->m_ResourceTimestamp = fileTimestamp;
+            currasset->m_Flags.m_ReferenceCount = -1;
+
             it++;
         }
     }
 
-    delete[] resourcesDataSize;
+    delete[] resDataSizeTable;
 
     if (totalResources > 0)
     {
@@ -832,7 +845,7 @@ CompiledAssetInfo::CompiledAssetInfo(const AssetType assettype, const char* asse
     MESSAGE_CLASS_CREATED(CompiledAssetInfo);
 
     m_AssetType = assettype;
-    field_4 = 0;
+    m_AssetSize = 0;
     field_8 = 0;
     m_Alignment = alignment;
 
@@ -851,6 +864,35 @@ void CompiledAssetInfo::ParseAssetData(int* assetdataptr, int* a2, int a3, int a
 {
     if (field_30 != -1 || a4 != -1 && field_30 != a4)
         return;
+}
+
+int CompiledAssetInfo::GetAssetSize() const
+{
+    return m_AssetSize;
+}
+
+void CompiledAssetInfo::AlignDataOrSize(unsigned int alignment, unsigned char flags, int a3)
+{
+    if (field_30 == -1 || a3 != -1 && field_30 == a3)
+    {
+        switch (m_AssetType)
+        {
+        case ZERO:
+            if ((a3 & 2) != 0)
+                field_8 = ALIGN_4BYTES( ((~(alignment - 1) & (alignment + this->field_8 - 1)) + 3) );
+            else
+                m_AssetSize = ALIGN_4BYTES( ((~(alignment - 1) & (this->m_AssetSize + alignment - 1)) + 3) );
+            break;
+        case ONE:
+            if ((a3 & 2) != 0)
+                field_24 = (char*)ALIGN_4BYTES( ((~(alignment - 1) & (unsigned int)&field_24[alignment - 1]) + 3) );
+            else
+                field_20 = (char*)ALIGN_4BYTES( ((~(alignment - 1) & (unsigned int)&field_20[alignment - 1]) + 3) );
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 void CompiledAssetInfo::InstantiateAsset(CompiledAssetInfo* compassinfo, int* assetinstanceinfo)
