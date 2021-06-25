@@ -125,7 +125,7 @@ protected:
 public:
     GlobalScript(const char* const scriptName, const char* const parentName, bool a3, bool a4);	//	@48A530
 
-    void                        AddStructElement(unsigned int fieldId, const char* const defaultValue, unsigned int);	//	@48AF10
+    void                        AddStructElement(const int fieldId, const char* const defaultValue, const unsigned int);	//	@48AF10
     void                        AddMethod(unsigned short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*));	//	@48A690
     void                        CalculateSize();	//	@48AA60
     bool						_48A7E0(Node* node, int scriptId, void* args);	//	@48A7E0

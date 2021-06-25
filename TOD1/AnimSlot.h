@@ -1,30 +1,29 @@
 #pragma once
-
 #include "Node.h"
-
-#define ANIMSLOT_CLASS_SIZE 140
-
-enum E_ANIMSLOT_LOOPMODE
-{
-	MODE_LOOP = 0,
-	MODE_ONESHOT = 1,
-	MODE_RANDOM = 2
-};
+#include "AnimationAsset.h"
 
 class AnimSlot : public Node
 {
+    enum Loopmode
+    {
+        LOOP = 0,
+        ONESHOT,
+        RANDOM
+    };
+
 protected:
-	int*		m_Target_1;
-	int			field_54;
-	int			m_LoopMode_1;
-	float		m_Speed;
-	float		m_CrossBlendSpeed;
-	Vector4f	m_OverrideAverage;
-	Vector4f	m_OverrideEscape;
-	int			m_AnimFlags;
-	unsigned int	m_Flags;
+    AnimationAsset *m_TargetAnimation;
+    int             field_54;
+    int             m_LoopMode_1;
+    float           m_Speed;
+    float           m_CrossBlendSpeed;
+    Vector4f        m_OverrideAverage;
+    Vector4f        m_OverrideEscape;
+    int             m_AnimFlags;
+    unsigned int    m_Flags;
 public:
-	AnimSlot();	//	@905D90
+    AnimSlot();	//	@905D90
+    virtual ~AnimSlot();
 };
 
-static_assert(sizeof(AnimSlot) == ANIMSLOT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(AnimSlot));
+ASSERT_CLASS_SIZE(AnimSlot, 140);

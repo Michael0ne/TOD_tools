@@ -2,6 +2,33 @@
 
 char* TextAsset::_A3CE80;
 int TextAsset::_A3CE84;
+AssetInstance* TextAsset::Instance;
+
+AssetInstance* TextAsset::GetInstancePtr() const
+{
+	return Instance;
+}
+
+void TextAsset::CreateInstance()
+{
+	Instance = new AssetInstance("textres", (CREATOR)Create);
+
+	Instance->m_FileExtensions.push_back("txt");
+	Instance->SetAlignment(16, 1);
+	Instance->SetAlignment(16, 2);
+	Instance->SetAlignment(16, 0);
+	Instance->field_2C = true;
+}
+
+TextAsset* TextAsset::Create()
+{
+	return new TextAsset;
+}
+
+TextAsset::TextAsset() : Asset(false)
+{
+	MESSAGE_CLASS_CREATED(TextAsset);
+}
 
 void TextAsset::GetStringById(String& outString, const unsigned int ind) const
 {

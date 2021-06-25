@@ -1,5 +1,6 @@
 #ifndef _EXE
 #include "LogDump.h"
+#include "Globals.h"
 
 HMODULE DllModuleHandle;
 HANDLE hHookThread = NULL;
@@ -44,6 +45,22 @@ void HookDInput()
 	debug("DirectInput8 hooked! Lib addr: %0.4x, DirectInput8Create method addr: %0.4x\n", &g_DirectInput, &__DirectInput8Create);
 }
 
+void PrintVersionInfo()
+{
+#ifdef INCLUDE_FIXES
+	char buf[256] = {};
+
+	debug("******** Kapow! ********\n");
+	Utils::GetBuildNumberString(buf);
+	strcat(buf, "\n");
+	debug(buf);
+	Utils::GetEngineAuthor(buf);
+	strcat(buf, "\n");
+	debug(buf);
+	debug("************************\n");
+#endif
+}
+
 void MemoryHook()
 {
 	//	Insert all hooks here.
@@ -73,6 +90,7 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 		debug("Log Started!\n");
 
 		//	Replace DirectInput8 methods with stubs.
+		PrintVersionInfo();
 		HookDInput();
 
 		if (!g_DirectInput)

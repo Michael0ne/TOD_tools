@@ -28,6 +28,9 @@
 #include "VirtualHud.h"
 #include "LoadScreen.h"
 #include "SkyBox.h"
+#include "FontAsset.h"
+#include "TextAsset.h"
+#include "ModelAsset.h"
 
 namespace Script
 {
@@ -137,16 +140,18 @@ namespace GameConfig
 		g_SceneSaveLoad = new SceneSaveLoad();
 
 		TextureAsset::CreateInstance();
-		//FontAsset::CreateInstance();
-		//TextAsset::CreateInstance();
-		//ModelAsset::CreateInstance();
-		//FragmentAsset::CreateInstance();
-		//MovieAsset::CreateInstance();
-		//CutsceneAsset::CreateInstance();
-		//SoundAsset::CreateInstance();
-		//StreamedSoundInfoAsset::CreateInstance();
-		//AnimationAsset::CreateInstance();
-		//MeshColorAsset::CreateInstance();
+		FontAsset::CreateInstance();
+		TextAsset::CreateInstance();
+		ModelAsset::CreateInstance();
+		FragmentAsset::CreateInstance();
+		/*
+		MovieAsset::CreateInstance();
+		CutsceneAsset::CreateInstance();
+		SoundAsset::CreateInstance();
+		StreamedSoundInfoAsset::CreateInstance();
+		AnimationAsset::CreateInstance();
+		MeshColorAsset::CreateInstance();
+		*/
 
 		CreateUnknownMatricies();
 

@@ -46,6 +46,7 @@
 #define KAPOW_ENGINE_VERSION_MAJOR 34
 #define KAPOW_ENGINE_VERSION_MINOR 7
 #define KAPOW_ENGINE_VERSION_BUILD 1925
+#define KAPOW_ENGINE_BUILDBY "Kasper.Fauerby"
 
 #define MESSAGE_NOT_IMPLEMENTED(x) debug(#x " is not implemented!\n")
 #define MESSAGE_WRONG_CLASS_SIZE(x) "Wrong size for " #x " class!"

@@ -14,6 +14,39 @@ int ModelAsset::PivotIndexByName(const char* const pivotname) const
 	return -1;
 }
 
+void ModelAsset::CreateInstance()
+{
+	Instance = new AssetInstance("modelres", (CREATOR)Create);
+
+	Instance->m_FileExtensions.push_back("model");
+	Instance->SetAlignment(16, 1);
+	Instance->SetAlignment(16, 2);
+	Instance->SetAlignment(16, 0);
+}
+
+ModelAsset* ModelAsset::Create()
+{
+	return new ModelAsset;
+}
+
+ModelAsset::ModelAsset() : Asset(false)
+{
+	MESSAGE_CLASS_CREATED(ModelAsset);
+
+	field_40 = 0;
+	field_54 = 0;
+	field_58 = (int*)1;
+	field_5C &= 0xFFFFFFF0;
+	m_BoundingRadius = {};
+	SetReferenceCount(1);
+	field_5C &= 0xFFFFFF2F | 0x20;
+}
+
+AssetInstance* ModelAsset::GetInstancePtr() const
+{
+	return Instance;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void ModelAsset::_856E60()
 {

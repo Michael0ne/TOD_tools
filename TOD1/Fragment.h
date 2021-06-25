@@ -1,4 +1,5 @@
 #pragma once
+#include "Globals.h"
 #include "FragmentAsset.h"
 #include "AssetManager.h"
 
@@ -11,7 +12,7 @@ protected:
     FragmentAsset  *m_FragmentRes;
     int            *field_8;
     char           *m_Name;
-    UINT64          m_UniqueId;
+    Utils::UniqueId m_UniqueId;
 
 public:
     Fragment(class Node* owner);	//	@87F1E0

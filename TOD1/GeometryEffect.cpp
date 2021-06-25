@@ -1,13 +1,23 @@
 #include "GeometryEffect.h"
 
-#pragma message(TODO_IMPLEMENTATION)
-GeometryEffect::GeometryEffect() : Model()
+Effect* GeometryEffect::AddEffect()
 {
-	MESSAGE_CLASS_CREATED(GeometryEffect);
+	Effect* effect = new Effect();
+
+	if (m_Effect)
+		m_Effect->m_Sibling = effect;
+
+	effect->m_ParentEffect = m_Effect;
+	m_Effect = effect;
+	m_TotalEffects++;
+
+	return effect;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-GeometryEffect::~GeometryEffect()
+void GeometryEffect::SetTimeAndFreeze(float* args)
 {
-	MESSAGE_CLASS_DESTROYED(GeometryEffect);
+	m_GeometryEffectFlags.m_FlagBits.Frozen = 1;
+
+	for (Effect* eff = m_Effect; eff; eff = eff->m_ParentEffect)
+		eff->m_Lifetime = m_EffectLifeTime - *args;
 }

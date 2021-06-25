@@ -33,6 +33,7 @@ protected:
 
 private:
     void						StopSound();	//	@89D320
+    void                        GetSoundName(String& outName);    //  @89F080
 
 public:
     virtual ~SoundSlot();	//	@89F290

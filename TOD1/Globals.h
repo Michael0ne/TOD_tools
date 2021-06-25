@@ -79,20 +79,25 @@ namespace Utils
 
 	static void GetDXErrorString(HRESULT hr, char* errorstr)
 	{
-		//	NOTE: this is a replacement over deprecated 'DXGetErrorString'.
 		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 0, (DWORD)hr, 0, errorstr, 0, 0);
 	}
 
 	static void (__cdecl* DeleteAllFilesInFolder)(const char* inPath) = (void (__cdecl*)(const char*))0x418B50;
 
-	//	TODO: is this correct?
-	static UINT64&	CreateUniqueId(UINT64& id_)
+	struct UniqueId
 	{
-		id_ = __rdtsc();
-		id_ = time(NULL);
+		UINT64		m_Id;
 
-		return id_;
-	}
+		UniqueId()	//	@40FEA0
+		{
+			*(time_t*)&m_Id = time(NULL);
+			*((unsigned int*)&m_Id + 1) = (unsigned int)__rdtsc();
+		}
+
+		static UniqueId		Instance;	//	@A3D8A8
+	};
+
+	__declspec(selectany) Utils::UniqueId UniqueId::Instance;
 
 	static void		GetBuildNumberString(char* str)	//	@401000
 	{
@@ -101,7 +106,7 @@ namespace Utils
 
 	static void		GetEngineAuthor(char* str)	//	@401020
 	{
-		sprintf(str, "by %s", "Kasper.Fauerby");
+		sprintf(str, "by %s", KAPOW_ENGINE_BUILDBY);
 	}
 
 	static unsigned int	GetEngineVersionBuild()

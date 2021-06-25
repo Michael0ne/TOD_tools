@@ -1,25 +1,13 @@
 #pragma once
-
+#include "Globals.h"
 #include "Node.h"
-
-struct UniqueId
-{
-    unsigned int		m_Time;
-    unsigned int		m_Rdtsc;
-
-    void	Set();	//	@40FEA0
-
-    UniqueId()
-        : m_Time(NULL), m_Rdtsc(NULL)
-    {};
-};
 
 #define MEMCARD_DEFAULT_SAVE_DIR "savegames"
 
 class MemoryCards : public Node
 {
 protected:
-    UniqueId       *m_MemCardsUniqueId[8];
+    Utils::UniqueId m_MemCardsUniqueId[4];
     String          m_Ps2SlesLicense;
     String          m_Ps2SlusLicense;
     String          m_GameName;
@@ -66,7 +54,7 @@ private:
 
 public:
     MemoryCards();	//	@9263B0
-    virtual ~MemoryCards();
+    virtual ~MemoryCards(); //  @928A10
 
     unsigned int    GetLastModifiedTimeAsNumber(unsigned int memcardind, unsigned int slotind) const;	//	@928090
 };

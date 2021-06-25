@@ -264,6 +264,8 @@
     <ClInclude Include="FragmentAsset.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="scripts\common.h" />
+    <ClInclude Include="scripts\HUD_health_bar.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="GfxInternal_OGL.h" />
     <ClInclude Include="MeshBuffer.h" />
@@ -427,6 +429,7 @@
     <ClCompile Include="FragmentAsset.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PhysSystem.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="GfxInternal_OGL.cpp" />
     <ClCompile Include="MeshBuffer.cpp" />

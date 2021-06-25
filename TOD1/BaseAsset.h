@@ -76,7 +76,7 @@ public:
     typedef Asset* (*CREATOR)();
 
 public:
-    const char*         m_ResourcePath;
+    char               *m_ResourcePath;
     int                 m_GlobalResourceId;	//	NOTE: this is an index for Blocks global 'ResourceTypeList'.
     int                 field_C;
     UINT64              m_ResourceTimestamp;

@@ -93,6 +93,9 @@
     <Filter Include="Source files\KapowSystems\System\Assets">
       <UniqueIdentifier>{095819aa-1405-44cd-bca9-b407b461a65c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header files\KapowSystems\Scripting\Builtin">
+      <UniqueIdentifier>{ef26fd81-21a3-4ac1-9e45-96c39c4d8d91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -581,6 +584,12 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\common.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\HUD_health_bar.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1026,6 +1035,9 @@
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysSystem.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

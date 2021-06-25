@@ -54,6 +54,17 @@ void SoundSlot::StopSound()
 	*/
 }
 
+void SoundSlot::GetSoundName(String& outName)
+{
+	if (m_SoundResource)
+		outName = m_SoundResource->AddResToOpenListAndReturnName();
+	else
+		if (m_Sound.m_nLength)
+			outName = m_Sound;
+		else
+			outName = GetStreamingSound();
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 SoundSlot::~SoundSlot()
 {
