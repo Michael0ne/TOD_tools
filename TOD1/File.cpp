@@ -208,6 +208,25 @@ void FileWrapper::SetFileAttrib(const char* const file, unsigned int attrib, cha
 	SetFileAttributes(fileStr.m_szString, unk ? (newAttrib | GetFileAttributes(fileStr.m_szString)) : (~newAttrib & GetFileAttributes(fileStr.m_szString)));
 }
 
+bool FileWrapper::CheckGameFileAttributes(const char* const filename, const FileAttribute mode)
+{
+	String gamedirrelativefilepath = filename;
+	GetWorkingDirRelativePath(gamedirrelativefilepath);
+	DWORD fattrib = GetFileAttributes(gamedirrelativefilepath.m_szString);
+
+	switch (mode)
+	{
+	case READONLY:
+		return fattrib & FILE_ATTRIBUTE_READONLY;
+	case HIDDEN:
+		return fattrib & FILE_ATTRIBUTE_HIDDEN;
+	case ARCHIVE:
+		return fattrib & FILE_ATTRIBUTE_ARCHIVE;
+	default:
+		return false;
+	}
+}
+
 void FileWrapper::SetExecuteAttr(unsigned char _attr)
 {
 	EnterCriticalSection(&m_CriticalSection);
@@ -1040,7 +1059,7 @@ void FileWrapper::ReleaseFileHandle()
 	LeaveCriticalSection(&m_CriticalSection);
 }
 
-void FileWrapper::_436FF0(HANDLE)
+void FileWrapper::FlushAndClose(HANDLE)
 {
 	EnterCriticalSection(&m_CriticalSection);
 
@@ -1474,6 +1493,11 @@ bool File::SearchScriptFile(const char* const searchpath, const char* const scri
 	GetPathFromDirectoryMappings(mappedpath, searchpath);
 
 	return FileWrapper::FindFileRecursive(mappedpath.m_szString, scriptfilename, zipname);
+}
+
+bool File::CheckGameFileAttributes(const char* const filename, const FileWrapper::FileAttribute mode)
+{
+	return FileWrapper::CheckGameFileAttributes(filename, mode);
 }
 
 bool File::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)

@@ -9,13 +9,11 @@ GFXEffect::~GFXEffect()
 	//delete field_50;
 	//delete field_54;
 	//delete field_58;
-	
-	m_EffectProperties.ClearEffectProperties();
 
 	TotalCreated--;
 }
 
-void GFXEffectProperties::ClearEffectProperties()
+GFXEffectProperties::~GFXEffectProperties()
 {
 	g_AssetManager->DecreaseResourceReferenceCount(m_VignetteTexture);
 	delete m_VignetteTexture;

@@ -30,7 +30,7 @@ protected:
     TextureAsset   *m_NoiseTexture = nullptr;
     bool            field_9C = true;
 
-    void            ClearEffectProperties();	//	@8E3620
+    ~GFXEffectProperties();	//	@8E3620
 };
 
 class GFXEffect : public Node

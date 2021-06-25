@@ -12,11 +12,8 @@ MemoryCards::MemoryCards() : Node(NODE_MASK_EMPTY)
 {
 	MESSAGE_CLASS_CREATED(MemoryCards);
 
-	for (unsigned int i = 0; i < 8; i++)
-	{
-		m_MemCardsUniqueId[i] = new UniqueId;
-		m_MemCardsUniqueId[i]->Set();
-	}
+	for (unsigned int i = 0; i < 4; i++)
+		m_MemCardsUniqueId[i] = {};
 
 	m_Ps2SlesLicense = "00000";
 	m_Ps2SlusLicense = "00000";
@@ -28,9 +25,6 @@ MemoryCards::MemoryCards() : Node(NODE_MASK_EMPTY)
 MemoryCards::~MemoryCards()
 {
 	MESSAGE_CLASS_DESTROYED(MemoryCards);
-
-	for (unsigned int i = 0; i < 8; i++)
-		delete m_MemCardsUniqueId[i];
 }
 
 unsigned int MemoryCards::GetLastModifiedTimeAsNumber(unsigned int memcardind, unsigned int slotind) const
@@ -151,7 +145,8 @@ void MemoryCards::SetSaveFileSize(unsigned int savesize)
 unsigned int MemoryCards::GetSavePointSize(unsigned int memcardind, unsigned int slotind) const
 {
 	String tempStr;
-	return MemoryCardInfo[memcardind]->GetSavePointFileSize(MEMCARD_DEFAULT_SAVE_DIR, MakeSaveSlotString(tempStr, slotind).m_szString);
+	MakeSaveSlotString(tempStr, slotind);
+	return MemoryCardInfo[memcardind]->GetSavePointFileSize(MEMCARD_DEFAULT_SAVE_DIR, tempStr.m_szString);
 }
 
 void MemoryCards::HasCardChanged(int* args) const
@@ -197,7 +192,6 @@ void MemoryCards::IsPresent(int* args) const
 
 bool MemoryCards::IsPrepared(unsigned int memcardind) const
 {
-	String tempStr;
 	if (!MemoryCardInfo[memcardind]->IsSaveDirPresent(MEMCARD_DEFAULT_SAVE_DIR))
 		return false;
 
@@ -229,7 +223,7 @@ void MemoryCards::DeleteSavePoint(int* args)
 
 bool MemoryCards::DeleteSavePoint_Impl(unsigned int memcardind, unsigned int slotind)
 {
-	char slotindstr[10] = {};
+	char slotindstr[12] = {};
 	sprintf(slotindstr, "Slot%02d", slotind);
 
 	return MemoryCardInfo[memcardind]->DeleteSavePointFile(MEMCARD_DEFAULT_SAVE_DIR, slotindstr);
@@ -284,14 +278,12 @@ bool MemoryCards::PrepareCardForSavegames_Impl(unsigned int memcardind)
 	if (!savepoint.Open(STATUS_1))
 		return false;
 
-	UniqueId uniqid;
-	uniqid.Set();
+	Utils::UniqueId uniqid;
 
 	if (!savepoint.WriteBufferWithSize((const char*)&uniqid, sizeof(uniqid)))
 		return false;
 
-	//	TODO: not sure about that.
-	*m_MemCardsUniqueId[memcardind] = uniqid;
+	m_MemCardsUniqueId[memcardind] = uniqid;
 
 	return true;
 }
@@ -315,15 +307,4 @@ void MemoryCards::RestoreSavePoint(unsigned int memcardind, unsigned int slotind
 void MemoryCards::CreateSavePoint(unsigned int memcardind, unsigned int slotind, EntityType* textbox, unsigned int, const char* const savedirectory, Node* summarynode) const
 {
 	Scene::SceneInstance->CreateSavePoint(memcardind, slotind, MEMCARD_DEFAULT_SAVE_DIR, summarynode, m_SaveFileSize);
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-void UniqueId::Set()
-{
-	//	TODO: simplify this?
-	FILETIME filetime;
-	GetSystemTimeAsFileTime(&filetime);
-
-	m_Time = (filetime.dwLowDateTime + 0x2AC18000) / (filetime.dwHighDateTime + 0xFE624E21);
-	m_Rdtsc = (int)__rdtsc();
 }

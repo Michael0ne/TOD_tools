@@ -8,7 +8,16 @@
 
 class FileWrapper
 {
+public:
 	friend class File;
+
+	enum FileAttribute
+	{
+		READONLY = 1,
+		HIDDEN = 2,
+		ARCHIVE = 4
+	};
+
 protected:
 	mutable CRITICAL_SECTION m_CriticalSection;
 	HANDLE			m_File;
@@ -53,7 +62,7 @@ public:
 
 	void			SetFileHandle(HANDLE _hnd);	//	@436D90
 	void			ReleaseFileHandle();	//	@436DC0
-	void			_436FF0(HANDLE);	//	@436FF0
+	void			FlushAndClose(HANDLE);	//	@436FF0
 	HANDLE			CreateFile_();	//	@4378D0
 
 protected:
@@ -82,6 +91,7 @@ protected:
 	static void		RemoveDirectory_(const char* const dir);	//	@4389D0
 	static bool		EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList);	//	@439420
 	static void		SetFileAttrib(const char* const file, unsigned int attrib, char unk);	//	@438310
+	static bool		CheckGameFileAttributes(const char* const filename, const FileAttribute mode);	//	@4383B0
 
 	static FileWrapper*	ZipFilesArray[FILE_MAX_ZIP_FILES];	//	@A35DB8	//	NOTE: named so because only zip files accessed through it.
 	static bool		GameDiscFound;	//	@A35E68
@@ -220,6 +230,7 @@ public:
 	static void		RemoveDirectory_(const char* const dir);	//	@418740
 	static void		SetFileAttrib(const char* const file, unsigned int attrib, char unk);	//	@417D50
 	static bool		SearchScriptFile(const char* const searchpath, const char* const scriptfilename, String& zipname);	//	@418210
+	static bool		CheckGameFileAttributes(const char* const filename, const FileWrapper::FileAttribute mode);	//	@417D60
 
 	static unsigned int FilesOpen;	//	@A35DD8
 	static HANDLE	FilesSemaphoreArray[FILE_MAX_ZIP_FILES];	//	@A35D98

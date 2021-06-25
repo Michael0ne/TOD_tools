@@ -530,7 +530,8 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
 
     *resdatasize = resourcesInfoSize;
     Asset::AllocateResourceForBlockLoad(resourcesInfoSize, (int**)&resourcesInfoBuffer, resbufferptr, resblockid);
-    resourceDataBuffer = (char*)MemoryManager::AllocateByType(RENDERLIST, maximumAssetSize);
+    //  resourceDataBuffer = (char*)MemoryManager::AllocateByType(RENDERLIST, maximumAssetSize);
+    resourceDataBuffer = (char*)MemoryManager::AllocateByType(DEFAULT, maximumAssetSize);
     g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
     file->SetPosAligned(0);
@@ -563,7 +564,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
             }
 
             CompiledAssetInfo compasset(CompiledAssetInfo::AssetType::COMPILED, resourcesInfoBuffer, resourceDataBuffer, 0, 2, -1);
-            CompiledAssetInfo::InstantiateAsset(&compasset, (int*)resourcesInfoBuffer);
+            CompiledAssetInfo::InstantiateAsset(&compasset, resourcesInfoBuffer);
 
             Asset* currasset = (Asset*)resourcesInfoBuffer;
             *it = currasset;
@@ -859,11 +860,57 @@ CompiledAssetInfo::CompiledAssetInfo(const AssetType assettype, const char* asse
     field_35 = (a5 & 2) != 0;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void CompiledAssetInfo::ParseAssetData(int* assetdataptr, int* a2, int a3, int a4)
+void CompiledAssetInfo::ParseAssetData(char** assetdataptr, int* dataptr, int flags, int a4)
 {
     if (field_30 != -1 || a4 != -1 && field_30 != a4)
         return;
+
+    switch (m_AssetType)
+    {
+    case ZERO:
+    {
+        if (field_30 != -1)
+            break;
+
+        size_t slen = ALIGN_4BYTES(*assetdataptr) ? strlen((const char*)ALIGN_4BYTES(*assetdataptr)) + 1 : NULL;
+        slen = ALIGN_4BYTES(slen + 3);
+        if ((flags & 2) != 0)
+            field_8 += slen;
+        else
+            m_AssetSize += slen;
+        break;
+    }
+    case ONE:
+    {
+        if (!ALIGN_4BYTES(*assetdataptr))
+            break;
+
+        size_t slen = ALIGN_4BYTES((strlen((const char*)ALIGN_4BYTES(*assetdataptr)) + 4));
+        *dataptr = ALIGN_4BYTES(*dataptr);
+
+        memcpy(GetDataPtr(flags), (const void*)ALIGN_4BYTES(*assetdataptr), slen);
+        *dataptr = ALIGN_4BYTES(*dataptr);
+        *dataptr = (int)GetDataPtr(flags);
+        *dataptr = ALIGN_4BYTES(*dataptr);
+
+        if (field_30 == -1)
+            if (flags & 2)
+                field_24 += ALIGN_4BYTES(slen + 3);
+            else
+                field_20 += ALIGN_4BYTES(slen + 3);
+        break;
+    }
+    case TWO:
+        if (ALIGN_4BYTES(*assetdataptr))
+            AddAssetToList(assetdataptr, flags);
+        break;
+    case COMPILED:
+        GetAssetName(assetdataptr, flags);
+        *assetdataptr = (char*)ALIGN_4BYTES(*assetdataptr);
+        break;
+    default:
+        break;
+    }
 }
 
 int CompiledAssetInfo::GetAssetSize() const
@@ -895,15 +942,48 @@ void CompiledAssetInfo::AlignDataOrSize(unsigned int alignment, unsigned char fl
     }
 }
 
-void CompiledAssetInfo::InstantiateAsset(CompiledAssetInfo* compassinfo, int* assetinstanceinfo)
+void CompiledAssetInfo::GetAssetName(char** dataptr, char flags) const
+{
+    if (flags & 1 || !dataptr)
+        return;
+
+    if (*dataptr == (char*)0x80000000)
+        *dataptr = nullptr;
+
+    *dataptr = *dataptr + **dataptr;
+
+    if (flags & 2)
+        if ((flags & 4) == 0)
+            *dataptr = dataptr[field_2C - field_28];
+        else
+            if (flags & 4)
+                *dataptr = dataptr[field_28 - field_2C];
+}
+
+void CompiledAssetInfo::AddAssetToList(char** dataptr, const int flags)
+{
+    if (flags & 1)
+        return;
+
+    field_10.push_back({ dataptr, flags });
+}
+
+char* CompiledAssetInfo::GetDataPtr(const int flags)
+{
+    return flags & 2 ? field_24 : field_20;
+}
+
+void CompiledAssetInfo::InstantiateAsset(CompiledAssetInfo* compassinfo, char* assetinstanceinfo)
 {
     if (compassinfo->m_AssetType == COMPILED)
-        *assetinstanceinfo = (int)AssetInstance::Assets[*assetinstanceinfo]->m_ResourceTypeMethods;
+        *(int*)assetinstanceinfo = (int)AssetInstance::Assets[*(int*)assetinstanceinfo]->m_ResourceTypeMethods;
 
-    compassinfo->ParseAssetData(assetinstanceinfo + 1, 0, 0, -1);
+    char* assetpathoffset = assetinstanceinfo + 4;
+    compassinfo->ParseAssetData(&assetpathoffset, 0, 0, -1);
+    *(int*)(assetinstanceinfo + 4) = (int)assetpathoffset;
 
     if (compassinfo->m_AssetType == COMPILED)
-        *(assetinstanceinfo + 2) = g_AssetManager->AddAssetReference((Asset*)assetinstanceinfo);
+        *(int*)(assetinstanceinfo + 8) = g_AssetManager->AddAssetReference((Asset*)assetinstanceinfo);
 
     ((Asset*)assetinstanceinfo)->ApplyAssetData((int*)compassinfo);
 }

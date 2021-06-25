@@ -20,7 +20,7 @@ protected:
     int                 field_54;
 
 private:
-    TextAsset();
+    TextAsset();    //  @862380
 
 protected:
     void                GetStringById(String& outString, const unsigned int ind) const;  //  @8A9E70
@@ -37,6 +37,8 @@ public:
 
     static void       CreateInstance();	//	@861CE0
     static TextAsset* Create();	//	@861BD0
+
+    static AssetInstance*   Instance; //  @A3CE7C
 };
 
 ASSERT_CLASS_SIZE(TextAsset, 88);

@@ -863,6 +863,7 @@ void LoadScripts()
     
     //	NOTE: register game scripts.
     #include "scripts/common.h"
+    #include "scripts/HUD_health_bar.h"
     //	TODO: much much more.
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)
@@ -1037,10 +1038,10 @@ GlobalScript::GlobalScript(const char* const scriptName, const char* const paren
     field_60 = 0;
 }
 
-void GlobalScript::AddStructElement(unsigned int fieldId, const char* const defaultValue, unsigned int a3)
+void GlobalScript::AddStructElement(const int fieldId, const char* const defaultValue, const unsigned int a3)
 {
 #ifdef INCLUDE_FIXES
-    if (fieldId == 0xFFFFFFFF)
+    if (fieldId == -1)
     {
         LogDump::LogA("GlobalScript::AddStructElement(%d, \"%s\", %d) FAILED!\n", fieldId, defaultValue, a3);
         return;

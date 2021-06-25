@@ -23,6 +23,11 @@ AssetInstance* FragmentAsset::GetInstancePtr() const
 	return Instance;
 }
 
+void FragmentAsset::ApplyAssetData(int*)
+{
+	return;
+}
+
 void FragmentAsset::CreateInstance()
 {
 	Instance = new AssetInstance("fragment", (CREATOR)Create);

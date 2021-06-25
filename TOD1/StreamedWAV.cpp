@@ -164,7 +164,7 @@ void StreamedWAV::DestroySoundBuffers(bool unk)
 	else
 		if (m_FileHandle && m_WavFile && unk && m_WavFile->m_FileHandle)
 		{
-			m_WavFile->m_FileHandle->_436FF0(m_FileHandle);
+			m_WavFile->m_FileHandle->FlushAndClose(m_FileHandle);
 			m_WavFile->m_FileHandle->ReleaseFileHandle();
 			m_FileHandle = NULL;
 		}

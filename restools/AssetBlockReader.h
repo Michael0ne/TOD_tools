@@ -19,6 +19,14 @@ public:
         float           z;
     };
 
+    struct vec4
+    {
+        float           x;
+        float           y;
+        float           z;
+        float           w;
+    };
+
     enum AssetType
     {
         TEXTURE = 0,
@@ -216,11 +224,53 @@ public:
             char           *m_TextureName;
         };
 
+        struct SkinnedMeshBuffer;
+
+        struct Mesh
+        {
+            vec3            m_Position;
+            float           field_C;
+            float           field_10;
+            float           field_14;
+            float           field_18;
+            char           *m_Name;
+            char           *field_20;
+            SkinnedMeshBuffer  *m_SkinnedMeshBuffer;
+            int             m_TotalMeshes;
+            int             field_2C;
+            int             field_30;
+            char           *field_34;
+            int             field_38;
+            int             field_3C;
+            int             field_40;
+            int             field_44;
+            char           *field_48;
+            int             field_4C;
+            int             field_50;
+            int             field_54;
+            int             m_ParentPivotIndex; //  NOTE: or 'NextPivotIndex'.
+            int             field_5C;
+            int             field_60;
+            float           field_64;
+            float           field_68;
+            float           field_6C;
+            int             field_70;
+            int             field_74;
+            int             field_78;
+        };
+
         unsigned int    field_1C;
-        std::vector<TextureReference>   m_TextureResources;
-        std::vector<int>    m_MeshList;
-        unsigned int    field_40;
-        vec3            m_BoundingRadius;
+
+        TextureReference* m_TextureResources_Elements;
+        unsigned int    m_TextureResources_Size;
+        int             field_28[2];
+
+        Mesh           *m_MeshList_Elements;
+        unsigned int    m_MeshList_Size;
+        int             field_38[2];
+
+        unsigned int   *field_40;
+        vec4            m_BoundingRadius;
         unsigned int    field_54;
         unsigned int   *field_58;
         unsigned char   field_5C;

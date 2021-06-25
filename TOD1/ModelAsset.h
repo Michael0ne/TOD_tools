@@ -44,7 +44,6 @@ public:
         int             field_70;
         int             field_74;
         int             field_78;
-
     };
 
 protected:
@@ -58,7 +57,7 @@ protected:
     unsigned char       field_5C;
 
 private:
-    ModelAsset();
+    ModelAsset();   //  @858090
 public:
     virtual AssetInstance* GetInstancePtr() const override;
 

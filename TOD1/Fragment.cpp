@@ -1,5 +1,4 @@
 #include "Fragment.h"
-#include "Globals.h"
 #include "AssetManager.h"
 #include "Node.h"
 
@@ -9,7 +8,7 @@ Fragment::Fragment(Node* owner)
 
 	m_FragmentRes = nullptr;
 	field_8 = nullptr;
-	Utils::CreateUniqueId(m_UniqueId);
+	m_UniqueId = {};
 	m_Owner = owner;
 	m_Name = nullptr;
 }

@@ -44,6 +44,12 @@ struct AssetHeaderStruct_t
 
 struct CompiledAssetInfo
 {
+    struct ListAssetInfo
+    {
+        char**          m_AssetDataPtr;
+        int             m_Flags;
+    };
+
     enum AssetType
     {
         ZERO = 0,
@@ -54,7 +60,7 @@ struct CompiledAssetInfo
     int                 m_AssetSize;
     int                 field_8;
     int                 m_Alignment;
-    std::vector<int>    field_10;
+    std::vector<ListAssetInfo>    field_10;
     char               *field_20;
     char               *field_24;
     char               *field_28;
@@ -69,11 +75,14 @@ struct CompiledAssetInfo
         MESSAGE_CLASS_DESTROYED(CompiledAssetInfo);
     }
 
-    void                ParseAssetData(int* assetdataptr, int* a2, int a3, int a4); //  @40D0C0
+    void                ParseAssetData(char** assetdataptr, int* dataptr, int flags, int a4); //  @40D0C0
     int                 GetAssetSize() const;   //  @40CB00
     void                AlignDataOrSize(unsigned int alignment, unsigned char flags, int a3);  //  @40CC10
+    void                GetAssetName(char** dataptr, char flags) const;   //  @40CB20
+    void                AddAssetToList(char** dataptr, const int flags);  //  @40CDA0
+    char*               GetDataPtr(const int flags);    //  @4062E0
 
-    static void         InstantiateAsset(CompiledAssetInfo* compassinfo, int* assetinstanceinfo);    //  @851510
+    static void         InstantiateAsset(CompiledAssetInfo* compassinfo, char* assetinstanceinfo);    //  @851510
 };
 
 ASSERT_CLASS_SIZE(CompiledAssetInfo, 56);

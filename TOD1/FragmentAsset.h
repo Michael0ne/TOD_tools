@@ -14,6 +14,7 @@ private:
 
 public:
     virtual AssetInstance*  GetInstancePtr() const override;
+    virtual void            ApplyAssetData(int*) override;  //  @85DEC0
 
     static void             CreateInstance();	//	@85DFA0
     static FragmentAsset*   Create();	//	@85DE30

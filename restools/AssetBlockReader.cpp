@@ -590,3 +590,78 @@ void AssetBlockReader::CompiledSoundAsset::SkipAlignment(unsigned char** infobuf
 		else
 			*infobuffer += (char)1;
 }
+
+AssetBlockReader::CompiledModelAsset::CompiledModelAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
+{
+	field_1C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_TextureResources_Elements = (TextureReference*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(TextureReference*);
+
+	m_TextureResources_Size = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	for (unsigned int i = 0; i < m_TextureResources_Size; ++i)
+		m_TextureResources_Elements[i].m_TextureName = (char*)((unsigned int)&m_TextureResources_Elements[i] + offsetof(TextureReference, m_TextureName) + (unsigned int)m_TextureResources_Elements[i].m_TextureName);
+
+	field_28[0] = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_28[1] = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_MeshList_Elements = (Mesh*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(Mesh*);
+
+	m_MeshList_Size = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_38[0] = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_38[1] = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_40 = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(unsigned int);
+
+	m_BoundingRadius = **(vec4**)infobuffer;
+	*infobuffer += sizeof(vec4);
+
+	field_54 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_58 = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(unsigned int);
+
+	field_5C = **(unsigned char**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	SkipNameRead(infobuffer);
+	SkipAlignment(infobuffer);
+	SkipSpecificData(infobuffer);
+}
+
+void AssetBlockReader::CompiledModelAsset::PrintInfo() const
+{
+	CompiledAsset::PrintInfo();
+}
+
+void AssetBlockReader::CompiledModelAsset::SkipAlignment(unsigned char** infobuffer)
+{
+	while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D)
+		if (*infobuffer == (unsigned char*)m_TextureResources_Elements)
+			break;
+		else
+			*infobuffer += (char)1;
+}
+
+void AssetBlockReader::CompiledModelAsset::SkipSpecificData(unsigned char** infobuffer)
+{
+	unsigned int maxstructaddr = max((unsigned int)m_TextureResources_Elements, (unsigned int)m_MeshList_Elements);
+	maxstructaddr = max((unsigned int)field_40, maxstructaddr);
+	maxstructaddr = max((unsigned int)field_58, maxstructaddr);
+
+	*infobuffer = (unsigned char*)maxstructaddr;
+}

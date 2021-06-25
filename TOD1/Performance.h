@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 
-//	TODO: this could be a simple namespace, since all 'members' are static.
 class Performance
 {
 private:
