@@ -3,7 +3,21 @@
 #include "GfxInternal_Dx9.h"
 
 std::map<unsigned int, Texture*>* Texture::TexturesMap;
-D3DFORMAT Texture::SupportedTextureFormats[] = {D3DFMT_R8G8B8, D3DFMT_A8R8G8B8, D3DFMT_R5G6B5, D3DFMT_A1R5G5B5, D3DFMT_A4R4G4B4, D3DFMT_P8};
+D3DFORMAT Texture::SupportedTextureFormats[] =
+{
+	D3DFMT_R8G8B8,
+	D3DFMT_A8R8G8B8,
+	D3DFMT_R5G6B5,
+	D3DFMT_A1R5G5B5,
+	D3DFMT_A4R4G4B4,
+	D3DFMT_P8,
+	D3DFMT_UNKNOWN,
+	D3DFMT_DXT1,
+	D3DFMT_DXT2,
+	D3DFMT_DXT3,
+	D3DFMT_DXT4,
+	D3DFMT_DXT5
+};
 unsigned int Texture::_A08980[] = { 0x180888, 0x208888, 0x100565, 0x101555, 0x104444, 0x8088888, 0x8048888, 0x40000, 0, 0, 0, 0, 0x208888, 0x100565, 0 };
 int Texture::Formats[] =
 {
@@ -141,7 +155,7 @@ unsigned int Texture::GetSizeForLevel(const unsigned char lvl) const
 	if (heightn < 1) heightn = 1;
 
 	if (!(m_Levels & 1))
-		return (widthn * heightn * (*((char*)&field_20 + 2) & 63)) >> 3;
+		return (widthn * heightn * (m_BitsPerPixel & 63)) >> 3;
 	else
 		return (8 * (widthn / 4 >= 1 ? widthn / 4 : 1) * (heightn / 4 >= 1 ? heightn : 1));
 }
