@@ -3,6 +3,17 @@
 
 class FragmentAsset : public Asset
 {
+    struct FragmentInfo
+    {
+        int	field_0;
+        int	field_4;
+        int	field_8;
+        int	field_C;
+        int	field_10;
+        int	field_14;
+
+        FragmentInfo(const FragmentInfo& rhs, void (*FindSuitableAllocatorProc)(size_t desiredsize, FragmentAsset*), FragmentAsset* owner); //  @406750
+    };
 public:
     int                     field_1C;
     int                    *field_20;

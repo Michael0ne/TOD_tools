@@ -152,7 +152,7 @@ void AssetBlockReader::PrintInfo() const
 			asset = new CompiledStreamedSoundInfoAsset(&infobuffer);
 			break;
 		case ANIMATION:
-			//asset = new CompiledAnimationAsset(&infobuffer);
+			asset = new CompiledAnimationAsset(&infobuffer);
 			break;
 		case MESHCOLOR:
 			//asset = new CompiledMeshColorAsset(&infobuffer);
@@ -297,7 +297,7 @@ AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** i
 	field_1C = **(unsigned int**)infobuffer;
 	*infobuffer += sizeof(unsigned int);
 
-	field_20 = **(unsigned int**)infobuffer;
+	field_20 = (unsigned int*)(*(unsigned int*)infobuffer + **(unsigned int**)infobuffer);
 	*infobuffer += sizeof(unsigned int);
 
 	field_24 = **(unsigned int**)infobuffer;
@@ -305,6 +305,7 @@ AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** i
 
 	SkipNameRead(infobuffer);
 	SkipAlignment(infobuffer);
+	SkipSpecificData(infobuffer);
 }
 
 void AssetBlockReader::CompiledFragmentAsset::PrintInfo() const
@@ -318,7 +319,8 @@ void AssetBlockReader::CompiledFragmentAsset::PrintInfo() const
 
 void AssetBlockReader::CompiledFragmentAsset::SkipSpecificData(unsigned char** infobuffer)
 {
-	return;
+	while (**infobuffer == NULL)
+		*infobuffer += 1;
 }
 
 AssetBlockReader::CompiledStreamedSoundInfoAsset::CompiledStreamedSoundInfoAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -664,4 +666,91 @@ void AssetBlockReader::CompiledModelAsset::SkipSpecificData(unsigned char** info
 	maxstructaddr = max((unsigned int)field_58, maxstructaddr);
 
 	*infobuffer = (unsigned char*)maxstructaddr;
+	*infobuffer = *infobuffer + **(unsigned int**)infobuffer;
+
+	while (**infobuffer == NULL)
+		*infobuffer += 1;
+}
+
+AssetBlockReader::CompiledAnimationAsset::CompiledAnimationAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
+{
+	field_1C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_20 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_24 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_28 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_List_1_Elements = (char*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(char*);
+
+	m_List_1_Size = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_34 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_38 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_List_2_Elements = (char*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(char*);
+
+	m_List_2_Size = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_44 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_48 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	m_List_3_Elements = (char*)(*infobuffer + **(unsigned int**)infobuffer);
+	*infobuffer += sizeof(char*);
+
+	m_List_3_Size = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_54 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_58 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_5C = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_60 = **(unsigned int**)infobuffer;
+	*infobuffer += sizeof(unsigned int);
+
+	field_64 = **(unsigned short**)infobuffer;
+	*infobuffer += sizeof(unsigned short);
+
+	field_66 = **(unsigned short**)infobuffer;
+	*infobuffer += sizeof(unsigned short);
+
+	SkipNameRead(infobuffer);
+	SkipAlignment(infobuffer);
+	SkipSpecificData(infobuffer);
+}
+
+void AssetBlockReader::CompiledAnimationAsset::PrintInfo() const
+{
+	CompiledAsset::PrintInfo();
+}
+
+void AssetBlockReader::CompiledAnimationAsset::SkipSpecificData(unsigned char** infobuffer)
+{
+	size_t maxstructaddr = max((unsigned int)m_List_1_Elements, (unsigned int)m_List_2_Elements);
+	maxstructaddr = max(maxstructaddr, (unsigned int)m_List_3_Elements);
+
+	*infobuffer = (unsigned char*)maxstructaddr;
+	
+	while (**infobuffer == NULL)
+		*infobuffer += 1;
 }

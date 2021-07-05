@@ -24,7 +24,10 @@ public:
     ScreenResolution    m_Resolution;
     ScreenResolution    m_SurfaceSize;
     TextureFormat       m_Format;
-    int                 field_20;
+    char                field_20;
+    char                field_21;
+    char                m_BitsPerPixel;
+    char                field_23;
     unsigned short      m_Levels;
     unsigned short      field_26;   //  NOTE: not used, only here for alignment.
     unsigned char       m_MipMapLevels;

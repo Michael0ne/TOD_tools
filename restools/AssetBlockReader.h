@@ -285,7 +285,7 @@ public:
     struct CompiledFragmentAsset : CompiledAsset
     {
         unsigned int    field_1C;
-        unsigned int    field_20;
+        unsigned int   *field_20;
         unsigned int    field_24;
 
         CompiledFragmentAsset(unsigned char** infobuffer);
@@ -397,9 +397,22 @@ public:
         unsigned int        field_20;
         unsigned int        field_24;
         unsigned int        field_28;
-        std::vector<int>    m_List_1;
-        std::vector<int>    m_List_2;
-        std::vector<int>    m_List_3;
+
+        char               *m_List_1_Elements;
+        unsigned int        m_List_1_Size;
+        unsigned int        field_34;
+        unsigned int        field_38;
+
+        char               *m_List_2_Elements;
+        unsigned int        m_List_2_Size;
+        unsigned int        field_44;
+        unsigned int        field_48;
+
+        char               *m_List_3_Elements;
+        unsigned int        m_List_3_Size;
+        unsigned int        field_54;
+        unsigned int        field_58;
+
         unsigned int        field_5C;
         unsigned int        field_60;
         unsigned short      field_64;
@@ -408,6 +421,7 @@ public:
         CompiledAnimationAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
+        virtual void    SkipSpecificData(unsigned char** infobuffer) override;
     };
 
     struct CompiledMeshColorAsset : CompiledAsset

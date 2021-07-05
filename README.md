@@ -52,7 +52,7 @@ Included libraries can be found under 'TOD_tools\ThirdParty'.
 
 ## Building for Windows
 
-I use Visual Studio 2019 (16.10.2) to build this project for Windows.
+I use Visual Studio 2019 (16.10.3) to build this project for Windows.
 It's always a good idea to re-compile provided third party libraries under your specific machine and link against them when compiling the rest.
 After the build a batch file is executed to copy output file into game directory (updateHookFile.bat), you should edit this batch file to replace game path to where your actual game is. Please, do not rely on this batch file too much, because it will be removed in near future, once cmake/premake project generation is implemented.
 
@@ -67,6 +67,7 @@ The provided files only include Visual Studio-specific "solution" file that is u
 # Contributing
 
 Check 'stdafx' header file for comments about how to write code.
+Also, join my discord server if you have any questions or suggestions: https://discord.gg/C49BvdtK
 
 # License
 
