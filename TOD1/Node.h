@@ -118,8 +118,8 @@ public:
     virtual void		nullsub_3(int);							//	@88C600
     virtual void		_88C610();								//	@88C610	//	NOTE: this could be 'ExecuteScript'.
     virtual void		nullsub_4(int);							//	@883EC0
-    virtual void		nullsub_5();							//	@8CB190
-    virtual void		nullsub_6(int);                         //	@883EC0
+    virtual void		DestroyFrameBuffers();					//	@8CB190
+    virtual void		nullsub_6(const std::vector<Node*>);    //	@883EC0 //  NOTE: used when checking for dangling entities.
     virtual String*		GetResourceName(String* unk);           //	@484E80
     virtual Vector4f*	GetBounds(Vector4f& unk) const;         //	@484DC0
 

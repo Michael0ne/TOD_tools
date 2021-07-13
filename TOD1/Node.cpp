@@ -184,12 +184,12 @@ void Node::nullsub_4(int)
     return;
 }
 
-void Node::nullsub_5()
+void Node::DestroyFrameBuffers()
 {
     return;
 }
 
-void Node::nullsub_6(int)
+void Node::nullsub_6(const std::vector<Node*>)
 {
     return;
 }
@@ -574,7 +574,7 @@ void Node::DestroyChildren()
 {
     for (Node* child = m_FirstChild; child; child = child->m_NextSibling)
     {
-        child->nullsub_5();
+        child->DestroyFrameBuffers();
         child->DestroyChildren();
     }
 }

@@ -16,6 +16,10 @@ EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
 AuxQuadTree* Scene::SceneTree;
 
+unsigned int Scene::QuadTreesAllocated;
+Scene::QuadTree* Scene::QuadTrees;
+short Scene::_A120E8 = -1;
+
 int Scene::RealTimeMs;
 int Scene::GameTimeMs;
 int Scene::NextUpdateTime;
@@ -38,6 +42,20 @@ int Scene::PreBlocksUnloadedCommand;
 int Scene::BlocksUnloadedCommand;
 int Scene::InvalidatePlaceholderModelCommand = -1;
 int Scene::RewindOrRetryFinishedCommand = -1;
+
+void Scene::CreateQuadTrees(const unsigned int num, const AllocatorIndex allocind)
+{
+	if (QuadTrees)
+		return;
+
+	QuadTreesAllocated = num;
+	QuadTrees = new QuadTree[num];
+
+	for (unsigned int i = 0; i < num - 1; ++i)
+		QuadTrees[i].m_Index = i;
+
+	QuadTrees[num - 1].m_Index = -1;
+}
 
 Scene::Scene() : Folder_()
 {

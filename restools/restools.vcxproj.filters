@@ -56,7 +56,7 @@
     <ClCompile Include="ScriptDatabaseReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ThirdParty\EasyBMP\EasyBMP.cpp">
+    <ClCompile Include="..\ThirdParty\bmp\bitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

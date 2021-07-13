@@ -1,5 +1,5 @@
 #include "TextureResourceReader.h"
-#include <EasyBMP.h>
+#include <bitmap.h>
 
 const std::string TextureResourceReader::PlatformExtension[] =
 {
@@ -39,121 +39,6 @@ const char* const TextureResourceReader::TextureFormatString[] =
 	"DXT4",
 	"DXT5"
 };
-
-// unsigned long PackRGBA(): Helper method that packs RGBA channels into a single 4 byte pixel.
-//
-// unsigned char r:     red channel.
-// unsigned char g:     green channel.
-// unsigned char b:     blue channel.
-// unsigned char a:     alpha channel.
-
-unsigned long PackRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
-{
-	return ((r << 24) | (g << 16) | (b << 8) | a);
-}
-
-// void DecompressBlockDXT1(): Decompresses one block of a DXT1 texture and stores the resulting pixels at the appropriate offset in 'image'.
-//
-// unsigned long x:                     x-coordinate of the first pixel in the block.
-// unsigned long y:                     y-coordinate of the first pixel in the block.
-// unsigned long width:                 width of the texture being decompressed.
-// unsigned long height:                height of the texture being decompressed.
-// const unsigned char *blockStorage:   pointer to the block to decompress.
-// unsigned long *image:                pointer to image where the decompressed pixel data should be stored.
-
-void DecompressBlockDXT1(unsigned long x, unsigned long y, unsigned long width, const unsigned char* blockStorage, unsigned long* image)
-{
-	unsigned short color0 = *reinterpret_cast<const unsigned short*>(blockStorage);
-	unsigned short color1 = *reinterpret_cast<const unsigned short*>(blockStorage + 2);
-
-	unsigned long temp;
-
-	temp = (color0 >> 11) * 255 + 16;
-	unsigned char r0 = (unsigned char)((temp / 32 + temp) / 32);
-	temp = ((color0 & 0x07E0) >> 5) * 255 + 32;
-	unsigned char g0 = (unsigned char)((temp / 64 + temp) / 64);
-	temp = (color0 & 0x001F) * 255 + 16;
-	unsigned char b0 = (unsigned char)((temp / 32 + temp) / 32);
-
-	temp = (color1 >> 11) * 255 + 16;
-	unsigned char r1 = (unsigned char)((temp / 32 + temp) / 32);
-	temp = ((color1 & 0x07E0) >> 5) * 255 + 32;
-	unsigned char g1 = (unsigned char)((temp / 64 + temp) / 64);
-	temp = (color1 & 0x001F) * 255 + 16;
-	unsigned char b1 = (unsigned char)((temp / 32 + temp) / 32);
-
-	unsigned long code = *reinterpret_cast<const unsigned long*>(blockStorage + 4);
-
-	for (int j = 0; j < 4; j++)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			unsigned long finalColor = 0;
-			unsigned char positionCode = (code >> 2 * (4 * j + i)) & 0x03;
-
-			if (color0 > color1)
-			{
-				switch (positionCode)
-				{
-				case 0:
-					finalColor = PackRGBA(r0, g0, b0, 255);
-					break;
-				case 1:
-					finalColor = PackRGBA(r1, g1, b1, 255);
-					break;
-				case 2:
-					finalColor = PackRGBA((2 * r0 + r1) / 3, (2 * g0 + g1) / 3, (2 * b0 + b1) / 3, 255);
-					break;
-				case 3:
-					finalColor = PackRGBA((r0 + 2 * r1) / 3, (g0 + 2 * g1) / 3, (b0 + 2 * b1) / 3, 255);
-					break;
-				}
-			}
-			else
-			{
-				switch (positionCode)
-				{
-				case 0:
-					finalColor = PackRGBA(r0, g0, b0, 255);
-					break;
-				case 1:
-					finalColor = PackRGBA(r1, g1, b1, 255);
-					break;
-				case 2:
-					finalColor = PackRGBA((r0 + r1) / 2, (g0 + g1) / 2, (b0 + b1) / 2, 255);
-					break;
-				case 3:
-					finalColor = PackRGBA(0, 0, 0, 255);
-					break;
-				}
-			}
-
-			if (x + i < width)
-				image[(y + j) * width + (x + i)] = finalColor;
-		}
-	}
-}
-
-// void BlockDecompressImageDXT1(): Decompresses all the blocks of a DXT1 compressed texture and stores the resulting pixels in 'image'.
-//
-// unsigned long width:                 Texture width.
-// unsigned long height:                Texture height.
-// const unsigned char *blockStorage:   pointer to compressed DXT1 blocks.
-// unsigned long *image:                pointer to the image where the decompressed pixels will be stored.
-
-void BlockDecompressImageDXT1(unsigned long width, unsigned long height, const unsigned char* blockStorage, unsigned long* image)
-{
-	unsigned long blockCountX = (width + 3) / 4;
-	unsigned long blockCountY = (height + 3) / 4;
-	unsigned long blockWidth = (width < 4) ? width : 4;
-	unsigned long blockHeight = (height < 4) ? height : 4;
-
-	for (unsigned long j = 0; j < blockCountY; j++)
-	{
-		for (unsigned long i = 0; i < blockCountX; i++) DecompressBlockDXT1(i * 4, j * 4, width, blockStorage + i * 8, image);
-		blockStorage += blockCountX * 8;
-	}
-}
 
 void TextureResourceReader::ReadInfo()
 {
@@ -256,88 +141,27 @@ void TextureResourceReader::DumpData() const
 	outfilename += ".bmp";
 
 	unsigned char* rawclrs = (unsigned char*)m_AssetData;
-	const unsigned char* rawclrs_end = rawclrs + m_GfxTexture->GetSizeForLevel(1);
-	const unsigned int width = m_GfxTexture->GetSize(1).w;
-	const unsigned int height = m_GfxTexture->GetSize(1).h;
+	unsigned char* convclrs = new unsigned char[m_GfxTexture->GetSizeForLevel(0)];
 
-	BMP bmImage;
-	bmImage.SetSize(width, height);
-	bmImage.SetBitDepth(m_BitsPerPixel);
+	const unsigned int width = m_GfxTexture->GetSize(0).w;
+	const unsigned int height = m_GfxTexture->GetSize(0).h;
 
-	for (unsigned y = 0; y < height; y += 8)
-		for (unsigned x = 0; x < width; x += 8)
-	{
-		DXT1Texture	dxt1tex = *(DXT1Texture*)rawclrs;
+	BITMAPINFO bmpinfo;
+	bmpinfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmpinfo.bmiHeader.biWidth = width;
+	bmpinfo.bmiHeader.biHeight = height;
+	bmpinfo.bmiHeader.biPlanes = 0;
+	bmpinfo.bmiHeader.biBitCount = m_GfxTexture->m_BitsPerPixel;
+	bmpinfo.bmiHeader.biCompression = BI_RGB;
+	bmpinfo.bmiHeader.biSizeImage = m_GfxTexture->GetSizeForLevel(0);
+	bmpinfo.bmiHeader.biXPelsPerMeter = 0;
+	bmpinfo.bmiHeader.biYPelsPerMeter = 0;
+	bmpinfo.bmiHeader.biClrUsed = 0;
+	bmpinfo.bmiHeader.biClrImportant = 0;
 
-		bmImage(x, y)->Alpha = NULL;
+	SaveDIBitmap(outfilename.c_str(), &bmpinfo, convclrs);
 
-		//	Blue color
-		bmImage(x, y)->Blue =		dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._00].m_ColorBits.Blue;
-		bmImage(x + 1, y)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._01].m_ColorBits.Blue;
-		bmImage(x + 2, y)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._02].m_ColorBits.Blue;
-		bmImage(x + 3, y)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._03].m_ColorBits.Blue;
-
-		bmImage(x, y)->Blue =		dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._10].m_ColorBits.Blue;
-		bmImage(x, y + 1)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._11].m_ColorBits.Blue;
-		bmImage(x, y + 2)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._12].m_ColorBits.Blue;
-		bmImage(x, y + 3)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._13].m_ColorBits.Blue;
-
-		bmImage(x + 4, y)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._20].m_ColorBits.Blue;
-		bmImage(x + 5, y)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._21].m_ColorBits.Blue;
-		bmImage(x + 6, y)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._22].m_ColorBits.Blue;
-		bmImage(x + 7, y)->Blue =	dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._23].m_ColorBits.Blue;
-
-		bmImage(x + 4, y + 4)->Blue = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._30].m_ColorBits.Blue;
-		bmImage(x + 5, y + 5)->Blue = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._31].m_ColorBits.Blue;
-		bmImage(x + 6, y + 6)->Blue = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._32].m_ColorBits.Blue;
-		bmImage(x + 7, y + 7)->Blue = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._33].m_ColorBits.Blue;
-
-		//	Green color
-		bmImage(x, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._00].GetNormalGreenColor();
-		bmImage(x + 1, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._01].GetNormalGreenColor();
-		bmImage(x + 2, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._02].GetNormalGreenColor();
-		bmImage(x + 3, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._03].GetNormalGreenColor();
-
-		bmImage(x, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._10].GetNormalGreenColor();
-		bmImage(x, y + 1)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._11].GetNormalGreenColor();
-		bmImage(x, y + 2)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._12].GetNormalGreenColor();
-		bmImage(x, y + 3)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._13].GetNormalGreenColor();
-
-		bmImage(x + 4, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._20].GetNormalGreenColor();
-		bmImage(x + 5, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._21].GetNormalGreenColor();
-		bmImage(x + 6, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._22].GetNormalGreenColor();
-		bmImage(x + 7, y)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._23].GetNormalGreenColor();
-
-		bmImage(x + 4, y + 4)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._30].GetNormalGreenColor();
-		bmImage(x + 5, y + 5)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._31].GetNormalGreenColor();
-		bmImage(x + 6, y + 6)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._32].GetNormalGreenColor();
-		bmImage(x + 7, y + 7)->Green = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._33].GetNormalGreenColor();
-
-		//	Red color
-		bmImage(x, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._00].m_ColorBits.Red;
-		bmImage(x + 1, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._01].m_ColorBits.Red;
-		bmImage(x + 2, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._02].m_ColorBits.Red;
-		bmImage(x + 3, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._03].m_ColorBits.Red;
-
-		bmImage(x, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._10].m_ColorBits.Red;
-		bmImage(x, y + 1)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._11].m_ColorBits.Red;
-		bmImage(x, y + 2)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._12].m_ColorBits.Red;
-		bmImage(x, y + 3)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._13].m_ColorBits.Red;
-
-		bmImage(x + 4, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._20].m_ColorBits.Red;
-		bmImage(x + 5, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._21].m_ColorBits.Red;
-		bmImage(x + 6, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._22].m_ColorBits.Red;
-		bmImage(x + 7, y)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._23].m_ColorBits.Red;
-
-		bmImage(x + 4, y + 4)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._30].m_ColorBits.Red;
-		bmImage(x + 5, y + 5)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._31].m_ColorBits.Red;
-		bmImage(x + 6, y + 6)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._32].m_ColorBits.Red;
-		bmImage(x + 7, y + 7)->Red = dxt1tex.ColorArr[dxt1tex.WordArr.m_WordBits._33].m_ColorBits.Red;
-
-		rawclrs += sizeof(DXT1Texture);
-	}
-
-	bmImage.WriteToFile(outfilename.c_str());
+	delete[] convclrs;
 	printf("Saved dump: %s -> %s\n", m_ResourceName.c_str(), outfilename.c_str());
 }
 
