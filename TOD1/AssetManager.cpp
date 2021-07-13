@@ -148,6 +148,34 @@ const char* AssetManager::GetCurrentSceneName() const
     return m_SceneNames.size() ? m_SceneNames.end()->m_szString : nullptr;
 }
 
+void AssetManager::BuildFastFindNodeVector()
+{
+    FastFindInfo ffi;
+    FillFastFindNodeVector(Scene::SceneInstance, &ffi);
+    m_FastFindNodeVector.push_back(ffi);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void AssetManager::FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi)
+{
+    Node* child = baseNode->m_FirstChild;
+
+    while (child)
+    {
+        //  ...
+        if (!child->m_Name || !*child->m_Name)
+        {
+
+        }
+
+
+        if (child->m_FirstChild)
+            FillFastFindNodeVector(child, ffi);
+
+        child = child->m_NextSibling;
+    }
+}
+
 AllocatorIndex AssetManager::GetAllocatorType() const
 {
     if (m_LoadBlocks && m_ActiveBlockId >= NULL)
@@ -626,7 +654,7 @@ void AssetManager::ResetSceneChildrenNodes(const int)
     {
         for (Node* child = Scene::SceneInstance->m_FirstChild; child; child = child->m_NextSibling)
         {
-            child->nullsub_5();
+            child->DestroyFrameBuffers();
             child->DestroyChildren();
         }
     }

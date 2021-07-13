@@ -13,75 +13,6 @@ public:
         {};
     };
 
-    struct DXT1Texture
-    {
-        struct Color
-        {
-            union
-            {
-                struct
-                {
-                    //unsigned char   Blue : 5;
-                    //unsigned char   Green : 6;
-                    //unsigned char   Red : 5;
-                    unsigned char   Blue : 5;
-                    unsigned char   GreenLow : 3;
-                    unsigned char   GreenHigh : 3;
-                    unsigned char   Red : 5;
-                }               m_ColorBits;
-                unsigned short  m_Color;
-            };
-
-            Color(const unsigned int clr)
-            {
-                m_Color = (unsigned short)clr;
-            }
-
-            inline unsigned char   GetNormalGreenColor() const
-            {
-                return (m_ColorBits.GreenHigh << 3) | m_ColorBits.GreenLow;
-            }
-        };
-
-        struct BitmapWord
-        {
-            union
-            {
-                struct
-                {
-                    unsigned char   _00 : 2;
-                    unsigned char   _01 : 2;
-                    unsigned char   _02 : 2;
-                    unsigned char   _03 : 2;
-
-                    unsigned char   _10 : 2;
-                    unsigned char   _11 : 2;
-                    unsigned char   _12 : 2;
-                    unsigned char   _13 : 2;
-
-                    unsigned char   _20 : 2;
-                    unsigned char   _21 : 2;
-                    unsigned char   _22 : 2;
-                    unsigned char   _23 : 2;
-
-                    unsigned char   _30 : 2;
-                    unsigned char   _31 : 2;
-                    unsigned char   _32 : 2;
-                    unsigned char   _33 : 2;
-                }               m_WordBits;
-                unsigned short  m_Word;
-            };
-        };
-
-        Color   ColorArr[2];
-        BitmapWord  WordArr;
-
-        inline Color    GetColor() const
-        {
-            return (Color)((ColorArr[0].m_Color + ColorArr[1].m_Color) / 2);
-        }
-    };
-
 private:
     struct AssetHeader
     {
@@ -165,5 +96,3 @@ public:
     virtual void	PrintInfo() const override;
     virtual void    DumpData() const override;
 };
-
-static_assert(sizeof(TextureResourceReader::DXT1Texture) == 8, "Wrong size for DXT1Texture class!");

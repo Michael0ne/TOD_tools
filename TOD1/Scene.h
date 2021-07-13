@@ -156,11 +156,30 @@ public:
     static Scene   *SceneInstance;	//	@A3DCBC
     static AuxQuadTree* SceneTree;	//	@A3DCE8
 
+    struct QuadTree
+    {
+        unsigned short  m_Index;
+        unsigned short  field_2;
+        int             field_4;
+        int             field_8[2];
+        int             field_10;
+        int             field_14;
+        unsigned short  field_18;
+        char            field_1A;
+        char            field_1B;
+        int             field_1C;
+    };
+
+    static unsigned int QuadTreesAllocated; //  @A3DD70
+    static QuadTree*    QuadTrees;  //  @A3B580
+    static short    _A120E8;    //  @A120E8
+
     static int      PreBlocksUnloadedCommand;	//	@A3DCF8
     static int      BlocksUnloadedCommand;	//	@A3DCFC
     static int      InvalidatePlaceholderModelCommand;	//	@A12098
     static int      RewindOrRetryFinishedCommand;	//	@A1209C
 
+    static void     CreateQuadTrees(const unsigned int num, const AllocatorIndex allocind); //  @89A370
     static void     TriggerScriptForAllChildren(int scriptId, Node* node, int* args);	//	@892F10
     static void     Register();	//	@899CC0
     static Scene*   Create(AllocatorIndex);	//	@89A7A0
@@ -169,3 +188,4 @@ public:
 extern EntityType* tScene;	//	@A3DCB8
 
 ASSERT_CLASS_SIZE(Scene, 616);	//	FIXME: actual size is 620 (0x26C).
+ASSERT_CLASS_SIZE(Scene::QuadTree, 32);
