@@ -65,7 +65,6 @@ public:
 	int				CalculateChecksum(SavePoint* savepoint, int pos);	//	@874180
 	bool			CloseFile();	//	@869D90
 
-	static bool		WriteSavePointFileData(const SavePoint& savepoint, const class TransactionBuffer& rewbuff);	//	@873DA0
 	static bool		VerifyFileChecksum(SavePoint*);	//	@874230
 
 	static int		OpenFilesCount;	//	@A35EA8

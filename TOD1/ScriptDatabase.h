@@ -109,6 +109,7 @@ class GlobalScript
     };
 
     friend class Node;
+    friend class Entity;
 protected:
     std::vector<Property>       m_PropertiesList;
     std::map<unsigned int, unsigned int> m_PropertiesValues;
@@ -131,6 +132,8 @@ public:
     bool						_48A7E0(Node* node, int scriptId, void* args);	//	@48A7E0
     void                        ClearEntityProperties(Entity* ent); //  @489C90
     class EntityType*           GetScriptEntity() const;  //  @489AE0
+    const int                   GetPropertiesListSize() const;  //  @489A20
+    void                        GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue);   //  @489E50
 
     class EntityType*           AssignScriptToEntity(const EntityType* parent);	//	@48A3F0
 

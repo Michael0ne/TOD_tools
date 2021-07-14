@@ -64,7 +64,7 @@ void LoadScreenInfo::Show(Node* topNode)
 	DWORD timestart = Performance::GetMilliseconds();
 	float f9758 = g_GfxInternal_Dx9->field_9758;
 
-	g_AssetManager->ResetSceneChildrenNodes(true);
+	g_AssetManager->DestroySceneNodesFrameBuffers(true);
 	LoadTexture();
 
 	FrameBuffer* fb = new FrameBuffer(50, 4, 2);

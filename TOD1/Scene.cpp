@@ -138,7 +138,7 @@ void Scene::ReleaseQuadTreeAndRenderlist()
 
 	ClearNodesLists();
 	g_GfxInternal->SetRenderBufferIsEmpty(true);
-	g_AssetManager->ResetSceneChildrenNodes(0);
+	g_AssetManager->DestroySceneNodesFrameBuffers(0);
 	const unsigned int resind = g_AssetManager->GetFreeResourceTypeListItem(0);
 
 	if (resind)
