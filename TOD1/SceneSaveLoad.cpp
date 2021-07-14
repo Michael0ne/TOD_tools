@@ -226,3 +226,141 @@ bool SceneSaveLoad::WriteDummySavePointData(class SavePoint* savepoint, unsigned
 
 	return false;
 }
+
+bool SceneSaveLoad::WriteSavePointFileData(class SavePoint* savepoint, SaveInfo* savedata)
+{
+	const unsigned int savefileversion = 9;
+	const unsigned int propertychecksum = GetGlobalPropertyListChecksum();
+	const unsigned int enginebuild = Utils::GetEngineVersionBuild();
+	const unsigned int dummynull = NULL;
+	const unsigned int folderstosave = 6;
+
+	if (savepoint->WriteBufferWithSize((const char*)&savefileversion, sizeof(savefileversion) != sizeof(savefileversion)))
+		return false;
+
+	if (savepoint->WriteBufferWithSize((const char*)&propertychecksum, sizeof(propertychecksum)) != sizeof(propertychecksum))
+		return false;
+
+	if (savepoint->WriteBufferWithSize((const char*)&enginebuild, sizeof(enginebuild)) != sizeof(enginebuild))
+		return false;
+
+	const int checksumfilepos = savepoint->GetPosition();
+
+	if (savepoint->WriteBufferWithSize((const char*)&dummynull, sizeof(dummynull)) != sizeof(dummynull))
+		return false;
+
+	if (savepoint->WriteBufferWithSize((const char*)&dummynull, sizeof(dummynull)) != sizeof(dummynull))
+		return false;
+
+	SaveFileHelper savefilehelper;
+
+	if (savefilehelper.WriteBufferWithSize((const char*)&folderstosave, sizeof(folderstosave)) != sizeof(folderstosave))
+		return false;
+
+	if (savefilehelper.WriteBufferWithSize((const char*)&savedata->field_1C, sizeof(savedata->field_1C)) != sizeof(savedata->field_1C))
+		return false;
+
+	if (savedata->m_MemorySummaryNode)
+	{
+		const int filepos = savefilehelper.GetPosition();
+		if (savefilehelper.WriteBufferWithSize((const char*)&dummynull, sizeof(dummynull)) == sizeof(dummynull))
+		{
+			const unsigned int propertiessize = savedata->m_MemorySummaryNode->SaveScriptData(savefilehelper);
+			if (propertiessize >= 0)
+			{
+				savefilehelper._WriteBufferAndSetToStart();
+				savefilehelper.Seek(filepos);
+
+				if (savefilehelper.WriteBufferWithSize((const char*)&propertiessize, sizeof(propertiessize)) == sizeof(propertiessize))
+				{
+					savefilehelper.WriteFromBuffer();
+					
+					for (unsigned int i = 0; i < 6; ++i)
+					{
+						const int folderid = savedata->m_LoadedFolders[i] ? savedata->m_LoadedFolders[i]->m_Id >> 8 : -1;
+						if (savefilehelper.WriteBufferWithSize((const char*)&folderid, sizeof(folderid)) != sizeof(folderid))
+							break;
+					}
+
+					if (savefilehelper.WriteBufferWithSize((const char*)&savedata->m_SavedGameTimeMs, sizeof(savedata->m_SavedGameTimeMs)) &&
+						savefilehelper.WriteBufferWithSize((const char*)&savedata->m_SavedFrameNumber, sizeof(savedata->m_SavedFrameNumber)))
+					{
+						int crc = NULL;
+						char buf[256] = {};
+						unsigned int filesize = NULL;
+						Utils::crc32_init_default(&crc);
+						savefilehelper._WriteBufferAndSetToStart();
+
+						for (unsigned int len = savefilehelper.Read(buf, sizeof(buf)); len > 0; len = savefilehelper.Read(buf, sizeof(buf)))
+						{
+							Utils::generic_crc32(&crc, buf, len);
+							savepoint->WriteBufferWithSize(buf, len);
+
+							filesize += len;
+						}
+
+						Utils::crc32_gen(&crc);
+
+						const int endfilepos = savepoint->GetPosition();
+						savepoint->RewindFileToBeginning();
+						savepoint->Seek(checksumfilepos);
+
+						if (savepoint->WriteBufferWithSize((const char*)&crc, sizeof(crc)) == sizeof(crc) &&
+							savepoint->WriteBufferWithSize((const char*)&filesize, sizeof(filesize)) == sizeof(filesize))
+						{
+							savepoint->Seek(endfilepos);
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		const int dummynegone = -1;
+
+		if (savefilehelper.WriteBufferWithSize((const char*)&dummynegone, sizeof(dummynegone)) == sizeof(dummynegone))
+		{
+			for (unsigned int i = 0; i < 6; ++i)
+			{
+				const int folderid = savedata->m_LoadedFolders[i] ? savedata->m_LoadedFolders[i]->m_Id >> 8 : -1;
+				if (savefilehelper.WriteBufferWithSize((const char*)&folderid, sizeof(folderid)) != sizeof(folderid))
+					break;
+			}
+
+			if (savefilehelper.WriteBufferWithSize((const char*)&savedata->m_SavedGameTimeMs, sizeof(savedata->m_SavedGameTimeMs)) &&
+				savefilehelper.WriteBufferWithSize((const char*)&savedata->m_SavedFrameNumber, sizeof(savedata->m_SavedFrameNumber)))
+			{
+				int crc = NULL;
+				char buf[256] = {};
+				unsigned int filesize = NULL;
+				Utils::crc32_init_default(&crc);
+				savefilehelper._WriteBufferAndSetToStart();
+
+				for (unsigned int len = savefilehelper.Read(buf, sizeof(buf)); len > 0; len = savefilehelper.Read(buf, sizeof(buf)))
+				{
+					Utils::generic_crc32(&crc, buf, len);
+					savepoint->WriteBufferWithSize(buf, len);
+
+					filesize += len;
+				}
+
+				Utils::crc32_gen(&crc);
+
+				const int endfilepos = savepoint->GetPosition();
+				savepoint->RewindFileToBeginning();
+				savepoint->Seek(checksumfilepos);
+
+				if (savepoint->WriteBufferWithSize((const char*)&crc, sizeof(crc)) == sizeof(crc) &&
+					savepoint->WriteBufferWithSize((const char*)&filesize, sizeof(filesize)) == sizeof(filesize))
+				{
+					savepoint->Seek(endfilepos);
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}

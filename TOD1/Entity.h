@@ -44,6 +44,8 @@ public:
 
 	void            SetScript(const EntityType*);	//	@869E20
 
+	const int		SaveScriptData(SaveFileHelper& savefilehelper);	//	@86B110
+
 	static void     Register();	//	@86BC70
 	static Entity*  Create(AllocatorIndex);	//	@86C130
 };

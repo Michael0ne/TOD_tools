@@ -38,6 +38,18 @@ void EntityType::InheritFrom(const EntityType* from)
 #pragma message(TODO_IMPLEMENTATION)
 void EntityType::_86E9B0()
 {
+    if (!m_Parent ||
+        m_PropertiesList.size() ||
+        m_PropertiesList_1.size() ||
+        m_ScriptsList.size() ||
+        m_Parent->m_HasParent)
+    {
+        //  TODO: copy properties list from parent?
+    }
+    else
+    {
+        m_HasParent = true;
+    }
 }
 
 Entity* EntityType::IsParentOf(EntityType* ett, Entity* ent)

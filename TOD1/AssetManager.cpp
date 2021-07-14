@@ -644,7 +644,7 @@ Entity* AssetManager::FindNextEntity(Entity* node)
         return nullptr;
 }
 
-void AssetManager::ResetSceneChildrenNodes(const int)
+void AssetManager::DestroySceneNodesFrameBuffers(const int)
 {
     g_GfxInternal->Render(nullptr, false, -1, -1);
     MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->stub19();

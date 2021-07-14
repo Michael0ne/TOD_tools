@@ -178,7 +178,7 @@ public:
     void*                       LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid);	//	@8759E0
     Entity*                     FindFirstEntity();	//	@8755E0
     Entity*                     FindNextEntity(Entity*);	//	@875610
-    void                        ResetSceneChildrenNodes(const int);  //  @875390
+    void                        DestroySceneNodesFrameBuffers(const int);  //  @875390
     RegionCode                  GetRegion() const;	//	@875440
     String&                     GetDataPath(String& outstr) const;	//	@8764E0
     Asset*                      FindFirstFreeResource() const;	//	@879E00

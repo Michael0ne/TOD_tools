@@ -1783,3 +1783,121 @@ const char* IFile::GetFileName() const
 {
 	return "";
 }
+
+SaveFileHelper::~SaveFileHelper()
+{
+	MESSAGE_CLASS_DESTROYED(SaveFileHelper);
+
+	delete[] m_Buffer;
+}
+
+bool SaveFileHelper::WriteBuffers()
+{
+	return true;
+}
+
+char SaveFileHelper::ReadBlock()
+{
+	if (m_CurrentPos >= m_BufferSize)
+		return -1;
+
+	m_CurrentPos++;
+	
+	return m_Buffer[m_CurrentPos - 1];
+}
+
+int SaveFileHelper::ReadBlockAndGetPosition()
+{
+	return m_CurrentPos >= m_BufferSize ? -1 : (int)m_Buffer[m_CurrentPos];
+}
+
+char SaveFileHelper::_WriteBufferBlockAndInsertNewLine(char _newlinesym)
+{
+	if (m_CurrentPos + 1 > m_BufferSize)
+	{
+		m_Buffer = (char*)MemoryManager::Realloc(m_Buffer, m_CurrentPos + 1, false);
+		m_BufferSize = m_CurrentPos + 1;
+	}
+
+	m_Buffer[m_CurrentPos++] = _newlinesym;
+
+	return true;
+}
+
+int SaveFileHelper::Read(void* _buffer, int _numbytestoread)
+{
+	unsigned int readbuffsize = m_BufferSize - m_CurrentPos;
+
+	if (_numbytestoread < readbuffsize)
+		readbuffsize = _numbytestoread;
+
+	memcpy(_buffer, &m_Buffer[m_CurrentPos], readbuffsize);
+
+	m_CurrentPos += readbuffsize;
+
+	return readbuffsize;
+}
+
+int SaveFileHelper::WriteBuffer(const char* _buf)
+{
+	unsigned int i = 0;
+
+	if (*_buf)
+		while (_buf[++i]);
+
+	return WriteBufferWithSize(_buf, i);
+}
+
+int SaveFileHelper::WriteBufferWithSize(const char* _buf, int _size)
+{
+	if (m_CurrentPos + _size > m_BufferSize)
+	{
+		m_Buffer = (char*)MemoryManager::Realloc(m_Buffer, m_CurrentPos + _size, false);
+		m_BufferSize = m_CurrentPos + _size;
+	}
+
+	memcpy(&m_Buffer[m_CurrentPos], _buf, _size);
+
+	m_CurrentPos += _size;
+
+	return _size;
+}
+
+int SaveFileHelper::Seek(int _pos)
+{
+	m_CurrentPos = _pos <= m_BufferSize ? _pos : m_BufferSize;
+
+	return NULL;
+}
+
+char SaveFileHelper::_WriteBufferAndSetToStart()
+{
+	m_CurrentPos = NULL;
+	
+	return true;
+}
+
+char SaveFileHelper::WriteFromBuffer()
+{
+	m_CurrentPos = m_BufferSize;
+
+	return true;
+}
+
+int SaveFileHelper::GetPosition() const
+{
+	return m_CurrentPos;
+}
+
+char SaveFileHelper::ReadBlockDecreasePosition()
+{
+	if (m_CurrentPos)
+		m_CurrentPos--;
+
+	return true;
+}
+
+char SaveFileHelper::ReadIfNotEOF()
+{
+	return m_CurrentPos >= m_BufferSize;
+}

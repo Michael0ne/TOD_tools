@@ -1114,6 +1114,21 @@ class EntityType* GlobalScript::GetScriptEntity() const
     return BaseType::GetScriptEntityByName(buf);
 }
 
+const int GlobalScript::GetPropertiesListSize() const
+{
+    return m_PropertiesList.size();
+}
+
+void GlobalScript::GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue)
+{
+    unsigned int propertyvaluesize = m_PropertiesList[propertyindex].m_Info->m_PropertyType->m_Size;
+    int* entpropertyvalue = &ent->m_Parameters[m_PropertiesList[propertyindex].m_Offset];
+
+    if (propertyvaluesize > 0)
+        for (; propertyvaluesize; --propertyvaluesize)
+            *outPropValue++ = *entpropertyvalue++;
+}
+
 EntityType* GlobalScript::AssignScriptToEntity(const EntityType* parent)
 {
     if (!m_BaseEntity)

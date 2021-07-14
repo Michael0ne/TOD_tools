@@ -135,6 +135,32 @@ void Entity::SetScript(const EntityType* script)
 		//script->m_ParentNode->_489BE0(this);
 }
 
+const int Entity::SaveScriptData(SaveFileHelper& savefilehelper)
+{
+	if (!m_ScriptEntity->m_Script)
+		return -1;
+
+	const unsigned int propertiessize = m_ScriptEntity->m_Script->GetPropertiesListSize();
+	unsigned int writtendatasize = savefilehelper.WriteBufferWithSize((const char*)&propertiessize, sizeof(propertiessize));
+
+	if (propertiessize > 0)
+	{
+		int propval[4] = {};
+		char buf[32768] = {};
+
+		for (unsigned int propindex = 0; propindex < propertiessize; ++propindex)
+		{
+			m_ScriptEntity->m_Script->GetEntityPropertyValue(this, propindex, propval);
+			const unsigned int entvalsize = m_ScriptEntity->m_Script->m_PropertiesList[propindex].m_Info->m_PropertyType->stub9((char*)propval, buf);
+
+			writtendatasize += savefilehelper.WriteBufferWithSize((const char*)&entvalsize, sizeof(entvalsize));
+			writtendatasize += savefilehelper.WriteBufferWithSize(buf, entvalsize * sizeof(entvalsize));
+		}
+	}
+
+	return writtendatasize;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void Entity::Register()
 {

@@ -109,7 +109,7 @@ namespace Utils
 		sprintf(str, "by %s", KAPOW_ENGINE_BUILDBY);
 	}
 
-	static unsigned int	GetEngineVersionBuild()
+	static unsigned int	GetEngineVersionBuild()	//	@401040
 	{
 		return KAPOW_ENGINE_VERSION_BUILD;
 	}
