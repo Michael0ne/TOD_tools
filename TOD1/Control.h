@@ -1,25 +1,21 @@
 #pragma once
-
 #include "Node.h"
-
-#define CONTROL_CLASS_SIZE 92
-
-enum E_CONTROL_TYPE
-{
-	CONTROL_TYPE_NONE = 0,
-	CONTROL_TYPE_KEYBOARD = 1,
-	CONTROL_TYPE_MOUSE = 2,
-	CONTROL_TYPE_MOUSE_BUTTON = 3,
-	CONTROL_TYPE_GAMEPAD = 4,
-	CONTROL_TYPE_DPAD = 5	//	NOTE: "A_LEFT" "A_RIGHT" etc...
-};
 
 class Control : public Node
 {
+	enum ControlType
+	{
+		NONE = 0,
+		KEYBOARD = 1,
+		MOUSE = 2,
+		MOUSE_BUTTON = 3,
+		GAMEPAD = 4,
+		DPAD = 5	//	NOTE: "A_LEFT" "A_RIGHT" etc...
+	};
 protected:
-	int m_Key;
-	char field_54;
-	int m_ControlType;
+	int				m_Key;
+	char			field_54;
+	ControlType		m_ControlType;
 
 public:
 	Control() : Node(NODE_MASK_EMPTY)	//	NOTE: no constructor.
@@ -28,8 +24,23 @@ public:
 
 		m_Key = -1;
 		field_54 = 0;
-		m_ControlType = CONTROL_TYPE_KEYBOARD;
+		m_ControlType = KEYBOARD;
 	}
+
+	static void		Register();	//	@924A30
+
+private:
+	const int		GetKey() const;	//	@8F92C0
+	void			SetKey(const int keyind);	//	@924590
+
+	const char*		GetKeyStr() const;	//	@9249C0
+	void			SetKeyStr(const char* args);	//	@9247B0
+
+	const char*		DPadKeyToStr(const unsigned int keyid) const;	//	@924730
+
+	static Control* Create(AllocatorIndex);	//	@924E60
 };
 
-static_assert(sizeof(Control) == CONTROL_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(Control));
+extern EntityType* tControl;	//	@A3E158
+
+ASSERT_CLASS_SIZE(Control, 92);

@@ -60,9 +60,10 @@ namespace Input
 		void					SetWindowCapture(HWND window);	//	@43B3C0
 		void					ReleaseWindowCapture();	//	@43B3F0
 		void					ResetButtonsState();	//	@43B410
-		const char*				MouseButtonToStr(unsigned int button);	//	@43B440
-		const char*				MousePositionTostr(unsigned int axis);	//	@43B4C0
 		void					Process();	//	@43B670
+
+		static const char*		MouseButtonToStr(unsigned int button);	//	@43B440
+		static const char*		MousePositionTostr(unsigned int axis);	//	@43B4C0
 	};
 
 	ASSERT_CLASS_SIZE(Mouse, 96);

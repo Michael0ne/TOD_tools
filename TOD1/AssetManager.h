@@ -119,7 +119,7 @@ public:
     int                         m_NodesInNodeList[6];
     int                         field_1C8;
     bool                        m_BlocksUnloaded;
-    int                        *field_1D0;
+    std::map<int, int>         *field_1D0;
     int                         m_EngineVersionTimestamp;
     RegionCode                  m_RegionId;
     bool                        m_CheckTimestamp;

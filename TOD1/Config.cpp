@@ -31,6 +31,8 @@
 #include "FontAsset.h"
 #include "TextAsset.h"
 #include "ModelAsset.h"
+#include "Group.h"
+#include "Control.h"
 
 namespace Script
 {
@@ -646,9 +648,9 @@ namespace GameConfig
 		SignPost::Register();
 		Track::Register();
 		ControlSetup::Register();
+		*/
 		Control::Register();
 		Group::Register();
-		*/
 		CollisionProbe::Register();
 		/*
 		RigidBody::Register();

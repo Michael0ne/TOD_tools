@@ -38,7 +38,8 @@ namespace Input
 		void					Reset();	//	@43A740
 		void					ResetKeyboardButtons();	//	@43A750
 		void					UnacquireAndResetKeyboard();	//	@43A790
-		const char*				KeyboardButtonToStr(int keyCode);	//	@43A7D0
+		
+		static const char*		KeyboardButtonToStr(int keyCode);	//	@43A7D0
 	};
 }
 

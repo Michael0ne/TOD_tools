@@ -56,6 +56,11 @@ public:
     void                SetMeshDataAsCurrent() const;   //  @462F20
     void                SWSkin();   //  @462690
     char*               LockAndGetVertexBufferPtr(const int mode);  //  @44BCA0
+
+    static void         CreateStaticVertexDeclaration();    //  @461D30
+
+    static LPDIRECT3DVERTEXDECLARATION9 StaticVertexDeclaration[4]; //  @A39F40
+    static bool         StaticVertexDeclarationCreated; //  @A39F3C
 };
 
 ASSERT_CLASS_SIZE(MeshBuffer_Dx9, 100);

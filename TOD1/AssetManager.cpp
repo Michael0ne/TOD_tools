@@ -765,11 +765,12 @@ AssetManager::AssetManager(bool loadBlocks)
 
     g_AssetManager = this;
 
-    m_NodesList[0].reserve(11200);
-    m_NodesList[1].reserve(4100);
-    m_NodesList[2].reserve(6000);
-    m_NodesList[3].reserve(2800);
-    m_NodesList[5].reserve(100);
+    m_NodesList[0].resize(11200);
+    m_NodesList[1].resize(4100);
+    m_NodesList[2].resize(6000);
+    m_NodesList[3].resize(2800);
+    m_NodesList[5].resize(100);
+
     m_NodesInNodeList[0] = 1;
     m_NodesInNodeList[1] = 1;
     m_NodesInNodeList[2] = 1;
