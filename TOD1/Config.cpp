@@ -33,6 +33,8 @@
 #include "ModelAsset.h"
 #include "Group.h"
 #include "Control.h"
+#include "Track.h"
+#include "ControlSetup.h"
 
 namespace Script
 {
@@ -646,9 +648,9 @@ namespace GameConfig
 		TrackPoint::Register();
 		Navigator::Register();
 		SignPost::Register();
+		*/
 		Track::Register();
 		ControlSetup::Register();
-		*/
 		Control::Register();
 		Group::Register();
 		CollisionProbe::Register();

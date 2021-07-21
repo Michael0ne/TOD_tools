@@ -23,9 +23,9 @@ namespace Input {
 	{
 		MESSAGE_CLASS_CREATED(Mouse);
 
-		m_nMouseButtons[MOUSE_BUTTON_0] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_1] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_2] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_0] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_1] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_2] = NULL;
 		m_FullscreenMousePosition.x = m_FullscreenMousePosition.y = NULL;
 		m_Position_X = m_Position_Y = m_Position_Z = NULL;
 		m_WindowedMousePosition.x = m_WindowedMousePosition.y = NULL;
@@ -94,16 +94,16 @@ namespace Input {
 		m_DirectInputDevice->Unacquire();
 		m_Acquired = false;
 
-		m_nMouseButtons[MOUSE_BUTTON_0] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_1] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_2] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_3] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_4] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_5] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_6] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_7] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_WHEEL_UP] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_WHEEL_DOWN] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_0] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_1] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_2] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_3] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_4] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_5] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_6] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_7] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_WHEEL_UP] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_WHEEL_DOWN] = NULL;
 	}
 
 	void Mouse::SetWindowCapture(HWND window)
@@ -123,16 +123,16 @@ namespace Input {
 
 	void Mouse::ResetButtonsState()
 	{
-		m_nMouseButtons[MOUSE_BUTTON_0] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_1] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_2] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_3] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_4] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_5] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_6] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_7] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_WHEEL_UP] = NULL;
-		m_nMouseButtons[MOUSE_BUTTON_WHEEL_DOWN] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_0] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_1] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_2] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_3] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_4] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_5] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_6] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_7] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_WHEEL_UP] = NULL;
+		m_MouseButtons[MOUSE_BUTTON_WHEEL_DOWN] = NULL;
 
 		m_Position_Z = NULL;
 	}
@@ -188,16 +188,16 @@ namespace Input {
 			m_DirectInputDevice->Unacquire();
 			m_Acquired = false;
 
-			m_nMouseButtons[MOUSE_BUTTON_0] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_1] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_2] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_3] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_4] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_5] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_6] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_7] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_WHEEL_UP] = NULL;
-			m_nMouseButtons[MOUSE_BUTTON_WHEEL_DOWN] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_0] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_1] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_2] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_3] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_4] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_5] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_6] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_7] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_WHEEL_UP] = NULL;
+			m_MouseButtons[MOUSE_BUTTON_WHEEL_DOWN] = NULL;
 
 			return;
 		}
@@ -246,9 +246,9 @@ namespace Input {
 				if (m_Buffer[ind].dwData >= 0)
 				{
 					if (m_Buffer[ind].dwData > 0)
-						m_nMouseButtons[MOUSE_BUTTON_WHEEL_UP] |= 6;
+						m_MouseButtons[MOUSE_BUTTON_WHEEL_UP] |= 6;
 				}else
-					m_nMouseButtons[MOUSE_BUTTON_WHEEL_DOWN] |= 6;
+					m_MouseButtons[MOUSE_BUTTON_WHEEL_DOWN] |= 6;
 				break;
 			case 12:
 			case 13:
@@ -258,7 +258,7 @@ namespace Input {
 			case 17:
 			case 18:
 			case 19:
-				m_nMouseButtons[m_Buffer[ind].dwOfs - 12] |= (m_Buffer[ind].dwData >> 7) & 1 ? 3 : ((m_nMouseButtons[m_Buffer[ind].dwOfs - 12] & 0xFFFFFFFE) | 4);
+				m_MouseButtons[m_Buffer[ind].dwOfs - 12] |= (m_Buffer[ind].dwData >> 7) & 1 ? 3 : ((m_MouseButtons[m_Buffer[ind].dwOfs - 12] & 0xFFFFFFFE) | 4);
 				break;
 			default:
 				LogDump::LogA("WARNING: Invalid mousebutton %i!", m_Buffer[ind].dwOfs);

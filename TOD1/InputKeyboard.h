@@ -3,13 +3,13 @@
 
 namespace Input
 {
-
 	#define INPUT_KEYBOARD_BUFFERS_COUNT 30
 
 	class Keyboard
 	{
 		friend class BuiltinType;
 		friend class GfxInternal_Dx9;
+		friend class ControlSetup;
 	protected:
 		unsigned char			m_ButtonStates[256];
 		unsigned char			m_ButtonStates_1[256];

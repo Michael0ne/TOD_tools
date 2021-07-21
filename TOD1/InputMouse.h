@@ -23,17 +23,15 @@ namespace Input
 	 //---------- Wrapper around DirectInput Mouse ----------------
 	class Mouse
 	{
-	private:
-		unsigned int			m_nMouseButtons[10];
-		int						m_Position_Z;
 	public:
+		unsigned int			m_MouseButtons[10];
+		int						m_Position_Z;
 		tagPOINT				m_FullscreenMousePosition;
 		tagPOINT				m_WindowedMousePosition;
-	private:
 		int						m_Position_X;
 		int						m_Position_Y;
 		int						field_44;
-		BYTE					m_ShouldBeProcessed;
+		bool					m_ShouldBeProcessed;
 		LPDIRECTINPUT8			m_DirectInputInterface;
 		LPDIRECTINPUTDEVICE8	m_DirectInputDevice;
 		bool					m_Acquired;

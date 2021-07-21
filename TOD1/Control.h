@@ -29,6 +29,10 @@ public:
 
 	static void		Register();	//	@924A30
 
+protected:
+	const int		MousePositionEngineToString() const;	//	@924600
+	const int		MousePositionRawToString() const;	//	@9245A0
+
 private:
 	const int		GetKey() const;	//	@8F92C0
 	void			SetKey(const int keyind);	//	@924590

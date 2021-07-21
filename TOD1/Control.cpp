@@ -4,6 +4,12 @@
 #include "InputKeyboard.h"
 #include "InputMouse.h"
 #include "InputGameController.h"
+#ifdef DIRECTX
+#include "GfxInternal_Dx9.h"
+#endif
+#ifdef OPENGL
+#include "GfxInternal_OGL.h"
+#endif
 
 EntityType* tControl;
 
@@ -17,6 +23,52 @@ void Control::Register()
 	tControl->RegisterProperty(tSTRING, "keystr", &GetKeyStr, NULL, NULL, NULL, &SetKeyStr, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
 
 	tControl->_86E9B0();
+}
+
+const int Control::MousePositionEngineToString() const
+{
+	if (m_ControlType != MOUSE)
+		return NULL;
+
+	switch (m_Key)
+	{
+	case 0:
+		return g_InputMouse->m_Position_X;
+	case 1:
+		return g_InputMouse->m_Position_Y;
+	default:
+		return NULL;
+	}
+}
+
+const int Control::MousePositionRawToString() const
+{
+	if (m_ControlType != MOUSE)
+		return NULL;
+
+	switch (m_Key)
+	{
+	case 0:
+		return
+#ifdef DIRECTX
+			g_GfxInternal_Dx9->m_Windowed
+#endif
+#ifdef OPENGL
+			g_GfxInternal_OGL->m_Windowed
+#endif
+			? g_InputMouse->m_WindowedMousePosition.x : g_InputMouse->m_FullscreenMousePosition.x;
+	case 1:
+		return
+#ifdef DIRECTX
+			g_GfxInternal_Dx9->m_Windowed
+#endif
+#ifdef OPENGL
+			g_GfxInternal_OGL->m_Windowed
+#endif
+			? g_InputMouse->m_WindowedMousePosition.y : g_InputMouse->m_FullscreenMousePosition.y;
+	default:
+		return NULL;
+	}
 }
 
 const int Control::GetKey() const

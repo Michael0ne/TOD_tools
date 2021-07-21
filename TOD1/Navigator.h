@@ -1,6 +1,8 @@
 #pragma once
 #include "Node.h"
 
+class SignPost;
+
 class Navigator : public Node
 {
 protected:
@@ -26,6 +28,10 @@ protected:
 	int							m_MoveCtrlCommand;
 public:
 	Navigator();	//	@91DB30
+
+private:
+	void						FindNearestSignPost(int* args) const;	//	@91CD20
+	static SignPost*			FindNearestSignPost_Impl(const Vector4f& pos, const float radius);	//	@920CA0
 };
 
 ASSERT_CLASS_SIZE(Navigator, 220);

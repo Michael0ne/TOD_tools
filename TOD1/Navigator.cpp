@@ -24,3 +24,14 @@ Navigator::Navigator() : Node(NODE_MASK_EMPTY)
 	m_ObstacleCheckInterval = 500;
 	m_PathFinishedEvent = -1;
 }
+
+void Navigator::FindNearestSignPost(int* args) const
+{
+	*args = (int)FindNearestSignPost_Impl(*(Vector4f*)&args[1], (const float)args[5]);
+}
+
+SignPost* Navigator::FindNearestSignPost_Impl(const Vector4f& pos, const float radius)
+{
+	//	NOTE: Yes, this IS the original code.
+	return nullptr;
+}
