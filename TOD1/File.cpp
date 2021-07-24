@@ -777,6 +777,16 @@ void File::ExtractFilePath(const char* inFilePath, char* outDirectory, char* out
 	strncpy(outDirectory, inFilePath, lastslashpos - inFilePath + 1);
 }
 
+void File::ExtractFileExtension(String& outStr, const char* const path)
+{
+	char fdir[1024] = {};
+	char fname[128] = {};
+	char fext[16] = {};
+	ExtractFilePath(path, fdir, fname, fext);
+
+	outStr = fext;
+}
+
 FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _createifnotfound)
 {
 	m_File = NULL;

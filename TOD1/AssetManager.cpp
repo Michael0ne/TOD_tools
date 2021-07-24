@@ -478,7 +478,18 @@ Asset* AssetManager::LoadResourceFile(const char* const respath)
         return texass;
     }
 
-    //	TODO: actually load asset from a specified path.
+    String resdir;
+    assinst->SetResourcePathAndGetResourcesDir(resdir, respath, Asset::PlatformId::PC);
+
+    if (resdir.Empty())
+    {
+        Asset* asset = assinst->m_Creator();
+        asset->SetResourcePath(respath);
+        _878220(*asset);
+
+        return asset;
+    }
+
     return nullptr;
 }
 
@@ -725,6 +736,37 @@ void AssetManager::_877AE0()
         return;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+bool AssetManager::_878220(Asset& asset)
+{    
+    char assetdir[1024] = {};
+    char assetfilename[256] = {};
+    char assetext[16] = {};
+
+    File::ExtractFilePath(asset.m_ResourcePath, assetdir, assetfilename, assetext);
+
+    if (assetext && strcmp(assetext, "stream") == NULL)
+        strcpy(strstr(asset.m_ResourcePath, "stream"), "wav");
+
+    if (!asset.m_ResourcePath || !*asset.m_ResourcePath)
+        return false;
+
+    if (asset.m_ResourceTimestamp > NULL)
+    {
+        String resdir;
+        asset.GetResourcesDir(resdir, Asset::PlatformId::PC);
+
+        if (!resdir.Empty())
+            return false;
+
+        if (File::FindFileEverywhere(asset.m_ResourcePath))
+            if (asset.GetResourceCountryCode() != Script::GetCurrentCountryCode())
+                return false;
+    }
+
+    return false;
+}
+
 void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)
 {
     m_ResourcesInstancesList.insert(m_ResourcesInstancesList.begin(), index, {});
@@ -751,7 +793,7 @@ unsigned int AssetManager::FindNodeById(unsigned int id)
     };
 
     unsigned int i = (id & 0xFF8FFFFF) + 1;
-    for (i; i < m_NodesList[block_id].size(); i++);
+    for (; i < m_NodesList[block_id].size(); ++i);
 
     return i | ((block_id + 1) << 20);
 }

@@ -164,11 +164,10 @@ void GfxInternal_Dx9::SetFlushDirectly()
     LogDump::LogA("FlushDirectly set to %i\n", m_FlushDirectly);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::SetupViewportSurface()
 {
-    //if (m_ViewportTexturesArray[0])
-        //SetRenderTarget(m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex]);
+    if (m_ViewportTexturesArray[0])
+        SetRenderTarget(m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex]);
 }
 
 void GfxInternal_Dx9::HandleDeviceLost()
@@ -658,9 +657,19 @@ void GfxInternal_Dx9::CreateSurfaces()
     m_ShouldCreateVerticies = false;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::CreateParticleMeshBuffer()
 {
+    Mesh mesh(0, 0, 1);
+    mesh.AddFace(0, { -0.5, 0.5, 0 }, { 0, 0, -1 }, { 0, 0 });
+    mesh.AddFace(1, { -0.5, -0.5, 0 }, { 0, 0, -1 }, { 0, 1 });
+    mesh.AddFace(2, { 0.5, -0.5, 0 }, { 0, 0, -1 }, { 1, 1 });
+    mesh.AddFace(3, { 0.5, 0.5, 0 }, { 0, 0, -1 }, { 1, 0 });
+    mesh.SetFaceVertexIndex(0, 1);
+    mesh.SetFaceVertexIndex(1, 2);
+    mesh.SetFaceVertexIndex(2, 0);
+    mesh.SetFaceVertexIndex(3, 3);
+
+    m_ParticleMeshBuffer = new MeshBuffer(mesh, 1);
 }
 
 void GfxInternal_Dx9::RenderTriangle2D(const Vector2<float>& top, const Vector2<float>& bottomleft, const Vector2<float>& bottomright, const ColorRGB& clr)
@@ -2392,7 +2401,6 @@ void GfxInternal_Dx9::SetRenderTarget(Texture* tex)
     }
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::TransformStateView(DirectX::XMMATRIX* mat)
 {
     m_IdentityMatrix = *mat;
@@ -2404,9 +2412,7 @@ void GfxInternal_Dx9::TransformStateView(DirectX::XMMATRIX* mat)
     
     m_ViewMatrix.r[3] = { 0, 0, 0, 1 };
 
-    DirectX::XMMATRIX vmat;
-    //_4687D0(mat, vmat);
-
+    DirectX::XMMATRIX vmat = DirectX::XMMatrixTranspose(*mat);
     m_Direct3DDevice->SetTransform(D3DTS_VIEW, (const D3DMATRIX*)&vmat);
 
     if (m_EnvironmentMapEnabled)

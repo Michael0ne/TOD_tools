@@ -31,10 +31,10 @@ MockupBox::MockupBox() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 		Mesh m(1, 0, 1);
 
 		m.AddFace(0, { -1, -1, -1 }, (Vector3f)BuiltinType::OutVector, { 0, 0 });
-		
 		m.SetFaceVertexIndex(0, 0);
+		//	TODO: Add 22 more faces.
 
-		MeshBufferPtr = new MeshBuffer(m);
+		MeshBufferPtr = new MeshBuffer(m, 0);
 	}
 
 	CalculateDimensions();

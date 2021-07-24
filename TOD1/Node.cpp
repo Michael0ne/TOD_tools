@@ -99,6 +99,8 @@ Entity* Node::FindNode(const char* nodeName)
 {
 #ifdef _EXE
     LogDump::LogA("Node::FindNode NOT IMPLEMENTED!\n");
+
+    return nullptr;
 #else
     return (*(Entity * (__thiscall*)(Node*, const char*))0x88EED0)(this, nodeName);
 #endif

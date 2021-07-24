@@ -231,6 +231,14 @@ void AssetInstance::SetAlignment(unsigned int size, unsigned int slot)
         AssetAlignment[slot] = size;
 }
 
+void AssetInstance::SetResourcePathAndGetResourcesDir(String& outResourcesDir, const char* const resourcepath, const unsigned char platform) const
+{
+    Asset* asset = m_Creator();
+    asset->SetResourcePath(resourcepath);
+    asset->GetResourcesDir(outResourcesDir, (Asset::PlatformId)platform);
+    Asset::Destroy(asset);
+}
+
 AllocatorIndex Asset::AllocatorIndexByBlockType(unsigned int blocktype)
 {
     if (!blocktype ||

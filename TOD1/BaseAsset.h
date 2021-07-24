@@ -32,6 +32,7 @@ public:
     }
 
     void                SetAlignment(unsigned int size, unsigned int slot); //  @852160
+    void                SetResourcePathAndGetResourcesDir(String& outResourcesDir, const char* const resourcepath, const unsigned char platform) const;    //  @852180
 
     static unsigned int AssetAlignment[3];  //  @A3BE1C
     static std::vector<AssetInstance*> Assets;  //  @A10F80
@@ -39,9 +40,15 @@ public:
     static AssetInstance*   GetAssetInstanceByName(const char* const asspath);  //  @852220
 };
 
-//	NOTE: this class is actually inherited from another class, but parent doesn't seem to do anything important, so skipping it now.
+//  NOTE: this interface is also being used for StreamBuffer. Hmm?
+class IAsset
+{
+public:
+    virtual ~IAsset() {};  //  @43F3B0
+};
+
 #pragma pack(4)
-class Asset
+class Asset : public IAsset
 {
 public:
     enum PlatformId

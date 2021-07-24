@@ -23,7 +23,7 @@ protected:
 	float	field_40;
 
 public:
-	MeshBuffer(const Mesh& mutablemesh);	//	@4617D0
+	MeshBuffer(const Mesh& mutablemesh, const int);	//	@4617D0
 	~MeshBuffer();	//	@4616F0
 
 	void* operator new(size_t size)

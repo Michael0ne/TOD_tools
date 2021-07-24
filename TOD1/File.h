@@ -214,6 +214,7 @@ public:
     static void		AddDirectoryMappingsListEntry(const char* str1, const char* str2);	//	@418F90
     static String&	GetPathFromDirectoryMappings(String& outStr, const char* path);	//	@41A360
     static void		ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension);	//	@4088E0
+    static void     ExtractFileExtension(String& outStr, const char* const path);   //  @409420
     static String*	ExtractFileDir(String& outStr, const char* path);	//	@409360
     static String*	ExtractFileName(String& outStr, const char* path);	//	@4093B0
     static void		FindDirectoryMappedFileAndDelete(const char* const filename);	//	@418810

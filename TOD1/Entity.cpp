@@ -146,7 +146,12 @@ const int Entity::SaveScriptData(SaveFileHelper& savefilehelper)
 	if (propertiessize > 0)
 	{
 		int propval[4] = {};
+#ifdef INCLUDE_FIXES
+		//	NOTE: 8 Kib of space should be sufficient, I guess.
+		char buf[8192] = {};
+#else
 		char buf[32768] = {};
+#endif
 
 		for (unsigned int propindex = 0; propindex < propertiessize; ++propindex)
 		{

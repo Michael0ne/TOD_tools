@@ -269,7 +269,7 @@ protected:
     Vector4f                        m_ParticleOrient;
     int                             m_ParticleAlign;
     int                             m_ParticleColor;
-    int                            *m_ParticleMeshBuffer;	//	TODO: is this correct name?
+    MeshBuffer                     *m_ParticleMeshBuffer;
     int                             m_ParticleSystemEnded;
 public:
     float                           field_9758;

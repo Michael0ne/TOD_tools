@@ -84,7 +84,7 @@
     <EmbedManifest>false</EmbedManifest>
     <TargetName>TOD1</TargetName>
     <IncludePath>$(SolutionDir)ThirdParty;$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)ThirdParty\zlib121\;$(SolutionDir)ThirdParty\libvorbis-1.1.0\lib\;$(SolutionDir)ThirdParty\libogg-1.1.2\lib\;$(SolutionDir)Debug\;$(DXSDK_DIR)Lib\x86\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)ThirdParty\zlib121\;$(SolutionDir)ThirdParty\libvorbis-1.1.0\lib\;$(SolutionDir)ThirdParty\libogg-1.1.2\lib\;$(SolutionDir)Debug\;$(DXSDK_DIR)Lib\x86\;$(SolutionDir)ThirdParty\DirectXTex\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -144,7 +144,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>dxguid.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dsound.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;debugmenu.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dsound.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;debugmenu.lib;zlib.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>

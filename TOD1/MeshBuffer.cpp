@@ -1,7 +1,7 @@
 #include "MeshBuffer.h"
 
 #pragma message(TODO_IMPLEMENTATION)
-MeshBuffer::MeshBuffer(const Mesh& mutablemesh)
+MeshBuffer::MeshBuffer(const Mesh& mutablemesh, const int)
 {
 	MESSAGE_CLASS_CREATED(MeshBuffer);
 }
