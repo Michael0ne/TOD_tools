@@ -10,8 +10,6 @@
 #include <directxmath\include\DirectXMath.h>
 #include <vector>
 
-#define COLOR_BGRA(clr) (DWORD)( ((unsigned char)(clr.b * 255.f) << 8 | ((unsigned char)(clr.g * 255.f) << 8 |(((unsigned char)(clr.r * 255.f) << 8) | (unsigned char)(clr.a * 255.f) << 8))))
-
 class GfxInternal_Dx9
 {
     friend class GfxInternal;

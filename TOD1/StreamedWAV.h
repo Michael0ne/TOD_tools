@@ -31,6 +31,7 @@ struct SoundBufferInfo
 class StreamedWAV
 {
 	friend class SoundFile;
+	friend class StreamedSoundBuffer;
 protected:
 	AuxMonoStreamSoundFormat m_SoundFormat;
 	int				m_WavChunkSize;

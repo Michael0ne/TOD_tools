@@ -16,6 +16,7 @@ float StreamedSoundBuffers::DefaultMusicVolume;
 float StreamedSoundBuffers::DefaultSpeaksVolume;
 SoundSystemType StreamedSoundBuffers::SoundRendererId;
 HANDLE StreamedSoundBuffers::SemaphoreObject;
+StreamedSoundBuffer* StreamedSoundBuffers::StaticStreamedSound = nullptr;
 
 void StreamedSoundBuffers::SetDefaultFxVolume(float vol)
 {
@@ -529,18 +530,18 @@ void StreamedSoundBuffers::_43E850()
 void StreamedSoundBuffers::StopAllSounds()
 {
 	for (unsigned int i = 0; i < m_StreamDataBufferList.size(); ++i)
-		m_StreamDataBufferList[i]->_443E00();
+		m_StreamDataBufferList[i]->StopZerothSound();
 }
 
 void StreamedSoundBuffers::PreallocateStreamBuffersPool()
 {
 	LogDump::LogA(" ++ Preparing/pre-allocating %d Streambuffers to pool.\n", STREAMEDSOUNDBUFFERS_PREALLOCATED_COUNT);
-	std::vector<StreamedSound*> tempStreamedSoundVector(STREAMEDSOUNDBUFFERS_PREALLOCATED_COUNT);
+	std::vector<StreamedSoundBuffer*> tempStreamedSoundVector(STREAMEDSOUNDBUFFERS_PREALLOCATED_COUNT);
 
 	for (unsigned int i = 0; i < STREAMEDSOUNDBUFFERS_PREALLOCATED_COUNT; ++i)
 	{
 		SoundFile sndfile;
-		tempStreamedSoundVector.push_back(new StreamedSound(&sndfile, 0, 0, 0, 1, 0));
+		tempStreamedSoundVector.push_back(new StreamedSoundBuffer(&sndfile, 0, 0, 0, 1, 0));
 	}
 
 	tempStreamedSoundVector.clear();
@@ -554,8 +555,7 @@ void StreamedSoundBuffers::PreallocateStreamBuffersPool()
 	LogDump::LogA(" ++ Done.\n");
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffers::CreateStaticStreamBuffer()
+void StreamedSoundBuffers::CreateStaticStreamedSoundBuffer()
 {
-
+	StaticStreamedSound = new StreamedSoundBuffer(false, 1024, 1, false, 2.f, 44100, false, NULL, true, nullptr);
 }

@@ -1,0 +1,393 @@
+#include "StreamedSoundBuffer.h"
+#include "LogDump.h"
+#include "StreamedSoundBuffers.h"
+#include "StreamedWAV.h"
+#include "BuiltinType.h"
+
+#pragma message(TODO_IMPLEMENTATION)
+StreamedSoundBuffer::~StreamedSoundBuffer()
+{
+	MESSAGE_CLASS_DESTROYED(StreamedSoundBuffer);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+StreamedSoundBuffer::StreamedSoundBuffer(class SoundFile* sndfile, int, int, int, char, char)
+{
+	MESSAGE_CLASS_CREATED(StreamedSoundBuffer);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+StreamedSoundBuffer::StreamedSoundBuffer(bool a2, unsigned int totalchunks, int channels, unsigned int isstereo, float bytespersec, unsigned int frequency, bool ismonosound, unsigned int a9, char a10, const char* filepath)
+{
+	MESSAGE_CLASS_CREATED(StreamedSoundBuffer);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::stub2()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::stub3()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::SetSampledData(void*)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool StreamedSoundBuffer::Is3DSound(int)
+{
+	return false;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::_4433A0(bool)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool StreamedSoundBuffer::IsLooped(int)
+{
+	return false;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+int StreamedSoundBuffer::Play(int, char, int)
+{
+	return 0;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool StreamedSoundBuffer::IsPlaying(int)
+{
+	return false;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool StreamedSoundBuffer::AreAnyInstancesPlaying()
+{
+	return false;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::_440850(int)
+{
+}
+
+void StreamedSoundBuffer::Stop(int)
+{
+	field_54 = field_54 & 0xFF00FFFF | (((unsigned short)field_54 + 1) << 16) & 0xFF0000;
+	m_Flags.m_FlagBits.StopRequest = m_Flags.m_FlagBits._4 = true;
+
+	if (m_StreamedWAV)
+	{
+		m_StoppingFinished = !m_DirectSoundBuffer && !m_DieselPowerSoundBuffer;
+
+		if (field_A0)
+			ResetEvent(field_A0);
+		if (field_B0)
+			SetEvent(field_B0);
+		if (m_EventNotify)
+			ResetEvent(m_EventNotify);
+		if (m_EvHandle_2)
+			ResetEvent(m_EvHandle_2);
+
+		m_Flags.m_FlagBits.LastChunkPlaying = false;
+		field_5C = NULL;
+	}
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::SetPause(int, bool)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::SetPause_A(int, bool)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool StreamedSoundBuffer::IsPaused(int)
+{
+	return false;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool StreamedSoundBuffer::IsMonoStreamCreated()
+{
+	return false;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+int StreamedSoundBuffer::_443480()
+{
+	return 0;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::SetVolume(int, float)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+float StreamedSoundBuffer::GetVolume(int)
+{
+	return 0.0f;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::SetFrequencyMultiplier(int, float mul)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+float StreamedSoundBuffer::GetFrequencyMultiplier(int)
+{
+	return 0.0f;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+int StreamedSoundBuffer::_4435C0(int, int)
+{
+	return 0;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+float StreamedSoundBuffer::_443650(int)
+{
+	return 0.0f;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::SetSoundPosition(int, const Vector4f*)
+{
+}
+
+void StreamedSoundBuffer::GetPosition(Vector4f& outPos, const int)
+{
+	if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+	{
+		if (m_DieselPowerSoundBuffer)
+		{
+			float x, y, z;
+			m_DieselPowerSoundBuffer->GetPosition(x, y, z);
+			outPos = { x, y, z, 0 };
+
+			return;
+		}
+		else
+		{
+			outPos = BuiltinType::ZeroVector;
+			return;
+		}
+	}
+
+	if (m_DirectSound3DBuffer)
+	{
+		m_DirectSound3DBuffer->GetPosition((LPD3DVECTOR)&m_Position);
+		outPos = m_Position;
+	}
+	else
+	{
+		outPos = BuiltinType::ZeroVector;
+		return;
+	}
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::_443990(int, int*)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Vector4f* StreamedSoundBuffer::_4439E0(Vector4f*, int)
+{
+	return nullptr;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::SetPan(int, float)
+{
+}
+
+float StreamedSoundBuffer::GetPan(int)
+{
+	if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+		if (m_DieselPowerSoundBuffer)
+			return m_DieselPowerSoundBuffer->GetPan();
+		else
+			return NULL;
+
+	if (!m_DirectSound3DBuffer)
+		return NULL;
+
+	m_DirectSound3DBuffer->GetMaxDistance(&m_Pan);
+	return m_Pan;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::SetFrequency(int, float)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+float StreamedSoundBuffer::GetFrequency(int)
+{
+	return 0.0f;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::_443C20(int, float)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+float StreamedSoundBuffer::_443C90(int)
+{
+	return 0.0f;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::_443CD0(int, float)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+float StreamedSoundBuffer::_443D30(int)
+{
+	return 0.0f;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void StreamedSoundBuffer::_443D40(int, float, float, float)
+{
+}
+
+int StreamedSoundBuffer::GetChannelsNumber() const
+{
+	return m_Channels;
+}
+
+void StreamedSoundBuffer::DumpInfo()
+{
+	Vector4f sndpos;
+	GetPosition(sndpos, NULL);
+	
+	const bool islooped = m_Flags.m_FlagBits.Looped;
+	const bool isplaying = IsPlaying(NULL);
+	const bool is3d = Is3DSound(NULL);
+	const float vol = GetVolume(NULL);
+
+	LogDump::LogA("   %s, vol=%.1f, playing=%s, looped=%s, pos=(%.1f,%.1f,%.1f)\n",
+		is3d ? "3d" : "2d",
+		vol,
+		isplaying,
+		islooped,
+		sndpos.x, sndpos.y, sndpos.z);
+}
+
+void StreamedSoundBuffer::StopZerothSound()
+{
+	Stop(0);
+}
+
+void StreamedSoundBuffer::FillSoundData(const bool overwrite)
+{
+	char* soundbufferptr = nullptr;
+	unsigned int soundbuffersize = NULL;
+
+	if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+	{
+		soundbufferptr = m_DieselPowerSoundBuffer->GetSoundBufferPtr();
+		soundbuffersize = m_DieselPowerSoundBuffer->stub9();
+	}
+	else
+	{
+		unsigned int i = NULL;
+		HRESULT hr = NULL;
+
+		for (; i < 100; ++i)
+		{
+			hr = m_DirectSoundBuffer->Lock(NULL, m_SoundBufferBlockSize, (LPVOID*)&soundbufferptr, (LPDWORD)&soundbuffersize, nullptr, nullptr, DSBLOCK_ENTIREBUFFER);
+
+			if (SUCCEEDED(hr))
+				break;
+
+			//	NOTE: this method is executed from another thread, so SoundSystem MAY change at any moment.
+			if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+			{
+				soundbufferptr = m_DieselPowerSoundBuffer->GetSoundBufferPtr();
+				soundbuffersize = m_DieselPowerSoundBuffer->stub9();
+			}
+		}
+
+		if (i >= 100)
+		{
+			char* errmsgbuf = nullptr;
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, hr, 0x400, errmsgbuf, NULL, nullptr);
+			delete errmsgbuf;
+		}
+	}
+
+	if (overwrite)
+	{
+		if (m_StreamedWAV->m_SoundBufferPtr)
+		{
+			memcpy(soundbufferptr, m_StreamedWAV->m_SoundBufferPtr, 4 * (m_SoundBufferBlockSize >> 2));
+			memcpy(&soundbufferptr[4 * (m_SoundBufferBlockSize >> 2)], &m_StreamedWAV->m_SoundBufferPtr[4 * (m_SoundBufferBlockSize >> 2)], m_SoundBufferBlockSize & 3);
+		}
+		else
+			memset(soundbufferptr, NULL, 4 * (m_SoundBufferBlockSize >> 2) + (m_SoundBufferBlockSize & 3));
+	}
+	else
+	{
+		if (m_StreamedWAV->m_SoundBufferPtr)
+			memcpy(soundbufferptr + m_SoundBufferBlockSize, m_StreamedWAV->m_SoundBufferPtr, m_SoundBufferBlockSize);
+		else
+			memset(soundbufferptr + m_SoundBufferBlockSize, NULL, 4 * (m_SoundBufferBlockSize >> 2) + (m_SoundBufferBlockSize & 3));
+	}
+
+	if (g_StreamedSoundBuffers->m_SoundSystem != SOUND_SYSTEM_DIESELPOWER)
+	{
+		unsigned int i = NULL;
+		HRESULT hr = NULL;
+
+		for (; i < 100; ++i)
+		{
+			hr = m_DirectSoundBuffer->Unlock(soundbufferptr, soundbuffersize, nullptr, NULL);
+
+			if (SUCCEEDED(hr))
+				break;
+		}
+
+		if (i >= 100)
+		{
+			char* errmsgbuf = nullptr;
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, hr, LANG_USER_DEFAULT, (LPSTR)&errmsgbuf, NULL, nullptr);
+			delete errmsgbuf;
+		}
+	}
+}
+
+IStreamBuffer::~IStreamBuffer()
+{
+	MESSAGE_CLASS_DESTROYED(IStreamBuffer);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+StreamBuffer::~StreamBuffer()
+{
+	MESSAGE_CLASS_DESTROYED(StreamBuffer);
+}
+
+StreamBuffer::StreamBuffer()
+{
+	MESSAGE_CLASS_CREATED(StreamBuffer);
+
+	m_SampledData = nullptr;
+	m_AuxMonoStream_1 = nullptr;
+}

@@ -126,6 +126,11 @@ void VertexBuffer::FillFromBufferedData()
 	}
 }
 
+char* VertexBuffer::GetBufferPtr() const
+{
+	return m_BufferPtr;
+}
+
 void VertexBuffer::CreateVerticesMap()
 {
 	VertexBufferMap = new std::map<int, VertexBuffer*>();

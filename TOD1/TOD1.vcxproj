@@ -369,7 +369,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
-    <ClInclude Include="StreamedSound.h" />
+    <ClInclude Include="StreamedSoundBuffer.h" />
     <ClInclude Include="StringsPool.h" />
     <ClInclude Include="StringType.h" />
     <ClInclude Include="SystemSubAllocator.h" />
@@ -530,7 +530,7 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
-    <ClCompile Include="StreamedSound.cpp" />
+    <ClCompile Include="StreamedSoundBuffer.cpp" />
     <ClCompile Include="StringsPool.cpp" />
     <ClCompile Include="StringType.cpp" />
     <ClCompile Include="SystemSubAllocator.cpp" />

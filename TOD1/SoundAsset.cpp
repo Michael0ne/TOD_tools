@@ -1,7 +1,7 @@
 #include "SoundAsset.h"
 #include "File.h"
 #include "LogDump.h"
-#include "StreamedSound.h"
+#include "StreamedSoundBuffer.h"
 
 AssetInstance* SoundAsset::Instance;
 
@@ -130,7 +130,7 @@ void SoundAsset::LoadResource(const char* const resPath)
 
 	if (sndfile.GetTotalChunks())
 	{
-		m_StreamBuffer = new StreamedSound(
+		m_StreamBuffer = new StreamedSoundBuffer(
 			false,
 			sndfile.GetTotalChunks(),
 			sndfile.GetNumberOfChannels(),

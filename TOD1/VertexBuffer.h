@@ -47,6 +47,7 @@ public:
     int                         SetData(const unsigned int verticies, const void* indata, void* outdata);	//	@464C00
     void                        CreateDirect3DBuffer();	//	@464CC0
     void                        FillFromBufferedData();   //  @464AF0
+    char*                       GetBufferPtr() const; //  @464BF0
 
     static void                 CreateVerticesMap();	//	@4651B0
     static void                 DestroyVertexBufferMap();   //  @464D60

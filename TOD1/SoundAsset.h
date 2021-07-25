@@ -1,7 +1,7 @@
 #pragma once
 #include "BaseAsset.h"
 
-class StreamedSound;
+class StreamedSoundBuffer;
 
 class SoundAsset : public Asset
 {
@@ -30,7 +30,7 @@ class SoundAsset : public Asset
 
 protected:
     int                 field_1C;
-    StreamedSound       *m_StreamBuffer;
+    StreamedSoundBuffer       *m_StreamBuffer;
     int                 field_24;
 
 public:

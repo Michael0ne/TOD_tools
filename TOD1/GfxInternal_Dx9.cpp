@@ -200,7 +200,7 @@ void GfxInternal_Dx9::Clear(unsigned char flags, const ColorRGB& clearcolor)
         flags_ |= 6;
 
     ResetTextures();
-    m_Direct3DDevice->Clear(0, nullptr, flags_, COLOR_BGRA(clearcolor), 1.f, 0);
+    m_Direct3DDevice->Clear(0, nullptr, flags_, D3DCOLOR_DWORD(clearcolor.r, clearcolor.g, clearcolor.b, clearcolor.a), 1.f, 0);
 }
 
 void GfxInternal_Dx9::SetZBias(unsigned int zbias)
@@ -214,7 +214,7 @@ void GfxInternal_Dx9::SetZBias(unsigned int zbias)
 
 void GfxInternal_Dx9::SetFogProperties(unsigned int fogmode, const ColorRGB& color, float start, float end, float density)
 {
-    m_Direct3DDevice->SetRenderState(D3DRS_FOGCOLOR, COLOR_BGRA(color));
+    m_Direct3DDevice->SetRenderState(D3DRS_FOGCOLOR, D3DCOLOR_DWORD(color.r, color.g, color.b, color.a));
 
     if (fogmode)
     {
@@ -669,7 +669,7 @@ void GfxInternal_Dx9::CreateParticleMeshBuffer()
     mesh.SetFaceVertexIndex(2, 0);
     mesh.SetFaceVertexIndex(3, 3);
 
-    m_ParticleMeshBuffer = new MeshBuffer(mesh, 1);
+    m_ParticleMeshBuffer = new MeshBuffer(&mesh, 1);
 }
 
 void GfxInternal_Dx9::RenderTriangle2D(const Vector2<float>& top, const Vector2<float>& bottomleft, const Vector2<float>& bottomright, const ColorRGB& clr)
@@ -1313,7 +1313,7 @@ void GfxInternal_Dx9::ToggleEnvironmentMap(bool enable)
 {
     if (enable)
     {
-        m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR, COLOR_BGRA(m_EnvironmentMapColors));
+        m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_DWORD(m_EnvironmentMapColors.r, m_EnvironmentMapColors.g, m_EnvironmentMapColors.b, m_EnvironmentMapColors.a));
 
         m_TexProperties[0].field_34 = 1;
         m_TexProperties[0].field_4C = 1;
@@ -2254,7 +2254,7 @@ void GfxInternal_Dx9::SetRenderStateWireframe(bool enabled)
 
 void GfxInternal_Dx9::SetWireFrameColor(const ColorRGB& clr)
 {
-    m_WireframeColor = COLOR_BGRA(clr);
+    m_WireframeColor = D3DCOLOR_DWORD(clr.r, clr.g, clr.b, clr.a);
 }
 
 void GfxInternal_Dx9::SetWorldMatrix(const DirectX::XMMATRIX* worldmat)
@@ -2271,7 +2271,7 @@ void GfxInternal_Dx9::SetEnvironmentMapOpacity(float opacity)
     m_EnvironmentMapColors = { m_EnvironmentMapCoefficient, m_EnvironmentMapCoefficient, m_EnvironmentMapCoefficient, opacity };
     m_EnvironmentMapOpacity = opacity;
 
-    m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR, COLOR_BGRA(m_EnvironmentMapColors));
+    m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_DWORD(m_EnvironmentMapColors.r, m_EnvironmentMapColors.g, m_EnvironmentMapColors.b, m_EnvironmentMapColors.a));
 }
 
 void GfxInternal_Dx9::EnableAlphaChannel(bool enabled)
@@ -2502,7 +2502,7 @@ void GfxInternal_Dx9::RenderProperties::SetTextureAmbientColor(const ColorRGB& c
     field_8A = 1;
 
     if (flushdirectly)
-        g_Direct3DDevice->SetRenderState(D3DRS_AMBIENT, COLOR_BGRA(clr));
+        g_Direct3DDevice->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_DWORD(clr.r, clr.g, clr.b, clr.a));
 }
 
 void GfxInternal_Dx9::RenderProperties::ToggleLighting(bool enabled, bool flushdirectly)

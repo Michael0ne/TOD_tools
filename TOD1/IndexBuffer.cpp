@@ -62,10 +62,23 @@ IndexBuffer::~IndexBuffer()
 	}
 }
 
-char* IndexBuffer::LockModeAndGetBufferPtr(const int mode)
+char* IndexBuffer::LockAndGetBufferPtr(const int mode)
 {
 	m_LockMode = mode;
 	return m_BufferPtr;
+}
+
+unsigned short* IndexBuffer::GetBufferPtr() const
+{
+	return (unsigned short*)m_BufferPtr;
+}
+
+void IndexBuffer::UnlockBuffer()
+{
+	if (m_LockMode == 1)
+		FillFromBufferedData();
+
+	m_LockMode = NULL;
 }
 
 void IndexBuffer::CreateDirect3DBuffer()

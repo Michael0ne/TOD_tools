@@ -5,7 +5,7 @@
 struct IndexBuffer
 {
 public:
-    int             m_TotalIndicies;
+    unsigned int    m_TotalIndicies;
     int             m_PrimitiveTypeIndex;
     D3DPRIMITIVETYPE    m_PrimitiveType;
     char           *m_BufferPtr;
@@ -30,7 +30,9 @@ public:
         ptr = nullptr;
     }
 
-    char*           LockModeAndGetBufferPtr(const int mode);	//	@460580
+    char*           LockAndGetBufferPtr(const int mode);	//	@460580
+    unsigned short* GetBufferPtr() const;   //  @4605B0
+    void            UnlockBuffer(); //  @460590
 
 private:
     void            CreateDirect3DBuffer();	//	@4605F0

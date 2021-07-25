@@ -206,7 +206,7 @@
     <ClInclude Include="MemoryCard.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="StreamedSound.h">
+    <ClInclude Include="StreamedSoundBuffer.h">
       <Filter>Header files\KapowSystems\Audio</Filter>
     </ClInclude>
     <ClInclude Include="StreamedWAV.h">
@@ -664,7 +664,7 @@
     <ClCompile Include="MemoryCard.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="StreamedSound.cpp">
+    <ClCompile Include="StreamedSoundBuffer.cpp">
       <Filter>Source files\KapowSystems\Audio</Filter>
     </ClCompile>
     <ClCompile Include="StreamedWAV.cpp">

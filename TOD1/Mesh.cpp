@@ -5,9 +5,22 @@ Mesh::Mesh(const unsigned int a1, const char a2, const char a3)
 {
 	MESSAGE_CLASS_CREATED(Mesh);
 
-	field_54 = a1;
-	field_50 = field_50 & 0xFFFFFFE0 | a2 & 1 | (8 * (a3 & 3));
+	m_IsTrianglesList = a1;
+	m_Flags.m_Flags = m_Flags.m_Flags & 0xFFFFFFE0 | a2 & 1 | (8 * (a3 & 3));
 	field_58 = 0;
+}
+
+Mesh::Mesh(const Mesh& rhs)
+{
+	MESSAGE_CLASS_CREATED(Mesh);
+
+	//	NOTE: check when ready if simple copy is sufficient for 'fld_50'.
+	m_Flags = rhs.m_Flags;
+	m_FacesList = rhs.m_FacesList;
+	m_IndiciesList = rhs.m_IndiciesList;
+	field_58 = rhs.field_58;
+	field_30 = rhs.field_30;
+	field_40 = rhs.field_40;
 }
 
 Mesh::~Mesh()
@@ -31,12 +44,37 @@ void Mesh::AddFace(const unsigned int faceind, const Vector3f& face1, const Vect
 	if (m_FacesList.size() < faceind)
 		m_FacesList.resize(faceind + 1);
 
-	m_FacesList[faceind].field_10 = texuv;
+	m_FacesList[faceind].m_TexCoord[0] = texuv;
 }
 
 void Mesh::GetFaceColor(ColorRGB& clr, const unsigned int faceind) const
 {
-	clr = m_FacesList[faceind].field_30;
+	clr = m_FacesList[faceind].m_Color;
+}
+
+const bool Mesh::HasDiffuseFlag() const
+{
+	return m_Flags.m_FlagsBits.HasDiffuse;
+}
+
+void Mesh::GetFacePositionByIndex(Vector4f& outPos, const unsigned int ind) const
+{
+	outPos = m_FacesList[ind].m_Position;
+}
+
+unsigned short Mesh::GetIndiciesListElementByIndex(const unsigned int ind) const
+{
+	return m_IndiciesList[ind];
+}
+
+void Mesh::GetNormaPositionByIndex(Vector4f& outPos, const unsigned int ind) const
+{
+	outPos = m_FacesList[ind].m_Normal;
+}
+
+void Mesh::GetTexCoordByIndex(Vector2f& outCoords, const unsigned int ind, const TexCoord uv) const
+{
+	outCoords = m_FacesList[ind].m_TexCoord[uv];
 }
 
 void Mesh::AddFace1(const unsigned int faceind, const float x, const float y, const float z)
@@ -44,7 +82,7 @@ void Mesh::AddFace1(const unsigned int faceind, const float x, const float y, co
 	if (m_FacesList.size() < faceind)
 		m_FacesList.resize(faceind + 1);
 
-	m_FacesList[faceind].field_0 = { x, y, z, 0 };
+	m_FacesList[faceind].m_Position = { x, y, z, 0 };
 }
 
 void Mesh::AddFace2(const unsigned int faceind, const float x, const float y, const float z)
@@ -54,7 +92,7 @@ void Mesh::AddFace2(const unsigned int faceind, const float x, const float y, co
 	if (m_FacesList.size() < faceind)
 		m_FacesList.resize(faceind + 1);
 
-	Vector4f& v = m_FacesList[faceind].field_20;
+	Vector4f& v = m_FacesList[faceind].m_Normal;
 	if (s < 0.00001f)
 		v = BuiltinType::InVector;
 	else
@@ -66,6 +104,6 @@ Mesh::Face::Face()
 	MESSAGE_CLASS_CREATED(Face);
 
 	field_60 = 0;
-	field_0 = BuiltinType::ZeroVector;
-	field_20 = { 0, 1, 0, 0 };
+	m_Position = BuiltinType::ZeroVector;
+	m_Normal = { 0, 1, 0, 0 };
 }
