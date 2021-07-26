@@ -142,8 +142,8 @@ public:
     static bool     LoadingAssetBlock;	//	@A3CE60
     static const unsigned int RewindBufferSize_1 = 204800;	//	@A12088
     static const unsigned int RewindBufferSize_2 = 309248;	//	@A1208C
-    static float    FrameRate;	//	@A3DCC0
-    static float    FrameRate_1;	//	@A3DCC4
+    static float    RealTimePassed;	//	@A3DCC0
+    static float    TimePassed;	//	@A3DCC4
     static UINT64   CreationTime;	//	@A3DD00
     static int     *_A3CEE4;	//	@A3CEE4
     static int      _A3CEE8;	//	@A3CEE8

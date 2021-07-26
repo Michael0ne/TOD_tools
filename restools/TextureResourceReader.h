@@ -89,7 +89,8 @@ private:
     static const char* const    AssetTypeString[];
     static const char* const    TextureFormatString[];
 public:
-    TextureResourceReader(const char* const filename, PlatformDefinition platform = PC);
+    TextureResourceReader(const char* const filename);
+    TextureResourceReader(const char* const filename, PlatformDefinition platform);
     ~TextureResourceReader();
 
     virtual void	ReadInfo() override;

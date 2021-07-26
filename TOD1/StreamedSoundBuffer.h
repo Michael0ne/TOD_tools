@@ -85,6 +85,7 @@ protected:
     int						field_58;
     int						field_5C;
     char					m_StoppingFinished;
+    char                    field_61;
     void*					m_SoundBufferBlockStartPtr;
     int						m_SoundBufferBlockSize;
     int						field_6C;
@@ -95,9 +96,9 @@ protected:
     LPDWORD					m_ThreadId;
     int						field_84;
     LPDIRECTSOUNDBUFFER		m_DirectSoundBuffer;
-    int*					field_8C;
+    StreamedSoundBuffer    *field_8C;
     LPDIRECTSOUND3DBUFFER	m_DirectSound3DBuffer;
-    int*					field_94;
+    int*					m_DieselPowerStream;
     DieselPower			   *m_DieselPowerSoundBuffer;
     HANDLE					field_9C;
     HANDLE					field_A0;
@@ -119,7 +120,6 @@ protected:
     int						field_EC;
 
 public:
-    virtual ~StreamedSoundBuffer();	//	@446640
     StreamedSoundBuffer(class SoundFile* sndfile, int, int, int, char, char);	//	@445770
     StreamedSoundBuffer(bool a2, unsigned int totalchunks, int channels, unsigned int isstereo, float bytespersec, unsigned int frequency, bool ismonosound, unsigned int a9, char a10, const char* filepath);	//	@441A10
 
@@ -134,6 +134,7 @@ public:
         ptr = nullptr;
     }
 
+    virtual ~StreamedSoundBuffer();	//	@446640
     virtual void			stub2();
     virtual void			stub3();
     virtual void			SetSampledData(void*);
@@ -174,6 +175,7 @@ public:
     virtual void			StopZerothSound();  //  NOTE: maybe 'StopFirstSound' or 'StopLastSound'.
 
     void					FillSoundData(const bool overwrite);	//	@443FC0
+    void                    ShutdownThread();   //  @444D60
 };
 
 ASSERT_CLASS_SIZE(StreamBuffer, 76);

@@ -110,3 +110,12 @@ void SoundFile::Open(const char* const filename)
 	m_FileName = finalname;
 	ReadStreamedSoundFile(true);
 }
+
+void SoundFile::ChangeFileNameIfDifferent(const String& fname)
+{
+	if (m_FileName.Equal(fname.m_szString))
+	{
+		m_FileName = fname;
+		field_24 &= 0xFFFFFFFE;
+	}
+}

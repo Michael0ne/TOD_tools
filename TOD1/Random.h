@@ -1,5 +1,4 @@
 #pragma once
-
 #include "stdafx.h"
 
 #define RANDOM_DEFAULT_SEED 5489

@@ -72,6 +72,7 @@ public:
 	bool			OpenSoundFile(bool a1);	//	@40F470
 	void			DestroySoundBuffers(bool);	//	@40F4C0
 	bool			TryLocateCurrentStreamFile() const;	//	@40F5A0
+	void			RemoveSoundBuffer();	//	@40F640
 
 	void* operator new(size_t);
 	void* operator new[](size_t size);

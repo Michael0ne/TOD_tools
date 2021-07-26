@@ -266,6 +266,8 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="scripts\common.h" />
     <ClInclude Include="scripts\HUD_health_bar.h" />
+    <ClInclude Include="scripts\master_mission_ctrl.h" />
+    <ClInclude Include="scripts\Trigger_Activate_Weapons.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="GfxInternal_OGL.h" />
     <ClInclude Include="MeshBuffer.h" />

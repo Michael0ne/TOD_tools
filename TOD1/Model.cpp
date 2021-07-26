@@ -3,6 +3,7 @@
 #include "IntegerType.h"
 #include "StringType.h"
 #include "Light.h"
+#include "SkinnedMeshBuffer.h"
 
 EntityType* tModel;
 
@@ -153,6 +154,7 @@ const short Model::GetActiveTextureSet() const
 	return m_ActiveTextureSet;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 const int Model::GetNumberOfTextureSets() const
 {
 	if (!m_ModelRes)
@@ -161,9 +163,9 @@ const int Model::GetNumberOfTextureSets() const
 	if (m_ModelRes->m_MeshList.size() <= 0)
 		return 1;
 
-	for (unsigned int i = 0; i < m_ModelRes->m_MeshList.size(); ++i)
-		if (!m_ModelRes->m_MeshList[i].m_TotalMeshes)
-			return m_ModelRes->m_MeshList[i].m_SkinnedMeshBuffer->m_TextureSets;
+	//for (unsigned int i = 0; i < m_ModelRes->m_MeshList.size(); ++i)
+	//	if (!m_ModelRes->m_MeshList[i].m_SkinnedMeshesList)
+	//		return m_ModelRes->m_MeshList[i].m_SkinnedMeshesList->m_TextureSets;
 
 	return 1;
 }

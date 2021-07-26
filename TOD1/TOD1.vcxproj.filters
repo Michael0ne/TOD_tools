@@ -590,6 +590,12 @@
     <ClInclude Include="scripts\HUD_health_bar.h">
       <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\master_mission_ctrl.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\Trigger_Activate_Weapons.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

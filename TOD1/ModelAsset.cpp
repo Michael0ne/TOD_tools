@@ -51,3 +51,15 @@ AssetInstance* ModelAsset::GetInstancePtr() const
 void ModelAsset::_856E60()
 {
 }
+
+#pragma message(TODO_IMPLEMENTATION)
+ModelAsset::Mesh::Mesh()
+{
+	MESSAGE_CLASS_CREATED(Mesh);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+ModelAsset::Mesh::~Mesh()
+{
+	MESSAGE_CLASS_DESTROYED(Mesh);
+}

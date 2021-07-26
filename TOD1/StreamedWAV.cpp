@@ -199,6 +199,20 @@ bool StreamedWAV::TryLocateCurrentStreamFile() const
 	return (m_WavFile || m_OggInfo) && File::FindFileEverywhere(m_FileName.m_szString);
 }
 
+void StreamedWAV::RemoveSoundBuffer()
+{
+	if (m_SoundBufferPtr)
+	{
+		SoundBufferInfo* sbi = CheckIfSoundBufferIsUsed(m_SoundBufferPtr);
+		if (sbi->m_BufferPtr)
+			sbi->m_Used = false;
+
+		m_SoundBufferPtr = nullptr;
+	}
+
+	m_Flags &= 0xFFFFFFFE;
+}
+
 bool StreamedWAV::OpenOGG(bool createnew)
 {
 	if (!createnew)

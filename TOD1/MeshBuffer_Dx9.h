@@ -56,6 +56,12 @@ public:
     void                SetMeshDataAsCurrent() const;   //  @462F20
     void                SWSkin();   //  @462690
     char*               LockAndGetVertexBufferPtr(const int mode);  //  @44BCA0
+    void                ResetStreamSources();  //  @44BC30 //  NOTE: unused.
+    void                UnlockBuffers();    //  @44BCF0
+    void                GetPositionFromVertexBuffer(Vector4f& outPos, const unsigned int vertexindex) const;    //  @44BD20
+    void                GetNormalFromVertexBuffer(Vector4f& outNormal, const unsigned int vertexindex) const;   //  @44BD70
+    void                SetPositionAndNormal(const unsigned int vertexindex, const Vector3f& pos, const Vector3f& norm);    //  @44BDC0
+    const unsigned short    GetFaceIndex(const unsigned int vertexindex) const;  //  @44BE60
 
     static void         CreateStaticVertexDeclaration();    //  @461D30
 

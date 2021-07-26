@@ -4,7 +4,6 @@
 
 std::vector<String> Asset::OpenResourcesList;
 unsigned int Asset::TotalResourcesCreated;
-unsigned int Asset::LastOpenResourceIndex;
 unsigned int Asset::TextureAssetAllocatorId;
 const char* const Asset::BlockTypeExtension[] = { ".", "map", "submap", "mission", "cutscene", "playerdata", "main", "" };
 
@@ -120,6 +119,7 @@ Asset::Asset(bool dontmakeglobal)
 
 const char* Asset::AddResToOpenListAndReturnName() const
 {
+    static unsigned int LastOpenResourceIndex;
     unsigned int resind = LastOpenResourceIndex;
     LastOpenResourceIndex = (LastOpenResourceIndex + 1) % 10;
     OpenResourcesList[resind] = g_AssetManager->GetResourcePathSceneRelative(m_ResourcePath);

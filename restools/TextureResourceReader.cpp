@@ -51,7 +51,7 @@ void TextureResourceReader::ReadInfo()
 	fread(&m_Header.m_AssetDataSize, sizeof(m_Header.m_AssetDataSize), 1, m_FilePtr);
 	fread(&m_Header.m_IsLocalised, 4, 1, m_FilePtr);
 	fread(&m_Header.m_LocalisationStringLength, sizeof(m_Header.m_LocalisationStringLength), 1, m_FilePtr);
-	
+
 	if (m_Header.m_LocalisationStringLength)
 	{
 		m_Header.m_LocalisationString = new char[m_Header.m_LocalisationStringLength];
@@ -75,7 +75,7 @@ void TextureResourceReader::PrintInfo() const
 	char* info = m_AssetStruct;
 	printf("\tAsset type:\t%s (%d)\n", AssetTypeString[*(int*)info], *(int*)info);
 	info += 4;
-	printf("\tResource path:\t\"%s\"\n", (const char*)((int)info + *(int*)info) );
+	printf("\tResource path:\t\"%s\"\n", (const char*)((int)info + *(int*)info));
 	info += 4;
 	printf("\tGlobal ID:\t%d\n", *(int*)info);
 	info += 4;
@@ -138,30 +138,71 @@ void TextureResourceReader::DumpData() const
 	//	TODO: filename is fucked up, maybe change it sometime so this is not necessary.
 	std::string outfilename = m_ResourceName;
 	outfilename = outfilename.substr(0, outfilename.find('.', 0));
-	outfilename += ".bmp";
+	outfilename += ".dds";
 
-	unsigned char* rawclrs = (unsigned char*)m_AssetData;
-	unsigned char* convclrs = new unsigned char[m_GfxTexture->GetSizeForLevel(0)];
+	const char ddsmagick[] = "DDS ";
+	struct DDS_HEADER
+	{
+		unsigned int	size;
+		unsigned int	flags;
+		unsigned int	height;
+		unsigned int	width;
+		unsigned int	pitchOrLinearSize;
+		unsigned int	depth;
+		unsigned int	mipMapCount;
+		unsigned int	reserved[11];
 
-	const unsigned int width = m_GfxTexture->GetSize(0).w;
-	const unsigned int height = m_GfxTexture->GetSize(0).h;
+		struct DDS_PIXELFORMAT
+		{
+			unsigned int	size;
+			unsigned int	flags;
+			char			fourcc[4];
+			unsigned int	RGBBitCount;
+			unsigned int	RBitMask;
+			unsigned int	GBitMask;
+			unsigned int	BBitMask;
+			unsigned int	ABitMask;
+		}				ddspf;
 
-	BITMAPINFO bmpinfo;
-	bmpinfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmpinfo.bmiHeader.biWidth = width;
-	bmpinfo.bmiHeader.biHeight = height;
-	bmpinfo.bmiHeader.biPlanes = 0;
-	bmpinfo.bmiHeader.biBitCount = m_GfxTexture->m_BitsPerPixel;
-	bmpinfo.bmiHeader.biCompression = BI_RGB;
-	bmpinfo.bmiHeader.biSizeImage = m_GfxTexture->GetSizeForLevel(0);
-	bmpinfo.bmiHeader.biXPelsPerMeter = 0;
-	bmpinfo.bmiHeader.biYPelsPerMeter = 0;
-	bmpinfo.bmiHeader.biClrUsed = 0;
-	bmpinfo.bmiHeader.biClrImportant = 0;
+		unsigned int	caps;
+		unsigned int	caps2;
+		unsigned int	caps3;
+		unsigned int	caps4;
+		unsigned int	reserved2;
+	};
 
-	SaveDIBitmap(outfilename.c_str(), &bmpinfo, convclrs);
+	DDS_HEADER ddsheader;
+	ddsheader.size = 124;
+	ddsheader.flags = 0x0A1007;
+	ddsheader.height = m_GfxTexture->m_SurfaceSize[1];
+	ddsheader.width = m_GfxTexture->m_SurfaceSize[0];
+	ddsheader.pitchOrLinearSize = m_Header.m_AssetDataSize;
+	ddsheader.depth = NULL;
+	ddsheader.mipMapCount = m_GfxTexture->m_MipMapLevels;
 
-	delete[] convclrs;
+	ddsheader.ddspf.size = m_GfxTexture->m_BitsPerPixel;
+	ddsheader.ddspf.flags = 4;	//	FOURCC
+	strcpy(ddsheader.ddspf.fourcc, "DXT1");
+	ddsheader.ddspf.RGBBitCount = NULL;
+	ddsheader.ddspf.RBitMask = NULL;
+	ddsheader.ddspf.GBitMask = NULL;
+	ddsheader.ddspf.BBitMask = NULL;
+	ddsheader.ddspf.ABitMask = NULL;
+
+	ddsheader.caps = 4198408;
+	ddsheader.caps2 = NULL;
+	ddsheader.caps3 = NULL;
+	ddsheader.caps4 = NULL;
+	ddsheader.reserved2 = NULL;
+
+	FILE* f;
+	fopen_s(&f, outfilename.c_str(), "wb");
+
+	fwrite(ddsmagick, sizeof(ddsmagick) - 1, 1, f);
+	fwrite((const void*)&ddsheader, sizeof(DDS_HEADER), 1, f);
+	fwrite(m_AssetData, m_Header.m_AssetDataSize, 1, f);
+	fclose(f);
+
 	printf("Saved dump: %s -> %s\n", m_ResourceName.c_str(), outfilename.c_str());
 }
 
@@ -170,6 +211,31 @@ TextureResourceReader::TextureResourceReader(const char* const filename, Platfor
 	m_ResourceExtension = PlatformExtension[platform];
 	m_ResourceName = filename;
 	m_ResourceName += m_ResourceExtension;
+}
+
+TextureResourceReader::TextureResourceReader(const char* const filename)
+{
+	FILE* f;
+	errno_t err = NULL;
+
+	//	TODO: right now, fopen will try to locate this file in a folder where EXE is. Fix this so the search is where the executable is launched from (i.e. when launched through CMD or LNK).
+	for (unsigned int i = 1; i < 4; ++i)
+	{
+		//	NOTE: try and find texture for ANY platform.
+		m_ResourceExtension = PlatformExtension[i];
+		m_ResourceName = filename;
+		m_ResourceName += m_ResourceExtension;
+
+		err = fopen_s(&f, m_ResourceName.c_str(), "r");
+
+		if (err)
+			continue;
+		else
+			break;
+	}
+
+	if (f)
+		fclose(f);
 }
 
 TextureResourceReader::~TextureResourceReader()

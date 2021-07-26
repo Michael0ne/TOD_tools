@@ -38,7 +38,7 @@ public:
 	void			CopySoundPropertiesFromStreamedWav_1();	//	@445080
 	void			ReadStreamedSoundFile(bool a1);	//	@445370
 	void			Open(const char* const filename);	//	@445510
-
+	void			ChangeFileNameIfDifferent(const String& fname);	//	@444F90	//	NOTE: unused.
 
 	static SoundFile	GlobalMonoStream;	//	@A3DD90
 };

@@ -862,8 +862,11 @@ void LoadScripts()
     GlobalScriptsArray[400] = BaseType::LoadScript("random_sound");
     
     //	NOTE: register game scripts.
+    //  TODO: probably, these should be moved on top of this source file, only call actual Create functions here.
     #include "scripts/common.h"
     #include "scripts/HUD_health_bar.h"
+    #include "scripts/master_mission_ctrl.h"
+    #include "scripts/Trigger_Activate_Weapons.h"
     //	TODO: much much more.
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)

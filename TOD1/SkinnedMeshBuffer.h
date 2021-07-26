@@ -1,29 +1,24 @@
 #pragma once
 #include "MemoryManager.h"
+#include "ModelAsset.h"
+
+class MeshBuffer;
+class Mesh;
 
 class SkinnedMeshBuffer
 {
     friend class Model;
 protected:
-    int field_0;
-    int field_4;
-    int* field_8;
-    int m_TextureSets;
-    int field_10;
-    int field_14;
-    int field_18;
-    int field_1C;
-    int field_20;
-    int field_24;
-    int field_28;
-    int field_2C;
-    int field_30;
-    int field_34;
-    int field_38;
+    MeshBuffer         *m_MeshBuffer;
+    Mesh               *m_Mesh;
+    std::vector<ModelAsset::TextureSet>    m_TextureSets;   //  TODO: check if list element type is correct.
+    std::vector<int>    field_18;
+    std::vector<int>    field_28;
+    int                 field_38;
 
 public:
-    SkinnedMeshBuffer();
-    ~SkinnedMeshBuffer();
+    SkinnedMeshBuffer();    //  @85A170
+    ~SkinnedMeshBuffer();   //  @857330
 };
 
 ASSERT_CLASS_SIZE(SkinnedMeshBuffer, 60);

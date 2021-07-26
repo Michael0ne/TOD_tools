@@ -3,6 +3,7 @@
 #include "Types.h"
 
 class Node;
+
 class AuxQuadTree
 {
 public:

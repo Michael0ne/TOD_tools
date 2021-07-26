@@ -3,11 +3,16 @@
 #include "StreamedSoundBuffers.h"
 #include "StreamedWAV.h"
 #include "BuiltinType.h"
+#include "Performance.h"
 
-#pragma message(TODO_IMPLEMENTATION)
 StreamedSoundBuffer::~StreamedSoundBuffer()
 {
 	MESSAGE_CLASS_DESTROYED(StreamedSoundBuffer);
+	LogDump::LogA("Deleting streamed sound buffer....\n");
+
+	ShutdownThread();
+
+	LogDump::LogA("Streamed sound buffer deleted\n");
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -371,6 +376,92 @@ void StreamedSoundBuffer::FillSoundData(const bool overwrite)
 			delete errmsgbuf;
 		}
 	}
+}
+
+void StreamedSoundBuffer::ShutdownThread()
+{
+	Stop(NULL);
+
+	if (m_TerminateThreadEvent)
+		SetEvent(m_TerminateThreadEvent);
+
+	if (m_StreamThread)
+	{
+		LogDump::LogA("Shutting down thread - hTerminateThreadEvent = %i\n", this->m_TerminateThreadEvent);
+		
+		const unsigned int currtime = Performance::GetMilliseconds();
+		constexpr unsigned int timeouttime = 5000;
+		constexpr unsigned int sleeptime = 5;
+		DWORD exitcode = NULL;
+		GetExitCodeThread(m_StreamThread, &exitcode);
+
+		while (exitcode == STILL_ACTIVE)
+		{
+			if (Performance::GetMilliseconds() - currtime > timeouttime)
+				break;
+
+			GetExitCodeThread(m_StreamThread, &exitcode);
+			Sleep(sleeptime);
+		}
+
+		LogDump::LogA("Thread closed...\n");
+	}
+
+	if (m_StreamedWAV)
+		m_StreamedWAV->field_34 = -1;
+
+	RELEASE_SAFE(m_DirectSoundBuffer);
+	RELEASE_SAFE(m_DirectSound3DBuffer);
+
+	if (m_DieselPowerSoundBuffer)
+	{
+		m_DieselPowerSoundBuffer->stub24();
+		m_DieselPowerSoundBuffer->stub27();
+		m_DieselPowerSoundBuffer->stub28();
+
+		m_DieselPowerSoundBuffer = nullptr;
+		m_DieselPowerStream = nullptr;
+	}
+
+	field_58 = 0xDEA110CA;
+
+	if (IsMonoStreamCreated())
+		g_StreamedSoundBuffers->RemoveSoundBufferFromList(this);
+
+	if (m_StreamThread)
+		CloseHandle(m_StreamThread);
+
+	if (m_EventNotify)
+		CloseHandle(m_EventNotify);
+
+	if (m_EvHandle_2)
+		CloseHandle(m_EvHandle_2);
+
+	if (m_TerminateThreadEvent)
+		CloseHandle(m_TerminateThreadEvent);
+
+	if (field_9C)
+		CloseHandle(field_9C);
+
+	if (field_A0)
+		CloseHandle(field_A0);
+
+	if (field_B0)
+		CloseHandle(field_B0);
+
+	if (field_61 && m_StreamedWAV)
+		delete m_StreamedWAV;
+	else
+		if (m_StreamedWAV)
+			m_StreamedWAV->RemoveSoundBuffer();
+	
+	m_StreamedWAV = nullptr;
+
+	SoundBufferStatus& sbs = StreamedSoundBuffers::FindSoundBufferInBuffersList(field_8C);
+	if (sbs.m_StreamBufferPtr)
+		sbs.m_InUse;
+
+	m_ThreadId = NULL;
 }
 
 IStreamBuffer::~IStreamBuffer()

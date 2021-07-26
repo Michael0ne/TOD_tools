@@ -165,7 +165,6 @@ public:
     static const char* const BlockTypeExtension[];  //  @A11B64
     static std::vector<String> OpenResourcesList;	//	@A10F00
     static unsigned int TotalResourcesCreated;	//	@A3BE10
-    static unsigned int	LastOpenResourceIndex;	//	@A3BE14
     static unsigned int TextureAssetAllocatorId;    //  @A3BE18
 };
 

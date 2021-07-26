@@ -28,6 +28,8 @@ struct SoundBufferStatus
 {
     StreamedSoundBuffer* m_StreamBufferPtr;
     bool	m_InUse;
+
+    static SoundBufferStatus    EmptyInstance;
 };
 
 //-------------- Handles streamed game sounds ----------------
@@ -62,15 +64,15 @@ public:
     int							m_DirectSoundSampleRate;
     int							m_DirectSoundBits;
     int							m_MultichannelStreamedSoundsNum;
-    int							m_MonoStreamsTotal;
-    int							m_MonochannelStreamedSoundsNum;
+    int							m_MonoStreamsNumber;
+    int							m_PlayingMonoStreamsNumber;
     LPDIRECTSOUND3DBUFFER		m_DirectSound3DBuffer;
     LPDIRECTSOUNDBUFFER			m_DirectSoundBuffer_1;
     class DieselPower*			m_DieselPower;
     int*						field_50;	//	NOTE: pointer to some DieselPower structure, size unknown.
     int*						field_54;
     LPDIRECTSOUND				m_DirectSound;
-    std::vector<int>			m_DieselPowerSoundBuffers;
+    std::vector<DieselPower*>			m_DieselPowerSoundBuffers;
     std::vector<StreamedSoundBuffer*>	m_StreamDataBufferList;
     std::vector<int>			m_SoundList_1;
     std::vector<int>			m_SoundList_2;
@@ -120,10 +122,11 @@ public:
     void						SetPrimarySoundFormat(int channels, int sampleRate, int bits);	//	@43D0D0
     float						GetDefaultVolumeForType(int type);	//	@43D180
     void						SetGlobalPause(bool pause);	//	@43D1D0
-    void						_43D200(int unk1, int unk2, int unk3, int unk4, int unk5);	//	@43D200
+    void						_43D200(LPDIRECTSOUNDBUFFER, const float, const int, const int, const int);	//	@43D200 //  NOTE: used, but empty.
 
     static void					RememberSoundRenderer(SoundSystemType soundRendererId);	//	@43D210
     static SoundSystemType		GetSoundRenderer();	//	@43D280
+    static SoundBufferStatus&   FindSoundBufferInBuffersList(const StreamedSoundBuffer* ssb);   //  @444D20
 
     void						InitDirectSound(char channels, int sampleRate);	//	@43D310
     void						SetListener3DPos(const Vector4f& pos);	//	@43D560
@@ -139,6 +142,7 @@ public:
     void						AddStreamBufferToList(const StreamedSoundBuffer& streamedsound);	//	@43F240
     void						PreallocateStreamBuffersPool();	//	@4462D0
     void						CreateStaticStreamedSoundBuffer();	//	@441C00
+    void                        RemoveSoundBufferFromList(StreamedSoundBuffer* soundbuffer);    //  @43F2B0
 
     static std::vector<SoundBufferStatus>	vSoundBuffers;	//	@A09314
 

@@ -52,13 +52,12 @@ void TextureAsset::ApplyAssetData(int* assetdata)
 {
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 char TextureAsset::SetResourcePlaceholder()
 {
-	//if (strstr(m_ResourcePath, "pinkyellowcheckers.bmp") == 0)
-		//m_Texture_1 = g_GfxInternal->m_TexturesList[0]->m_TextureInfo;
-	//else
-		//m_Texture_1 = g_GfxInternal->m_TexturesList[0]->m_Texture;
+	if (strstr(m_ResourcePath, "pinkyellowcheckers.bmp") == NULL)
+		m_Texture_1 = (Texture*)g_GfxInternal->m_CheckerboardTextures[0]->m_Mutable;
+	else
+		m_Texture_1 = (Texture*)g_GfxInternal->m_CheckerboardTextures[0]->m_Texture;
 
 	return 1;
 }

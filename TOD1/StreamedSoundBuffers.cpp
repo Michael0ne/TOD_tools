@@ -17,6 +17,7 @@ float StreamedSoundBuffers::DefaultSpeaksVolume;
 SoundSystemType StreamedSoundBuffers::SoundRendererId;
 HANDLE StreamedSoundBuffers::SemaphoreObject;
 StreamedSoundBuffer* StreamedSoundBuffers::StaticStreamedSound = nullptr;
+SoundBufferStatus SoundBufferStatus::EmptyInstance;
 
 void StreamedSoundBuffers::SetDefaultFxVolume(float vol)
 {
@@ -91,6 +92,18 @@ SoundSystemType StreamedSoundBuffers::GetSoundRenderer()
 	return SoundRendererId;
 }
 
+SoundBufferStatus& StreamedSoundBuffers::FindSoundBufferInBuffersList(const StreamedSoundBuffer* ssb)
+{
+	if (!vSoundBuffers.size())
+		return SoundBufferStatus::EmptyInstance;
+
+	for (unsigned int i = 0; i < vSoundBuffers.size(); ++i)
+		if (!vSoundBuffers[i].m_InUse || vSoundBuffers[i].m_StreamBufferPtr == ssb)
+			return vSoundBuffers[i];
+
+	return SoundBufferStatus::EmptyInstance;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 StreamedSoundBuffers::StreamedSoundBuffers(char channels, int sampleRate)
 {
@@ -116,8 +129,8 @@ StreamedSoundBuffers::StreamedSoundBuffers(char channels, int sampleRate)
 	field_8 = 0.001f;
 	field_C = 1;
 	m_MultichannelStreamedSoundsNum = NULL;
-	m_MonochannelStreamedSoundsNum = NULL;
-	m_MonoStreamsTotal = 0;
+	m_PlayingMonoStreamsNumber = NULL;
+	m_MonoStreamsNumber = 0;
 	m_SoundList_2_Ptr = &m_SoundList_2;
 	m_SoundList_3_Ptr = &m_SoundList_3;
 	m_SoundList_7_Ptr = &m_SoundList_7;
@@ -138,11 +151,7 @@ StreamedSoundBuffers::StreamedSoundBuffers(char channels, int sampleRate)
 	if (FAILED(directSound->GetSpeakerConfig((LPDWORD)&m_SpeakerConfig)))
 		IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_SOUNDCARD, false);
 
-	if (directSound)
-	{
-		directSound->Release();
-		directSound = nullptr;
-	}
+	RELEASE_SAFE(directSound);
 
 	switch (m_SpeakerConfig)
 	{
@@ -207,7 +216,6 @@ StreamedSoundBuffers::StreamedSoundBuffers(char channels, int sampleRate)
 	m_GlobalPause = false;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 StreamedSoundBuffers::~StreamedSoundBuffers()
 {
 	MESSAGE_CLASS_DESTROYED(StreamedSoundBuffers);
@@ -225,14 +233,15 @@ StreamedSoundBuffers::~StreamedSoundBuffers()
 		{
 			for (unsigned int ind = 0; ind < m_DieselPowerSoundBuffers.size(); ++ind)
 				if (m_DieselPowerSoundBuffers[ind])
-					(*(void(__stdcall*)(signed int))m_DieselPowerSoundBuffers[ind])(1);
+					delete m_DieselPowerSoundBuffers[ind];
 			for (unsigned int ind = 0; ind < m_StreamDataBufferList.size(); ++ind)
 				if (m_StreamDataBufferList[ind])
-					(*(void(__stdcall*)(signed int))m_StreamDataBufferList[ind])(1);
-			//m_DieselPower->stub33();
+					delete m_StreamDataBufferList[ind];
+
+			m_DieselPower->stub33();
 			Sleep(2000);
 
-			//delete m_DieselPower;
+			delete m_DieselPower;
 			m_DieselPower = nullptr;
 		}
 	}
@@ -378,7 +387,7 @@ void StreamedSoundBuffers::SetGlobalPause(bool pause)
 	m_GlobalPauseCalled = true;
 }
 
-void StreamedSoundBuffers::_43D200(int unk1, int unk2, int unk3, int unk4, int unk5)
+void StreamedSoundBuffers::_43D200(LPDIRECTSOUNDBUFFER, const float, const int, const int, const int)
 {
 	return;
 }
@@ -450,7 +459,7 @@ void StreamedSoundBuffers::InitDirectSound(char channels, int sampleRate)
 #pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffers::SetListener3DPos(const Vector4f& pos)
 {
-	float dist = Scene::FrameRate_1 >= 0.0099999998f ? Scene::FrameRate_1 : 0.0099999998f;
+	float dist = Scene::TimePassed >= 0.0099999998f ? Scene::TimePassed : 0.0099999998f;
 	Vector4f maxDistanceVec;
 	GetMaxDistance(maxDistanceVec);
 
@@ -558,4 +567,37 @@ void StreamedSoundBuffers::PreallocateStreamBuffersPool()
 void StreamedSoundBuffers::CreateStaticStreamedSoundBuffer()
 {
 	StaticStreamedSound = new StreamedSoundBuffer(false, 1024, 1, false, 2.f, 44100, false, NULL, true, nullptr);
+}
+
+void StreamedSoundBuffers::RemoveSoundBufferFromList(StreamedSoundBuffer* soundbuffer)
+{
+	bool sndbuffound = false;
+	std::vector<StreamedSoundBuffer*> soundbufferstemplist(m_StreamDataBufferList.size());
+
+	if (m_StreamDataBufferList.size())
+	{
+		for (unsigned int i = 0; i < m_StreamDataBufferList.size(); ++i)
+			if (m_StreamDataBufferList[i] == soundbuffer)
+				sndbuffound = true;
+			else
+				soundbufferstemplist.push_back(m_StreamDataBufferList[i]);
+	}
+
+	m_StreamDataBufferList.clear();
+	m_StreamDataBufferList = soundbufferstemplist;
+	soundbufferstemplist.clear();
+
+	if (sndbuffound)
+	{
+		if (soundbuffer->m_Channels <= 1)
+		{
+			if (soundbuffer->m_Channels == 1)
+				if (soundbuffer->m_Flags.m_FlagBits.Started)
+					m_PlayingMonoStreamsNumber--;
+				else
+					m_MonoStreamsNumber--;
+		}
+		else
+			m_MultichannelStreamedSoundsNum--;
+	}
 }
