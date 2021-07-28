@@ -1,5 +1,4 @@
 #include "TextureResourceReader.h"
-#include <bitmap.h>
 
 const std::string TextureResourceReader::PlatformExtension[] =
 {
@@ -26,13 +25,13 @@ const char* const TextureResourceReader::AssetTypeString[] =
 
 const char* const TextureResourceReader::TextureFormatString[] =
 {
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr,
+	"R8G8B8",
+	"A8R8G8B8",
+	"R5G6B5",
+	"A1R5G5B5",
+	"A4R4G4B4",
+	"P8",
+	"UNKNOWN",
 	"DXT1",
 	"DXT2",
 	"DXT3",
@@ -111,9 +110,9 @@ void TextureResourceReader::PrintInfo() const
 	else
 		m_GfxTexture->m_TextureSurfaceBits = (char*)((int)m_GfxTexture + offsetof(GfxTexture, m_TextureSurfaceBits) + (int)m_GfxTexture->m_TextureSurfaceBits);
 
-	printf("\tMutable ptr:\t0x%X\n", m_GfxTexture->m_Mutable);
-	printf("\tTexture ptr:\t0x%X\n", m_GfxTexture->m_Texture);
-	printf("\tSurface bits:\t0x%X\n", m_GfxTexture->m_TextureSurfaceBits);
+	printf("\tMutable ptr:\t0x%p\n", m_GfxTexture->m_Mutable);
+	printf("\tTexture ptr:\t0x%p\n", m_GfxTexture->m_Texture);
+	printf("\tSurface bits:\t0x%p\n", m_GfxTexture->m_TextureSurfaceBits);
 	printf("\tResolution:\t%dx%d\n", m_GfxTexture->m_Resolution[0], m_GfxTexture->m_Resolution[1]);
 	printf("\tSurface size:\t%dx%d\n", m_GfxTexture->m_SurfaceSize[0], m_GfxTexture->m_SurfaceSize[1]);
 	printf("\tFormat:\t%s\n", TextureFormatString[m_GfxTexture->m_Format]);
@@ -181,8 +180,8 @@ void TextureResourceReader::DumpData() const
 	ddsheader.mipMapCount = m_GfxTexture->m_MipMapLevels;
 
 	ddsheader.ddspf.size = m_GfxTexture->m_BitsPerPixel;
-	ddsheader.ddspf.flags = 4;	//	FOURCC
-	strcpy(ddsheader.ddspf.fourcc, "DXT1");
+	ddsheader.ddspf.flags = 4;
+	strcpy(ddsheader.ddspf.fourcc, TextureFormatString[m_GfxTexture->m_Format]);
 	ddsheader.ddspf.RGBBitCount = NULL;
 	ddsheader.ddspf.RBitMask = NULL;
 	ddsheader.ddspf.GBitMask = NULL;

@@ -49,15 +49,6 @@ private:
         int                     field_50;
     };
 
-    enum TextureFormat
-    {
-        DXT1 = 7,
-        DXT2 = 8,
-        DXT3 = 9,
-        DXT4 = 10,
-        DXT5 = 11
-    };
-
     struct GfxTexture
     {
         struct SurfaceMutable  *m_Mutable;
@@ -65,7 +56,7 @@ private:
         char                   *m_TextureSurfaceBits;
         unsigned int            m_Resolution[2];
         unsigned int            m_SurfaceSize[2];
-        TextureFormat           m_Format;
+        int                     m_Format;
         char                    field_20;
         char                    field_21;
         char                    m_BitsPerPixel;

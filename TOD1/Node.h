@@ -107,7 +107,7 @@ public:
     virtual				~Node();								//	@86C6D0
     virtual void		Destroy();                              //	@88F770
     virtual void		_484CC0(int);                           //	@484CC0
-    virtual Entity*		FindNode(const char* nodeName);         //	@88EED0
+    virtual Entity*		FindNode(const char* nodeName) const;   //	@88EED0
     virtual void		SetFlags(int);                          //	@88EC20	//	NOTE: this could be 'SetFlagsForChildren'.
     virtual void		Instantiate();                          //	@88DE70
     virtual void		Update();                               //	@8CB190
@@ -166,6 +166,7 @@ public:
     void                _86A190();  //  @86A190
     void                SetFragment(const char* const fragmentpath);    //  @88F8A0
     void                TryInstantiate(); //   @88C2D0
+    void                FindNode_Impl(int* args) const;  //  @88EB60
 
     static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
     static void         _891E70(const String& s, String& sout); //  @891E70

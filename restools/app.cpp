@@ -44,7 +44,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
 
 	if (*argv[1] == 't' &&
 		strcmp(argv[1], "texture") == NULL)
-		resreader = new TextureResourceReader(lastslashpos + 1);
+		resreader = new TextureResourceReader(lastslashpos + 1, GenericResourceReader::PlatformDefinition::PC);
 
 	if ((*argv[1] == 's' && argv[1][1] == 'a') &&
 		strcmp(argv[1], "save") == NULL)

@@ -13,7 +13,7 @@
 //	NOTE: abstract reader. Doesn't do anything and relies on implementations of derived classes.
 class GenericResourceReader
 {
-protected:
+public:
 	enum PlatformDefinition
 	{
 		PC = 1,

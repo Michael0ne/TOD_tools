@@ -867,6 +867,10 @@ void LoadScripts()
     #include "scripts/HUD_health_bar.h"
     #include "scripts/master_mission_ctrl.h"
     #include "scripts/Trigger_Activate_Weapons.h"
+    #include "scripts/Hydrant_Root.h"
+    #include "scripts/Ladder_Root.h"
+    #include "scripts/Magnet.h"
+    #include "scripts/MarcoDist.h"
     //	TODO: much much more.
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)

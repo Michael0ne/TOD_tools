@@ -95,15 +95,20 @@ void Node::_484CC0(int)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-Entity* Node::FindNode(const char* nodeName)
+Entity* Node::FindNode(const char* nodeName) const
 {
 #ifdef _EXE
     LogDump::LogA("Node::FindNode NOT IMPLEMENTED!\n");
 
     return nullptr;
 #else
-    return (*(Entity * (__thiscall*)(Node*, const char*))0x88EED0)(this, nodeName);
+    return (*(Entity * (__thiscall*)(const Node*, const char*))0x88EED0)(this, nodeName);
 #endif
+}
+
+void Node::FindNode_Impl(int* args) const
+{
+    *args = (int)FindNode((const char*)args[1]);
 }
 
 void Node::SetFlags(int flags)

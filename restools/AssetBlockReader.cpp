@@ -48,13 +48,13 @@ unsigned int AssetBlockReader::AssetTypeAlignment[][3] =
 
 const char* const AssetBlockReader::CompiledTextureAsset::TextureFormatString[] =
 {
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr,
-	nullptr,
+	"R8G8B8",
+	"A8R8G8B8",
+	"R5G6B5",
+	"A1R5G5B5",
+	"A4R4G4B4",
+	"P8",
+	"UNKNOWN",
 	"DXT1",
 	"DXT2",
 	"DXT3",
@@ -77,6 +77,10 @@ AssetBlockReader::~AssetBlockReader()
 	delete[] m_AssetsSizes;
 	for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
 		delete[] m_AssetsNames[i];
+	for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
+		if (m_AssetsList[i])
+			delete m_AssetsList[i];
+	m_AssetsList.clear();
 }
 
 void AssetBlockReader::ReadInfo()
@@ -89,7 +93,7 @@ void AssetBlockReader::ReadInfo()
 
 	m_AssetsInfoBuffer = new char[m_SharedHeader.m_AssetsHeaderSize];
 	fread(m_AssetsInfoBuffer, m_SharedHeader.m_AssetsHeaderSize, 1, m_FilePtr);
-	
+
 	m_AssetsSizes = new int[m_SharedHeader.m_ResourcesTotal];
 	fread(m_AssetsSizes, sizeof(m_AssetsSizes), m_SharedHeader.m_ResourcesTotal, m_FilePtr);
 
@@ -170,7 +174,7 @@ void AssetBlockReader::PrintInfo() const
 		m_AssetsNames[i] = new char[strlen(asset->m_AssetName) + 1];
 		strcpy(m_AssetsNames[i], asset->m_AssetName);
 
-		delete asset;
+		m_AssetsList.push_back(asset);
 	}
 }
 
@@ -190,12 +194,85 @@ void AssetBlockReader::DumpData() const
 #else
 		strcpy(assname, strrchr(m_AssetsNames[i], '/') + 1);
 #endif
-		strcat(assname, ".dump");
 
-		//	TODO: restore asset header so it can be open as normal file.
-		FILE* ofile = fopen(assname, "wb");
-		fwrite(m_AssetsDataBuffer[i], m_AssetsSizes[i], 1, ofile);
-		fclose(ofile);
+		const char* const assetext = strrchr(assname, '.') + 1;
+		//	NOTE: handle BMP image.
+		if (strstr(assetext, "BMP") || strstr(assetext, "bmp"))
+		{
+			strcat(assname, ".dds");
+
+			FILE* ofile;
+			fopen_s(&ofile, assname, "wb");
+
+			const char ddsmagick[] = "DDS ";
+			struct DDS_HEADER
+			{
+				unsigned int	size;
+				unsigned int	flags;
+				unsigned int	height;
+				unsigned int	width;
+				unsigned int	pitchOrLinearSize;
+				unsigned int	depth;
+				unsigned int	mipMapCount;
+				unsigned int	reserved[11];
+
+				struct DDS_PIXELFORMAT
+				{
+					unsigned int	size;
+					unsigned int	flags;
+					char			fourcc[4];
+					unsigned int	RGBBitCount;
+					unsigned int	RBitMask;
+					unsigned int	GBitMask;
+					unsigned int	BBitMask;
+					unsigned int	ABitMask;
+				}				ddspf;
+
+				unsigned int	caps;
+				unsigned int	caps2;
+				unsigned int	caps3;
+				unsigned int	caps4;
+				unsigned int	reserved2;
+			};
+
+			CompiledTextureAsset* tex = (CompiledTextureAsset*)m_AssetsList[i];
+
+			DDS_HEADER ddsheader;
+			ddsheader.size = 124;
+			ddsheader.flags = 0x0A1007;
+			ddsheader.height = tex->m_GfxTexture->m_SurfaceSize[1];
+			ddsheader.width = tex->m_GfxTexture->m_SurfaceSize[0];
+			ddsheader.pitchOrLinearSize = m_AssetsSizes[i];
+			ddsheader.depth = NULL;
+			ddsheader.mipMapCount = tex->m_GfxTexture->m_MipMapLevels;
+
+			ddsheader.ddspf.size = tex->m_BitsPerPixel;
+			ddsheader.ddspf.flags = 4;
+			strcpy(ddsheader.ddspf.fourcc, CompiledTextureAsset::TextureFormatString[tex->m_GfxTexture->m_Format]);
+			ddsheader.ddspf.RGBBitCount = NULL;
+			ddsheader.ddspf.RBitMask = NULL;
+			ddsheader.ddspf.GBitMask = NULL;
+			ddsheader.ddspf.BBitMask = NULL;
+			ddsheader.ddspf.ABitMask = NULL;
+
+			ddsheader.caps = 4198408;
+			ddsheader.caps2 = NULL;
+			ddsheader.caps3 = NULL;
+			ddsheader.caps4 = NULL;
+			ddsheader.reserved2 = NULL;
+
+			fwrite(ddsmagick, sizeof(ddsmagick) - 1, 1, ofile);
+			fwrite((const void*)&ddsheader, sizeof(DDS_HEADER), 1, ofile);
+			fwrite(m_AssetsDataBuffer[i], m_AssetsSizes[i], 1, ofile);
+			fclose(ofile);
+		}
+		else
+		{
+			printf("Trying to dump an asset with unsupported format '%s'! Skipped...\n", assetext);
+			continue;
+		}
+
+		//	TODO: restore asset header so it can be open as normal file for other types.
 
 		printf("Saved asset dump: %s\n", assname);
 	}
@@ -205,16 +282,16 @@ AssetBlockReader::CompiledAsset::CompiledAsset(unsigned char** infobuffer)
 {
 	m_AssetType = **(AssetType**)infobuffer;
 	*infobuffer += sizeof(AssetType);
-	
+
 	m_AssetName = (char*)(*infobuffer + **(unsigned int**)infobuffer);
 	*infobuffer += sizeof(unsigned int);
-	
+
 	m_AssetGlobalId = **(unsigned int**)infobuffer;
 	*infobuffer += sizeof(unsigned int);
-	
+
 	field_C = **(unsigned int**)infobuffer;
 	*infobuffer += sizeof(unsigned int);
-	
+
 	m_EngineTimestamp = **(UINT64**)infobuffer;
 	*infobuffer += sizeof(UINT64);
 
@@ -305,7 +382,7 @@ AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** i
 
 	SkipNameRead(infobuffer);
 	SkipAlignment(infobuffer);
-	SkipSpecificData(infobuffer);
+	//SkipSpecificData(infobuffer);
 }
 
 void AssetBlockReader::CompiledFragmentAsset::PrintInfo() const
@@ -421,7 +498,7 @@ void AssetBlockReader::CompiledFontAsset::SkipSpecificData(unsigned char** infob
 {
 	*infobuffer += sizeof(Font);
 
-	do 
+	do
 	{
 		if (*infobuffer == (unsigned char*)m_FontInfo->m_FontTexture)
 			break;
@@ -750,7 +827,7 @@ void AssetBlockReader::CompiledAnimationAsset::SkipSpecificData(unsigned char** 
 	maxstructaddr = max(maxstructaddr, (unsigned int)m_List_3_Elements);
 
 	*infobuffer = (unsigned char*)maxstructaddr;
-	
+
 	while (**infobuffer == NULL)
 		*infobuffer += 1;
 }

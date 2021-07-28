@@ -68,15 +68,6 @@ public:
 
     struct CompiledTextureAsset : CompiledAsset
     {
-        enum TextureFormat
-        {
-            DXT1 = 7,
-            DXT2 = 8,
-            DXT3 = 9,
-            DXT4 = 10,
-            DXT5 = 11
-        };
-
         static const char* const    TextureFormatString[];
 
         struct TextureInfo
@@ -111,7 +102,7 @@ public:
             char               *m_TextureSurfaceBits;
             unsigned int        m_Resolution[2];
             unsigned int        m_SurfaceSize[2];
-            TextureFormat       m_Format;
+            int                 m_Format;
             int                 field_20;
             unsigned short      m_Levels;
             unsigned short      field_26;   //  NOTE: not used, only here for alignment.
@@ -455,6 +446,7 @@ public:
     char**				m_AssetsDataBuffer;
     char**				m_AssetsNames;
     int*				m_AssetsSizes;
+    mutable std::vector<CompiledAsset*> m_AssetsList;
 
 public:
     AssetBlockReader(LPCSTR filename);

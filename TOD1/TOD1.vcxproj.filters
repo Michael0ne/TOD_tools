@@ -596,6 +596,18 @@
     <ClInclude Include="scripts\Trigger_Activate_Weapons.h">
       <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\Hydrant_Root.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\Ladder_Root.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\MarcoDist.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\Magnet.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

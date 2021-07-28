@@ -266,6 +266,10 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="scripts\common.h" />
     <ClInclude Include="scripts\HUD_health_bar.h" />
+    <ClInclude Include="scripts\Hydrant_Root.h" />
+    <ClInclude Include="scripts\Ladder_Root.h" />
+    <ClInclude Include="scripts\Magnet.h" />
+    <ClInclude Include="scripts\MarcoDist.h" />
     <ClInclude Include="scripts\master_mission_ctrl.h" />
     <ClInclude Include="scripts\Trigger_Activate_Weapons.h" />
     <ClInclude Include="VertexBuffer.h" />

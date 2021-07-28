@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)ThirdParty\zlib121\;$(SolutionDir)ThirdParty\bmp\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)ThirdParty\zlib121\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ThirdParty\zlib121\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -152,7 +152,6 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ThirdParty\bmp\bitmap.cpp" />
     <ClCompile Include="app.cpp" />
     <ClCompile Include="GenericResourceReader.cpp" />
     <ClCompile Include="AssetBlockReader.cpp" />
