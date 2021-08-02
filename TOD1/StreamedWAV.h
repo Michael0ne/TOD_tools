@@ -44,7 +44,21 @@ protected:
 	int				m_SamplesPerSec;
 	int				m_ChunkSize;
 	char*			m_SoundBufferPtr;
-	int				m_Flags;
+	union
+	{
+		struct
+		{
+			unsigned char	SoundBufferInUse : 1;
+			unsigned char	_1 : 1;
+			unsigned char	Initialised : 1;
+			unsigned char	_3 : 1;
+			unsigned char	HasSoundFile : 1;
+			unsigned char	_5 : 1;
+			unsigned char	_6 : 1;
+			unsigned char	_7 : 1;
+		}			m_FlagsBits;
+		unsigned int	m_Flags;
+	}				m_Flags;
 	int				field_34;
 	String			m_FileName;
 	File*			m_WavFile;
@@ -73,6 +87,7 @@ public:
 	void			DestroySoundBuffers(bool);	//	@40F4C0
 	bool			TryLocateCurrentStreamFile() const;	//	@40F5A0
 	void			RemoveSoundBuffer();	//	@40F640
+	int				ReadNextPiece(const bool flushbuffers);	//	@40F9F0
 
 	void* operator new(size_t);
 	void* operator new[](size_t size);

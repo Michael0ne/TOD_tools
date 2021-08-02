@@ -44,10 +44,10 @@ void SoundFile::CopySoundPropertiesFromStreamedWav()
 	m_BlockAlign = m_StreamedWAV->m_BlockAlign;
 	m_Frequency = m_StreamedWAV->m_SamplesPerSec;
 	m_ChunkSize = m_StreamedWAV->m_ChunkSize;
-	field_24 = ((unsigned char)field_24 ^ (unsigned char)(2 * m_StreamedWAV->m_Flags)) & 2 ^ field_24;
-	field_24 = field_24 ^ ((unsigned char)field_24 ^ (unsigned char)(2 * m_StreamedWAV->m_Flags)) & 4;
-	field_24 = field_24 ^ ((unsigned char)field_24 ^ (unsigned char)(2 * m_StreamedWAV->m_Flags)) & 8;
-	field_24 = field_24 ^ ((unsigned char)field_24 ^ ((unsigned char)m_StreamedWAV->m_Flags)) & 0x10 | 1;
+	field_24 = ((unsigned char)field_24 ^ (unsigned char)(2 * m_StreamedWAV->m_Flags.m_Flags)) & 2 ^ field_24;
+	field_24 = field_24 ^ ((unsigned char)field_24 ^ (unsigned char)(2 * m_StreamedWAV->m_Flags.m_Flags)) & 4;
+	field_24 = field_24 ^ ((unsigned char)field_24 ^ (unsigned char)(2 * m_StreamedWAV->m_Flags.m_Flags)) & 8;
+	field_24 = field_24 ^ ((unsigned char)field_24 ^ ((unsigned char)m_StreamedWAV->m_Flags.m_Flags)) & 0x10 | 1;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

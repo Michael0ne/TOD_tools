@@ -68,7 +68,8 @@ StreamedWAV::StreamedWAV(unsigned int sampleRate)
 	m_BytesPerSample = 0.f;
 	memset(m_ChunkId, 0, sizeof(m_ChunkId));
 	m_SoundFormat = FORMAT_UNSET;
-	m_Flags = 0 | 0xFFFFFFE8;
+	m_Flags.m_FlagsBits.HasSoundFile = false;
+	m_Flags.m_FlagsBits._3 = true;
 	m_FileHandle = NULL;
 	m_WavFile = nullptr;
 	m_OggInfo = nullptr;
@@ -95,7 +96,7 @@ StreamedWAV::StreamedWAV(unsigned int sampleRate, const char* soundFile)
 	m_FileHandle = NULL;
 	m_WavFile = nullptr;
 	m_OggInfo = nullptr;
-	m_Flags = 0 | AUDIO_AUXMONOSTREAM_FLAG_FILE_SET;
+	m_Flags.m_FlagsBits.HasSoundFile = true;
 	m_SampleRate = sampleRate;
 
 	SoundBuffersList.reserve(12);
@@ -125,7 +126,7 @@ StreamedWAV::~StreamedWAV()
 		m_SoundBufferPtr = nullptr;
 	}
 
-	m_Flags = m_Flags & 0xFFFFFFFE;
+	m_Flags.m_FlagsBits.SoundBufferInUse = false;
 
 	if (m_WavFile)
 	{
@@ -156,7 +157,8 @@ void StreamedWAV::DestroySoundBuffers(bool unk)
 			m_OggInfo = nullptr;
 			field_34 = -1;
 			memset(m_ChunkId, 0, sizeof(m_ChunkId));
-			m_Flags = m_Flags & 0xFFFFFFF9;
+			m_Flags.m_FlagsBits.Initialised = false;
+			m_Flags.m_FlagsBits._1 = false;
 
 			return;
 		}
@@ -170,15 +172,16 @@ void StreamedWAV::DestroySoundBuffers(bool unk)
 		}
 
 	memset(m_ChunkId, 0, sizeof(m_ChunkId));
-	m_Flags = m_Flags & 0xFFFFFFF9;
+	m_Flags.m_FlagsBits.Initialised = false;
+	m_Flags.m_FlagsBits._1 = false;
 }
 
 bool StreamedWAV::OpenSoundFile(bool a1)
 {
-	if ((m_Flags & 16) == 0 ||
-		(m_Flags & 4) != 0 &&
-		(m_Flags & 1) != 0 &&
-		(m_Flags & 2) != 0 &&
+	if (!m_Flags.m_FlagsBits.HasSoundFile ||
+		m_Flags.m_FlagsBits.Initialised &&
+		m_Flags.m_FlagsBits.SoundBufferInUse &&
+		m_Flags.m_FlagsBits._1 &&
 		(m_WavFile || m_OggInfo))
 		return true;
 
@@ -210,7 +213,18 @@ void StreamedWAV::RemoveSoundBuffer()
 		m_SoundBufferPtr = nullptr;
 	}
 
-	m_Flags &= 0xFFFFFFFE;
+	m_Flags.m_Flags &= 0xFFFFFFFE;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+int StreamedWAV::ReadNextPiece(const bool flushbuffers)
+{
+	if (!m_Flags.m_FlagsBits.Initialised)
+	{
+		LogDump::LogA("ReadNextPiece() - Init() not called. ");
+	}
+
+	return NULL;
 }
 
 bool StreamedWAV::OpenOGG(bool createnew)
@@ -224,7 +238,7 @@ bool StreamedWAV::OpenOGG(bool createnew)
 
 		if (!f->IsFileOpen())
 		{
-			m_Flags &= 0xFFFFFFF9;
+			m_Flags.m_Flags &= 0xFFFFFFF9;
 			return false;
 		}
 
@@ -248,7 +262,7 @@ bool StreamedWAV::OpenOGG(bool createnew)
 	m_BlockAlign = 0;
 	m_ChunkSize = m_Channels * 2 * (int)pcmt;
 	field_C = m_ChunkSize;
-	m_Flags = m_Flags & 0xFFFFFFF7 | 7;
+	m_Flags.m_Flags = m_Flags.m_Flags & 0xFFFFFFF7 | 7;
 
 	return true;
 }
@@ -276,7 +290,7 @@ bool StreamedWAV::OpenWAV(bool createnew)
 		return false;
 	}
 
-	m_Flags &= 0xFFFFFFF7;
+	m_Flags.m_FlagsBits._3 = true;
 
 	m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId));
 
@@ -298,13 +312,13 @@ bool StreamedWAV::OpenWAV(bool createnew)
 	strncmp(m_ChunkId, "WAVE", sizeof(m_ChunkId));
 #endif
 
-	m_Flags &= 0xFFFFFFFD;
+	m_Flags.m_Flags &= 0xFFFFFFFD;
 	m_BlockAlign = 0;
 
 	if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
 	{
 		m_Samples = m_ChunkSize / (int)(m_Channels * m_BytesPerSample);
-		m_Flags |= 4;
+		m_Flags.m_FlagsBits.Initialised = true;
 
 		return true;
 	}
@@ -336,12 +350,12 @@ bool StreamedWAV::OpenWAV(bool createnew)
 		for (unsigned int i = pcm_chunksize - 16; i > 0; --i)
 			m_WavFile->ReadBlock();
 
-		m_Flags |= 2;
+		m_Flags.m_Flags |= 2;
 
 		if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
 		{
 			m_Samples = m_ChunkSize / (int)(m_Channels * m_BytesPerSample);
-			m_Flags |= 4;
+			m_Flags.m_FlagsBits.Initialised = true;
 
 			return true;
 		}
@@ -354,7 +368,7 @@ bool StreamedWAV::OpenWAV(bool createnew)
 			if (m_WavFile->Read(&m_ChunkId, sizeof(m_ChunkId)) != sizeof(m_ChunkId))
 			{
 				m_Samples = m_ChunkSize / (int)(m_Channels * m_BytesPerSample);
-				m_Flags |= 4;
+				m_Flags.m_FlagsBits.Initialised = true;
 
 				return true;
 			}
@@ -364,7 +378,7 @@ bool StreamedWAV::OpenWAV(bool createnew)
 	m_ChunkSize = m_WavFile->ReadIntLittleToBigEndian();
 	field_C = m_ChunkSize;
 	m_Samples = m_ChunkSize / (int)(m_Channels * m_BytesPerSample);
-	m_Flags |= 4;
+	m_Flags.m_FlagsBits.Initialised = true;
 
 	return true;
 }

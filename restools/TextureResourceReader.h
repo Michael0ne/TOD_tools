@@ -69,6 +69,61 @@ private:
         const vec2              GetSize(const unsigned char level) const;
     };
 
+    struct DDS_HEADER
+    {
+        unsigned int	size;
+        enum DDSFLAGS
+        {
+            DDSD_CAPS = 0x1,
+            DDSD_HEIGHT = 0x2,
+            DDSD_WIDTH = 0x4,
+            DDSD_PITCH = 0x8,
+            DDSD_PIXELFORMAT = 0x1000,
+            DDSD_MIPMAPCOUNT = 0x20000,
+            DDSD_LINEARSIZE = 0x80000,
+            DDSD_DEPTH = 0x800000
+        }               flags;
+        unsigned int	height;
+        unsigned int	width;
+        unsigned int	pitchOrLinearSize;
+        unsigned int	depth;
+        unsigned int	mipMapCount;
+        unsigned int	reserved[11];
+
+        struct DDS_PIXELFORMAT
+        {
+            unsigned int	size;
+            enum
+            {
+                DDPF_ALPHAPIXELS = 1,
+                DDPF_ALPHA = 2,
+                DDPF_FOURCC = 4,
+                DDPF_RGB = 64,
+                DDPF_YUV = 512,
+                DDPF_LUMINANCE = 131072
+            }               flags;
+            char			fourcc[4];
+            unsigned int	RGBBitCount;
+            unsigned int	RBitMask;
+            unsigned int	GBitMask;
+            unsigned int	BBitMask;
+            unsigned int	ABitMask;
+        }				ddspf;
+
+        enum DDSCAPS
+        {
+            DDSCAPS_COMPLEX = 0x8,
+            DDSCAPS_MIPMAP = 0x400000,
+            DDSCAPS_TEXTURE = 0x1000
+        }               caps;
+        unsigned int	caps2;
+        unsigned int	caps3;
+        unsigned int	caps4;
+        unsigned int	reserved2;
+
+        static const unsigned int magick;
+    };
+
     AssetHeader                 m_Header;
     char                       *m_AssetStruct;
     char                       *m_AssetData;

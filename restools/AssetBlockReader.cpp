@@ -1,6 +1,10 @@
 #include "AssetBlockReader.h"
 #include <stdlib.h>
 
+const unsigned int AssetBlockReader::CompiledTextureAsset::DDS_HEADER::magick = 0x20534444;
+int AssetBlockReader::CompiledTextAsset::Dictionary::Offset;
+unsigned char* AssetBlockReader::CompiledTextAsset::Dictionary::Indicy;
+
 const char* AssetBlockReader::AssetTypeIndexString[] =
 {
 	"TEXTURE",
@@ -189,65 +193,29 @@ void AssetBlockReader::DumpData() const
 	for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
 	{
 		char assname[512] = {};
-#ifdef KEEP_STRUCTURE
-		strcpy(assname, m_AssetsNames[i]);
-#else
 		strcpy(assname, strrchr(m_AssetsNames[i], '/') + 1);
-#endif
+		const char* const assetext = _strlwr(strrchr(assname, '.') + 1);
 
-		const char* const assetext = strrchr(assname, '.') + 1;
-		//	NOTE: handle BMP image.
-		if (strstr(assetext, "BMP") || strstr(assetext, "bmp"))
+		if (strstr(assetext, "bmp"))
 		{
-			strcat(assname, ".dds");
-
-			FILE* ofile;
-			fopen_s(&ofile, assname, "wb");
-
-			const char ddsmagick[] = "DDS ";
-			struct DDS_HEADER
-			{
-				unsigned int	size;
-				unsigned int	flags;
-				unsigned int	height;
-				unsigned int	width;
-				unsigned int	pitchOrLinearSize;
-				unsigned int	depth;
-				unsigned int	mipMapCount;
-				unsigned int	reserved[11];
-
-				struct DDS_PIXELFORMAT
-				{
-					unsigned int	size;
-					unsigned int	flags;
-					char			fourcc[4];
-					unsigned int	RGBBitCount;
-					unsigned int	RBitMask;
-					unsigned int	GBitMask;
-					unsigned int	BBitMask;
-					unsigned int	ABitMask;
-				}				ddspf;
-
-				unsigned int	caps;
-				unsigned int	caps2;
-				unsigned int	caps3;
-				unsigned int	caps4;
-				unsigned int	reserved2;
-			};
-
 			CompiledTextureAsset* tex = (CompiledTextureAsset*)m_AssetsList[i];
+			CompiledTextureAsset::DDS_HEADER ddsheader;
 
-			DDS_HEADER ddsheader;
-			ddsheader.size = 124;
-			ddsheader.flags = 0x0A1007;
+			ddsheader.size = sizeof(CompiledTextureAsset::DDS_HEADER);
+			ddsheader.flags = (CompiledTextureAsset::DDS_HEADER::DDSFLAGS)(
+				CompiledTextureAsset::DDS_HEADER::DDSD_CAPS |
+				CompiledTextureAsset::DDS_HEADER::DDSD_HEIGHT |
+				CompiledTextureAsset::DDS_HEADER::DDSD_WIDTH |
+				CompiledTextureAsset::DDS_HEADER::DDSD_PIXELFORMAT |
+				CompiledTextureAsset::DDS_HEADER::DDSD_LINEARSIZE);
 			ddsheader.height = tex->m_GfxTexture->m_SurfaceSize[1];
 			ddsheader.width = tex->m_GfxTexture->m_SurfaceSize[0];
 			ddsheader.pitchOrLinearSize = m_AssetsSizes[i];
 			ddsheader.depth = NULL;
 			ddsheader.mipMapCount = tex->m_GfxTexture->m_MipMapLevels;
 
-			ddsheader.ddspf.size = tex->m_BitsPerPixel;
-			ddsheader.ddspf.flags = 4;
+			ddsheader.ddspf.size = sizeof(CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT);
+			ddsheader.ddspf.flags = CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT::DDPF_FOURCC;
 			strcpy(ddsheader.ddspf.fourcc, CompiledTextureAsset::TextureFormatString[tex->m_GfxTexture->m_Format]);
 			ddsheader.ddspf.RGBBitCount = NULL;
 			ddsheader.ddspf.RBitMask = NULL;
@@ -255,24 +223,123 @@ void AssetBlockReader::DumpData() const
 			ddsheader.ddspf.BBitMask = NULL;
 			ddsheader.ddspf.ABitMask = NULL;
 
-			ddsheader.caps = 4198408;
+			ddsheader.caps = CompiledTextureAsset::DDS_HEADER::DDSCAPS_TEXTURE;
 			ddsheader.caps2 = NULL;
 			ddsheader.caps3 = NULL;
 			ddsheader.caps4 = NULL;
 			ddsheader.reserved2 = NULL;
 
-			fwrite(ddsmagick, sizeof(ddsmagick) - 1, 1, ofile);
-			fwrite((const void*)&ddsheader, sizeof(DDS_HEADER), 1, ofile);
-			fwrite(m_AssetsDataBuffer[i], m_AssetsSizes[i], 1, ofile);
-			fclose(ofile);
+			FILE* f = nullptr;
+			strcat(assname, ".dds");
+			errno_t err = fopen_s(&f, assname, "wb");
+			if (!f)
+			{
+				printf("Failed to create texture file! fopen returned error %d\n", err);
+				continue;
+			}
+			fwrite((const void*)&CompiledTextureAsset::DDS_HEADER::magick, sizeof(CompiledTextureAsset::DDS_HEADER::magick), 1, f);
+			fwrite((const void*)&ddsheader, sizeof(CompiledTextureAsset::DDS_HEADER), 1, f);
+			fwrite(m_AssetsDataBuffer[i], m_AssetsSizes[i], 1, f);
+			
+			fclose(f);
+		}
+		else if (strstr(assetext, "txt"))
+		{
+			//	TODO: this doesn't work right now...
+			CompiledTextAsset* txt = (CompiledTextAsset*)m_AssetsList[i];
+			FILE* f = nullptr;
+			errno_t err = fopen_s(&f, assname, "wb");
+			if (!f)
+			{
+				printf("Failed to create TXT file! fopen returned error %d\n", err);
+				continue;
+			}
+
+			for (unsigned int slot = 0; slot < txt->m_TextIndicies_Size; ++slot)
+			{
+				if (!txt->m_TextIndicies_Elements[slot])
+					continue;
+
+				AssetBlockReader::CompiledTextAsset::Dictionary::Offset = NULL;
+				AssetBlockReader::CompiledTextAsset::Dictionary::Indicy = &txt->m_List_3_Elements[txt->m_TextIndicies_Elements[slot]];
+				AssetBlockReader::CompiledTextAsset::Dictionary* dic = nullptr;
+
+				unsigned short buf[2048] = {};
+				unsigned short* buf_ptr = buf;
+
+				do
+				{
+					dic = AssetBlockReader::CompiledTextAsset::Dictionary::GetCharacterInfo(txt->field_50);
+
+					*buf_ptr++ = dic->m_Contents;
+
+				} while (*(char*)&dic->m_Contents);
+
+				unsigned int slen = NULL;
+				for (unsigned int i = 0; i < 1023; ++i, ++slen)
+					buf[i + 1024] = buf[i];
+				printf("String length is: %d\n", slen * 2 + 2);
+
+				fwrite("SLOT", 4, 1, f);
+				fwrite(&slen, sizeof(slen), 1, f);
+				fwrite(buf, sizeof(unsigned short), slen, f);
+			}
+
+			fclose(f);
+		}
+		else if (strstr(assetext, "font"))
+		{
+			//	TODO: output is wrong: resolution is incorrect, colors are messed up.
+			CompiledFontAsset* fnt = (CompiledFontAsset*)m_AssetsList[i];
+
+			CompiledTextureAsset::DDS_HEADER ddsheader;
+			ddsheader.size = sizeof(CompiledTextureAsset::DDS_HEADER);
+			ddsheader.flags = (CompiledTextureAsset::DDS_HEADER::DDSFLAGS)(
+				CompiledTextureAsset::DDS_HEADER::DDSD_CAPS |
+				CompiledTextureAsset::DDS_HEADER::DDSD_HEIGHT |
+				CompiledTextureAsset::DDS_HEADER::DDSD_WIDTH |
+				CompiledTextureAsset::DDS_HEADER::DDSD_PIXELFORMAT |
+				CompiledTextureAsset::DDS_HEADER::DDSD_LINEARSIZE);
+			ddsheader.height = fnt->m_FontInfo->m_FontTexture->m_SurfaceSize[1];
+			ddsheader.width = fnt->m_FontInfo->m_FontTexture->m_SurfaceSize[0];
+			ddsheader.pitchOrLinearSize = m_AssetsSizes[i];
+			ddsheader.depth = NULL;
+			ddsheader.mipMapCount = fnt->m_FontInfo->m_FontTexture->m_Levels & 512;
+
+			ddsheader.ddspf.size = sizeof(CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT);
+			ddsheader.ddspf.flags = CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT::DDPF_FOURCC;
+			strcpy(ddsheader.ddspf.fourcc, "DXT1");// CompiledTextureAsset::TextureFormatString[fnt->m_FontInfo->m_FontTexture->m_Format]);
+			ddsheader.ddspf.RGBBitCount = NULL;
+			ddsheader.ddspf.RBitMask = NULL;
+			ddsheader.ddspf.GBitMask = NULL;
+			ddsheader.ddspf.BBitMask = NULL;
+			ddsheader.ddspf.ABitMask = NULL;
+
+			ddsheader.caps = CompiledTextureAsset::DDS_HEADER::DDSCAPS_TEXTURE;
+			ddsheader.caps2 = NULL;
+			ddsheader.caps3 = NULL;
+			ddsheader.caps4 = NULL;
+			ddsheader.reserved2 = NULL;
+
+			FILE* f = nullptr;
+			strcat(assname, ".dds");
+			errno_t err = fopen_s(&f, assname, "wb");
+			if (!f)
+			{
+				printf("Failed to create font texture file! fopen returned error %d\n", err);
+				continue;
+			}
+			fwrite((const void*)&CompiledTextureAsset::DDS_HEADER::magick, sizeof(CompiledTextureAsset::DDS_HEADER::magick), 1, f);
+			fwrite((const void*)&ddsheader, sizeof(CompiledTextureAsset::DDS_HEADER), 1, f);
+			fwrite(m_AssetsDataBuffer[i], m_AssetsSizes[i], 1, f);
+
+			fclose(f);
 		}
 		else
 		{
 			printf("Trying to dump an asset with unsupported format '%s'! Skipped...\n", assetext);
 			continue;
 		}
-
-		//	TODO: restore asset header so it can be open as normal file for other types.
 
 		printf("Saved asset dump: %s\n", assname);
 	}
@@ -390,7 +457,7 @@ void AssetBlockReader::CompiledFragmentAsset::PrintInfo() const
 	CompiledAsset::PrintInfo();
 
 	printf("\tfield_1C:\t%d\n", field_1C);
-	printf("\tfield_20:\t%d\n", field_20);
+	printf("\tfield_20:\t%p\n", field_20);
 	printf("\tfield_24:\t%d\n", field_24);
 }
 
@@ -527,7 +594,7 @@ AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffe
 	field_28[1] = **(int**)infobuffer;
 	*infobuffer += sizeof(int);
 
-	m_TextIndicies_Elements = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
+	m_TextIndicies_Elements = (unsigned short*)(*infobuffer + **(unsigned int**)infobuffer);
 	*infobuffer += sizeof(int);
 	m_TextIndicies_Size = **(int**)infobuffer;
 	*infobuffer += sizeof(int);
@@ -536,7 +603,7 @@ AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffe
 	field_38[1] = **(int**)infobuffer;
 	*infobuffer += sizeof(int);
 
-	m_List_3_Elements = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
+	m_List_3_Elements = (unsigned char*)(*infobuffer + **(unsigned int**)infobuffer);
 	*infobuffer += sizeof(int);
 	m_List_3_Size = **(int**)infobuffer;
 	*infobuffer += sizeof(int);
@@ -830,4 +897,26 @@ void AssetBlockReader::CompiledAnimationAsset::SkipSpecificData(unsigned char** 
 
 	while (**infobuffer == NULL)
 		*infobuffer += 1;
+}
+
+AssetBlockReader::CompiledTextAsset::Dictionary* AssetBlockReader::CompiledTextAsset::Dictionary::GetCharacterInfo(Dictionary* dic)
+{
+	if (dic->m_Contents == (unsigned short)0xA74)
+	{
+		do 
+		{
+			if (Offset >= 8)
+			{
+				Indicy++;
+				Offset -= 8;
+			}
+
+			if (((*Indicy >> Offset++) & 1) != 0)
+				dic = (Dictionary*) ((unsigned int*)dic + offsetof(Dictionary, field_4) + (unsigned int)dic->field_4);
+			else
+				dic = (Dictionary*) ((unsigned int*)dic + offsetof(Dictionary, field_0) + (unsigned int)dic->field_0);
+		} while (dic->m_Contents == (unsigned short)0xA74);
+	}
+
+	return dic;
 }

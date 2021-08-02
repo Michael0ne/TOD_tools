@@ -1,5 +1,7 @@
 #include "TextureResourceReader.h"
 
+const unsigned int TextureResourceReader::DDS_HEADER::magick = 0x20534444;
+
 const std::string TextureResourceReader::PlatformExtension[] =
 {
 	"",
@@ -139,48 +141,25 @@ void TextureResourceReader::DumpData() const
 	outfilename = outfilename.substr(0, outfilename.find('.', 0));
 	outfilename += ".dds";
 
-	const char ddsmagick[] = "DDS ";
-	struct DDS_HEADER
-	{
-		unsigned int	size;
-		unsigned int	flags;
-		unsigned int	height;
-		unsigned int	width;
-		unsigned int	pitchOrLinearSize;
-		unsigned int	depth;
-		unsigned int	mipMapCount;
-		unsigned int	reserved[11];
-
-		struct DDS_PIXELFORMAT
-		{
-			unsigned int	size;
-			unsigned int	flags;
-			char			fourcc[4];
-			unsigned int	RGBBitCount;
-			unsigned int	RBitMask;
-			unsigned int	GBitMask;
-			unsigned int	BBitMask;
-			unsigned int	ABitMask;
-		}				ddspf;
-
-		unsigned int	caps;
-		unsigned int	caps2;
-		unsigned int	caps3;
-		unsigned int	caps4;
-		unsigned int	reserved2;
-	};
-
 	DDS_HEADER ddsheader;
-	ddsheader.size = 124;
-	ddsheader.flags = 0x0A1007;
+	FILE* f = nullptr;
+
+	ddsheader.size = sizeof(DDS_HEADER);
+	ddsheader.flags = (DDS_HEADER::DDSFLAGS)(
+		DDS_HEADER::DDSD_CAPS |
+		DDS_HEADER::DDSD_HEIGHT |
+		DDS_HEADER::DDSD_WIDTH |
+		DDS_HEADER::DDSD_PIXELFORMAT |
+		DDS_HEADER::DDSD_MIPMAPCOUNT |
+		DDS_HEADER::DDSD_LINEARSIZE);
 	ddsheader.height = m_GfxTexture->m_SurfaceSize[1];
 	ddsheader.width = m_GfxTexture->m_SurfaceSize[0];
 	ddsheader.pitchOrLinearSize = m_Header.m_AssetDataSize;
 	ddsheader.depth = NULL;
 	ddsheader.mipMapCount = m_GfxTexture->m_MipMapLevels;
 
-	ddsheader.ddspf.size = m_GfxTexture->m_BitsPerPixel;
-	ddsheader.ddspf.flags = 4;
+	ddsheader.ddspf.size = sizeof(DDS_HEADER::DDS_PIXELFORMAT);
+	ddsheader.ddspf.flags = DDS_HEADER::DDS_PIXELFORMAT::DDPF_FOURCC;
 	strcpy(ddsheader.ddspf.fourcc, TextureFormatString[m_GfxTexture->m_Format]);
 	ddsheader.ddspf.RGBBitCount = NULL;
 	ddsheader.ddspf.RBitMask = NULL;
@@ -188,18 +167,22 @@ void TextureResourceReader::DumpData() const
 	ddsheader.ddspf.BBitMask = NULL;
 	ddsheader.ddspf.ABitMask = NULL;
 
-	ddsheader.caps = 4198408;
+	ddsheader.caps = (DDS_HEADER::DDSCAPS)(DDS_HEADER::DDSCAPS_TEXTURE | DDS_HEADER::DDSCAPS_MIPMAP | DDS_HEADER::DDSCAPS_COMPLEX);
 	ddsheader.caps2 = NULL;
 	ddsheader.caps3 = NULL;
 	ddsheader.caps4 = NULL;
 	ddsheader.reserved2 = NULL;
 
-	FILE* f;
-	fopen_s(&f, outfilename.c_str(), "wb");
-
-	fwrite(ddsmagick, sizeof(ddsmagick) - 1, 1, f);
+	errno_t err = fopen_s(&f, outfilename.c_str(), "wb");
+	if (!f)
+	{
+		printf("Failed to create texture file! fopen returned error %d\n", err);
+		return;
+	}
+	fwrite((const void*)&DDS_HEADER::magick, sizeof(DDS_HEADER::magick), 1, f);
 	fwrite((const void*)&ddsheader, sizeof(DDS_HEADER), 1, f);
 	fwrite(m_AssetData, m_Header.m_AssetDataSize, 1, f);
+	
 	fclose(f);
 
 	printf("Saved dump: %s -> %s\n", m_ResourceName.c_str(), outfilename.c_str());

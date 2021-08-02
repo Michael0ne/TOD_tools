@@ -6,6 +6,8 @@ class TextSlot;
 
 class TextBox : public Sprite
 {
+    #define MAX_TEXT_SLOTS 10
+
     enum HorizontalAlign
     {
         LEFT        = 0,
@@ -18,7 +20,7 @@ protected:
     FontAsset      *m_FontRes;
     int             field_A8;
     String         *m_Text;
-    int             field_B0;
+    int           **m_TextSlotsContents;
     TextSlot       *m_TextSlot;
     int             field_B8;
     int             m_TextColor;
@@ -34,7 +36,7 @@ public:
     TextBox();	//	@8FDAA0
 
     virtual ~TextBox();	//	@8FDBE0
-    virtual Vector4f* GetBounds(Vector4f& outBounds) const;	//	@8FF220
+    virtual Vector4f* GetBounds(Vector4f& outBounds) const override;	//	@8FF220
 
     void* operator new (size_t size)
     {

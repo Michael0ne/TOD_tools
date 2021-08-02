@@ -70,6 +70,61 @@ public:
     {
         static const char* const    TextureFormatString[];
 
+        struct DDS_HEADER
+        {
+            unsigned int	size;
+            enum DDSFLAGS
+            {
+                DDSD_CAPS = 0x1,
+                DDSD_HEIGHT = 0x2,
+                DDSD_WIDTH = 0x4,
+                DDSD_PITCH = 0x8,
+                DDSD_PIXELFORMAT = 0x1000,
+                DDSD_MIPMAPCOUNT = 0x20000,
+                DDSD_LINEARSIZE = 0x80000,
+                DDSD_DEPTH = 0x800000
+            }               flags;
+            unsigned int	height;
+            unsigned int	width;
+            unsigned int	pitchOrLinearSize;
+            unsigned int	depth;
+            unsigned int	mipMapCount;
+            unsigned int	reserved[11];
+
+            struct DDS_PIXELFORMAT
+            {
+                unsigned int	size;
+                enum
+                {
+                    DDPF_ALPHAPIXELS = 1,
+                    DDPF_ALPHA = 2,
+                    DDPF_FOURCC = 4,
+                    DDPF_RGB = 64,
+                    DDPF_YUV = 512,
+                    DDPF_LUMINANCE = 131072
+                }               flags;
+                char			fourcc[4];
+                unsigned int	RGBBitCount;
+                unsigned int	RBitMask;
+                unsigned int	GBitMask;
+                unsigned int	BBitMask;
+                unsigned int	ABitMask;
+            }				ddspf;
+
+            enum DDSCAPS
+            {
+                DDSCAPS_COMPLEX = 0x8,
+                DDSCAPS_MIPMAP = 0x400000,
+                DDSCAPS_TEXTURE = 0x1000
+            }               caps;
+            unsigned int	caps2;
+            unsigned int	caps3;
+            unsigned int	caps4;
+            unsigned int	reserved2;
+
+            static const unsigned int magick;
+        };
+
         struct TextureInfo
         {
             int         field_0;
@@ -151,12 +206,14 @@ public:
             float			field_2C;
             int				field_30;
             float			field_34;
-            int				field_38;
+            short			field_38;
+            short           field_3A;
             CompiledTextureAsset::GfxTexture   *m_FontTexture;
             Glyph          *m_GlyphsList;
             unsigned int    m_GlyphsInList;
             int             field_48;
             int             field_4C;
+
             int				field_50;
             int				field_54;
             float			field_58;
@@ -181,7 +238,12 @@ public:
         {
             Dictionary         *field_0;
             Dictionary         *field_4;
-            unsigned short      field_8;
+            unsigned short      m_Contents;
+
+            static Dictionary*  GetCharacterInfo(Dictionary* dic);  //  @861760
+
+            static int Offset;  //  @A3CE84
+            static unsigned char* Indicy;   //  @A3CE80
         };
 
         unsigned int    field_1C;
@@ -189,11 +251,11 @@ public:
         unsigned int    m_List_1_Size;
         unsigned int    field_28[2];
 
-        unsigned int   *m_TextIndicies_Elements;
+        unsigned short *m_TextIndicies_Elements;
         unsigned int    m_TextIndicies_Size;
         unsigned int    field_38[2];
 
-        unsigned int   *m_List_3_Elements;
+        unsigned char  *m_List_3_Elements;
         unsigned int    m_List_3_Size;
         unsigned int    field_48[2];
 

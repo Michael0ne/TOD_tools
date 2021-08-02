@@ -38,7 +38,8 @@ TextBox::TextBox() : Sprite()
 	m_Text = new String();
 	m_Flags = m_Flags & 0xFFFFA5FF | 0x7FF2000;
 	m_TextSlot = nullptr;
-	field_B8 = field_B0 = 0;
+	field_B8 = NULL;
+	m_TextSlotsContens = nullptr;
 	m_VerticalScroll = 0.0f;
 	m_Id = m_Id | 8;
 
