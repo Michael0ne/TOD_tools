@@ -46,7 +46,7 @@ INT64 Performance::GetSeconds()
 	}
 
 	if (!MeasuringPerformanceSeconds)
-		return 1000 * timeGetTime();
+		return 1000 * (INT64)timeGetTime();
 
 	LARGE_INTEGER freq;
 	QueryPerformanceCounter(&freq);

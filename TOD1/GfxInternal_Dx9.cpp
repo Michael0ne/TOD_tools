@@ -2436,7 +2436,7 @@ void GfxInternal_Dx9::DumpScreenShot(Surface* surf)
     backBufferSurface->GetDesc(&backBufferSurfaceDesc);
     backBufferSurface->LockRect(&backBufferRect, nullptr, D3DLOCK_READONLY);
 
-    LogDump::LogA("copying from surface (%i,%i) --> (%i,%i)\n", backBufferSurfaceDesc.Width, backBufferSurfaceDesc.Height, surf->m_Width, surf->m_Height);
+    LogDump::LogA("copying from surface (%i,%i) --> (%i,%i)\n", backBufferSurfaceDesc.Width, backBufferSurfaceDesc.Height, surf->m_ImageWidth, surf->m_ImageHeight);
 
     ColorRGB clr;
     for (unsigned int x = 0; x < backBufferSurfaceDesc.Width; x++)

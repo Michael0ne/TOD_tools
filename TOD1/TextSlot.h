@@ -7,7 +7,7 @@
 class TextSlot : public Node
 {
 protected:
-	char* field_50;
+	char* m_TextStringId;
 	int m_CurrentIndex;
 	int* m_TextRes;
 	int field_5C;
@@ -19,7 +19,7 @@ public:
 
 		m_TextRes = nullptr;
 		field_5C = 1;
-		field_50 = 0;
+		m_TextStringId = 0;
 		m_CurrentIndex = 0;
 	}
 };

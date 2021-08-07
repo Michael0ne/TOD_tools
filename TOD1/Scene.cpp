@@ -63,8 +63,8 @@ Scene::Scene() : Folder_()
 
 	m_PlayMode = MODE_UNKNOWN_1;
 	m_NodesWithUpdateOrBlockingScripts = NULL;
-	m_Buffer_1 = new FrameBuffer(0, 36, 2);
-	m_Buffer_2 = new FrameBuffer(0, 36, 2);
+	m_FrameBuffer_1 = new FrameBuffer(0, 36, 2);
+	m_FrameBuffer_2 = new FrameBuffer(0, 36, 2);
 	m_SharedProbe = (CollisionProbe*)tCollisionProbe->CreateNode();
 	SceneInstance = this;
 	m_GameCamera = nullptr;

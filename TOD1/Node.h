@@ -167,6 +167,8 @@ public:
     void                SetFragment(const char* const fragmentpath);    //  @88F8A0
     void                TryInstantiate(); //   @88C2D0
     void                FindNode_Impl(int* args) const;  //  @88EB60
+    void                ConvertFromWorldSpace(Vector4f& outPos, const Vector4f& inPos); //  @88BC90
+    void                SetWorldOrient(const Orientation& orientation);   //  @87F240
 
     static AuxQuadTree* _8A0810(Node* node);	//	@8A0810
     static void         _891E70(const String& s, String& sout); //  @891E70

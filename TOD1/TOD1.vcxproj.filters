@@ -578,7 +578,7 @@
     <ClInclude Include="SkinnedMeshBuffer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
-    <ClInclude Include="SurfaceMutable.h">
+    <ClInclude Include="MutableTextureBuffer.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
@@ -1048,7 +1048,7 @@
     <ClCompile Include="SkinnedMeshBuffer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
-    <ClCompile Include="SurfaceMutable.cpp">
+    <ClCompile Include="MutableTextureBuffer.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">

@@ -283,7 +283,7 @@
     <ClInclude Include="SoundAsset.h" />
     <ClInclude Include="SoundFile.h" />
     <ClInclude Include="StreamedSoundInfoAsset.h" />
-    <ClInclude Include="SurfaceMutable.h" />
+    <ClInclude Include="MutableTextureBuffer.h" />
     <ClInclude Include="TextAsset.h" />
     <ClInclude Include="TextureAsset.h" />
     <ClInclude Include="TruthType.h" />
@@ -447,7 +447,7 @@
     <ClCompile Include="SoundAsset.cpp" />
     <ClCompile Include="SoundFile.cpp" />
     <ClCompile Include="StreamedSoundInfoAsset.cpp" />
-    <ClCompile Include="SurfaceMutable.cpp" />
+    <ClCompile Include="MutableTextureBuffer.cpp" />
     <ClCompile Include="TextAsset.cpp" />
     <ClCompile Include="TextureAsset.cpp" />
     <ClCompile Include="TruthType.cpp" />

@@ -30,7 +30,22 @@ protected:
     float           m_HorizontalSpacing;
     float           m_VerticalSpacing;
     float           m_VerticalScroll;
-    unsigned int    m_Flags;
+    union
+    {
+        struct
+        {
+            unsigned char   HorizontalAlignment : 4;
+            unsigned char   VerticalAlignment : 4;
+            unsigned char   TextResMode : 1;
+            unsigned char   UseSlotIndex : 1;
+            unsigned char   _10 : 1;
+            unsigned char   VerticalClip : 1;
+            unsigned char   ViewAllSlotIndices : 1;
+            unsigned char   UseGlyphIgnoreColor : 1;
+            unsigned char   ScaleIfWidescreen : 1;
+        }           m_FlagsBits;
+        unsigned int    m_Flags;
+    }               m_Flags;
 
 public:
     TextBox();	//	@8FDAA0
@@ -49,6 +64,7 @@ public:
         ptr = nullptr;
     }
 
+    void            SetTextScale(const float* args);    //  @8FD200
     Vector4f*       GetActualBoxSize(Vector4f& outSize) const;	//	@8FDCD0
     void            SetFont(const char* fontName);	//	@8FF2F0
     void            ParseFormatting(char* key, float* linescale, int* colorindex, HorizontalAlign* alignment);  //  @8FD570

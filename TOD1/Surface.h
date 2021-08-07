@@ -7,11 +7,11 @@ class Surface
 public:
     unsigned char   m_BitsPerPixel;
     int            *field_4;
-    unsigned int    m_Width;
-    unsigned int    m_Height;
-    unsigned int    m_WidthPowerOf2;
-    unsigned int    m_HeightPowerOf2;
-    char           *m_ColorPallette;
+    unsigned int    m_ImageWidth;
+    unsigned int    m_ImageHeight;
+    unsigned int    m_TextureWidth;
+    unsigned int    m_TextureHeight;
+    char           *m_SurfacePixels;    //  NOTE: format ARGB.
     char           *m_Canvas;
 
 private:
@@ -33,7 +33,13 @@ public:
         ptr = nullptr;
     }
 
-    void            SetPixelColor(unsigned int x, unsigned int y, const ColorRGB& clr);	//	@42F8A0
+    void            SetPixelColor(const unsigned int x, const unsigned int y, const ColorRGB& clr);	//	@42F8A0
     void            ConvertColorsToPS2();   //  @42FBA0
     unsigned int    GetTotalSurfaceColors() const;  //  @42F820
+    void            ScaleImage(const unsigned int width, const unsigned int height);    //  @42FFF0
+    ColorRGB        GetPixelColor(const unsigned int x, const unsigned int y) const;  //  @42FA80
+    unsigned char   GetPixelColor_A(const unsigned int x, const unsigned int y) const;    //  @42F920
+    void            SetSurfaceColorPalette(const unsigned int colors);  //  @430290
+    void            CopyCanvas(const char* const canvas, const unsigned int canvassize, int* const a3); //  @42FA10
+    void            SetPixelColor(const unsigned int x, const unsigned int y, const char clr);  //  @42F990
 };

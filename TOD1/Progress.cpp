@@ -42,7 +42,7 @@ Progress::Progress() : ProgressBase(Performance::ClockGetCycles() / 5)
 		for (unsigned int y = 0; y < 8; ++y)
 			spsurf->SetPixelColor(x, y, BuiltinType::ColorWhite);
 
-	SurfaceMutable* spsurfmut = new SurfaceMutable(spsurf);
+	MutableTextureBuffer* spsurfmut = new MutableTextureBuffer(spsurf);
 	m_LoadBarTexture = new Texture(spsurfmut);
 	delete spsurfmut;
 }

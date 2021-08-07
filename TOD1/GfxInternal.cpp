@@ -328,7 +328,7 @@ void GfxInternal::CreateCheckerboardTextures()
         for (unsigned int y = 0; y < 64; ++y)
             bwtexsurf->SetPixelColor(x, y, !(x % 16) || !(y % 16) ? BuiltinType::ColorWhite : BuiltinType::ColorBlack );
 
-    SurfaceMutable* bwtexsurfmut = new SurfaceMutable(bwtexsurf);
+    MutableTextureBuffer* bwtexsurfmut = new MutableTextureBuffer(bwtexsurf);
     m_CheckerboardTextures.push_back(new Texture(bwtexsurfmut));
     delete bwtexsurfmut;
 
@@ -339,7 +339,7 @@ void GfxInternal::CreateCheckerboardTextures()
         for (unsigned int y = 0; y < 64; ++y)
             pytexsurf->SetPixelColor(x, y, (x % 16 < 8) || (y % 16 < 8) ? BuiltinType::ColorPink : BuiltinType::ColorYellow );
 
-    SurfaceMutable* pytexsurfmut = new SurfaceMutable(pytexsurf);
+    MutableTextureBuffer* pytexsurfmut = new MutableTextureBuffer(pytexsurf);
     m_CheckerboardTextures.push_back(new Texture(pytexsurfmut));
     delete pytexsurfmut;
 }

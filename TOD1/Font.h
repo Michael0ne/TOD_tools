@@ -25,6 +25,14 @@ class Font
         void*       field_C;
     };
 
+    struct Fld50
+    {
+        int         field_0;
+        int        *field_4;
+        int        *field_8;
+        int        *field_C;
+    };
+
 private:
     int				field_0;
     int				field_4;
@@ -43,7 +51,7 @@ private:
     int				field_38;
     Texture        *m_FontTexture;
     std::vector<Glyph>	m_GlyphsList;
-    int				field_50;
+    Fld50          *field_50;
     int				field_54;
     float			field_58;
     float			field_5C;

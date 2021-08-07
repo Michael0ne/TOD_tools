@@ -111,6 +111,17 @@ void Node::FindNode_Impl(int* args) const
     *args = (int)FindNode((const char*)args[1]);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void Node::ConvertFromWorldSpace(Vector4f& outPos, const Vector4f& inPos)
+{
+    //  TODO: Get world matrix, transpose and return new translated position.
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::SetWorldOrient(const Orientation& orientation)
+{
+}
+
 void Node::SetFlags(int flags)
 {
     if (!m_Flags.m_FlagBits.Volatile && (flags & 0x20) == 0 && flags != (m_Flags.m_Flags & 0xFFF))

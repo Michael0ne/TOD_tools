@@ -17,7 +17,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
 	if (!argv[1] || !argv[2])
 	{
 		char errmessage[32] = {};
-		LoadString(GetModuleHandle(NULL), 106, errmessage, sizeof(errmessage));
+		LoadString(GetModuleHandle(nullptr), 106, errmessage, sizeof(errmessage));
 		std::cout << errmessage << std::endl;
 
 		return NULL;
@@ -33,7 +33,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
 	if (lastslashpos == nullptr || (dotpos != nullptr && dotpos > lastslashpos))
 	{
 		char errmessage[32] = {};
-		LoadString(GetModuleHandle(NULL), 105, errmessage, sizeof(errmessage));
+		LoadString(GetModuleHandle(nullptr), 105, errmessage, sizeof(errmessage));
 		std::cout << errmessage << std::endl;
 
 		return NULL;
@@ -60,7 +60,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
 	if (resreader == nullptr)
 	{
 		char errmessage[32] = {};
-		LoadString(GetModuleHandle(NULL), 104, errmessage, sizeof(errmessage));
+		LoadString(GetModuleHandle(nullptr), 104, errmessage, sizeof(errmessage));
 		printf(errmessage, argv[1]);
 
 		return NULL;

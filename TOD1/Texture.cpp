@@ -123,7 +123,7 @@ Texture::Texture(const ScreenResolution& resolution, unsigned int, unsigned int 
 	GfxInternal_Dx9::RenderedTexturesMap.insert({ GfxInternal_Dx9::RenderedTexturesMap.size(), this });
 }
 
-Texture::Texture(SurfaceMutable* surf)
+Texture::Texture(MutableTextureBuffer* surf)
 {
 	MESSAGE_CLASS_CREATED(Texture);
 
@@ -168,9 +168,9 @@ void Texture::SetTextureForStage(const unsigned int stage) const
 void Texture::AdjustColors()
 {
 	ScreenResolution surfsize, surfsizenorm;
-	m_Mutable->GetSurfaceResolutionNormalised(surfsizenorm, 0);
+	m_Mutable->GetTextureResolution(surfsizenorm, 0);
 	CreateDirect3DTexture(surfsizenorm, 1, m_Mutable->m_Surfaces.size() > 1);
-	m_Resolution = m_Mutable->GetSurfaceResolution(surfsize, 0);
+	m_Resolution = m_Mutable->GetImageResolution(surfsize, 0);
 
 	if (m_Levels >> 1 != m_Mutable->m_Surfaces.size())
 	{
@@ -180,7 +180,7 @@ void Texture::AdjustColors()
 		for (unsigned int i = 0; i < m_Mutable->m_Surfaces.size(); ++i)
 		{
 			ScreenResolution s;
-			m_Mutable->GetSurfaceResolutionNormalised(s, i);
+			m_Mutable->GetTextureResolution(s, i);
 			LogDump::LogA("Level %i: size=(%i,%i)\n", i, s.x, s.y);
 		}
 
@@ -195,7 +195,7 @@ void Texture::AdjustColors()
 			D3DLOCKED_RECT surfrect;
 			ScreenResolution texres;
 			m_Texture->GetLevelDesc(level, &surfdesc);
-			m_Mutable->GetSurfaceResolutionNormalised(texres, level);
+			m_Mutable->GetTextureResolution(texres, level);
 
 			if (FAILED(m_Texture->LockRect(level, &surfrect, nullptr, NULL)))
 				LogDump::LogA("Error - could not lock this tex level %i\n", level);

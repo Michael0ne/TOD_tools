@@ -10,22 +10,13 @@ class PhysSystem
         unsigned int        field_4;
     };
 
-    struct List2
+    struct Vertex
     {
-        int	field_0;
-        int	field_4;
-        int	field_8;
-        int	field_C;
-        int	field_10;
-        int	field_14;
-        int	field_18;
-        int	field_1C;
-        int	field_20;
-        int	field_24;
-        int	field_28;
-        int	field_2C;
-        int	field_30;
-
+        Vector4f	m_Position;
+        Orientation m_Orientation;
+        Vector4f    m_Normal;
+        short       field_30;
+        short       field_32;
     };
 
     struct List4
@@ -39,7 +30,7 @@ class PhysSystem
 
 protected:
     std::vector<Vector4f>   m_List_1;
-    std::vector<List2>      m_List_2;
+    std::vector<Vertex>     m_VerticesList;
     std::vector<List3>      m_List_3;
     Cloth                  *m_Cloth;
     Vector4f                m_GravityVec;
@@ -57,6 +48,9 @@ protected:
 public:
     PhysSystem(unsigned int, Cloth*, bool);	//	@931240
     ~PhysSystem();  //  @92FB30
+
+    void                    SetVertexPos(const unsigned int vertexindex, const Vector4f& pos);   //  @92FB90
+    void                    SetNormalPos(const unsigned int vertexindex, const Vector4f& norm); //  @92FC80
 };
 
 ASSERT_CLASS_SIZE(PhysSystem, 120);

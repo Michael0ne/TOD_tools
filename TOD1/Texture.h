@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "stdafx.h"
 #include "Types.h"
-#include "SurfaceMutable.h"
+#include "MutableTextureBuffer.h"
 #include <map>
 #include <vector>
 
@@ -18,7 +18,7 @@ class Texture
     };
 
 public:
-    SurfaceMutable     *m_Mutable;
+    MutableTextureBuffer     *m_Mutable;
     LPDIRECT3DTEXTURE9  m_Texture;
     char               *m_TextureSurfaceBits;
     ScreenResolution    m_Resolution;
@@ -41,7 +41,7 @@ private:
 
 public:
     Texture(const ScreenResolution& resolution, unsigned int, unsigned int levels);	//	@463BA0
-    Texture(SurfaceMutable* surf);	//	@463C60
+    Texture(MutableTextureBuffer* surf);	//	@463C60
     ~Texture(); //  @463D20
 
     unsigned int        GetSizeForLevel(const unsigned char lvl) const;	//	@4633D0

@@ -11,7 +11,7 @@ TextBox::~TextBox()
 
 Vector4f* TextBox::GetBounds(Vector4f& outBounds) const
 {
-	if (!(m_Flags & 0x10))
+	if (!m_Flags.m_FlagsBits.VerticalAlignment)
 		return (outBounds = Vector4f(0.f, 0.f, 0.f, 10000.f), &outBounds);
 
 	Vector4f boxSize;
@@ -31,19 +31,34 @@ TextBox::TextBox() : Sprite()
 	m_TextColor = m_TextColor2 = -1;
 	m_ScaleX = 1.0f;
 	m_ScaleY = 1.0f;
-	m_Flags = m_Flags & 0xFFFFFF00;
+	m_Flags.m_Flags = m_Flags.m_Flags & 0xFFFFFF00;
 	m_HorizontalSpacing = m_VerticalSpacing = 0.0f;
 	field_94 = 0;
-	m_Flags = m_Flags & 0xFFFFFEFF;
+	m_Flags.m_FlagsBits.TextResMode = false;
 	m_Text = new String();
-	m_Flags = m_Flags & 0xFFFFA5FF | 0x7FF2000;
+	m_Flags.m_Flags = m_Flags.m_Flags & 0xFFFFA5FF | 0x7FF2000;
 	m_TextSlot = nullptr;
 	field_B8 = NULL;
-	m_TextSlotsContens = nullptr;
+	m_TextSlotsContents = nullptr;
 	m_VerticalScroll = 0.0f;
 	m_Id = m_Id | 8;
 
 	m_QuadTree->field_1C = m_QuadTree->field_1C & 0xFFFFFF | m_QuadTree->field_1C & 0xFF000000 | 0x8000000;
+}
+
+void TextBox::SetTextScale(const float* args)
+{
+	m_Id |= 8;
+	if (m_QuadTree)
+		m_QuadTree->Refresh();
+
+	m_ScaleY = args[1];
+
+	m_Id |= 8;
+	m_ScaleX = args[0];
+
+	if (m_QuadTree)
+		m_QuadTree->Refresh();
 }
 
 #pragma message(TODO_IMPLEMENTATION)

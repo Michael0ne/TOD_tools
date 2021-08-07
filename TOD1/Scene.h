@@ -90,8 +90,8 @@ public:
     Node*           m_LoadedBlocks[8];
     char            field_1D0[8];
     class FrameBuffer*   m_FrameBuffers[31];
-    class FrameBuffer*   m_Buffer_1;
-    class FrameBuffer*   m_Buffer_2;
+    class FrameBuffer*   m_FrameBuffer_1;
+    class FrameBuffer*   m_FrameBuffer_2;
     UINT64          m_StartTimeMs;
     int             field_268;
 
