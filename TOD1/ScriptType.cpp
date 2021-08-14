@@ -1,6 +1,6 @@
 #include "ScriptType.h"
 
-ScriptType::ScriptType(const String& name, const ScriptFieldsList& fields) : BaseType(TYPE_SCRIPT, name.m_szString, TYPE_SCRIPT_SIZE)
+ScriptType::ScriptType(const String& name, const ScriptFieldsList& fields) : DataType(TYPE_SCRIPT, name.m_Str, TYPE_SCRIPT_SIZE)
 {
 	MESSAGE_CLASS_CREATED(ScriptType);
 
@@ -15,7 +15,7 @@ ScriptType::~ScriptType()
 	MESSAGE_CLASS_DESTROYED(ScriptType);
 }
 
-void ScriptType::ScriptFieldsList::Add(const char* const fieldname, BaseType* fieldtype, unsigned int)
+void ScriptType::ScriptFieldsList::Add(const char* const fieldname, DataType* fieldtype, unsigned int)
 {
 	m_List.push_back({ fieldname, fieldtype, m_TotalSizeBytes });
 	m_TotalSizeBytes += fieldtype->m_Size;

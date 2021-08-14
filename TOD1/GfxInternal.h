@@ -48,7 +48,7 @@ class GfxInternal
 protected:
     bool                            m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
     std::vector<Texture*>           m_CheckerboardTextures;
-    MeshBuffer_Dx9                 *m_MeshBuffer;
+    MeshBuffer                     *m_MeshBuffer;
     Mesh                           *m_Mesh;
     unsigned int                    m_RenderBufferTotal;
     int                             field_20;
@@ -92,6 +92,7 @@ public:
     FrameBuffer*                    _41F8F0(FrameBuffer* fb, unsigned int index);   //  @41F8F0
     void                            CreateCheckerboardTextures();    //  @4210E0
     void                            GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsigned int ind) const;  //  @45EE30
+    void                            _420390();  //  @420390
 
     static AssetManager::RegionCode		GetRegion();	//	@420160
     static bool                     IsWideScreen();	//	@420120

@@ -25,7 +25,7 @@ struct GlobalProperty
 {
     int                         m_PropertyId = 0;
     char*                       m_PropertyName = nullptr;
-    class BaseType*             m_PropertyType = nullptr;
+    class DataType*             m_PropertyType = nullptr;
 
     GlobalProperty() {};
     GlobalProperty(const char* const propertyname, unsigned int ind);
@@ -47,10 +47,10 @@ protected:
     struct CommandArgument
     {
         String					m_PropertyName;
-        class BaseType*			m_ScriptType;
+        class DataType*			m_ScriptType;
         unsigned int			m_TotalSizeBytes;
 
-        CommandArgument(String& argname, const class BaseType* argtype, unsigned int argsize);
+        CommandArgument(String& argname, const class DataType* argtype, unsigned int argsize);
     };
 
     struct CommandArguments
@@ -67,7 +67,7 @@ protected:
     char*						m_CommandName;	//	NOTE: the name without arguments (only command name).
 
 private:
-    void						AddArgumentType(BaseType* argtype);	//	@862650
+    void						AddArgumentType(DataType* argtype);	//	@862650
 
 public:
     GlobalCommand(const char* const commandname, const unsigned int commandind);	//	@871FE0
@@ -84,6 +84,7 @@ extern std::map<String, unsigned int>	GlobalCommandsMap;	//	@A3CF08
 class EntityType;
 class Entity;
 
+//  NOTE: actual path to header file "/Kernel/Script/Interface/Scriptbaked.h".
 class GlobalScript
 {
     struct Property
@@ -105,7 +106,7 @@ class GlobalScript
     struct Parameter
     {
         void                    (* m_ProcPtr)(void*);
-        BaseType*               m_ParamType;
+        DataType*               m_ParamType;
     };
 
     friend class Node;
@@ -149,7 +150,7 @@ public:
     static std::vector<Node*>           SceneScriptEntitiesList;    //  @A3B5A4
 };
 
-extern BaseType*                GlobalScriptsArray[410];	//	@A3B7A4	//	TODO: this could be just a global 'scripts space' where mixed objects are contained.
+extern DataType*                GlobalScriptsArray[410];	//	@A3B7A4	//	TODO: this could be just a global 'scripts space' where mixed objects are contained.
 extern Node*                    CacheScriptNode;    //  @A3B58C
 extern Node*                    CommonScriptNode;   //  @A3B590
 extern Node*                    CommonAnimSlotScriptNode;   //  @A3B594

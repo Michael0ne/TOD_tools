@@ -1,7 +1,7 @@
 #pragma once
 #include "BaseAsset.h"
 #include "TextureAsset.h"
-#include "Config.h"
+#include "KapowEngineClass.h"
 #include <vector>
 
 class Node;

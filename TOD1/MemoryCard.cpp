@@ -25,15 +25,15 @@ bool MemoryCard::IsFormatted() const
 	if (!Script::SavePlatformPS2)
 		return true;
 
-	if (m_SaveFolderPath.m_nLength)
+	if (m_SaveFolderPath.m_Length)
 	{
 		if (m_Formatted)
 		{
-			if (File::IsDirectoryValid(m_SaveFolderPath.m_szString))
+			if (File::IsDirectoryValid(m_SaveFolderPath.m_Str))
 			{
 #ifdef INCLUDE_FIXES
 				char temp[1024] = {};
-				strcpy(temp, m_SaveFolderPath.m_szString);
+				strcpy(temp, m_SaveFolderPath.m_Str);
 				strcat(temp, "/Formatted.txt");
 
 				if (File::FindFileEverywhere(temp))
@@ -41,7 +41,7 @@ bool MemoryCard::IsFormatted() const
 				String temp = m_SaveFolderPath;
 				temp.Append("/Formatted.txt");
 				
-				if (File::FindFileEverywhere(temp.m_szString))
+				if (File::FindFileEverywhere(temp.m_Str))
 #endif
 
 					return true;
@@ -58,7 +58,7 @@ bool MemoryCard::FormatCard()
 	if (!Script::SavePlatformPS2)
 		return true;
 
-	if (!m_SaveFolderPath.m_nLength)
+	if (!m_SaveFolderPath.m_Length)
 	{
 		LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.");
 		LogDump::LogA("Warning: Memory Card not found.");
@@ -66,19 +66,19 @@ bool MemoryCard::FormatCard()
 		return false;
 	}
 
-	if (!m_Formatted || !File::IsDirectoryValid(m_SaveFolderPath.m_szString))
+	if (!m_Formatted || !File::IsDirectoryValid(m_SaveFolderPath.m_Str))
 	{
 		LogDump::LogA("Warning: Memory Card not found.");
 
 		return false;
 	}
 
-	Utils::DeleteAllFilesInFolder(m_SaveFolderPath.m_szString);
-	File::CreateNewDirectory(m_SaveFolderPath.m_szString);	//	NOTE: these above are not used outside this class, maybe just private static methods?
+	Utils::DeleteAllFilesInFolder(m_SaveFolderPath.m_Str);
+	File::CreateNewDirectory(m_SaveFolderPath.m_Str);	//	NOTE: these above are not used outside this class, maybe just private static methods?
 
 #ifdef INCLUDE_FIXES
 	char temp[1024] = {};
-	strcpy(temp, m_SaveFolderPath.m_szString);
+	strcpy(temp, m_SaveFolderPath.m_Str);
 	strcat(temp, "Formatted.txt");
 
 	File formattedFile(temp, 2, true);
@@ -86,7 +86,7 @@ bool MemoryCard::FormatCard()
 	String temp = m_SaveFolderPath;
 	temp.Append("Formatted.txt");
 	
-	File formattedFile(temp.m_szString, 2, true);
+	File formattedFile(temp.m_Str, 2, true);
 #endif
 
 	return true;
@@ -96,17 +96,17 @@ bool MemoryCard::UnformatCard()
 {
 	if (Script::SavePlatformPS2)
 	{
-		if (!m_SaveFolderPath.m_nLength)
+		if (!m_SaveFolderPath.m_Length)
 		{
 			LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.\n");
 			return false;
 		}
 
-		if (!m_Formatted || !File::IsDirectoryValid(m_SaveFolderPath.m_szString))
+		if (!m_Formatted || !File::IsDirectoryValid(m_SaveFolderPath.m_Str))
 			return false;
 
-		Utils::DeleteAllFilesInFolder(m_SaveFolderPath.m_szString);
-		File::CreateNewDirectory(m_SaveFolderPath.m_szString);
+		Utils::DeleteAllFilesInFolder(m_SaveFolderPath.m_Str);
+		File::CreateNewDirectory(m_SaveFolderPath.m_Str);
 	}
 
 	return true;
@@ -118,7 +118,7 @@ bool MemoryCard::IsSaveDirPresent(const char* const directory) const
 	{
 #ifdef INCLUDE_FIXES
 		char savePath[1024] = {};
-		strcpy(savePath, m_SaveFolderPath.m_szString);
+		strcpy(savePath, m_SaveFolderPath.m_Str);
 		strcat(savePath, "/");
 		strcat(savePath, directory);
 
@@ -128,7 +128,7 @@ bool MemoryCard::IsSaveDirPresent(const char* const directory) const
 		savePath.Append("/");
 		savePath.Append(directory);
 		
-		return File::IsDirectoryValid(savePath.m_szString);
+		return File::IsDirectoryValid(savePath.m_Str);
 #endif
 	}
 
@@ -143,7 +143,7 @@ bool MemoryCard::IsSaveFilePresent(const char* const directory, const char* cons
 		String tempStr;
 		GetFullSaveFolderPath(tempStr, directory, slot);
 
-		return File::FindFileEverywhere(tempStr.m_szString);
+		return File::FindFileEverywhere(tempStr.m_Str);
 	}
 	
 	LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
@@ -155,7 +155,7 @@ unsigned int MemoryCard::GetSavePointFileSize(const char* const directory, const
 	if (IsFormatted())
 	{
 		String tempStr;
-		File savefile(GetFullSaveFolderPath(tempStr, directory, slotfilename).m_szString, 0x21, true);
+		File savefile(GetFullSaveFolderPath(tempStr, directory, slotfilename).m_Str, 0x21, true);
 		
 		return savefile.GetSize();
 	}
@@ -183,8 +183,8 @@ bool MemoryCard::DeleteSavePointFile(const char* const savedir, const char* cons
 	}
 
 	String tempStr;
-	if (File::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_szString))
-		File::FindDirectoryMappedFileAndDelete(tempStr.m_szString);
+	if (File::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_Str))
+		File::FindDirectoryMappedFileAndDelete(tempStr.m_Str);
 #ifdef INCLUDE_FIXES
 	else
 		return false;
@@ -202,7 +202,7 @@ bool MemoryCard::IsSavePointFileExists(const char* const savedir, const char* co
 	}
 
 	String tempStr;
-	return File::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_szString);
+	return File::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_Str);
 }
 
 bool MemoryCard::CreateSaveDirectory(const char* const savedir)
@@ -217,8 +217,8 @@ bool MemoryCard::CreateSaveDirectory(const char* const savedir)
 	savedirStr.Append("/");
 	savedirStr.Append(savedir);
 
-	if (!File::IsDirectoryValid(savedirStr.m_szString))
-		File::CreateNewDirectory(savedirStr.m_szString);
+	if (!File::IsDirectoryValid(savedirStr.m_Str))
+		File::CreateNewDirectory(savedirStr.m_Str);
 
 	return true;
 }

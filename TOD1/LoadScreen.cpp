@@ -8,8 +8,8 @@ EntityType* tLoadScreenNode;
 
 void LoadScreenNode::Activate_Impl()
 {
-    g_AssetManager->GetResourcePath(m_ImageFile, m_ImageFile.m_szString);
-    g_LoadScreenInfo->SetTexturePath(m_ImageFile.m_szString);
+    g_AssetManager->GetResourcePath(m_ImageFile, m_ImageFile.m_Str);
+    g_LoadScreenInfo->SetTexturePath(m_ImageFile.m_Str);
     g_Progress->SetLoadScreenSprite(m_LoadBarSprite);
     g_LoadScreenInfo->Enable(m_RenderOnTopNode);
 }
@@ -30,7 +30,7 @@ LoadScreenNode::~LoadScreenNode()
 
 const char* LoadScreenNode::GetImageFile() const
 {
-    return m_ImageFile.m_szString;
+    return m_ImageFile.m_Str;
 }
 
 void LoadScreenNode::SetImageFile(const char* _fname)

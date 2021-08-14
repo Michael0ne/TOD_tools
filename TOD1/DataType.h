@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 
-class BaseType
+class DataType
 {
 public:
 	enum ScriptTypeId
@@ -45,7 +45,7 @@ public:
 	unsigned int	m_Size;
 	unsigned int	m_GlobalId;
 
-	virtual			~BaseType();	//	@867A70
+	virtual			~DataType();	//	@867A70
 	virtual int		stub2(int*, int*);	//	@489370
 	virtual void*	stub3(void*) const;	//	NOTE: this pointer type is actually class-dependent. Returns zero (default value?).
 	virtual void	stub4(char*);
@@ -61,7 +61,7 @@ public:
 	virtual void	stub14(int*, int, void*, int, int, int) const;
 	virtual bool	stub15(void*, void*) const;	//	@7A1F00
 	virtual bool	stub16(void*, void*) const;	//	@862AB0
-	virtual void	stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const;	//	@8637D0	//	NOTE: possible name is 'ParseOperationString'.
+	virtual void	stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const;	//	@8637D0	//	NOTE: possible name is 'ParseOperationString'.
 	virtual void	stub18(int operationId, void* params) const;	//	@8C4D60	//	NOTE: possible name is 'PerformOperation'.
 	virtual char	stub19(int, int);	//	@8637E0
 	virtual bool	stub20(void*) const;	//	@489440	//	NOTE: possible name is 'IsValidValueForType'.
@@ -70,14 +70,14 @@ private:
 	void			_4893C0(int*, int*, int);	//	@4893C0
 
 	static void		RemoveTypeFromList(const char* const name);	//	@862B50
-	static unsigned int	GetTypeSize_Impl(const BaseType* type);	//	@862AC0
+	static unsigned int	GetTypeSize_Impl(const DataType* type);	//	@862AC0
 
 protected:
 	static int		ParseFloatNumberString(const char* const, float* const);	//	@8628C0
 	static int		ParseNumberString(const char* const, int* const);	//	@862850
 
 public:
-	BaseType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize);	//	@862E90
+	DataType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize);	//	@862E90
 
 	void* operator new (size_t size)
 	{
@@ -92,8 +92,8 @@ public:
 
 	unsigned int	GetTypeSize() const;	//	@862B20
 
-	static BaseType* GetTypeByName(const char* name);	//	@862C00
-	static BaseType* LoadScript(const char* script);	//	@863070
+	static DataType* GetTypeByName(const char* name);	//	@862C00
+	static DataType* LoadScript(const char* script);	//	@863070
 	static bool		ParseVariableString(const char* variable, String& variableName, String& variableType);	//	@862F70
 	static void		InitScriptTypes();	//	@8634E0
 	static void		ClearScriptLists();	//	@863380
@@ -115,8 +115,8 @@ extern class ColorType*			tCOLOR;	//	@A3CEA4
 extern class StringType*		tSTRING;	//	@A3CEB0
 
 extern bool						TypesListCRCCalculated;		//	@A3CEC8
-extern std::vector<BaseType*>	TypesList;		//	@A3CECC
+extern std::vector<DataType*>	TypesList;		//	@A3CECC
 extern unsigned int				TypesListCRC;				//	@A3CEDC
 extern float					_A3A064;	//	@A3A064
 
-ASSERT_CLASS_SIZE(BaseType, 32);
+ASSERT_CLASS_SIZE(DataType, 32);

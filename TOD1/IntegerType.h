@@ -1,7 +1,7 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 
-class IntegerType : public BaseType
+class IntegerType : public DataType
 {
 public:
 	IntegerType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize);
@@ -12,7 +12,7 @@ public:
 	virtual int		stub7(char*, void*) const override;	//	@863F30
 	virtual void	stub13(int, void*, int, int, int, void* const) const override;	//	@489450
 	virtual bool	stub16(void*, void*) const override;	//	@863F50
-	virtual void	stub17(const char* const operation, int* outopid, BaseType** outoprestype, char*) const override;	//	@863F70
+	virtual void	stub17(const char* const operation, int* outopid, DataType** outoprestype, char*) const override;	//	@863F70
 	virtual void	stub18(int operationId, void* params) const override;	//	@864200
 	virtual bool	stub20(void*) const override;	//	@489440
 

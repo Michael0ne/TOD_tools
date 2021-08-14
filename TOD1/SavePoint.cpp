@@ -62,7 +62,7 @@ time_t SavePoint::GetTime() const
 	String tempStr;
 
 	if (m_SaveMemoryCard->IsFormatted())
-		return File::GetFileTimestamp(m_SaveMemoryCard->GetFullSaveFolderPath(tempStr, m_SaveDir.m_szString, m_SlotDir.m_szString).m_szString);
+		return File::GetFileTimestamp(m_SaveMemoryCard->GetFullSaveFolderPath(tempStr, m_SaveDir.m_Str, m_SlotDir.m_Str).m_Str);
 	else
 		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
 
@@ -85,8 +85,8 @@ bool SavePoint::Open(SavePointStatus mode)
 
 	m_Status = mode;
 	String saveSlotPath;
-	m_SaveMemoryCard->GetFullSaveFolderPath(saveSlotPath, m_SaveDir.m_szString, m_SlotIdStr.m_szString);
-	m_SaveFile = new File(saveSlotPath.m_szString, mode ? (mode == STATUS_1 ? 2 | 96 : (mode == STATUS_2 ? 18 | 96 : 1 | 96)) : 1 | 96, true);
+	m_SaveMemoryCard->GetFullSaveFolderPath(saveSlotPath, m_SaveDir.m_Str, m_SlotIdStr.m_Str);
+	m_SaveFile = new File(saveSlotPath.m_Str, mode ? (mode == STATUS_1 ? 2 | 96 : (mode == STATUS_2 ? 18 | 96 : 1 | 96)) : 1 | 96, true);
 
 	if (m_SaveFile && m_SaveFile->IsFileOpen())
 		++OpenFilesCount;

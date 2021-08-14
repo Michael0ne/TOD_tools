@@ -10,6 +10,7 @@ struct CameraMatrix
 	void        SetupMatrix(const Vector4f& pos, const Orientation& orient, const float fov, const float nearclip, const float farclip);	//	@406E60
 };
 
+//	NOTE: actual path to header file "/Kernel/Scenegraph/Camera.h".
 class Camera : public Node
 {
 public:

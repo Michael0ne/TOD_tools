@@ -2,7 +2,7 @@
 #include "IntegerType.h"
 #include "NumberType.h"
 
-ColorType::ColorType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : BaseType(typeId, typeName, typeSize)
+ColorType::ColorType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
 	MESSAGE_CLASS_CREATED(ColorType);
 }

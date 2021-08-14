@@ -59,7 +59,7 @@ void SoundSlot::GetSoundName(String& outName)
 	if (m_SoundResource)
 		outName = m_SoundResource->AddResToOpenListAndReturnName();
 	else
-		if (m_Sound.m_nLength)
+		if (m_Sound.m_Length)
 			outName = m_Sound;
 		else
 			outName = GetStreamingSound();

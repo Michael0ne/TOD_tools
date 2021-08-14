@@ -17,7 +17,7 @@ String FileWrapper::GameWorkingDirectory;
 bool FileWrapper::IsStorageFull()
 {
 	ULARGE_INTEGER spaceAvailable = {};
-	GetDiskFreeSpaceEx(WorkingDirectory.m_szString, &spaceAvailable, nullptr, nullptr);
+	GetDiskFreeSpaceEx(WorkingDirectory.m_Str, &spaceAvailable, nullptr, nullptr);
 
 	return spaceAvailable.QuadPart == NULL;
 }
@@ -26,7 +26,7 @@ ULARGE_INTEGER FileWrapper::GetStorageFreeSpace()
 {
 	ULARGE_INTEGER spaceAvailable;
 
-	GetDiskFreeSpaceEx(WorkingDirectory.m_szString, &spaceAvailable, nullptr, nullptr);
+	GetDiskFreeSpaceEx(WorkingDirectory.m_Str, &spaceAvailable, nullptr, nullptr);
 	return spaceAvailable;
 }
 
@@ -34,7 +34,7 @@ void FileWrapper::DeleteFileFromGameDir(const char* const filename)
 {
 	String filepath = filename;
 	GetWorkingDirRelativePath(filepath);
-	DeleteFile(filepath.m_szString);
+	DeleteFile(filepath.m_Str);
 }
 
 void FileWrapper::FindGameDir()
@@ -93,7 +93,7 @@ bool FileWrapper::IsDirectoryValid(const char* const dir)
 	String dirStr = dir;
 	GetWorkingDirRelativePath(dirStr);
 
-	int dirAttributes = GetFileAttributes(dirStr.m_szString);
+	int dirAttributes = GetFileAttributes(dirStr.m_Str);
 
 	if (dirAttributes != INVALID_FILE_ATTRIBUTES)
 		return (dirAttributes & FILE_ATTRIBUTE_DIRECTORY) != false;
@@ -104,7 +104,7 @@ bool FileWrapper::IsDirectoryValid(const char* const dir)
 	dirStr = dir;
 	GetGameWorkingDirRelativePath(dirStr);
 
-	dirAttributes = GetFileAttributes(dirStr.m_szString);
+	dirAttributes = GetFileAttributes(dirStr.m_Str);
 
 	if (dirAttributes != INVALID_FILE_ATTRIBUTES)
 		return (dirAttributes & FILE_ATTRIBUTE_DIRECTORY) != false;
@@ -117,7 +117,7 @@ bool FileWrapper::IsFileReadOnly(const char* const file)
 	String fileStr = file;
 	GetWorkingDirRelativePath(fileStr);
 
-	return GetFileAttributes(fileStr.m_szString) & FILE_ATTRIBUTE_READONLY;
+	return GetFileAttributes(fileStr.m_Str) & FILE_ATTRIBUTE_READONLY;
 }
 
 bool FileWrapper::IsFileValid(const char* const file)
@@ -125,7 +125,7 @@ bool FileWrapper::IsFileValid(const char* const file)
 	String fileStr = file;
 	GetWorkingDirRelativePath(fileStr);
 
-	return GetFileAttributes(fileStr.m_szString) != INVALID_FILE_ATTRIBUTES;
+	return GetFileAttributes(fileStr.m_Str) != INVALID_FILE_ATTRIBUTES;
 }
 
 void FileWrapper::CreateNewDirectory(const char* const dir)
@@ -133,8 +133,8 @@ void FileWrapper::CreateNewDirectory(const char* const dir)
 	String dirStr = dir;
 	GetWorkingDirRelativePath(dirStr);
 
-	if (!IsDirectoryValid(dirStr.m_szString))
-		CreateDirectory(dirStr.m_szString, nullptr);
+	if (!IsDirectoryValid(dirStr.m_Str))
+		CreateDirectory(dirStr.m_Str, nullptr);
 }
 
 void FileWrapper::RemoveDirectory_(const char* const dir)
@@ -142,11 +142,11 @@ void FileWrapper::RemoveDirectory_(const char* const dir)
 	String workingDir = dir;
 	GetWorkingDirRelativePath(workingDir);
 
-	char* lastslash = strrchr(workingDir.m_szString, '/');
+	char* lastslash = strrchr(workingDir.m_Str, '/');
 	if (lastslash != nullptr)
 		*lastslash = '\0';
 
-	RemoveDirectory(workingDir.m_szString);
+	RemoveDirectory(workingDir.m_Str);
 }
 
 bool FileWrapper::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)
@@ -154,23 +154,23 @@ bool FileWrapper::EnumerateFolderFiles(const char* const dir, std::vector<String
 	String workingDir = dir;
 	GetWorkingDirRelativePath(workingDir);
 
-	if (workingDir.m_szString[workingDir.m_nLength - 1] != '/')
+	if (workingDir.m_Str[workingDir.m_Length - 1] != '/')
 	{
-		LogDump::LogA("'%s' must end with '/'\n", workingDir.m_szString);
+		LogDump::LogA("'%s' must end with '/'\n", workingDir.m_Str);
 		return false;
 	}
 
-	if (!FileWrapper::IsDirectoryValid(workingDir.m_szString))
+	if (!FileWrapper::IsDirectoryValid(workingDir.m_Str))
 	{
-		LogDump::LogA("'%s' is not a valid directory\n", workingDir.m_szString);
+		LogDump::LogA("'%s' is not a valid directory\n", workingDir.m_Str);
 		return false;
 	}
 
-	String searchMask = workingDir.m_szString;
+	String searchMask = workingDir.m_Str;
 	searchMask.Append("*.*");
 
 	WIN32_FIND_DATA searchFilesData;
-	HANDLE searchHandle = FindFirstFile(searchMask.m_szString, &searchFilesData);
+	HANDLE searchHandle = FindFirstFile(searchMask.m_Str, &searchFilesData);
 
 	if (searchHandle == INVALID_HANDLE_VALUE)
 		return false;
@@ -205,14 +205,14 @@ void FileWrapper::SetFileAttrib(const char* const file, unsigned int attrib, cha
 		break;
 	}
 
-	SetFileAttributes(fileStr.m_szString, unk ? (newAttrib | GetFileAttributes(fileStr.m_szString)) : (~newAttrib & GetFileAttributes(fileStr.m_szString)));
+	SetFileAttributes(fileStr.m_Str, unk ? (newAttrib | GetFileAttributes(fileStr.m_Str)) : (~newAttrib & GetFileAttributes(fileStr.m_Str)));
 }
 
 bool FileWrapper::CheckGameFileAttributes(const char* const filename, const FileAttribute mode)
 {
 	String gamedirrelativefilepath = filename;
 	GetWorkingDirRelativePath(gamedirrelativefilepath);
-	DWORD fattrib = GetFileAttributes(gamedirrelativefilepath.m_szString);
+	DWORD fattrib = GetFileAttributes(gamedirrelativefilepath.m_Str);
 
 	switch (mode)
 	{
@@ -243,12 +243,12 @@ time_t File::GetFileTimestamp_Impl(const char* path)
 	SYSTEMTIME fileTimeSystem = {};
 	tm time_ = {};
 
-	findHandle = FindFirstFile(workingdir.m_szString, &findData);
+	findHandle = FindFirstFile(workingdir.m_Str, &findData);
 	if (findHandle == INVALID_HANDLE_VALUE && FileWrapper::GameDiscFound)
 	{
 		workingdir = path;
 		FileWrapper::GetGameWorkingDirRelativePath(workingdir);
-		findHandle = FindFirstFile(workingdir.m_szString, &findData);
+		findHandle = FindFirstFile(workingdir.m_Str, &findData);
 	}
 
 	FileTimeToLocalFileTime(&findData.ftLastWriteTime, &fileTime);
@@ -518,7 +518,7 @@ char File::ReadIfNotEOF()
 
 const char* File::GetFileName() const
 {
-	return m_FileName.m_szString;
+	return m_FileName.m_Str;
 }
 
 File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
@@ -527,7 +527,7 @@ File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
 
 	GetPathFromDirectoryMappings(fname, _filename);
 
-	m_FileName = fname.m_szString;
+	m_FileName = fname.m_Str;
 	m_FileHandle = nullptr;
 	m_ReadFromZip = false;
 	m_ZipSlot = -1;
@@ -551,7 +551,7 @@ File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
 		m_ZipFileHandle = nullptr;
 	}
 	else
-		m_FileHandle = new FileWrapper(m_FileName.m_szString, _desiredaccess, _createifnotfound);
+		m_FileHandle = new FileWrapper(m_FileName.m_Str, _desiredaccess, _createifnotfound);
 
 	if ((m_ReadFromZip && m_OffsetInZip) || (m_FileHandle && m_FileHandle->m_File != NULL))
 		++FilesOpen;
@@ -661,7 +661,7 @@ HANDLE File::GetFileHandle()
 	if (m_ZipSlot == -1 || m_OffsetInZip == -1 || !FileWrapper::ZipFilesArray[m_ZipSlot])
 		return NULL;
 
-	m_ZipFileHandle = new FileWrapper(ZipArch::ZipNames[m_ZipSlot].m_szString, 0x21, true);
+	m_ZipFileHandle = new FileWrapper(ZipArch::ZipNames[m_ZipSlot].m_Str, 0x21, true);
 	m_ZipFileHandle->Seek(m_OffsetInZip);
 
 	return m_ZipFileHandle->m_File;
@@ -683,10 +683,10 @@ String& File::GetPathFromDirectoryMappings(String& outStr, const char* path)
 	const size_t pathstrlen = strlen(path);
 	for (std::vector<StringTuple>::iterator it = DirectoryMappingsList.begin(); it != DirectoryMappingsList.end(); ++it)
 	{
-		if (strncmp(path, it->m_String_1.m_szString, pathstrlen) == NULL)
+		if (strncmp(path, it->m_String_1.m_Str, pathstrlen) == NULL)
 		{
-			outStr = it->m_String_2.m_szString;
-			outStr.Append(&path[it->m_String_1.m_nLength]);
+			outStr = it->m_String_2.m_Str;
+			outStr.Append(&path[it->m_String_1.m_Length]);
 
 			return outStr;
 		}
@@ -725,7 +725,7 @@ void File::FindDirectoryMappedFileAndDelete(const char* const filename)
 {
 	String tempStr;
 	GetPathFromDirectoryMappings(tempStr, filename);
-	FileWrapper::DeleteFileFromGameDir(tempStr.m_szString);
+	FileWrapper::DeleteFileFromGameDir(tempStr.m_Str);
 }
 
 bool File::FindFileEverywhere(const char* path)
@@ -738,10 +738,10 @@ bool File::FindFileEverywhere(const char* path)
 	int zipSlot;
 	ZipArch::FileInfo zipFileInfo;
 
-	if (ZipArch::SlotId > 0 && ZipArch::FindFile(pathStr.m_szString, zipFileInfo, &zipSlot))
+	if (ZipArch::SlotId > 0 && ZipArch::FindFile(pathStr.m_Str, zipFileInfo, &zipSlot))
 		return true;
 
-	return FileWrapper::IsFileExists(pathStr.m_szString);
+	return FileWrapper::IsFileExists(pathStr.m_Str);
 }
 
 time_t File::GetFileTimestamp(const char* filename)
@@ -751,10 +751,10 @@ time_t File::GetFileTimestamp(const char* filename)
 	int zipslot = NULL;
 	ZipArch::FileInfo zipFileInfo;
 
-	if (ZipArch::SlotId <= 0 || !ZipArch::FindFile(pathStr.m_szString, zipFileInfo, &zipslot))
-		return GetFileTimestamp_Impl(pathStr.m_szString);
+	if (ZipArch::SlotId <= 0 || !ZipArch::FindFile(pathStr.m_Str, zipFileInfo, &zipslot))
+		return GetFileTimestamp_Impl(pathStr.m_Str);
 	else
-		return GetFileTimestamp_Impl(FileWrapper::ZipFilesArray[0]->m_WorkingDir.m_szString);
+		return GetFileTimestamp_Impl(FileWrapper::ZipFilesArray[0]->m_WorkingDir.m_Str);
 }
 
 void File::ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension)
@@ -811,7 +811,7 @@ FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _create
 	GetGameWorkingDirRelativePath(m_GameWorkingDir);
 
 	if (_desiredaccess & FILE_READ_EA)
-		IsFileExists(m_GameWorkingDir.m_szString);
+		IsFileExists(m_GameWorkingDir.m_Str);
 
 	m_DesiredAccess_2 = NULL;
 
@@ -870,7 +870,7 @@ HANDLE FileWrapper::CreateFile_()
 {
 	EnterCriticalSection(&m_CriticalSection);
 
-	m_File = CreateFile(m_WorkingDir.m_szString, m_DesiredAccess_2, FILE_SHARE_READ, NULL, m_CreationDisposition, FILE_FLAG_WRITE_THROUGH, NULL);
+	m_File = CreateFile(m_WorkingDir.m_Str, m_DesiredAccess_2, FILE_SHARE_READ, NULL, m_CreationDisposition, FILE_FLAG_WRITE_THROUGH, NULL);
 
 	if (m_File == INVALID_HANDLE_VALUE)
 	{
@@ -888,7 +888,7 @@ HANDLE FileWrapper::CreateFile_()
 		if (FileWrapper::GameDiscFound)
 		{
 			m_WorkingDir = m_GameWorkingDir;
-			m_File = CreateFile(m_WorkingDir.m_szString, m_DesiredAccess_2, FILE_SHARE_READ, NULL, m_CreationDisposition, FILE_FLAG_WRITE_THROUGH, NULL);
+			m_File = CreateFile(m_WorkingDir.m_Str, m_DesiredAccess_2, FILE_SHARE_READ, NULL, m_CreationDisposition, FILE_FLAG_WRITE_THROUGH, NULL);
 
 			if (m_File == INVALID_HANDLE_VALUE)
 			{
@@ -1007,7 +1007,7 @@ bool FileWrapper::IsFileExists(const char* const file)
 	String temp = file;
 	FileWrapper::GetWorkingDirRelativePath(temp);
 
-	if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
+	if (GetFileAttributes(temp.m_Str) == INVALID_FILE_ATTRIBUTES)
 	{
 		if (!GameDiscFound)
 			return false;
@@ -1015,7 +1015,7 @@ bool FileWrapper::IsFileExists(const char* const file)
 		temp = file;
 		FileWrapper::GetGameWorkingDirRelativePath(temp);
 
-		if (GetFileAttributes(temp.m_szString) == INVALID_FILE_ATTRIBUTES)
+		if (GetFileAttributes(temp.m_Str) == INVALID_FILE_ATTRIBUTES)
 			return false;
 	}
 
@@ -1418,7 +1418,7 @@ void File::ReadZipDirectories(const char* fileSystem)
 
 		char zipNameLocalised[32] = {};
 
-		strcpy(zipNameLocalised, Script::LanguageMode.m_szString);
+		strcpy(zipNameLocalised, Script::LanguageMode.m_Str);
 		strcat(zipNameLocalised, "_");
 		strcat(zipNameLocalised, zipName);
 
@@ -1439,14 +1439,14 @@ bool File::IsDirectoryValid(const char* const path)
 	String pathStr;
 	GetPathFromDirectoryMappings(pathStr, path);
 
-	return FileWrapper::IsDirectoryValid(pathStr.m_szString);
+	return FileWrapper::IsDirectoryValid(pathStr.m_Str);
 }
 
 bool File::IsFileValid(const char* const file)
 {
 	String fileStr;
 	GetPathFromDirectoryMappings(fileStr, file);
-	return FileWrapper::IsFileValid(fileStr.m_szString);
+	return FileWrapper::IsFileValid(fileStr.m_Str);
 }
 
 bool File::IsFileReadOnly(const char* const file)
@@ -1454,29 +1454,29 @@ bool File::IsFileReadOnly(const char* const file)
 	String fileStr;
 	GetPathFromDirectoryMappings(fileStr, file);
 
-	if (!FindFileEverywhere(fileStr.m_szString))
+	if (!FindFileEverywhere(fileStr.m_Str))
 		return false;
 
 	int zipslot = NULL;
 	ZipArch::FileInfo zipFileInfo;
-	if (ZipArch::SlotId && ZipArch::FindFile(fileStr.m_szString, zipFileInfo, &zipslot))
+	if (ZipArch::SlotId && ZipArch::FindFile(fileStr.m_Str, zipFileInfo, &zipslot))
 		return true;
 
-	return FileWrapper::IsFileReadOnly(fileStr.m_szString);
+	return FileWrapper::IsFileReadOnly(fileStr.m_Str);
 }
 
 void File::CreateNewDirectory(const char* const dir)
 {
 	String dirStr;
 	GetPathFromDirectoryMappings(dirStr, dir);
-	FileWrapper::CreateNewDirectory(dirStr.m_szString);
+	FileWrapper::CreateNewDirectory(dirStr.m_Str);
 }
 
 void File::RemoveDirectory_(const char* const dir)
 {
 	String dirStr;
 	GetPathFromDirectoryMappings(dirStr, dir);
-	FileWrapper::RemoveDirectory_(dirStr.m_szString);
+	FileWrapper::RemoveDirectory_(dirStr.m_Str);
 }
 
 void File::SetFileAttrib(const char* const file, unsigned int attrib, char unk)
@@ -1502,7 +1502,7 @@ bool File::SearchScriptFile(const char* const searchpath, const char* const scri
 	String mappedpath;
 	GetPathFromDirectoryMappings(mappedpath, searchpath);
 
-	return FileWrapper::FindFileRecursive(mappedpath.m_szString, scriptfilename, zipname);
+	return FileWrapper::FindFileRecursive(mappedpath.m_Str, scriptfilename, zipname);
 }
 
 bool File::CheckGameFileAttributes(const char* const filename, const FileWrapper::FileAttribute mode)
@@ -1514,7 +1514,7 @@ bool File::EnumerateFolderFiles(const char* const dir, std::vector<String>& outF
 {
 	String dirStr;
 	GetPathFromDirectoryMappings(dirStr, dir);
-	return FileWrapper::EnumerateFolderFiles(dirStr.m_szString, outFilesList);
+	return FileWrapper::EnumerateFolderFiles(dirStr.m_Str, outFilesList);
 }
 
 void File::OpenZip(const char* const zipName)
@@ -1616,7 +1616,7 @@ void FileWrapper::SetWorkingDir(const char* const str)
 	WorkingDirectory = str;
 	WorkingDirectory.ConvertBackslashes();
 
-	if (WorkingDirectory.m_szString[WorkingDirectory.m_nLength - 1] != '/')
+	if (WorkingDirectory.m_Str[WorkingDirectory.m_Length - 1] != '/')
 		WorkingDirectory.Append("/");
 }
 
@@ -1625,44 +1625,44 @@ void FileWrapper::SetGameWorkingDir(const char* const str)
 	GameWorkingDirectory = str;
 	GameWorkingDirectory.ConvertBackslashes();
 
-	if (GameWorkingDirectory.m_szString[GameWorkingDirectory.m_nLength - 1] != '/')
+	if (GameWorkingDirectory.m_Str[GameWorkingDirectory.m_Length - 1] != '/')
 		GameWorkingDirectory.Append("/");
 }
 
 void FileWrapper::GetWorkingDirRelativePath(String& path)
 {
-	if (!path.m_nLength)
+	if (!path.m_Length)
 	{
 		path = WorkingDirectory;
 		return;
 	}
 
 	char buffer[1024] = {};
-	strcpy(buffer, WorkingDirectory.m_szString);
+	strcpy(buffer, WorkingDirectory.m_Str);
 
-	if (buffer[WorkingDirectory.m_nLength - 1] == '/' && path.m_szString[0] == '/')
-		strcat(buffer, (const char*)((int)path.m_szString + 1));
+	if (buffer[WorkingDirectory.m_Length - 1] == '/' && path.m_Str[0] == '/')
+		strcat(buffer, (const char*)((int)path.m_Str + 1));
 	else
-		strcat(buffer, path.m_szString);
+		strcat(buffer, path.m_Str);
 
 	path = buffer;
 }
 
 void FileWrapper::GetGameWorkingDirRelativePath(String& path)
 {
-	if (!path.m_nLength)
+	if (!path.m_Length)
 	{
 		path = GameWorkingDirectory;
 		return;
 	}
 
 	char buffer[1024] = {};
-	strcpy(buffer, GameWorkingDirectory.m_szString);
+	strcpy(buffer, GameWorkingDirectory.m_Str);
 
-	if (buffer[GameWorkingDirectory.m_nLength - 1] == '/' && path.m_szString[0] == '/')
-		strcat(buffer, (const char*)((int)path.m_szString + 1));
+	if (buffer[GameWorkingDirectory.m_Length - 1] == '/' && path.m_Str[0] == '/')
+		strcat(buffer, (const char*)((int)path.m_Str + 1));
 	else
-		strcat(buffer, path.m_szString);
+		strcat(buffer, path.m_Str);
 
 	path = buffer;
 }
@@ -1674,18 +1674,18 @@ bool FileWrapper::FindFileRecursive(const char* const dir, const char* const fna
 
 	if (!fpath.EndsWith('/'))
 	{
-		LogDump::LogA("'%s' must end with '/'\n", fpath.m_szString);
+		LogDump::LogA("'%s' must end with '/'\n", fpath.m_Str);
 		return false;
 	}
 
-	if (!IsDirectoryValid(fpath.m_szString))
+	if (!IsDirectoryValid(fpath.m_Str))
 	{
 		LogDump::LogA("'%s' is not a valid directory\n");
 		return false;
 	}
 
 	char fpathsearch[512] = {};
-	strcpy(fpathsearch, fpath.m_szString);
+	strcpy(fpathsearch, fpath.m_Str);
 	strcat(fpathsearch, "*.*");
 
 	WIN32_FIND_DATA searchdata;

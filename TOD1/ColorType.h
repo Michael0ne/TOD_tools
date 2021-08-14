@@ -1,7 +1,7 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 
-class ColorType : public BaseType
+class ColorType : public DataType
 {
 public:
 	ColorType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize);

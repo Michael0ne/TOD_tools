@@ -1,13 +1,13 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 
-class DictType : public BaseType
+class DictType : public DataType
 {
 protected:
-	BaseType*	m_ElementsType;
+	DataType*	m_ElementsType;
 
 public:
-	DictType(BaseType* elementsType);	//	@867B50
+	DictType(DataType* elementsType);	//	@867B50
 	virtual ~DictType();
 
 	virtual int		stub2(int*, int*);	//	@867C00
@@ -19,7 +19,7 @@ public:
 	virtual int		stub9(char*, char*);	//	@868100
 	virtual int		stub10(char*, char*);	//	@868830
 	virtual bool	stub16(void*, void*) const;	//	@868240
-	virtual void	stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const;	//	@8682D0
+	virtual void	stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const;	//	@8682D0
 	virtual void	stub18(int operationId, void* params) const;	//	@868C30
 	virtual char	stub19(int, int);	//	@8685A0
 

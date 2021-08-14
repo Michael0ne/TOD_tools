@@ -1,4 +1,4 @@
-#include "BaseType.h"
+#include "DataType.h"
 #include "NothingType.h"
 #include "NumberType.h"
 #include "IntegerType.h"
@@ -24,18 +24,18 @@ class ColorType*		tCOLOR;	//	@A3CEA4
 class StringType*		tSTRING;	//	@A3CEB0
 
 bool					TypesListCRCCalculated;
-std::vector<BaseType*>	TypesList;
+std::vector<DataType*>	TypesList;
 unsigned int			TypesListCRC;
 float					_A3A064;
 
-BaseType::~BaseType()
+DataType::~DataType()
 {
-	MESSAGE_CLASS_DESTROYED(BaseType);
+	MESSAGE_CLASS_DESTROYED(DataType);
 
-	RemoveTypeFromList(m_TypeName.m_szString);
+	RemoveTypeFromList(m_TypeName.m_Str);
 }
 
-int BaseType::stub2(int* a1, int* a2)
+int DataType::stub2(int* a1, int* a2)
 {
 	if (a2)
 		a2[m_TypeId] += m_Size * 4;
@@ -43,33 +43,33 @@ int BaseType::stub2(int* a1, int* a2)
 	return m_Size * 4;
 }
 
-void* BaseType::stub3(void*) const
+void* DataType::stub3(void*) const
 {
 	return nullptr;
 }
 
-void BaseType::stub4(char*)
+void DataType::stub4(char*)
 {
 	return;
 }
 
-void BaseType::stub5(int* a1, int* a2)
+void DataType::stub5(int* a1, int* a2)
 {
 	_4893C0(a1, a2, m_Size);
 }
 
-String& BaseType::stub6(String& outstr, void*, int) const
+String& DataType::stub6(String& outstr, void*, int) const
 {
 	outstr = {};
 	return outstr;
 }
 
-int BaseType::stub7(char*, void*) const
+int DataType::stub7(char*, void*) const
 {
 	return -1;
 }
 
-int BaseType::stub8(char* a1)
+int DataType::stub8(char* a1)
 {
 	char str[16] = {};
 
@@ -79,7 +79,7 @@ int BaseType::stub8(char* a1)
 	return result;
 }
 
-int BaseType::stub9(char* a1, char* a2)
+int DataType::stub9(char* a1, char* a2)
 {
 	if (a1 == a2)
 		return m_Size;
@@ -107,12 +107,12 @@ int BaseType::stub9(char* a1, char* a2)
 	return m_Size;
 }
 
-int BaseType::stub10(char* a1, char* a2)
+int DataType::stub10(char* a1, char* a2)
 {
 	return stub9(a1, a2);
 }
 
-int BaseType::stub11(char* a1, String& a2, int a3)
+int DataType::stub11(char* a1, String& a2, int a3)
 {
 	char str[16] = {};
 	String str1;
@@ -124,7 +124,7 @@ int BaseType::stub11(char* a1, String& a2, int a3)
 	return result;
 }
 
-int BaseType::stub12(char* a1, char* a2, int* a3)
+int DataType::stub12(char* a1, char* a2, int* a3)
 {
 	char str[16] = {};
 
@@ -135,47 +135,47 @@ int BaseType::stub12(char* a1, char* a2, int* a3)
 	return result;
 }
 
-void BaseType::stub13(int, void*, int, int, int, void* const) const
+void DataType::stub13(int, void*, int, int, int, void* const) const
 {
 	return;
 }
 
-void BaseType::stub14(int*, int, void*, int, int, int) const
+void DataType::stub14(int*, int, void*, int, int, int) const
 {
 	return;
 }
 
-bool BaseType::stub15(void* a1, void* a2) const
+bool DataType::stub15(void* a1, void* a2) const
 {
 	return stub16(a1, a2) == false;
 }
 
-bool BaseType::stub16(void* a1, void* a2) const
+bool DataType::stub16(void* a1, void* a2) const
 {
 	return true;
 }
 
-void BaseType::stub17(const char* const operation, int* outopid, BaseType** outoprestype, char*) const
+void DataType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char*) const
 {
 	*outopid = -1;
 }
 
-void BaseType::stub18(int operationId, void* params) const
+void DataType::stub18(int operationId, void* params) const
 {
 	return;
 }
 
-char BaseType::stub19(int a1, int a2)
+char DataType::stub19(int a1, int a2)
 {
 	return true;
 }
 
-bool BaseType::stub20(void*) const
+bool DataType::stub20(void*) const
 {
 	return true;
 }
 
-void BaseType::_4893C0(int* a1, int* a2, int a3)
+void DataType::_4893C0(int* a1, int* a2, int a3)
 {
 	if (a1 == a2)
 		return;
@@ -203,13 +203,13 @@ void BaseType::_4893C0(int* a1, int* a2, int a3)
 
 }
 
-void BaseType::RemoveTypeFromList(const char* const name)
+void DataType::RemoveTypeFromList(const char* const name)
 {
 	TypesList.pop_back();
 	TypesListCRCCalculated = false;
 }
 
-unsigned int BaseType::GetTypeSize_Impl(const BaseType* type)
+unsigned int DataType::GetTypeSize_Impl(const DataType* type)
 {
 	switch (type->m_TypeId)
 	{
@@ -238,7 +238,7 @@ unsigned int BaseType::GetTypeSize_Impl(const BaseType* type)
 	}
 }
 
-int BaseType::ParseFloatNumberString(const char* const numberstr, float* const outval)
+int DataType::ParseFloatNumberString(const char* const numberstr, float* const outval)
 {
 	bool negativenum = false;
 	int intpart = 0, fractpart = 0;
@@ -282,7 +282,7 @@ int BaseType::ParseFloatNumberString(const char* const numberstr, float* const o
 		return -1;
 }
 
-int BaseType::ParseNumberString(const char* const numberstr, int* const outnumber)
+int DataType::ParseNumberString(const char* const numberstr, int* const outnumber)
 {
 	bool negativenum = false;
 	char* currchar = (char*)numberstr;
@@ -316,9 +316,9 @@ int BaseType::ParseNumberString(const char* const numberstr, int* const outnumbe
 	return currchar - numberstr;
 }
 
-BaseType::BaseType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize)
+DataType::DataType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize)
 {
-	MESSAGE_CLASS_CREATED(BaseType);
+	MESSAGE_CLASS_CREATED(DataType);
 
 	m_TypeName = typeName;
 	m_TypeId = typeId;
@@ -329,18 +329,18 @@ BaseType::BaseType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSi
 	TypesListCRCCalculated = false;
 }
 
-unsigned int BaseType::GetTypeSize() const
+unsigned int DataType::GetTypeSize() const
 {
 	return GetTypeSize_Impl(this);
 }
 
-BaseType* BaseType::GetTypeByName(const char* name)
+DataType* DataType::GetTypeByName(const char* name)
 {
 	if (!TypesList.size())
 		return nullptr;
 
-	for (std::vector<BaseType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
-		if (strncmp((*it)->m_TypeName.m_szString, name, strlen(name)) == NULL)
+	for (std::vector<DataType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
+		if (strncmp((*it)->m_TypeName.m_Str, name, strlen(name)) == NULL)
 			return (*it);
 
 #if defined(INCLUDE_FIXES) && defined(VERBOSELOG)
@@ -349,9 +349,9 @@ BaseType* BaseType::GetTypeByName(const char* name)
 	return nullptr;
 }
 
-BaseType* BaseType::LoadScript(const char* script)
+DataType* DataType::LoadScript(const char* script)
 {
-	if (BaseType* type_ = GetTypeByName(script))
+	if (DataType* type_ = GetTypeByName(script))
 		return type_;
 
 	const char* parenthopenpos = strchr(script, '(');
@@ -367,7 +367,7 @@ BaseType* BaseType::LoadScript(const char* script)
 			char dict_element_type[50] = {};
 			strncpy(dict_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
 
-			BaseType* dictelscript = LoadScript(dict_element_type);
+			DataType* dictelscript = LoadScript(dict_element_type);
 			if (dictelscript)
 				new DictType(dictelscript);
 		}
@@ -378,24 +378,24 @@ BaseType* BaseType::LoadScript(const char* script)
 
 		String script_complete_name = script_name;
 		script_complete_name.Append("(");
-		script_complete_name.Append(script_type.m_szString);
+		script_complete_name.Append(script_type.m_Str);
 		script_complete_name.Append(")");
 
-		BaseType* rettype = GetTypeByName(script_complete_name.m_szString);
+		DataType* rettype = GetTypeByName(script_complete_name.m_Str);
 		if (!rettype)
 		{
-			rettype = (BaseType*)GetScriptEntityByName(script_type.m_szString);
+			rettype = (DataType*)GetScriptEntityByName(script_type.m_Str);
 			if (!rettype)
 				return nullptr;
 
-			GlobalScript* glob_script = GlobalScript::GetGlobalScriptByName(script_name.m_szString);
+			GlobalScript* glob_script = GlobalScript::GetGlobalScriptByName(script_name.m_Str);
 			if (!glob_script)
 			{
-				LogDump::LogA("Unable to load script '%s'\n", script_name.m_szString);
+				LogDump::LogA("Unable to load script '%s'\n", script_name.m_Str);
 				return nullptr;
 			}
 
-			rettype = (BaseType*)glob_script->AssignScriptToEntity((EntityType*)rettype);
+			rettype = (DataType*)glob_script->AssignScriptToEntity((EntityType*)rettype);
 		}
 
 		return rettype;
@@ -403,7 +403,7 @@ BaseType* BaseType::LoadScript(const char* script)
 
 	char list_element_type[50] = {};
 	strncpy(list_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
-	BaseType* listelscript = LoadScript(list_element_type);
+	DataType* listelscript = LoadScript(list_element_type);
 
 	if (listelscript)
 		return new ListType(listelscript);
@@ -411,19 +411,19 @@ BaseType* BaseType::LoadScript(const char* script)
 		return nullptr;
 }
 
-EntityType* BaseType::GetScriptEntityByName(const char* name)
+EntityType* DataType::GetScriptEntityByName(const char* name)
 {
 	if (!TypesList.size())
 		return nullptr;
 
-	for (std::vector<BaseType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
-		if ((*it)->m_TypeId == TYPE_ENTITY && strncmp((*it)->m_TypeName.m_szString, name, strlen(name)) == NULL)
+	for (std::vector<DataType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
+		if ((*it)->m_TypeId == TYPE_ENTITY && strncmp((*it)->m_TypeName.m_Str, name, strlen(name)) == NULL)
 			return (EntityType*)(*it);
 
 	return nullptr;
 }
 
-bool BaseType::ParseVariableString(const char* variable, String& variableName, String& variableType)
+bool DataType::ParseVariableString(const char* variable, String& variableName, String& variableType)
 {
 	const char* parenth_open_pos = strchr(variable, '(');
 	const char* parenth_close_pos = strrchr(variable, ')');
@@ -442,7 +442,7 @@ bool BaseType::ParseVariableString(const char* variable, String& variableName, S
 	return true;
 }
 
-void BaseType::InitScriptTypes()
+void DataType::InitScriptTypes()
 {
 	static NothingType* tyNothing	= new NothingType(ScriptTypeId::TYPE_NOTHING, "nothing", ScriptTypeSize::TYPE_NOTHING_SIZE);
 	static NumberType* tyNumber		= new NumberType(ScriptTypeId::TYPE_NUMBER, "number", ScriptTypeSize::TYPE_NUMBER_SIZE);
@@ -463,7 +463,7 @@ void BaseType::InitScriptTypes()
 	tSTRING = tyString;
 }
 
-void BaseType::ClearScriptLists()
+void DataType::ClearScriptLists()
 {
 	ClearGlobalScriptList();
 	GlobalCommand::ClearGlobalCommands();
@@ -473,12 +473,12 @@ void BaseType::ClearScriptLists()
 	TypesListCRCCalculated = false;
 }
 
-void BaseType::ClearGlobalScriptList()
+void DataType::ClearGlobalScriptList()
 {
 	GlobalScript::ScriptsList.clear();
 }
 
-unsigned int BaseType::GetTypesListChecksum()
+unsigned int DataType::GetTypesListChecksum()
 {
 	if (TypesListCRCCalculated)
 		return TypesListCRC;
@@ -492,20 +492,20 @@ unsigned int BaseType::GetTypesListChecksum()
 
 	if (TypesList.size() > 0)
 	{
-		for (std::vector<BaseType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
+		for (std::vector<DataType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
 		{
-			if ((*it)->m_TypeId != BaseType::ScriptTypeId::TYPE_ENTITY)
+			if ((*it)->m_TypeId != DataType::ScriptTypeId::TYPE_ENTITY)
 				continue;
 
-			if (checksum_str_len + strlen((*it)->m_TypeName.m_szString) > sizeof(checksum_str))
+			if (checksum_str_len + strlen((*it)->m_TypeName.m_Str) > sizeof(checksum_str))
 				break;
 			else
-				checksum_str_len += strlen((*it)->m_TypeName.m_szString);
+				checksum_str_len += strlen((*it)->m_TypeName.m_Str);
 
 			if (*checksum_str == NULL)
-				strcpy(checksum_str, (*it)->m_TypeName.m_szString);
+				strcpy(checksum_str, (*it)->m_TypeName.m_Str);
 			else
-				strcat(checksum_str, (*it)->m_TypeName.m_szString);
+				strcat(checksum_str, (*it)->m_TypeName.m_Str);
 		}
 	}
 
@@ -514,7 +514,7 @@ unsigned int BaseType::GetTypesListChecksum()
 	return TypesListCRC;
 }
 
-unsigned int BaseType::GetTypesListSize()
+unsigned int DataType::GetTypesListSize()
 {
 	return TypesList.size();
 }

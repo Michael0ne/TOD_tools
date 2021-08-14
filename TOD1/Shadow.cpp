@@ -50,7 +50,7 @@ void Shadow::Instantiate()
 	if (m_BoneName.Empty() || m_Parent == Scene::SceneInstance)
 		m_Bone = nullptr;
 	else
-		m_Bone = (Node*)m_Parent->FindNode(m_BoneName.m_szString);
+		m_Bone = (Node*)m_Parent->FindNode(m_BoneName.m_Str);
 
 	field_80 = 0;
 	if (m_QuadTree)

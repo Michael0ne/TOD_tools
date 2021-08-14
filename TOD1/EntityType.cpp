@@ -2,7 +2,7 @@
 #include "AssetManager.h"
 #include "Node.h"
 
-EntityType::EntityType(const char* const entityname) : BaseType(TYPE_ENTITY, entityname, TYPE_ENTITY_SIZE)
+EntityType::EntityType(const char* const entityname) : DataType(TYPE_ENTITY, entityname, TYPE_ENTITY_SIZE)
 {
     MESSAGE_CLASS_CREATED(EntityType);
 

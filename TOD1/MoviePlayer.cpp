@@ -22,9 +22,9 @@ const char* MoviePlayer::GetMovie() const
 	static String MovieName;
 	
 	MovieName = m_FrameInfo.m_MovieName;
-	MovieName = g_AssetManager->GetResourcePathSceneRelative(MovieName.m_szString);
+	MovieName = g_AssetManager->GetResourcePathSceneRelative(MovieName.m_Str);
 
-	return MovieName.m_szString;
+	return MovieName.m_Str;
 }
 
 void MoviePlayer::Play(int args)
@@ -211,7 +211,7 @@ void MoviePlayer::FrameInfo::ProcessFrame(FrameBuffer* fb)
 
 void MoviePlayer::FrameInfo::OpenMovie()
 {
-	m_MovieFile = new File(m_MovieName.m_szString, 0x21, true);
+	m_MovieFile = new File(m_MovieName.m_Str, 0x21, true);
 	HANDLE filehnd = m_MovieFile->GetFileHandle();
 
 	if (filehnd)

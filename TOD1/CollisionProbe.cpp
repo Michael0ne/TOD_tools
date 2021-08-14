@@ -9,17 +9,15 @@ CollisionProbe::CollisionProbe(int, float) : Node(NODE_MASK_POSITION)
 {
 	MESSAGE_CLASS_CREATED(CollisionProbe);
 
-	m_TouchingNodes = (Node*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator;
 	field_AC = 0x2007C00;
-	m_Nodes = (EntityType*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator;
-	field_D0 = nullptr;
+	m_CachedProbes = nullptr;
 
 	Reset();
 
 	field_FC = true;
 
 	ProbesList.push_back(this);
-	field_D0 = nullptr;
+	m_CachedProbes = nullptr;
 
 	Reset();
 }
@@ -51,9 +49,23 @@ void CollisionProbe::Reset()
 	ClearCache();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void CollisionProbe::ClearCache()
 {
+	if (m_CachedProbes)
+	{
+		do 
+		{
+			CachedProbe* cachedprobeptr = m_CachedProbes->m_Next;
+
+			--CachedProbes;
+			delete m_CachedProbes;
+
+			m_CachedProbes = cachedprobeptr->m_Next;
+		} while (m_CachedProbes);
+	}
+
+	m_Nodes.clear();
+	m_TouchingNodes.clear();
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -66,5 +78,5 @@ void CollisionProbe::Register()
 
 CollisionProbe* CollisionProbe::Create()
 {
-	return new CollisionProbe();
+	return new CollisionProbe(0, -1.0f);
 }

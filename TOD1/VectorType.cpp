@@ -3,7 +3,7 @@
 #include "NumberType.h"
 #include "TruthType.h"
 
-VectorType::VectorType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : BaseType(typeId, typeName, typeSize)
+VectorType::VectorType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
 	MESSAGE_CLASS_CREATED(VectorType);
 }
@@ -112,7 +112,7 @@ bool VectorType::stub16(void* a1, void* a2) const
 		(*((float*)a1 + 2) != *((float*)a2 + 2));
 }
 
-void VectorType::stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const
+void VectorType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const
 {
 	*a4 = 0;
 
@@ -224,7 +224,7 @@ void VectorType::stub17(const char* const operation, int* outopid, BaseType** ou
 		*outoprestype = tVECTOR;
 	}
 
-	BaseType::stub17(operation, outopid, outoprestype, a4);
+	DataType::stub17(operation, outopid, outoprestype, a4);
 }
 
 void VectorType::stub18(int operationId, void* params) const

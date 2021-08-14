@@ -5,7 +5,7 @@
 #include "NumberType.h"
 #include <directxmath/include/DirectXMath.h>
 
-QuaternionType::QuaternionType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : BaseType(typeId, typeName, typeSize)
+QuaternionType::QuaternionType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
 	MESSAGE_CLASS_CREATED(QuaternionType);
 }
@@ -150,7 +150,7 @@ bool QuaternionType::stub16(void* a1, void* a2) const
 	return _A3A064 < a;
 }
 
-void QuaternionType::stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const
+void QuaternionType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const
 {
 	*a4 = 0;
 

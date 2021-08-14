@@ -24,7 +24,7 @@ AssetInstance* AssetInstance::GetAssetInstanceByName(const char* const asspath)
             continue;
         else
             for (auto ext = (*it)->m_FileExtensions.cbegin(); ext != (*it)->m_FileExtensions.cend(); ext++)
-                if (strcmp(ext->m_szString, asspath_) == 0)
+                if (strcmp(ext->m_Str, asspath_) == 0)
                     return *it;
 
     return nullptr;
@@ -124,7 +124,7 @@ const char* Asset::AddResToOpenListAndReturnName() const
     LastOpenResourceIndex = (LastOpenResourceIndex + 1) % 10;
     OpenResourcesList[resind] = g_AssetManager->GetResourcePathSceneRelative(m_ResourcePath);
 
-    return OpenResourcesList[resind].m_szString;
+    return OpenResourcesList[resind].m_Str;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

@@ -63,7 +63,7 @@ void SoundFile::ReadStreamedSoundFile(bool a1)
 		a1 = true;
 
 	delete m_StreamedWAV;
-	m_StreamedWAV = new StreamedWAV(72000, m_FileName.m_szString);
+	m_StreamedWAV = new StreamedWAV(72000, m_FileName.m_Str);
 	
 	WaitForSingleObject(StreamedSoundBuffers::SemaphoreObject, INFINITE);
 
@@ -81,7 +81,7 @@ void SoundFile::ReadStreamedSoundFile(bool a1)
 	}
 	else
 	{
-		LogDump::LogA("Could not open/find streamed sound called %s\n", m_FileName.m_szString);
+		LogDump::LogA("Could not open/find streamed sound called %s\n", m_FileName.m_Str);
 
 		delete m_StreamedWAV;
 		field_24 &= 0x7FFFFFFF;
@@ -100,12 +100,12 @@ void SoundFile::Open(const char* const filename)
 	char dir[1024] = {};
 	char fn[128] = {};
 	char finalname[1152] = {};
-	File::ExtractFilePath(m_FileName.m_szString, dir, fn, nullptr);
+	File::ExtractFilePath(m_FileName.m_Str, dir, fn, nullptr);
 
 	strcpy(finalname, dir);
 	strcat(finalname, fn);
 	strcat(finalname, ".");
-	strcat(finalname, Script::StreamedSoundExt.m_szString);
+	strcat(finalname, Script::StreamedSoundExt.m_Str);
 
 	m_FileName = finalname;
 	ReadStreamedSoundFile(true);
@@ -113,7 +113,7 @@ void SoundFile::Open(const char* const filename)
 
 void SoundFile::ChangeFileNameIfDifferent(const String& fname)
 {
-	if (m_FileName.Equal(fname.m_szString))
+	if (m_FileName.Equal(fname.m_Str))
 	{
 		m_FileName = fname;
 		field_24 &= 0xFFFFFFFE;

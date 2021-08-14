@@ -1,7 +1,7 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 
-class StringType : public BaseType
+class StringType : public DataType
 {
 public:
 	StringType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize);

@@ -4,6 +4,7 @@
 
 #define EDITORCAMERA_CLASS_SIZE 312
 
+//	NOTE: actual path to header file "/Editor/EditorCamera.h".
 class EditorCamera : public Camera
 {
 protected:

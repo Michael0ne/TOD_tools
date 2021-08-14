@@ -257,7 +257,7 @@
     <ClInclude Include="AnimLayer.h" />
     <ClInclude Include="AnimSlot.h" />
     <ClInclude Include="BaseAsset.h" />
-    <ClInclude Include="BaseType.h" />
+    <ClInclude Include="DataType.h" />
     <ClInclude Include="BestFitAllocator.h" />
     <ClInclude Include="CutsceneAsset.h" />
     <ClInclude Include="FontAsset.h" />
@@ -372,7 +372,7 @@
     <ClInclude Include="InputGameController.h" />
     <ClInclude Include="InputKeyboard.h" />
     <ClInclude Include="InputMouse.h" />
-    <ClInclude Include="Config.h" />
+    <ClInclude Include="KapowEngineClass.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GfxInternal_Dx9.h" />
     <ClInclude Include="StreamedSoundBuffer.h" />
@@ -429,7 +429,7 @@
     <ClCompile Include="AnimLayer.cpp" />
     <ClCompile Include="AnimSlot.cpp" />
     <ClCompile Include="BaseAsset.cpp" />
-    <ClCompile Include="BaseType.cpp" />
+    <ClCompile Include="DataType.cpp" />
     <ClCompile Include="CutsceneAsset.cpp" />
     <ClCompile Include="FontAsset.cpp" />
     <ClCompile Include="FragmentAsset.cpp" />
@@ -533,7 +533,7 @@
     <ClCompile Include="InputGameController.cpp" />
     <ClCompile Include="InputKeyboard.cpp" />
     <ClCompile Include="InputMouse.cpp" />
-    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="KapowEngineClass.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GfxInternal_Dx9.cpp" />
     <ClCompile Include="StreamedSoundBuffer.cpp" />

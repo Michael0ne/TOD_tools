@@ -80,8 +80,7 @@ GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int u
     m_RenderBufferEmpty = false;
 
     CreateCheckerboardTextures();
-    //	Allocate something
-    //(*(void(__thiscall*)(Renderer*))0x420390)(this);
+    _420390();
 
     field_35 = 1;
     m_Time_1 = 0.f;
@@ -347,6 +346,18 @@ void GfxInternal::CreateCheckerboardTextures()
 void GfxInternal::GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsigned int ind) const
 {
     mat = m_RenderBufferArray[ind].m_ViewMatrix;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void GfxInternal::_420390()
+{
+    m_Mesh = new Mesh(1, 0, 1);
+    m_Mesh->AddFace(0, { 0, 50, 0 }, { 0, 1, 0 }, { 0.5, 0.5 });
+    m_Mesh->AddFace(1, { 0, -50, 0 }, { 0, -1, 0 }, { 0.5, 0.5 });
+
+    //  TODO: add more 12 faces.
+
+    m_MeshBuffer = new MeshBuffer(m_Mesh, NULL);
 }
 
 AssetManager::RegionCode GfxInternal::GetRegion()

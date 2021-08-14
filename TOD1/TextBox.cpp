@@ -78,17 +78,17 @@ void TextBox::SetFont(const char* fontName)
 
 	g_AssetManager->GetResourcePath(fontPath, fontName);
 
-	if (!_stricmp(fontPath.m_szString, "/data/fonts/screenfont_Headlines.font") ||
-		!_stricmp(fontPath.m_szString, "/data/fonts/InnerSanctumCondensed_Screenfont.font"))
+	if (!_stricmp(fontPath.m_Str, "/data/fonts/screenfont_Headlines.font") ||
+		!_stricmp(fontPath.m_Str, "/data/fonts/InnerSanctumCondensed_Screenfont.font"))
 	{
 		fontPath = "/data/fonts/screenfont_ODserif_64all.font";
-		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_szString);
+		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_Str);
 	}
 
-	if (!_stricmp(fontPath.m_szString, "/data/fonts/screenfont_ODserif_64cond.font"))
+	if (!_stricmp(fontPath.m_Str, "/data/fonts/screenfont_ODserif_64cond.font"))
 	{
 		fontPath = "/data/fonts/screenfont_ODserif_64all.font";
-		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_szString);
+		LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_Str);
 	}
 
 	/*if (fontName)

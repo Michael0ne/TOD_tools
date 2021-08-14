@@ -20,10 +20,10 @@ void LoadScreenInfo::LoadTexture()
 	IsLoadingLoadScreenTexture = true;
 
 	String respath;
-	AssetManager::CorrectTextureResourcePath(respath, m_TexturePath.m_szString, GfxInternal::GetRegion(), Asset::PlatformId::PC);
+	AssetManager::CorrectTextureResourcePath(respath, m_TexturePath.m_Str, GfxInternal::GetRegion(), Asset::PlatformId::PC);
 
-	LogDump::LogA("LoadScreen:%s\n", respath.m_szString);
-	m_TextureResource = (TextureAsset*)g_AssetManager->LoadResourceFile(respath.m_szString);
+	LogDump::LogA("LoadScreen:%s\n", respath.m_Str);
+	m_TextureResource = (TextureAsset*)g_AssetManager->LoadResourceFile(respath.m_Str);
 
 	if (g_GfxInternal->m_CheckerboardTextures[0] == m_TextureResource->m_Texture_1)
 		LogDump::LogA("TEXTURE NOT FOUND!!!!!\n");
@@ -103,7 +103,7 @@ void LoadScreenInfo::Show(Node* topNode)
 	g_AssetManager->DestroyTextureAsset(*m_TextureResource);
 	Asset::Destroy(m_TextureResource);
 
-	LogDump::LogA("LoadScreen::Show (%s) took %ims\n", m_TexturePath.m_szString, Performance::GetMilliseconds() - timestart);
+	LogDump::LogA("LoadScreen::Show (%s) took %ims\n", m_TexturePath.m_Str, Performance::GetMilliseconds() - timestart);
 }
 
 void LoadScreenInfo::Deactivate()

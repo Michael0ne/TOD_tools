@@ -142,7 +142,7 @@ public:
     const char*			GetScript() const;	//	@86A230
     unsigned int		GetFlags() const;	//	@495DB0
 
-    void				SetParam(const int index, const void* param, BaseType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
+    void				SetParam(const int index, const void* param, DataType* type);	//	@86A3C0	//	NOTE: probably it's 'SetScriptParam'.
     void				SetOrient(const Orientation& orient);	//	@88DB20
     Vector4f*			GetPos(Vector4f& outVec);	//	@483620
     void				GetWorldMatrix(DirectX::XMMATRIX& outMat) const;	//	@4842C0
@@ -154,8 +154,8 @@ public:
     void				ForceLodCalculation(unsigned int);	//	@88D100
     void				_88E6A0(Node* node);	//	@88E6A0
     AuxQuadTree*		GetEntityQuadTreeOrParentQuadTree() const;	//	@88C260
-    void                _869EC0(const unsigned int paramind, const void* paramptr, BaseType& paramtype);	//	@869EC0
-    void                _869F80(const unsigned int paramind, const void* paramptr, BaseType& paramtype);	//	@869F80
+    void                _869EC0(const unsigned int paramind, const void* paramptr, DataType& paramtype);	//	@869EC0
+    void                _869F80(const unsigned int paramind, const void* paramptr, DataType& paramtype);	//	@869F80
     void                Project_Impl(Vector2f& outvec, const Vector4f& invec);	//	@87DA10
     void				TriggerGlobalScript(int scriptId, void* args);	//	@86A340
     void                _88C310(struct CameraMatrix* cammat);  //  @88C310

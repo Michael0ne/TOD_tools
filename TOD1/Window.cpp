@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "Config.h"
+#include "KapowEngineClass.h"
 #include "StreamedSoundBuffers.h"
 #include "ScriptDatabase.h"
 #include "GfxInternal_Dx9.h"
@@ -397,7 +397,7 @@ void Window::_CreateWindow(UINT16 nIconResourceId)
 	if (nIconResourceId)
 		windowStyle |= WS_SYSMENU;
 
-	m_WindowHandle = CreateWindowExA(WS_EX_APPWINDOW, m_WindowTitle.m_szString, m_WindowTitle.m_szString, windowStyle, NULL, NULL, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, WindowInstanceHandle, nullptr);
+	m_WindowHandle = CreateWindowExA(WS_EX_APPWINDOW, m_WindowTitle.m_Str, m_WindowTitle.m_Str, windowStyle, NULL, NULL, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, WindowInstanceHandle, nullptr);
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -515,7 +515,7 @@ ATOM Window::RegisterWindowClass(UINT16 menuResId, UINT16 iconResId)
 	WndClass.hCursor = 0;
 	WndClass.hIcon = LoadIcon(WindowInstanceHandle, MAKEINTRESOURCE(iconResId));
 	WndClass.lpszMenuName = MAKEINTRESOURCE(menuResId);
-	WndClass.lpszClassName = m_WindowTitle.m_szString;
+	WndClass.lpszClassName = m_WindowTitle.m_Str;
 	WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	WndClass.hInstance = WindowInstanceHandle;
 	WndClass.style = CS_VREDRAW | CS_HREDRAW;
@@ -691,7 +691,7 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 		}
 
 		FileWrapper::FindGameDir();
-		GameConfig::InitialiseGame(lpCmdLine);
+		InitialiseGame(lpCmdLine);
 	}
 
 #ifdef _EXE

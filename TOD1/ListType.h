@@ -1,15 +1,15 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 
-class ListType : public BaseType
+class ListType : public DataType
 {
 protected:
-    BaseType       *m_ListElementsType;
+    DataType       *m_ListElementsType;
     unsigned int    m_ListElementSize;
     bool            m_ComplexType;
 
 public:
-    ListType(BaseType* elementsType);	//	@870630
+    ListType(DataType* elementsType);	//	@870630
     virtual        ~ListType();
 
     virtual int     stub2(int*, int*);	//	@870CD0
@@ -23,7 +23,7 @@ public:
     virtual int     stub11(char*, String&, int);	//	@870AE0
     virtual int     stub12(char*, char*, int*);	//	@870560
     virtual bool    stub16(void*, void*) const;	//	@870D50
-    virtual void    stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const;	//	@870DE0
+    virtual void    stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const;	//	@870DE0
     virtual void    stub18(int operationId, void* params) const;	//	@8712F0
     virtual char    stub19(int, int);	//	@870730
 };

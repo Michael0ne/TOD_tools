@@ -68,7 +68,7 @@ void Progress::_40E7F0(unsigned int unk1, UINT64 unk2)
 		field_24 = NULL;
 		field_30 += m_LoadBarPhases[field_20].m_Time / m_TotalTimeToLoad;
 
-		stub1(m_LoadBarPhases[field_20].m_Status.m_szString);
+		stub1(m_LoadBarPhases[field_20].m_Status.m_Str);
 
 		field_38 = m_TimeStart + unk2;
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 
-class NothingType : public BaseType
+class NothingType : public DataType
 {
 public:
 	NothingType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize);

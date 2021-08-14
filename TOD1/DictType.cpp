@@ -1,13 +1,13 @@
 #include "DictType.h"
 
-DictType::DictType(BaseType* elementsType) : BaseType(TYPE_DICT, "dict", TYPE_DICT_SIZE)
+DictType::DictType(DataType* elementsType) : DataType(TYPE_DICT, "dict", TYPE_DICT_SIZE)
 {
 	MESSAGE_CLASS_CREATED(DictType);
 
 	m_ElementsType = elementsType;
 
 	char dtname[64] = {};
-	sprintf(dtname, "dict(%s)", elementsType->m_TypeName.m_szString);
+	sprintf(dtname, "dict(%s)", elementsType->m_TypeName.m_Str);
 	m_TypeName = dtname;
 }
 
@@ -69,7 +69,7 @@ bool DictType::stub16(void*, void*) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void DictType::stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const
+void DictType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const
 {
 }
 

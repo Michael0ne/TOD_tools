@@ -143,7 +143,7 @@ void StreamedWAV::DestroySoundBuffers(bool unk)
 	if (m_SoundFormat == FORMAT_OGG)
 	{
 		if (m_OggInfo && ov_pcm_seek(m_OggInfo, NULL))
-			LogDump::LogA("DeInit: %s\n", m_FileName.m_szString);
+			LogDump::LogA("DeInit: %s\n", m_FileName.m_Str);
 	}
 	else
 		if (m_WavFile && m_WavFile->IsFileOpen())
@@ -199,7 +199,7 @@ bool StreamedWAV::OpenSoundFile(bool a1)
 
 bool StreamedWAV::TryLocateCurrentStreamFile() const
 {
-	return (m_WavFile || m_OggInfo) && File::FindFileEverywhere(m_FileName.m_szString);
+	return (m_WavFile || m_OggInfo) && File::FindFileEverywhere(m_FileName.m_Str);
 }
 
 void StreamedWAV::RemoveSoundBuffer()
@@ -234,7 +234,7 @@ bool StreamedWAV::OpenOGG(bool createnew)
 
 	if (!m_OggInfo)
 	{
-		File* f = new File(m_FileName.m_szString, 0x21, true);
+		File* f = new File(m_FileName.m_Str, 0x21, true);
 
 		if (!f->IsFileOpen())
 		{
@@ -270,7 +270,7 @@ bool StreamedWAV::OpenOGG(bool createnew)
 bool StreamedWAV::OpenWAV(bool createnew)
 {
 	if (!m_WavFile)
-		m_WavFile = new File(m_FileName.m_szString, 0x61, false);
+		m_WavFile = new File(m_FileName.m_Str, 0x61, false);
 
 	if (!createnew)
 		return true;

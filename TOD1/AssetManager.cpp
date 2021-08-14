@@ -145,7 +145,7 @@ void AssetManager::DecreaseResourceReferenceCount(Asset* _res)
 
 const char* AssetManager::GetCurrentSceneName() const
 {
-    return m_SceneNames.size() ? m_SceneNames.end()->m_szString : nullptr;
+    return m_SceneNames.size() ? m_SceneNames.end()->m_Str : nullptr;
 }
 
 void AssetManager::BuildFastFindNodeVector()
@@ -235,7 +235,7 @@ void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, 
     char res_dir[1024] = {};
     char res_name[128] = {};
     char res_ext[16] = {};
-    File::ExtractFilePath(respath_str.m_szString, res_dir, res_name, res_ext);
+    File::ExtractFilePath(respath_str.m_Str, res_dir, res_name, res_ext);
 
     strcat(buff, res_dir + 5);
     strcat(buff, res_name);
@@ -256,14 +256,14 @@ void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, 
 const char* AssetManager::GetResourcePathSceneRelative(const char* const path)
 {
     const String& scenename = m_SceneNames.back();
-    if (strncmp(path, scenename.m_szString, scenename.m_nLength))
-        if (strstr(scenename.m_szString, "/data/") &&
+    if (strncmp(path, scenename.m_Str, scenename.m_Length))
+        if (strstr(scenename.m_Str, "/data/") &&
             strstr(path, "/data/"))
             return path + 5;
         else
             return path;
     else
-        return &path[scenename.m_nLength];
+        return &path[scenename.m_Length];
 }
 
 AssetHeaderStruct_t::Header_t::Header_t()
@@ -859,7 +859,7 @@ void AssetManager::SetSceneName(const char* scenename)
     String sceneDir;
     File::ExtractFileDir(sceneDir, scenename);
 
-    if (sceneDir.m_nLength > 0 && sceneDir.m_szString[sceneDir.m_nLength - 1] != '/')
+    if (sceneDir.m_Length > 0 && sceneDir.m_Str[sceneDir.m_Length - 1] != '/')
         sceneDir.Append("/");
 
     m_SceneNames.push_back(sceneDir);

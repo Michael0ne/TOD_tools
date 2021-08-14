@@ -8,7 +8,7 @@ class BuiltinType : public EntityType
 
 	struct BuiltinMember
 	{
-		BaseType*	m_RetType;
+		DataType*	m_RetType;
 		Getter		m_Getter;
 		Setter		m_Setter;
 		String		m_Proto;
@@ -34,7 +34,7 @@ private:
 	BuiltinType();	//	@486D00
 
 	void	RegisterMemberFunction(
-		BaseType* returntype,
+		DataType* returntype,
 		const char* membername,
 		Getter,
 		Setter,

@@ -127,7 +127,7 @@ void Node::SetFlags(int flags)
     if (!m_Flags.m_FlagBits.Volatile && (flags & 0x20) == 0 && flags != (m_Flags.m_Flags & 0xFFF))
     {
         unsigned int _flags = m_Flags.m_Flags & 0xFFF;
-        SetParam(2, &_flags, (BaseType*)tINTEGER);
+        SetParam(2, &_flags, (DataType*)tINTEGER);
     }
 
     if (((flags ^ m_Flags.m_FlagBits.Dynamic) & 2) != 0)
@@ -274,12 +274,12 @@ Node::~Node()
 
 const char* Node::GetTypename() const
 {
-    return m_ScriptEntity->m_TypeName.m_szString;
+    return m_ScriptEntity->m_TypeName.m_Str;
 }
 
 const char* Node::GetScript() const
 {
-    return m_ScriptEntity->m_Script ? m_ScriptEntity->m_Script->m_Name.m_szString : nullptr;
+    return m_ScriptEntity->m_Script ? m_ScriptEntity->m_Script->m_Name.m_Str : nullptr;
 }
 
 unsigned int Node::GetFlags() const
@@ -287,7 +287,7 @@ unsigned int Node::GetFlags() const
     return m_Flags.m_Flags & 0xFFF;
 }
 
-void Node::SetParam(const int index, const void* param, BaseType* type)
+void Node::SetParam(const int index, const void* param, DataType* type)
 {
     if (!m_ScriptEntity)
         return;
@@ -527,7 +527,7 @@ AuxQuadTree* Node::GetEntityQuadTreeOrParentQuadTree() const
     return nullptr;
 }
 
-void Node::_869EC0(const unsigned int paramind, const void* paramptr, BaseType& paramtype)
+void Node::_869EC0(const unsigned int paramind, const void* paramptr, DataType& paramtype)
 {
     if (!Scene::_A3CEE4)
         return;
@@ -542,7 +542,7 @@ void Node::_869EC0(const unsigned int paramind, const void* paramptr, BaseType& 
     field_8[paramind / 8] |= 1 << (paramind & 7);
 }
 
-void Node::_869F80(const unsigned int paramind, const void* paramptr, BaseType& paramtype)
+void Node::_869F80(const unsigned int paramind, const void* paramptr, DataType& paramtype)
 {
     int* v1 = g_SceneSaveLoad->_873BA0(m_Id >> 8);
     if (v1)
@@ -652,22 +652,22 @@ void Node::SetFragment(const char* const fragmentpath)
     _891E70(respath, fullfragmpath);
 
     const size_t tstscrpathlen = strlen("/data/scripts/testing/fragments");
-    if (strncmp(respath.m_szString, "/data/scripts/testing/fragments", tstscrpathlen))
+    if (strncmp(respath.m_Str, "/data/scripts/testing/fragments", tstscrpathlen))
     {
         fullfragmpath = "/data/scripts/fragments";
-        fullfragmpath.Append(&respath.m_szString[tstscrpathlen]);
+        fullfragmpath.Append(&respath.m_Str[tstscrpathlen]);
     }
 
-    if (strcmp(fullfragmpath.m_szString, fragmentpath))
-        LogDump::LogA("unmapped %s -> %s\n", fragmentpath, fullfragmpath.m_szString);
+    if (strcmp(fullfragmpath.m_Str, fragmentpath))
+        LogDump::LogA("unmapped %s -> %s\n", fragmentpath, fullfragmpath.m_Str);
 
     if (m_Flags.m_FlagBits.HasFragment)
     {
-        m_Fragment->LoadResourceFile(fullfragmpath.m_szString);
+        m_Fragment->LoadResourceFile(fullfragmpath.m_Str);
         m_Fragment->ApplyFragment();
     }
     else
-        m_Fragment->SetFragmentName(fullfragmpath.m_szString);
+        m_Fragment->SetFragmentName(fullfragmpath.m_Str);
 }
 
 void Node::TryInstantiate()
@@ -734,10 +734,10 @@ void Node::_891E70(const String& s, String& outs)
 
     for (unsigned int i = 0; i < File::DirectoryMappingsList.size(); ++i)
     {
-        if (strncmp(s.m_szString, File::DirectoryMappingsList[i].m_String_1.m_szString, File::DirectoryMappingsList[i].m_String_1.m_nLength) == NULL)
+        if (strncmp(s.m_Str, File::DirectoryMappingsList[i].m_String_1.m_Str, File::DirectoryMappingsList[i].m_String_1.m_Length) == NULL)
         {
-            outs = File::DirectoryMappingsList[i].m_String_2.m_szString;
-            outs.Append(&s.m_szString[File::DirectoryMappingsList[i].m_String_1.m_nLength]);
+            outs = File::DirectoryMappingsList[i].m_String_2.m_Str;
+            outs.Append(&s.m_Str[File::DirectoryMappingsList[i].m_String_1.m_Length]);
         }
     }
 

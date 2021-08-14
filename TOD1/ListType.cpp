@@ -1,6 +1,6 @@
 #include "ListType.h"
 
-ListType::ListType(BaseType* elementsType) : BaseType(TYPE_LIST, "list", TYPE_LIST_SIZE)
+ListType::ListType(DataType* elementsType) : DataType(TYPE_LIST, "list", TYPE_LIST_SIZE)
 {
 	MESSAGE_CLASS_CREATED(ListType);
 
@@ -8,7 +8,7 @@ ListType::ListType(BaseType* elementsType) : BaseType(TYPE_LIST, "list", TYPE_LI
 	m_ListElementSize = elementsType->m_Size;
 
 	char str[64] = {};
-	sprintf(str, "list(%s)", elementsType->m_TypeName.m_szString);
+	sprintf(str, "list(%s)", elementsType->m_TypeName.m_Str);
 	
 	m_ComplexType = (elementsType->m_TypeId == TYPE_STRING || elementsType->m_TypeId == TYPE_LIST || elementsType->m_TypeId == TYPE_DICT || elementsType->m_TypeId == TYPE_SCRIPT);
 }
@@ -83,7 +83,7 @@ bool ListType::stub16(void*, void*) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void ListType::stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const
+void ListType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const
 {
 }
 

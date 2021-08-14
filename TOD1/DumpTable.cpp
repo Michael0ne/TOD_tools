@@ -123,7 +123,7 @@ void DumpTableDescription::DumpContents(String& outstr, const int a2, const int 
 	for (std::vector<Column*>::const_iterator it = m_Columns.cbegin(); it != m_Columns.cend(); ++it)
 	{
 		char buf[128] = {};
-		sprintf(buf, "%s-%ds%s", (*it)->m_ColumnName.m_szString, (*it)->field_2C, it + 1 != m_Columns.cend() ? ";" : "");
+		sprintf(buf, "%s-%ds%s", (*it)->m_ColumnName.m_Str, (*it)->field_2C, it + 1 != m_Columns.cend() ? ";" : "");
 		outstr.Append(buf);
 	}
 

@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "Sprite.h"
 
+//  NOTE: actual header file path "/Kernel/Miscellaneous/LoadScreenNode.h".
 class LoadScreenNode : public Node
 {
 protected:

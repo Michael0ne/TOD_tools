@@ -43,7 +43,7 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Asse
 	char	fileDir[1024] = {};
 	char	fileName[128] = {};
 
-	File::ExtractFilePath(resourceName.m_szString, fileDir, fileName, fileExt);
+	File::ExtractFilePath(resourceName.m_Str, fileDir, fileName, fileExt);
 
 	if (languageCode)
 	{

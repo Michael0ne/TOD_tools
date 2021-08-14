@@ -100,16 +100,16 @@ namespace Input
 
 			memset(&m_ButtonsStates, NULL, sizeof(m_ButtonsStates));
 
-			LogDump::LogA("CONTROLLER: Model of game device = %s", m_ModelName.m_szString);
+			LogDump::LogA("CONTROLLER: Model of game device = %s", m_ModelName.m_Str);
 
 #ifdef INCLUDE_FIXES
-			m_SmartJoyGamepad = strncmp(m_ModelName.m_szString, "SmartJoy", 8) == NULL;
+			m_SmartJoyGamepad = strncmp(m_ModelName.m_Str, "SmartJoy", 8) == NULL;
 #else
 			//	NOTE: this is stupid, so disabled by default.
 			String sModelName;
-			AllocateGamepadNameStringBuffer(&sModelName, m_ModelName.m_szString, 8);
+			AllocateGamepadNameStringBuffer(&sModelName, m_ModelName.m_Str, 8);
 
-			m_SmartJoyGamepad = strncmp(sModelName.m_szString, "SmartJoy", 8) == NULL;
+			m_SmartJoyGamepad = strncmp(sModelName.m_Str, "SmartJoy", 8) == NULL;
 #endif
 
 			if (!m_ForceFeedbackAvailable)
@@ -281,7 +281,7 @@ namespace Input
 		*(int*)(pvRef[1]->m_GUID.Data4) = *(int*)(devInst->guidInstance.Data4);
 		pvRef[1]->m_GUID.Data4[4] = pvRef[1]->m_GUID.Data4[4];
 
-		strcpy(pvRef[1]->m_ModelName.m_szString, devInst->tszProductName);
+		strcpy(pvRef[1]->m_ModelName.m_Str, devInst->tszProductName);
 		DirectInput8Interface->CreateDevice(devInst->guidInstance, &pvRef[1]->m_DirectInputDevice, NULL);
 
 		if (FAILED(pvRef[1]->m_DirectInputDevice->SetDataFormat(&c_dfDIJoystick)))
@@ -600,7 +600,7 @@ namespace Input
 
 	const char* Gamepad::GetModelNameString() const
 	{
-		return m_ModelName.m_szString;
+		return m_ModelName.m_Str;
 	}
 
 	void Gamepad::ProcessController()

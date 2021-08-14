@@ -125,7 +125,7 @@
     <ClInclude Include="Window.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="Config.h">
+    <ClInclude Include="KapowEngineClass.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
     <ClInclude Include="SavePoint.h">
@@ -254,7 +254,7 @@
     <ClInclude Include="MemoryManager.h">
       <Filter>Header files\KapowSystems\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="BaseType.h">
+    <ClInclude Include="DataType.h">
       <Filter>Header files\KapowSystems\Scripting\Types</Filter>
     </ClInclude>
     <ClInclude Include="StringsPool.h">
@@ -637,7 +637,7 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
+    <ClCompile Include="KapowEngineClass.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
     <ClCompile Include="SavePoint.cpp">
@@ -940,7 +940,7 @@
     <ClCompile Include="StaticLighting.cpp">
       <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="BaseType.cpp">
+    <ClCompile Include="DataType.cpp">
       <Filter>Source files\KapowSystems\Scripting\Types</Filter>
     </ClCompile>
     <ClCompile Include="NothingType.cpp">

@@ -15,7 +15,7 @@ const int ControlSetup::GetControlId_Impl(const char* const controlname) const
 		return -1;
 
 	for (unsigned int i = 0; i < m_ControlsList.size(); ++i)
-		if (strcmp(m_ControlsList[i].m_Name.m_szString, controlname) == NULL)
+		if (strcmp(m_ControlsList[i].m_Name.m_Str, controlname) == NULL)
 			return i;
 
 	return NULL;

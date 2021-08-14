@@ -1,17 +1,17 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 
 //	NOTE: this is essentially a struct.
-class ScriptType : public BaseType
+class ScriptType : public DataType
 {
 public:
 	struct ScriptField
 	{
 		String			m_Name;
-		BaseType*		m_Type = nullptr;
+		DataType*		m_Type = nullptr;
 		unsigned int	m_FieldOffset = NULL;
 
-		ScriptField(const char* name, BaseType* stype, unsigned int fldoffset)
+		ScriptField(const char* name, DataType* stype, unsigned int fldoffset)
 			: m_Name(name), m_Type(stype), m_FieldOffset(fldoffset)
 		{};
 		ScriptField(const ScriptField& rhs)	//	@7A1D40
@@ -26,7 +26,7 @@ public:
 		unsigned int	m_TotalSizeBytes = NULL;
 		unsigned int	m_TotalSize = NULL;
 
-		void            Add(const char* const fieldname, BaseType* fieldtype, unsigned int);	//	@862550
+		void            Add(const char* const fieldname, DataType* fieldtype, unsigned int);	//	@862550
 		void            Clear();	//	@862540
 	};
 

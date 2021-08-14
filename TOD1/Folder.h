@@ -22,6 +22,7 @@ struct AssetInfo
 
 ASSERT_CLASS_SIZE(AssetInfo, 24);
 
+//	NOTE: actual path to header file "/Kernel/Scenegraph/Folder.h".
 class Folder_ : public Node
 {
 protected:

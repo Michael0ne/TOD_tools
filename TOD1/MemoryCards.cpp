@@ -30,7 +30,7 @@ MemoryCards::~MemoryCards()
 unsigned int MemoryCards::GetLastModifiedTimeAsNumber(unsigned int memcardind, unsigned int slotind) const
 {
 	String tempStr;
-	SavePoint savepoint(MemoryCardInfo[memcardind], MEMCARD_DEFAULT_SAVE_DIR, MakeSaveSlotString(tempStr, slotind).m_szString, SAVEPOINT_SAVE_SIZE);
+	SavePoint savepoint(MemoryCardInfo[memcardind], MEMCARD_DEFAULT_SAVE_DIR, MakeSaveSlotString(tempStr, slotind).m_Str, SAVEPOINT_SAVE_SIZE);
 	time_t ftime = savepoint.GetTime();
 
 	if (!ftime || ftime == -1)
@@ -88,7 +88,7 @@ MemoryCards* MemoryCards::Create(AllocatorIndex allocInd)
 
 const char* MemoryCards::GetGamename() const
 {
-	return m_GameName.m_szString;
+	return m_GameName.m_Str;
 }
 
 void MemoryCards::SetGamename(const char* const gamename)
@@ -99,7 +99,7 @@ void MemoryCards::SetGamename(const char* const gamename)
 
 const char* MemoryCards::GetPs2SlesLicense() const
 {
-	return m_Ps2SlesLicense.m_szString;
+	return m_Ps2SlesLicense.m_Str;
 }
 
 void MemoryCards::SetPs2SlesLicense(const char* const sleslicense)
@@ -116,7 +116,7 @@ void MemoryCards::SetPs2SlesLicense(const char* const sleslicense)
 
 const char* MemoryCards::GetPs2SlusLicense() const
 {
-	return m_Ps2SlusLicense.m_szString;
+	return m_Ps2SlusLicense.m_Str;
 }
 
 void MemoryCards::SetPs2SlusLicense(const char* const sluslicense)
@@ -146,7 +146,7 @@ unsigned int MemoryCards::GetSavePointSize(unsigned int memcardind, unsigned int
 {
 	String tempStr;
 	MakeSaveSlotString(tempStr, slotind);
-	return MemoryCardInfo[memcardind]->GetSavePointFileSize(MEMCARD_DEFAULT_SAVE_DIR, tempStr.m_szString);
+	return MemoryCardInfo[memcardind]->GetSavePointFileSize(MEMCARD_DEFAULT_SAVE_DIR, tempStr.m_Str);
 }
 
 void MemoryCards::HasCardChanged(int* args) const
@@ -181,8 +181,8 @@ void MemoryCards::IsCardPrepared(int* args) const
 
 void MemoryCards::IsPresent(int* args) const
 {
-	if (MemoryCardInfo[args[1]]->m_SaveFolderPath.m_nLength)
-		*args = MemoryCardInfo[args[1]]->m_Formatted && File::IsDirectoryValid(MemoryCardInfo[args[1]]->m_SaveFolderPath.m_szString);
+	if (MemoryCardInfo[args[1]]->m_SaveFolderPath.m_Length)
+		*args = MemoryCardInfo[args[1]]->m_Formatted && File::IsDirectoryValid(MemoryCardInfo[args[1]]->m_SaveFolderPath.m_Str);
 	else
 	{
 		LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.\n");
@@ -239,20 +239,20 @@ bool MemoryCards::SavePointExists_Impl(unsigned int memcardind, unsigned int slo
 	if (!MemoryCardInfo[memcardind])
 		return false;
 
-	if (!MemoryCardInfo[memcardind]->m_SaveFolderPath.m_nLength)
+	if (!MemoryCardInfo[memcardind]->m_SaveFolderPath.m_Length)
 	{
 		LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.\n");
 		return false;
 	}
 
-	if (!MemoryCardInfo[memcardind]->IsFormatted() || !File::IsDirectoryValid(MemoryCardInfo[memcardind]->m_SaveFolderPath.m_szString))
+	if (!MemoryCardInfo[memcardind]->IsFormatted() || !File::IsDirectoryValid(MemoryCardInfo[memcardind]->m_SaveFolderPath.m_Str))
 		return false;
 
 	String saveSlotStr;
-	if (MakeSaveSlotString(saveSlotStr, slotind).m_szString == nullptr)
+	if (MakeSaveSlotString(saveSlotStr, slotind).m_Str == nullptr)
 		return false;
 
-	return MemoryCardInfo[memcardind]->IsSavePointFileExists(MEMCARD_DEFAULT_SAVE_DIR, saveSlotStr.m_szString);
+	return MemoryCardInfo[memcardind]->IsSavePointFileExists(MEMCARD_DEFAULT_SAVE_DIR, saveSlotStr.m_Str);
 }
 
 void MemoryCards::SavePointExists(int* args) const

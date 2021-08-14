@@ -1,6 +1,6 @@
 #include "TruthType.h"
 
-TruthType::TruthType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : BaseType(typeId, typeName, typeSize)
+TruthType::TruthType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
 	MESSAGE_CLASS_CREATED(TruthType);
 }
@@ -56,7 +56,7 @@ void TruthType::stub14(int* a1, int a2, void* a3, int a4, int a5, int a6) const
 		((void(__thiscall*)(int, int))a3)(a4 + a2, *a1 != 0);
 }
 
-void TruthType::stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const
+void TruthType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const
 {
 	*a4 = 1;
 
@@ -90,7 +90,7 @@ void TruthType::stub17(const char* const operation, int* outopid, BaseType** out
 		*outoprestype = tTRUTH;
 	}
 
-	BaseType::stub17(operation, outopid, outoprestype, a4);
+	DataType::stub17(operation, outopid, outoprestype, a4);
 }
 
 void TruthType::stub18(int operationId, void* params) const

@@ -1,8 +1,8 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 #include "ScriptDatabase.h"
 
-class EntityType : public BaseType
+class EntityType : public DataType
 {
     friend class Node;
 
@@ -16,7 +16,7 @@ class EntityType : public BaseType
 
     struct PropertyInfo
     {
-        BaseType       *m_ReturnType = nullptr;
+        DataType       *m_ReturnType = nullptr;
         int            *field_4 = nullptr;
         void*           (__thiscall *m_GetterPtr)(void*) = nullptr;
         unsigned int    field_C = NULL;
@@ -94,10 +94,10 @@ public:
     }
 
     template <typename T, typename T1>
-    void RegisterProperty(BaseType* returntype, const char* const propertyname, T getterptr, const int a4, const int a5, const int a6, T1 setterptr, const int a8, const int a9, const int a10, const char* const a11, const int a12, const int a13, const int propertyind)	//	@86D370
+    void RegisterProperty(DataType* returntype, const char* const propertyname, T getterptr, const int a4, const int a5, const int a6, T1 setterptr, const int a8, const int a9, const int a10, const char* const a11, const int a12, const int a13, const int propertyind)	//	@86D370
     {
         char propstr[128] = {};
-        sprintf(propstr, "%s:%s", propertyname, returntype->m_TypeName.m_szString);
+        sprintf(propstr, "%s:%s", propertyname, returntype->m_TypeName.m_Str);
         unsigned int ind = RegisterGlobalProperty(propstr, true);
 
         //	NOTE: a workaround to insert a method pointer to a list.

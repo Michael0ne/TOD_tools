@@ -1,7 +1,7 @@
 #pragma once
-#include "BaseType.h"
+#include "DataType.h"
 
-class VectorType : public BaseType
+class VectorType : public DataType
 {
 public:
 	VectorType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize);
@@ -13,7 +13,7 @@ public:
 	virtual void	stub13(int, void*, int, int, int, void* const) const override;	//	@864850
 	virtual void	stub14(int*, int, void*, int, int, int) const override;	//	@8648B0
 	virtual bool	stub16(void*, void*) const override;	//	@864A30
-	virtual void	stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const override;	//	@864B20
+	virtual void	stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const override;	//	@864B20
 	virtual void	stub18(int operationId, void* params) const override;	//	@864E60
 	virtual bool	stub20(void*) const override;	//	@864930
 

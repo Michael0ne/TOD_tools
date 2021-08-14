@@ -208,7 +208,7 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
 
 	char slotstr[10] = {};
 	sprintf(slotstr, "Slot%02d", m_SaveSlotIndex);
-	SavePoint savepoint(MemoryCardInfo[m_MemoryCardIndex], m_SaveDir.m_szString, slotstr, SAVEPOINT_SAVE_SIZE);
+	SavePoint savepoint(MemoryCardInfo[m_MemoryCardIndex], m_SaveDir.m_Str, slotstr, SAVEPOINT_SAVE_SIZE);
 
 	if (savepoint.Open(STATUS_SUCCESS))
 	{
@@ -220,7 +220,7 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
 
 	if (m_SavePointOperationError == STATUS_CANT_READ_SAVE_DATA)
 	{
-		if (!MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_nLength)
+		if (!MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_Length)
 		{
 			LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.\n");
 
@@ -229,7 +229,7 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
 		}
 
 		if (!MemoryCardInfo[m_MemoryCardIndex]->m_Formatted ||
-			!File::IsDirectoryValid(MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_szString))
+			!File::IsDirectoryValid(MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_Str))
 		{
 			m_SavePointOperationError = STATUS_SAVEDIR_NOT_READY;
 			m_SaveLoadState = STATE_DONE;
@@ -348,22 +348,22 @@ void Scene::Load(const char* sceneName)
 		Folder_::GetResourcePathRelative(block_path_shared, scene_path, Asset::BlockTypeNumber::NONE, 0);
 		Folder_::GetResourcePathRelative(block_path_localised, scene_path, Asset::BlockTypeNumber::NONE, Script::GetCurrentCountryCode());
 #ifdef INCLUDE_FIXES
-		if (!File::FindFileEverywhere(block_path_shared.m_szString))
+		if (!File::FindFileEverywhere(block_path_shared.m_Str))
 		{
-			LogDump::LogA("Asset shared block not found: \"%s\"!\n", block_path_shared.m_szString);
+			LogDump::LogA("Asset shared block not found: \"%s\"!\n", block_path_shared.m_Str);
 			return;
 		}
 #else
-		File::FindFileEverywhere(block_path_shared.m_szString);
+		File::FindFileEverywhere(block_path_shared.m_Str);
 #endif
 #ifdef INCLUDE_FIXES
-		if (!File::FindFileEverywhere(block_path_localised.m_szString))
+		if (!File::FindFileEverywhere(block_path_localised.m_Str))
 		{
-			LogDump::LogA("Asset localization block not found: \"%s\"!\n", block_path_shared.m_szString);
+			LogDump::LogA("Asset localization block not found: \"%s\"!\n", block_path_shared.m_Str);
 			return;
 		}
 #else
-		File::FindFileEverywhere(block_path_localised.m_szString);
+		File::FindFileEverywhere(block_path_localised.m_Str);
 #endif
 
 		int mainAssetAllocMem = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
@@ -374,8 +374,8 @@ void Scene::Load(const char* sceneName)
 		
 		LoadingAssetBlock = true;
 		//Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = false;
-		LoadResourceBlockIntoSceneBuffer(block_path_shared.m_szString, &m_AssetBlockInfo->m_AssetInfo_Shared);
-		LoadResourceBlockIntoSceneBuffer(block_path_localised.m_szString, &m_AssetBlockInfo->m_AssetInfo_Localised);
+		LoadResourceBlockIntoSceneBuffer(block_path_shared.m_Str, &m_AssetBlockInfo->m_AssetInfo_Shared);
+		LoadResourceBlockIntoSceneBuffer(block_path_localised.m_Str, &m_AssetBlockInfo->m_AssetInfo_Localised);
 		
 		m_BlockId = m_BlockId | 0x80000000;
 		LoadingAssetBlock = false;

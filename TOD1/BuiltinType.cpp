@@ -2,7 +2,7 @@
 #include "LogDump.h"
 #include "Random.h"
 #include "Performance.h"
-#include "Config.h"
+#include "KapowEngineClass.h"
 #include "StreamedSoundBuffers.h"
 #include "InputKeyboard.h"
 #include "InputMouse.h"
@@ -128,7 +128,7 @@ void BuiltinType::Rand_number(float* arg)
 
 void BuiltinType::Get_facecoll_MaterialID(int* arg)
 {
-	*arg = GameConfig::GetCollmatMaterialId((const char*)*arg);
+	*arg = GetCollmatMaterialId((const char*)*arg);
 }
 
 void BuiltinType::GetTime(float* arg)
@@ -372,11 +372,11 @@ void BuiltinType::GetVersionNumber(char** arg)
 
 void BuiltinType::GetConfigString(int* arg)
 {
-	if (GameConfig::g_Config->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]))
+	if (g_KapowEngine->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]))
 	{
 		String configstr;
-		GameConfig::g_Config->m_ConfigurationVariables->GetParamValueString(configstr, (const char*)arg[1]);
-		*arg = (int)_strdup(configstr.m_szString);
+		g_KapowEngine->m_ConfigurationVariables->GetParamValueString(configstr, (const char*)arg[1]);
+		*arg = (int)_strdup(configstr.m_Str);
 	}
 	else
 		*arg = NULL;
@@ -384,16 +384,16 @@ void BuiltinType::GetConfigString(int* arg)
 
 void BuiltinType::GetConfigTruth(int* arg)
 {
-	*arg = GameConfig::g_Config->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]) ? GameConfig::g_Config->m_ConfigurationVariables->GetParamValueBool((const char*)arg[1]) : 0;
+	*arg = g_KapowEngine->m_ConfigurationVariables->IsVariableSet((const char*)arg[1]) ? g_KapowEngine->m_ConfigurationVariables->GetParamValueBool((const char*)arg[1]) : 0;
 }
 
 void BuiltinType::GetSessionVariableString(int* arg)
 {
-	if (GameConfig::g_Config->m_SessionVariables->IsVariableSet((const char*)arg[1]))
+	if (g_KapowEngine->m_SessionVariables->IsVariableSet((const char*)arg[1]))
 	{
 		String sessionstr;
-		GameConfig::g_Config->m_SessionVariables->GetParamValueString(sessionstr, (const char*)arg[1]);
-		*arg = (int)_strdup(sessionstr.m_szString);
+		g_KapowEngine->m_SessionVariables->GetParamValueString(sessionstr, (const char*)arg[1]);
+		*arg = (int)_strdup(sessionstr.m_Str);
 	}
 	else
 		*arg = NULL;
@@ -401,17 +401,17 @@ void BuiltinType::GetSessionVariableString(int* arg)
 
 void BuiltinType::SetSessionVariableString(int* arg)
 {
-	GameConfig::g_Config->m_SessionVariables->SetParamValue((const char*)arg[0], (const char*)arg[1]);
+	g_KapowEngine->m_SessionVariables->SetParamValue((const char*)arg[0], (const char*)arg[1]);
 }
 
 void BuiltinType::GetSessionVariableTruth(char* arg)
 {
-	*arg = GameConfig::g_Config->m_SessionVariables->IsVariableSet((const char*)arg[1]) ? GameConfig::g_Config->m_SessionVariables->GetParamValueBool((const char*)arg[1]) : *arg = false;
+	*arg = g_KapowEngine->m_SessionVariables->IsVariableSet((const char*)arg[1]) ? g_KapowEngine->m_SessionVariables->GetParamValueBool((const char*)arg[1]) : *arg = false;
 }
 
 void BuiltinType::SetSessionVariableTruth(int* arg)
 {
-	GameConfig::g_Config->m_SessionVariables->SetParamValueBool((const char*)arg[0], (bool)arg[1]);
+	g_KapowEngine->m_SessionVariables->SetParamValueBool((const char*)arg[0], (bool)arg[1]);
 }
 
 void BuiltinType::SetCurrentCountryCode(char* arg)
@@ -442,7 +442,7 @@ void BuiltinType::LoadScene(char** arg)
 	if (!*arg || !**arg || !strlen(*arg))
 		return;
 
-	GameConfig::g_Config->m_SceneName = *arg;
+	g_KapowEngine->m_SceneName = *arg;
 }
 
 void BuiltinType::GetSystemLanguage(int* arg)
@@ -599,7 +599,7 @@ void BuiltinType::DumptableWriteToFile(int* arg)
 	DumpTable[*arg]->DumpContents(dumpstr, -1, -1, -1, 0);
 
 	File dumpfile((const char*)arg[1], 2, true);
-	dumpfile.WriteBuffer(dumpstr.m_szString);
+	dumpfile.WriteBuffer(dumpstr.m_Str);
 }
 
 void BuiltinType::DumptableClose(int* arg)

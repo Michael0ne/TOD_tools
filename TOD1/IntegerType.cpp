@@ -2,7 +2,7 @@
 #include "NumberType.h"
 #include "TruthType.h"
 
-IntegerType::IntegerType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : BaseType(typeId, typeName, typeSize)
+IntegerType::IntegerType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
 	MESSAGE_CLASS_CREATED(IntegerType);
 }
@@ -59,7 +59,7 @@ bool IntegerType::stub16(void* a1, void* a2) const
 	return *(int*)a1 != *(int*)a2;
 }
 
-void IntegerType::stub17(const char* const operation, int* outopid, BaseType** outoprestype, char* a4) const
+void IntegerType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const
 {
 	*a4 = 1;
 
@@ -145,7 +145,7 @@ void IntegerType::stub17(const char* const operation, int* outopid, BaseType** o
 		*outoprestype = tINTEGER;
 	}
 
-	BaseType::stub17(operation, outopid, outoprestype, a4);
+	DataType::stub17(operation, outopid, outoprestype, a4);
 }
 
 void IntegerType::stub18(int operationId, void* params) const
