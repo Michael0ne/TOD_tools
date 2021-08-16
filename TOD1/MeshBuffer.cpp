@@ -52,15 +52,11 @@ void MeshBuffer::FillFromMesh(const Mesh& mutablemesh, const int a2)
 			mutablemesh.GetFacePositionByIndex(facepos, i);
 			mutablemesh.GetNormaPositionByIndex(normalpos, i);
 			
-			*(float*)vb++ = facepos.x;
-			*(float*)vb++ = facepos.y;
-			*(float*)vb++ = facepos.z;
+			*(Vector3f*)vb = {facepos.x, facepos.y, facepos.z};
 
 			//	TODO: check coords sanity.
 
-			*(float*)vb++ = normalpos.x;
-			*(float*)vb++ = normalpos.y;
-			*(float*)vb++ = normalpos.z;
+			*(Vector3f*)vb = { normalpos.x, normalpos.y, normalpos.z};
 
 			if (mutablemesh.HasDiffuseFlag())
 			{
@@ -80,8 +76,7 @@ void MeshBuffer::FillFromMesh(const Mesh& mutablemesh, const int a2)
 					Vector2f texcoords;
 					mutablemesh.GetTexCoordByIndex(texcoords, i, (Mesh::TexCoord)j);
 
-					*(float*)vb++ = texcoords.x;
-					*(float*)vb = texcoords.y;
+					*(Vector2f*)vb = texcoords;
 				}
 			}
 

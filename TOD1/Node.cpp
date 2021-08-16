@@ -192,7 +192,7 @@ void Node::nullsub_3(int)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Node::_88C610()
+void Node::ExecuteScript()
 {
     (*(void(__thiscall*)(void*, Node*))0x86CFF0)(m_ScriptEntity, this);
 }
@@ -752,7 +752,7 @@ void Node::Register()
 
 Node* Node::Create(AllocatorIndex)
 {
-    return new Node();
+    return new Node(NODE_MASK_POSITION);
 }
 
 Vector4f* NodePosition::GetPosition(Vector4f* outPos)
@@ -783,7 +783,8 @@ Orientation* NodePosition::GetWorldRotation(Orientation* rot)
 {
     DirectX::XMMATRIX mat;
 
-    ((Node*)(this - 9))->GetWorldMatrix(mat);
+    ((Node*)(this - 9))->GetWorldMatrix(mat);   //  NOTE: this f'd up pointer math is here to get the pointer to the owner Node.
+    //  TODO: convert rotation vector from world matrix to quaternion.
 
     return nullptr;
 }

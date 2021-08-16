@@ -22,7 +22,7 @@ class NodePosition : INodeMatrix
 {
 public:
     virtual Vector4f*	GetPosition(Vector4f*) override;	//	@484CD0
-    virtual void		GetOrientation(Orientation*) override;	//	@484CF0
+    virtual void		GetOrientation(Orientation*) override;	//	@484CF0 //  NOTE: unused.
     virtual void		CopyPositionToMatrix(DirectX::XMMATRIX*) override;	//	@484D40
     virtual Orientation* GetWorldRotation(Orientation*) override;	//	@484D80
 };
@@ -116,7 +116,7 @@ public:
     virtual char		ProcessCollision(int, int);             //	@484DB0	//	NOTE: char _484DB0(int, int) { return 0; }
     virtual float		_8F8650(int, int);						//	@8F8650	//	NOTE: float _8F8650(int, int) { return -1.0f; }
     virtual void		nullsub_3(int);							//	@88C600
-    virtual void		_88C610();								//	@88C610	//	NOTE: this could be 'ExecuteScript'.
+    virtual void		ExecuteScript();                        //	@88C610
     virtual void		nullsub_4(int);							//	@883EC0
     virtual void		DestroyFrameBuffers();					//	@8CB190
     virtual void		nullsub_6(const std::vector<Node*>);    //	@883EC0 //  NOTE: used when checking for dangling entities.
@@ -124,7 +124,6 @@ public:
     virtual Vector4f*	GetBounds(Vector4f& unk) const;         //	@484DC0
 
 public:
-    Node() {};	//	NOTE: this is not in EXE, but required for List class.
     Node(unsigned char allocationBitmask);	//	@88D4B0
 
     void* operator new (size_t size)

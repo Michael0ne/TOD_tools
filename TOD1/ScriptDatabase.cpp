@@ -928,6 +928,13 @@ GlobalProperty::~GlobalProperty()
 
 void GlobalCommand::AddArgumentType(DataType* argtype)
 {
+#ifdef INCLUDE_FIXES
+    if (!argtype)
+{
+    LogDump::LogA("GlobalCommand::AddArgumentType(\"%s\") empty DataType argument passed!\n", m_CommandName);
+    return;
+}
+#endif
     String emptystr;
     m_Arguments.m_ArgumentsList.emplace_back(emptystr, argtype, m_Arguments.m_TotalSizeBytes);
     m_Arguments.m_TotalSizeBytes += argtype->m_Size;

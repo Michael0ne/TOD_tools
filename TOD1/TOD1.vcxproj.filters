@@ -608,6 +608,9 @@
     <ClInclude Include="scripts\Magnet.h">
       <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
     </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Header files\KapowSystems\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1056,6 +1059,9 @@
     </ClCompile>
     <ClCompile Include="PhysSystem.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
