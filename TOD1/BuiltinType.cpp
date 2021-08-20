@@ -13,6 +13,7 @@
 #include "AssetManager.h"
 #include "VirtualHud.h"
 #include "DumpTable.h"
+#include "SoundSlot.h"
 
 BuiltinType* tBuiltin;
 
@@ -263,16 +264,14 @@ void BuiltinType::SfxIsMuteAll(int* arg)
 	*arg = (int)g_StreamedSoundBuffers->m_Muted;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::AllocateGlobalStreamedSound(int* arg)
 {
-	//*arg = Audio::AllocateGlobalStreamedSound((const char*)(arg[1]), arg[2] != NULL, arg[3] != NULL);
+	*arg = SoundSlot::AllocateGlobalStreamedSound((const char*)(arg[1]), arg[2] != NULL, arg[3] != NULL);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::DeallocateGlobalStreamedSound(int* arg)
 {
-	//Audio::DeallocateGlobalStreamedSound();
+	SoundSlot::DeallocateGlobalStreamedSound();
 }
 
 #pragma message(TODO_IMPLEMENTATION)

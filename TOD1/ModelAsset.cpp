@@ -1,4 +1,6 @@
 #include "ModelAsset.h"
+#include "SkinnedMeshBuffer.h"
+#include "GfxInternal.h"
 
 AssetInstance* ModelAsset::Instance;
 
@@ -42,9 +44,33 @@ ModelAsset::ModelAsset() : Asset(false)
 	field_5C &= 0xFFFFFF2F | 0x20;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+int ModelAsset::LoadTexture(const char* const texname)
+{
+	return 0;
+}
+
 AssetInstance* ModelAsset::GetInstancePtr() const
 {
 	return Instance;
+}
+
+char ModelAsset::SetResourcePlaceholder()
+{
+	Mesh mesh;
+	SkinnedMeshBuffer skinnedmeshbuffer;
+
+	skinnedmeshbuffer.m_Mesh = g_GfxInternal->m_Mesh;
+	skinnedmeshbuffer.m_MeshBuffer = g_GfxInternal->m_MeshBuffer;
+
+	skinnedmeshbuffer.m_TextureSets.push_back(
+		{ nullptr, LoadTexture("pinkyellowcheckers.bmp"), nullptr }
+	);
+
+	mesh.m_SkinnedMeshesList.push_back(&skinnedmeshbuffer);
+	m_MeshList.push_back(mesh);
+
+	return 1;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -54,6 +80,12 @@ void ModelAsset::_856E60()
 
 #pragma message(TODO_IMPLEMENTATION)
 ModelAsset::Mesh::Mesh()
+{
+	MESSAGE_CLASS_CREATED(Mesh);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+ModelAsset::Mesh::Mesh(const Mesh& rhs)
 {
 	MESSAGE_CLASS_CREATED(Mesh);
 }

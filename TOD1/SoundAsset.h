@@ -5,6 +5,8 @@ class StreamedSoundBuffer;
 
 class SoundAsset : public Asset
 {
+    friend class SoundSlot;
+
     class SoundFileInfo
     {
         friend class SoundAsset;

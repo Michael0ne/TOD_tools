@@ -8,6 +8,7 @@ class Mesh;
 class SkinnedMeshBuffer
 {
     friend class Model;
+    friend class ModelAsset;
 protected:
     MeshBuffer         *m_MeshBuffer;
     Mesh               *m_Mesh;
@@ -18,6 +19,8 @@ protected:
 
 public:
     SkinnedMeshBuffer();    //  @85A170
+    SkinnedMeshBuffer(const SkinnedMeshBuffer& rhs);    //  @85A1F0
+
     ~SkinnedMeshBuffer();   //  @857330
 };
 

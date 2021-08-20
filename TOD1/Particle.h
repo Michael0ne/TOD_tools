@@ -1,10 +1,11 @@
 #pragma once
 #include "Types.h"
 #include "MemoryManager.h"
+#include <vector>
 
 class NodePosition;
 
-struct Particle
+class Particle
 {
 protected:
     int             field_4;
@@ -14,10 +15,7 @@ protected:
     int             field_14;
     NodePosition   *m_PositionMethods;
     Vector4f        field_1C;
-    int             field_2C;
-    int             field_30;
-    int             field_34;
-    int             field_38;
+    Vector4f        field_2C;
     int             field_3C;
     float           field_40;
     int             field_44;
@@ -36,8 +34,24 @@ public:
 
     virtual ~Particle();   //  @424DC0
 
-    virtual void    stub2() = 0;
-    virtual void    stub3() = 0;
+    virtual void    SetParticlesListSize() = 0;
+    virtual const unsigned int  GetParticlesListSize() const = 0;
 };
 
 ASSERT_CLASS_SIZE(Particle, 120);
+
+class ParticleA : public Particle
+{
+protected:
+    std::vector<int>    m_Particles;
+
+public:
+    ParticleA();    //  @4255D0
+
+    virtual ~ParticleA();   //  @42E310
+
+    virtual void    SetParticlesListSize() override; //  @42E350
+    virtual const unsigned int  GetParticlesListSize() const override;  //  @42E300
+};
+
+ASSERT_CLASS_SIZE(ParticleA, 136);

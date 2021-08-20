@@ -51,8 +51,8 @@ protected:
     short           m_MaxParticles;
     short           field_3E;
     int             field_40;
-    int            *field_44;
-    Particle       *m_Particle;
+    ParticleA      *m_Particles;
+    Particle       *m_Particles_1;
     int             field_4C;
     int             field_50;
     int             field_54;

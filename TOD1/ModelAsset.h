@@ -35,6 +35,7 @@ public:
         int             field_78;
 
         Mesh(); //  @85A740
+        Mesh(const Mesh& rhs);  //  @85A7B0
         ~Mesh();    //  @857820
     };
 
@@ -50,8 +51,11 @@ protected:
 
 private:
     ModelAsset();   //  @858090
+
+    int                 LoadTexture(const char* const texname); //  @8575B0
 public:
     virtual AssetInstance* GetInstancePtr() const override;
+    virtual char        SetResourcePlaceholder() override;  //  @858380
 
     void                _856E60();  //  @856E60
     int                 PivotIndexByName(const char* const pivotname) const;    //  @88A060

@@ -45,6 +45,7 @@ class GfxInternal
     friend class TextureAsset;
     friend class GfxInternal_Dx9;
     friend class LoadScreenInfo;
+    friend class ModelAsset;
 protected:
     bool                            m_RenderBufferEmpty;	//	NOTE: this is set when failed to allocate space for buffer from stack.
     std::vector<Texture*>           m_CheckerboardTextures;

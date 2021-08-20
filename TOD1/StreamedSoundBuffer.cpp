@@ -5,6 +5,8 @@
 #include "BuiltinType.h"
 #include "Performance.h"
 
+StreamedSoundBuffer* StreamedSoundBuffer::GlobalStreamedSound;
+
 StreamedSoundBuffer::~StreamedSoundBuffer()
 {
 	MESSAGE_CLASS_DESTROYED(StreamedSoundBuffer);

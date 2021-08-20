@@ -176,6 +176,8 @@ public:
 
     void					FillSoundData(const bool overwrite);	//	@443FC0
     void                    ShutdownThread();   //  @444D60
+
+    static StreamedSoundBuffer* GlobalStreamedSound;    //  @A3DD8C
 };
 
 ASSERT_CLASS_SIZE(StreamBuffer, 76);

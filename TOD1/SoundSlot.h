@@ -15,7 +15,7 @@ protected:
     String						m_Sound;
     StreamedSoundInfoAsset     *m_StreamingSoundResource;	//	TODO: i think type is correct, check again.
     int							field_7C;
-    class StreamBuffer*			m_StreamBuffer;
+    StreamedSoundBuffer        *m_StreamBuffer;
     unsigned short				m_Volume;
     unsigned short				m_Pitch;
     int							m_StreamBufferIndex;
@@ -34,12 +34,20 @@ protected:
 private:
     void						StopSound();	//	@89D320
     void                        GetSoundName(String& outName);    //  @89F080
+    void                        UnPause();  //  @89D2C0
+    bool                        IsPlaying() const;  //  @89D380
 
 public:
     virtual ~SoundSlot();	//	@89F290
     virtual String*				GetResourceName(String*);	//	@89F270
 
     SoundSlot();	//	@89D590
+
+    static bool                 AllocateGlobalStreamedSound(const char* const filename, const bool ismono, const int a3);  //  @89CF90
+    static void                 DeallocateGlobalStreamedSound();    //  @89CEB0
+
+private:
+    static int                  _A3DD7C;    //  @A3DD7C
 };
 
 ASSERT_CLASS_SIZE(SoundSlot, 176);
