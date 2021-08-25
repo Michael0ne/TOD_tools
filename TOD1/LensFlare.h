@@ -1,30 +1,38 @@
 #pragma once
-
 #include "Node.h"
-
-#define LENSFLARE_CLASS_SIZE 152
 
 class LensFlare : public Node
 {
+    enum BlendMode
+    {
+        NORMAL = 0,
+        ADD = 1
+    };
+
 protected:
-	int* m_ResourceInfo;
-	int field_54;
-	float m_Offset;
-	float m_Size;
-	int m_BlendMode;
-	float m_FadeCameraAngle1;
-	float m_f68;
-	float m_FadeCameraAngle2;
-	float m_f70;
-	float m_FadeCamBlindDiming;
-	float m_Opacity;
-	ColorRGB m_Color;
-	float m_FadeFlareAngle;
-	float m_f90;
-	char m_InverseFlareAngle;
+    TextureAsset   *m_TextureRes;
+    int             field_54;
+    float           m_Offset;
+    float           m_Size;
+    BlendMode       m_BlendMode;
+    float           m_FadeCameraAngle1;
+    float           field_68;
+    float           m_FadeCameraAngle2;
+    float           field_70;
+    float           m_FadeCamBlindDiming;
+    float           m_Opacity;
+    ColorRGB        m_Color;
+    float           m_FadeFlareAngle;
+    float           field_90;
+    char            m_InverseFlareAngle;
 
 public:
-	LensFlare();	//	@8E3F50
+    LensFlare();	//	@8E3F50
+    virtual ~LensFlare();   //  @8E5670
+
+    void            SetColor(const float* args);    //  @8E3840
+
+    static LensFlare*   Create(AllocatorIndex); //  @8E56B0
 };
 
-static_assert(sizeof(LensFlare) == LENSFLARE_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(LensFlare));
+ASSERT_CLASS_SIZE(LensFlare, 152);

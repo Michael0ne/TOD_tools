@@ -35,6 +35,8 @@
 #include "Control.h"
 #include "Track.h"
 #include "ControlSetup.h"
+#include "Fog.h"
+#include "Wind.h"
 
 namespace Script
 {
@@ -658,9 +660,9 @@ void KapowEngineClass::InitEntitiesDatabase()
     StretchModel::Register();
     */
     SkyBox::Register();
-    /*
     Fog::Register();
     Wind::Register();
+    /*
     Cloth::Register();
     GFXEffect::Register();
     Shadow::Register();

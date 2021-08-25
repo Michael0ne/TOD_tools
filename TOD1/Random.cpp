@@ -1,7 +1,7 @@
 #include "Random.h"
 
 int Random::Values[] = {};
-int Random::_A0ADC8 = 1;
+int Random::Index = 1;
 int Random::SeedSet = false;
 int* Random::LastRandomValue = nullptr;
 
@@ -14,7 +14,7 @@ void Random::Init(int seed)
 	for (int ind = 1; ind < _size; ind++)
 		Values[ind] = ind + 0x6C078965 * (Values[ind - 1] ^ (Values[ind - 1] >> 30));
 
-	_A0ADC8 = 1;
+	Index = 1;
 	SeedSet = 1;
 }
 
@@ -24,8 +24,8 @@ unsigned int Random::Integer(int maxVal)
 
 	do 
 	{
-		if (!--_A0ADC8)
-			_46C470();
+		if (!--Index)
+			Generate();
 
 		genval = ((((((((*LastRandomValue >> 11) ^ *LastRandomValue) & 0xFF3A58AD) << 7) ^
 			(*LastRandomValue >> 11) ^ *LastRandomValue & 0xFFFFDF8C) << 15) ^
@@ -42,21 +42,21 @@ unsigned int Random::Integer(int maxVal)
 
 float Random::Float()
 {
-	if (!--_A0ADC8)
-		_46C470();
+	if (!--Index)
+		Generate();
 
 	return ((((((((*LastRandomValue >> 11) ^ *LastRandomValue) & 0xFF3A58AD) << 7) ^ (*LastRandomValue >> 11) ^ *LastRandomValue & 0xFFFFDF8C) << 15) ^
 		((((*LastRandomValue >> 11) ^ *LastRandomValue) & 0xFF3A58AD) << 7) ^ (*LastRandomValue >> 11) ^ *LastRandomValue ^ ((((((((*LastRandomValue >> 11) ^ *LastRandomValue) & 0xFF3A58AD) << 7) ^
 			(*LastRandomValue >> 11) ^ *LastRandomValue & 0xFFFFDF8C) << 15) ^ ((((*LastRandomValue >> 11) ^ *LastRandomValue) & 0xFF3A58AD) << 7) ^ (*LastRandomValue >> 11) ^ *LastRandomValue) >> 18)) * 2.32f);
 }
 
-void Random::_46C470()
+void Random::Generate()
 {
 	if (!SeedSet)
 		Init(RANDOM_DEFAULT_SEED);
 
 	int* values = Values;
-	_A0ADC8 = 624;
+	Index = 624;
 	LastRandomValue = Values;
 
 	for (unsigned int i = 227; i != NULL; i--)

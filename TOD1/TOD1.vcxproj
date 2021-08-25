@@ -121,10 +121,13 @@
       <ModuleDefinitionFile>dinput_h.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)updateHookFile.bat" "$(SolutionDir)$(Configuration)\" "$(TargetFileName)" "$(TargetName).pdb"</Command>
+      <Command>copy "$(TargetPath)" "C:\Program Files\Eidos\Total Overdose\$(TargetFileName)"
+copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files\Eidos\Total Overdose\$(TargetName).pdb"
+copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(TargetName).map"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copying dinput8 (dll and pdb) into game dir.</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug EXE|Win32'">
@@ -153,10 +156,13 @@
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)updateHookFile.bat" "$(SolutionDir)$(Configuration)\" "$(TargetFileName)" "$(TargetName).pdb"</Command>
+      <Command>copy "$(TargetPath)" "C:\Program Files\Eidos\Total Overdose\$(TargetFileName)"
+copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files\Eidos\Total Overdose\$(TargetName).pdb"
+copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(TargetName).map"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copying TOD1 (exe and pdb) into game dir.</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|Win32'">
@@ -186,8 +192,11 @@
       <ModuleDefinitionFile>dinput_h.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)updateHookFile.bat" "$(SolutionDir)$(Configuration)\" "$(TargetFileName)" "$(TargetName).pdb"</Command>
-      <Message>Copying dinput8 (dll and pdb) into game dir.</Message>
+      <Command>copy "$(TargetPath)" "C:\Program Files\Eidos\Total Overdose\$(TargetFileName)"
+copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files\Eidos\Total Overdose\$(TargetName).pdb"
+copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(TargetName).map"</Command>
+      <Message>
+      </Message>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -232,8 +241,11 @@
       <ModuleDefinitionFile>dinput_h.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)updateHookFile.bat" "$(SolutionDir)$(Configuration)\" "$(TargetFileName)" "$(TargetName).pdb"</Command>
-      <Message>Copying dinput8 (dll and pdb) into game dir.</Message>
+      <Command>copy "$(TargetPath)" "C:\Program Files\Eidos\Total Overdose\$(TargetFileName)"
+copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files\Eidos\Total Overdose\$(TargetName).pdb"
+copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(TargetName).map"</Command>
+      <Message>
+      </Message>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>
