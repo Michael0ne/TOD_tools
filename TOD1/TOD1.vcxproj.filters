@@ -161,9 +161,6 @@
     <ClInclude Include="LogDump.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="ThirdParty\bink\radbase.h">
-      <Filter>Header files\ThirdParty\Bink</Filter>
-    </ClInclude>
     <ClInclude Include="ThirdParty\libpng-1.0.5\png.h">
       <Filter>Header files\ThirdParty\libpng</Filter>
     </ClInclude>
