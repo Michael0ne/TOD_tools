@@ -46,7 +46,6 @@ When compiling using 'Release EXE' or 'Debug EXE' you get 'TOD1.exe' file that's
 * libvorbis 1.1.0 (included).
 * libogg 1.1.2 (included).
 * libpng 1.0.5 (included).
-* bink (headers included).
 
 Included libraries can be found under 'TOD_tools\ThirdParty'.
 

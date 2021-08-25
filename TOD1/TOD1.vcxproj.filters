@@ -54,9 +54,6 @@
     <Filter Include="Header files\ThirdParty">
       <UniqueIdentifier>{504d8b40-d93a-4147-8881-1b5a84a26ac8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header files\ThirdParty\Bink">
-      <UniqueIdentifier>{fe960532-7bcd-4fa9-9b9e-981e29e2d6e9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header files\ThirdParty\libpng">
       <UniqueIdentifier>{acf199cd-d85f-4fc0-b677-d22097c2706d}</UniqueIdentifier>
     </Filter>
@@ -163,9 +160,6 @@
     </ClInclude>
     <ClInclude Include="LogDump.h">
       <Filter>Header files\KapowSystems\System</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\bink\bink.h">
-      <Filter>Header files\ThirdParty\Bink</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\bink\radbase.h">
       <Filter>Header files\ThirdParty\Bink</Filter>

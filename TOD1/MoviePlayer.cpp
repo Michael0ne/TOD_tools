@@ -7,7 +7,7 @@ EntityType* tMoviePlayer;
 String MoviePlayer::MovieName;
 MoviePlayer* MoviePlayer::Instance;
 bool MoviePlayer::MovieOpen = false;
-BINK* MoviePlayer::BinkHandle = nullptr;
+void* MoviePlayer::BinkHandle = nullptr;
 int MoviePlayer::StopPressedCommand = -1;
 int MoviePlayer::PlayPressedCommand = -1;
 
@@ -177,6 +177,7 @@ MoviePlayer::FrameInfo::FrameInfo()
 	m_MovieFile = nullptr;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 MoviePlayer::FrameInfo::~FrameInfo()
 {
 	MESSAGE_CLASS_DESTROYED(FrameInfo);
@@ -185,7 +186,6 @@ MoviePlayer::FrameInfo::~FrameInfo()
 
 	if (BinkHandle)
 	{
-		BinkClose(BinkHandle);
 		BinkHandle = nullptr;
 	}
 }

@@ -2,7 +2,6 @@
 #include "Node.h"
 #include "FrameBuffer.h"
 #include "Texture.h"
-#include "bink/bink.h"
 
 class MoviePlayer : public Node
 {
@@ -76,7 +75,7 @@ public:
     static bool             MovieOpen;  //  @A35ED4
 
 private:
-    static BINK            *BinkHandle; //  @A35ED8
+    static void            *BinkHandle; //  @A35ED8
     static int              StopPressedCommand;    //  @A11C30
     static int              PlayPressedCommand; //  @A11C34
 public:
