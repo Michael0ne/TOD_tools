@@ -411,8 +411,6 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="SurroundGeometry.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="TextSlot.h" />
-    <ClInclude Include="ThirdParty\bink\bink.h" />
-    <ClInclude Include="ThirdParty\bink\radbase.h" />
     <ClInclude Include="ThirdParty\libogg-1.1.2\include\ogg.h" />
     <ClInclude Include="ThirdParty\libogg-1.1.2\include\os_types.h" />
     <ClInclude Include="ThirdParty\libpng-1.0.5\png.h" />
