@@ -4,6 +4,8 @@
 
 class AnimSlot : public Node
 {
+    friend class AnimLayer;
+
     enum Loopmode
     {
         LOOP = 0,
