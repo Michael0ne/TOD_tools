@@ -68,6 +68,7 @@ void AnimLayer::GetLoopMode(int& outLoopMode) const
     outLoopMode = m_TargetAnim == 1 ? m_TargetAnim_Entity->m_LoopMode_1 : m_TargetAnim_Entity_2->m_LoopMode_1;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void AnimLayer::Register()
 {
     tAnimLayer = new EntityType("AnimLayer");

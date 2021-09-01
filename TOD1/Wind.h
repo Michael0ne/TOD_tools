@@ -4,16 +4,16 @@
 class Wind : public Node
 {
 protected:
-    Vector4f    m_Pos[20];
-    float       field_190;
-    float       field_194;
-    float       field_198;
-    float       field_19C;
-    float       m_WindSpeed;
-    float       m_WindFlux;
-    float       m_WindFrenzy;
-    float       m_FrenzyAngle;
-    float       m_VariationSpeed;
+    Vector4f        m_Pos[20];
+    float           field_190;
+    float           field_194;
+    float           field_198;
+    float           field_19C;
+    float           m_WindSpeed;
+    float           m_WindFlux;
+    float           m_WindFrenzy;
+    float           m_FrenzyAngle;
+    float           m_VariationSpeed;
 
 public:
     Wind();	//	@8D2200
@@ -22,13 +22,12 @@ public:
 
     static Wind*    Instance;   //  @A3DFF0
     static int      LastUpdateTime; //  @A0ADC4
+    static int      CreationTime;   //  @A0ADC0
 
-    static void		Register();	//	@8D2370
+    static void     Register();	//	@8D2370
 
 private:
     static Wind*    Create(AllocatorIndex); //  @8D2970
-    
-    static int      CreationTime;   //  @A0ADC0
 
     const float     GetWindSpeed() const;   //  @833340
     void            SetWindSpeed(const float speed);    //  @659DE0
