@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "SceneSaveLoad.h"
 #include "LogDump.h"
-#include "Performance.h"
+#include "Timer.h"
 #include "Progress.h"
 #include "ScriptDatabase.h"
 #include "SavePoint.h"
@@ -78,7 +78,7 @@ Scene::Scene() : Folder_()
 	GameTimeMs = NULL;
 	m_RewindResumeTimeMs = NULL;
 	m_InitMode = NULL;
-	CreationTime = Performance::GetMilliseconds();
+	CreationTime = Timer::GetMilliseconds();
 	m_TimeMultiplier = 1.f;
 	field_118 = 1.f;
 	m_RewindTimeMultiplier = 1.f;
@@ -161,7 +161,7 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 	//g_Blocks->_875EB0();
 	//g_Blocks->_877AE0();
 
-	LogDump::LogA("Timings: FixupAssetRefsInLoadedAssetBlocks: %f\n", (__rdtsc() - starttick) / Performance::ClockGetCycles());
+	LogDump::LogA("Timings: FixupAssetRefsInLoadedAssetBlocks: %f\n", (__rdtsc() - starttick) / Timer::ClockGetCycles());
 
 	if (assetinfo->m_ResourceDataBufferPtr)
 		LogDump::LogA("read asset block file: %s\n", assetname);
@@ -321,16 +321,16 @@ void Scene::Start()
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::Load(const char* sceneName)
 {
-	m_StartTimeMs = Performance::GetMilliseconds();
+	m_StartTimeMs = Timer::GetMilliseconds();
 	int alloctotalbefore;
 
 	FreeRewindBuffer();
 	ReleaseQuadTreeAndRenderlist();
 
-	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Initialization", Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Initialization", Timer::GetMilliseconds() - m_StartTimeMs, Timer::GetMilliseconds() - m_StartTimeMs);
 
 	g_Progress->Reset();
-	g_Progress->AddLoadbarPhase("load scene", 25 * Performance::ClockGetCycles(), true);
+	g_Progress->AddLoadbarPhase("load scene", 25 * Timer::ClockGetCycles(), true);
 	g_Progress->_40E7F0(1, __rdtsc());
 
 	if (g_AssetManager->m_LoadBlocks)
@@ -383,9 +383,9 @@ void Scene::Load(const char* sceneName)
 		LogDump::LogA("asset block took %0.1f Kb\n", (mainAssetAllocMem - MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations()) * 0.0009765625f);
 	}
 
-	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load main asset block", Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load main asset block", Timer::GetMilliseconds() - m_StartTimeMs, Timer::GetMilliseconds() - m_StartTimeMs);
 
-	m_StartTimeMs = Performance::GetMilliseconds();
+	m_StartTimeMs = Timer::GetMilliseconds();
 
 	g_AssetManager->m_ActiveBlockId = (8 * m_BlockId) >> 3;
 	_A3D858 = 1;
@@ -397,7 +397,7 @@ void Scene::Load(const char* sceneName)
 	g_AssetManager->_878030();
 	SetFragment(sceneName);
 	g_AssetManager->_877AE0();
-	LogDump::LogA("Timings: SetFragment: %f\n", (__rdtsc() - fragmentloadstarttime) / Performance::ClockGetCycles());
+	LogDump::LogA("Timings: SetFragment: %f\n", (__rdtsc() - fragmentloadstarttime) / Timer::ClockGetCycles());
 	const int alloctotal = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
 	LogDump::LogA("Scene graph took %0.1f KB\n", (alloctotal - alloctotalbefore) * 0.0009765625f);
 	LogDump::LogA("Asset block after: %0.1f KB\n", alloctotal * 0.0009765625f);
@@ -431,14 +431,14 @@ void Scene::Load(const char* sceneName)
 	g_AssetManager->m_ActiveBlockId = -1;
 	_896BA0();
 	AllocateRewindBuffer();
-	DWORD currtimems = Performance::GetMilliseconds();
+	DWORD currtimems = Timer::GetMilliseconds();
 	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Scene load and apply", currtimems - m_StartTimeMs, currtimems - m_StartTimeMs);
 	m_StartTimeMs = currtimems;
 	LoadSceneSession();
-	currtimems = Performance::GetMilliseconds();
+	currtimems = Timer::GetMilliseconds();
 	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load current asset blocks", currtimems - m_StartTimeMs, currtimems - m_StartTimeMs);
 	m_StartTimeMs = currtimems;
-	currtimems = Performance::GetMilliseconds();
+	currtimems = Timer::GetMilliseconds();
 	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Compile 'test' folder scripts", currtimems - m_StartTimeMs, currtimems - m_StartTimeMs);
 	m_StartTimeMs = currtimems;
 	GlobalScript::InstantiateGlobalScripts();
@@ -451,8 +451,8 @@ void Scene::Load(const char* sceneName)
 
 void Scene::FinishCreation(const char* logTitle)
 {
-	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", logTitle, Performance::GetMilliseconds() - m_StartTimeMs, Performance::GetMilliseconds() - m_StartTimeMs);
-	m_StartTimeMs = Performance::GetMilliseconds();
+	LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", logTitle, Timer::GetMilliseconds() - m_StartTimeMs, Timer::GetMilliseconds() - m_StartTimeMs);
+	m_StartTimeMs = Timer::GetMilliseconds();
 }
 
 void Scene::StoreGameCamera()

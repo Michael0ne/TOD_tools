@@ -27,7 +27,7 @@ void Progress::UpdateProgress(float time, bool unk)
 	//	TODO: figure out loading bar sprite dimensions and put them into render buffer, then render.
 }
 
-Progress::Progress() : ProgressBase(Performance::ClockGetCycles() / 5)
+Progress::Progress() : ProgressBase(Timer::ClockGetCycles() / 5)
 {
 	MESSAGE_CLASS_CREATED(Progress);
 
@@ -131,7 +131,7 @@ void Progress::Disable()
 	if (!m_Enabled)
 		return;
 
-	LogDump::LogA("PROGRESS DISABLE. Loadtime: %d ms\n", (__rdtsc() - StartTime) / Performance::ClockGetCyclesMilliseconds());
+	LogDump::LogA("PROGRESS DISABLE. Loadtime: %d ms\n", (__rdtsc() - StartTime) / Timer::ClockGetCyclesMilliseconds());
 
 	UpdateProgress(1.0, 1);
 	UpdateProgress(1.0, 1);

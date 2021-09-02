@@ -1,5 +1,5 @@
 #include "LoadScreenInfo.h"
-#include "Performance.h"
+#include "Timer.h"
 #include "LogDump.h"
 #include "AssetManager.h"
 #include "GfxInternal.h"
@@ -50,7 +50,7 @@ void LoadScreenInfo::Enable(Node* topNode)
 	if (m_Enabled)
 		return;
 
-	m_StartTime = Performance::GetMilliseconds();
+	m_StartTime = Timer::GetMilliseconds();
 	LogDump::LogA("Enabling load screen\n");
 
 	Show(topNode);
@@ -61,7 +61,7 @@ void LoadScreenInfo::Enable(Node* topNode)
 #pragma message(TODO_IMPLEMENTATION)
 void LoadScreenInfo::Show(Node* topNode)
 {
-	DWORD timestart = Performance::GetMilliseconds();
+	DWORD timestart = Timer::GetMilliseconds();
 	float f9758 = g_GfxInternal_Dx9->field_9758;
 
 	g_AssetManager->DestroySceneNodesFrameBuffers(true);
@@ -103,7 +103,7 @@ void LoadScreenInfo::Show(Node* topNode)
 	g_AssetManager->DestroyTextureAsset(*m_TextureResource);
 	Asset::Destroy(m_TextureResource);
 
-	LogDump::LogA("LoadScreen::Show (%s) took %ims\n", m_TexturePath.m_Str, Performance::GetMilliseconds() - timestart);
+	LogDump::LogA("LoadScreen::Show (%s) took %ims\n", m_TexturePath.m_Str, Timer::GetMilliseconds() - timestart);
 }
 
 void LoadScreenInfo::Deactivate()
@@ -111,6 +111,6 @@ void LoadScreenInfo::Deactivate()
 	if (!m_Enabled)
 		return;
 
-	LogDump::LogA("Disabling load screen (%0.1f sec)\n", (Performance::GetMilliseconds() - m_StartTime) * 0.001f);
+	LogDump::LogA("Disabling load screen (%0.1f sec)\n", (Timer::GetMilliseconds() - m_StartTime) * 0.001f);
 	m_Enabled = false;
 }

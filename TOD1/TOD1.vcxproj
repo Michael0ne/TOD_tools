@@ -429,7 +429,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="Wind.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Light.h" />
-    <ClInclude Include="Performance.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="StreamedSoundBuffers.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ZipArch.h" />
@@ -594,7 +594,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Light.cpp" />
-    <ClCompile Include="Performance.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="StreamedSoundBuffers.cpp" />
     <ClCompile Include="ZipArch.cpp" />

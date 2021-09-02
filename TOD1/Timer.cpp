@@ -1,16 +1,16 @@
-#include "Performance.h"
+#include "Timer.h"
 
-bool Performance::QueryingPerformance = true;
-bool Performance::MeasuringPerformance = false;
-bool Performance::QueryingPerformanceSeconds = true;
-bool Performance::MeasuringPerformanceSeconds = false;
-LARGE_INTEGER Performance::PerformanceFrequency = LARGE_INTEGER();
-LARGE_INTEGER Performance::PerformancyFrequencySeconds = LARGE_INTEGER();
-INT64 Performance::ClockCycles = NULL;
-INT64 Performance::TimeInitialSeconds = NULL;
-INT64 Performance::ClockCyclesInitial = NULL;
+bool Timer::QueryingPerformance = true;
+bool Timer::MeasuringPerformance = false;
+bool Timer::QueryingPerformanceSeconds = true;
+bool Timer::MeasuringPerformanceSeconds = false;
+LARGE_INTEGER Timer::PerformanceFrequency = LARGE_INTEGER();
+LARGE_INTEGER Timer::PerformancyFrequencySeconds = LARGE_INTEGER();
+INT64 Timer::ClockCycles = NULL;
+INT64 Timer::TimeInitialSeconds = NULL;
+INT64 Timer::ClockCyclesInitial = NULL;
 
-DWORD Performance::GetMilliseconds()
+DWORD Timer::GetMilliseconds()
 {
 	if (QueryingPerformance)
 	{
@@ -33,7 +33,7 @@ DWORD Performance::GetMilliseconds()
 		return timeGetTime();
 }
 
-INT64 Performance::GetSeconds()
+INT64 Timer::GetSeconds()
 {
 	if (QueryingPerformanceSeconds)
 	{
@@ -54,23 +54,23 @@ INT64 Performance::GetSeconds()
 	return freq.QuadPart / PerformancyFrequencySeconds.QuadPart;
 }
 
-INT64 Performance::ClockGetCycles()
+INT64 Timer::ClockGetCycles()
 {
 	return ClockCycles;
 }
 
-INT64 Performance::ClockGetCyclesMilliseconds()
+INT64 Timer::ClockGetCyclesMilliseconds()
 {
 	return ClockCycles / 1000;
 }
 
-void Performance::Init()
+void Timer::Init()
 {
 	TimeInitialSeconds = GetSeconds();
 	ClockCyclesInitial = __rdtsc();
 }
 
-void Performance::Calculate()
+void Timer::Calculate()
 {
 	ClockCycles = (1000000 * (__rdtsc() - ClockCyclesInitial)) / (GetSeconds() - TimeInitialSeconds);
 }

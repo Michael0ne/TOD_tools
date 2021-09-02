@@ -1,7 +1,7 @@
 #include "BuiltinType.h"
 #include "LogDump.h"
 #include "Random.h"
-#include "Performance.h"
+#include "Timer.h"
 #include "KapowEngineClass.h"
 #include "StreamedSoundBuffers.h"
 #include "InputKeyboard.h"
@@ -134,7 +134,7 @@ void BuiltinType::Get_facecoll_MaterialID(int* arg)
 
 void BuiltinType::GetTime(float* arg)
 {
-	*arg = Performance::GetMilliseconds() * 0.001f;
+	*arg = Timer::GetMilliseconds() * 0.001f;
 }
 
 void BuiltinType::Print(int* arg)

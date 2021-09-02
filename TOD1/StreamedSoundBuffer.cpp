@@ -3,7 +3,7 @@
 #include "StreamedSoundBuffers.h"
 #include "StreamedWAV.h"
 #include "BuiltinType.h"
-#include "Performance.h"
+#include "Timer.h"
 
 StreamedSoundBuffer* StreamedSoundBuffer::GlobalStreamedSound;
 
@@ -391,7 +391,7 @@ void StreamedSoundBuffer::ShutdownThread()
 	{
 		LogDump::LogA("Shutting down thread - hTerminateThreadEvent = %i\n", this->m_TerminateThreadEvent);
 		
-		const unsigned int currtime = Performance::GetMilliseconds();
+		const unsigned int currtime = Timer::GetMilliseconds();
 		constexpr unsigned int timeouttime = 5000;
 		constexpr unsigned int sleeptime = 5;
 		DWORD exitcode = NULL;
@@ -399,7 +399,7 @@ void StreamedSoundBuffer::ShutdownThread()
 
 		while (exitcode == STILL_ACTIVE)
 		{
-			if (Performance::GetMilliseconds() - currtime > timeouttime)
+			if (Timer::GetMilliseconds() - currtime > timeouttime)
 				break;
 
 			GetExitCodeThread(m_StreamThread, &exitcode);

@@ -1,5 +1,5 @@
 #include "GfxInternal.h"
-#include "Performance.h"
+#include "Timer.h"
 #include "LogDump.h"
 #include "BuiltinType.h"
 
@@ -51,7 +51,7 @@ GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int u
 
     m_TimeDelta = 0.f;
     m_FramesRendered = 0;
-    m_TimeMilliseconds = Performance::GetMilliseconds();
+    m_TimeMilliseconds = Timer::GetMilliseconds();
     field_34 = 0;
 
 #ifdef OPENGL
@@ -168,8 +168,8 @@ void GfxInternal::Render(Surface* screenshotDumpSurface, const bool shouldRender
     }
 
     _41F950();
-    m_TimeDelta = (float)(Performance::GetMilliseconds() - m_TimeMilliseconds) * 0.001f;
-    m_TimeMilliseconds = Performance::GetMilliseconds();
+    m_TimeDelta = (float)(Timer::GetMilliseconds() - m_TimeMilliseconds) * 0.001f;
+    m_TimeMilliseconds = Timer::GetMilliseconds();
 
     g_GfxInternal_Dx9->ResetStream();
 }

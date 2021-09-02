@@ -6,7 +6,7 @@
 #include "InputMouse.h"
 #include "InputKeyboard.h"
 #include "InputGameController.h"
-#include "Performance.h"
+#include "Timer.h"
 #include "LogDump.h"
 
 Window* g_Window = nullptr;
@@ -649,9 +649,9 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	debug("Log Started!\n");
 #endif
 
-	Performance::Init();
+	Timer::Init();
 	Sleep(10);
-	Performance::Calculate();
+	Timer::Calculate();
 
 	Window::WindowInstanceHandle = hInstance;
 	Window::CmdLine = lpCmdLine;

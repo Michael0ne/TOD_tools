@@ -2,7 +2,7 @@
 #include "Globals.h"
 #include "File.h"
 #include "LogDump.h"
-#include "Performance.h"
+#include "Timer.h"
 #include "Progress.h"
 #include "ScriptDatabase.h"
 #include "GfxInternal.h"
@@ -499,7 +499,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
     AssetHeaderStruct_t assetHeaderStruct;
 
     LogDump::LogA("Loading resource block with ID=%i...\n", resblockid);
-    unsigned int timeStart = Performance::GetMilliseconds();
+    unsigned int timeStart = Timer::GetMilliseconds();
 
     if (resblockid == 1)
     {
@@ -592,7 +592,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
         auto it = ResList.begin();
         for (unsigned int i = totalResources, j = 0; i; i--, j++)
         {
-            Performance::GetMilliseconds();
+            Timer::GetMilliseconds();
             g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
             const unsigned int assetSize = resDataSizeTable[j];
@@ -631,7 +631,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
             m_AssetsList[i] = ResList[i];
     }
 
-    LogDump::LogA("Done. Loading %d resource took %.2f secs.\n", totalResources, (Performance::GetMilliseconds() - timeStart) * 0.001f);
+    LogDump::LogA("Done. Loading %d resource took %.2f secs.\n", totalResources, (Timer::GetMilliseconds() - timeStart) * 0.001f);
     MemoryManager::ReleaseMemory(resourceDataBuffer, false);
 
     return resourcesInfoBuffer;

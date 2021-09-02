@@ -1,7 +1,7 @@
 #include "StreamedSoundBuffers.h"
 #include "DieselPowerSound.h"
 #include "Window.h"
-#include "Performance.h"
+#include "Timer.h"
 #include "LogDump.h"
 #include "Scene.h"
 #include "StreamedWAV.h"
@@ -516,7 +516,7 @@ int StreamedSoundBuffers::GetPlayingSoundsNumber()
 
 void StreamedSoundBuffers::MeasureWaitForSoftPause()
 {
-	int startTime = Performance::GetMilliseconds();
+	int startTime = Timer::GetMilliseconds();
 
 	while (m_GlobalPauseCalled)
 	{
@@ -524,7 +524,7 @@ void StreamedSoundBuffers::MeasureWaitForSoftPause()
 		Sleep(10);
 	}
 
-	int interval = Performance::GetMilliseconds() - startTime;
+	int interval = Timer::GetMilliseconds() - startTime;
 
 	if (interval > 10)
 		LogDump::LogA("WaitForSoftPause slept %dms\n", interval);

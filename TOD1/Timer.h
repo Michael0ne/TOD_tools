@@ -1,8 +1,7 @@
 #pragma once
-
 #include "stdafx.h"
 
-class Performance
+class Timer
 {
 private:
 	static bool				QueryingPerformance;	//	@A08E90
@@ -23,4 +22,3 @@ public:
 	static void				Init();	//	@4306D0
 	static void				Calculate();	//	@4306F0
 };
-

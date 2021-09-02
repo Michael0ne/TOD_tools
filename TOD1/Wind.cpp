@@ -1,6 +1,6 @@
 #include "Wind.h"
 #include "NumberType.h"
-#include "Performance.h"
+#include "Timer.h"
 
 Wind* Wind::Instance;
 EntityType* tWind;
@@ -57,7 +57,7 @@ void Wind::Register()
 
     tWind->_86E9B0();
 
-    CreationTime = Performance::GetMilliseconds();
+    CreationTime = Timer::GetMilliseconds();
     LastUpdateTime = CreationTime;
 }
 

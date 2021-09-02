@@ -116,7 +116,7 @@
     <ClInclude Include="File.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="Performance.h">
+    <ClInclude Include="Timer.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
@@ -610,7 +610,7 @@
     <ClCompile Include="File.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="Performance.cpp">
+    <ClCompile Include="Timer.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
     <ClCompile Include="GfxInternal_Dx9.cpp">

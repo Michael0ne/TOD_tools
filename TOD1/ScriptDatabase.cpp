@@ -1,6 +1,6 @@
 #include "ScriptDatabase.h"
 #include "LogDump.h"
-#include "Performance.h"
+#include "Timer.h"
 #include "Globals.h"
 #include "EntityType.h"
 #include "AssetManager.h"
@@ -217,7 +217,7 @@ void ReadDatabaseFile(const char* path)
     if (!dbfile.IsFileOpen())
         return;
 
-    DWORD timeStart = Performance::GetMilliseconds();
+    DWORD timeStart = Timer::GetMilliseconds();
     unsigned int	totalProperties = NULL;
     unsigned int	totalCommands = NULL;
 
@@ -249,7 +249,7 @@ void ReadDatabaseFile(const char* path)
         RegisterGlobalCommand(commandName, false);
     }
 
-    LogDump::LogA("Done loading script database (%dms)\n", Performance::GetMilliseconds() - timeStart);
+    LogDump::LogA("Done loading script database (%dms)\n", Timer::GetMilliseconds() - timeStart);
 #ifdef INCLUDE_FIXES
     LogDump::LogA("Read %d properties and %d commands\n", totalProperties, totalCommands);
 #endif
