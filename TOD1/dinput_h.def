@@ -1,2 +1,2 @@
 EXPORTS
-	DirectInput8Create=_DirectInput8Create
+ DirectInput8Create=_DirectInput8Create

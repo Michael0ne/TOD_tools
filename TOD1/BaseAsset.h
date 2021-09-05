@@ -84,7 +84,7 @@ public:
 
 public:
     char               *m_ResourcePath;
-    int                 m_GlobalResourceId;	//	NOTE: this is an index for Blocks global 'ResourceTypeList'.
+    int                 m_GlobalResourceId; // NOTE: this is an index for Blocks global 'ResourceTypeList'.
     int                 field_C;
     UINT64              m_ResourceTimestamp;
     union
@@ -122,7 +122,7 @@ public:
     }                   m_Flags;
 
 public:
-    virtual             ~Asset();	//	@8516C0
+    virtual             ~Asset(); // @8516C0
     virtual AssetInstance* GetInstancePtr() const = 0;
     virtual bool        stub3(unsigned char a1, int, int);    //  @851400
     virtual bool        stub4() const; //  @851E80
@@ -135,7 +135,7 @@ public:
     virtual void        LoadResource(const char* const resPath);
     virtual void        DestroyResource(); //  @851E90
 
-    Asset(bool dontmakeglobal);	//	@851D00
+    Asset(bool dontmakeglobal); // @851D00
 
     void* operator new(size_t size)
     {
@@ -150,21 +150,21 @@ public:
         ptr = nullptr;
     }
 
-    const char*         AddResToOpenListAndReturnName() const;	//	@851720
-    void                _851800(String& outstr, const char* inpath, bool a3, bool a4) const;	//	@851800
-    void                SetReferenceCount(unsigned char count);	//	@8513E0
-    void                EncodeCountryCode(const char* const countrycode);	//	@851480
-    const char* const   GetResourceCountryCode() const;	//	@851CC0
+    const char*         AddResToOpenListAndReturnName() const; // @851720
+    void                _851800(String& outstr, const char* inpath, bool a3, bool a4) const; // @851800
+    void                SetReferenceCount(unsigned char count); // @8513E0
+    void                EncodeCountryCode(const char* const countrycode); // @851480
+    const char* const   GetResourceCountryCode() const; // @851CC0
     void                SetResourcePath(const char* const respath); //  @851DF0
 
     static AllocatorIndex AllocatorIndexByBlockType(unsigned int blocktype);   //  @851FE0
-    static void         Destroy(Asset* res);	//	@851FC0
+    static void         Destroy(Asset* res); // @851FC0
     static Asset*       CreateInstance(size_t classsize);  //  @852100
     static void         AllocateResourceForBlockLoad(const unsigned int size, int** bufaligned, int* buf, const unsigned int blockid);  //  @852070
 
     static const char* const BlockTypeExtension[];  //  @A11B64
-    static std::vector<String> OpenResourcesList;	//	@A10F00
-    static unsigned int TotalResourcesCreated;	//	@A3BE10
+    static std::vector<String> OpenResourcesList; // @A10F00
+    static unsigned int TotalResourcesCreated; // @A3BE10
     static unsigned int TextureAssetAllocatorId;    //  @A3BE18
 };
 

@@ -3,161 +3,161 @@
 
 bool SavePoint::VerifyFileChecksum(SavePoint* savepoint)
 {
-	if (savepoint->m_Status != STATUS_CLOSED)
-	{
-		if (savepoint->m_SaveFile)
-		{
-			--OpenFilesCount;
-			delete savepoint->m_SaveFile;
-		}
+ if (savepoint->m_Status != STATUS_CLOSED)
+ {
+  if (savepoint->m_SaveFile)
+  {
+   --OpenFilesCount;
+   delete savepoint->m_SaveFile;
+  }
 
-		savepoint->m_Status = STATUS_CLOSED;
-	}
+  savepoint->m_Status = STATUS_CLOSED;
+ }
 
-	if (!savepoint->Open(STATUS_SUCCESS) || savepoint->IsFileOpen())
-		return false;
+ if (!savepoint->Open(STATUS_SUCCESS) || savepoint->IsFileOpen())
+  return false;
 
-	unsigned int fileSize = savepoint->GetPosition();	//	NOTE: why not 'GetSize'?
-	if (fileSize > (1024 * 1024))
-	{
-		LogDump::LogA("VerifyFileChecksum failed because size is too large (file '%s' has size %i)\n", savepoint->GetSaveSlotDir(), fileSize);
-		return false;
-	}
+ unsigned int fileSize = savepoint->GetPosition(); // NOTE: why not 'GetSize'?
+ if (fileSize > (1024 * 1024))
+ {
+  LogDump::LogA("VerifyFileChecksum failed because size is too large (file '%s' has size %i)\n", savepoint->GetSaveSlotDir(), fileSize);
+  return false;
+ }
 
-	if (!savepoint->RewindFileToBeginning())
-		return false;
+ if (!savepoint->RewindFileToBeginning())
+  return false;
 
-	unsigned int checksum = savepoint->CalculateChecksum(savepoint, fileSize);
-	savepoint->Seek(fileSize);
+ unsigned int checksum = savepoint->CalculateChecksum(savepoint, fileSize);
+ savepoint->Seek(fileSize);
 
-	unsigned int saveChecksum = NULL;
-	if (savepoint->Read(&saveChecksum, sizeof(saveChecksum)) != sizeof(saveChecksum))
-		return false;
+ unsigned int saveChecksum = NULL;
+ if (savepoint->Read(&saveChecksum, sizeof(saveChecksum)) != sizeof(saveChecksum))
+  return false;
 
-	if (saveChecksum != checksum)
-	{
-		LogDump::LogA("Checksum mismatch: %x : %x\n", saveChecksum, checksum);
-		return 0;
-	}
+ if (saveChecksum != checksum)
+ {
+  LogDump::LogA("Checksum mismatch: %x : %x\n", saveChecksum, checksum);
+  return 0;
+ }
 
-	return savepoint->CloseFile() != false;
+ return savepoint->CloseFile() != false;
 }
 
 int SavePoint::OpenFilesCount;
 
 SavePoint::SavePoint(MemoryCard* dirInfo, const char* saveDir, const char* saveSlotId, unsigned int bufferSize)
 {
-	MESSAGE_CLASS_CREATED(SavePoint);
+ MESSAGE_CLASS_CREATED(SavePoint);
 
-	m_SaveDir = saveDir;
-	m_SlotIdStr = saveSlotId;
-	m_SlotDir;
-	m_SaveMemoryCard = dirInfo;
-	m_Status = STATUS_SUCCESS;
-	m_SaveFile = nullptr;
+ m_SaveDir = saveDir;
+ m_SlotIdStr = saveSlotId;
+ m_SlotDir;
+ m_SaveMemoryCard = dirInfo;
+ m_Status = STATUS_SUCCESS;
+ m_SaveFile = nullptr;
 }
 
 time_t SavePoint::GetTime() const
 {
-	String tempStr;
+ String tempStr;
 
-	if (m_SaveMemoryCard->IsFormatted())
-		return File::GetFileTimestamp(m_SaveMemoryCard->GetFullSaveFolderPath(tempStr, m_SaveDir.m_Str, m_SlotDir.m_Str).m_Str);
-	else
-		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
+ if (m_SaveMemoryCard->IsFormatted())
+  return File::GetFileTimestamp(m_SaveMemoryCard->GetFullSaveFolderPath(tempStr, m_SaveDir.m_Str, m_SlotDir.m_Str).m_Str);
+ else
+  LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
 
-	return NULL;
+ return NULL;
 }
 
 bool SavePoint::Open(SavePointStatus mode)
 {
-	if (!m_SaveMemoryCard->IsFormatted())
-	{
-		LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
-		return false;
-	}
+ if (!m_SaveMemoryCard->IsFormatted())
+ {
+  LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
+  return false;
+ }
 
-	if (OpenFilesCount >= SAVEPOINT_MAX_OPEN_FILES)
-	{
-		LogDump::LogA("Warning: 3 Files already open. Open command ignored.\n");
-		return false;
-	}
+ if (OpenFilesCount >= SAVEPOINT_MAX_OPEN_FILES)
+ {
+  LogDump::LogA("Warning: 3 Files already open. Open command ignored.\n");
+  return false;
+ }
 
-	m_Status = mode;
-	String saveSlotPath;
-	m_SaveMemoryCard->GetFullSaveFolderPath(saveSlotPath, m_SaveDir.m_Str, m_SlotIdStr.m_Str);
-	m_SaveFile = new File(saveSlotPath.m_Str, mode ? (mode == STATUS_1 ? 2 | 96 : (mode == STATUS_2 ? 18 | 96 : 1 | 96)) : 1 | 96, true);
+ m_Status = mode;
+ String saveSlotPath;
+ m_SaveMemoryCard->GetFullSaveFolderPath(saveSlotPath, m_SaveDir.m_Str, m_SlotIdStr.m_Str);
+ m_SaveFile = new File(saveSlotPath.m_Str, mode ? (mode == STATUS_1 ? 2 | 96 : (mode == STATUS_2 ? 18 | 96 : 1 | 96)) : 1 | 96, true);
 
-	if (m_SaveFile && m_SaveFile->IsFileOpen())
-		++OpenFilesCount;
-	else
-		m_Status = STATUS_CLOSED;
+ if (m_SaveFile && m_SaveFile->IsFileOpen())
+  ++OpenFilesCount;
+ else
+  m_Status = STATUS_CLOSED;
 
-	return m_Status != STATUS_CLOSED;
+ return m_Status != STATUS_CLOSED;
 }
 
 int SavePoint::CalculateChecksum(SavePoint* savepoint, int pos)
 {
-	int checksum;
-	Utils::crc32_init_default(&checksum);
+ int checksum;
+ Utils::crc32_init_default(&checksum);
 
-	if (pos <= NULL)
-	{
-		Utils::crc32_gen(&checksum);
-		return checksum;
-	}
+ if (pos <= NULL)
+ {
+  Utils::crc32_gen(&checksum);
+  return checksum;
+ }
 
-	char buffer[1024] = {};
-	while (true)
-	{
-		int readsize = savepoint->Read(buffer, sizeof(buffer));
-		if (readsize <= NULL)
-		{
-			Utils::crc32_gen(&checksum);
-			return -1;
-		}
+ char buffer[1024] = {};
+ while (true)
+ {
+  int readsize = savepoint->Read(buffer, sizeof(buffer));
+  if (readsize <= NULL)
+  {
+   Utils::crc32_gen(&checksum);
+   return -1;
+  }
 
-		if (readsize > pos)
-			readsize = pos;
+  if (readsize > pos)
+   readsize = pos;
 
-		pos -= readsize;
+  pos -= readsize;
 
-		if (!readsize)
-			break;
+  if (!readsize)
+   break;
 
-		Utils::generic_crc32(&checksum, buffer, readsize);
+  Utils::generic_crc32(&checksum, buffer, readsize);
 
-		if (pos <= NULL)
-		{
-			Utils::crc32_gen(&checksum);
-			return checksum;
-		}
-	}
+  if (pos <= NULL)
+  {
+   Utils::crc32_gen(&checksum);
+   return checksum;
+  }
+ }
 
-	return NULL;
+ return NULL;
 }
 
 bool SavePoint::CloseFile()
 {
-	if (m_SaveFile)
-	{
-		--OpenFilesCount;
-		delete m_SaveFile;
-	}
+ if (m_SaveFile)
+ {
+  --OpenFilesCount;
+  delete m_SaveFile;
+ }
 
-	m_Status = STATUS_CLOSED;
-	return true;
+ m_Status = STATUS_CLOSED;
+ return true;
 }
 
 SavePoint::~SavePoint()
 {
-	MESSAGE_CLASS_DESTROYED(SavePoint);
+ MESSAGE_CLASS_DESTROYED(SavePoint);
 
-	if (m_SaveFile) {
-		--OpenFilesCount;
-		delete m_SaveFile;
-		m_SaveFile = nullptr;
-	}
+ if (m_SaveFile) {
+  --OpenFilesCount;
+  delete m_SaveFile;
+  m_SaveFile = nullptr;
+ }
 
-	m_Status = STATUS_CLOSED;
+ m_Status = STATUS_CLOSED;
 }

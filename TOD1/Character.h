@@ -6,7 +6,7 @@ class Character : public Node
 {
     struct AttachedNode
     {
-        unsigned int	field_0;
+        unsigned int field_0;
         Node           *m_Node;
         void           *field_8;
     };
@@ -67,7 +67,7 @@ protected:
     int field_1B0;
     int field_1B4;
     float m_Opacity;
-    int	m_List_1[4];
+    int m_List_1[4];
     int m_TextureSets;
     ModelAsset* m_ModelRes;
     int field_1D4;
@@ -82,7 +82,7 @@ protected:
     int field_24C;
     int field_250;
 public:
-    Character();	//	@914320
+    Character(); // @914320
     virtual ~Character();   //  @910DA0
 
     void* operator new (size_t size)
@@ -96,7 +96,7 @@ public:
         ptr = nullptr;
     }
 
-    void		UpdateAnimation();	//	@90B3F0
+    void  UpdateAnimation(); // @90B3F0
 
 private:
     void        InitPhysicsSystems();   //  @908490

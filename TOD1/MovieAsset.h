@@ -19,11 +19,11 @@ public:
     virtual AssetInstance*  GetInstancePtr() const override;    //  @85BC10
     virtual void            DestroyResource() override; //  @85BC30
 
-    static void             CreateInstance();	//	@85BC70
-    static MovieAsset*      Create();	//	@85BC40
+    static void             CreateInstance(); // @85BC70
+    static MovieAsset*      Create(); // @85BC40
 
 private:
-    static AssetInstance*   Instance;	//	@A3BE4C
+    static AssetInstance*   Instance; // @A3BE4C
 };
 
 ASSERT_CLASS_SIZE(MovieAsset, 40);

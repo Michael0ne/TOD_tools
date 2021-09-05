@@ -8,7 +8,7 @@
 #define KAPOW_CLASS_SIZE 156
 
 #define KAPOW_GAMENAME "Total Overdose"
-#define CONFIG_SAVEDIR	"/Total Overdose/"
+#define CONFIG_SAVEDIR "/Total Overdose/"
 #define CONFIG_CONFIGFILE "/configpc.txt"
 #define CONFIG_PROFILEFILE "/profile.txt"
 #define CONFIG_SCRIPTS_PATH_STABLE "/data/scripts/stable/"
@@ -23,28 +23,28 @@ struct ConfigVariables
 {
 protected:
     mutable std::map<String, String>m_KeyValueMap;
-    int								field_C;
-    std::map<unsigned int, String>	m_Keys;
-    int								field_1C;
-    std::map<unsigned int, String>	m_UnrecognizedKeys;
-    int								field_2C;
-    std::map<unsigned int, bool>	m_StringVariables;	//	NOTE: if variable at index is a string then it's set to true.
-    int								field_3C;
-    std::map<unsigned int, String>	field_40;
-    int								field_4C;
-    std::map<int, int>				field_50;
-    int								field_5C;
+    int        field_C;
+    std::map<unsigned int, String> m_Keys;
+    int        field_1C;
+    std::map<unsigned int, String> m_UnrecognizedKeys;
+    int        field_2C;
+    std::map<unsigned int, bool> m_StringVariables; // NOTE: if variable at index is a string then it's set to true.
+    int        field_3C;
+    std::map<unsigned int, String> field_40;
+    int        field_4C;
+    std::map<int, int>    field_50;
+    int        field_5C;
 
-    int		m_TotalVariables;
-    char	field_64;
+    int  m_TotalVariables;
+    char field_64;
 
-    void	LoadVariablesFile(const char* file, bool configvariables);	//	@412110
-    void	ParseVariablesFile(File* file, bool configvariables);	//	@411A30
+    void LoadVariablesFile(const char* file, bool configvariables); // @412110
+    void ParseVariablesFile(File* file, bool configvariables); // @411A30
 
 public:
-    ConfigVariables(int);	//	@410680
-    ConfigVariables(const char* file, bool configvariables);	//	@4124D0
-    ~ConfigVariables();	//	@4107B0
+    ConfigVariables(int); // @410680
+    ConfigVariables(const char* file, bool configvariables); // @4124D0
+    ~ConfigVariables(); // @4107B0
 
     void* operator new(size_t size)
     {
@@ -57,20 +57,20 @@ public:
         ptr = nullptr;
     }
 
-    bool IsVariableSet(const char* const variableName) const;	//	@410080
+    bool IsVariableSet(const char* const variableName) const; // @410080
 
-    const bool GetParamValueBool(const char* const variableName) const;	//	@410900
-    const int GetParamValueInt(const char* const variableName) const;	//	@410A30
-    const float GetParamValueFloat(const char* const variableName) const;	//	@410AC0
-    Vector2<int>& GetParamValueVector2i(Vector2<int>& outvec, const char* const variableName, const char delimiter) const;	//	@410B50
-    Vector2<unsigned int>& GetParamValueVector2i(Vector2<unsigned int>& outvec, const char* const variableName, const char delimiter) const;	//	@410B50
-    Vector2<float>& GetParamValueVector2f(Vector2<float>& outvec, const char* const variableName, const char delimiter) const;	//	@410BE0
-    Vector3<float>& GetParamValueVector3(Vector3<float>& outvec, const char* const variableName, const char delimiter) const;	//	@410C70
-    Vector4f& GetParamValueVector4(Vector4f& outvec, const char* const variableName, const char delimiter) const;	//	@410D90
-    String& GetParamValueString(String& outstr, const char* const variableName) const;	//	@410E30
+    const bool GetParamValueBool(const char* const variableName) const; // @410900
+    const int GetParamValueInt(const char* const variableName) const; // @410A30
+    const float GetParamValueFloat(const char* const variableName) const; // @410AC0
+    Vector2<int>& GetParamValueVector2i(Vector2<int>& outvec, const char* const variableName, const char delimiter) const; // @410B50
+    Vector2<unsigned int>& GetParamValueVector2i(Vector2<unsigned int>& outvec, const char* const variableName, const char delimiter) const; // @410B50
+    Vector2<float>& GetParamValueVector2f(Vector2<float>& outvec, const char* const variableName, const char delimiter) const; // @410BE0
+    Vector3<float>& GetParamValueVector3(Vector3<float>& outvec, const char* const variableName, const char delimiter) const; // @410C70
+    Vector4f& GetParamValueVector4(Vector4f& outvec, const char* const variableName, const char delimiter) const; // @410D90
+    String& GetParamValueString(String& outstr, const char* const variableName) const; // @410E30
 
-    void SetParamValue(const char* const variableName, const char* const value);	//	@4114E0
-    void SetParamValueBool(const char* const variableName, const bool value);	//	@4116D0
+    void SetParamValue(const char* const variableName, const char* const value); // @4114E0
+    void SetParamValueBool(const char* const variableName, const bool value); // @4116D0
 };
 
 ASSERT_CLASS_SIZE(ConfigVariables, 104);
@@ -78,7 +78,7 @@ ASSERT_CLASS_SIZE(ConfigVariables, 104);
 struct ConfigCallback
 {
 public:
-    virtual void		UninitialiseGameCallback(int);	//	NOTE: not actually in EXE.
+    virtual void  UninitialiseGameCallback(int); // NOTE: not actually in EXE.
 };
 
 //  NOTE: actual path to header file "/Main/KapowEngine.h".
@@ -86,34 +86,34 @@ class KapowEngineClass
 {
     friend class BuiltinType;
 protected:
-    bool				m_Initialized;
-    String				m_GameName;
-    String				m_ConfigFilePath;
+    bool    m_Initialized;
+    String    m_GameName;
+    String    m_ConfigFilePath;
     ConfigVariables* m_ConfigurationVariables;
     ConfigVariables* m_SessionVariables;
-    String				m_String_1;
-    String				m_String_2;
-    int					field_4C;
-    bool				m_ShouldStartGame;
+    String    m_String_1;
+    String    m_String_2;
+    int     field_4C;
+    bool    m_ShouldStartGame;
     ConfigCallback* m_UninitialiseCallback;
-    String				m_SceneName;
-    Vector4f			m_Background;	//	TODO: better name?
+    String    m_SceneName;
+    Vector4f   m_Background; // TODO: better name?
 
-    int					m_PropertiesBuiltinChecksum;
-    int					m_CommandsBuiltinChecksum;
-    int					m_TypesBuiltinChecksum;
+    int     m_PropertiesBuiltinChecksum;
+    int     m_CommandsBuiltinChecksum;
+    int     m_TypesBuiltinChecksum;
 
-    int					m_PropertiesTotal;
-    int					m_CommandsTotal;
-    int					m_TypesTotal;
+    int     m_PropertiesTotal;
+    int     m_CommandsTotal;
+    int     m_TypesTotal;
 
-    int					m_PropertiesLoadedChecksum;
-    int					m_CommandsLoadedChecksum;
-    int					m_TypesLoadedChecksum;
+    int     m_PropertiesLoadedChecksum;
+    int     m_CommandsLoadedChecksum;
+    int     m_TypesLoadedChecksum;
 
 public:
-    KapowEngineClass();	//	@93CB60
-    ~KapowEngineClass();	//	@93CCF0
+    KapowEngineClass(); // @93CB60
+    ~KapowEngineClass(); // @93CCF0
 
     void* operator new(size_t size)
     {
@@ -126,31 +126,31 @@ public:
         ptr = nullptr;
     }
 
-    void				Init(LPSTR cmdline, int, const char* configFileName, signed int iconResId);	//	@93D480
-    void				InitEntitiesDatabase();	//	@93C950
-    void				UninitialiseGame();	//	@93CBC0
-    bool				OpenScene(const char* scene);	//	@93CE00
-    void				CreateUnknownMatricies();	//	@93D360
+    void    Init(LPSTR cmdline, int, const char* configFileName, signed int iconResId); // @93D480
+    void    InitEntitiesDatabase(); // @93C950
+    void    UninitialiseGame(); // @93CBC0
+    bool    OpenScene(const char* scene); // @93CE00
+    void    CreateUnknownMatricies(); // @93D360
     void                ReloadScripts();    //  @93D0D0
 
-    static bool			CheckAssetChecksum(File& file, const unsigned int propertyChecksum, const unsigned int commandChecksum);	//	@93CB00
-    static bool			UpdateGame();	//	@93CEB0
-    static void			_93CDA0(const char* const str);	//	@93CDA0
+    static bool   CheckAssetChecksum(File& file, const unsigned int propertyChecksum, const unsigned int commandChecksum); // @93CB00
+    static bool   UpdateGame(); // @93CEB0
+    static void   _93CDA0(const char* const str); // @93CDA0
 
-    static String		_A1B9F8;	//	@A1B9F8	//	NOTE: unused, max length is 10'000 symbols.
+    static String  _A1B9F8; // @A1B9F8 // NOTE: unused, max length is 10'000 symbols.
 };
 
 ASSERT_CLASS_SIZE(KapowEngineClass, 156);
 
-void					InitialiseGame(LPSTR cmdline);	//	@93F680
+void     InitialiseGame(LPSTR cmdline); // @93F680
 
-static void				EnumMaterialsInCollmat();	//	@87D330
-static void				EnumFaceColMaterials();	//	@87D100
+static void    EnumMaterialsInCollmat(); // @87D330
+static void    EnumFaceColMaterials(); // @87D100
 
-static void				CreateDirectoriesRecursive(char* dir);	//	@4096E0
-static void				GetInternalGameName(String& outStr);	//	@4098D0
+static void    CreateDirectoriesRecursive(char* dir); // @4096E0
+static void    GetInternalGameName(String& outStr); // @4098D0
 
-//	TODO: move this to 'CollMat'.
+// TODO: move this to 'CollMat'.
 enum FaceColl
 {
     FACECOLL_METAL = 1,
@@ -175,13 +175,13 @@ enum FaceColl
     FACECOLL_DEFAULT_NO_DECAL
 };
 
-static bool             OpenCollMatFile(const char* const fileName, String& materialName, int& materialProperties);	//	@87CE50
-static bool             ReadAndParseCollMatMaterial(String& materialName, int& outMaterialProperties);	//	@87CC80
-extern int				GetCollmatMaterialId(const char* materialname);	//	@87CEB0
+static bool             OpenCollMatFile(const char* const fileName, String& materialName, int& materialProperties); // @87CE50
+static bool             ReadAndParseCollMatMaterial(String& materialName, int& outMaterialProperties); // @87CC80
+extern int    GetCollmatMaterialId(const char* materialname); // @87CEB0
 
-extern std::list<String>	FaceCollList;	//	@A3D7EC
-extern File* CollMatFile;	//	@A3D7E8
-extern std::map<String, unsigned int>	CollMatProperties;	//	@A11704
-extern std::map<String, FaceColl>	CollMatMaterialsTypes;	//	@A3D7FC
+extern std::list<String> FaceCollList; // @A3D7EC
+extern File* CollMatFile; // @A3D7E8
+extern std::map<String, unsigned int> CollMatProperties; // @A11704
+extern std::map<String, FaceColl> CollMatMaterialsTypes; // @A3D7FC
 
 extern KapowEngineClass* g_KapowEngine;

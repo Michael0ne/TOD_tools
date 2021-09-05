@@ -96,7 +96,7 @@ public:
     int             field_268;
 
 public:
-    Scene();	//	@896D40
+    Scene(); // @896D40
 
     void* operator new (size_t size)
     {
@@ -109,23 +109,23 @@ public:
         ptr = nullptr;
     }
 
-    void            Start();	//	@89A100
-    void            Load(const char* sceneName);	//	@8980C0
-    void            FinishCreation(const char* logTitle);	//	@8935F0
-    void            StoreGameCamera();	//	@893480
-    void            EnumSceneCamerasAndUpdate();	//	@893870
-    void            UpdateLoadedBlocks(int unk1, Node* unk2);	//	@8986E0
-    void            _896810();	//	@896810
-    void            AllocateRewindBuffer();	//	@894C50
-    void            BuildSceneTree();	//	@896BA0
-    void            FreeRewindBuffer();	//	@896CD0
-    void            ResetRewindBuffer(bool);	//	@894A80
+    void            Start(); // @89A100
+    void            Load(const char* sceneName); // @8980C0
+    void            FinishCreation(const char* logTitle); // @8935F0
+    void            StoreGameCamera(); // @893480
+    void            EnumSceneCamerasAndUpdate(); // @893870
+    void            UpdateLoadedBlocks(int unk1, Node* unk2); // @8986E0
+    void            _896810(); // @896810
+    void            AllocateRewindBuffer(); // @894C50
+    void            BuildSceneTree(); // @896BA0
+    void            FreeRewindBuffer(); // @896CD0
+    void            ResetRewindBuffer(bool); // @894A80
     void            _896BA0();  //  @896BA0
-    void            ReleaseQuadTreeAndRenderlist();	//	@896C30
-    void            LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo);	//	@892E40
-    void            CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, unsigned int savesize);	//	@895B80
-    void            RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, MemoryCards* memcards);	//	@895C00
-    void            LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode);	//	@895CB0
+    void            ReleaseQuadTreeAndRenderlist(); // @896C30
+    void            LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo); // @892E40
+    void            CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, unsigned int savesize); // @895B80
+    void            RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, MemoryCards* memcards); // @895C00
+    void            LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode); // @895CB0
     void            ProfileMemory(const int);   //  @893460
     void            ClearNodesLists();  //  @894950
     void            _895F50();  //  @895F50
@@ -133,28 +133,28 @@ public:
     void            LoadSceneSession(void) const;   //  @8956D0
     void            InstantiateAssetsToLists(); //  @896810
 
-    static int      RealTimeMs;	//	@A3DCCC
-    static int      GameTimeMs;	//	@A3DCD4
-    static int      NextUpdateTime;	//	@A3DCD0
-    static int      TotalFrames;	//	@A3DCE4
-    static int      NewFrameNumber;	//	@A3DCE0
-    static bool     IsRewindBufferInUse;	//	@A1207C
-    static bool     LoadingAssetBlock;	//	@A3CE60
-    static const unsigned int RewindBufferSize_1 = 204800;	//	@A12088
-    static const unsigned int RewindBufferSize_2 = 309248;	//	@A1208C
-    static float    RealTimePassed;	//	@A3DCC0
-    static float    TimePassed;	//	@A3DCC4
-    static UINT64   CreationTime;	//	@A3DD00
-    static int     *_A3CEE4;	//	@A3CEE4
-    static int      _A3CEE8;	//	@A3CEE8
-    static int      _A3DA80[100];	//	@A3DA80
-    static int      _A3D8D8[100];	//	@A3D8D8
-    static int      _A3DC38[4];	//	@A3DC38
+    static int      RealTimeMs; // @A3DCCC
+    static int      GameTimeMs; // @A3DCD4
+    static int      NextUpdateTime; // @A3DCD0
+    static int      TotalFrames; // @A3DCE4
+    static int      NewFrameNumber; // @A3DCE0
+    static bool     IsRewindBufferInUse; // @A1207C
+    static bool     LoadingAssetBlock; // @A3CE60
+    static const unsigned int RewindBufferSize_1 = 204800; // @A12088
+    static const unsigned int RewindBufferSize_2 = 309248; // @A1208C
+    static float    RealTimePassed; // @A3DCC0
+    static float    TimePassed; // @A3DCC4
+    static UINT64   CreationTime; // @A3DD00
+    static int     *_A3CEE4; // @A3CEE4
+    static int      _A3CEE8; // @A3CEE8
+    static int      _A3DA80[100]; // @A3DA80
+    static int      _A3D8D8[100]; // @A3D8D8
+    static int      _A3DC38[4]; // @A3DC38
     static int      UpdateOrBlockingListSize;   //  @A3DD08
     static bool     _A3D858;    //  @A3D858
 
-    static Scene   *SceneInstance;	//	@A3DCBC
-    static AuxQuadTree* SceneTree;	//	@A3DCE8
+    static Scene   *SceneInstance; // @A3DCBC
+    static AuxQuadTree* SceneTree; // @A3DCE8
 
     struct QuadTree
     {
@@ -174,18 +174,18 @@ public:
     static QuadTree*    QuadTrees;  //  @A3B580
     static short    _A120E8;    //  @A120E8
 
-    static int      PreBlocksUnloadedCommand;	//	@A3DCF8
-    static int      BlocksUnloadedCommand;	//	@A3DCFC
-    static int      InvalidatePlaceholderModelCommand;	//	@A12098
-    static int      RewindOrRetryFinishedCommand;	//	@A1209C
+    static int      PreBlocksUnloadedCommand; // @A3DCF8
+    static int      BlocksUnloadedCommand; // @A3DCFC
+    static int      InvalidatePlaceholderModelCommand; // @A12098
+    static int      RewindOrRetryFinishedCommand; // @A1209C
 
     static void     CreateQuadTrees(const unsigned int num, const AllocatorIndex allocind); //  @89A370
-    static void     TriggerScriptForAllChildren(int scriptId, Node* node, int* args);	//	@892F10
-    static void     Register();	//	@899CC0
-    static Scene*   Create(AllocatorIndex);	//	@89A7A0
+    static void     TriggerScriptForAllChildren(int scriptId, Node* node, int* args); // @892F10
+    static void     Register(); // @899CC0
+    static Scene*   Create(AllocatorIndex); // @89A7A0
 };
 
-extern EntityType* tScene;	//	@A3DCB8
+extern EntityType* tScene; // @A3DCB8
 
-ASSERT_CLASS_SIZE(Scene, 616);	//	FIXME: actual size is 620 (0x26C).
+ASSERT_CLASS_SIZE(Scene, 616); // FIXME: actual size is 620 (0x26C).
 ASSERT_CLASS_SIZE(Scene::QuadTree, 32);

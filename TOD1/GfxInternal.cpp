@@ -4,9 +4,9 @@
 #include "BuiltinType.h"
 
 GfxInternal        *g_GfxInternal = nullptr;
-bool                GfxInternal::WideScreen;	//	@A39F12
+bool                GfxInternal::WideScreen; // @A39F12
 bool                GfxInternal::FSAA;
-float               GfxInternal::RatioXY = 1.0f;	//	@A119F4
+float               GfxInternal::RatioXY = 1.0f; // @A119F4
 float               GfxInternal::_A3A064;
 DirectX::XMMATRIX   GfxInternal::_A3A268;
 
@@ -180,7 +180,7 @@ void GfxInternal::CallSceneCallback()
     if (!m_SceneCallback)
         return;
 
-    //	TODO: ...
+    // TODO: ...
 }
 
 void GfxInternal::SetClearColorForBufferIndex(const ColorRGB& color, int index)

@@ -53,10 +53,10 @@ namespace Script
 KapowEngineClass* g_KapowEngine = nullptr;
 String KapowEngineClass::_A1B9F8 = {};
 
-std::list<String>	FaceCollList;
+std::list<String> FaceCollList;
 File* CollMatFile;
-std::map<String, unsigned int>	CollMatProperties;
-std::map<String, FaceColl>	CollMatMaterialsTypes;
+std::map<String, unsigned int> CollMatProperties;
+std::map<String, FaceColl> CollMatMaterialsTypes;
 
 KapowEngineClass::KapowEngineClass()
 {
@@ -123,7 +123,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
         profileVariables = new ConfigVariables(CONFIG_PROFILEFILE, 0);
 
     if (m_ConfigurationVariables->IsVariableSet("filecheck"))
-        Script::FileCheck = m_ConfigurationVariables->GetParamValueBool("filecheck") == 0;	//	NOTE: wtf?
+        Script::FileCheck = m_ConfigurationVariables->GetParamValueBool("filecheck") == 0; // NOTE: wtf?
 
     if (m_ConfigurationVariables->IsVariableSet("control_type"))
         m_ConfigurationVariables->GetParamValueString(Script::ControlType, "control_type");
@@ -211,7 +211,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 
             if (strchr(dirmapping.m_Str, '>') != nullptr)
             {
-                //	NOTE: potential place for buffer overflow right here, original code uses heap allocation, but this is redundant here really, adjust buffer size if any errors happen.
+                // NOTE: potential place for buffer overflow right here, original code uses heap allocation, but this is redundant here really, adjust buffer size if any errors happen.
                 char direntry[128] = {};
                 strncpy_s(direntry, sizeof(direntry), dirmapping.m_Str, strchr(dirmapping.m_Str, '>') - dirmapping.m_Str);
 
@@ -285,7 +285,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 
     Input::Gamepad::GetGameControllerByIndex(0);
 
-    //	TODO: we probably want to control how many of save slots are available.
+    // TODO: we probably want to control how many of save slots are available.
     MemoryCardInfo[SAVE_SLOT_0] = new MemoryCard(SAVE_SLOT_0);
     MemoryCardInfo[SAVE_SLOT_1] = new MemoryCard(SAVE_SLOT_1);
     MemoryCardInfo[SAVE_SLOT_8] = new MemoryCard(SAVE_SLOT_8);
@@ -462,7 +462,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 
     g_GfxInternal->SetClearColorForBufferIndex(*((ColorRGB*)&m_Background), -1);
 
-    //	TODO: what is this?
+    // TODO: what is this?
     GfxInternal::_A08704[0].field_0 = 0;
     GfxInternal::_A08704[1].field_0 = 0;
     GfxInternal::_A08704[5].field_0 = 0;
@@ -470,23 +470,23 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     if (m_ConfigurationVariables->IsVariableSet("version_name"))
         m_ConfigurationVariables->GetParamValueString(Script::VersionName, "version_name");
 
-    //	NOTE: this is unused.
+    // NOTE: this is unused.
     Script::_A1B98D = 0;
 
     Font::MakeCharactersMap(Font::GlyphsInfo);
     new Font(Font::GlyphsInfo);
 
-    //	Load NAZ archives into memory.
+    // Load NAZ archives into memory.
     File::ReadZipDirectories(Script::Filesystem.m_Str);
 
     EnumMaterialsInCollmat();
-    //	Parse facecolmat file
+    // Parse facecolmat file
     EnumFaceColMaterials();
 
-    //	Init random numbers generator.
+    // Init random numbers generator.
     Random::Init((int)__rdtsc());
 
-    //	Load screen and progress class.
+    // Load screen and progress class.
     g_LoadScreenInfo = new LoadScreenInfo("");
     g_Progress = new Progress();
 
@@ -501,7 +501,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     if (m_ConfigurationVariables->IsVariableSet("warning_window"))
         Script::WarningShow = m_ConfigurationVariables->GetParamValueBool("warning_window");
 
-    //	NOTE: this adjusts size for global entities lists.
+    // NOTE: this adjusts size for global entities lists.
     //(*(void(__cdecl*)(int, int))0x8C66E0)(8192, 512);
 
     LoadScripts();
@@ -510,7 +510,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     m_CommandsLoadedChecksum = GetGlobalCommandListChecksum();
     m_TypesLoadedChecksum = DataType::GetTypesListChecksum();
 
-    //	Instantiate scene.
+    // Instantiate scene.
     bool SceneSet = false;
     if (m_ConfigurationVariables->IsVariableSet("scenefile"))
     {
@@ -570,7 +570,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
             Script::CheckDivisionByZero = profileVariables->GetParamValueBool("check_division_by_zero");
     }
 
-    //	Start editor or game.
+    // Start editor or game.
     m_ShouldStartGame = false;
     if (SceneSet)
         m_ShouldStartGame = true;
@@ -810,7 +810,7 @@ void ConfigVariables::ParseVariablesFile(File* file, bool configvariables)
     char* currline = strtok(buffer, "\n");
     while (currline)
     {
-        //	TODO: curly brackets are somehow used, haven't figured out how yet...
+        // TODO: curly brackets are somehow used, haven't figured out how yet...
 
         if (!*currline)
             continue;
@@ -886,7 +886,7 @@ ConfigVariables::~ConfigVariables()
 
 bool ConfigVariables::IsVariableSet(const char* const variableName) const
 {
-    //	FIXME: optimize this!
+    // FIXME: optimize this!
     const auto& s_ = m_KeyValueMap.find(variableName);
     const size_t varstrlen = strlen(variableName);
 
@@ -935,7 +935,7 @@ Vector2<int>& ConfigVariables::GetParamValueVector2i(Vector2<int>& outvec, const
     char* delimpos = nullptr;
     int* vecint = (int*)&outvec;
 
-    //	TODO: bounds check.
+    // TODO: bounds check.
     while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
         *vecint++ = atoi(delimpos);
 
@@ -951,7 +951,7 @@ Vector2<unsigned int>& ConfigVariables::GetParamValueVector2i(Vector2<unsigned i
     char* delimpos = nullptr;
     int* vecint = (int*)&outvec;
 
-    //	TODO: bounds check.
+    // TODO: bounds check.
     while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
         *vecint++ = atoi(delimpos);
 
@@ -967,7 +967,7 @@ Vector2<float>& ConfigVariables::GetParamValueVector2f(Vector2<float>& outvec, c
     char* delimpos = nullptr;
     float* vecfl = (float*)&outvec;
 
-    //	TODO: bounds check.
+    // TODO: bounds check.
     while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
         *vecfl++ = (float)atof(delimpos);
 
@@ -983,7 +983,7 @@ Vector3<float>& ConfigVariables::GetParamValueVector3(Vector3<float>& outvec, co
     char* delimpos = nullptr;
     float* vecfl = (float*)&outvec;
 
-    //	TODO: bounds check.
+    // TODO: bounds check.
     while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
         *vecfl++ = (float)atof(delimpos);
 
@@ -999,7 +999,7 @@ Vector4f& ConfigVariables::GetParamValueVector4(Vector4f& outvec, const char* co
     char* delimpos = nullptr;
     float* vecfl = (float*)&outvec;
 
-    //	TODO: bounds check.
+    // TODO: bounds check.
     while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
         *vecfl++ = (float)atof(delimpos);
 
@@ -1046,7 +1046,7 @@ void EnumMaterialsInCollmat()
     if (!File::FindFileEverywhere(collmatFilename))
         return;
 #else
-    //	NOTE: original code doesn't check the result.
+    // NOTE: original code doesn't check the result.
     File::FindFileEverywhere(collmatFilename);
 #endif
 

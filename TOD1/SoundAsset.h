@@ -36,7 +36,7 @@ protected:
     int                 field_24;
 
 public:
-    SoundAsset();	//	@85C3C0
+    SoundAsset(); // @85C3C0
 
     virtual             ~SoundAsset();  //  @85C450
     virtual AssetInstance* GetInstancePtr() const override;
@@ -53,8 +53,8 @@ public:
         ptr = nullptr;
     }
 
-    static void         CreateInstance();	//	@85C010
-    static SoundAsset*  Create();	//	@85C430
+    static void         CreateInstance(); // @85C010
+    static SoundAsset*  Create(); // @85C430
 
 private:
     static AssetInstance*   Instance;   //  @A3BE50

@@ -25,16 +25,16 @@ private:
     Vector4f            m_Dimensions;
     std::vector<int>    m_LightsList;
     std::vector<int>    m_List_2;
-    int				    field_B8;
-    int				    field_BC;
-    int				    field_C0;
+    int        field_B8;
+    int        field_BC;
+    int        field_C0;
 public:
-    MockupBox();	//	@8CF870
+    MockupBox(); // @8CF870
     virtual            ~MockupBox();   //  @8D1170
     virtual void        GetBounds(Vector4f& bounds);   //  @8CE330
     virtual void        Render();   //  @8CE930
 
-    static unsigned int TotalCreated;	//	@A3DFD8
+    static unsigned int TotalCreated; // @A3DFD8
     static MeshBuffer* MeshBufferPtr;   //  @A3DFD4
 
     static void         Register(); //  @8D1260

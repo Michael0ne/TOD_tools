@@ -54,7 +54,7 @@ protected:
     float                       m_SpeedMultiplier;
     float                       m_CrossBlendFactor;
     float                       m_CrossBlendSpeed;
-    int                         m_TargetAnim;	//	NOTE: which of 'TargetAnim_Entity' to use.
+    int                         m_TargetAnim; // NOTE: which of 'TargetAnim_Entity' to use.
     float                       m_Weight;
     MotionLayer                *m_MotionLayer;
     int                         m_Event;

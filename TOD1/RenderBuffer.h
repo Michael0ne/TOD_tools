@@ -152,10 +152,10 @@ public:
     AllocatorIndex  m_AllocatorId;
 
 protected:
-    void            SetBufferSize(const unsigned int size);	//	@415350
+    void            SetBufferSize(const unsigned int size); // @415350
 
 public:
-    RenderBuffer(const unsigned int maxParams, AllocatorIndex allocatorType);	//	@415400
+    RenderBuffer(const unsigned int maxParams, AllocatorIndex allocatorType); // @415400
     RenderBuffer();
 
     void* operator new(size_t size)
@@ -169,9 +169,9 @@ public:
         ptr = nullptr;
     }
 
-    void            AdjustBufferSize(const unsigned int size);	//	@415510
+    void            AdjustBufferSize(const unsigned int size); // @415510
     template <typename T>
-    inline void     push_back(T val)	//	NOTE: this does not exist in original code as-is, because it's always inlined.
+    inline void     push_back(T val) // NOTE: this does not exist in original code as-is, because it's always inlined.
     {
         //  TODO: unoptimised variant. In most cases we know how much parameters are being submitted, re-write and take it into account.
         if (m_MaxParams < m_CurrentParamIndex + 1)
@@ -214,12 +214,12 @@ public:
     void            PushMatrix(const DirectX::XMMATRIX& mat, const unsigned int ind);   //  @430F80
     void            PushModelMatrix(const DirectX::XMMATRIX& mat);  //  @430D60
 
-    static void     CreateRenderBuffer();	//	@436070
+    static void     CreateRenderBuffer(); // @436070
 
-    static int      Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE];	//	@A35B98
+    static int      Buffer[RENDERBUFFER_DEFAULT_BUFFER_SIZE]; // @A35B98
     static int      MeshBuffersDrawn;   //  @A35E64
 };
 
-extern RenderBuffer*    g_RenderBuffer;	//	@A35E60
+extern RenderBuffer*    g_RenderBuffer; // @A35E60
 
 ASSERT_CLASS_SIZE(RenderBuffer, 20);

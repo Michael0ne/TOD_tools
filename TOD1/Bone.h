@@ -7,9 +7,9 @@ class Bone : public Node
 {
 protected:
 
-    static Bone*	Create(AllocatorIndex);	//	@907220
+    static Bone* Create(AllocatorIndex); // @907220
 public:
-    Bone() : Node(NODE_MASK_POSITION)	//	NOTE: has no constructor.
+    Bone() : Node(NODE_MASK_POSITION) // NOTE: has no constructor.
     {
         MESSAGE_CLASS_CREATED(Bone);
     };
@@ -21,9 +21,9 @@ public:
     void            SetBoneWorldOrient(float* args);    //  @907160
     void            SetBoneOrient(float* args); //  @9071E0
 
-    static void		Register();	//	@907270
+    static void  Register(); // @907270
 };
 
-extern EntityType*	tBone;	//	@A3E124
+extern EntityType* tBone; // @A3E124
 
 ASSERT_CLASS_SIZE(Bone, 80);

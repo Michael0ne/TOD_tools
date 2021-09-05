@@ -33,18 +33,18 @@ public:
     unsigned char       m_MipMapLevels;
 
 private:
-    void                CreateDirect3DTexture(const ScreenResolution& res, unsigned int formatindex, unsigned int levels);	//	@463530
+    void                CreateDirect3DTexture(const ScreenResolution& res, unsigned int formatindex, unsigned int levels); // @463530
 
     static TextureFormat    GetTextureFormat(D3DFORMAT fmt);   //  @463360
 
     static int          Formats[];  //  @A0A5F0
 
 public:
-    Texture(const ScreenResolution& resolution, unsigned int, unsigned int levels);	//	@463BA0
-    Texture(MutableTextureBuffer* surf);	//	@463C60
+    Texture(const ScreenResolution& resolution, unsigned int, unsigned int levels); // @463BA0
+    Texture(MutableTextureBuffer* surf); // @463C60
     ~Texture(); //  @463D20
 
-    unsigned int        GetSizeForLevel(const unsigned char lvl) const;	//	@4633D0
+    unsigned int        GetSizeForLevel(const unsigned char lvl) const; // @4633D0
     void                SetTextureForStage(const unsigned int stage) const; //  @4634B0
     void                AdjustColors(); //  @463970
     const unsigned int  GetTextureSizeBytes() const;    //  @463450
@@ -52,12 +52,12 @@ public:
     LPDIRECT3DTEXTURE9  GetDirect3DTexture() const; //  @4634A0
     bool                FillTextureInfo();  //  @4634D0
 
-    static void         DrawAllTextures();	//	@463850
-    static void         InitTexturesMap();	//	@464120
+    static void         DrawAllTextures(); // @463850
+    static void         InitTexturesMap(); // @464120
 
-    static std::map<unsigned int, Texture*>*	TexturesMap;	//	@A39F50
-    static D3DFORMAT	SupportedTextureFormats[];	//	@A0A5B0
-    static unsigned int	_A08980[15];	//	@A08980
+    static std::map<unsigned int, Texture*>* TexturesMap; // @A39F50
+    static D3DFORMAT SupportedTextureFormats[]; // @A0A5B0
+    static unsigned int _A08980[15]; // @A08980
 };
 
 ASSERT_CLASS_SIZE(Texture, 44);

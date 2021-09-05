@@ -66,7 +66,7 @@ private:
     Node*                   _8A6EB0();    //  @8A6EB0
     void                    _8A6E10(Node*, Node*);  //  @8A6E10
 
-    static StaticLighting*  Create(AllocatorIndex);	//	@8A9A30
+    static StaticLighting*  Create(AllocatorIndex); // @8A9A30
 };
 
 extern EntityType* tStaticLighting; //  @A3DDF4

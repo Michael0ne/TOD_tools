@@ -59,31 +59,31 @@ public:
     EntityType         *m_Parent;
     GlobalScript       *m_Script;
 protected:
-    std::map<unsigned short, ScriptInfo> m_ScriptsList;	//	NOTE: each 'derived' script derives it's parent scripts.
+    std::map<unsigned short, ScriptInfo> m_ScriptsList; // NOTE: each 'derived' script derives it's parent scripts.
     int                 field_38;
-    std::map<unsigned short, unsigned short> field_3C;	//	NOTE: could be list with properties id's and their values.
+    std::map<unsigned short, unsigned short> field_3C; // NOTE: could be list with properties id's and their values.
     int                 field_48;
-    std::vector<PropertyInfo> m_PropertiesList;	//	NOTE: could be list with methods for THIS exact class only.
-    std::vector<PropertyInfo> m_PropertiesList_1;	//	NOTE: another list same as above, but there are more methods in this list.
+    std::vector<PropertyInfo> m_PropertiesList; // NOTE: could be list with methods for THIS exact class only.
+    std::vector<PropertyInfo> m_PropertiesList_1; // NOTE: another list same as above, but there are more methods in this list.
     int                 field_6C;
     int                 field_70;
     bool                m_HasParent;
 
 public:
-    EntityType(const char* const entityname);	//	@86CC00
-    virtual ~EntityType();	//	@4886C0
+    EntityType(const char* const entityname); // @86CC00
+    virtual ~EntityType(); // @4886C0
 
-    void*               CreateNode() const;	//	@86C770
-    void                InheritFrom(const EntityType* from);	//	@86CB40
+    void*               CreateNode() const; // @86C770
+    void                InheritFrom(const EntityType* from); // @86CB40
     inline void         SetCreator(CREATOR creator)
     {
         m_Creator = creator;
     };
 
     template <typename T>
-    void RegisterScript(const char* const scriptname, T scriptptr, const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7)	//	@86EC70
+    void RegisterScript(const char* const scriptname, T scriptptr, const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7) // @86EC70
     {
-        //	NOTE: a workaround to insert a method pointer to a list.
+        // NOTE: a workaround to insert a method pointer to a list.
         int sptr = 0;
         _asm push eax
         _asm mov eax, scriptptr
@@ -94,13 +94,13 @@ public:
     }
 
     template <typename T, typename T1>
-    void RegisterProperty(DataType* returntype, const char* const propertyname, T getterptr, const int a4, const int a5, const int a6, T1 setterptr, const int a8, const int a9, const int a10, const char* const editorcontrolstring, const int a12, const int a13, const int propertyind)	//	@86D370
+    void RegisterProperty(DataType* returntype, const char* const propertyname, T getterptr, const int a4, const int a5, const int a6, T1 setterptr, const int a8, const int a9, const int a10, const char* const editorcontrolstring, const int a12, const int a13, const int propertyind) // @86D370
     {
         char propstr[128] = {};
         sprintf(propstr, "%s:%s", propertyname, returntype->m_TypeName.m_Str);
         unsigned int ind = RegisterGlobalProperty(propstr, true);
 
-        //	NOTE: a workaround to insert a method pointer to a list.
+        // NOTE: a workaround to insert a method pointer to a list.
         int gptr = 0, sptr = 0;
         _asm push eax
         _asm mov eax, getterptr
@@ -144,7 +144,7 @@ public:
             m_PropertiesList.insert(m_PropertiesList.begin() + (propertyind - field_6C), tmp);
         }
     }
-    void				_86E9B0();	//	@86E9B0	//	NOTE: probably, this propagates all methods and properties from parent entity.
+    void    _86E9B0(); // @86E9B0 // NOTE: probably, this propagates all methods and properties from parent entity.
 
     static Entity*      IsParentOf(EntityType* ett, Entity* ent);   //  @48C3B0
 };

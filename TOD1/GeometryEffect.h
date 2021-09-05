@@ -84,9 +84,9 @@ protected:
             unsigned _28 : 1;
             unsigned _29 : 1;
             unsigned _30 : 1;
-        }				m_FlagBits;
-        unsigned int	m_Flags;
-    }					m_GeometryEffectFlags;
+        }    m_FlagBits;
+        unsigned int m_Flags;
+    }     m_GeometryEffectFlags;
     int                 field_10C;
     int                 field_110;
     int                 field_114;

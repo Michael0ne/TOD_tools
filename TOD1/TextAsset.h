@@ -35,8 +35,8 @@ protected:
 public:
     virtual AssetInstance* GetInstancePtr() const override;
 
-    static void       CreateInstance();	//	@861CE0
-    static TextAsset* Create();	//	@861BD0
+    static void       CreateInstance(); // @861CE0
+    static TextAsset* Create(); // @861BD0
 
     static AssetInstance*   Instance; //  @A3CE7C
 };

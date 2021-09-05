@@ -27,7 +27,7 @@ protected:
     char            m_InverseFlareAngle;
 
 public:
-    LensFlare();	//	@8E3F50
+    LensFlare(); // @8E3F50
     virtual ~LensFlare();   //  @8E5670
 
     void            SetColor(const float* args);    //  @8E3840

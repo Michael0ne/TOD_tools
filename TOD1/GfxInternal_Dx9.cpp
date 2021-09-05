@@ -538,7 +538,7 @@ GfxInternal_Dx9::DisplayModeInfo* GfxInternal_Dx9::IsScreenResolutionAvailable(u
 
 void GfxInternal_Dx9::EnumDisplayModes()
 {
-    //	TODO: display modes are hardcoded, maybe add option to change it?
+    // TODO: display modes are hardcoded, maybe add option to change it?
     int adapterModesTotal = m_Direct3DInterface->GetAdapterModeCount(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8);
     int adapterMode = 0;
     D3DDISPLAYMODE adapterModes;
@@ -625,7 +625,7 @@ void GfxInternal_Dx9::CreateSurfaces()
 
     m_DepthStencilSurface = nullptr;
 
-    //	NOTE: go through all supported formats and try to create first available depth surface.
+    // NOTE: go through all supported formats and try to create first available depth surface.
     for (const D3DFORMAT* format = SupportedFormats; format; format++)
     {
         LogDump::LogA("Creating depth surface of size (%i,%i)\n", m_ViewportTexturesArray[0]->m_SurfaceSize.x, m_ViewportTexturesArray[0]->m_SurfaceSize.y);
@@ -1381,7 +1381,7 @@ void GfxInternal_Dx9::RememberResolution()
 void GfxInternal_Dx9::SetCullMode(unsigned int cullmode)
 {
 #ifdef INCLUDE_FIXES
-    //	NOTE: sanity check.
+    // NOTE: sanity check.
     m_TexProperties[0].m_CullMode = cullmode > 2 ? 0 : cullmode;
 #else
     m_TexProperties[0].m_CullMode = cullmode;

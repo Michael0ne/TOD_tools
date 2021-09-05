@@ -16,7 +16,7 @@ protected:
     float           m_VariationSpeed;
 
 public:
-    Wind();	//	@8D2200
+    Wind(); // @8D2200
     virtual ~Wind() override;    //  @8D29B0 for scalar, 8D22E0 for unused, but same.
     virtual void    Instantiate() override; //  @8D2310
 
@@ -24,7 +24,7 @@ public:
     static int      LastUpdateTime; //  @A0ADC4
     static int      CreationTime;   //  @A0ADC0
 
-    static void     Register();	//	@8D2370
+    static void     Register(); // @8D2370
 
 private:
     static Wind*    Create(AllocatorIndex); //  @8D2970

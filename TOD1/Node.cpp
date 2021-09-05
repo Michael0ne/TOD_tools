@@ -49,9 +49,9 @@ void NodeMatrix::GetMatrix(DirectX::XMMATRIX& outMat) const
 
 void NodeMatrix::SetTransformationFromMatrix(const DirectX::XMMATRIX& mat)
 {
-    m_RightVector	 = *(Vector4f*)&mat.r[0];
-    m_UpVector		 = *(Vector4f*)&mat.r[1];
-    m_ForwardVector	 = *(Vector4f*)&mat.r[2];
+    m_RightVector  = *(Vector4f*)&mat.r[0];
+    m_UpVector   = *(Vector4f*)&mat.r[1];
+    m_ForwardVector  = *(Vector4f*)&mat.r[2];
     m_PositionVector = *(Vector4f*)&mat.r[3];
 }
 
@@ -355,7 +355,7 @@ void Node::SetParent(const Node* parent)
     }
 
     //if (!m_QuadTree && m_Parent)
-        //SetChildrenPositionToSame();	//	@88D1E0
+        //SetChildrenPositionToSame(); // @88D1E0
 }
 
 void Node::DestroyAddon()
@@ -452,7 +452,7 @@ void Node::SetPos(const Vector4f& newpos)
     {
         //if (Camera::PlayerPos && m_ScriptEntity == tBone)
         //{
-            //	TODO ...
+            // TODO ...
         //}
     }
 
@@ -483,7 +483,7 @@ void Node::SetPos(const Vector4f& newpos)
 const char* Node::GetFragment() const
 {
     if (m_Fragment)
-        if (m_Flags.m_FlagBits.HasFragment)	//	TODO: check if this is correct!
+        if (m_Flags.m_FlagBits.HasFragment) // TODO: check if this is correct!
             return m_Fragment->m_Name;
         else
             if (m_Fragment->m_FragmentRes)
@@ -568,7 +568,7 @@ void Node::TriggerGlobalScript(int scriptId, void* args)
         EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_HasParent ? &m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : &m_ScriptEntity->m_ScriptsList[scriptId];
         if (scriptinfo)
             if (scriptinfo->field_C)
-                //	TODO: some complex pointer maths going on here, fix this.
+                // TODO: some complex pointer maths going on here, fix this.
                 scriptinfo->m_ScriptPtr(this + scriptinfo->field_8 + scriptinfo->field_C + scriptinfo->field_4 + scriptinfo->field_8, args);
             else
                 scriptinfo->m_ScriptPtr(this + scriptinfo->field_4, args);

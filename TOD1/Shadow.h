@@ -25,12 +25,12 @@ protected:
     int            *m_HintCollisionVolume;
 
 public:
-    Shadow();	//	@8EE3B0
+    Shadow(); // @8EE3B0
     virtual ~Shadow();  //  @8F1CB0
 
     virtual void    Destroy(); //  @8EC330
     virtual void    Instantiate();  //  @8EC3C0
-    virtual void	Render();	//	@8EEF50
+    virtual void Render(); // @8EEF50
 
     void* operator new (size_t size)
     {
@@ -45,7 +45,7 @@ public:
 
     static void     Register(); //  @8EEB70
 
-    static int		TotalShadows;	//	@A3E094
+    static int  TotalShadows; // @A3E094
 
 private:
     void            ClearHints();   //  @8EBBC0

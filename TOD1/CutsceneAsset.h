@@ -35,14 +35,14 @@ protected:
     int                                 field_5C;
 
 private:
-    CutsceneAsset();	//	@916080
+    CutsceneAsset(); // @916080
 
 public:
     virtual ~CutsceneAsset();   //  @916DB0
     virtual AssetInstance*              GetInstancePtr() const override;    //  @916BF0
 
-    static void                         CreateInstance();	//	@9164C0
-    static CutsceneAsset*               Create();	//	@916100
+    static void                         CreateInstance(); // @9164C0
+    static CutsceneAsset*               Create(); // @916100
 
     static AssetInstance*               Instance; //  @A3E12C
 };

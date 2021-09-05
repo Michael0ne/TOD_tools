@@ -86,7 +86,7 @@ void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respa
     {
         if (region != REGION_USA)
         {
-            //	TODO: check if this is correct.
+            // TODO: check if this is correct.
             outPath = respath;
             outPath.Append(pathsuffix);
             return;
@@ -129,7 +129,7 @@ void AssetManager::GetResourcePath(String& outStr, const char* path) const
     if (m_SceneNames.size())
         path_ = m_SceneNames[m_SceneNames.size() - 1];
 
-    //	TODO: what this does exactly?
+    // TODO: what this does exactly?
     outStr = path;
 }
 
@@ -315,7 +315,7 @@ void AssetHeaderStruct_t::Header_t::_4010C0(const char* key)
 
 void AssetHeaderStruct_t::Header_t::_4011A0(char* key)
 {
-    //	NOTE: this routine reverses bytes
+    // NOTE: this routine reverses bytes
     unsigned int rounds = 2;
     unsigned char v3 = field_24 & 1,
         v7 = 0,
@@ -548,7 +548,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
 
         file->Read(&checksum, sizeof(checksum));
         if (GetGlobalCommandListChecksum() != checksum)
-#ifndef INCLUDE_FIXES	
+#ifndef INCLUDE_FIXES 
             return nullptr;
 #else
             LogDump::LogA("Commands checksum mismatch! Asset has %x, engine has %x\n", checksum, GlobalCommandListChecksum);
@@ -557,11 +557,11 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
         ChecksumChecked = true;
     }
 
-    unsigned int	totalResources = NULL;
-    unsigned int	resourcesInfoSize = NULL;
-    unsigned int	maximumAssetSize = NULL;
-    char*			resourcesInfoBuffer = nullptr;
-    char*			resourceDataBuffer = nullptr;
+    unsigned int totalResources = NULL;
+    unsigned int resourcesInfoSize = NULL;
+    unsigned int maximumAssetSize = NULL;
+    char*   resourcesInfoBuffer = nullptr;
+    char*   resourceDataBuffer = nullptr;
 
     file->Read(&totalResources, sizeof(totalResources));
     file->Read(&resourcesInfoSize, sizeof(resourcesInfoSize));
@@ -581,7 +581,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
     if (totalResources > 0)
         ResList.resize(totalResources);
 
-    time_t	fileTimestamp = File::GetFileTimestamp(file->GetFileName());
+    time_t fileTimestamp = File::GetFileTimestamp(file->GetFileName());
     int* resDataSizeTable = new int[totalResources];    //  NOTE: original code has this value multiplied by 4, don't know why really.
 
     file->SetPosAligned(0);
@@ -839,7 +839,7 @@ AssetManager::~AssetManager()
     Asset* res = FindFirstFreeResource();
     if (res)
     {
-        //	TODO: finish this!
+        // TODO: finish this!
     }
 
     g_AssetManager = nullptr;
@@ -872,7 +872,7 @@ void AssetManager::RemoveLastSceneName()
 }
 
 unsigned int AssetManager::GetFreeResourceTypeListItem(unsigned int index)
-{	
+{ 
     unsigned int freeind = index + 1;
     if (freeind >= m_ResourcesInstancesList.size())
         return 0;

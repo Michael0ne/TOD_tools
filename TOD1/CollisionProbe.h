@@ -6,10 +6,10 @@ class CollisionProbe : public Node
 {
     struct CachedProbe 
     {
-        std::vector<Node*>	field_0;
-        std::vector<int>	field_10;
-        Node			   *field_14;
-        int					field_18;
+        std::vector<Node*> field_0;
+        std::vector<int> field_10;
+        Node      *field_14;
+        int     field_18;
 
         CachedProbe        *m_Next;
         int                *field_20;
@@ -49,18 +49,18 @@ protected:
     char                    m_OptimisticMode;
 
 public:
-    CollisionProbe(int, float);	//	@8BA600
+    CollisionProbe(int, float); // @8BA600
 
-    void                    Reset();	//	@8B61D0
-    void                    ClearCache();	//	@8B6130
+    void                    Reset(); // @8B61D0
+    void                    ClearCache(); // @8B6130
     
-    static std::vector<CollisionProbe*>	ProbesList;	//	@A3DD4C
-    static unsigned int     CachedProbes;	//	@A3DE48
+    static std::vector<CollisionProbe*> ProbesList; // @A3DD4C
+    static unsigned int     CachedProbes; // @A3DE48
 
-    static void             Register();	//	@8BA830
-    static CollisionProbe*  Create();	//	@8BDEA0
+    static void             Register(); // @8BA830
+    static CollisionProbe*  Create(); // @8BDEA0
 };
 
-extern EntityType*          tCollisionProbe;	//	@A3DE38
+extern EntityType*          tCollisionProbe; // @A3DE38
 
 ASSERT_CLASS_SIZE(CollisionProbe, 292);

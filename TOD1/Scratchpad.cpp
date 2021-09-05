@@ -4,10 +4,10 @@ Scratchpad* g_Scratchpad = nullptr;
 
 Scratchpad::Scratchpad()
 {
-	MESSAGE_CLASS_CREATED(Scratchpad);
+ MESSAGE_CLASS_CREATED(Scratchpad);
 }
 
 Scratchpad::~Scratchpad()
 {
-	MESSAGE_CLASS_DESTROYED(Scratchpad);
+ MESSAGE_CLASS_DESTROYED(Scratchpad);
 }

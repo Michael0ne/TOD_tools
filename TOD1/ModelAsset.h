@@ -60,8 +60,8 @@ public:
     void                _856E60();  //  @856E60
     int                 PivotIndexByName(const char* const pivotname) const;    //  @88A060
 
-    static void         CreateInstance();	//	@858210
-    static ModelAsset*  Create();	//	@8581F0
+    static void         CreateInstance(); // @858210
+    static ModelAsset*  Create(); // @8581F0
 
     static AssetInstance*   Instance;   //  @A3BE30
 };

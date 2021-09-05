@@ -34,11 +34,11 @@ struct AssetHeaderStruct_t
         int                     field_48;
         int                     field_4C;
 
-        Header_t();	//	@401050
+        Header_t(); // @401050
 
-        void                    DecodeFingerprintKey(char* key, char* keydata);	//	@401450
-        void                    _4010C0(const char* key);	//	@4010C0
-        void                    _4011A0(char* key);	//	@4011A0
+        void                    DecodeFingerprintKey(char* key, char* keydata); // @401450
+        void                    _4010C0(const char* key); // @4010C0
+        void                    _4011A0(char* key); // @4011A0
     } field_38;
 };
 
@@ -100,15 +100,15 @@ public:
 
     struct FastFindInfo
     {
-        unsigned int            m_NodeNameCRC;	//	NOTE: CRC for Node name OR model name (if it's a model).
-        unsigned int            m_Index;	//	NOTE: maybe?
+        unsigned int            m_NodeNameCRC; // NOTE: CRC for Node name OR model name (if it's a model).
+        unsigned int            m_Index; // NOTE: maybe?
         Node                   *m_Node;
     };
 
 public:
     unsigned char               field_0;
     int                         m_ActiveBlockId;
-    char                        m_FingerprintKey[256];	//	NOTE: default value is 'THIS IS THE DEFAULT FINGERPRINT KEY, PLEASE CHANGE IT!". LOLZ.
+    char                        m_FingerprintKey[256]; // NOTE: default value is 'THIS IS THE DEFAULT FINGERPRINT KEY, PLEASE CHANGE IT!". LOLZ.
     int                         field_108;
     DefragmentatorBase*         m_Defragmentator;
     std::vector<int>            m_DefragmentatorList;
@@ -127,12 +127,12 @@ public:
     bool                        m_LoadBlocks;
 
 private:
-    void                        AddTypesListItemAtPos(Asset* element, unsigned int index);	//	@8760C0
-    unsigned int                FindNodeById(unsigned int );	//	@875570
+    void                        AddTypesListItemAtPos(Asset* element, unsigned int index); // @8760C0
+    unsigned int                FindNodeById(unsigned int ); // @875570
 
 public:
-    AssetManager(bool loadBlocks);	//	@876E20
-    ~AssetManager();	//	@877250
+    AssetManager(bool loadBlocks); // @876E20
+    ~AssetManager(); // @877250
 
     void* operator new (size_t size)
     {
@@ -155,43 +155,43 @@ public:
         ptr = nullptr;
     }
 
-    void                        SetSceneName(const char* scenename);	//	@877F40
-    void                        RemoveLastSceneName();	//	@875650
-    unsigned int                GetFreeResourceTypeListItem(unsigned int index);	//	@875540
-    unsigned int                AddEntity(class Entity* ent);	//	@875FA0	//	NOTE: returns index
-    void                        SetRegion(RegionCode id);	//	@875434
-    AllocatorIndex              GetAllocatorType() const;	//	@875360
-    int                         AddAssetReference(Asset* a);	//	@877A90
+    void                        SetSceneName(const char* scenename); // @877F40
+    void                        RemoveLastSceneName(); // @875650
+    unsigned int                GetFreeResourceTypeListItem(unsigned int index); // @875540
+    unsigned int                AddEntity(class Entity* ent); // @875FA0 // NOTE: returns index
+    void                        SetRegion(RegionCode id); // @875434
+    AllocatorIndex              GetAllocatorType() const; // @875360
+    int                         AddAssetReference(Asset* a); // @877A90
 #ifdef INCLUDE_FIXES
-    void                        GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, Asset::PlatformId platform);	//	@8776B0
+    void                        GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, Asset::PlatformId platform); // @8776B0
 #else
-    void                        GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform);	//	@8776B0
+    void                        GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform); // @8776B0
 #endif
-    const char*                 GetResourcePathSceneRelative(const char* const path);	//	@8773A0
-    void                        GetResourcePath(String& outStr, const char* path) const;	//	@875770
-    void                        IncreaseResourceReferenceCount(Asset*);	//	@875320
-    void                        DecreaseResourceReferenceCount(Asset*);	//	@875330
+    const char*                 GetResourcePathSceneRelative(const char* const path); // @8773A0
+    void                        GetResourcePath(String& outStr, const char* path) const; // @875770
+    void                        IncreaseResourceReferenceCount(Asset*); // @875320
+    void                        DecreaseResourceReferenceCount(Asset*); // @875330
     const char*                 GetCurrentSceneName() const;
-    void                        BuildFastFindNodeVector();	//	@877DA0
-    void                        FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi);	//	@877B00	//	NOTE: this goes through 'baseNode' children and fills vector.
-    Asset*                      LoadResourceFile(const char* const respath);	//	@878AB0
-    void*                       LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid);	//	@8759E0
-    Entity*                     FindFirstEntity();	//	@8755E0
-    Entity*                     FindNextEntity(Entity*);	//	@875610
+    void                        BuildFastFindNodeVector(); // @877DA0
+    void                        FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi); // @877B00 // NOTE: this goes through 'baseNode' children and fills vector.
+    Asset*                      LoadResourceFile(const char* const respath); // @878AB0
+    void*                       LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid); // @8759E0
+    Entity*                     FindFirstEntity(); // @8755E0
+    Entity*                     FindNextEntity(Entity*); // @875610
     void                        DestroySceneNodesFrameBuffers(const int);  //  @875390
-    RegionCode                  GetRegion() const;	//	@875440
-    String&                     GetDataPath(String& outstr) const;	//	@8764E0
-    Asset*                      FindFirstFreeResource() const;	//	@879E00
+    RegionCode                  GetRegion() const; // @875440
+    String&                     GetDataPath(String& outstr) const; // @8764E0
+    Asset*                      FindFirstFreeResource() const; // @879E00
     void                        DestroyTextureAsset(TextureAsset& ass); //  @875340
     Asset*                      GetAssetIfExists(const Asset* a) const; //  @875720
     void                        _878030();  //  @878030
     void                        _877AE0();  //  @877AE0
     bool                        _878220(Asset& asset);  //  @878220
 
-    static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform);	//	@876500
-    static RegionCode           RegionIdByName(const String& region);	//	@875450
+    static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform); // @876500
+    static RegionCode           RegionIdByName(const String& region); // @875450
 
-    static bool                 ChecksumChecked;	//	@A3D7C9
+    static bool                 ChecksumChecked; // @A3D7C9
     static bool                 _A3D7C0;    //  @A3D7C0
 };
 

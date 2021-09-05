@@ -12,65 +12,65 @@ INT64 Timer::ClockCyclesInitial = NULL;
 
 DWORD Timer::GetMilliseconds()
 {
-	if (QueryingPerformance)
-	{
-		MeasuringPerformance = true;
+ if (QueryingPerformance)
+ {
+  MeasuringPerformance = true;
 
-		if (!QueryPerformanceFrequency(&PerformanceFrequency))
-			MeasuringPerformance = false;
+  if (!QueryPerformanceFrequency(&PerformanceFrequency))
+   MeasuringPerformance = false;
 
-		PerformanceFrequency.QuadPart /= 1000;
-		QueryingPerformance = false;
-	}
+  PerformanceFrequency.QuadPart /= 1000;
+  QueryingPerformance = false;
+ }
 
-	if (MeasuringPerformance)
-	{
-		LARGE_INTEGER freq;
-		QueryPerformanceCounter(&freq);
+ if (MeasuringPerformance)
+ {
+  LARGE_INTEGER freq;
+  QueryPerformanceCounter(&freq);
 
-		return (DWORD)(freq.QuadPart / PerformanceFrequency.QuadPart);
-	}else
-		return timeGetTime();
+  return (DWORD)(freq.QuadPart / PerformanceFrequency.QuadPart);
+ }else
+  return timeGetTime();
 }
 
 INT64 Timer::GetSeconds()
 {
-	if (QueryingPerformanceSeconds)
-	{
-		MeasuringPerformanceSeconds = true;
-		if (!QueryPerformanceFrequency(&PerformancyFrequencySeconds))
-			MeasuringPerformanceSeconds = false;
+ if (QueryingPerformanceSeconds)
+ {
+  MeasuringPerformanceSeconds = true;
+  if (!QueryPerformanceFrequency(&PerformancyFrequencySeconds))
+   MeasuringPerformanceSeconds = false;
 
-		PerformancyFrequencySeconds.QuadPart /= 1000000;
-		QueryingPerformanceSeconds = false;
-	}
+  PerformancyFrequencySeconds.QuadPart /= 1000000;
+  QueryingPerformanceSeconds = false;
+ }
 
-	if (!MeasuringPerformanceSeconds)
-		return 1000 * (INT64)timeGetTime();
+ if (!MeasuringPerformanceSeconds)
+  return 1000 * (INT64)timeGetTime();
 
-	LARGE_INTEGER freq;
-	QueryPerformanceCounter(&freq);
+ LARGE_INTEGER freq;
+ QueryPerformanceCounter(&freq);
 
-	return freq.QuadPart / PerformancyFrequencySeconds.QuadPart;
+ return freq.QuadPart / PerformancyFrequencySeconds.QuadPart;
 }
 
 INT64 Timer::ClockGetCycles()
 {
-	return ClockCycles;
+ return ClockCycles;
 }
 
 INT64 Timer::ClockGetCyclesMilliseconds()
 {
-	return ClockCycles / 1000;
+ return ClockCycles / 1000;
 }
 
 void Timer::Init()
 {
-	TimeInitialSeconds = GetSeconds();
-	ClockCyclesInitial = __rdtsc();
+ TimeInitialSeconds = GetSeconds();
+ ClockCyclesInitial = __rdtsc();
 }
 
 void Timer::Calculate()
 {
-	ClockCycles = (1000000 * (__rdtsc() - ClockCyclesInitial)) / (GetSeconds() - TimeInitialSeconds);
+ ClockCycles = (1000000 * (__rdtsc() - ClockCyclesInitial)) / (GetSeconds() - TimeInitialSeconds);
 }

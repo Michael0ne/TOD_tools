@@ -60,8 +60,8 @@ protected:
     short           field_5C;
     short           field_5E;
 
-    Properties();	//	@425470
-    void            _4250C0();	//	@4250C0
+    Properties(); // @425470
+    void            _4250C0(); // @4250C0
 };
 
 class ParticleSystem : public Node
@@ -77,13 +77,13 @@ protected:
     std::vector<int>m_List_2;
     int             field_E4;
     int             field_E8;
-    int				field_EC;
+    int    field_EC;
     int             m_IndexInSceneList;
 
 public:
-    ParticleSystem();	//	@8EB650
+    ParticleSystem(); // @8EB650
 
-    static bool     LodAndFade;	//	@A08944
+    static bool     LodAndFade; // @A08944
 };
 
 ASSERT_CLASS_SIZE(ParticleSystem, 244);

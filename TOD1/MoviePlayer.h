@@ -24,7 +24,7 @@ class MoviePlayer : public Node
         Texture            *m_CurrentFrameTexture;
         File               *m_MovieFile;
 
-        FrameInfo();	//	@442F00
+        FrameInfo(); // @442F00
         ~FrameInfo();   //  @443060
         
         void                Stop(); //  @443010
@@ -57,7 +57,7 @@ protected:
     }                       m_Flags;
 
 public:
-    MoviePlayer();  //	NOTE: no constructor.
+    MoviePlayer();  // NOTE: no constructor.
     virtual ~MoviePlayer(); //  @88ADC0
 
     virtual void            Update();  //  @88AC60
@@ -70,7 +70,7 @@ private:
     void                    Play(int args); //  @88B740
 
 public:
-    static String           MovieName;	//	@A3D864
+    static String           MovieName; // @A3D864
     static MoviePlayer     *Instance;   //  @A3D860
     static bool             MovieOpen;  //  @A35ED4
 

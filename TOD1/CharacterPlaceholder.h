@@ -52,8 +52,8 @@ public:
         m_Flags_8 = m_Flags_8 & 0xFFFFFC01 | 1;
     }
 
-    virtual ~CharacterPlaceHolder();	//	@8CC860
-    virtual Vector4f*	GetBounds(Vector4f& outbounds) const override;	//	@8CC800
+    virtual ~CharacterPlaceHolder(); // @8CC860
+    virtual Vector4f* GetBounds(Vector4f& outbounds) const override; // @8CC800
 
     static CharacterPlaceHolder*    Create(AllocatorIndex); //  @8CC8A0
     static void                     Register(); //  @8CB680

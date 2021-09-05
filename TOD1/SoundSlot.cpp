@@ -100,11 +100,11 @@ SoundSlot::~SoundSlot()
     MESSAGE_CLASS_DESTROYED(SoundSlot);
 
     StopSound();
-    DeallocateStream();	//	NOTE: original code has this function inlined, so no need to dup it here.
+    DeallocateStream(); // NOTE: original code has this function inlined, so no need to dup it here.
 
     delete m_StreamingSoundName;
 
-    //	TODO: delete lists...
+    // TODO: delete lists...
 }
 
 String* SoundSlot::GetResourceName(String* strResName)
@@ -140,7 +140,7 @@ SoundSlot::SoundSlot() : Node(NODE_MASK_EMPTY)
     m_LfeLevel = 0;
     m_PausedInstanceIndex = -1;
 
-    //	TODO: initialize more lists here.
+    // TODO: initialize more lists here.
 }
 
 bool SoundSlot::AllocateGlobalStreamedSound(const char* const filename, const bool ismono, const int a3)

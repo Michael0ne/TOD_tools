@@ -3,12 +3,12 @@
 
 class RealtimeFolder : public Folder_
 {
-	friend class Scene;
+ friend class Scene;
 protected:
 
-	static RealtimeFolder*	RealtimeFolderInstance;	//	@A3D8D4
+ static RealtimeFolder* RealtimeFolderInstance; // @A3D8D4
 public:
-	RealtimeFolder();
+ RealtimeFolder();
 };
 
 extern RealtimeFolder* tRealtimeFolder;

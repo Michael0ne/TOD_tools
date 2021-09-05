@@ -15,11 +15,11 @@ public:
     char           *m_Canvas;
 
 private:
-    void            SetupSurface(unsigned int width, unsigned int height);	//	@42FE00
-    void            CreateCanvasBuffer();	//	@42FD80
+    void            SetupSurface(unsigned int width, unsigned int height); // @42FE00
+    void            CreateCanvasBuffer(); // @42FD80
 
 public:
-    Surface(unsigned int width, unsigned int height);	//	@430450
+    Surface(unsigned int width, unsigned int height); // @430450
     ~Surface(); //  @42FA40
 
     void* operator new (size_t size)
@@ -33,7 +33,7 @@ public:
         ptr = nullptr;
     }
 
-    void            SetPixelColor(const unsigned int x, const unsigned int y, const ColorRGB& clr);	//	@42F8A0
+    void            SetPixelColor(const unsigned int x, const unsigned int y, const ColorRGB& clr); // @42F8A0
     void            ConvertColorsToPS2();   //  @42FBA0
     unsigned int    GetTotalSurfaceColors() const;  //  @42F820
     void            ScaleImage(const unsigned int width, const unsigned int height);    //  @42FFF0

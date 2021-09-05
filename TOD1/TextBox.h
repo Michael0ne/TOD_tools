@@ -48,10 +48,10 @@ protected:
     }               m_Flags;
 
 public:
-    TextBox();	//	@8FDAA0
+    TextBox(); // @8FDAA0
 
-    virtual ~TextBox();	//	@8FDBE0
-    virtual Vector4f* GetBounds(Vector4f& outBounds) const override;	//	@8FF220
+    virtual ~TextBox(); // @8FDBE0
+    virtual Vector4f* GetBounds(Vector4f& outBounds) const override; // @8FF220
 
     void* operator new (size_t size)
     {
@@ -65,8 +65,8 @@ public:
     }
 
     void            SetTextScale(const float* args);    //  @8FD200
-    Vector4f*       GetActualBoxSize(Vector4f& outSize) const;	//	@8FDCD0
-    void            SetFont(const char* fontName);	//	@8FF2F0
+    Vector4f*       GetActualBoxSize(Vector4f& outSize) const; // @8FDCD0
+    void            SetFont(const char* fontName); // @8FF2F0
     void            ParseFormatting(char* key, float* linescale, int* colorindex, HorizontalAlign* alignment);  //  @8FD570
 };
 

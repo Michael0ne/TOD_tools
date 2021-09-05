@@ -27,7 +27,7 @@ protected:
     float           m_LineCheckLength;
 
 public:
-    LensFlareManager();	//	@8E3960
+    LensFlareManager(); // @8E3960
     virtual ~LensFlareManager();
 
     virtual void    Destroy() override; //  @8E3CA0

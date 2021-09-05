@@ -5,17 +5,17 @@
 class Track : public Node
 {
 protected:
-    Vector4f	m_LatestPos;
-    Orientation	m_LatestOrient;
-    int			field_70;
-    int			field_74;
-    int			field_78;
-    int			field_7C;
-    int			field_80;
-    int			field_84;
-    int			field_88;
-    Orientation	m_Orient_2;
-    Vector4f	m_LatestTangent;
+    Vector4f m_LatestPos;
+    Orientation m_LatestOrient;
+    int   field_70;
+    int   field_74;
+    int   field_78;
+    int   field_7C;
+    int   field_80;
+    int   field_84;
+    int   field_88;
+    Orientation m_Orient_2;
+    Vector4f m_LatestTangent;
     union
     {
         struct
@@ -54,9 +54,9 @@ protected:
         }       m_FlagBits;
         unsigned int    m_Flags;
     }           m_TrackFlags;
-    float		m_Framerate;
-    Node*		m_TrackPoint;
-    float		m_LatestTime;
+    float  m_Framerate;
+    Node*  m_TrackPoint;
+    float  m_LatestTime;
 
 public:
     inline Track() : Node(NODE_MASK_POSITION)
@@ -121,9 +121,9 @@ private:
 
     void            GetLatestTangent(float* args) const;  //  @923FF0
 
-    static Track*	Create();	//	@924070
+    static Track* Create(); // @924070
 };
 
-extern EntityType* tTrack;	//	@A3E14C
+extern EntityType* tTrack; // @A3E14C
 
 ASSERT_CLASS_SIZE(Track, 188);

@@ -184,7 +184,7 @@ const char* const Asset::GetResourceCountryCode() const
 {
     const unsigned int countrycode = m_Flags.m_FlagBits.AssetRegion & 15;
 
-    //	NOTE: obvious fix - original code assumes that asset country code cannot be tampered with, since it's validated when loading.
+    // NOTE: obvious fix - original code assumes that asset country code cannot be tampered with, since it's validated when loading.
 #ifdef INCLUDE_FIXES
     if (countrycode < 6)
 #else
@@ -217,7 +217,7 @@ AssetInstance::AssetInstance(const char* const assetname, Asset* (*creatorptr)()
 
     Assets.push_back(this);
 
-    //	NOTE: this is temporary just to get VMT pointer, so destroy after use.
+    // NOTE: this is temporary just to get VMT pointer, so destroy after use.
     Asset* asset = m_Creator();
     m_ResourceTypeMethods = (void*)(*(int*)asset);
     Asset::Destroy(asset);

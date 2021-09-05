@@ -13,7 +13,7 @@ struct MutableTextureBuffer
     MutableTextureBuffer();  //  @424110  //  NOTE: unused.
     ~MutableTextureBuffer(); //  @424140
 
-    void						EmplaceSurfaceAtIndex(Surface* surf, const unsigned int ind);   //  @4242D0
+    void      EmplaceSurfaceAtIndex(Surface* surf, const unsigned int ind);   //  @4242D0
     Surface*                    GetSurfaceByIndex(const unsigned int ind) const; //  @423D80
     ScreenResolution&           GetImageResolution(ScreenResolution& resolution, const int surfaceindex) const;    //  @423D60
     ScreenResolution&           GetTextureResolution(ScreenResolution& resolution, const int surfaceindex) const;    //  @423D40

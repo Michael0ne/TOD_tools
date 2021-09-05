@@ -8,8 +8,8 @@ class MeshBuffer
 {
 protected:
     Mesh           *m_Mesh;
-    int		        field_4;
-    int		        field_8;
+    int          field_4;
+    int          field_8;
     VertexBuffer   *m_VertexBuffer;
     IndexBuffer    *m_IndexBuffer;
     String          field_14;
@@ -21,8 +21,8 @@ protected:
     Vector4f        field_34;   //  NOTE: boundaries?
 
 public:
-    MeshBuffer(Mesh* mutablemesh, const int);	//	@4617D0
-    ~MeshBuffer();	//	@4616F0
+    MeshBuffer(Mesh* mutablemesh, const int); // @4617D0
+    ~MeshBuffer(); // @4616F0
 
     void* operator new(size_t size)
     {

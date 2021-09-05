@@ -9,17 +9,17 @@
 #include "Entity.h"
 #include "Scene.h"
 
-std::vector<GlobalProperty>		GlobalPropertiesList;
-std::map<String, unsigned int>	GlobalPropertiesMap;
-std::vector<GlobalCommand>		GlobalCommandsList;
-std::map<String, unsigned int>	GlobalCommandsMap;
+std::vector<GlobalProperty>  GlobalPropertiesList;
+std::map<String, unsigned int> GlobalPropertiesMap;
+std::vector<GlobalCommand>  GlobalCommandsList;
+std::map<String, unsigned int> GlobalCommandsMap;
 std::vector<GlobalScript*> GlobalScript::ScriptsList;
 std::vector<Node*> GlobalScript::SceneScriptEntitiesList;
 
-unsigned int	GlobalPropertyListChecksum;
-bool			GlobalPropertyListChecksumObtained;
-unsigned int	GlobalCommandListChecksum;
-bool			GlobalCommandListChecksumObtained;
+unsigned int GlobalPropertyListChecksum;
+bool   GlobalPropertyListChecksumObtained;
+unsigned int GlobalCommandListChecksum;
+bool   GlobalCommandListChecksumObtained;
 DataType*       GlobalScriptsArray[410];
 Node* CacheScriptNode;
 Node* CommonScriptNode;
@@ -218,8 +218,8 @@ void ReadDatabaseFile(const char* path)
         return;
 
     DWORD timeStart = Timer::GetMilliseconds();
-    unsigned int	totalProperties = NULL;
-    unsigned int	totalCommands = NULL;
+    unsigned int totalProperties = NULL;
+    unsigned int totalCommands = NULL;
 
     dbfile.Read(&totalProperties, sizeof(totalProperties));
     GlobalPropertiesList.reserve(totalProperties);
@@ -273,7 +273,7 @@ bool FindScript(const char* const scriptname, String& zipname)
 #pragma message(TODO_IMPLEMENTATION)
 void LoadScripts()
 {
-    //	NOTE: register built-in scripts.
+    // NOTE: register built-in scripts.
     ScriptType::ScriptFieldsList fields;
     fields.Add("RecievingEntity", DataType::LoadScript("Entity"), 0);
     fields.Add("Damage", DataType::LoadScript("number"), 0);
@@ -740,7 +740,7 @@ void LoadScripts()
 #ifdef INCLUDE_FIXES
         LogDump::LogA("%s built-in properties initialized.\n", GlobalCommandsList.size());
 #else
-        GlobalCommandsList.size();	//	NOTE: why?
+        GlobalCommandsList.size(); // NOTE: why?
 #endif
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_BUILTIN_CRC)
@@ -760,13 +760,13 @@ void LoadScripts()
 #ifdef INCLUDE_FIXES
         LogDump::LogA("%s more properties loaded.\n", GlobalCommandsList.size());
 #else
-        GlobalCommandsList.size();	//	NOTE: why?
+        GlobalCommandsList.size(); // NOTE: why?
 #endif
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)
         GetGlobalCommandListChecksum();
 
-    //	NOTE: global variables?
+    // NOTE: global variables?
     GlobalScriptsArray[65] = DataType::LoadScript("list(entity)");
     GlobalScriptsArray[50] = DataType::LoadScript("list(string)");
     GlobalScriptsArray[334] = DataType::LoadScript("list(truth)");
@@ -861,7 +861,7 @@ void LoadScripts()
     GlobalScriptsArray[221] = DataType::LoadScript("s_ctrlbone");
     GlobalScriptsArray[400] = DataType::LoadScript("random_sound");
     
-    //	NOTE: register game scripts.
+    // NOTE: register game scripts.
     //  TODO: probably, these should be moved on top of this source file, only call actual Create functions here.
     #include "scripts/common.h"
     #include "scripts/HUD_health_bar.h"
@@ -871,12 +871,12 @@ void LoadScripts()
     #include "scripts/Ladder_Root.h"
     #include "scripts/Magnet.h"
     #include "scripts/MarcoDist.h"
-    //	TODO: much much more.
+    // TODO: much much more.
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)
         GetGlobalCommandListChecksum();
 
-    //	TODO: assign loaded scripts to global variables here.
+    // TODO: assign loaded scripts to global variables here.
 }
 
 void GlobalProperty::GetNameAndType(String& outStr) const
@@ -1011,14 +1011,14 @@ GlobalCommand::GlobalCommand(const char* const commandname, const unsigned int c
             {
                 DataType* argscripttype = DataType::LoadScript(tok);
 #ifdef INCLUDE_FIXES
-                //	NOTE: this should NOT happen!
+                // NOTE: this should NOT happen!
                 if (!argscripttype)
                 {
                     LogDump::LogA("*** Failed to load script \"%s\" ( command: \"%s\" ) ***\n", tok, commandname);
                     AddArgumentType(tNOTHING);
                 }
                 else
-#endif					
+#endif     
                 AddArgumentType(argscripttype);
                 tok = strtok(NULL, ",");
             }
@@ -1283,7 +1283,7 @@ void GlobalScript::AssignCommonNodes()
 
 unsigned int GlobalScript::GetScriptIdByFullName(const char* const name)
 {
-    //	TODO: there's a trouble when looking for an Entity-specific properties. Take that into account?
+    // TODO: there's a trouble when looking for an Entity-specific properties. Take that into account?
     const char* ddpos = strchr(name, ':');
     char scriptname[256] = {};
     size_t scriptnamelen = 0;

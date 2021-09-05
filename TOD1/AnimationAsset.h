@@ -27,13 +27,13 @@ protected:
     short                   field_66;
 
 private:
-    AnimationAsset();	//	@900080
+    AnimationAsset(); // @900080
 
 public:
     virtual AssetInstance* GetInstancePtr() const override;
 
-    static void            CreateInstance();	//	@900980
-    static AnimationAsset* Create();	//	@900EF0
+    static void            CreateInstance(); // @900980
+    static AnimationAsset* Create(); // @900EF0
 };
 
 ASSERT_CLASS_SIZE(AnimationAsset, 104);

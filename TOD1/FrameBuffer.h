@@ -54,8 +54,8 @@ protected:
     FrameBuffer        *field_58;
 
 public:
-    FrameBuffer(unsigned int a1, unsigned char a2, unsigned int a3);	//	@436B00
-    ~FrameBuffer();	//	@4361E0
+    FrameBuffer(unsigned int a1, unsigned char a2, unsigned int a3); // @436B00
+    ~FrameBuffer(); // @4361E0
 
     void* operator new(size_t size)
     {

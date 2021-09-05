@@ -24,7 +24,7 @@ protected:
     int             m_AnimFlags;
     unsigned int    m_Flags;
 public:
-    AnimSlot();	//	@905D90
+    AnimSlot(); // @905D90
     virtual ~AnimSlot();
 };
 

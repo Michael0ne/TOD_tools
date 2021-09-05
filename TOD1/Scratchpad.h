@@ -6,21 +6,21 @@
 class Scratchpad
 {
 private:
-	char	_pad[1076] = {};
+ char _pad[1076] = {};
 public:
-	Scratchpad();
-	~Scratchpad();
+ Scratchpad();
+ ~Scratchpad();
 
-	void* operator new (size_t size)
-	{
-		return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-	}
-	void operator delete(void* ptr)
-	{
-		if (ptr)
-			MemoryManager::ReleaseMemory(ptr, 0);
-		ptr = nullptr;
-	}
+ void* operator new (size_t size)
+ {
+  return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+ }
+ void operator delete(void* ptr)
+ {
+  if (ptr)
+   MemoryManager::ReleaseMemory(ptr, 0);
+  ptr = nullptr;
+ }
 };
 
 extern Scratchpad* g_Scratchpad;

@@ -1,24 +1,24 @@
 #include "DieselPowerSound.h"
 
-DieselPower* g_DieselPower = nullptr;	//	@A5E848
+DieselPower* g_DieselPower = nullptr; // @A5E848
 
-const char             *DieselPower::RequiredVersion = AUDIO_DIESELPO_DLL_SUPPORTED_VERSION;	//	@A1BA50	//	NOTE: this becomes unused, since 'CheckDllVersion' doesn't use this for now.
-char					DieselPower::DetectedVersion[64];	//	@A5E800
-HMODULE					DieselPower::LibraryHandle;	//	@A5E840
-int						DieselPower::ErrorCode;	//	@A5E844
-DIESELPOWERCREATEPROC	DieselPower::FactoryFunction;	//	@A5E868;
-char				   *DieselPower::ErrorMessageBuffer;	//	@A5E700
-bool					DieselPower::InstanceAcquired;	//	@A5E84C
-unsigned int			DieselPower::VersionNumberMajor;	//	@A5E850
-unsigned int			DieselPower::VersionNumberMinor;	//	@A5E854
-unsigned int			DieselPower::VersionNumberBuild;	//	@A5E858
-unsigned int			DieselPower::VersionNumberRequiredMajor;	//	@A5E85C
-unsigned int			DieselPower::VersionNumberRequiredMinor;	//	@A5E860
-unsigned int			DieselPower::VersionNumberRequiredBuild;	//	@A5E864
+const char             *DieselPower::RequiredVersion = AUDIO_DIESELPO_DLL_SUPPORTED_VERSION; // @A1BA50 // NOTE: this becomes unused, since 'CheckDllVersion' doesn't use this for now.
+char     DieselPower::DetectedVersion[64]; // @A5E800
+HMODULE     DieselPower::LibraryHandle; // @A5E840
+int      DieselPower::ErrorCode; // @A5E844
+DIESELPOWERCREATEPROC DieselPower::FactoryFunction; // @A5E868;
+char       *DieselPower::ErrorMessageBuffer; // @A5E700
+bool     DieselPower::InstanceAcquired; // @A5E84C
+unsigned int   DieselPower::VersionNumberMajor; // @A5E850
+unsigned int   DieselPower::VersionNumberMinor; // @A5E854
+unsigned int   DieselPower::VersionNumberBuild; // @A5E858
+unsigned int   DieselPower::VersionNumberRequiredMajor; // @A5E85C
+unsigned int   DieselPower::VersionNumberRequiredMinor; // @A5E860
+unsigned int   DieselPower::VersionNumberRequiredBuild; // @A5E864
 
 bool DieselPower::CheckDllVersion()
 {
-    //	NOTE: below is a recreation of what was a pretty good compiler optimization work.
+    // NOTE: below is a recreation of what was a pretty good compiler optimization work.
     sscanf_s(DetectedVersion, "v.%d.%d.%d.", &VersionNumberMajor, &VersionNumberMinor, &VersionNumberBuild);
     sscanf_s(AUDIO_DIESELPO_DLL_SUPPORTED_VERSION, "v.%d.%d.%d.", &VersionNumberRequiredMajor, &VersionNumberRequiredMinor, &VersionNumberRequiredBuild);
 
@@ -93,7 +93,7 @@ DieselPower* DieselPower::CallFactory(unsigned int versionMajor, unsigned int ve
     if (LibraryHandle)
     {
         if (!FactoryFunction)
-            FactoryFunction = (DIESELPOWERCREATEPROC)GetProcAddress(LibraryHandle, MAKEINTRESOURCE(1));	//	NOTE: DieselPower dll doesn't actually export function name, just ordinal number.
+            FactoryFunction = (DIESELPOWERCREATEPROC)GetProcAddress(LibraryHandle, MAKEINTRESOURCE(1)); // NOTE: DieselPower dll doesn't actually export function name, just ordinal number.
 
         if (!FactoryFunction)
         {

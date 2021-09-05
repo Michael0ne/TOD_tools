@@ -32,16 +32,16 @@ private:
 
     static const char* const    GetKeyPressedString_Impl();  //  @924ED0
 
-    static ControlSetup*	Create(AllocatorIndex);	//	@925810
+    static ControlSetup* Create(AllocatorIndex); // @925810
 
 public:
-    static ControlSetup*	CurrentController;	//	@A3E16C
-    static bool&			WaitForController;	//	@A3E168
-    static short*			WaitForControllerText;	//	@A3E164
+    static ControlSetup* CurrentController; // @A3E16C
+    static bool&   WaitForController; // @A3E168
+    static short*   WaitForControllerText; // @A3E164
 
-    static void				Register();	//	@925BA0
+    static void    Register(); // @925BA0
 };
 
-extern EntityType* tControlSetup;	//	@A3E15C
+extern EntityType* tControlSetup; // @A3E15C
 
 ASSERT_CLASS_SIZE(ControlSetup, 96);

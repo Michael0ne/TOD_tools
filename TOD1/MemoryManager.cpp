@@ -21,226 +21,226 @@ MemoryManager MemoryManager::g_Allocators;
 
 void MemoryManager::CreateAllocators()
 {
-	static FrameBasedSubAllocator ALLOCATOR_MAIN_ASSETS;
-	static FrameBasedSubAllocator ALLOCATOR_MISSION_ASSETS;
-	static FrameBasedSubAllocator ALLOCATOR_CUTSCENE_OR_REWIND;
-	static FrameBasedSubAllocator ALLOCATOR_PLAYER_DATA;
-	static FirstFitSubAllocator ALLOCATOR_TEMP;
-	static BestFitAllocator ALLOCATOR_RENDERLIST;
-	static StackBasedSubAllocator ALLOCATOR_SCRATCHPAD;
-	static PoolSubAllocator ALLOCATOR_COLLISION_CACHE_ENTRIES(48, 4);
-	static BestFitAllocator ALLOCATOR_DEFRAGMENTING;
-	static Defragmentator DEFRAGMENTATOR(&ALLOCATOR_DEFRAGMENTING, 1, 100000);
+ static FrameBasedSubAllocator ALLOCATOR_MAIN_ASSETS;
+ static FrameBasedSubAllocator ALLOCATOR_MISSION_ASSETS;
+ static FrameBasedSubAllocator ALLOCATOR_CUTSCENE_OR_REWIND;
+ static FrameBasedSubAllocator ALLOCATOR_PLAYER_DATA;
+ static FirstFitSubAllocator ALLOCATOR_TEMP;
+ static BestFitAllocator ALLOCATOR_RENDERLIST;
+ static StackBasedSubAllocator ALLOCATOR_SCRATCHPAD;
+ static PoolSubAllocator ALLOCATOR_COLLISION_CACHE_ENTRIES(48, 4);
+ static BestFitAllocator ALLOCATOR_DEFRAGMENTING;
+ static Defragmentator DEFRAGMENTATOR(&ALLOCATOR_DEFRAGMENTING, 1, 100000);
 
-	InitAllocator(ALLOCATOR_CUTSCENE_OR_REWIND, CUTSCENE_OR_REWIND, "ALLOCATOR_CUTSCENE_OR_REWIND", 0x200000);
-	InitAllocator(ALLOCATOR_PLAYER_DATA, PLAYER_DATA, "ALLOCATOR_PLAYER_DATA", 0x300000);
-	InitAllocator(ALLOCATOR_MISSION_ASSETS, MISSION_ASSETS, "ALLOCATOR_MISSION_ASSETS", 0x700000);
-	InitAllocator(ALLOCATOR_MAIN_ASSETS, MAIN_ASSETS, "ALLOCATOR_MAIN_ASSETS", 0x5A00000);
-	InitAllocator(ALLOCATOR_COLLISION_CACHE_ENTRIES, COLLISION_CACHE_ENTRIES, "ALLOCATOR_COLLISION_CACHE_ENTRIES", 0x3E800);
-	InitAllocator(ALLOCATOR_DEFRAGMENTING, DEFRAGMENTING, "ALLOCATOR_DEFRAGMENTING", 0x96000);
-	InitAllocator(ALLOCATOR_RENDERLIST, RENDERLIST, "ALLOCATOR_RENDERLIST", 0xA00000);
-	InitAllocator(ALLOCATOR_TEMP, TEMP, "ALLOCATOR_TEMP", 0x40000);
-	InitAllocator(ALLOCATOR_SCRATCHPAD, SCRATCHPAD, "ALLOCATOR_SCRATCHPAD", 0x3FC0);
+ InitAllocator(ALLOCATOR_CUTSCENE_OR_REWIND, CUTSCENE_OR_REWIND, "ALLOCATOR_CUTSCENE_OR_REWIND", 0x200000);
+ InitAllocator(ALLOCATOR_PLAYER_DATA, PLAYER_DATA, "ALLOCATOR_PLAYER_DATA", 0x300000);
+ InitAllocator(ALLOCATOR_MISSION_ASSETS, MISSION_ASSETS, "ALLOCATOR_MISSION_ASSETS", 0x700000);
+ InitAllocator(ALLOCATOR_MAIN_ASSETS, MAIN_ASSETS, "ALLOCATOR_MAIN_ASSETS", 0x5A00000);
+ InitAllocator(ALLOCATOR_COLLISION_CACHE_ENTRIES, COLLISION_CACHE_ENTRIES, "ALLOCATOR_COLLISION_CACHE_ENTRIES", 0x3E800);
+ InitAllocator(ALLOCATOR_DEFRAGMENTING, DEFRAGMENTING, "ALLOCATOR_DEFRAGMENTING", 0x96000);
+ InitAllocator(ALLOCATOR_RENDERLIST, RENDERLIST, "ALLOCATOR_RENDERLIST", 0xA00000);
+ InitAllocator(ALLOCATOR_TEMP, TEMP, "ALLOCATOR_TEMP", 0x40000);
+ InitAllocator(ALLOCATOR_SCRATCHPAD, SCRATCHPAD, "ALLOCATOR_SCRATCHPAD", 0x3FC0);
 
-	InitAllocatorsBuffers();
+ InitAllocatorsBuffers();
 
-	ALLOCATOR_RENDERLIST.field_20 = NULL;
-	ALLOCATOR_COLLISION_CACHE_ENTRIES.field_20 = NULL;
-	ALLOCATOR_SCRATCHPAD.field_20 = NULL;
+ ALLOCATOR_RENDERLIST.field_20 = NULL;
+ ALLOCATOR_COLLISION_CACHE_ENTRIES.field_20 = NULL;
+ ALLOCATOR_SCRATCHPAD.field_20 = NULL;
 }
 
 void MemoryManager::InitAllocator(Allocator& alloc, AllocatorIndex allocind, const char* const allocname, unsigned int allocsize)
 {
-	alloc.m_SystemAllocators = alloc.GetSystemAllocatorsTable();
+ alloc.m_SystemAllocators = alloc.GetSystemAllocatorsTable();
 
-	AllocatorsList[allocind] = &alloc;
-	alloc.m_AllocatorIndex = allocind;
-	BuffersPtr[allocind] = alloc.m_SystemAllocators._malloc((allocsize + 64) & 0xFFFFFFC0);
-	alloc.SetNameAndAllocatedSpaceParams(BuffersPtr[allocind], allocname, allocsize);
+ AllocatorsList[allocind] = &alloc;
+ alloc.m_AllocatorIndex = allocind;
+ BuffersPtr[allocind] = alloc.m_SystemAllocators._malloc((allocsize + 64) & 0xFFFFFFC0);
+ alloc.SetNameAndAllocatedSpaceParams(BuffersPtr[allocind], allocname, allocsize);
 }
 
 void MemoryManager::InitAllocatorsBuffers()
 {
-	TotalAllocators = 0;
-	unsigned char v19[12] = {};
-	char* v0 = nullptr;
+ TotalAllocators = 0;
+ unsigned char v19[12] = {};
+ char* v0 = nullptr;
 
-	for (int ind = DEFRAGMENTING; ind != 1; --ind)
-	{
-		void* v1 = (void*)-1;
-		int v2 = -1;
-		for (int currallocator = 1; currallocator < TOTAL; ++currallocator)
-		{
-			void* v4 = AllocatorsList[currallocator]->GetAllocatedSpacePtr();
-			if (!v19[currallocator] && v4 < v1)
-			{
-				v1 = v4;
-				v2 = currallocator;
-			}
-		}
+ for (int ind = DEFRAGMENTING; ind != 1; --ind)
+ {
+  void* v1 = (void*)-1;
+  int v2 = -1;
+  for (int currallocator = 1; currallocator < TOTAL; ++currallocator)
+  {
+   void* v4 = AllocatorsList[currallocator]->GetAllocatedSpacePtr();
+   if (!v19[currallocator] && v4 < v1)
+   {
+    v1 = v4;
+    v2 = currallocator;
+   }
+  }
 
-		if (v1 > (void*)(((unsigned int)v0 + 7) & 0xFFFFFFF8))
-		{
-			_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
-			_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
-			TotalAllocators++;
-		}
+  if (v1 > (void*)(((unsigned int)v0 + 7) & 0xFFFFFFF8))
+  {
+   _A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
+   _A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
+   TotalAllocators++;
+  }
 
-		_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = AllocatorsList[v2]->GetAllocatedSpacePtr();
-		_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[v2];
-		TotalAllocators++;
+  _A3AFE8[TotalAllocators].m_AllocatedSpacePtr = AllocatorsList[v2]->GetAllocatedSpacePtr();
+  _A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[v2];
+  TotalAllocators++;
 
-		v0 = (char*)AllocatorsList[v2]->GetAllocatedSpacePtr() + AllocatorsList[v2]->GetAllocatedSpaceSize();
+  v0 = (char*)AllocatorsList[v2]->GetAllocatedSpacePtr() + AllocatorsList[v2]->GetAllocatedSpaceSize();
 
-		v19[v2] = 1;
-	}
+  v19[v2] = 1;
+ }
 
-	_A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
-	_A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
-	TotalAllocators++;
+ _A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
+ _A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
+ TotalAllocators++;
 }
 
 MemoryManager::MemoryManager()
 {
-	MESSAGE_CLASS_CREATED(MemoryManager);
+ MESSAGE_CLASS_CREATED(MemoryManager);
 
-	static SystemSubAllocator ALLOCATOR_DEFAULT;
+ static SystemSubAllocator ALLOCATOR_DEFAULT;
 
-	ALLOCATOR_DEFAULT.m_AllocatorName = "ALLOCATOR_DEFAULT";
-	ALLOCATOR_DEFAULT.field_20 = NULL;
-	ALLOCATOR_DEFAULT.m_AllocatorIndex = DEFAULT;
+ ALLOCATOR_DEFAULT.m_AllocatorName = "ALLOCATOR_DEFAULT";
+ ALLOCATOR_DEFAULT.field_20 = NULL;
+ ALLOCATOR_DEFAULT.m_AllocatorIndex = DEFAULT;
 
-	AllocatorsList[DEFAULT] = &ALLOCATOR_DEFAULT;
-	AllocatorsList[MAIN_ASSETS] = nullptr;
-	AllocatorsList[MISSION_ASSETS] = nullptr;
-	AllocatorsList[CUTSCENE_OR_REWIND] = nullptr;
-	AllocatorsList[PLAYER_DATA] = nullptr;
-	AllocatorsList[TEMP] = nullptr;
-	AllocatorsList[RENDERLIST] = nullptr;
-	AllocatorsList[SCRATCHPAD] = nullptr;
-	AllocatorsList[COLLISION_CACHE_ENTRIES] = nullptr;
-	AllocatorsList[DEFRAGMENTING] = nullptr;
+ AllocatorsList[DEFAULT] = &ALLOCATOR_DEFAULT;
+ AllocatorsList[MAIN_ASSETS] = nullptr;
+ AllocatorsList[MISSION_ASSETS] = nullptr;
+ AllocatorsList[CUTSCENE_OR_REWIND] = nullptr;
+ AllocatorsList[PLAYER_DATA] = nullptr;
+ AllocatorsList[TEMP] = nullptr;
+ AllocatorsList[RENDERLIST] = nullptr;
+ AllocatorsList[SCRATCHPAD] = nullptr;
+ AllocatorsList[COLLISION_CACHE_ENTRIES] = nullptr;
+ AllocatorsList[DEFRAGMENTING] = nullptr;
 
-	BuffersPtr[MAIN_ASSETS] = nullptr;
-	BuffersPtr[MISSION_ASSETS] = nullptr;
-	BuffersPtr[CUTSCENE_OR_REWIND] = nullptr;
-	BuffersPtr[PLAYER_DATA] = nullptr;
-	BuffersPtr[TEMP] = nullptr;
-	BuffersPtr[RENDERLIST] = nullptr;
-	BuffersPtr[SCRATCHPAD] = nullptr;
-	BuffersPtr[COLLISION_CACHE_ENTRIES] = nullptr;
-	BuffersPtr[DEFRAGMENTING] = nullptr;
+ BuffersPtr[MAIN_ASSETS] = nullptr;
+ BuffersPtr[MISSION_ASSETS] = nullptr;
+ BuffersPtr[CUTSCENE_OR_REWIND] = nullptr;
+ BuffersPtr[PLAYER_DATA] = nullptr;
+ BuffersPtr[TEMP] = nullptr;
+ BuffersPtr[RENDERLIST] = nullptr;
+ BuffersPtr[SCRATCHPAD] = nullptr;
+ BuffersPtr[COLLISION_CACHE_ENTRIES] = nullptr;
+ BuffersPtr[DEFRAGMENTING] = nullptr;
 
-	BufferPtr = malloc(1024);
+ BufferPtr = malloc(1024);
 
-	CreateAllocators();
+ CreateAllocators();
 
-	_A3AFB8 = 0xABCDEF;
+ _A3AFB8 = 0xABCDEF;
 
-	InitializeCriticalSection(&AllocatorsCriticalSection);
+ InitializeCriticalSection(&AllocatorsCriticalSection);
 }
 
 MemoryManager::~MemoryManager()
 {
-	MESSAGE_CLASS_DESTROYED(MemoryManager);
+ MESSAGE_CLASS_DESTROYED(MemoryManager);
 
-	if (BufferPtr)
-		free(BufferPtr);
+ if (BufferPtr)
+  free(BufferPtr);
 
-	for (unsigned int ind = 0; ind < 9; ++ind)
-		if (AllocatorsList[ind + 1])
-			AllocatorsList[ind + 1]->m_SystemAllocators._free(BuffersPtr[ind + 1]);
+ for (unsigned int ind = 0; ind < 9; ++ind)
+  if (AllocatorsList[ind + 1])
+   AllocatorsList[ind + 1]->m_SystemAllocators._free(BuffersPtr[ind + 1]);
 
-	Released = true;
+ Released = true;
 }
 
 char MemoryManager::_477BC0(void* ptr, int a2)
 {
-	if (a2 <= NULL)
-		return 1;
+ if (a2 <= NULL)
+  return 1;
 
-	return GetAllocatorByMemoryPointer(ptr)->stub34((int*)ptr, a2);
+ return GetAllocatorByMemoryPointer(ptr)->stub34((int*)ptr, a2);
 }
 
 DefragmentatorBase* MemoryManager::_4777F0(AllocatorIndex allocind)
 {
-	return AllocatorsList[allocind]->m_Defragmentator;
+ return AllocatorsList[allocind]->m_Defragmentator;
 }
 
 void MemoryManager::ReleaseMemory(void* ptr, bool aligned)
 {
-	if (Released)
-		return;
+ if (Released)
+  return;
 
 #ifdef INCLUDE_FIXES
-	if (!ptr)
-		return;
+ if (!ptr)
+  return;
 #endif
 
-	EnterCriticalSection(&AllocatorsCriticalSection);
+ EnterCriticalSection(&AllocatorsCriticalSection);
 
-	//	NOTE: figure out which allocator has allocated this memory and use it's method to free memory.
-	int ind = TotalAllocators - 1;
-	void* _allocspace = nullptr;
-	if (ptr < _A3AFE8[TotalAllocators].m_AllocatedSpacePtr)
-	{
-		do
-		{
-			_allocspace = _A3AFE8[ind--].m_AllocatedSpacePtr;
-		} while (ptr < _allocspace);
-	}
+ // NOTE: figure out which allocator has allocated this memory and use it's method to free memory.
+ int ind = TotalAllocators - 1;
+ void* _allocspace = nullptr;
+ if (ptr < _A3AFE8[TotalAllocators].m_AllocatedSpacePtr)
+ {
+  do
+  {
+   _allocspace = _A3AFE8[ind--].m_AllocatedSpacePtr;
+  } while (ptr < _allocspace);
+ }
 
-	if (aligned)
-		_A3AFE8[ind].m_Allocator->FreeAligned(ptr);
-	else
-		_A3AFE8[ind].m_Allocator->Free(ptr);
+ if (aligned)
+  _A3AFE8[ind].m_Allocator->FreeAligned(ptr);
+ else
+  _A3AFE8[ind].m_Allocator->Free(ptr);
 
-	LeaveCriticalSection(&AllocatorsCriticalSection);
+ LeaveCriticalSection(&AllocatorsCriticalSection);
 }
 
 Allocator* MemoryManager::GetAllocatorByMemoryPointer(void* ptr)
 {
-	int allocInd = TotalAllocators - 1;
-	void* _spaceptr = nullptr;
+ int allocInd = TotalAllocators - 1;
+ void* _spaceptr = nullptr;
 
-	if (ptr < _A3AFE8[TotalAllocators].m_AllocatedSpacePtr)
-	{
-		do
-		{
-			_spaceptr = _A3AFE8[allocInd--].m_AllocatedSpacePtr;
-		} while (ptr < _spaceptr);
-	}
+ if (ptr < _A3AFE8[TotalAllocators].m_AllocatedSpacePtr)
+ {
+  do
+  {
+   _spaceptr = _A3AFE8[allocInd--].m_AllocatedSpacePtr;
+  } while (ptr < _spaceptr);
+ }
 
-	return _A3AFE8[allocInd].m_Allocator;
+ return _A3AFE8[allocInd].m_Allocator;
 }
 
 void* MemoryManager::Realloc(void* oldptr, size_t newsize, bool a3)
 {
-	if (Released)
-		return nullptr;
+ if (Released)
+  return nullptr;
 
-	EnterCriticalSection(&AllocatorsCriticalSection);
+ EnterCriticalSection(&AllocatorsCriticalSection);
 
-	Allocator* _allocator = GetAllocatorByMemoryPointer(oldptr);
-	void* newptr = _allocator->Realloc(oldptr, newsize, NULL, NULL);
-	if (!newptr && newsize && (_allocator->field_20 || !a3))
-	{
-		if (BufferPtr)
-		{
-			delete BufferPtr;
-			BufferPtr = nullptr;
-		}
-	}
+ Allocator* _allocator = GetAllocatorByMemoryPointer(oldptr);
+ void* newptr = _allocator->Realloc(oldptr, newsize, NULL, NULL);
+ if (!newptr && newsize && (_allocator->field_20 || !a3))
+ {
+  if (BufferPtr)
+  {
+   delete BufferPtr;
+   BufferPtr = nullptr;
+  }
+ }
 
-	LeaveCriticalSection(&AllocatorsCriticalSection);
+ LeaveCriticalSection(&AllocatorsCriticalSection);
 
-	return newptr;
+ return newptr;
 }
 
 void* MemoryManager::AllocateByType(AllocatorIndex allocind, size_t size)
 {
-	if (Released)
-		return nullptr;
-	else
-		return AllocatorsList[allocind]->Allocate_A(size, NULL, NULL);
+ if (Released)
+  return nullptr;
+ else
+  return AllocatorsList[allocind]->Allocate_A(size, NULL, NULL);
 }
