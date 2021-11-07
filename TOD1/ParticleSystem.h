@@ -84,6 +84,7 @@ public:
     ParticleSystem(); // @8EB650
 
     static bool     LodAndFade; // @A08944
+    static Vector4f CameraOrigin;   //  @A35E18
 };
 
 ASSERT_CLASS_SIZE(ParticleSystem, 244);

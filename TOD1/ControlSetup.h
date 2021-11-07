@@ -25,12 +25,14 @@ private:
     const int               GetControlId_Impl(const char* const controlname) const; //  @9250E0
 
     void                    IsControlDown(int* args) const; //  @610000
-    const bool              IsControlDown_Impl(const int controlid) const;  //  @925880
-    float                   GetControlPressForce(const int, float* pressure, float* realpressure, bool* pressed, bool* released) const;    //  @925210
+    const bool              IsControlDown_Impl(const float controlid) const;  //  @925880
+    float                   GetControlPressForce(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const;    //  @925210
 
     void                    GetKeyPressedString(char** args) const; //  @6D8200
 
     static const char* const    GetKeyPressedString_Impl();  //  @924ED0
+    static bool             AnyControllerStickMoved(const int controllerindex); //  @925040
+    static bool             AnyControllerButtonPressed(const int controllerindex);  //  @925000
 
     static ControlSetup* Create(AllocatorIndex); // @925810
 

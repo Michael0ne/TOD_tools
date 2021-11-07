@@ -21,759 +21,787 @@ STICKYKEYS Window::StickyKeysFeature = { 8, 0 };
 TOGGLEKEYS Window::ToggleKeysFeature = { 8, 0 };
 FILTERKEYS Window::FilterKeysFeature = { 24, 0, 0, 0, 0, 0 };
 
+void Window::QuitGame()
+{
+    m_QuitRequested = true;
+}
+
 bool Window::ProcessMessages()
 {
- tagMSG Msg;
+    tagMSG Msg;
 
- if (!PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
-  return true;
+    if (!PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
+        return true;
 
- while (Msg.message != WM_QUIT)
- {
-  TranslateMessage(&Msg);
-  DispatchMessage(&Msg);
+    while (Msg.message != WM_QUIT)
+    {
+        TranslateMessage(&Msg);
+        DispatchMessage(&Msg);
 
-  if (!PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
-   return true;
- }
+        if (!PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
+            return true;
+    }
 
- return false;
+    return false;
+}
+
+void Window::SetMenuClickCallback(MenuItemClickCallback callback)
+{
+    m_MenuItemClickCallback = callback;
 }
 
 void Window::SetWindowResolutionRaw(const Vector2<unsigned int>& resolution)
 {
- SetWindowPos(m_WindowHandle, 0, 0, 0, resolution.x, resolution.y, SWP_NOMOVE);
+    SetWindowPos(m_WindowHandle, 0, 0, 0, resolution.x, resolution.y, SWP_NOMOVE);
 }
 
 void Window::SetWindowResolutionDontMove(const Vector2<unsigned int>& resolution)
 {
- tagRECT  Rect = { 0, 0, (LONG)resolution.x, (LONG)resolution.y };
- DWORD  dwMenuName = GetClassLongA(m_WindowHandle, GCL_MENUNAME);
- DWORD  dwStyle = GetWindowLongA(m_WindowHandle, GWL_STYLE);
+    tagRECT  Rect = { 0, 0, (LONG)resolution.x, (LONG)resolution.y };
+    DWORD  dwMenuName = GetClassLongA(m_WindowHandle, GCL_MENUNAME);
+    DWORD  dwStyle = GetWindowLongA(m_WindowHandle, GWL_STYLE);
 
- AdjustWindowRect(&Rect, dwStyle, dwMenuName);
- SetWindowPos(m_WindowHandle, 0, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, SWP_NOMOVE);
+    AdjustWindowRect(&Rect, dwStyle, dwMenuName);
+    SetWindowPos(m_WindowHandle, 0, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, SWP_NOMOVE);
 }
 
-void Window::_GetWindowRect(Vector2<LONG>& outRect)
+void Window::GetWindowTopPosition(Vector2<LONG>& outRect)
 {
- tagRECT  WindowRect;
+    tagRECT  WindowRect;
 
- if (m_WindowHandle)
- {
-  GetWindowRect(m_WindowHandle, &WindowRect);
+    if (m_WindowHandle)
+    {
+        GetWindowRect(m_WindowHandle, &WindowRect);
 
-  m_WindowLeft = WindowRect.left;
-  m_WindowTop = WindowRect.top;
- }
+        m_WindowLeft = WindowRect.left;
+        m_WindowTop = WindowRect.top;
+    }
 
- if (m_WindowLeft < 0 || m_WindowTop < 0)
- {
-  m_WindowLeft = 0;
-  m_WindowTop = 0;
- }
+    if (m_WindowLeft < 0 || m_WindowTop < 0)
+    {
+        m_WindowLeft = 0;
+        m_WindowTop = 0;
+    }
 
- outRect.x = m_WindowLeft;
- outRect.y = m_WindowTop;
+    outRect.x = m_WindowLeft;
+    outRect.y = m_WindowTop;
 }
 
 void Window::GetTopCorner(Vector2<LONG>& outRect) const
 {
- tagRECT  Rect;
+    tagRECT  Rect;
 
- GetClientRect(m_WindowHandle, &Rect);
+    GetClientRect(m_WindowHandle, &Rect);
 
- outRect.x = Rect.left;
- outRect.y = Rect.top;
+    outRect.x = Rect.left;
+    outRect.y = Rect.top;
 }
 
 void Window::GetWindowCenterRelative(Vector2<LONG>& outRect) const
 {
- tagRECT  Rect;
+    tagRECT  Rect;
 
- GetWindowRect(m_WindowHandle, &Rect);
+    GetWindowRect(m_WindowHandle, &Rect);
 
- outRect.x = Rect.right - Rect.left;
- outRect.y = Rect.bottom - Rect.top;
+    outRect.x = Rect.right - Rect.left;
+    outRect.y = Rect.bottom - Rect.top;
 }
 
 void Window::GetClientCenterRelative(Vector2<LONG>& outRect) const
 {
- tagRECT  Rect;
+    tagRECT  Rect;
 
- GetClientRect(m_WindowHandle, &Rect);
+    GetClientRect(m_WindowHandle, &Rect);
 
- outRect.x = Rect.right - Rect.left;
- outRect.y = Rect.bottom - Rect.top;
+    outRect.x = Rect.right - Rect.left;
+    outRect.y = Rect.bottom - Rect.top;
 }
 
-void Window::_SetWindowPos(Vector2<int>& pos)
+void Window::SetWindowPositionNative(const Vector2<int>& pos)
 {
- SetWindowPos(m_WindowHandle, 0, pos.x, pos.y, 0, 0, SWP_NOSIZE);
+    SetWindowPos(m_WindowHandle, 0, pos.x, pos.y, 0, 0, SWP_NOSIZE);
 }
 
-void Window::SetWindowPosNoCopyBits(tagPOINT* newPos)
+void Window::SetWindowPosNoCopyBits(const tagPOINT& newPos)
 {
- tagRECT  WindowRect;
- tagRECT  NewRect;
+    tagRECT  WindowRect;
+    tagRECT  NewRect;
 
- DWORD dwMenuName = GetClassLongA(m_WindowHandle, GCL_MENUNAME);
- DWORD dwStyle = GetWindowLongA(m_WindowHandle, GWL_STYLE);
+    DWORD dwMenuName = GetClassLongA(m_WindowHandle, GCL_MENUNAME);
+    DWORD dwStyle = GetWindowLongA(m_WindowHandle, GWL_STYLE);
 
- GetWindowRect(m_WindowHandle, &WindowRect);
+    GetWindowRect(m_WindowHandle, &WindowRect);
 
- NewRect.left = newPos->x;
- NewRect.top = newPos->y;
- NewRect.right = WindowRect.right - WindowRect.left + newPos->x;
- NewRect.bottom = WindowRect.bottom - WindowRect.top + newPos->y;
+    NewRect.left = newPos.x;
+    NewRect.top = newPos.y;
+    NewRect.right = WindowRect.right - WindowRect.left + newPos.x;
+    NewRect.bottom = WindowRect.bottom - WindowRect.top + newPos.y;
 
- AdjustWindowRect(&NewRect, dwStyle, dwMenuName);
- SetWindowPos(m_WindowHandle, 0, NewRect.left, NewRect.top, 0, 0, SWP_NOCOPYBITS);
+    AdjustWindowRect(&NewRect, dwStyle, dwMenuName);
+    SetWindowPos(m_WindowHandle, 0, NewRect.left, NewRect.top, 0, 0, SWP_NOCOPYBITS);
 }
 
 void Window::UpdateVisibility()
 {
- bool WindowVisible = true;
+    bool WindowVisible = true;
 
- WINDOWPLACEMENT windowPlacement;
- windowPlacement.length = sizeof(WINDOWPLACEMENT);
- GetWindowPlacement(m_WindowHandle, &windowPlacement);
+    WINDOWPLACEMENT windowPlacement;
+    windowPlacement.length = sizeof(WINDOWPLACEMENT);
+    GetWindowPlacement(m_WindowHandle, &windowPlacement);
 
- if ((windowPlacement.showCmd == SW_MINIMIZE || windowPlacement.showCmd == SW_SHOWMINIMIZED) && !(m_Flags & 4))
-  WindowVisible = false;
+    if ((windowPlacement.showCmd == SW_MINIMIZE || windowPlacement.showCmd == SW_SHOWMINIMIZED) && !(m_Flags & 4))
+        WindowVisible = false;
 
- if (m_Visible != WindowVisible) {
-  m_Visible = WindowVisible;
+    if (m_Visible != WindowVisible) {
+        m_Visible = WindowVisible;
 
-  if (WindowVisible) {
-   g_StreamedSoundBuffers->SetGlobalPause(false);
-  }else{
-   g_StreamedSoundBuffers->SetGlobalPause(true);
-   g_StreamedSoundBuffers->MeasureWaitForSoftPause();
-  }
- }
+        if (WindowVisible) {
+            g_StreamedSoundBuffers->SetGlobalPause(false);
+        }
+        else
+        {
+            g_StreamedSoundBuffers->SetGlobalPause(true);
+            g_StreamedSoundBuffers->MeasureWaitForSoftPause();
+        }
+    }
 }
 
 void Window::SetCursorReleased(bool released)
 {
- m_CursorReleased = released;
+    m_CursorReleased = released;
 
- ShowCursor(released);
+    ShowCursor(released);
 
- if (released)
- {
-  ClipCursor(0);
-  return;
- }
+    if (released)
+    {
+        ClipCursor(0);
+        return;
+    }
 
- tagRECT  WindowRect;
- tagPOINT Point = { 0, 0 };
- RECT  ClipRect;
+    tagRECT  WindowRect;
+    tagPOINT Point = { 0, 0 };
+    RECT  ClipRect;
 
- SetActiveWindow(m_WindowHandle);
- GetClientRect(m_WindowHandle, &WindowRect);
- ClientToScreen(m_WindowHandle, &Point);
+    SetActiveWindow(m_WindowHandle);
+    GetClientRect(m_WindowHandle, &WindowRect);
+    ClientToScreen(m_WindowHandle, &Point);
 
- ClipRect.left = Point.x;
- ClipRect.top = Point.y;
- ClipRect.bottom = WindowRect.bottom;
- ClipRect.right = WindowRect.right;
+    ClipRect.left = Point.x;
+    ClipRect.top = Point.y;
+    ClipRect.bottom = WindowRect.bottom;
+    ClipRect.right = WindowRect.right;
 
- ClipCursor(&ClipRect);
+    ClipCursor(&ClipRect);
 }
 
 int Window::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
 {
- switch (MessageBox(m_WindowHandle, lpText, lpCaption, MessageBoxType[type])) {
- case IDCANCEL:
-  return 2;
-  break;
- case IDYES:
-  return 4;
-  break;
- case IDNO:
-  return 8;
-  break;
- default:
-  return 1;
-  break;
- }
+    switch (MessageBox(m_WindowHandle, lpText, lpCaption, MessageBoxType[type])) {
+    case IDCANCEL:
+        return 2;
+        break;
+    case IDYES:
+        return 4;
+        break;
+    case IDNO:
+        return 8;
+        break;
+    default:
+        return 1;
+        break;
+    }
+}
+
+int Window::GetCoverdemoPlayMode()
+{
+    return 0;
+}
+
+int Window::GetCoverdemoInactiveTimeoutSec() const
+{
+    return -1;
+}
+
+int Window::GetCoverdemoGameplayTimeoutSec() const
+{
+    return -1;
 }
 
 LanguageCode CALLBACK GetSystemLanguageCode()
 {
- CHAR LocaleData[8];
- int  langcode = 0;
- bool bUnk;
+    CHAR LocaleData[8];
+    int  langcode = 0;
+    bool bUnk;
 
- GetLocaleInfoA(LOCALE_SYSTEM_DEFAULT, LOCALE_ILANGUAGE, LocaleData, 5);
- sscanf(LocaleData, "%x", &langcode);
+    GetLocaleInfoA(LOCALE_SYSTEM_DEFAULT, LOCALE_ILANGUAGE, LocaleData, 5);
+    sscanf(LocaleData, "%x", &langcode);
 
- if (langcode > 5132)
- {
-  if (langcode > 13322)
-  {
-   if (langcode > 17418)
-   {
-    if (langcode == 18442 || langcode == 19466)
-     return LANGCODE_SPANISH;
-    bUnk = langcode == 20490;
-   }
-   else
-   {
-    if (langcode == 17418 || langcode == 14346 || langcode == 15370)
-     return LANGCODE_SPANISH;
-    bUnk = langcode == 16394;
-   }
-  }
-  else
-  {
-   if (langcode == 13322)
-    return LANGCODE_SPANISH;
-   if (langcode > 9226)
-   {
-    if (langcode == 10250 || langcode == 11274)
-     return LANGCODE_SPANISH;
-    langcode = langcode == 12298;
-   }
-   else
-   {
-    if (langcode == 9226)
-     return LANGCODE_SPANISH;
-    if (langcode <= 7178)
+    if (langcode > 5132)
     {
-     if (langcode == 7178 || langcode == 6154)
-      return LANGCODE_SPANISH;
-     if (langcode == 6156)
-      return LANGCODE_FRENCH;
-     return LANGCODE_ENGLISH;
+        if (langcode > 13322)
+        {
+            if (langcode > 17418)
+            {
+                if (langcode == 18442 || langcode == 19466)
+                    return LANGCODE_SPANISH;
+                bUnk = langcode == 20490;
+            }
+            else
+            {
+                if (langcode == 17418 || langcode == 14346 || langcode == 15370)
+                    return LANGCODE_SPANISH;
+                bUnk = langcode == 16394;
+            }
+        }
+        else
+        {
+            if (langcode == 13322)
+                return LANGCODE_SPANISH;
+            if (langcode > 9226)
+            {
+                if (langcode == 10250 || langcode == 11274)
+                    return LANGCODE_SPANISH;
+                langcode = langcode == 12298;
+            }
+            else
+            {
+                if (langcode == 9226)
+                    return LANGCODE_SPANISH;
+                if (langcode <= 7178)
+                {
+                    if (langcode == 7178 || langcode == 6154)
+                        return LANGCODE_SPANISH;
+                    if (langcode == 6156)
+                        return LANGCODE_FRENCH;
+                    return LANGCODE_ENGLISH;
+                }
+                bUnk = langcode == 8202;
+            }
+        }
+
+        if (bUnk)
+            return LANGCODE_SPANISH;
+        return LANGCODE_ENGLISH;
     }
-    bUnk = langcode == 8202;
-   }
-  }
+    if (langcode == 5132)
+        return LANGCODE_FRENCH;
+    if (langcode > 3079)
+    {
+        if (langcode <= 4106)
+        {
+            switch (langcode)
+            {
+            case 4106:
+            case 3082:
+                return LANGCODE_SPANISH;
+            case 3084:
+                return LANGCODE_FRENCH;
+            case 4103:
+                return LANGCODE_GERMAN;
+            }
+            return LANGCODE_ENGLISH;
+        }
+        if (langcode == 4108)
+            return LANGCODE_FRENCH;
+        if (langcode == 5127)
+            return LANGCODE_GERMAN;
+        bUnk = langcode == 5130;
 
-  if (bUnk)
-   return LANGCODE_SPANISH;
-  return LANGCODE_ENGLISH;
- }
- if (langcode == 5132)
-  return LANGCODE_FRENCH;
- if (langcode > 3079)
- {
-  if (langcode <= 4106)
-  {
-   switch (langcode)
-   {
-   case 4106:
-   case 3082:
+        if (bUnk)
+            return LANGCODE_SPANISH;
+        return LANGCODE_ENGLISH;
+    }
+    if (langcode == 3079)
+        return LANGCODE_GERMAN;
+    if (langcode <= 2055)
+    {
+        if (langcode != 2055)
+        {
+            switch (langcode)
+            {
+            case 1031:
+                return LANGCODE_GERMAN;
+            case 1034:
+                return LANGCODE_SPANISH;
+            case 1036:
+                return LANGCODE_FRENCH;
+            case 1040:
+                return LANGCODE_ITALIAN;
+            default:
+                return LANGCODE_ENGLISH;
+            }
+            return LANGCODE_ENGLISH;
+        }
+        return LANGCODE_GERMAN;
+    }
+    if (langcode != 2058)
+    {
+        if (langcode != 2060)
+        {
+            if (langcode == 2064)
+                return LANGCODE_ITALIAN;
+            return LANGCODE_ENGLISH;
+        }
+        return LANGCODE_FRENCH;
+    }
     return LANGCODE_SPANISH;
-   case 3084:
-    return LANGCODE_FRENCH;
-   case 4103:
-    return LANGCODE_GERMAN;
-   }
-   return LANGCODE_ENGLISH;
-  }
-  if (langcode == 4108)
-   return LANGCODE_FRENCH;
-  if (langcode == 5127)
-   return LANGCODE_GERMAN;
-  bUnk = langcode == 5130;
-
-  if (bUnk)
-   return LANGCODE_SPANISH;
-  return LANGCODE_ENGLISH;
- }
- if (langcode == 3079)
-  return LANGCODE_GERMAN;
- if (langcode <= 2055)
- {
-  if (langcode != 2055)
-  {
-   switch (langcode)
-   {
-   case 1031:
-    return LANGCODE_GERMAN;
-   case 1034:
-    return LANGCODE_SPANISH;
-   case 1036:
-    return LANGCODE_FRENCH;
-   case 1040:
-    return LANGCODE_ITALIAN;
-   default:
-    return LANGCODE_ENGLISH;
-   }
-   return LANGCODE_ENGLISH;
-  }
-  return LANGCODE_GERMAN;
- }
- if (langcode != 2058)
- {
-  if (langcode != 2060)
-  {
-   if (langcode == 2064)
-    return LANGCODE_ITALIAN;
-   return LANGCODE_ENGLISH;
-  }
-  return LANGCODE_FRENCH;
- }
- return LANGCODE_SPANISH;
 }
 
 void IncompatibleMachineParameterError(ErrorMessageId messageID, char bWarningIcon)
 {
- signed int nMessageId = NULL;
+    signed int nMessageId = NULL;
 
- switch (messageID) {
- case ERRMSG_INCOMPATIBLE_MOUSE:
-  nMessageId = 230;
-  break;
- case ERRMSG_INCOMPATIBLE_KEYBOARD:
-  nMessageId = 240;
-  break;
- case ERRMSG_INCOMPATIBLE_SOUNDCARD:
-  nMessageId = 250;
-  break;
- case ERRMSG_INCOMPATIBLE_VIDEOCARD:
-  nMessageId = 280;
-  break;
- case ERRMSG_DIRECTX9_NOT_FOUND:
-  nMessageId = 260;
-  break;
- case ERRMSG_DISC_NOT_FOUND:
-  nMessageId = 270;
-  break;
- case ERRMSG_INSUFFICIENT_RAM:
-  nMessageId = 290;
-  break;
- }
+    switch (messageID) {
+    case ERRMSG_INCOMPATIBLE_MOUSE:
+        nMessageId = 230;
+        break;
+    case ERRMSG_INCOMPATIBLE_KEYBOARD:
+        nMessageId = 240;
+        break;
+    case ERRMSG_INCOMPATIBLE_SOUNDCARD:
+        nMessageId = 250;
+        break;
+    case ERRMSG_INCOMPATIBLE_VIDEOCARD:
+        nMessageId = 280;
+        break;
+    case ERRMSG_DIRECTX9_NOT_FOUND:
+        nMessageId = 260;
+        break;
+    case ERRMSG_DISC_NOT_FOUND:
+        nMessageId = 270;
+        break;
+    case ERRMSG_INSUFFICIENT_RAM:
+        nMessageId = 290;
+        break;
+    }
 
- char caption[16] = {};
- char text[512] = {};
- LoadString(Window::WindowInstanceHandle, Script::LanguageStringsOffset + 220, caption, sizeof(caption) / sizeof(char));
- LoadString(Window::WindowInstanceHandle, Script::LanguageStringsOffset + nMessageId, text, sizeof(text) / sizeof(char));
+    char caption[16] = {};
+    char text[512] = {};
+    LoadString(Window::WindowInstanceHandle, Script::LanguageStringsOffset + 220, caption, sizeof(caption) / sizeof(char));
+    LoadString(Window::WindowInstanceHandle, Script::LanguageStringsOffset + nMessageId, text, sizeof(text) / sizeof(char));
 
- if (!bWarningIcon)
- {
-  MessageBox(g_Window->m_WindowHandle, text, caption, MB_ICONERROR);
-  exit(1);
- }else
-  MessageBox(g_Window->m_WindowHandle, text, caption, MB_ICONWARNING);
+    if (!bWarningIcon)
+    {
+        MessageBox(g_Window->m_WindowHandle, text, caption, MB_ICONERROR);
+        exit(1);
+    }
+    else
+        MessageBox(g_Window->m_WindowHandle, text, caption, MB_ICONWARNING);
 }
 
 void SetAccessibilityFeatures(bool bCollect)
 {
- if (bCollect)
- {
-  SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
-  SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
-  SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
+    if (bCollect)
+    {
+        SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
+        SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
+        SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
 
-  return;
- }
+        return;
+    }
 
- if (!(Window::StickyKeysFeature.dwFlags & SKF_STICKYKEYSON))
- {
-  Window::StickyKeysFeature.dwFlags &= 0xFFFFFFF3; // SKF_STICKYKEYSON | SKF_AVAILABLE
-  SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
- }
+    if (!(Window::StickyKeysFeature.dwFlags & SKF_STICKYKEYSON))
+    {
+        Window::StickyKeysFeature.dwFlags &= 0xFFFFFFF3; // SKF_STICKYKEYSON | SKF_AVAILABLE
+        SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
+    }
 
- if (!(Window::ToggleKeysFeature.dwFlags & TKF_TOGGLEKEYSON))
- {
-  Window::ToggleKeysFeature.dwFlags &= 0xFFFFFFF3; // TKF_TOGGLEKEYSON | TKF_AVAILABLE
-  SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
- }
+    if (!(Window::ToggleKeysFeature.dwFlags & TKF_TOGGLEKEYSON))
+    {
+        Window::ToggleKeysFeature.dwFlags &= 0xFFFFFFF3; // TKF_TOGGLEKEYSON | TKF_AVAILABLE
+        SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
+    }
 
- if (!(Window::FilterKeysFeature.dwFlags & FKF_FILTERKEYSON))
- {
-  Window::FilterKeysFeature.dwFlags &= 0xFFFFFFF3; // FKF_FILTERYSON | FKF_AVAILABLE
-  SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
- }
+    if (!(Window::FilterKeysFeature.dwFlags & FKF_FILTERKEYSON))
+    {
+        Window::FilterKeysFeature.dwFlags &= 0xFFFFFFF3; // FKF_FILTERYSON | FKF_AVAILABLE
+        SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
+    }
 }
 
-void Window::_CreateWindow(UINT16 nIconResourceId)
+void Window::CreateWindowInstance(UINT16 nIconResourceId)
 {
- DWORD windowStyle = (m_Flags & 1) != 0 ? WS_CAPTION | WS_MAXIMIZE : WS_CAPTION | WS_MINIMIZE;
- if (nIconResourceId)
-  windowStyle |= WS_SYSMENU;
+    DWORD windowStyle = (m_Flags & 1) != 0 ? WS_CAPTION | WS_MAXIMIZE : WS_CAPTION | WS_MINIMIZE;
+    if (nIconResourceId)
+        windowStyle |= WS_SYSMENU;
 
- m_WindowHandle = CreateWindowExA(WS_EX_APPWINDOW, m_WindowTitle.m_Str, m_WindowTitle.m_Str, windowStyle, NULL, NULL, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, WindowInstanceHandle, nullptr);
+    m_WindowHandle = CreateWindowExA(WS_EX_APPWINDOW, m_WindowTitle.m_Str, m_WindowTitle.m_Str, windowStyle, NULL, NULL, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, WindowInstanceHandle, nullptr);
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
- Vector2<LONG> wndRect;
+    Vector2<LONG> wndRect;
 
- if (Msg <= WM_SETCURSOR)
- {
-  if (Msg != WM_SETCURSOR)
-  {
-   if (Msg == WM_DESTROY
+    if (Msg <= WM_SETCURSOR)
+    {
+        if (Msg != WM_SETCURSOR)
+        {
+            if (Msg == WM_DESTROY
 #ifdef INCLUDE_FIXES
-    || Msg == WM_CLOSE
+                || Msg == WM_CLOSE
 #endif
-    )
-   {
-    g_Window->_GetWindowRect(wndRect);
-    g_Window->m_CursorReleased = true;
-    ShowCursor(1);
-    ClipCursor(0);
-    PostQuitMessage(0);
-    g_Window->m_WindowHandle = NULL;
+                )
+            {
+                g_Window->GetWindowTopPosition(wndRect);
+                g_Window->m_CursorReleased = true;
+                ShowCursor(1);
+                ClipCursor(0);
+                PostQuitMessage(0);
+                g_Window->m_WindowHandle = NULL;
 
-    return 0;
-   }
+                return 0;
+            }
 
-   if (Msg != WM_ERASEBKGND)
-   {
-    if (Msg == WM_ACTIVATEAPP && !wParam && g_GfxInternal_Dx9)
-     if (g_GfxInternal_Dx9->m_Windowed)
-      ShowWindow(hWnd, SW_MINIMIZE);
+            if (Msg != WM_ERASEBKGND)
+            {
+                if (Msg == WM_ACTIVATEAPP && !wParam && g_GfxInternal_Dx9)
+                    if (g_GfxInternal_Dx9->m_Windowed)
+                        ShowWindow(hWnd, SW_MINIMIZE);
 
-    return DefWindowProc(hWnd, Msg, wParam, lParam);
-   }
-   return 1;
-  }
-  if (!g_Window->m_CursorReleased)
-  {
-   SetCursor(0);
-   return 0;
-  }
-  SetCursor(g_Window->m_Cursor);
+                return DefWindowProc(hWnd, Msg, wParam, lParam);
+            }
+            return 1;
+        }
+        if (!g_Window->m_CursorReleased)
+        {
+            SetCursor(0);
+            return 0;
+        }
+        SetCursor(g_Window->m_Cursor);
 
-  return DefWindowProc(hWnd, Msg, wParam, lParam);
- }
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
+    }
 
- if (Msg != WM_NCHITTEST)
- {
-  if (Msg == WM_COMMAND)
-  {
-   if (g_Window->m_MenuItemClickedCallback)
-    g_Window->m_MenuItemClickedCallback(wParam);
+    if (Msg != WM_NCHITTEST)
+    {
+        if (Msg == WM_COMMAND)
+        {
+            if (g_Window->m_MenuItemClickCallback)
+                g_Window->m_MenuItemClickCallback(wParam);
 
-   return DefWindowProc(hWnd, Msg, wParam, lParam);
-  }
+            return DefWindowProc(hWnd, Msg, wParam, lParam);
+        }
 
-  if (Msg == WM_SYSCOMMAND &&
-   (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) &&
-   g_GfxInternal_Dx9->m_Windowed)
-   return 1;
-  
-  return DefWindowProc(hWnd, Msg, wParam, lParam);
- }
+        if (Msg == WM_SYSCOMMAND &&
+            (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) &&
+            g_GfxInternal_Dx9->m_Windowed)
+            return 1;
 
- if (!g_GfxInternal_Dx9->m_Windowed)
-  return DefWindowProc(hWnd, Msg, wParam, lParam);
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
+    }
 
- return 1;
+    if (!g_GfxInternal_Dx9->m_Windowed)
+        return DefWindowProc(hWnd, Msg, wParam, lParam);
+
+    return 1;
 }
 
-void Window::Process(bool (*GameLoop)(void))
+void Window::Process(GameLoopCallback callback)
 {
- ShowWindow(m_WindowHandle, SW_SHOW);
+    ShowWindow(m_WindowHandle, SW_SHOW);
 
- while (true)
- {
-  if (m_QuitRequested)
-   SendMessage(m_WindowHandle, WM_CLOSE, 0, 0);
+    while (true)
+    {
+        if (m_QuitRequested)
+            SendMessage(m_WindowHandle, WM_CLOSE, 0, 0);
 
-  if (!ProcessMessages())
-   break;
+        if (!ProcessMessages())
+            break;
 
-  UpdateVisibility();
+        UpdateVisibility();
 
-  if (m_Visible)
-  {
-   if (g_InputMouse)
-    g_InputMouse->Process();
+        if (m_Visible)
+        {
+            if (g_InputMouse)
+                g_InputMouse->Process();
 
-   if (g_InputKeyboard)
-    g_InputKeyboard->Process();
+            if (g_InputKeyboard)
+                g_InputKeyboard->Process();
 
-   Input::Gamepad::Process();
+            Input::Gamepad::Process();
 
-   if (!GameLoop())
-    return;
+            if (!callback())
+                return;
 
-   if (g_InputMouse)
-    g_InputMouse->ResetButtonsState();
+            if (g_InputMouse)
+                g_InputMouse->ResetButtonsState();
 
-   if (g_InputKeyboard)
-    g_InputKeyboard->Reset();
-  }
-  else
-   WaitMessage();
- }
+            if (g_InputKeyboard)
+                g_InputKeyboard->Reset();
+        }
+        else
+            WaitMessage();
+    }
 }
 
 ATOM Window::RegisterWindowClass(UINT16 menuResId, UINT16 iconResId)
 {
- WNDCLASSA WndClass;
+    WNDCLASSA WndClass;
 
- LogDump::LogA("Creating menu with resource ID: %d\n", menuResId);
+    LogDump::LogA("Creating menu with resource ID: %d\n", menuResId);
 
- WndClass.hCursor = 0;
- WndClass.hIcon = LoadIcon(WindowInstanceHandle, MAKEINTRESOURCE(iconResId));
- WndClass.lpszMenuName = MAKEINTRESOURCE(menuResId);
- WndClass.lpszClassName = m_WindowTitle.m_Str;
- WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
- WndClass.hInstance = WindowInstanceHandle;
- WndClass.style = CS_VREDRAW | CS_HREDRAW;
- WndClass.lpfnWndProc = WindowProc;
- WndClass.cbClsExtra = NULL;
- WndClass.cbWndExtra = NULL;
+    WndClass.hCursor = 0;
+    WndClass.hIcon = LoadIcon(WindowInstanceHandle, MAKEINTRESOURCE(iconResId));
+    WndClass.lpszMenuName = MAKEINTRESOURCE(menuResId);
+    WndClass.lpszClassName = m_WindowTitle.m_Str;
+    WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    WndClass.hInstance = WindowInstanceHandle;
+    WndClass.style = CS_VREDRAW | CS_HREDRAW;
+    WndClass.lpfnWndProc = WindowProc;
+    WndClass.cbClsExtra = NULL;
+    WndClass.cbWndExtra = NULL;
 
- return RegisterClassA(&WndClass);
+    return RegisterClassA(&WndClass);
 }
 
 #ifdef INCLUDE_FIXES
 int CALLBACK MenuClickCallback(WPARAM wParam)
 {
- if (wParam == 40006) {
-  // ID_EXIT
-  g_Window->m_QuitRequested = true;
+    if (wParam == 40006) {
+        // ID_EXIT
+        g_Window->m_QuitRequested = true;
 
-  return NULL;
- }
+        return NULL;
+    }
 
- ProcessDebugMenuOption(g_Window->m_WindowHandle, Window::WindowInstanceHandle, wParam);
+    ProcessDebugMenuOption(g_Window->m_WindowHandle, Window::WindowInstanceHandle, wParam);
 
- return 1;
+    return 1;
 }
 #endif
 
 Window::Window(const char* wndClassName, int flags, UINT16 menuResId, char* fileSystem, UINT16 iconResId)
 {
- MESSAGE_CLASS_CREATED(Window);
+    MESSAGE_CLASS_CREATED(Window);
 
- HKEY    phkResult;
- char    szDesktopPath[MAX_PATH];
- MEMORYSTATUSEX  memoryStatus;
+    HKEY    phkResult;
+    char    szDesktopPath[MAX_PATH];
+    MEMORYSTATUSEX  memoryStatus;
 
- m_Flags = flags;
- m_Visible = true;
+    m_Flags = flags;
+    m_Visible = true;
 #ifdef INCLUDE_FIXES
- m_MenuItemClickedCallback = MenuClickCallback;
+    m_MenuItemClickCallback = MenuClickCallback;
 #else
- m_MenuItemClickedCallback = nullptr;
+    m_MenuItemClickedCallback = nullptr;
 #endif
- m_CursorReleased = true;
- m_QuitRequested = false;
+    m_CursorReleased = true;
+    m_QuitRequested = false;
 
- m_WindowTitle = wndClassName;
+    m_WindowTitle = wndClassName;
 
- if (!RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\", 0, KEY_QUERY_VALUE, &phkResult)) {
-  DWORD nMaxValueSize = MAX_PATH;
-  RegQueryValueEx(phkResult, "Desktop", NULL, NULL, (byte*)szDesktopPath, &nMaxValueSize);
-  RegCloseKey(phkResult);
- }
+    if (!RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\", 0, KEY_QUERY_VALUE, &phkResult)) {
+        DWORD nMaxValueSize = MAX_PATH;
+        RegQueryValueEx(phkResult, "Desktop", NULL, NULL, (byte*)szDesktopPath, &nMaxValueSize);
+        RegCloseKey(phkResult);
+    }
 
- m_UserDesktopPath = szDesktopPath;
+    m_UserDesktopPath = szDesktopPath;
 
- RegisterWindowClass(menuResId, iconResId);
- _CreateWindow(menuResId);
+    RegisterWindowClass(menuResId, iconResId);
+    CreateWindowInstance(menuResId);
 
- m_Cursor = LoadCursor(NULL, IDC_ARROW);
+    m_Cursor = LoadCursor(NULL, IDC_ARROW);
 
- SystemParametersInfo(SPI_GETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
- SystemParametersInfo(SPI_GETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
- SystemParametersInfo(SPI_GETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
+    SystemParametersInfo(SPI_GETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
+    SystemParametersInfo(SPI_GETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
+    SystemParametersInfo(SPI_GETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
 
- SetAccessibilityFeatures(false);
+    SetAccessibilityFeatures(false);
 
- memoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
- GlobalMemoryStatusEx(&memoryStatus);
+    memoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
+    GlobalMemoryStatusEx(&memoryStatus);
 
- if (memoryStatus.ullTotalPhys < (251 * 1024 * 1024))
-  IncompatibleMachineParameterError(ERRMSG_INSUFFICIENT_RAM, true);
+    if (memoryStatus.ullTotalPhys < (251 * 1024 * 1024))
+        IncompatibleMachineParameterError(ERRMSG_INSUFFICIENT_RAM, true);
 }
 
 Window::~Window()
 {
- MESSAGE_CLASS_DESTROYED(Window);
+    MESSAGE_CLASS_DESTROYED(Window);
 
- if (m_WindowHandle)
-  DestroyWindow(m_WindowHandle);
+    if (m_WindowHandle)
+        DestroyWindow(m_WindowHandle);
 
- SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
- SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
- SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
+    SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
+    SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
+    SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
 }
 
-BOOL Window::_SetTitle(LPCSTR lpString)
+BOOL Window::SetWindowTitle(LPCSTR lpString)
 {
- m_WindowTitle = lpString;
+    m_WindowTitle = lpString;
 
- return SetWindowText(m_WindowHandle, lpString);
+    return SetWindowText(m_WindowHandle, lpString);
 }
 
-void Window::SetDesktopDirectory(const char* pDesktopPath)
+void Window::SetDesktopDirectory(LPCSTR pDesktopPath)
 {
- m_UserDesktopPath = pDesktopPath;
+    m_UserDesktopPath = pDesktopPath;
 }
 
 void SetGlobalInstanceHandle(HINSTANCE inst)
 {
- Window::WindowInstanceHandle = inst;
+    Window::WindowInstanceHandle = inst;
 }
 
 void SetGlobalCmdLinePtr(LPSTR cmdl)
 {
- Window::CmdLine = cmdl;
+    Window::CmdLine = cmdl;
 }
 
 #ifdef _EXE
 static FILE* logfile;
 void debug(char* message, ...)
 {
- if (!logfile)
-  return;
- SYSTEMTIME t;
- GetLocalTime(&t);
- fprintf(logfile, "%02d/%02d/%04d %02d:%02d:%02d.%03d ", t.wDay, t.wMonth, t.wYear, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
- va_list arg;
- va_start(arg, message);
- vfprintf(logfile, message, arg);
- fflush(logfile);
- va_end(arg);
+    if (!logfile)
+        return;
+    SYSTEMTIME t;
+    GetLocalTime(&t);
+    fprintf(logfile, "%02d/%02d/%04d %02d:%02d:%02d.%03d ", t.wDay, t.wMonth, t.wYear, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
+    va_list arg;
+    va_start(arg, message);
+    vfprintf(logfile, message, arg);
+    fflush(logfile);
+    va_end(arg);
 }
 #endif
 
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
 #ifdef _EXE
- // Begin tracing.
- fopen_s(&logfile, "tod_trace.log", "ab");
- if (!logfile)
-  return false;
- debug("Log Started!\n");
+    // Begin tracing.
+    fopen_s(&logfile, "tod_trace.log", "ab");
+    if (!logfile)
+        return false;
+    debug("Log Started!\n");
 #endif
 
- Timer::Init();
- Sleep(10);
- Timer::Calculate();
+    Timer::Init();
+    Sleep(10);
+    Timer::Calculate();
 
- Window::WindowInstanceHandle = hInstance;
- Window::CmdLine = lpCmdLine;
+    Window::WindowInstanceHandle = hInstance;
+    Window::CmdLine = lpCmdLine;
 
- char exefname[1024] = {};
- char exedir[1024] = {};
- char exeext[8] = {};
- char fname[16] = {};
- DWORD procIdArr[1024];
- DWORD procIdRetnSize = NULL;
+    char exefname[1024] = {};
+    char exedir[1024] = {};
+    char exeext[8] = {};
+    char fname[16] = {};
+    DWORD procIdArr[1024];
+    DWORD procIdRetnSize = NULL;
 
- GetModuleFileName(GetModuleHandle(nullptr), exefname, sizeof(exefname));
- String::ConvertBackslashes(exefname);
- File::ExtractFilePath(exefname, exedir, fname, exeext);
+    GetModuleFileName(GetModuleHandle(nullptr), exefname, sizeof(exefname));
+    String::ConvertBackslashes(exefname);
+    File::ExtractFilePath(exefname, exedir, fname, exeext);
 
- char exefullname[32] = {};
- strcpy(exefullname, fname);
- strcat(exefullname, ".");
- strcat(exefullname, exeext);
+    char exefullname[32] = {};
+    strcpy(exefullname, fname);
+    strcat(exefullname, ".");
+    strcat(exefullname, exeext);
 
- if (EnumProcesses(procIdArr, sizeof(procIdArr), &procIdRetnSize))
- {
-  unsigned int copiesRunning = NULL;
+    if (EnumProcesses(procIdArr, sizeof(procIdArr), &procIdRetnSize))
+    {
+        unsigned int copiesRunning = NULL;
 
-  if (procIdRetnSize >> 2)
-  {
-   for (unsigned int i = NULL; i < (procIdRetnSize >> 2); i++)
-    if (IsProcessAGameProcess(procIdArr[i], exefullname))
-     copiesRunning++;
+        if (procIdRetnSize >> 2)
+        {
+            for (unsigned int i = NULL; i < (procIdRetnSize >> 2); i++)
+                if (IsProcessAGameProcess(procIdArr[i], exefullname))
+                    copiesRunning++;
 
 #ifdef INCLUDE_FIXES
-   LogDump::LogA("Found %d already running game instances!\n", copiesRunning);
+            LogDump::LogA("Found %d already running game instances!\n", copiesRunning);
 #else
-   if (copiesRunning > 1)
-    exit(1);
+            if (copiesRunning > 1)
+                exit(1);
 #endif
-  }
+        }
 
-  FileWrapper::FindGameDir();
-  InitialiseGame(lpCmdLine);
- }
+        FileWrapper::FindGameDir();
+        InitialiseGame(lpCmdLine);
+    }
 
 #ifdef _EXE
- // Stop tracing.
- if (logfile)
- {
-  debug("Log Closed!\n\n");
-  fclose(logfile);
-  logfile = NULL;
- }
+    // Stop tracing.
+    if (logfile)
+    {
+        debug("Log Closed!\n\n");
+        fclose(logfile);
+        logfile = NULL;
+    }
 #endif
 
- return NULL;
+    return NULL;
 }
 
 bool IsProcessAGameProcess(DWORD procId, LPCSTR exename)
 {
- HMODULE procModHnd;
- DWORD procModRetn;
- CHAR procModBaseName[MAX_PATH];
- HANDLE procHnd = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, procId);
+    HMODULE procModHnd;
+    DWORD procModRetn;
+    CHAR procModBaseName[MAX_PATH];
+    HANDLE procHnd = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, procId);
 
- if (procHnd && EnumProcessModules(procHnd, &procModHnd, sizeof(procModHnd), &procModRetn))
- {
-  GetModuleBaseName(procHnd, procModHnd, procModBaseName, sizeof(procModBaseName));
+    if (procHnd && EnumProcessModules(procHnd, &procModHnd, sizeof(procModHnd), &procModRetn))
+    {
+        GetModuleBaseName(procHnd, procModHnd, procModBaseName, sizeof(procModBaseName));
 
-  if (!strcmp(procModBaseName, exename))
-   return true;
- }
+        if (!strcmp(procModBaseName, exename))
+            return true;
+    }
 
- CloseHandle(procHnd);
+    CloseHandle(procHnd);
 
- return false;
+    return false;
 }
 
 void GetUserDocumentsDir(String& outString)
 {
- char pszPath[MAX_PATH];
+    char pszPath[MAX_PATH];
 
- if (SHGetFolderPath(0, CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE, NULL, NULL, pszPath) != S_FALSE)
-  outString = pszPath;
+    if (SHGetFolderPath(0, CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE, NULL, NULL, pszPath) != S_FALSE)
+        outString = pszPath;
 }
 
 void SetWarningString(const char* (*ptr)())
 {
- WarningStringProc = ptr;
+    WarningStringProc = ptr;
 }
 
 const char* GetWarningString()
 {
- if (WarningStringProc)
-  return WarningStringProc();
- else
-  return NULL;
+    if (WarningStringProc)
+        return WarningStringProc();
+    else
+        return NULL;
 }
 
 #ifndef _EXE
 inline void PATCH_WINDOW()
 {
- void * dwFunc;
+    void* dwFunc;
 
- _asm mov  eax, offset Window::ProcessMessages
- _asm mov  dwFunc, eax
- // Override ShouldProcessMessages function.
- hook(0x46F7FB, dwFunc, PATCH_NOTHING);
- hook(0x46FACF, dwFunc, PATCH_NOTHING);
- hook(0x470A55, dwFunc, PATCH_NOTHING);
- hook(0x470B59, dwFunc, PATCH_NOTHING);
- hook(0x470B9E, dwFunc, PATCH_NOTHING);
- hook(0x473C1E, dwFunc, PATCH_NOTHING);
- hook(0x473F88, dwFunc, PATCH_NOTHING);
- hook(0x475A90, dwFunc, PATCH_NOTHING);
- hook(0x475A90, dwFunc, PATCH_NOTHING);
- hook(0x475D4B, dwFunc, PATCH_NOTHING);
- hook(0x475F4B, dwFunc, PATCH_NOTHING);
+    _asm mov  eax, offset Window::ProcessMessages
+    _asm mov  dwFunc, eax
+    // Override ShouldProcessMessages function.
+    hook(0x46F7FB, dwFunc, PATCH_NOTHING);
+    hook(0x46FACF, dwFunc, PATCH_NOTHING);
+    hook(0x470A55, dwFunc, PATCH_NOTHING);
+    hook(0x470B59, dwFunc, PATCH_NOTHING);
+    hook(0x470B9E, dwFunc, PATCH_NOTHING);
+    hook(0x473C1E, dwFunc, PATCH_NOTHING);
+    hook(0x473F88, dwFunc, PATCH_NOTHING);
+    hook(0x475A90, dwFunc, PATCH_NOTHING);
+    hook(0x475A90, dwFunc, PATCH_NOTHING);
+    hook(0x475D4B, dwFunc, PATCH_NOTHING);
+    hook(0x475F4B, dwFunc, PATCH_NOTHING);
 
- _asm mov  eax, offset Window::QuitGame
- _asm mov  dwFunc, eax
- // Override QuitGame function.
- hook(0x485666, dwFunc, PATCH_NOTHING);
+    _asm mov  eax, offset Window::QuitGame
+    _asm mov  dwFunc, eax
+    // Override QuitGame function.
+    hook(0x485666, dwFunc, PATCH_NOTHING);
 
- // Override WinMain function.
- hook(0x95383F, &WinMain, PATCH_CALL);
+    // Override WinMain function.
+    hook(0x95383F, &WinMain, PATCH_CALL);
 }
 #endif

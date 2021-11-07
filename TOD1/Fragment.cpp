@@ -4,41 +4,41 @@
 
 Fragment::Fragment(Node* owner)
 {
- MESSAGE_CLASS_CREATED(Fragment);
+    MESSAGE_CLASS_CREATED(Fragment);
 
- m_FragmentRes = nullptr;
- field_8 = nullptr;
- m_UniqueId = {};
- m_Owner = owner;
- m_Name = nullptr;
+    m_FragmentRes = nullptr;
+    field_8 = nullptr;
+    m_UniqueId = {};
+    m_Owner = owner;
+    m_Name = nullptr;
 }
 
 void Fragment::SetFragmentName(const char* fragmentname)
 {
- if (m_Name)
-  delete[] m_Name;
+    if (m_Name)
+        delete[] m_Name;
 
- m_Name = new char[52];
- strcpy(m_Name, fragmentname);
+    m_Name = new char[52];
+    strcpy(m_Name, fragmentname);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void Fragment::LoadResourceFile(const char* fname)
 {
- //ResType::ResourceHolder reshld;
- //reshld.LoadResourceFromBlock(fname);
- //m_FragmentRes->ApplyLoadedResource(reshld);
+    //ResType::ResourceHolder reshld;
+    //reshld.LoadResourceFromBlock(fname);
+    //m_FragmentRes->ApplyLoadedResource(reshld);
 
- //if (reshld.m_Resource)
-  //g_AssetManager->DecreaseResourceReferenceCount(reshld.m_Resource);
+    //if (reshld.m_Resource)
+     //g_AssetManager->DecreaseResourceReferenceCount(reshld.m_Resource);
 }
 
 void Fragment::ApplyFragment() const
 {
- if (m_FragmentRes && m_FragmentRes->m_ResourceTimestamp)
- {
-  g_AssetManager->SetSceneName(m_FragmentRes->m_ResourcePath);
-  m_FragmentRes->ApplyFragmentResource(m_Owner->m_Id >> 8, true);
-  g_AssetManager->RemoveLastSceneName();
- }
+    if (m_FragmentRes && m_FragmentRes->m_ResourceTimestamp)
+    {
+        g_AssetManager->SetSceneName(m_FragmentRes->m_ResourcePath);
+        m_FragmentRes->ApplyFragmentResource(m_Owner->m_Id >> 8, true);
+        g_AssetManager->RemoveLastSceneName();
+    }
 }

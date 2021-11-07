@@ -30,9 +30,9 @@ protected:
     bool   m_CreateIfNotFound;
     bool   m_ExecuteAttribute;
     bool   m_Read;
-    char*   m_Buffer;
-    char*   m_BufferBegin;
-    char*   m_BufferEnd;
+    char* m_Buffer;
+    char* m_BufferBegin;
+    char* m_BufferEnd;
 
 protected:
     FileWrapper(const char* _filename, int _desiredaccess, bool _createifnotfound); // @438180
@@ -47,7 +47,7 @@ public:
     {
         return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
     }
-    void operator delete(void* ptr)
+        void operator delete(void* ptr)
     {
         if (ptr)
             MemoryManager::ReleaseMemory(ptr, false);
@@ -190,7 +190,7 @@ public:
     {
         return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
     }
-    void operator delete(void* ptr)
+        void operator delete(void* ptr)
     {
         if (ptr)
             MemoryManager::ReleaseMemory(ptr, false);
@@ -203,38 +203,39 @@ public:
         ptr = nullptr;
     }
 
-    unsigned int GetSize(); // @417C10
-    bool   IsFileOpen() const; // @417CF0
-    char   ReadString(String& outStr); // @4180C0
-    void   SetPosAligned(unsigned char alignind); // @417DF0
-    int    ReadIntLittleToBigEndian(); // @417870
-    short   ReadShortLittleToBigEndian(); // @4178C0
-    HANDLE   GetFileHandle(); // @417FD0
+    unsigned int    GetSize(); // @417C10
+    bool            IsFileOpen() const; // @417CF0
+    char            ReadString(String& outStr); // @4180C0
+    void            SetPosAligned(unsigned char alignind); // @417DF0
+    int             ReadIntLittleToBigEndian(); // @417870
+    short           ReadShortLittleToBigEndian(); // @4178C0
+    HANDLE          GetFileHandle(); // @417FD0
 
-    static void  AddDirectoryMappingsListEntry(const char* str1, const char* str2); // @418F90
-    static String& GetPathFromDirectoryMappings(String& outStr, const char* path); // @41A360
-    static void  ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension); // @4088E0
+    static void     AddDirectoryMappingsListEntry(const char* str1, const char* str2); // @418F90
+    static String&  GetPathFromDirectoryMappings(String& outStr, const char* path); // @41A360
+    static void     ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension); // @4088E0
     static void     ExtractFileExtension(String& outStr, const char* const path);   //  @409420
-    static String* ExtractFileDir(String& outStr, const char* path); // @409360
-    static String* ExtractFileName(String& outStr, const char* path); // @4093B0
-    static void  FindDirectoryMappedFileAndDelete(const char* const filename); // @418810
-    static bool  FindFileEverywhere(const char* path); // @4182A0
-    static time_t GetFileTimestamp(const char* filename); // @418460
-    static void  OpenZip(const char* const zipName); // @419100
-    static void  ReadZipDirectories(const char* fileSystem); // @419550
+    static String*  ExtractFileDir(String& outStr, const char* path); // @409360
+    static String*  ExtractFileName(String& outStr, const char* path); // @4093B0
+    static void     FindDirectoryMappedFileAndDelete(const char* const filename); // @418810
+    static bool     FindFileEverywhere(const char* path); // @4182A0
+    static time_t   GetFileTimestamp(const char* filename); // @418460
+    static void     OpenZip(const char* const zipName); // @419100
+    static void     ReadZipDirectories(const char* fileSystem); // @419550
     static ULARGE_INTEGER GetStorageFreeSpace(); // @417D40
-    static bool  IsDirectoryValid(const char* const path); // @418410
-    static bool  IsFileValid(const char* const file); // @418B00
-    static bool  IsFileReadOnly(const char* const file); // @418550
-    static bool  EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList); // @418670
-    static void  CreateNewDirectory(const char* const dir); // @4186F0
-    static void  RemoveDirectory_(const char* const dir); // @418740
-    static void  SetFileAttrib(const char* const file, unsigned int attrib, char unk); // @417D50
-    static bool  SearchScriptFile(const char* const searchpath, const char* const scriptfilename, String& zipname); // @418210
-    static bool  CheckGameFileAttributes(const char* const filename, const FileWrapper::FileAttribute mode); // @417D60
+    static bool     IsDirectoryValid(const char* const path); // @418410
+    static bool     IsFileValid(const char* const file); // @418B00
+    static bool     IsFileReadOnly(const char* const file); // @418550
+    static bool     EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList); // @418670
+    static void     CreateNewDirectory(const char* const dir); // @4186F0
+    static void     RemoveDirectory_(const char* const dir); // @418740
+    static void     SetFileAttrib(const char* const file, unsigned int attrib, char unk); // @417D50
+    static bool     SearchScriptFile(const char* const searchpath, const char* const scriptfilename, String& zipname); // @418210
+    static bool     CheckGameFileAttributes(const char* const filename, const FileWrapper::FileAttribute mode); // @417D60
+    static void     DeleteAllFilesInFolder(const char* const foldername);   //  @418B50
 
     static unsigned int FilesOpen; // @A35DD8
-    static HANDLE FilesSemaphoreArray[FILE_MAX_ZIP_FILES]; // @A35D98
+    static HANDLE       FilesSemaphoreArray[FILE_MAX_ZIP_FILES]; // @A35D98
     static std::vector<StringTuple> DirectoryMappingsList; // @A35DE4
     static unsigned int AlignmentArray[3]; // @9B37E4
 };
@@ -244,7 +245,7 @@ ASSERT_CLASS_SIZE(File, 52);
 class SaveFileHelper : public IFile
 {
 private:
-    char           *m_Buffer;
+    char* m_Buffer;
     int             m_CurrentPos;
     unsigned int    m_BufferSize;
 

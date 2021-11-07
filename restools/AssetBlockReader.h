@@ -64,6 +64,7 @@ public:
         virtual void    SkipNameRead(unsigned char** infobuffer);
         virtual void    SkipAlignment(unsigned char** infobuffer);
         virtual void    SkipSpecificData(unsigned char** infobuffer) = 0;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledTextureAsset : CompiledAsset
@@ -174,6 +175,7 @@ public:
 
         virtual void    PrintInfo() const override;
         virtual void    SkipSpecificData(unsigned char** infobuffer);
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledFontAsset : CompiledAsset

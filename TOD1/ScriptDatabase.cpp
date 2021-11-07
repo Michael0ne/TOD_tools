@@ -1052,7 +1052,7 @@ GlobalScript::GlobalScript(const char* const scriptName, const char* const paren
     field_60 = 0;
 }
 
-void GlobalScript::AddStructElement(const int fieldId, const char* const defaultValue, const unsigned int a3)
+void GlobalScript::AddStructElement(const int fieldId, const char* const defaultValue, const int a3)
 {
 #ifdef INCLUDE_FIXES
     if (fieldId == -1)
@@ -1065,7 +1065,7 @@ void GlobalScript::AddStructElement(const int fieldId, const char* const default
     m_PropertiesList.push_back({ &GlobalProperty::GetById(fieldId), m_PropertiesValues.size(), (char*)defaultValue, a3 });
 }
 
-void GlobalScript::AddMethod(unsigned short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*))
+void GlobalScript::AddMethod(short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*))
 {
     m_MethodsList.push_back({ methodid, 0, scriptthreadhandler, methodptr });
 }
@@ -1309,7 +1309,7 @@ unsigned int GlobalScript::GetScriptIdByFullName(const char* const name)
     return -1;
 }
 
-GlobalCommand::CommandArgument::CommandArgument(String& argname, const DataType* argtype, unsigned int argsize)
+GlobalCommand::Argument::Argument(String& argname, const DataType* argtype, unsigned int argsize)
 {
     m_PropertyName = argname;
     m_ScriptType = (DataType*)argtype;

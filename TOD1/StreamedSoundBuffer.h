@@ -25,10 +25,10 @@ protected:
     float     m_BytesPerSec;
     int      field_1C;
     float     field_20;
-    void*     m_SampledData;
+    void* m_SampledData;
     std::map<int, int>  field_28;
     int      field_34;
-    class StreamedWAV*  m_AuxMonoStream_1;
+    class StreamedWAV* m_AuxMonoStream_1;
     std::vector<int>  m_List;
 
 public:
@@ -40,22 +40,22 @@ class StreamedSoundBuffer : public StreamBuffer
 {
     friend class StreamedSoundBuffers;
 protected:
-    int*     field_4C;
+    int* field_4C;
 
     union
     {
         struct
         {
-            unsigned _0  : 1;
-            unsigned Started  : 1;
-            unsigned PlayRequest  : 1;
-            unsigned StopRequest  : 1;
-            unsigned _4  : 1;
-            unsigned PreLoaded  : 1;
-            unsigned ThreadExited  : 1;
-            unsigned _7  : 1;
-            unsigned LastChunkPlaying  : 1;
-            unsigned Looped  : 1;
+            unsigned _0 : 1;
+            unsigned Started : 1;
+            unsigned PlayRequest : 1;
+            unsigned StopRequest : 1;
+            unsigned _4 : 1;
+            unsigned PreLoaded : 1;
+            unsigned ThreadExited : 1;
+            unsigned _7 : 1;
+            unsigned LastChunkPlaying : 1;
+            unsigned Looped : 1;
             unsigned _10 : 1;
             unsigned _11 : 1;
             unsigned _12 : 1;
@@ -86,20 +86,20 @@ protected:
     int      field_5C;
     char     m_StoppingFinished;
     char                    field_61;
-    void*     m_SoundBufferBlockStartPtr;
+    void* m_SoundBufferBlockStartPtr;
     int      m_SoundBufferBlockSize;
     int      field_6C;
     int      field_70;
-    class StreamedWAV*  m_StreamedWAV;
+    class StreamedWAV* m_StreamedWAV;
     int      field_78;
     int      field_7C;
     LPDWORD     m_ThreadId;
     int      field_84;
     LPDIRECTSOUNDBUFFER  m_DirectSoundBuffer;
-    StreamedSoundBuffer    *field_8C;
+    StreamedSoundBuffer* field_8C;
     LPDIRECTSOUND3DBUFFER m_DirectSound3DBuffer;
-    int*     m_DieselPowerStream;
-    DieselPower      *m_DieselPowerSoundBuffer;
+    int* m_DieselPowerStream;
+    DieselPower* m_DieselPowerSoundBuffer;
     HANDLE     field_9C;
     HANDLE     field_A0;
     HANDLE     m_EventNotify;
@@ -160,7 +160,7 @@ public:
     virtual void   SetSoundPosition(int, const Vector4f*);
     virtual void   GetPosition(Vector4f& outPos, const int);
     virtual void   _443990(int, int*);
-    virtual Vector4f*  _4439E0(Vector4f*, int);
+    virtual Vector4f* _4439E0(Vector4f*, int);
     virtual void   SetPan(int, float);
     virtual float   GetPan(int);
     virtual void   SetFrequency(int, float);

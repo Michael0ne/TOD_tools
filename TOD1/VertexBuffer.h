@@ -19,7 +19,7 @@ public:
     int                         m_VerticiesTotal;
     int                         m_FVF;
     int                         m_Length;
-    char        *m_BufferPtr;
+    char                       *m_BufferPtr;
     short                       m_Stride;
     char                        field_16;
     int                         m_FVFIndex;
