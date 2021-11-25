@@ -66,7 +66,7 @@ The provided files only include Visual Studio-specific "solution" file that is u
 # Contributing
 
 Check 'stdafx' header file for comments about how to write code.
-Also, join my discord server if you have any questions or suggestions: https://discord.gg/C49BvdtK
+Also, join my discord server if you have any questions or suggestions: https://discord.gg/RvUpHDVTct
 
 # License
 
