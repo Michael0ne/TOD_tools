@@ -353,6 +353,11 @@ void AssetBlockReader::CompiledAsset::SkipAlignment(unsigned char** infobuffer)
         *infobuffer += (char)1;
 }
 
+void AssetBlockReader::CompiledAsset::DumpData(const AssetBlockReader* reader)
+{
+    return;
+}
+
 AssetBlockReader::CompiledTextureAsset::CompiledTextureAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
 {
     m_BitsPerPixel = **(unsigned int**)infobuffer;
@@ -395,6 +400,9 @@ void AssetBlockReader::CompiledTextureAsset::SkipSpecificData(unsigned char** in
 
 void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* reader)
 {
+    printf("NOT IMPLEMENTED!\n");
+    return;
+/*
     CompiledTextureAsset::DDS_HEADER ddsheader;
 
     ddsheader.size = sizeof(CompiledTextureAsset::DDS_HEADER);
@@ -439,6 +447,7 @@ void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* re
     fwrite(reader->m_AssetsDataBuffer[i], reader->m_AssetsSizes[i], 1, f);
 
     fclose(f);
+*/
 }
 
 AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)

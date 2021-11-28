@@ -16,7 +16,7 @@ private:
     int             m_SoundFormat;
     int             field_24;
     String          m_FileName;
-    StreamedWAV* m_StreamedWAV;
+    StreamedWAV*    m_StreamedWAV;
 
 public:
     SoundFile(); // @4451C0
@@ -33,12 +33,11 @@ public:
         ptr = nullptr;
     }
 
-    void   _444F90(const String& fn); // @444F90
+    void   ChangeNameIfDifferent(const String& fn); // @444F90  //  NOTE: unused.
     void   CopySoundPropertiesFromStreamedWav(); // @444FE0
     void   CopySoundPropertiesFromStreamedWav_1(); // @445080
     void   ReadStreamedSoundFile(bool a1); // @445370
     void   Open(const char* const filename); // @445510
-    void   ChangeFileNameIfDifferent(const String& fname); // @444F90 // NOTE: unused.
 
     static SoundFile GlobalMonoStream; // @A3DD90
 };

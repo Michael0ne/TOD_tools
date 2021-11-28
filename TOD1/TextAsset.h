@@ -3,6 +3,7 @@
 
 class TextAsset : public Asset
 {
+    friend class TextBox;
 protected:
     struct Dictionary
     {
@@ -28,6 +29,7 @@ protected:
 
     static int          GetGameStringLength(short* str);    //  @4146F0
     static Dictionary*  GetCharacterInfo(Dictionary*);  //  @861760
+    static void         EncodeGameString(short* outString, short* inString);    //  @4147D0
 
     static char*        _A3CE80;    //  @A3CE80
     static int          _A3CE84;    //  @A3CE84

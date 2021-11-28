@@ -20,7 +20,7 @@ protected:
     FontAsset      *m_FontRes;
     int             field_A8;
     String         *m_Text;
-    int           **m_TextSlotsContents;
+    short         **m_TextSlotsContents;
     TextSlot       *m_TextSlot;
     int             field_B8;
     int             m_TextColor;
@@ -68,6 +68,23 @@ public:
     Vector4f*       GetActualBoxSize(Vector4f& outSize) const; // @8FDCD0
     void            SetFont(const char* fontName); // @8FF2F0
     void            ParseFormatting(char* key, float* linescale, int* colorindex, HorizontalAlign* alignment);  //  @8FD570
+    const char*     GetText() const;    //  @8FD720
+    const char*     GetFont() const;    //  @8FD700
+    const int       GetAsciiOffset() const; //  @8FD310
+    void            SetAsciiOffset(const int offset);   //  @8FD320
+    const bool      GetShouldScaleIfWidescreen() const; //  @8FCE60
+    const bool      GetUseGlyphIgnoreColor() const; //  @8FCE50
+    const char*     GetTextSlotByName() const;  //  @8FCE80
+    void            GetTextColor(ColorRGB& outTextColor) const; //  @8FCF40
+    void            GetTextColor2(ColorRGB& outTextColor) const;    //  @8FD080
+    void            GetTextScale(Vector4f& outTextScale) const; //  @8FD1C0
+    const float     GetHorizontalSpacing() const;   //  @8FD260
+    const float     GetVerticalSpacing() const; //  @8FD2A0
+    const bool      GetVerticalClip() const;    //  @8FCE20
+    const bool      GetViewAllSlotIndicies() const; //  @8FCDF0
+    const bool      GetUseSlotIndex() const;    //  @8FCDC0
+    const bool      GetTextresMode() const; //  @8FCDB0
+    void            SetTextSlotParam(unsigned int slotindex, short* slotvalue);   //  @8FD740
 };
 
 ASSERT_CLASS_SIZE(TextBox, 220);

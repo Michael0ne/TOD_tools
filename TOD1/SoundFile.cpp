@@ -21,13 +21,12 @@ SoundFile::~SoundFile()
     delete m_StreamedWAV;
 }
 
-void SoundFile::_444F90(const String& fn)
+void SoundFile::ChangeNameIfDifferent(const String& fn)
 {
-    if (fn == m_FileName)
+    if (fn != m_FileName)
     {
-        // NOTE: why?
         m_FileName = fn;
-        field_24 &= 0xFFFFFFFE;
+        field_24 &= ~1;
     }
 }
 
@@ -111,13 +110,4 @@ void SoundFile::Open(const char* const filename)
 
     m_FileName = finalname;
     ReadStreamedSoundFile(true);
-}
-
-void SoundFile::ChangeFileNameIfDifferent(const String& fname)
-{
-    if (m_FileName.Equal(fname.m_Str))
-    {
-        m_FileName = fname;
-        field_24 &= 0xFFFFFFFE;
-    }
 }

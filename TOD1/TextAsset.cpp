@@ -97,3 +97,17 @@ TextAsset::Dictionary* TextAsset::GetCharacterInfo(Dictionary* dict)
 
  return dict;
 }
+
+void TextAsset::EncodeGameString(short* outString, short* inString)
+{
+    unsigned int inputStringLength = 0;
+    for (short* i = inString; *i; ++inputStringLength)
+        ++i;
+
+    unsigned int inputStringLengthPastEnd = inputStringLength + 1;
+    if (inputStringLengthPastEnd > 0)
+    {
+        for (short* outStringPtr = outString; inputStringLengthPastEnd; --inputStringLengthPastEnd, ++outStringPtr)
+            *outStringPtr = *(short*)(*(char*)&outStringPtr + *(char*)&inString - *(char*)&outString);
+    }
+}

@@ -44,6 +44,11 @@ public:
         return strncmp(m_Str, _r.m_Str, m_Length) == 0;
     }
 
+    bool operator!=(const String& _r) const
+    {
+        return (_r == m_Str) == false;
+    }
+
     bool operator==(const char* const _r) const
     {
         return m_Str == _r;
