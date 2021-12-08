@@ -1,8 +1,11 @@
 #pragma once
 #include "Node.h"
+#include "InputGameController.h"
 
 class Control : public Node
 {
+    friend class ControlSetup;
+
     enum ControlType
     {
         NONE = 0,
@@ -43,6 +46,7 @@ public:
     static void Register(); // @924A30
 
     static unsigned int     ActiveControllerIndex;  //  @A3E160
+    static unsigned char    _A3E170[INPUT_GAMEPAD_MAX_GAMEPADS]; //  @A3E170
 
 protected:
     const int   MousePositionEngineToString() const; // @924600

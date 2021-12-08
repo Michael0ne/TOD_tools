@@ -187,6 +187,7 @@ public:
     void                        _878030();  //  @878030
     void                        _877AE0();  //  @877AE0
     bool                        _878220(Asset& asset);  //  @878220
+    Asset*                      _876140(const char* const assetname);   //  NOTE: get asset name hash and try to find it in the 'defragmentator' list. Possible name: FastFindAsset.
 
     static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform); // @876500
     static RegionCode           RegionIdByName(const String& region); // @875450

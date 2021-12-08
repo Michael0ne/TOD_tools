@@ -13,6 +13,7 @@
 
 EntityType* tControl;
 unsigned int Control::ActiveControllerIndex;
+unsigned char Control::_A3E170[INPUT_GAMEPAD_MAX_GAMEPADS]; //  @A3E170
 
 void Control::Register()
 {

@@ -767,6 +767,12 @@ bool AssetManager::_878220(Asset& asset)
     return false;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+Asset* AssetManager::_876140(const char* const assetname)
+{
+    return nullptr;
+}
+
 void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)
 {
     m_ResourcesInstancesList.insert(m_ResourcesInstancesList.begin(), index, {});

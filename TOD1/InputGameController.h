@@ -55,6 +55,7 @@ namespace Input
         static BOOL CALLBACK EnumControllersCallback(LPCDIDEVICEINSTANCE devInst, Gamepad** pvRef); // @43A1D0
         static String* AllocateGamepadNameStringBuffer(String* outString, char* inGamepadName, signed int length); // @43A670
         static Window* GetWindow(); // @43A730 // NOTE: unused.
+        static bool     IsControllerPresent(signed int controllerIndex); // @439A10
 
         void     _Acquire(); // @4396F0
         void     _Unacquire(); // @439700
@@ -67,7 +68,6 @@ namespace Input
         char     _439970(int unk1); // @439970
         double     _4399D0(int unk1); // @4399D0
         bool     IsDInputDeviceFound(); // @439A00 // NOTE: unused.
-        bool     IsControllerPresent(signed int controllerIndex); // @439A10
         void     SetControllerVibration(signed int controllerIndex, float force); // @439B10
         double     GetControllerVibration(int unk1); // @439C30
         void     StartRumbleEffect(); // @439C60 // NOTE: unused.

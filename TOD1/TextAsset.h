@@ -4,6 +4,8 @@
 class TextAsset : public Asset
 {
     friend class TextBox;
+    friend class TextSlot;
+    friend class ControlSetup;
 protected:
     struct Dictionary
     {
@@ -24,12 +26,14 @@ private:
     TextAsset();    //  @862380
 
 protected:
-    void                GetStringById(String& outString, const unsigned int ind) const;  //  @8A9E70
-    void                GetGameString(const unsigned short indicieslistindex, short* outString, const unsigned int maxlength, const bool a4) const;    //  @861800
+    void                GetIdentifierByIndex(String& outString, const unsigned int ind) const;  //  @8A9E70
+    void                GetTextContents(String& outString, const unsigned int ind) const;   //  @6F89E0
+    void                GetGameString(const unsigned short indicieslistindex, short* outString, const unsigned int maxlength, const bool contents) const;    //  @861800
 
     static int          GetGameStringLength(short* str);    //  @4146F0
     static Dictionary*  GetCharacterInfo(Dictionary*);  //  @861760
     static void         EncodeGameString(short* outString, short* inString);    //  @4147D0
+    static void         CopyCharArrayToGameString(short* gamestring, char* instring);   //  @414880
 
     static char*        _A3CE80;    //  @A3CE80
     static int          _A3CE84;    //  @A3CE84

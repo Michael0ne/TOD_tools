@@ -3,6 +3,7 @@
 #include <vector>
 
 class Control;
+class TextSlot;
 
 class ControlSetup : public Node
 {
@@ -27,21 +28,43 @@ private:
     void                    IsControlDown(int* args) const; //  @610000
     const bool              IsControlDown_Impl(const float controlid) const;  //  @925880
     float                   GetControlPressForce(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const;    //  @925210
-
+    void                    IsControlPressed(int* args) const;  //  @7231F0
+    bool                    IsControlPressed_Impl(float control) const; //  @925370
+    void                    IsControlReleased(int* args) const; //  @73D9E0
+    bool                    IsControlReleased_Impl(float control) const;    //  @9253C0
+    void                    GetControlPressForce(float* args) const;  //  @73DA00
+    const float             GetControlPressure_Impl(float control) const;   //  @925410
+    void                    GetControlRealPressure(int* args) const;    //  @73DA20
+    const float             GetControlRealPressure_Impl(const float control) const; //  @925460
+    void                    IsControllerPresent(bool* args) const;   //  @925F50
+    void                    GetControlPos(int* args) const; //  @6AE470
+    const int               GetControlPos_Impl(const int control) const;  //  @925170
+    void                    GetControlDeltaPos(int* args) const;    //  @73DA40
+    const int               GetControlDeltaPos_Impl(const int control) const;   //  @9251C0
+    void                    SetVibration(int* args) const;  //  @755250
+    void                    SetVibration_Impl(const int controller, const float force) const;   //  @924F40
+    void                    GetVibration(int* args) const;  //  @755270
+    const float             GetVibration_Impl(const int controller) const;  //  @924F80
+    void                    AnyControllerButtonPressed(int* args) const;    //  @925F70
+    void                    AnyControllerStickMoved(int* args) const;   //  @925F90
     void                    GetKeyPressedString(char** args) const; //  @6D8200
+    void                    SetWaitForControllerText(int* args) const;  //  @9254B0
 
     static const char* const    GetKeyPressedString_Impl();  //  @924ED0
     static bool             AnyControllerStickMoved(const int controllerindex); //  @925040
     static bool             AnyControllerButtonPressed(const int controllerindex);  //  @925000
 
-    static ControlSetup* Create(AllocatorIndex); // @925810
+    static ControlSetup*    Create(AllocatorIndex); // @925810
+
+private:
+    static void             SetWaitForControllerText(TextSlot* textslot, const int textindex);  //  @9252F0
 
 public:
-    static ControlSetup* CurrentController; // @A3E16C
-    static bool&   WaitForController; // @A3E168
-    static short*   WaitForControllerText; // @A3E164
+    static ControlSetup*    CurrentController; // @A3E16C
+    static bool&            WaitForController; // @A3E168
+    static short*           WaitForControllerText; // @A3E164
 
-    static void    Register(); // @925BA0
+    static void             Register(); // @925BA0
 };
 
 extern EntityType* tControlSetup; // @A3E15C

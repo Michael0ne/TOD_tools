@@ -2,12 +2,15 @@
 #include "InputKeyboard.h"
 #include "InputMouse.h"
 #include "InputGameController.h"
+#include "Control.h"
+#include "TextSlot.h"
+#include "TextAsset.h"
 
 EntityType* tControlSetup;
 
 void ControlSetup::GetControlId(int* args) const
 {
- *args = GetControlId_Impl((const char* const)args[1]);
+    *args = GetControlId_Impl((const char* const)args[1]);
 }
 
 const int ControlSetup::GetControlId_Impl(const char* const controlname) const
@@ -48,9 +51,166 @@ float ControlSetup::GetControlPressForce(const float controlid, float* pressure,
     return 0.0f;
 }
 
+void ControlSetup::IsControlPressed(int* args) const
+{
+    *args = IsControlPressed_Impl(args[1]);
+}
+
+bool ControlSetup::IsControlPressed_Impl(float control) const
+{
+    float pressure, realpressure;
+    bool pressed, released;
+
+    GetControlPressForce(control, &pressure, &realpressure, &pressed, &released);
+
+    return pressed;
+}
+
+void ControlSetup::IsControlReleased(int* args) const
+{
+    *args = IsControlReleased_Impl(args[1]);
+}
+
+bool ControlSetup::IsControlReleased_Impl(float control) const
+{
+    float pressure, realpressure;
+    bool pressed, released;
+
+    GetControlPressForce(control, &pressure, &realpressure, &pressed, &released);
+
+    return released;
+}
+
+void ControlSetup::GetControlPressForce(float* args) const
+{
+    *args = GetControlPressure_Impl(args[1]);
+}
+
+const float ControlSetup::GetControlPressure_Impl(float control) const
+{
+    float pressure, realpressure;
+    bool pressed, released;
+
+    GetControlPressForce(control, &pressure, &realpressure, &pressed, &released);
+
+    return pressure;
+}
+
+void ControlSetup::GetControlRealPressure(int* args) const
+{
+    *args = GetControlRealPressure_Impl(args[1]);
+}
+
+const float ControlSetup::GetControlRealPressure_Impl(const float control) const
+{
+    float pressure, realpressure;
+    bool pressed, released;
+
+    GetControlPressForce(control, &pressure, &realpressure, &pressed, &released);
+
+    return realpressure;
+}
+
+void ControlSetup::IsControllerPresent(bool* args) const
+{
+    *args = Input::Gamepad::IsControllerPresent(Control::ActiveControllerIndex);
+}
+
+void ControlSetup::GetControlPos(int* args) const
+{
+    *args = GetControlPos_Impl(args[1]);
+}
+
+const int ControlSetup::GetControlPos_Impl(const int control) const
+{
+    if (control < 0 || control >= m_ControlsList.size())
+        return NULL;
+
+    int pos = NULL;
+    for (unsigned int i = 0; i < m_ControlsList[control].m_NodesList.size(); ++i)
+        pos = m_ControlsList[control].m_NodesList[i]->MousePositionRawToString();
+
+    return pos;
+}
+
+void ControlSetup::GetControlDeltaPos(int* args) const
+{
+    *args = GetControlDeltaPos_Impl(args[1]);
+}
+
+const int ControlSetup::GetControlDeltaPos_Impl(const int control) const
+{
+    if (control < 0 || control >= m_ControlsList.size())
+        return NULL;
+
+    int pos = NULL;
+    for (unsigned int i = 0; i < m_ControlsList[control].m_NodesList.size(); ++i)
+        pos = m_ControlsList[control].m_NodesList[i]->MousePositionEngineToString();
+
+    return pos;
+}
+
+void ControlSetup::SetVibration(int* args) const
+{
+    SetVibration_Impl(args[0], args[1]);
+}
+
+void ControlSetup::SetVibration_Impl(const int controller, const float force) const
+{
+    if (Input::Gamepad::IsControllerPresent(Control::ActiveControllerIndex) &&
+        !Control::_A3E170[Control::ActiveControllerIndex])
+        Input::Gamepad::GetGameControllerByIndex(Control::ActiveControllerIndex)->SetControllerVibration(controller, force);
+}
+
+void ControlSetup::GetVibration(int* args) const
+{
+    *args = GetVibration_Impl(args[1]);
+}
+
+const float ControlSetup::GetVibration_Impl(const int controller) const
+{
+    if (!Input::Gamepad::IsControllerPresent(Control::ActiveControllerIndex) ||
+        Control::_A3E170[Control::ActiveControllerIndex])
+        return NULL;
+
+    return Input::Gamepad::GetGameControllerByIndex(Control::ActiveControllerIndex)->GetControllerVibration(controller);
+}
+
+void ControlSetup::AnyControllerButtonPressed(int* args) const
+{
+    *args = AnyControllerButtonPressed(Control::ActiveControllerIndex);
+}
+
+void ControlSetup::AnyControllerStickMoved(int* args) const
+{
+    *args = AnyControllerStickMoved(Control::ActiveControllerIndex);
+}
+
 void ControlSetup::GetKeyPressedString(char** args) const
 {
     *args = (char*)GetKeyPressedString_Impl();
+}
+
+void ControlSetup::SetWaitForControllerText(int* args) const
+{
+    if (!args[0] || !((Node*)args[1])->m_ScriptEntity)
+    {
+        SetWaitForControllerText(nullptr, args[1]);
+        return;
+    }
+
+    EntityType* argtextslot = ((Node*)args[0])->m_ScriptEntity;
+    while (tTextSlot != argtextslot)
+    {
+        argtextslot = argtextslot->m_Parent;
+        if (!argtextslot)
+        {
+            SetWaitForControllerText(nullptr, args[1]);
+            return;
+        }
+    }
+
+    SetWaitForControllerText((TextSlot*)args[0], args[1]);
 }
 
 const char* const ControlSetup::GetKeyPressedString_Impl()
@@ -100,7 +260,7 @@ bool ControlSetup::AnyControllerButtonPressed(const int controllerindex)
 
         if (Input::Gamepad::GetGameControllerByIndex(controllerindex)->KeyPressed(buttonsindexes[i]))
             buttonpressed = true;
-    }while (i++ != -1);
+    } while (buttonsindexes[i++] != -1);
 
     return buttonpressed;
 }
@@ -108,6 +268,14 @@ bool ControlSetup::AnyControllerButtonPressed(const int controllerindex)
 ControlSetup* ControlSetup::Create(AllocatorIndex)
 {
     return new ControlSetup;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ControlSetup::SetWaitForControllerText(TextSlot* textslot, const int textindex)
+{
+    static short* WaitForControllerText = new short[2048];
+    if (!WaitForControllerText)
+        TextAsset::CopyCharArrayToGameString(WaitForControllerText, "Please insert controller and press START");
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -119,4 +287,6 @@ void ControlSetup::Register()
 
     tControlSetup->RegisterScript("getcontrolid(string):integer", &GetControlId, NULL, NULL, NULL, nullptr, nullptr);
     tControlSetup->RegisterScript("iscontroldown(integer):truth", &IsControlDown, NULL, NULL, NULL, nullptr, nullptr);
+    tControlSetup->RegisterScript("iscontrolpressed(integer):truth", &IsControlPressed, NULL, NULL, NULL, nullptr, nullptr);
+    tControlSetup->RegisterScript("iscontrolreleased(integer):truth", &IsControlReleased, NULL, NULL, NULL, nullptr, nullptr);
 }

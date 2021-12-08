@@ -37,6 +37,7 @@
 #include "ControlSetup.h"
 #include "Fog.h"
 #include "Wind.h"
+#include "TextSlot.h"
 
 namespace Script
 {
@@ -676,7 +677,9 @@ void KapowEngineClass::InitEntitiesDatabase()
     /*
     Sprite::Register();
     TextBox::Register();
+    */
     TextSlot::Register();
+    /*
     GuideBox::Register();
     Bullet::Register();
     SoundSlot::Register();

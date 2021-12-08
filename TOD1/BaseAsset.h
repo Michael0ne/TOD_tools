@@ -5,6 +5,37 @@
 
 class Asset;
 
+//  TODO: move this somewhere.
+class AssetLoader
+{
+public:
+    Asset              *m_AssetPtr = nullptr;
+    int                *field_4;
+
+    inline AssetLoader(const char* const name)  //  NOTE: constructor inlined.
+    {
+        MESSAGE_CLASS_CREATED(AssetLoader);
+
+        field_4 = (int*)1;
+        LoadAssetByName(name);
+    };
+    ~AssetLoader();  //  NOTE: destructor inlined.
+
+    void* operator new(size_t size)
+    {
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, false);
+        ptr = nullptr;
+    }
+
+private:
+    void                LoadAssetByName(const char* const name);    //  @8FFC10
+};
+
 class AssetInstance
 {
 public:
@@ -167,6 +198,5 @@ public:
     static unsigned int TotalResourcesCreated; // @A3BE10
     static unsigned int TextureAssetAllocatorId;    //  @A3BE18
 };
-
 
 ASSERT_CLASS_SIZE(Asset, 28);
