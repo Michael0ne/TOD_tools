@@ -132,6 +132,8 @@ public:
     Folder_*        GetFolderByIndex(const unsigned int index) const;   //  @893290
     void            LoadSceneSession(void) const;   //  @8956D0
     void            InstantiateAssetsToLists(); //  @896810
+    void            AddCollisionList(CollisionList* list); //  @896B40
+    void            RemoveCollisionList(CollisionList* list);   //  @895AD0
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4

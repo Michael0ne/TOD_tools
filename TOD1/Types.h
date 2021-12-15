@@ -53,6 +53,10 @@ struct Vector4 {
     {
         return { x, y, z };
     }
+
+    Vector4(const Vector3<T>& rhs)
+        : x(rhs.x), y(rhs.y), z(rhs.z), a(0)
+    {}
 };
 
 struct ColorRGB {
@@ -94,6 +98,11 @@ struct Quaternion {
     Quaternion()
         : w(0), x(0), y(0), z(0)
     {}
+
+    explicit operator Vector4<T>() const
+    {
+        return { x, y, z, w };
+    }
 };
 
 typedef Quaternion<float> Orientation;

@@ -51,7 +51,7 @@ private:
     int                 field_38;
     Texture            *m_FontTexture;
     std::vector<Glyph>  m_GlyphsList;
-    Fld50              *field_50;
+    Fld50              *field_50;   //  NOTE: this is a pointer to some sort of list.
     int                 field_54;
     float               field_58;
     float               field_5C;

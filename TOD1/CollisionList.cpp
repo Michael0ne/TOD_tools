@@ -1,36 +1,32 @@
 #include "CollisionList.h"
 #include "Entity.h"
+#include "Scene.h"
+#include "BuiltinType.h"
 
-#pragma message(TODO_IMPLEMENTATION)
 CollisionList::CollisionList(Entity* owner)
 {
- MESSAGE_CLASS_CREATED(CollisionList);
+    MESSAGE_CLASS_CREATED(CollisionList);
 
- m_Owner = owner;
- field_78 = 0x80002710;
+    m_Owner = owner;
+    field_78 = 10'000;
+    m_GlobalIndex = -1;
+    
+    Scene::SceneInstance->AddCollisionList(this);
 
- //tScene->AddCollisionListToList(this);
-
- m_Position_2 = {};
- m_Position_3 = {};
- m_SafePos = Vector4f(0.f, 0.f, 0.f, 1.f);
- m_Unknown_1 = Vector4f(0.f, 0.f, 0.f, 1.0f);
+    m_Position_2 = { BuiltinType::ZeroVector.x, BuiltinType::ZeroVector.y, BuiltinType::ZeroVector.z };
+    m_Position_3 = { BuiltinType::ZeroVector.x, BuiltinType::ZeroVector.y, BuiltinType::ZeroVector.z };
+    m_SafePos = (Vector4f)BuiltinType::Orient;
+    m_Unknown_1 = (Vector4f)BuiltinType::Orient;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void CollisionList::AddEntity(Entity* pEnt)
+CollisionList::~CollisionList()
 {
- (*(void(__thiscall*)(CollisionList*, Entity*))0x8A6410)(this, pEnt);
+    MESSAGE_CLASS_DESTROYED(CollisionList);
+
+    Scene::SceneInstance->RemoveCollisionList(this);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void CollisionList::RemoveEntity(Entity* pEnt)
+void CollisionList::SetListGlobalIndex(const int index)
 {
- (*(void(__thiscall*)(CollisionList*, Entity*))0x891DB0)(this, pEnt);
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-void CollisionList::Init()
-{
- (*(void(__thiscall*)(CollisionList*))0x891E10)(this);
+    m_GlobalIndex = index;
 }
