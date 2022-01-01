@@ -6,6 +6,7 @@
 
 class MemoryCards : public Node
 {
+    friend class Entity;
 protected:
     Utils::UniqueId m_MemCardsUniqueId[4];
     String          m_Ps2SlesLicense;
@@ -14,6 +15,7 @@ protected:
     unsigned int    m_SaveFileSize;
 
     String&         MakeSaveSlotString(String& outStr, unsigned int slotind) const; // @926540
+    const char* const GetSaveDirectory(const unsigned int slot) const;  //  @926940
 
     static void     Register(); // @9281B0
 

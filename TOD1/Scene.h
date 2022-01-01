@@ -148,7 +148,7 @@ public:
     static float    TimePassed; // @A3DCC4
     static UINT64   CreationTime; // @A3DD00
     static int     *_A3CEE4; // @A3CEE4
-    static int      _A3CEE8; // @A3CEE8
+    static int     *_A3CEE8; // @A3CEE8
     static int      _A3DA80[100]; // @A3DA80
     static int      _A3D8D8[100]; // @A3D8D8
     static int      _A3DC38[4]; // @A3DC38

@@ -32,7 +32,7 @@ float Scene::RealTimePassed;
 float Scene::TimePassed;
 UINT64 Scene::CreationTime;
 int* Scene::_A3CEE4;
-int Scene::_A3CEE8;
+int* Scene::_A3CEE8;
 int Scene::_A3DA80[100];
 int Scene::_A3D8D8[100];
 int Scene::_A3DC38[4];

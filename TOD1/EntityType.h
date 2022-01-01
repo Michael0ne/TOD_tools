@@ -145,6 +145,7 @@ public:
         }
     }
     void    _86E9B0(); // @86E9B0 // NOTE: probably, this propagates all methods and properties from parent entity.
+    bool    HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
 
     static Entity*      IsParentOf(EntityType* ett, Entity* ent);   //  @48C3B0
 };

@@ -1143,6 +1143,11 @@ void GlobalScript::GetEntityPropertyValue(Entity* ent, const unsigned int proper
             *outPropValue++ = *entpropertyvalue++;
 }
 
+bool GlobalScript::HasPropertyId(const unsigned int propertyid) const
+{
+    return m_PropertiesValues.find(propertyid) != m_PropertiesValues.end();
+}
+
 EntityType* GlobalScript::AssignScriptToEntity(const EntityType* parent)
 {
     if (!m_BaseEntity)

@@ -52,6 +52,15 @@ void EntityType::_86E9B0()
     }
 }
 
+bool EntityType::HasPropertyId(const unsigned int propertyId) const
+{
+    bool found = m_HasParent ? m_Parent->field_3C.find((const unsigned short)propertyId) != m_Parent->field_3C.end() : field_3C.find((const unsigned short)propertyId) != field_3C.end();
+    if (found)
+        return true;
+
+    return m_Script && m_Script->HasPropertyId(propertyId);
+}
+
 Entity* EntityType::IsParentOf(EntityType* ett, Entity* ent)
 {
     if (!ent)

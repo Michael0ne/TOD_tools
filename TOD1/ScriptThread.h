@@ -11,6 +11,8 @@ public:
 
 class ScriptThread : public IScriptThread
 {
+    friend class Entity;
+
     struct ThreadList_1
     {
         unsigned int   field_0;

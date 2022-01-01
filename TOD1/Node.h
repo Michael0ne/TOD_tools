@@ -170,6 +170,9 @@ public:
     void                FindNode_Impl(int* args) const;  //  @88EB60
     void                ConvertFromWorldSpace(Vector4f& outPos, const Vector4f& inPos); //  @88BC90
     void                SetWorldOrient(const Orientation& orientation);   //  @87F240
+    void                _86B4B0(const int size);    //  @86B4B0 //  NOTE: make space for field?
+    void                _86A930(const int size, int* value, int* const outval, const int a4);   //  @86A930
+    void                _86AA10(const int size, int* value, int* const outval, const int a4);   //  @86AA10
 
     static AuxQuadTree* _8A0810(Node* node);    //  @8A0810
     static void         _891E70(const String& s, String& sout); //  @891E70

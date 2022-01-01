@@ -28,6 +28,7 @@ public:
     }
 
     void            _8AA1F0(int** a1); // @8AA1F0
+    int             DeleteChangesInBlocks(const int index, const int oldSize, const int blockMask); //  @8AA350
 };
 
 ASSERT_CLASS_SIZE(TransactionBuffer, 36);

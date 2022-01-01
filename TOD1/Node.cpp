@@ -122,6 +122,41 @@ void Node::SetWorldOrient(const Orientation& orientation)
 {
 }
 
+void Node::_86B4B0(const int size)
+{
+    if (m_Flags.m_FlagBits.HasFragment || m_Flags.m_FlagBits.Volatile)
+        return;
+
+    const unsigned int block = 2 * (size & 15);
+    const unsigned int slot = m_Parameters[size / 16] >> block;
+
+    if ((slot & 3) != 3)
+    {
+        if ((slot & 1) == 0 && Scene::_A3CEE8)
+            _86A930(size, &m_Parameters[m_ScriptEntity->m_Script->m_PropertiesList[size].m_Offset], &m_Parameters[size / 16], 1 << block);
+        if ((slot & 2) == 0)
+            _86AA10(size, &m_Parameters[m_ScriptEntity->m_Script->m_PropertiesList[size].m_Offset], &m_Parameters[size / 16], 2 * (1 << block));
+    }
+}
+
+void Node::_86A930(const int size, int* value, int* const outval, const int a4)
+{
+    EntityType* ent = m_ScriptEntity->m_HasParent ? m_ScriptEntity->m_Parent : m_ScriptEntity;
+    *Scene::_A3CEE8++ = 
+        ( ((m_Id & 0x7FFF00) << 8) | ( ((m_Id & 0xFFFF) & 0x7000) - 1 ) & 0xF000 ) |
+        ( (short)size + ent->m_PropertiesList.size() + ent->field_6C) & 0xFFF;
+    Scene::_A3CEE8 += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->stub9((char*)value, (char*)Scene::_A3CEE8);
+    if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::_A3CEE8) < 0x4000)
+        Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::_A3CEE8);
+
+    *outval |= a4;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_86AA10(const int size, int* value, int* const outval, const int a4)
+{
+}
+
 void Node::SetFlags(int flags)
 {
     if (!m_Flags.m_FlagBits.Volatile && (flags & 0x20) == 0 && flags != (m_Flags.m_Flags & 0xFFF))

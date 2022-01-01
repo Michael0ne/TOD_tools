@@ -28,3 +28,9 @@ void TransactionBuffer::_8AA1F0(int** a1)
     field_20 = (Entity*)(&(*a1)[-m_Size] - (int*)m_Buffer);
     *a1 = (int*)m_Buffer;
 }
+
+#pragma message(TODO_IMPLEMENTATION)
+int TransactionBuffer::DeleteChangesInBlocks(const int index, const int oldSize, const int blockMask)
+{
+    return 0;
+}

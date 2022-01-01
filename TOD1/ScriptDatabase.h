@@ -139,11 +139,12 @@ public:
     void                        AddStructElement(const int fieldId, const char* const defaultValue, const int); // @48AF10
     void                        AddMethod(short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*)); // @48A690
     void                        CalculateSize(); // @48AA60
-    bool      _48A7E0(Node* node, int scriptId, void* args); // @48A7E0
+    bool                        _48A7E0(Node* node, int scriptId, void* args); // @48A7E0
     void                        ClearEntityProperties(Entity* ent); //  @489C90
-    class EntityType* GetScriptEntity() const;  //  @489AE0
+    class EntityType*           GetScriptEntity() const;  //  @489AE0
     const int                   GetPropertiesListSize() const;  //  @489A20
     void                        GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue);   //  @489E50
+    bool                        HasPropertyId(const unsigned int propertyid) const; //  @489A30
 
     class EntityType* AssignScriptToEntity(const EntityType* parent); // @48A3F0
 
