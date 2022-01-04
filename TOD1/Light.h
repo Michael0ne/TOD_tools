@@ -3,12 +3,12 @@
 
 struct Light_Properties
 {
-    D3DCOLOR            m_Color;
-    Vector3f   m_Position;
-    Vector3f   m_Direction;
-    float    m_Range;
-    float    m_Brightness;
-    int     m_Flags;
+    D3DCOLOR                m_Color;
+    Vector3f                m_Position;
+    Vector3f                m_Direction;
+    float                   m_Range;
+    float                   m_Brightness;
+    int                     m_Flags;
 
 public:
     Light_Properties(); // @422100
@@ -29,12 +29,15 @@ class Light : public Node
     struct LightsList
     {
         std::vector<Light*> m_StaticLights;
-        int                 field_10;
+        int                *field_10;   //  NOTE: some QuadTree struct?
         int                 field_14;
         int                 m_StaticLightsTotal;
         char                m_LightsOverride;
 
         LightsList();   //  @882AB0
+
+        void                AddLightToList(Light* light); // @8812A0
+        void                RemoveLight(Light* light);  //  @8813C0
     };
 
 protected:
@@ -45,8 +48,13 @@ protected:
     {
         struct
         {
-            unsigned    Type : 3;
-        }               m_FlagsBits;
+            LightType   Type : 3;
+            unsigned    DynamicEmission : 1;
+            unsigned    StaticEmission : 1;
+            unsigned    NegativeLight : 1;
+            unsigned    _6 : 1;
+            unsigned    StaticallyLit : 1;
+        };
         unsigned int    m_Flags;
     }                   m_Flags;
     Vector4f   m_Vec_1;
@@ -64,16 +72,17 @@ protected:
 
 public:
     Light(); // @87FDF0
-    virtual ~Light(); // @880680
+    virtual             ~Light(); // @880680
+    virtual void        Destroy() override;    //  @880140
 
-    void    AddLightToList(void* list, Light* light); // @8812A0
-    void    SetLightType(LightType); // @880170
-    void    SetLightColorRGB(const ColorRGB&); // @65AB20
+    void                SetLightType(LightType); // @880170
+    void                SetLightColorRGB(const ColorRGB&); // @65AB20
     
-    static void   OverrideLights(bool unk); // @880DC0
-    static void   InitLightsList(); // @881070
-    static void   ClearLightsList(); // @881260
+    static void         OverrideLights(bool unk); // @880DC0
+    static void         InitLightsList(); // @881070
+    static void         ClearLightsList(); // @881260
     static LightsList*  GetGlobalList(); //  @880D80
+
     static void         Register(); //  @8801F0
     static Light*       Create(AllocatorIndex);   //  @880640
 

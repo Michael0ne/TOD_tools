@@ -4,6 +4,8 @@
 #include "Camera.h"
 #include <vector>
 
+#define EDITOR_SESSION_FILE_VERSION 3
+
 //#pragma pack(4)
 class Scene : public Folder_
 {
@@ -87,7 +89,7 @@ public:
     bool            field_1AA;
     bool            m_WindPause;
     bool            m_FlushRewindRequested;
-    Node*           m_LoadedBlocks[8];
+    Node*           m_LoadedBlocks[8];  //  NOTE: Blocks = maps.
     char            field_1D0[8];
     class FrameBuffer*   m_FrameBuffers[31];
     class FrameBuffer*   m_FrameBuffer_1;
@@ -134,6 +136,7 @@ public:
     void            InstantiateAssetsToLists(); //  @896810
     void            AddCollisionList(CollisionList* list); //  @896B40
     void            RemoveCollisionList(CollisionList* list);   //  @895AD0
+    void            LoadMap(const unsigned int blockind, Node* foldernode); //  @8932A0
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4

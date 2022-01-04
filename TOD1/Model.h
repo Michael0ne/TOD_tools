@@ -4,6 +4,8 @@
 #include "MeshColorAsset.h"
 #include "FrameBuffer.h"
 
+class Folder_;
+
 class Model : public Node
 {
     struct AttachedEffect

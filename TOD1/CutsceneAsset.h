@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseAsset.h"
 
+//  NOTE: original name in EXE is 'Cutscene'.
 class CutsceneAsset : public Asset
 {
     struct AnimationResourceInfo

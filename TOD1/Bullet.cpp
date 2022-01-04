@@ -49,6 +49,15 @@ Bullet::Bullet()
     m_SceneBufferPtr = nullptr;
 }
 
+void Bullet::ClearShells()
+{
+    for (unsigned int i = 0; i < m_BulletShellsList.size(); ++i)
+    {
+        m_BulletShellsList[i].m_Vec_5 = BuiltinType::ZeroVector;
+        m_BulletShellsList[i].field_5D = NULL;
+    }
+}
+
 Bullet* Bullet::Create(AllocatorIndex)
 {
     return new Bullet();

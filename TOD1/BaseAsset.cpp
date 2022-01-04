@@ -285,7 +285,7 @@ void AssetLoader::LoadAssetByName(const char* const name)
 
     String respath;
     g_AssetManager->GetResourcePath(respath, name);
-    m_AssetPtr = g_AssetManager->_876140(respath.m_Str);
+    m_AssetPtr = g_AssetManager->FindLoadedAsset(respath.m_Str);
     if (!m_AssetPtr)
         m_AssetPtr = g_AssetManager->LoadResourceFile(respath.m_Str);
 

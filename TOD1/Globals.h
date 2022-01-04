@@ -86,7 +86,15 @@ namespace Utils
 
     struct UniqueId
     {
-        UINT64  m_Id;
+        union
+        {
+            UINT64  m_Id64;
+            struct
+            {
+                unsigned    m_Id1;
+                unsigned    m_Id2;
+            };
+        }           m_Id;
 
         UniqueId() // @40FEA0
         {

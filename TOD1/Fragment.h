@@ -5,9 +5,7 @@
 
 class Fragment
 {
-    friend class Node;
-    friend class Folder_;
-protected:
+public:
     Node           *m_Owner;
     FragmentAsset  *m_FragmentRes;
     int            *field_8;

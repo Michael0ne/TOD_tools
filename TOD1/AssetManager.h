@@ -55,7 +55,8 @@ struct CompiledAssetInfo
         ZERO = 0,
         ONE,
         TWO,
-        COMPILED
+        COMPILED,
+        FOUR
     }                   m_AssetType;
     int                 m_AssetSize;
     int                 field_8;
@@ -105,13 +106,25 @@ public:
         Node                   *m_Node;
     };
 
+    struct AssetInfo
+    {
+        unsigned int            m_AssetNameCRC;
+        Asset                  *m_Asset;
+
+        //  NOTE: this is necessary for 'std::find' to work.
+        bool operator==(const AssetInfo& rhs)
+        {
+            return m_AssetNameCRC == rhs.m_AssetNameCRC;
+        }
+    };
+
 public:
     unsigned char               field_0;
     int                         m_ActiveBlockId;
     char                        m_FingerprintKey[256]; // NOTE: default value is 'THIS IS THE DEFAULT FINGERPRINT KEY, PLEASE CHANGE IT!". LOLZ.
     int                         field_108;
     DefragmentatorBase*         m_Defragmentator;
-    std::vector<int>            m_DefragmentatorList;
+    std::vector<AssetInfo>      m_DefragmentatorList;
     std::vector<FastFindInfo>   m_FastFindNodeVector;
     std::vector<Entity*>        m_NodesList[6];
     std::vector<Asset*>         m_ResourcesInstancesList;
@@ -187,7 +200,8 @@ public:
     void                        _878030();  //  @878030
     void                        _877AE0();  //  @877AE0
     bool                        _878220(Asset& asset);  //  @878220
-    Asset*                      _876140(const char* const assetname);   //  NOTE: get asset name hash and try to find it in the 'defragmentator' list. Possible name: FastFindAsset.
+    Asset*                      FindLoadedAsset(const char* const assetname);   //  @876140
+    void                        InstantiateAssetsAndClearAssetsList();  //  @875EB0
 
     static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform); // @876500
     static RegionCode           RegionIdByName(const String& region); // @875450

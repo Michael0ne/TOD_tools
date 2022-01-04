@@ -1,12 +1,18 @@
 #include "MotionAnimSlot.h"
 
-MotionAnimSlot::MotionAnimSlot() : AnimSlot()
+EntityType* tMotionAnimSlot;
+
+MotionAnimSlot::~MotionAnimSlot()
 {
- MESSAGE_CLASS_CREATED(MotionAnimSlot);
+    MESSAGE_CLASS_DESTROYED(MotionAnimSlot);
 
- //m_ActionAnimInfoList = List<int>(0x1A300);
- //m_ActionAnimList = List<int>(0x1A300);
+    if (m_CurrAnimListIndex >= NULL &&
+        m_ActionAnimList[m_CurrAnimListIndex].m_WeaponClass &&
+        strcmp(m_ActionAnimList[m_CurrAnimListIndex].m_WeaponClass, nullptr))
+        delete m_ActionAnimList[m_CurrAnimListIndex].m_WeaponClass;
+}
 
- m_CurrAnimListIndex = (char)255;
- m_CurrAnimInfoListIndex = (char)255;
+MotionAnimSlot* MotionAnimSlot::Create(AllocatorIndex)
+{
+    return new MotionAnimSlot;
 }

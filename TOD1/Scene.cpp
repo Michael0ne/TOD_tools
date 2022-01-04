@@ -274,9 +274,100 @@ Folder_* Scene::GetFolderByIndex(const unsigned int index) const
     return (Folder_*)m_LoadedBlocks[index];
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Scene::LoadSceneSession(void) const
 {
+    if (!GetFragment() ||
+        m_PlayMode != MODE_UNKNOWN_1 ||
+        g_AssetManager->m_LoadBlocks)
+        return;
+
+    String fragmentpath, fragmentname, sessionpath;
+    File::ExtractFileDir(fragmentpath, GetFragment());
+    File::ExtractFileName(fragmentname, GetFragment());
+    fragmentpath.Replace('/', '_');
+    fragmentpath.Append(fragmentname.m_Str);
+    fragmentpath.Append(".editorsession");
+    sessionpath = "/data/sessions/";
+    sessionpath.Append(fragmentpath.m_Str);
+
+    if (!File::FindFileEverywhere(sessionpath.m_Str))
+        return;
+
+    /*
+    *   Editor Session file format:
+    *   (this is my best guess)
+    *
+    *   1:  version
+    *   2:  <should this be loaded?> <folder's unique id> <fragment's unique id> <unused> <unused>
+    *   3:  repeat line above as many times as needed
+    */
+
+    File f(sessionpath.m_Str, 1, true);
+    unsigned int fileversion = 0;
+    f._scanf(&f, "%d\n", &fileversion);
+
+    if (fileversion != EDITOR_SESSION_FILE_VERSION)
+        return;
+
+    bool shouldload = false;
+    unsigned int folduniqid, fragmentuniqid;
+    unsigned char dummy = 0;
+    Folder_* folder = nullptr;
+
+    while (f._scanf(&f, "%d %d %d %d %d\n", &shouldload, &folduniqid, &fragmentuniqid, &dummy, &dummy) == 5)
+    {
+        if (!folduniqid)
+            continue;
+
+        folder = nullptr;
+        Folder_* foundfolderentity = (Folder_*)g_AssetManager->FindFirstEntity();
+
+        if (!foundfolderentity)
+            continue;
+
+        do
+        {
+            EntityType* folderscript = foundfolderentity->m_ScriptEntity;
+            if (folderscript)
+            {
+                bool noparent = false;
+                while (tFolder != folderscript)
+                {
+                    folderscript = folderscript->m_Parent;
+                    if (!folderscript)
+                    {
+                        noparent = true;
+                        break;
+                    }
+                }
+
+                if (noparent)
+                {
+                    foundfolderentity = (Folder_*)g_AssetManager->FindNextEntity(foundfolderentity);
+                    continue;
+                }
+
+                Fragment* frgm = foundfolderentity->m_Fragment;
+                const unsigned int frgmid = frgm ? frgm->m_UniqueId.m_Id.m_Id1 : 0;
+
+                if (frgmid == folduniqid)
+                {
+                    const unsigned int foldid = frgm ? frgm->m_UniqueId.m_Id.m_Id2 : 0;
+                    if (foldid == fragmentuniqid)
+                        folder = foundfolderentity;
+                }
+            }
+
+            foundfolderentity = (Folder_*)g_AssetManager->FindNextEntity(foundfolderentity);
+        } while (foundfolderentity);
+
+        if (folder)
+        {
+            folder->m_BlockId |= 0x20000000;
+            if (shouldload)
+                SceneInstance->LoadMap(folder->GetBlockId() - 1, folder);
+        }
+    }
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -308,6 +399,11 @@ void Scene::RemoveCollisionList(CollisionList* list)
 
     for (; i < m_CollisionListList.size(); ++i)
         m_CollisionListList[i]->SetListGlobalIndex(i);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::LoadMap(const unsigned int blockind, Node* foldernode)
+{
 }
 
 #pragma message(TODO_IMPLEMENTATION)

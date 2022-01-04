@@ -112,6 +112,7 @@ public:
 
     Effect*             AddEffect();    //  @8DDD40
     void                SetTimeAndFreeze(float* args);  //  @8DDB50
+    void                RemoveEffect(Effect* effect);   //  @8DDC10
 };
 
 ASSERT_CLASS_SIZE(GeometryEffect, 364);

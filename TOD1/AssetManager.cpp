@@ -767,10 +767,49 @@ bool AssetManager::_878220(Asset& asset)
     return false;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-Asset* AssetManager::_876140(const char* const assetname)
+Asset* AssetManager::FindLoadedAsset(const char* const assetname)
 {
-    return nullptr;
+    char* assnamelowered = (char*)assetname;
+    String::ToLowerCase(assnamelowered);
+
+    if (m_DefragmentatorList.size())
+    {
+        const unsigned int assnamechecksum = Utils::CalcCRC32(assnamelowered, strlen(assnamelowered));
+
+        std::vector<AssetInfo>::iterator assresult = std::find(m_DefragmentatorList.begin(), m_DefragmentatorList.end(), AssetInfo{ assnamechecksum, nullptr });
+        if (assresult != m_DefragmentatorList.end() && assnamechecksum == assresult->m_AssetNameCRC && strcmp(assnamelowered, assresult->m_Asset->m_ResourcePath) == NULL)
+            return assresult->m_Asset;
+        else
+            return nullptr;
+    }
+
+    Asset* freeass = FindFirstFreeResource();
+    if (!freeass)
+        return nullptr;
+
+    if (strcmp(assnamelowered, freeass->m_ResourcePath) == NULL)
+        return freeass;
+
+    unsigned int resind = freeass->m_GlobalResourceId + 1;
+    if (resind >= m_ResourcesInstancesList.size())
+        resind = 0;
+    else
+        for (; resind < m_ResourcesInstancesList.size(); ++resind)
+            if (!m_ResourcesInstancesList[resind])
+                break;
+
+    return m_ResourcesInstancesList[resind];
+}
+
+void AssetManager::InstantiateAssetsAndClearAssetsList()
+{
+    for (unsigned int i = 0; i < m_AssetsList.size(); ++i)
+    {
+        CompiledAssetInfo cmpassinf(CompiledAssetInfo::AssetType::FOUR, (char*)m_AssetsList[i], nullptr, NULL, NULL, -1);
+        CompiledAssetInfo::InstantiateAsset(&cmpassinf, (char*)m_AssetsList[i]);
+    }
+
+    m_AssetsList.clear();
 }
 
 void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)
