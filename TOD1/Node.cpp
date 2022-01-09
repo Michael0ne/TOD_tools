@@ -8,6 +8,7 @@
 #include "SceneSaveLoad.h"
 #include "VectorType.h"
 #include "Camera.h"
+#include "BuiltinType.h"
 
 EntityType* tNode;
 std::vector<Node::NodeInfo> Node::NodesWithUpdateOrBlockingScripts;
@@ -141,7 +142,7 @@ void Node::_86B4B0(const int size)
 
 void Node::_86A930(const int size, int* value, int* const outval, const int a4)
 {
-    EntityType* ent = m_ScriptEntity->m_HasParent ? m_ScriptEntity->m_Parent : m_ScriptEntity;
+    EntityType* ent = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
     *Scene::_A3CEE8++ = 
         ( ((m_Id & 0x7FFF00) << 8) | ( ((m_Id & 0xFFFF) & 0x7000) - 1 ) & 0xF000 ) |
         ( (short)size + ent->m_PropertiesList.size() + ent->field_6C) & 0xFFF;
@@ -155,6 +156,124 @@ void Node::_86A930(const int size, int* value, int* const outval, const int a4)
 #pragma message(TODO_IMPLEMENTATION)
 void Node::_86AA10(const int size, int* value, int* const outval, const int a4)
 {
+}
+
+void Node::RotateLocalX(const float x)
+{
+    const Orientation orient = &m_Position->m_Orientation ? m_Position->m_Orientation : BuiltinType::Orient;
+    const float halfnegx = x * -0.5f;
+    const float cosneghalfx = cosf(halfnegx);
+    const float sinneghalfx = sinf(halfnegx);
+
+    const Orientation newOrient =
+    {
+        (orient.w * cosneghalfx) + (orient.z * sinneghalfx),
+        (orient.x * cosneghalfx) - (orient.y * sinneghalfx),
+        (orient.y * cosneghalfx) + (orient.x * sinneghalfx),
+        (orient.z * cosneghalfx) - (orient.w * sinneghalfx)
+    };
+
+    SetOrient(newOrient);
+}
+
+void Node::RotateLocalY(const float y)
+{
+    const Orientation orient = &m_Position->m_Orientation ? m_Position->m_Orientation : BuiltinType::Orient;
+    const float halfnegy = y * -0.5f;
+    const float cosneghalfy = cosf(halfnegy);
+    const float sinneghalfy = sinf(halfnegy);
+
+    const Orientation newOrient =
+    {
+        (orient.w * cosneghalfy) + (orient.z * sinneghalfy),
+        (orient.x * cosneghalfy) + (orient.y * sinneghalfy),
+        (orient.y * cosneghalfy) - (orient.w * sinneghalfy),
+        (orient.z * cosneghalfy) - (orient.x * sinneghalfy)
+    };
+
+    SetOrient(newOrient);
+}
+
+void Node::RotateLocalZ(const float z)
+{
+    const Orientation orient = &m_Position->m_Orientation ? m_Position->m_Orientation : BuiltinType::Orient;
+    const float halfnegz = z * -0.5f;
+    const float cosneghalfz = cosf(halfnegz);
+    const float sinneghalfz = sinf(halfnegz);
+
+    const Orientation newOrient =
+    {
+        (orient.w * cosneghalfz) + (orient.x * sinneghalfz),
+        (orient.x * cosneghalfz) + (orient.w * sinneghalfz),
+        (orient.y * cosneghalfz) - (orient.z * sinneghalfz),
+        (orient.z * cosneghalfz) - (orient.y * sinneghalfz)
+    };
+
+    SetOrient(newOrient);
+}
+
+void Node::ConvertToWorldSpace(Vector4f& outPos, const Vector4f& inPos)
+{
+    if (m_Position)
+    {
+        if (m_Id & 2)
+            m_Position->ApplyMatrixFromQuadTree();
+
+        DirectX::XMMATRIX mat;
+        m_Position->GetMatrix(mat);
+
+        outPos =
+        {
+            (((inPos.x * mat.r[0].m128_f32[0]) + (inPos.y * mat.r[1].m128_f32[0])) + (mat.r[2].m128_f32[0])) + mat.r[3].m128_f32[0],
+            (((inPos.y * mat.r[1].m128_f32[1]) + (inPos.x * mat.r[0].m128_f32[1])) + (mat.r[2].m128_f32[1])) + mat.r[3].m128_f32[1],
+            (((inPos.y * mat.r[1].m128_f32[2]) + (inPos.x * mat.r[0].m128_f32[2])) + (mat.r[2].m128_f32[2])) + mat.r[3].m128_f32[2],
+            inPos.a
+        };
+    }
+}
+
+void Node::SetRotationX(const float x)
+{
+    const Orientation orient =
+    {
+        sinf(x * -0.5f),
+        0,
+        0,
+        cosf(x * -0.5f)
+    };
+
+    SetOrient(orient);
+}
+
+void Node::SetRotationY(const float y)
+{
+    const Orientation orient =
+    {
+        0,
+        sinf(y * -0.5f),
+        0,
+        cosf(y * -0.5f)
+    };
+
+    SetOrient(orient);
+}
+
+void Node::SetRotationZ(const float z)
+{
+    const Orientation orient =
+    {
+        0,
+        0,
+        sinf(z * -0.5f),
+        cosf(z * -0.5f)
+    };
+
+    SetOrient(orient);
+}
+
+void Node::TouchThisPivot(const int)
+{
+    _484CC0(0);
 }
 
 void Node::SetFlags(int flags)
@@ -185,7 +304,7 @@ void Node::SetFlags(int flags)
 void Node::Instantiate()
 {
     if (m_CollisionIgnoreList)
-        *(int*)((int*)m_CollisionIgnoreList + 0x78) |= 0x80000000;
+        m_CollisionIgnoreList->field_78 |= 0x80000000;
 
     m_Id &= 0xFE;
 
@@ -600,7 +719,7 @@ void Node::TriggerGlobalScript(int scriptId, void* args)
 {
     if (!m_ScriptEntity->m_Script || !m_ScriptEntity->m_Script->_48A7E0(this, scriptId, args))
     {
-        EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_HasParent ? &m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : &m_ScriptEntity->m_ScriptsList[scriptId];
+        EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_IsBaseEntity ? &m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : &m_ScriptEntity->m_ScriptsList[scriptId];
         if (scriptinfo)
             if (scriptinfo->field_C)
                 // TODO: some complex pointer maths going on here, fix this.

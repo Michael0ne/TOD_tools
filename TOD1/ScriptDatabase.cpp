@@ -748,11 +748,11 @@ void LoadScripts()
 
 #ifdef INCLUDE_FIXES
     char path[1024] = {};
-    g_AssetManager->GetPlatformSpecificPath(path, "/data/scripts/stable/Database.bin", "bin", Asset::PlatformId::PC);
+    g_AssetManager->GetPlatformSpecificPath(path, "/data/scripts/stable/Database.bin", "bin", AssetManager::PlatformId::PC);
     ReadDatabaseFile(path);
 #else
     String tmpstr;
-    g_AssetManager->GetPlatformSpecificPath(tmpstr, "/data/scripts/stable/Database.bin", "bin", Asset::PlatformId::PC);
+    g_AssetManager->GetPlatformSpecificPath(tmpstr, "/data/scripts/stable/Database.bin", "bin", AssetManager::PlatformId::PC);
     ReadDatabaseFile(tmpstr.m_Str);
 #endif
 
@@ -1148,7 +1148,7 @@ bool GlobalScript::HasPropertyId(const unsigned int propertyid) const
     return m_PropertiesValues.find(propertyid) != m_PropertiesValues.end();
 }
 
-EntityType* GlobalScript::AssignScriptToEntity(const EntityType* parent)
+EntityType* GlobalScript::AssignScriptToEntity(EntityType * parent)
 {
     if (!m_BaseEntity)
         return nullptr;
@@ -1194,7 +1194,7 @@ EntityType* GlobalScript::AssignScriptToEntity(const EntityType* parent)
     EntityType* ent = new EntityType(entname);
     ent->InheritFrom(parent);
     ent->m_Script = this;
-    ent->_86E9B0();
+    ent->PropagateProperties();
 
     return ent;
 }

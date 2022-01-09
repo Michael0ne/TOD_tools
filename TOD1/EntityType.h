@@ -65,16 +65,16 @@ protected:
     int                 field_48;
     std::vector<PropertyInfo> m_PropertiesList; // NOTE: could be list with methods for THIS exact class only.
     std::vector<PropertyInfo> m_PropertiesList_1; // NOTE: another list same as above, but there are more methods in this list.
-    int                 field_6C;
-    int                 field_70;
-    bool                m_HasParent;
+    int                 field_6C;   //  NOTE: 'TotalProperties' including parent's properties?
+    int                 field_70;   //  NOTE: same as above, but for second list.
+    bool                m_IsBaseEntity;
 
 public:
     EntityType(const char* const entityname); // @86CC00
     virtual ~EntityType(); // @4886C0
 
     void*               CreateNode() const; // @86C770
-    void                InheritFrom(const EntityType* from); // @86CB40
+    void                InheritFrom(EntityType* from); // @86CB40
     inline void         SetCreator(CREATOR creator)
     {
         m_Creator = creator;
@@ -144,7 +144,7 @@ public:
             m_PropertiesList.insert(m_PropertiesList.begin() + (propertyind - field_6C), tmp);
         }
     }
-    void    _86E9B0(); // @86E9B0 // NOTE: probably, this propagates all methods and properties from parent entity.
+    void    PropagateProperties(); // @86E9B0
     bool    HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
 
     static Entity*      IsParentOf(EntityType* ett, Entity* ent);   //  @48C3B0

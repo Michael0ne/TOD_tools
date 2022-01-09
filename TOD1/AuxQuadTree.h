@@ -24,7 +24,7 @@ public:
     char   field_3C;
     char   field_3D;
     short   m_TraverseDistance;
-    Vector4f  m_Position;
+    Vector4f  m_Bounds;
     char   field_4D;
     char   m_Lod;
     char   m_LodFade;
@@ -40,6 +40,7 @@ public:
     void   _8A3810(void* ptr); // @8A3810
     void   Refresh(); // @8A2EE0;
     void            SetLodLevel(const Vector4f& pos);   //  @8A0B80
+    void        CopyOwnerBounds(); //  @89F4D0
 };
 
 ASSERT_CLASS_SIZE(AuxQuadTree, 88);

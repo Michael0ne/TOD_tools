@@ -27,7 +27,7 @@ void Track::Register()
  tTrack->RegisterScript("getnextframenode(entity,integer,truth):entity", &GetNextFrameNode, NULL, NULL, NULL, nullptr, nullptr);
  tTrack->RegisterScript("getlatesttangent:vector", &GetLatestTangent, NULL, NULL, NULL, nullptr, nullptr);
 
- tTrack->_86E9B0();
+ tTrack->PropagateProperties();
 }
 
 const float Track::GetFramerate() const

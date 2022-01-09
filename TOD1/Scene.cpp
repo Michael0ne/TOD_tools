@@ -269,7 +269,7 @@ void Scene::_895F50()
 {
 }
 
-Folder_* Scene::GetFolderByIndex(const unsigned int index) const
+Folder_* Scene::GetLoadedBlockByIndex(const unsigned int index) const
 {
     return (Folder_*)m_LoadedBlocks[index];
 }
@@ -459,7 +459,7 @@ void Scene::Load(const char* sceneName)
     if (g_AssetManager->m_LoadBlocks)
     {
         char scene_path[1024] = {};
-        g_AssetManager->GetPlatformSpecificPath(scene_path, sceneName, "", Asset::PlatformId::PC);
+        g_AssetManager->GetPlatformSpecificPath(scene_path, sceneName, "", AssetManager::PlatformId::PC);
         strcat(scene_path, "/");
 
         char pathdummy[1024] = {};
@@ -728,7 +728,7 @@ void Scene::Register()
     BlocksUnloadedCommand = RegisterGlobalCommand("blocks_unloaded", true);
     InvalidatePlaceholderModelCommand = RegisterGlobalCommand("invalidate_placeholder_model", true);
 
-    tScene->_86E9B0();
+    tScene->PropagateProperties();
 }
 
 Scene* Scene::Create(AllocatorIndex)

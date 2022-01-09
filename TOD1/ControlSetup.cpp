@@ -27,7 +27,7 @@ const int ControlSetup::GetControlId_Impl(const char* const controlname) const
 
 void ControlSetup::IsControlDown(int* args) const
 {
-    *args = IsControlDown_Impl(args[1]);
+    *args = IsControlDown_Impl((float)args[1]);
 }
 
 const bool ControlSetup::IsControlDown_Impl(const float controlid) const
@@ -53,7 +53,7 @@ float ControlSetup::GetControlPressForce(const float controlid, float* pressure,
 
 void ControlSetup::IsControlPressed(int* args) const
 {
-    *args = IsControlPressed_Impl(args[1]);
+    *args = IsControlPressed_Impl((float)args[1]);
 }
 
 bool ControlSetup::IsControlPressed_Impl(float control) const
@@ -68,7 +68,7 @@ bool ControlSetup::IsControlPressed_Impl(float control) const
 
 void ControlSetup::IsControlReleased(int* args) const
 {
-    *args = IsControlReleased_Impl(args[1]);
+    *args = IsControlReleased_Impl((float)args[1]);
 }
 
 bool ControlSetup::IsControlReleased_Impl(float control) const
@@ -98,7 +98,7 @@ const float ControlSetup::GetControlPressure_Impl(float control) const
 
 void ControlSetup::GetControlRealPressure(int* args) const
 {
-    *args = GetControlRealPressure_Impl(args[1]);
+    *args = GetControlRealPressure_Impl((float)args[1]);
 }
 
 const float ControlSetup::GetControlRealPressure_Impl(const float control) const
@@ -152,7 +152,7 @@ const int ControlSetup::GetControlDeltaPos_Impl(const int control) const
 
 void ControlSetup::SetVibration(int* args) const
 {
-    SetVibration_Impl(args[0], args[1]);
+    SetVibration_Impl(args[0], (float)args[1]);
 }
 
 void ControlSetup::SetVibration_Impl(const int controller, const float force) const
@@ -173,7 +173,7 @@ const float ControlSetup::GetVibration_Impl(const int controller) const
         Control::_A3E170[Control::ActiveControllerIndex])
         return NULL;
 
-    return Input::Gamepad::GetGameControllerByIndex(Control::ActiveControllerIndex)->GetControllerVibration(controller);
+    return (float)Input::Gamepad::GetGameControllerByIndex(Control::ActiveControllerIndex)->GetControllerVibration(controller);
 }
 
 void ControlSetup::AnyControllerButtonPressed(int* args) const

@@ -36,7 +36,7 @@ void Fog::Register()
     tFog->RegisterProperty(tNUMBER, "density", &GetDensity, 0, 0, 0, &SetDensity, 0, 0, 0, "control=string", 0, 0, -1);
     tFog->RegisterProperty(tVECTOR, "color_rgb", &GetColorRGB, 0, 0, 0, &SetColorRGB, 0, 0, 0, "control=colorrgb", 0, 0, 12);
 
-    tFog->_86E9B0();
+    tFog->PropagateProperties();
 }
 
 Fog* Fog::Create(AllocatorIndex)

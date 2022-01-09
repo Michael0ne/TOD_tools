@@ -39,17 +39,17 @@ void AuxQuadTree::UpdateLodDistance()
         field_4D = field_4D & 0xF8 | 8;
         m_Lod = false;
         m_LodFade = -1;
-        m_LodDistance = (int)((m_Position.z - Camera::ActiveCameraPosition.z) * (m_Position.z - Camera::ActiveCameraPosition.z) +
-            (m_Position.y - Camera::ActiveCameraPosition.y) * (m_Position.y - Camera::ActiveCameraPosition.y) +
-            (m_Position.x - Camera::ActiveCameraPosition.x) * (m_Position.x - Camera::ActiveCameraPosition.x));
+        m_LodDistance = (int)((m_Bounds.z - Camera::ActiveCameraPosition.z) * (m_Bounds.z - Camera::ActiveCameraPosition.z) +
+            (m_Bounds.y - Camera::ActiveCameraPosition.y) * (m_Bounds.y - Camera::ActiveCameraPosition.y) +
+            (m_Bounds.x - Camera::ActiveCameraPosition.x) * (m_Bounds.x - Camera::ActiveCameraPosition.x));
         SetLodLevel(Camera::ActiveCameraPosition);
     }
     else
     {
         n->UpdateLodDistance();
-        m_LodDistance = (int)((m_Position.z - Camera::ActiveCameraPosition.z) * (m_Position.z - Camera::ActiveCameraPosition.z) +
-            (m_Position.y - Camera::ActiveCameraPosition.y) * (m_Position.y - Camera::ActiveCameraPosition.y) +
-            (m_Position.x - Camera::ActiveCameraPosition.x) * (m_Position.x - Camera::ActiveCameraPosition.x));
+        m_LodDistance = (int)((m_Bounds.z - Camera::ActiveCameraPosition.z) * (m_Bounds.z - Camera::ActiveCameraPosition.z) +
+            (m_Bounds.y - Camera::ActiveCameraPosition.y) * (m_Bounds.y - Camera::ActiveCameraPosition.y) +
+            (m_Bounds.x - Camera::ActiveCameraPosition.x) * (m_Bounds.x - Camera::ActiveCameraPosition.x));
         m_Lod = n->m_Lod;
     }
 }
@@ -67,7 +67,7 @@ void AuxQuadTree::Refresh()
 #pragma message(TODO_IMPLEMENTATION)
 void AuxQuadTree::SetLodLevel(const Vector4f& pos)
 {
-    if (m_Position.a >= 10000)
+    if (m_Bounds.a >= 10000)
     {
         m_LodFade = -1;
         m_Lod = false;
@@ -76,4 +76,14 @@ void AuxQuadTree::SetLodLevel(const Vector4f& pos)
     {
         // TODO: ...
     }
+}
+
+void AuxQuadTree::CopyOwnerBounds()
+{
+    Vector4f bounds;
+    Vector4f worldPos;
+    m_Owner->GetBounds(bounds);
+    m_Owner->ConvertToWorldSpace(worldPos, bounds);
+
+    m_Bounds = worldPos;
 }

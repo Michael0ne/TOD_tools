@@ -182,7 +182,7 @@ void SceneSaveLoad::Adapt()
 {
     for (unsigned int i = 1; i < 6; ++i)
     {
-        Folder_* fldr = Scene::SceneInstance->GetFolderByIndex(i - 1);
+        Folder_* fldr = Scene::SceneInstance->GetLoadedBlockByIndex(i - 1);
         if (m_SaveInfo.m_LoadedFolders[i] != fldr)
         {
             m_SaveInfo.m_LoadedFolders[i] = fldr;

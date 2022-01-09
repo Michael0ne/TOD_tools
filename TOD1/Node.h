@@ -173,6 +173,14 @@ public:
     void                _86B4B0(const int size);    //  @86B4B0 //  NOTE: make space for field?
     void                _86A930(const int size, int* value, int* const outval, const int a4);   //  @86A930
     void                _86AA10(const int size, int* value, int* const outval, const int a4);   //  @86AA10
+    void                RotateLocalX(const float x);    //  @483DE0
+    void                RotateLocalY(const float y);    //  @891A50
+    void                RotateLocalZ(const float z);    //  @484050
+    void                ConvertToWorldSpace(Vector4f& outPos, const Vector4f& inPos);   //  @88BDE0
+    void                SetRotationX(const float x);    //  @891300
+    void                SetRotationY(const float y);    //  @891360
+    void                SetRotationZ(const float z);    //  @8913C0
+    void                TouchThisPivot(const int);  //  @891170
 
     static AuxQuadTree* _8A0810(Node* node);    //  @8A0810
     static void         _891E70(const String& s, String& sout); //  @891E70

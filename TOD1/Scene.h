@@ -131,7 +131,7 @@ public:
     void            ProfileMemory(const int);   //  @893460
     void            ClearNodesLists();  //  @894950
     void            _895F50();  //  @895F50
-    Folder_*        GetFolderByIndex(const unsigned int index) const;   //  @893290
+    Folder_*        GetLoadedBlockByIndex(const unsigned int index) const;   //  @893290
     void            LoadSceneSession(void) const;   //  @8956D0
     void            InstantiateAssetsToLists(); //  @896810
     void            AddCollisionList(CollisionList* list); //  @896B40

@@ -72,7 +72,7 @@ void LoadScreenNode::Register()
     tLoadScreenNode->RegisterScript("setrenderontopnode(entity)", &SetRenderOnTopNode, 0, 0, 0, nullptr, nullptr);
     tLoadScreenNode->RegisterScript("setloadbarsprite(entity)", &SetLoadbarSprite, 0, 0, 0, nullptr, nullptr);
 
-    tLoadScreenNode->_86E9B0();
+    tLoadScreenNode->PropagateProperties();
 }
 
 LoadScreenNode* LoadScreenNode::Create(AllocatorIndex)

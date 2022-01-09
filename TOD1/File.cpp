@@ -374,7 +374,7 @@ char File::_WriteBufferBlockAndInsertNewLine(char _newlinesym)
     return m_FileHandle->_WriteBufferBlockAndInsertNewLine(_newlinesym);
 }
 
-int File::Read(void* _buffer, int _numbytestoread)
+int File::Read(void* _buffer, unsigned int _numbytestoread)
 {
     if (!m_ReadFromZip)
         return m_FileHandle->Read(_buffer, _numbytestoread);
@@ -1847,7 +1847,7 @@ char SaveFileHelper::_WriteBufferBlockAndInsertNewLine(char _newlinesym)
     return true;
 }
 
-int SaveFileHelper::Read(void* _buffer, int _numbytestoread)
+int SaveFileHelper::Read(void* _buffer, unsigned int _numbytestoread)
 {
     unsigned int readbuffsize = m_BufferSize - m_CurrentPos;
 

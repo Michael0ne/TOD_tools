@@ -12,7 +12,7 @@ AssetManager* g_AssetManager;
 bool AssetManager::ChecksumChecked;
 bool AssetManager::_A3D7C0;
 
-void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform)
+void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, PlatformId platform)
 {
     const char* const pcplatformdir = strstr(respath, "pc_lores");
     if (!platform)
@@ -33,9 +33,9 @@ void AssetManager::CorrectTextureResourcePath(String& outPath, const char* respa
         return;
     }
 
-    if (platform != Asset::PlatformId::PS2)
+    if (platform != PlatformId::PS2)
     {
-        if (platform != Asset::PlatformId::XBOX)
+        if (platform != PlatformId::XBOX)
         {
             outPath = respath;
             return;
@@ -210,22 +210,22 @@ int AssetManager::AddAssetReference(Asset* a)
 }
 
 #ifdef INCLUDE_FIXES
-void AssetManager::GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, Asset::PlatformId platform)
+void AssetManager::GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, PlatformId platform)
 #else
-void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, Asset::PlatformId platform)
+void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, PlatformId platform)
 #endif
 {
     char buff[1024] = {};
 
     switch (platform)
     {
-    case Asset::PlatformId::PC:
+    case PlatformId::PC:
         strcpy(buff, "/data_pc");
         break;
-    case Asset::PlatformId::PS2:
+    case PlatformId::PS2:
         strcpy(buff, "/data_ps2");
         break;
-    case Asset::PlatformId::XBOX:
+    case PlatformId::XBOX:
         strcpy(buff, "/data_xbox");
         break;
     }

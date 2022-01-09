@@ -102,7 +102,7 @@ void Light::Register()
     tLight->InheritFrom(tNode);
     tLight->SetCreator((EntityType::CREATOR)Create);
 
-    tLight->_86E9B0();
+    tLight->PropagateProperties();
 }
 
 Light* Light::Create(AllocatorIndex)

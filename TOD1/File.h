@@ -125,7 +125,7 @@ public:
     virtual char ReadBlock() = 0;
     virtual int  ReadBlockAndGetPosition() = 0;
     virtual char _WriteBufferBlockAndInsertNewLine(char _newlinesym) = 0;
-    virtual int  Read(void* _buffer, int _numbytestoread) = 0;
+    virtual int  Read(void* _buffer, unsigned int _numbytestoread) = 0;
     virtual int  WriteBuffer(const char* _buf) = 0;
     virtual int  WriteBufferWithSize(const char* _buf, int _size) = 0;
     virtual int  Seek(int _pos) = 0;
@@ -169,7 +169,7 @@ public:
     virtual char ReadBlock(); // @417980
     virtual int  ReadBlockAndGetPosition(); // @419BD0
     virtual char _WriteBufferBlockAndInsertNewLine(char _newlinesym); // @419BF0 // NOTE: this is a thunk function.
-    virtual int  Read(void* _buffer, int _numbytestoread); // @417A30
+    virtual int  Read(void* _buffer, unsigned int _numbytestoread); // @417A30
     virtual int  WriteBuffer(const char* _buf); // @419C10 // NOTE: this is a thunk function.
     virtual int  WriteBufferWithSize(const char* _buf, int _size); // @419C00 // NOTE: this is a thunk function.
     virtual int  Seek(int _pos); // @417B90
@@ -245,8 +245,8 @@ ASSERT_CLASS_SIZE(File, 52);
 class SaveFileHelper : public IFile
 {
 private:
-    char* m_Buffer;
-    int             m_CurrentPos;
+    char           *m_Buffer;
+    unsigned int    m_CurrentPos;
     unsigned int    m_BufferSize;
 
 public:
@@ -264,7 +264,7 @@ public:
     virtual char ReadBlock() override;   //  @4221A0
     virtual int  ReadBlockAndGetPosition() override; //  @4221C0
     virtual char _WriteBufferBlockAndInsertNewLine(char _newlinesym) override;   //  @4221E0
-    virtual int  Read(void* _buffer, int _numbytestoread) override;  //  @4222B0
+    virtual int  Read(void* _buffer, unsigned int _numbytestoread) override;  //  @4222B0
     virtual int  WriteBuffer(const char* _buf) override; //  @873AA0
     virtual int  WriteBufferWithSize(const char* _buf, int _size) override;  //  @422220
     virtual int  Seek(int _pos) override;    //  @422280

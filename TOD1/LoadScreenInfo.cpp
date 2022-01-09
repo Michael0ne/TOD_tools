@@ -20,7 +20,7 @@ void LoadScreenInfo::LoadTexture()
     IsLoadingLoadScreenTexture = true;
 
     String respath;
-    AssetManager::CorrectTextureResourcePath(respath, m_TexturePath.m_Str, GfxInternal::GetRegion(), Asset::PlatformId::PC);
+    AssetManager::CorrectTextureResourcePath(respath, m_TexturePath.m_Str, GfxInternal::GetRegion(), AssetManager::PlatformId::PC);
 
     LogDump::LogA("LoadScreen:%s\n", respath.m_Str);
     m_TextureResource = (TextureAsset*)g_AssetManager->LoadResourceFile(respath.m_Str);

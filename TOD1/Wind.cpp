@@ -55,7 +55,7 @@ void Wind::Register()
     tWind->RegisterProperty(tNUMBER, "FrenzyAngle", &GetFrenzyAngle, NULL, NULL, NULL, &SetFrenzyAngle, NULL, NULL, NULL, "control=slider|min=0|max=180", NULL, NULL, -1);
     tWind->RegisterProperty(tNUMBER, "VariationSpeed", &GetVariationSpeed, NULL, NULL, NULL, &SetVariationSpeed, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, -1);
 
-    tWind->_86E9B0();
+    tWind->PropagateProperties();
 
     CreationTime = Timer::GetMilliseconds();
     LastUpdateTime = CreationTime;

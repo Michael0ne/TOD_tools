@@ -24,7 +24,7 @@ void Control::Register()
     tControl->RegisterProperty(tINTEGER, "key", &GetKey, NULL, NULL, NULL, &SetKey, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
     tControl->RegisterProperty(tSTRING, "keystr", &GetKeyStr, NULL, NULL, NULL, &SetKeyStr, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
 
-    tControl->_86E9B0();
+    tControl->PropagateProperties();
 }
 
 const int Control::MousePositionEngineToString() const

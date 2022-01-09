@@ -19,7 +19,8 @@ public:
         field_4 = (int*)1;
         LoadAssetByName(name);
     };
-    ~AssetLoader();  //  NOTE: destructor inlined.
+
+    ~AssetLoader();  //  NOTE: destructor inlined (should be).
 
     void* operator new(size_t size)
     {

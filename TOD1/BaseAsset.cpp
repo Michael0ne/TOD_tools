@@ -268,16 +268,6 @@ void Asset::SetResourcePath(const char* const respath)
     strncpy((char*)m_ResourcePath, respath, respathlen);
 }
 
-AssetLoader::~AssetLoader()
-{
-    MESSAGE_CLASS_DESTROYED(AssetLoader);
-
-    if (m_AssetPtr)
-        g_AssetManager->DecreaseResourceReferenceCount(m_AssetPtr);
-
-    delete field_4;
-}
-
 void AssetLoader::LoadAssetByName(const char* const name)
 {
     if (!name || !name[0])
@@ -290,4 +280,14 @@ void AssetLoader::LoadAssetByName(const char* const name)
         m_AssetPtr = g_AssetManager->LoadResourceFile(respath.m_Str);
 
     g_AssetManager->IncreaseResourceReferenceCount(m_AssetPtr);
+}
+
+AssetLoader::~AssetLoader()
+{
+    MESSAGE_CLASS_DESTROYED(AssetLoader);
+
+    if (m_AssetPtr)
+        g_AssetManager->DecreaseResourceReferenceCount(m_AssetPtr);
+
+    delete field_4;
 }

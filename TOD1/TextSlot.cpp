@@ -31,7 +31,7 @@ void TextSlot::Register()
     tTextSlot->RegisterProperty(tSTRING, "current_text_content", &GetCurrentTextContent, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
     tTextSlot->RegisterScript("Dump", &Dump, NULL, NULL, NULL, "control=button|text=dump", nullptr);
 
-    tTextSlot->_86E9B0();
+    tTextSlot->PropagateProperties();
 }
 
 const char* TextSlot::GetTextRes() const
@@ -50,7 +50,7 @@ int TextSlot::GetCurrentIndex() const
     return m_CurrentIndex;
 }
 
-void TextSlot::SetCurrentIndex(int index)
+void TextSlot::SetCurrentIndex(unsigned int index)
 {
     index = index < 0 ? 0 : index;
 

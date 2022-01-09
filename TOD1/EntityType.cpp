@@ -10,7 +10,7 @@ EntityType::EntityType(const char* const entityname) : DataType(TYPE_ENTITY, ent
     m_Script = nullptr;
     m_Parent = nullptr;
     field_6C = NULL;
-    m_HasParent = false;
+    m_IsBaseEntity = false;
     field_70 = 1;
 }
 
@@ -27,34 +27,38 @@ void* EntityType::CreateNode() const
     return (void*)newnode;
 }
 
-void EntityType::InheritFrom(const EntityType* from)
+void EntityType::InheritFrom(EntityType* from)
 {
-    field_6C = from->m_HasParent ? from->m_Parent->m_PropertiesList.size() + from->m_Parent->field_6C : from->m_PropertiesList.size() + from->field_6C;
-    field_70 = from->m_HasParent ? from->m_Parent->m_PropertiesList_1.size() + from->m_Parent->field_70 : from->m_PropertiesList_1.size() + from->field_70;
+    field_6C = from->m_IsBaseEntity ? from->m_Parent->m_PropertiesList.size() + from->m_Parent->field_6C : from->m_PropertiesList.size() + from->field_6C;
+    field_70 = from->m_IsBaseEntity ? from->m_Parent->m_PropertiesList_1.size() + from->m_Parent->field_70 : from->m_PropertiesList_1.size() + from->field_70;
     m_Creator = from->m_Creator;
-    m_Parent = (EntityType*)from;
+    m_Parent = from;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void EntityType::_86E9B0()
+void EntityType::PropagateProperties()
 {
-    if (!m_Parent ||
-        m_PropertiesList.size() ||
-        m_PropertiesList_1.size() ||
-        m_ScriptsList.size() ||
-        m_Parent->m_HasParent)
+    if (m_Parent &&
+        m_Script &&
+        !m_PropertiesList.size() &&
+        !m_PropertiesList_1.size() &&
+        !m_ScriptsList.size() &&
+        m_Parent->m_IsBaseEntity)
     {
-        //  TODO: copy properties list from parent?
+        m_IsBaseEntity = true;
+        return;
     }
-    else
-    {
-        m_HasParent = true;
-    }
+
+    m_IsBaseEntity = false;
+
+    //  TODO: Copy all 'scripts' from parent first.
+    //  TODO: Copy all 'field_3C' from parent first.
+    //  TODO: Copy all 'properties' from parent first.
 }
 
 bool EntityType::HasPropertyId(const unsigned int propertyId) const
 {
-    bool found = m_HasParent ? m_Parent->field_3C.find((const unsigned short)propertyId) != m_Parent->field_3C.end() : field_3C.find((const unsigned short)propertyId) != field_3C.end();
+    bool found = m_IsBaseEntity ? m_Parent->field_3C.find((const unsigned short)propertyId) != m_Parent->field_3C.end() : field_3C.find((const unsigned short)propertyId) != field_3C.end();
     if (found)
         return true;
 

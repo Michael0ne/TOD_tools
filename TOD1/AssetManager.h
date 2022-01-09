@@ -91,6 +91,13 @@ ASSERT_CLASS_SIZE(CompiledAssetInfo, 56);
 class AssetManager
 {
 public:
+    enum PlatformId
+    {
+        PC = 0,
+        PS2 = 1,
+        XBOX = 2
+    };
+
     enum RegionCode
     {
         REGION_NOT_SET = -1,
@@ -176,7 +183,7 @@ public:
     AllocatorIndex              GetAllocatorType() const; // @875360
     int                         AddAssetReference(Asset* a); // @877A90
 #ifdef INCLUDE_FIXES
-    void                        GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, Asset::PlatformId platform); // @8776B0
+    void                        GetPlatformSpecificPath(char* outStr, const char* respath, const char* resext, PlatformId platform); // @8776B0
 #else
     void                        GetPlatformSpecificPath(String& outStr, const char* respath, const char* resext, ResType::PlatformId platform); // @8776B0
 #endif
@@ -203,7 +210,7 @@ public:
     Asset*                      FindLoadedAsset(const char* const assetname);   //  @876140
     void                        InstantiateAssetsAndClearAssetsList();  //  @875EB0
 
-    static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, Asset::PlatformId platform); // @876500
+    static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, PlatformId platform); // @876500
     static RegionCode           RegionIdByName(const String& region); // @875450
 
     static bool                 ChecksumChecked; // @A3D7C9

@@ -78,7 +78,7 @@ void MemoryCards::Register()
  // TODO: 'GetLastModifiedTime' methods here.
  tMemoryCards->RegisterScript("hascardchanged(integer):truth", &HasCardChanged, 0, 0, 0, nullptr, nullptr);
 
- tMemoryCards->_86E9B0();
+ tMemoryCards->PropagateProperties();
 }
 
 MemoryCards* MemoryCards::Create(AllocatorIndex allocInd)

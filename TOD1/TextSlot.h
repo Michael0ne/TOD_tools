@@ -29,7 +29,7 @@ private:
     const char*     GetTextRes() const; //  @8A9B30
     void            SetTextRes(const char* text);   //  @8A9C00
     int             GetCurrentIndex() const;    //  @8A9B10
-    void            SetCurrentIndex(int index);   //  @6F89B0
+    void            SetCurrentIndex(unsigned int index);   //  @6F89B0
     char*           GetTextStringIdentifier();  //  @8A9FA0
     int             GetNumberOfTextIndicies() const;    //  @8A9B20
     char*           GetCurrentTextContent();    //  @6F8B10

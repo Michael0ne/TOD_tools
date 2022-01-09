@@ -146,7 +146,7 @@ public:
     void                        GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue);   //  @489E50
     bool                        HasPropertyId(const unsigned int propertyid) const; //  @489A30
 
-    class EntityType* AssignScriptToEntity(const EntityType* parent); // @48A3F0
+    class EntityType* AssignScriptToEntity(EntityType * parent); // @48A3F0
 
     static GlobalScript* GetGlobalScriptByName(const char* name); // @48C590
     static GlobalScript* GetGlobalScriptById(const unsigned int id); // @48C580

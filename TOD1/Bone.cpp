@@ -47,5 +47,5 @@ void Bone::Register()
     tBone->RegisterScript("setboneorient(quaternion)", &SetBoneOrient, NULL, NULL, NULL, nullptr, "SetBoneOrientMSG");
     tBone->RegisterScript("setbonepos(vector)", &SetBonePos, NULL, NULL, NULL, nullptr, "SetBonePosMSG");
 
-    tBone->_86E9B0();
+    tBone->PropagateProperties();
 }
