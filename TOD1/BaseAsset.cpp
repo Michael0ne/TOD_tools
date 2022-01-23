@@ -43,13 +43,13 @@ Asset::~Asset()
 
 bool Asset::stub3(unsigned char a1, int, int)
 {
-    m_Flags.m_FlagBits._13 = a1;
+    m_Flags.m_FlagBits._18 = a1;
     return false;
 }
 
 bool Asset::stub4() const
 {
-    return m_Flags.m_FlagBits._13 & 1;
+    return m_Flags.m_FlagBits._18 & 1;
 }
 
 void Asset::stub5(int)

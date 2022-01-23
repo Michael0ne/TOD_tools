@@ -9,8 +9,8 @@ class EntityType : public DataType
     struct ScriptInfo
     {
         void            (__thiscall* m_ScriptPtr)(void*, void*) = nullptr;
-        int             field_4 = NULL;
-        int             field_8 = NULL;
+        int            *field_4 = NULL;
+        int            *field_8 = NULL;
         int             field_C = NULL;
     };
 

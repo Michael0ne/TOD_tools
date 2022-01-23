@@ -2,6 +2,8 @@
 #include "TruthType.h"
 #include "AssetManager.h"
 #include "AnimSlot.h"
+#include "IntegerType.h"
+#include "NumberType.h"
 
 EntityType* tAnimLayer;
 
@@ -38,6 +40,33 @@ AnimLayer::~AnimLayer()
     g_AssetManager->DecreaseResourceReferenceCount(field_D4);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void AnimLayer::Play(AnimLayer* animation, const unsigned int event)
+{
+/*
+    if (!animation)
+    {
+        LogDump::LogA("NULL animation\n");
+        return;
+    }
+
+    SetIsPlaying(true);
+    SetIsLooping(false);
+
+    if (m_TargetAnim != 1)
+        SetParam(13, &m_TargetAnim, tINTEGER);
+
+    SetCrossTarget1(animation);
+    SetTargetCrossBlendFactor(0);
+
+    if (m_CrossBlendSpeed != 0)
+        SetParam(21, &m_CrossBlendSpeed, tNUMBER);
+
+    m_CrossBlendSpeed = 0;
+    SetPlayPos2(0);
+*/
+}
+
 const bool AnimLayer::GetIsPlaying() const
 {
     return m_Flags.Playing;
@@ -53,9 +82,29 @@ void AnimLayer::SetIsPlaying(const bool playing)
     m_Flags.Playing = playing;
 }
 
+void AnimLayer::SetIsLooping(const bool loop)
+{
+    const int loopflag = m_Flags.Looping;
+
+    if (loop != loopflag)
+        SetParam(11, &loopflag, tTRUTH);
+
+    m_Flags.Looping = loop;
+}
+
 void AnimLayer::GetGamePivotPos(Vector4f& outPos) const
 {
     outPos = m_GamePivotPos;
+}
+
+void AnimLayer::GetGamePivot(Vector4f& outPos) const
+{
+    outPos = m_GamePivotPosition;
+}
+
+void AnimLayer::GetGamePivotOrientA(Orientation& outOrient) const
+{
+    outOrient = m_GamePivotOrient;
 }
 
 void AnimLayer::GetGamePivotOrient(Orientation& outOrient) const
@@ -65,7 +114,34 @@ void AnimLayer::GetGamePivotOrient(Orientation& outOrient) const
 
 void AnimLayer::GetLoopMode(int& outLoopMode) const
 {
-    outLoopMode = m_TargetAnim == 1 ? m_TargetAnim_Entity->m_LoopMode_1 : m_TargetAnim_Entity_2->m_LoopMode_1;
+    outLoopMode = m_TargetAnim == 1 ? m_TargetAnim_Entity->m_LoopMode : m_TargetAnim_Entity_2->m_LoopMode;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void AnimLayer::SetCrossTarget1(AnimLayer* target)
+{
+}
+
+void AnimLayer::SetTargetCrossBlendFactor(const float blend)
+{
+    if (m_CrossBlendFactor != blend)
+        SetParam(19, &m_CrossBlendFactor, tNUMBER);
+
+    if (m_TargetAnim_Entity)
+    {
+        if (_A11C90 == 1)
+        {
+            m_CrossBlendFactor = blend;
+            field_140 = blend;
+        }
+        else
+            m_CrossBlendFactor = ((1 - _A11C90) * field_140) + (_A11C90 * blend);
+    }
+    else
+        if (m_TargetAnim_Entity_2)
+            m_CrossBlendFactor = 1;
+        else
+            SetIsPlaying(false);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

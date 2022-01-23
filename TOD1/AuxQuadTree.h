@@ -41,6 +41,8 @@ public:
     void   Refresh(); // @8A2EE0;
     void            SetLodLevel(const Vector4f& pos);   //  @8A0B80
     void        CopyOwnerBounds(); //  @89F4D0
+
+    static AuxQuadTree*    GetNodeQuadTree(Node* node);    //  @8A0810
 };
 
 ASSERT_CLASS_SIZE(AuxQuadTree, 88);

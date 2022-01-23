@@ -11,8 +11,15 @@ public:
     EntityType     *m_ScriptEntity;
     unsigned char   field_8[10];
     short           m_Order;
-    // NOTE: m_Id's highest bit contains block number associated with this entity (0-6).
-    int             m_Id;  // NOTE: actual id is m_Id >> 8 - lower 3 bytes.
+    union
+    {
+        struct
+        {
+            unsigned    _0 : 8;
+            unsigned    Id : 20;
+            unsigned    BlockId : 3;
+        };
+    }               m_Id;
     int            *m_Parameters; // NOTE: an array of properties values.
     Defragmentator *m_Defragmentator;
     int            *field_20; // NOTE: at field_20[1] is a pointer to ScriptThread. Maybe script thread that's attached to this entity (?)

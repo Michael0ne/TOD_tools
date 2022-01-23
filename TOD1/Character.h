@@ -159,7 +159,7 @@ protected:
     std::vector<Node*>          m_PhysAttachments;
     std::vector<int>            m_List_3;
     std::vector<int>            m_List_4;
-    Vector4f                    m_Pos_1;
+    Vector4f                    m_BipPivotPos;
     std::vector<AttachedNode>   m_AttachedNodesList;
     std::vector<int>            m_AttachedLights;
     std::vector<int>            m_List_5;
@@ -183,6 +183,7 @@ public:
     }
 
     void                UpdateAnimation(); // @90B3F0
+    void                Animate();  //  @910CE0
     void                AttachNode(const unsigned int index, Node* node, const String& nodeName1, const String& nodeName2); //  @910FC0
     void                DetachNode(const unsigned int index);   //  @915D00
     const int           GetPhysAttachmentIndex(const char* attachmentName) const;   //  @9083F0

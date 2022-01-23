@@ -12,6 +12,7 @@
 #include "FrameBasedSubAllocator.h"
 #include "ModelAsset.h"
 #include "CollisionList.h"
+#include "NumberType.h"
 
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
@@ -404,6 +405,37 @@ void Scene::RemoveCollisionList(CollisionList* list)
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::LoadMap(const unsigned int blockind, Node* foldernode)
 {
+}
+
+float Scene::GetTimeMultiplier() const
+{
+    return m_TimeMultiplier;
+}
+
+void Scene::SetTimeMultiplier(const float multiplier)
+{
+    SetParam(10, &m_TimeMultiplier, tNUMBER);
+    m_TimeMultiplier = multiplier;
+}
+
+float Scene::GetRewindTimeMultiplier() const
+{
+    return m_RewindTimeMultiplier;
+}
+
+void Scene::SetRewindTimeMultiplier(const float mult)
+{
+    m_RewindTimeMultiplier = mult;
+}
+
+char Scene::GetInitMode() const
+{
+    return m_InitMode;
+}
+
+void Scene::SetInitMode(const char initmode)
+{
+    m_InitMode = initmode;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

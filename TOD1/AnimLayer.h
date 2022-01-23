@@ -7,8 +7,7 @@ class MotionLayer;
 class AnimLayer : public Node
 {
 protected:
-    Vector3f                    m_GamePivotPosition;
-    int                         field_5C;
+    Vector4f                    m_GamePivotPosition;    //  NOTE: this and below could be 'GamePivotAbsolutePosition/Orientation'.
     Orientation                 m_GamePivotOrient;
     Vector4f                    m_Pos_1;
     AnimSlot                   *m_TargetAnim_Entity;
@@ -101,11 +100,18 @@ public:
     AnimLayer();    //  @902F90
     virtual ~AnimLayer();   //  @905670
 
+    void                        Play(AnimLayer* animation, const unsigned int event);   //  @903A80
+
     const bool                  GetIsPlaying() const;   //  @900FA0
     void                        SetIsPlaying(const bool playing);   //  @901050
-    void                        GetGamePivotPos(Vector4f& outPos) const;    //  @901730
+    void                        SetIsLooping(const bool loop);  //  @900FD0
+    void                        GetGamePivotPos(Vector4f& outPos) const;    //  @901730 //  TODO: the argument could be a vec3f since disassembly is explicit about it.
+    void                        GetGamePivot(Vector4f& outPos) const;   //  @901EC0
+    void                        GetGamePivotOrientA(Orientation& outOrient) const;  //  @901EF0
     void                        GetGamePivotOrient(Orientation& outOrient) const;   //  @901750
     void                        GetLoopMode(int& outLoopMode) const;    //  @901770
+    void                        SetCrossTarget1(AnimLayer* target); //  @903560
+    void                        SetTargetCrossBlendFactor(const float blend);   //  @901A30
 
     static void                 Register(); //  @903E60
 

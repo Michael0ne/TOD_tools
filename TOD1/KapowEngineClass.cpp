@@ -38,6 +38,7 @@
 #include "Fog.h"
 #include "Wind.h"
 #include "TextSlot.h"
+#include "GEKeyFrame.h"
 
 namespace Script
 {
@@ -687,7 +688,9 @@ void KapowEngineClass::InitEntitiesDatabase()
     StaticLighting::Register();
     MoviePlayer::Register();
     ParticleSystem::Register();
+    */
     GEKeyFrame::Register();
+    /*
     GeometryEffect::Register();
     ProfilerInput::Register();
     RealtimeFolder::Register();

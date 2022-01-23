@@ -137,6 +137,13 @@ public:
     void            AddCollisionList(CollisionList* list); //  @896B40
     void            RemoveCollisionList(CollisionList* list);   //  @895AD0
     void            LoadMap(const unsigned int blockind, Node* foldernode); //  @8932A0
+    float           GetTimeMultiplier() const;  //  @4B3FC0
+    void            SetTimeMultiplier(const float multiplier);  //  @70EE70
+    float           GetRewindTimeMultiplier() const;    //  @755240
+    void            SetRewindTimeMultiplier(const float mult);  //  @892C70
+    char            GetInitMode() const;    //  @892C90
+    void            SetInitMode(const char initmode);   //  @70EEA0
+    float           GetWindSize() const;    //  @896110 //  NOTE: wind = rewind.
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4

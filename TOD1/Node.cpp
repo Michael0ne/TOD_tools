@@ -722,8 +722,19 @@ void Node::TriggerGlobalScript(int scriptId, void* args)
         EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_IsBaseEntity ? &m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : &m_ScriptEntity->m_ScriptsList[scriptId];
         if (scriptinfo)
             if (scriptinfo->field_C)
-                // TODO: some complex pointer maths going on here, fix this.
-                scriptinfo->m_ScriptPtr(this + scriptinfo->field_8 + scriptinfo->field_C + scriptinfo->field_4 + scriptinfo->field_8, args);
+                /*
+                * ESI = this
+                * EAX = scriptinfo
+                * ECX = scriptinfo->field_C
+                *
+                * EDX = *(scriptinfo->field_8)
+                * EDI = *( (*(scriptinfo->field_8)) + this)
+                * ECX = *( (*( (*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)
+                * ECX = (*( (*( (*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)) + *(scriptinfo->field_4)
+                * ECX = ((*( (*( (*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)) + *(scriptinfo->field_4)) + (*(scriptinfo->field_8))
+                * ECX = ((*( (*( (*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)) + *(scriptinfo->field_4)) + (*(scriptinfo->field_8)) + this
+                */
+                scriptinfo->m_ScriptPtr(((*((*((*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)) + *(scriptinfo->field_4)) + (*(scriptinfo->field_8)) + this, args);
             else
                 scriptinfo->m_ScriptPtr(this + scriptinfo->field_4, args);
     }

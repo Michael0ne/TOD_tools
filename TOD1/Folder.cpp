@@ -116,7 +116,7 @@ void Folder_::UnloadBlocks()
             if (!loadednode)
                 break;
 
-            while (((loadednode->m_Id >> 27) & 7) - 1 != ((8 * m_BlockId) >> 3))
+            while ( loadednode->m_Id.BlockId - 1 != ((8 * m_BlockId) >> 3))
             {
                 loadednode = (Node*)g_AssetManager->FindNextEntity(loadednode);
                 if (!loadednode)
@@ -128,7 +128,7 @@ void Folder_::UnloadBlocks()
                 }
             }
 
-            LogDump::LogA("deleting dangling node %s (id=%d) from block %d\n", loadednode->m_Name ? loadednode->m_Name : "", loadednode->m_Id >> 8, ((loadednode->m_Id >> 28) & 7) - 1);
+            LogDump::LogA("deleting dangling node %s (id=%d) from block %d\n", loadednode->m_Name ? loadednode->m_Name : "", loadednode->m_Id.Id, loadednode->m_Id.BlockId - 1);
         }
     }
 
