@@ -87,3 +87,8 @@ void AuxQuadTree::CopyOwnerBounds()
 
     m_Bounds = worldPos;
 }
+
+#pragma message(TODO_IMPLEMENTATION)
+void AuxQuadTree::_8A36A0(const bool use)
+{
+}

@@ -15,14 +15,29 @@ public:
     {
         struct
         {
-            unsigned    _0 : 8;
+            unsigned    HasPosition : 1;
+            unsigned    HasQuadTree : 1;
+            unsigned    HasFragment : 1;
+            unsigned    _3 : 5;
             unsigned    Id : 20;
             unsigned    BlockId : 3;
         };
     }               m_Id;
     int            *m_Parameters; // NOTE: an array of properties values.
     Defragmentator *m_Defragmentator;
-    int            *field_20; // NOTE: at field_20[1] is a pointer to ScriptThread. Maybe script thread that's attached to this entity (?)
+    
+    struct EntityScriptData
+    {
+        int         field_0;    //  NOTE: flags of some sort.
+        ScriptThread*m_ScriptThread;
+        void        (*m_Handler)();
+        int         field_C;
+        int        *field_10;
+        int         field_14;
+        int         field_18;
+        int        *field_1C;
+        int        *field_20;
+    }              *field_20;
 
     int             SaveScriptDataToFile_Impl(MemoryCards* memcard, int memcardindex, int savegameslot, const char* a4); // @86B650
     unsigned char   LoadScriptDataFromFile_Impl(EntityType*, int, int); // @86B8B0
@@ -56,7 +71,7 @@ public:
     void            SaveScriptDataToFile(int* params); // @86BBC0
     void            LoadScriptDataFromFile(int* params); // @86BC20
 
-    void            SetScript(const EntityType*); // @869E20
+    void            SetScript(EntityType* script); // @869E20
 
     const int       SaveScriptData(SavePoint * savefilehelper); // @86B110
 

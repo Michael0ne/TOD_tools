@@ -145,6 +145,7 @@ public:
     const int                   GetPropertiesListSize() const;  //  @489A20
     void                        GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue);   //  @489E50
     bool                        HasPropertyId(const unsigned int propertyid) const; //  @489A30
+    void                        CopyScriptParameters(Entity* entity);    //  @489BE0
 
     class EntityType* AssignScriptToEntity(EntityType * parent); // @48A3F0
 

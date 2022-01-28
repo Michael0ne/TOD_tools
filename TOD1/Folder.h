@@ -26,6 +26,8 @@ ASSERT_CLASS_SIZE(AssetInfo, 24);
 class Folder_ : public Node
 {
     friend class Scene;
+    friend class Node;
+
 protected:
     int             m_BlockId;
     AssetInfo      *m_AssetBlockInfo;

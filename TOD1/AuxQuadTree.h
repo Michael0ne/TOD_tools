@@ -13,7 +13,7 @@ public:
     AuxQuadTree    *m_FirstSibling;
     short   field_10[4];
     int    field_18;
-    int    field_1C;
+    int    m_UserType;
     int    field_20;
     int    field_24;
     int    field_28;
@@ -41,6 +41,7 @@ public:
     void   Refresh(); // @8A2EE0;
     void            SetLodLevel(const Vector4f& pos);   //  @8A0B80
     void        CopyOwnerBounds(); //  @89F4D0
+    void        _8A36A0(const bool use);    //  @8A36A0
 
     static AuxQuadTree*    GetNodeQuadTree(Node* node);    //  @8A0810
 };

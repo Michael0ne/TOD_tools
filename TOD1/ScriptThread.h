@@ -5,13 +5,14 @@
 class IScriptThread
 {
 public:
-    virtual      ~IScriptThread();
+    virtual         ~IScriptThread();
     virtual int     stub1(void*);
 };
 
 class ScriptThread : public IScriptThread
 {
     friend class Entity;
+    friend class Node;
 
     struct ThreadList_1
     {
@@ -65,8 +66,7 @@ protected:
             unsigned char       MarkedForSuspend : 1;   //  27
             unsigned char       _28 : 1;
             unsigned char       HasScriptNode : 1;
-            unsigned char       Priority : 1;
-            unsigned char       _31 : 1;
+            unsigned char       Priority : 2;
         }                       m_FlagBits;
         unsigned int            m_ThreadFlags;
     }                           m_ThreadFlags;

@@ -1649,8 +1649,6 @@ bool GfxInternal_Dx9::BeginScene()
 
 void GfxInternal_Dx9::CreateRenderDevice()
 {
-    int behaviourFlags;
-
     m_PresentParameters.EnableAutoDepthStencil = false;
     m_PresentParameters.SwapEffect = D3DSWAPEFFECT_FLIP;
     m_PresentParameters.BackBufferCount = 1;
@@ -1667,21 +1665,15 @@ void GfxInternal_Dx9::CreateRenderDevice()
     RELEASE_SAFE(m_Direct3DDevice);
 
     if (m_DeviceCaps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
-    {
         LogDump::LogA("Creating a HW device.\n");
-        behaviourFlags = 64;
-    }
     else
-    {
         LogDump::LogA("Creating a SW device.\n");
-        behaviourFlags = 32;
-    }
 
     m_Direct3DInterface->CreateDevice(
         D3DADAPTER_DEFAULT,
         D3DDEVTYPE_HAL,
         g_Window->m_WindowHandle,
-        behaviourFlags,
+        m_DeviceCaps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT ? D3DCREATE_HARDWARE_VERTEXPROCESSING : D3DCREATE_SOFTWARE_VERTEXPROCESSING,
         &m_PresentParameters,
         &m_Direct3DDevice);
 

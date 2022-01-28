@@ -6,6 +6,7 @@
 #include "MemoryCards.h"
 #include "SavePoint.h"
 #include "MemoryCard.h"
+#include "IntegerType.h"
 
 EntityType* tEntity;
 
@@ -20,7 +21,7 @@ Entity::~Entity()
 {
     MESSAGE_CLASS_DESTROYED(Entity);
 
-    if (field_20 && field_20[1])
+    if (field_20 && field_20->m_ScriptThread)
     {
         //m_Defragmentator->stub4((field_20 - m_Defragmentator->m_AllocatedSpace) / 12);
         field_20 = nullptr;
@@ -29,13 +30,10 @@ Entity::~Entity()
     if (m_Parameters)
         m_ScriptEntity->m_Script->ClearEntityProperties(this);
 
-    const unsigned int blockid = ((m_Id >> 28) & 7) - 1;
-    const int entindd = (m_Id >> 8) & 0xFF8FFFFF;
+    g_AssetManager->m_NodesList[m_Id.BlockId - 1][m_Id.Id] = nullptr;
 
-    g_AssetManager->m_NodesList[blockid][entindd] = nullptr;
-
-    if (g_AssetManager->m_NodesInNodeList[blockid] > entindd)
-        g_AssetManager->m_NodesInNodeList[blockid] = entindd;
+    if (g_AssetManager->m_NodesInNodeList[m_Id.BlockId - 1] > m_Id.Id)
+        g_AssetManager->m_NodesInNodeList[m_Id.BlockId - 1] = m_Id.Id;
 }
 
 Entity::Entity()
@@ -44,14 +42,14 @@ Entity::Entity()
 
     m_Defragmentator = NULL;
     field_20 = nullptr;
-    m_Id = m_Id | 255;
+    m_Id._0 = 255;
     m_ScriptEntity = nullptr;
     m_Parameters = nullptr;
     field_20 = nullptr;
 
     memset(field_8, NULL, sizeof(field_8));
 
-    m_Id = (g_AssetManager->AddEntity(this) << 8) | m_Id;
+    m_Id.Id = g_AssetManager->AddEntity(this);
 }
 
 int Entity::SaveScriptDataToFile_Impl(MemoryCards * memcard, int memcardindex, int savegameslot, const char* a4)
@@ -81,26 +79,27 @@ unsigned char Entity::LoadScriptDataFromFile_Impl(EntityType*, int, int)
 
 int Entity::GetId() const
 {
-    return m_Id >> 8;
+    return m_Id.Id;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 int Entity::GetScriptPriority() const
 {
-    return NULL;
+    if (!field_20 || !field_20->m_ScriptThread)
+        return NULL;
+
+    return field_20->m_ScriptThread->m_ThreadFlags.m_FlagBits.Priority;
 }
 
 void Entity::SetScriptPriority(const unsigned char priority)
 {
-    if (!field_20 || !field_20[1])
+    if (!field_20 || !field_20->m_ScriptThread)
         return;
 
-    ScriptThread* st = (ScriptThread*)field_20[1];
-    st->m_ThreadFlags.m_FlagBits.Priority = priority;
+    field_20->m_ScriptThread->m_ThreadFlags.m_FlagBits.Priority = priority;
     
-    if (st->m_ScriptNode->m_GlobalIdInBlockigList >= 0)
-        //  TODO: some flag value here...
-        Node::NodesWithUpdateOrBlockingScripts[st->m_ScriptNode->m_GlobalIdInBlockigList].m_Enabled = false;
+    const short globid = field_20->m_ScriptThread->m_ScriptNode->m_GlobalIdInBlockigList;
+    if (globid >= 0)
+        Node::NodesWithUpdateOrBlockingScripts[globid].m_Enabled = Node::NodesWithUpdateOrBlockingScripts[globid].m_Enabled ^ ( Node::NodesWithUpdateOrBlockingScripts[globid].m_Enabled ^ (field_20->m_ScriptThread->m_ThreadFlags.m_ThreadFlags >> 8) & 0xC00000);
 }
 
 void Entity::GetPropertyId(int* args) const
@@ -162,17 +161,15 @@ void Entity::LoadScriptDataFromFile(int* params)
     *params = LoadScriptDataFromFile_Impl(memcard, params[2], params[3]);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Entity::SetScript(const EntityType* script)
+void Entity::SetScript(EntityType* script)
 {
-    //if (field_18)
-     //if (m_ScriptEntity)
-      //m_ScriptEntity->m_ParentNode->_489C90(this);
+    if (m_Parameters && m_ScriptEntity)
+        m_ScriptEntity->m_Script->ClearEntityProperties(this);
 
-    //m_ScriptEntity = script;
+    m_ScriptEntity = script;
 
-    //if (script->m_ParentNode)
-     //script->m_ParentNode->_489BE0(this);
+    if (script->m_Script)
+        script->m_Script->CopyScriptParameters(this);
 }
 
 const int Entity::SaveScriptData(SavePoint * savefilehelper)
@@ -206,14 +203,23 @@ const int Entity::SaveScriptData(SavePoint * savefilehelper)
     return writtendatasize;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Entity::Register()
 {
     tEntity = new EntityType("Entity");
+    tEntity->RegisterScript("getpropertyid(string):integer", &GetPropertyId, NULL, NULL, NULL, nullptr, "GetPropertyIDMSG");
+    tEntity->RegisterScript("hasproperty(string):truth", &HasProperty, NULL, NULL, NULL, nullptr, "HasPropertyMSG");
+    tEntity->RegisterScript("haspropertyid(integer):truth", &HasPropertyId, NULL, NULL, NULL, nullptr, "HasPropertyIDMSG");
+    tEntity->RegisterScript("savescriptdatatofile(entity,integer,integer,string):truth", &SaveScriptDataToFile, NULL, NULL, NULL, nullptr, nullptr);
+    tEntity->RegisterScript("loadscriptdatafromfile(entity,integer,integer):integer", &LoadScriptDataFromFile, NULL, NULL, NULL, nullptr, nullptr);
+
+    tEntity->RegisterProperty(tINTEGER, "id", &GetId, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=string", NULL, NULL, -1);
+    tEntity->RegisterProperty(tINTEGER, "script_priority", &GetScriptPriority, NULL, NULL, NULL, &SetScriptPriority, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+
     tEntity->SetCreator((EntityType::CREATOR)Create);
+    tEntity->PropagateProperties();
 }
 
 Entity* Entity::Create(AllocatorIndex)
 {
-    return new Entity();
+    return new Entity;
 }

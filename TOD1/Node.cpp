@@ -9,10 +9,18 @@
 #include "VectorType.h"
 #include "Camera.h"
 #include "BuiltinType.h"
+#include "ScriptThread.h"
+#include "StringType.h"
+#include "IntegerType.h"
+#include "NumberType.h"
+#include "TruthType.h"
+#include "QuaternionType.h"
+#include "CollisionProbe.h"
 
 EntityType* tNode;
 std::vector<Node::NodeInfo> Node::NodesWithUpdateOrBlockingScripts;
 std::vector<Node::NodePosInfo> Node::NodesList;
+String Node::IgnoredCollisionNodes;
 
 NodeMatrix::NodeMatrix(Node* owner)
 {
@@ -30,7 +38,7 @@ NodeMatrix::~NodeMatrix()
 
 void NodeMatrix::GetMatrixForNode(DirectX::XMMATRIX& outMat)
 {
-    if (m_Owner->m_Id & NODE_MASK_QUADTREE)
+    if (m_Owner->m_Id.NodeMask == NODE_MASK_QUADTREE)
         ApplyMatrixFromQuadTree();
     GetMatrix(outMat);
 }
@@ -92,7 +100,8 @@ void Node::Destroy()
 
 void Node::_484CC0(int)
 {
-    m_Id |= 10;
+    m_Id.HasQuadTree = true;
+    m_Id._3 = 1;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -216,7 +225,7 @@ void Node::ConvertToWorldSpace(Vector4f& outPos, const Vector4f& inPos)
 {
     if (m_Position)
     {
-        if (m_Id & 2)
+        if (m_Id.HasQuadTree)
             m_Position->ApplyMatrixFromQuadTree();
 
         DirectX::XMMATRIX mat;
@@ -276,6 +285,386 @@ void Node::TouchThisPivot(const int)
     _484CC0(0);
 }
 
+void Node::IsSuspended(bool* suspended) const
+{
+    *suspended = field_20 &&
+        field_20->m_ScriptThread &&
+        field_20->m_ScriptThread->m_ThreadFlags.m_FlagBits.Suspended != false;
+}
+
+void Node::IsDisabled(bool* disabled) const
+{
+    *disabled = m_Flags.m_FlagBits._16 | m_Flags.m_FlagBits.Disable;
+}
+
+const int Node::GetUserType() const
+{
+    return m_QuadTree ? m_QuadTree->m_UserType : NULL;
+}
+
+const char Node::GetLod() const
+{
+    return m_QuadTree ? m_QuadTree->m_Lod : NULL;
+}
+
+const short Node::GetOrder() const
+{
+    return m_Order;
+}
+
+void Node::SetOrder(const short order)
+{
+    m_Order = order;
+
+    if (m_Parent)
+    {
+        SetChildrenPositionToSame();
+        SetParent(m_Parent);
+    }
+}
+
+const int Node::GetRenderOrderGroup() const
+{
+    return m_Flags.m_FlagBits.RenderOrderGroup;
+}
+
+void Node::SetRenderOrderGroup(int renderordergroup)
+{
+    if (renderordergroup > -1)
+    {
+        if (renderordergroup > 4)
+            renderordergroup = 4;
+    }
+    else
+        renderordergroup = -1;
+
+    m_Flags.m_FlagBits.RenderOrderGroup = renderordergroup;
+    m_Id._3 = true;
+}
+
+const bool Node::ShouldDisableOnCutscene() const
+{
+    return m_Flags.m_FlagBits.DisabledOnCutscene;
+}
+
+void Node::SetShouldDisableOnCutscene(const bool disable)
+{
+    m_Flags.m_FlagBits.DisabledOnCutscene = disable;
+}
+
+const int Node::GetRepresentation() const
+{
+    int representation = m_Position != nullptr;
+
+    if (m_QuadTree)
+        representation |= 2;
+
+    if (m_Flags.m_FlagBits.HasFragment)
+        representation |= 4;
+
+    return representation;
+}
+
+void Node::GetOrient(Orientation& orientation) const
+{
+    orientation = m_Position ? m_Position->m_Orientation : BuiltinType::Orient;
+}
+
+const bool Node::ShouldUseAuxQuadTree() const
+{
+    return m_QuadTree ? (m_QuadTree->field_4D >> 6) & 1 : false;
+}
+
+void Node::SetShouldUseAuxQuadTree(const bool use)
+{
+    if (!m_QuadTree)
+        return;
+
+    const bool flag = (m_QuadTree->field_4D >> 6) & 1;
+    SetParam(5, &flag, tTRUTH);
+    m_QuadTree->_8A36A0(use);
+}
+
+const char* const Node::GetName() const
+{
+    return m_Name ? m_Name : nullptr;
+}
+
+void Node::SetName(const char* const name)
+{
+    if (m_Name)
+        delete[] m_Name;
+
+    if (!name)
+        return;
+
+    m_Name = new char[53];
+    strcpy(m_Name, name);
+}
+
+const float Node::GetLodThreshold() const
+{
+    return m_QuadTree ? (m_QuadTree->field_3C * 0.0049999999f) : 0.f;
+}
+
+void Node::SetLodThreshold(float threshold)
+{
+    if (!m_QuadTree)
+        return;
+
+    const float threshold = m_QuadTree->field_3C * 0.0049999999f;
+    SetParam(8, &threshold, tNUMBER);
+
+    if (threshold > 1)
+        threshold = 1;
+
+    if (threshold < 0)
+        threshold = 0;
+
+    m_QuadTree->field_3C = (threshold * 200.0f);
+    _88BA60();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_88BA60()
+{
+}
+
+const float Node::GetFadeThreshold() const
+{
+    return m_QuadTree ? (m_QuadTree->field_3D & 127) * 0.0099999998f : 0.f;
+}
+
+void Node::SetFadeThreshold(float threshold)
+{
+    if (!m_QuadTree)
+        return;
+
+    const float fadethreshold = (m_QuadTree->field_3D & 127) * 0.0099999998f;
+    SetParam(9, &fadethreshold, tNUMBER);
+
+    if (threshold < 0)
+        threshold = 0;
+
+    if (threshold > 1)
+        threshold = 1;
+
+    m_QuadTree->field_3D ^= (m_QuadTree->field_3D ^ (unsigned int)(threshold * 100.0f)) & 127;
+    _88BAA0();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_88BAA0()
+{
+}
+
+const bool Node::ShouldSlowFade() const
+{
+    return m_QuadTree ? (m_QuadTree->field_3D >> 7) : false;
+}
+
+void Node::SetShouldSlowFade(const bool slowfade)
+{
+    if (m_QuadTree)
+        m_QuadTree->field_3D = (slowfade << 7) | m_QuadTree->field_3D & 127;
+}
+
+const float Node::GetTraverseDistance() const
+{
+    return m_QuadTree ? m_QuadTree->m_TraverseDistance : 0.f;
+}
+
+void Node::SetTraverseDistance(const float distance)
+{
+    if (!m_QuadTree)
+        return;
+
+    if (distance < 0)
+        m_QuadTree->m_TraverseDistance = 0;
+
+    if (distance > 65535)
+        m_QuadTree->m_TraverseDistance = -1;
+    else
+        m_QuadTree->m_TraverseDistance = distance;
+}
+
+Entity* Node::GetScene() const
+{
+    return Scene::SceneInstance;
+}
+
+Entity* Node::GetFirstChild() const
+{
+    return m_FirstChild;
+}
+
+Entity* Node::GetNextSibling() const
+{
+    return m_NextSibling;
+}
+
+const float Node::GetLodDistance() const
+{
+    return m_QuadTree ? sqrtf((float)(unsigned int)m_QuadTree->m_LodDistance) : 0.f;
+}
+
+const float Node::GetLodFade() const
+{
+    return m_QuadTree ? m_QuadTree->m_LodFade * 0.0039215689f : 0.f;
+}
+
+const bool Node::GetIsTaggedForUnload() const
+{
+    Folder_* parentfolder = FindParentFolder();
+    if (!parentfolder || parentfolder == this)
+        return false;
+    else
+        return (parentfolder->m_BlockId >> 30) & 1;
+}
+
+Folder_* Node::FindParentFolder() const
+{
+    Node* node = (Node*)this;
+    while (true)
+    {
+        if (!node)
+        {
+            node = node->m_Parent;
+            if (!node)
+                return nullptr;
+
+            continue;
+        }
+
+        EntityType* folderscript = m_ScriptEntity;
+        if (!folderscript)
+        {
+            node = node->m_Parent;
+            if (!node)
+                return nullptr;
+
+            continue;
+        }
+
+        while (folderscript != tFolder)
+        {
+            folderscript = folderscript->m_Parent;
+            if (!folderscript)
+            {
+                node = node->m_Parent;
+                if (!node)
+                    return nullptr;
+            }
+        }
+
+        if (!node->m_Parent || ((Folder_*)node)->GetBlockId() > 0)
+            return (Folder_*)node;
+
+        node = node->m_Parent;
+        if (!node)
+            return nullptr;
+    }
+}
+
+const int Node::GetUniqueId0() const
+{
+    return m_Fragment ? m_Fragment->m_UniqueId.m_Id.m_Id1 : NULL;
+}
+
+void Node::SetUniqueId0(const int id)
+{
+    if (m_Fragment)
+        m_Fragment->m_UniqueId.m_Id.m_Id1 = id;
+}
+
+const int Node::GetUniqueId1() const
+{
+    return m_Fragment ? m_Fragment->m_UniqueId.m_Id.m_Id2 : NULL;
+}
+
+void Node::SetUniqueId1(const int id)
+{
+    if (m_Fragment)
+        m_Fragment->m_UniqueId.m_Id.m_Id2 = id;
+}
+
+void Node::SetUserType(const int type)
+{
+    if (m_QuadTree)
+    {
+        SetParam(6, &m_QuadTree->m_UserType, tINTEGER);
+        m_QuadTree->m_UserType ^= (type ^ m_QuadTree->m_UserType) & 0xFFFFFF;
+    }
+}
+
+const char* const Node::GetIgnoreList() const
+{
+    if (!m_CollisionIgnoreList)
+        return nullptr;
+
+    if (!m_CollisionIgnoreList->m_CollisionProbesList.size())
+        return IgnoredCollisionNodes.m_Str;
+
+    char buffer[12] = {};
+    for (int i = 0; i < m_CollisionIgnoreList->m_CollisionProbesList.size(); ++i)
+    {
+        if (!m_CollisionIgnoreList->m_CollisionProbesList[i])
+            continue;
+
+        sprintf(buffer, "%010d;", m_CollisionIgnoreList->m_CollisionProbesList[i]->m_Id.Id);
+        IgnoredCollisionNodes.Append(buffer);
+
+        memset(buffer, NULL, 12);
+    }
+
+    return IgnoredCollisionNodes.m_Str;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::SetIgnoreList(const char* list)
+{
+    if (!m_CollisionIgnoreList || !list)
+        return;
+
+    m_CollisionIgnoreList->m_CollisionProbesList.clear();
+    const size_t listlen = strlen(list);
+    const size_t blocksize = 11;
+
+    if (listlen < blocksize)
+        return;
+
+    for (unsigned int i = listlen / blocksize; i; --i)
+    {
+        //  TODO: find probe by it's id and add it to the list.
+        CollisionProbe* colprobe;
+        m_CollisionIgnoreList->m_CollisionProbesList.push_back(colprobe);
+        list += blocksize;
+    }
+}
+
+void Node::Move(const Vector4f& pos)
+{
+    SetNewPos(pos);
+}
+
+void Node::SetNewPos(const Vector4f& pos)
+{
+    Vector4f nodepos;
+    GetPos(nodepos);
+
+    SetPos({ nodepos.x + pos.x, nodepos.y + pos.y, nodepos.z + pos.z, nodepos.a });
+}
+
+void Node::MoveLocal(const Vector4f& pos)
+{
+    MoveLocal_Impl(pos);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::MoveLocal_Impl(const Vector4f& pos)
+{
+}
+
 void Node::SetFlags(int flags)
 {
     if (!m_Flags.m_FlagBits.Volatile && (flags & 0x20) == 0 && flags != (m_Flags.m_Flags & 0xFFF))
@@ -306,12 +695,15 @@ void Node::Instantiate()
     if (m_CollisionIgnoreList)
         m_CollisionIgnoreList->field_78 |= 0x80000000;
 
-    m_Id &= 0xFE;
+    m_Id.HasPosition = false;
+    m_Id.HasQuadTree = true;
+    m_Id.HasFragment = true;
+    m_Id._3 = 31;   //  TODO: what is this?
 
     if (m_QuadTree)
         m_QuadTree->Refresh();
 
-    m_Id |= 0x40;
+    m_Id._3 = 8;
 }
 
 void Node::Update()
@@ -378,16 +770,12 @@ Vector4f* Node::GetBounds(Vector4f& unk) const
     return (unk = Vector4f(), &unk);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 Node::Node(unsigned char allocationBitmask)
 {
     MESSAGE_CLASS_CREATED(Node);
 
     m_Flags.m_FlagBits.HasFragment = true;
-    m_Flags.m_FlagBits._30 = true;
-    m_Flags.m_FlagBits._15 = true;
-    m_Flags.m_FlagBits._14 = true;
-    m_Flags.m_FlagBits._13 = true;
-    m_Flags.m_FlagBits._12 = true;
 
     m_GlobalIdInSceneList = NULL;
     m_QuadTree = nullptr;
@@ -413,11 +801,6 @@ Node::Node(unsigned char allocationBitmask)
     m_Flags.m_FlagBits.HasFragment = m_Fragment != nullptr;
 
     m_GlobalIdInSceneList = m_GlobalIdInSceneList | 0xFFFFFFFF;
-    
-    m_Flags.m_FlagBits._12 = true;
-    m_Flags.m_FlagBits._13 = true;
-    m_Flags.m_FlagBits._14 = true;
-    m_Flags.m_FlagBits._15 = true;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -461,11 +844,11 @@ void Node::SetParam(const int index, const void* param, DataType* type)
 #pragma message(TODO_IMPLEMENTATION)
 void Node::SetOrient(const Orientation& orient)
 {
-#ifdef _EXE
-    LogDump::LogA("Node::SetOrient NOT IMPLEMENTED!\n");
-#else
-    (*(void(__thiscall*)(Node*, const Orientation&))0x88DB20)(this, orient);
-#endif
+    if (!m_Position)
+        return;
+
+    if (m_Position->m_Owner != this)
+        return;
 }
 
 Vector4f* Node::GetPos(Vector4f& outVec)
@@ -523,20 +906,6 @@ void Node::DestroyAddon()
     else
         for (Node* node_ = m_FirstChild; node_; node_ = node_->m_NextSibling)
             node_->DestroyAddon();
-}
-
-void Node::SetName(const char* name)
-{
-    if (m_Name)
-        MemoryManager::ReleaseMemory(m_Name, false);
-
-    if (!name || *name == NULL)
-        m_Name = nullptr;
-    else
-    {
-        m_Name = (char*)MemoryManager::AllocatorsList[g_AssetManager->GetAllocatorType()]->Allocate(strlen(name) + 1, NULL, NULL);
-        strcpy(m_Name, name);
-    }
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -636,16 +1005,16 @@ void Node::SetPos(const Vector4f& newpos)
 
 const char* Node::GetFragment() const
 {
-    if (m_Fragment)
-        if (m_Flags.m_FlagBits.HasFragment) // TODO: check if this is correct!
-            return m_Fragment->m_Name;
-        else
-            if (m_Fragment->m_FragmentRes)
-                return m_Fragment->m_FragmentRes->AddResToOpenListAndReturnName();
-            else
-                return nullptr;
-    else
+    if (!m_Fragment)
         return nullptr;
+
+    if (!m_Flags.m_FlagBits.HasFragment)
+        return m_Fragment->m_Name;
+
+    if (m_Fragment->m_FragmentRes)
+        return m_Fragment->m_FragmentRes->AddResToOpenListAndReturnName();
+
+    return nullptr;
 }
 
 void Node::ForceLodCalculation(unsigned int a1)
@@ -838,7 +1207,7 @@ void Node::SetFragment(const char* const fragmentpath)
 void Node::TryInstantiate()
 {
     if (m_GlobalIdInBlockigList < 0)
-        m_Id |= 1;
+        m_Id.HasPosition = true;
     else
         Instantiate();
 }
@@ -909,10 +1278,48 @@ void Node::_891E70(const String& s, String& outs)
     outs = s;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void Node::Register()
 {
+    using CREATOR = EntityType::CREATOR;
+
     tNode = new EntityType("Node");
-    tNode->SetCreator((EntityType::CREATOR)Create);
+    tNode->InheritFrom(tEntity);
+    tNode->SetCreator((CREATOR)Create);
+
+    tNode->RegisterProperty(tSTRING, "typename", &GetTypename, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=static", NULL, NULL, -1);
+    tNode->RegisterProperty(tSTRING, "script", &GetScript, NULL, NULL, NULL, &SetScript, NULL, NULL, NULL, "control=resource|type=*.script", NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "order", &GetOrder, NULL, NULL, NULL, &SetOrder, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "renderordergroup", &GetRenderOrderGroup, NULL, NULL, NULL, &SetRenderOrderGroup, NULL, NULL, NULL, "control=slider|min=-1|max=4", NULL, NULL, -1);
+    tNode->RegisterProperty(tEntity, "parent", &GetParent, NULL, NULL, NULL, &SetParent, NULL, NULL, NULL, nullptr, NULL, NULL, 1);
+    tNode->RegisterProperty(tTRUTH, "disable_on_cutscene", &ShouldDisableOnCutscene, NULL, NULL, NULL, &SetShouldDisableOnCutscene, NULL, NULL, NULL, "control=truth", NULL, NULL, -1);
+    tNode->RegisterProperty(tSTRING, "fragment", &GetFragment, NULL, NULL, NULL, &SetFragment, NULL, NULL, NULL, "control=resource|type=*.fragment", NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "flags", &GetFlags, NULL, NULL, NULL, &SetFlags, NULL, NULL, NULL, "control=flags|flag0=disable|flag1=dynamic|flag2=invisible|flag3=lock|flag4=open|flag5=volatile|flag6=disable collision|flag7=d.b.r.|flag8=l.s.r.|flag9=purge names|flag10=e.r.r|flag11=f.r.r", NULL, NULL, 2);
+    tNode->RegisterProperty(tINTEGER, "representation", &GetRepresentation, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tVECTOR, "pos", &GetPos, NULL, NULL, NULL, &SetPos, NULL, NULL, NULL, "control=string", NULL, NULL, 3);
+    tNode->RegisterProperty(tQUATERNION, "orient", &GetOrient, NULL, NULL, NULL, &SetOrient, NULL, NULL, NULL, "control=string", NULL, NULL, 4);
+    tNode->RegisterProperty(tTRUTH, "use_aux_quadtree", &ShouldUseAuxQuadTree, NULL, NULL, NULL, &SetShouldUseAuxQuadTree, NULL, NULL, NULL, "control=truth", NULL, NULL, 5);
+    tNode->RegisterProperty(tSTRING, "name", &GetName, NULL, NULL, NULL, &SetName, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+    tNode->RegisterProperty(tNUMBER, "lod_threshold", &GetLodThreshold, NULL, NULL, NULL, &SetLodThreshold, NULL, NULL, NULL, "control=slider|min=0|max=0.4|step=0.01", NULL, NULL, 8);
+    tNode->RegisterProperty(tNUMBER, "fade_threshold", &GetFadeThreshold, NULL, NULL, NULL, &SetFadeThreshold, NULL, NULL, NULL, "control=slider|min=0|max=0.2|step=0.01", NULL, NULL, 9);
+    tNode->RegisterProperty(tTRUTH, "slow_fade", &ShouldSlowFade, NULL, NULL, NULL, &SetShouldSlowFade, NULL, NULL, NULL, "control=truth", NULL, NULL, -1);
+    tNode->RegisterProperty(tNUMBER, "traverse_distance", &GetTraverseDistance, NULL, NULL, NULL, &SetTraverseDistance, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tEntity, "scene", &GetScene, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tEntity, "firstchild", &GetFirstChild, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tEntity, "nextsibling", &GetNextSibling, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tNUMBER, "lod_distance", &GetLodDistance, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tNUMBER, "lod_fade", &GetLodFade, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "lod", &GetLod, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tTRUTH, "is_tagged_for_unload", &GetIsTaggedForUnload, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "unique_id0", &GetUniqueId0, NULL, NULL, NULL, &SetUniqueId0, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "unique_id1", &GetUniqueId1, NULL, NULL, NULL, &SetUniqueId1, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "UserType", &GetUserType, NULL, NULL, NULL, &SetUserType, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+    tNode->RegisterProperty(tSTRING, "IgnoreList", &GetIgnoreList, NULL, NULL, NULL, &SetIgnoreList, NULL, NULL, NULL, "control=string", NULL, NULL, 7);
+
+    tNode->RegisterScript("IsDisabled:truth", &IsDisabled, NULL, NULL, NULL, nullptr, "IsDisabledMSG");
+    tNode->RegisterScript("IsSuspended:truth", &IsSuspended, NULL, NULL, NULL, nullptr, "IsSuspendedMSG");
+    tNode->RegisterScript("move(vector)", &Move, NULL, NULL, NULL, nullptr, "MoveMSG");
+    tNode->RegisterScript("movelocal(vector)", &MoveLocal, NULL, NULL, NULL, nullptr, "MoveLocalMSG");
 }
 
 Node* Node::Create(AllocatorIndex)

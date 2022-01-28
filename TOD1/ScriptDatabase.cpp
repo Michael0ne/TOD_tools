@@ -1148,6 +1148,22 @@ bool GlobalScript::HasPropertyId(const unsigned int propertyid) const
     return m_PropertiesValues.find(propertyid) != m_PropertiesValues.end();
 }
 
+void GlobalScript::CopyScriptParameters(Entity* entity)
+{
+    int *parameters = new int[m_ScriptSize];
+
+    for (unsigned int i = 0; i < m_PropertiesList.size(); ++i)
+        if (m_PropertiesList[i].m_DefaultValue)
+            m_PropertiesList[i].m_Info->m_PropertyType->stub7(m_PropertiesList[i].m_DefaultValue, &parameters[m_PropertiesList[i].m_Offset]);
+        else
+            m_PropertiesList[i].m_Info->m_PropertyType->stub3(&parameters[m_PropertiesList[i].m_Offset]);
+
+    if (m_PropertiesBlocksTotal)
+        memset(parameters, NULL, m_PropertiesBlocksTotal * sizeof(*parameters));
+
+    entity->m_Parameters = parameters;
+}
+
 EntityType* GlobalScript::AssignScriptToEntity(EntityType * parent)
 {
     if (!m_BaseEntity)

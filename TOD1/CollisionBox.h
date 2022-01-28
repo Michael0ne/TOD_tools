@@ -44,11 +44,22 @@ protected:
 
 public:
     CollisionBox(); // @8AEC30
-    ~CollisionBox();	//	@8AF0A0
+    ~CollisionBox();    //  @8AF0A0
 
-    static void             Register();	//	@8AED20
-    static CollisionBox*    Create(AllocatorIndex);	//	@8AF070
+    const float             GetWidth() const;   //  @89A890
+    void                    SetWidth(const float width);    //  @8AE710
+    const float             GetHeight() const;  //  @89A8A0
+    void                    SetHeight(const float height);  //  @8AE730
+    const float             GetLength() const;  //  @905800
+    void                    SetLength(const float length);  //  @8AE750
+    const char              GetCollisionFlags() const;  //  @8AE7B0
+    void                    SetCollisionFlags(const char flags);    //  @8AE770
+
+    static void             Register(); //  @8AED20
+    static CollisionBox*    Create(AllocatorIndex); //  @8AF070
 };
+
+extern EntityType* tCollisionBox;
 
 ASSERT_CLASS_SIZE(CollisionBox, 100);
 ASSERT_CLASS_SIZE(CollBoxList, 20);

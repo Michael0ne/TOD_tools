@@ -9,6 +9,8 @@
 #define NODE_MASK_QUADTREE  2
 #define NODE_MASK_FRAGMENT  4
 
+class Folder_;
+
 class INodeMatrix
 {
 public:
@@ -30,7 +32,7 @@ public:
 class NodeMatrix
 {
 public:
-    Orientation         m_Orientation;  //  NOTE: not sure this is orientation.
+    Orientation         m_Orientation;  //  NOTE: not sure if this is orientation.
     Vector4f            m_Position;
     Vector4f            m_RightVector;
     Vector4f            m_UpVector;
@@ -73,9 +75,8 @@ public:
             unsigned PurgeNames : 1;
             unsigned ERR : 1;
             unsigned FRR : 1;
-            unsigned _12 : 1;
-            unsigned _13 : 1;
-            unsigned _14 : 1;
+
+            unsigned RenderOrderGroup : 3;
             unsigned _15 : 1;
             unsigned _16 : 1;
             unsigned _17 : 1;
@@ -88,10 +89,10 @@ public:
             unsigned _24 : 1;
             unsigned _25 : 1;
             unsigned _26 : 1;
+            unsigned _27 : 1;
             unsigned DisabledOnCutscene : 1;
-            unsigned _28 : 1;
+            unsigned _29 : 1;
             unsigned HasFragment : 1;
-            unsigned _30 : 1;
         }               m_FlagBits;
         unsigned int    m_Flags;
     }                   m_Flags;
@@ -181,6 +182,51 @@ public:
     void                SetRotationY(const float y);    //  @891360
     void                SetRotationZ(const float z);    //  @8913C0
     void                TouchThisPivot(const int);  //  @891170
+    void                IsSuspended(bool* suspended) const; //  @88E430
+    void                IsDisabled(bool* disabled) const;   //  @88C8D0
+    const int           GetUserType() const;    //  @48F390
+    const char          GetLod() const; //  @501080
+    const short         GetOrder() const;   //  @87F4A0
+    void                SetOrder(const short order);    //  @4843B0
+    void                SetChildrenPositionToSame();    //  @88D3B0
+    const int           GetRenderOrderGroup() const;    //  @67B880
+    void                SetRenderOrderGroup(int renderordergroup);    //  @67FB40
+    const bool          ShouldDisableOnCutscene() const;    //  @728D00
+    void                SetShouldDisableOnCutscene(const bool disable); //  @88BA20
+    const int           GetRepresentation() const;  //  @7BD7C0
+    void                GetOrient(Orientation& orientation) const;    //  @483680
+    const bool          ShouldUseAuxQuadTree() const;   //  @88C870
+    void                SetShouldUseAuxQuadTree(const bool use);    //  @88C890
+    const char* const   GetName() const;    //  @48C3E0
+    void                SetName(const char* const name);  //  @88D610
+    const float         GetLodThreshold() const;    //  @53FA20
+    void                SetLodThreshold(float threshold); //  @5406A0
+    void                _88BA60();  //  @88BA60
+    const float         GetFadeThreshold() const;   //  @53FA50
+    void                SetFadeThreshold(float threshold);  //  @540730
+    void                _88BAA0();  //  @88BAA0
+    const bool          ShouldSlowFade() const; //  @5A1870
+    void                SetShouldSlowFade(const bool slowfade); //  @5A1890
+    const float         GetTraverseDistance() const;    //  @75E510
+    void                SetTraverseDistance(const float distance);  //  @500BF0
+    Entity*             GetScene() const;   //  @88C570
+    Entity*             GetFirstChild() const;  //  @495DC0
+    Entity*             GetNextSibling() const; //  @495DD0
+    const float         GetLodDistance() const; //  @493F70
+    const float         GetLodFade() const; //  @571950
+    const bool          GetIsTaggedForUnload() const;   //  @88D490
+    Folder_*            FindParentFolder() const;   //  @88D430
+    const int           GetUniqueId0() const;   //  @88B9C0
+    void                SetUniqueId0(const int id); //  @88B9D0
+    const int           GetUniqueId1() const;   //  @88B9F0
+    void                SetUniqueId1(const int id); //  @88BA00
+    void                SetUserType(const int type);    //  @48F3A0
+    const char* const   GetIgnoreList() const;  //  @88ECD0
+    void                SetIgnoreList(const char* list);    //  @88EDC0
+    void                Move(const Vector4f& pos);  //  @88E470
+    void                SetNewPos(const Vector4f& pos); //  @891280
+    void                MoveLocal(const Vector4f& pos); //  @88E4B0
+    void                MoveLocal_Impl(const Vector4f& pos);    //  @4836D0
 
     static AuxQuadTree* _8A0810(Node* node);    //  @8A0810
     static void         _891E70(const String& s, String& sout); //  @891E70
@@ -203,6 +249,8 @@ public:
 
     static std::vector<NodeInfo>    NodesWithUpdateOrBlockingScripts;   //  @A11CC0
     static std::vector<NodePosInfo> NodesList;  //  @A3D8B0
+
+    static String       IgnoredCollisionNodes;  //  @A11CD0
 };
 
 extern EntityType* tNode;   //  @A3D884

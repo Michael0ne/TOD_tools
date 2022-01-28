@@ -13,8 +13,24 @@ class AnimationAsset : public Asset
         int                 field_C;
         int                 field_10;
         int                 field_14;
-
     };
+
+    struct PivotData
+    {
+        int                 field_0;
+        union
+        {
+            struct
+            {
+                unsigned    _0 : 11;
+                unsigned    Flag : 1;   //  NOTE: this flag is checked.
+                unsigned    Flag2 : 1;
+                unsigned    Flag3 : 1;
+            };
+        }                   m_Flags;
+        int                 field_8;
+    };
+
 protected:
     int                     field_1C;
     int                     field_20;
@@ -23,7 +39,7 @@ protected:
     std::vector<List1Struct>    m_List_1;
     std::vector<int>        m_List_2;
     std::vector<int>        m_List_3;
-    int                    *field_5C;   //  NOTE: an array of all pivot's positions. Index = pivot index.
+    PivotData              *field_5C;
     int                     field_60;
     short                   field_64;
     short                   field_66;

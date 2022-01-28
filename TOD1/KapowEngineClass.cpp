@@ -39,6 +39,9 @@
 #include "Wind.h"
 #include "TextSlot.h"
 #include "GEKeyFrame.h"
+#include "CollisionBox.h"
+#include "CollisionSphere.h"
+#include "GuideBox.h"
 
 namespace Script
 {
@@ -644,9 +647,10 @@ void KapowEngineClass::InitEntitiesDatabase()
     AnimLayer::Register();
     CutscenePlayer::Register();
     MotionLayer::Register();
+    */
     CollisionBox::Register();
     CollisionSphere::Register();
-    WayPoint::Register();
+    /*WayPoint::Register();
     TrackPoint::Register();
     Navigator::Register();
     SignPost::Register();
@@ -680,8 +684,8 @@ void KapowEngineClass::InitEntitiesDatabase()
     TextBox::Register();
     */
     TextSlot::Register();
-    /*
     GuideBox::Register();
+    /*
     Bullet::Register();
     SoundSlot::Register();
     SoundEmitter::Register();

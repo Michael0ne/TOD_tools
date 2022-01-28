@@ -91,8 +91,8 @@ namespace Utils
             UINT64  m_Id64;
             struct
             {
-                unsigned    m_Id1;
-                unsigned    m_Id2;
+                int     m_Id1;
+                int     m_Id2;
             };
         }           m_Id;
 
