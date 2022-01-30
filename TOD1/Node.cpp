@@ -16,6 +16,7 @@
 #include "TruthType.h"
 #include "QuaternionType.h"
 #include "CollisionProbe.h"
+#include "GfxInternal.h"
 
 EntityType* tNode;
 std::vector<Node::NodeInfo> Node::NodesWithUpdateOrBlockingScripts;
@@ -38,7 +39,7 @@ NodeMatrix::~NodeMatrix()
 
 void NodeMatrix::GetMatrixForNode(DirectX::XMMATRIX& outMat)
 {
-    if (m_Owner->m_Id.NodeMask == NODE_MASK_QUADTREE)
+    if (m_Owner->m_Id.HasQuadTree)
         ApplyMatrixFromQuadTree();
     GetMatrix(outMat);
 }
@@ -665,12 +666,204 @@ void Node::MoveLocal_Impl(const Vector4f& pos)
 {
 }
 
+void Node::GetBlockIdBelow(int* outBlockId) const
+{
+    *outBlockId = m_Id.BlockId - 1;
+
+    if (!m_ScriptEntity)
+        return;
+
+    EntityType* folderent = (EntityType*)m_ScriptEntity;
+    while (tFolder != folderent)
+    {
+        folderent = folderent->m_Parent;
+        if (!folderent)
+            return;
+    }
+
+    if (((Folder_*)this)->GetBlockId())
+        *outBlockId = ((Folder_*)this)->GetBlockId();
+}
+
+void Node::GetBlockId(int* outBlockId) const
+{
+    *outBlockId = m_Id.BlockId;
+}
+
+void Node::SetOrientFast_Impl(const Orientation& orient)
+{
+    if (!m_Position)
+        return;
+
+    if (m_Position->m_Owner != this)
+        return;
+
+    const float deltaW = fabsf(orient.w - m_Position->m_Orientation.w);
+    const float deltaX = fabsf(orient.x - m_Position->m_Orientation.x);
+    const float deltaY = fabsf(orient.y - m_Position->m_Orientation.y);
+    const float deltaZ = fabsf(orient.z - m_Position->m_Orientation.z);
+    float deltaMin = 0;
+
+    //  NOTE: maybe a better way to do this? Minimum out of four.
+    if (deltaW >= 0)
+        deltaMin = deltaW;
+
+    if (deltaMin <= deltaX)
+        deltaMin = deltaX;
+
+    if (deltaMin <= deltaY)
+        deltaMin = deltaY;
+
+    if (deltaMin <= deltaZ)
+        deltaMin = deltaZ;
+
+    if (0 < deltaMin)
+    {
+        SetParam(4, &m_Position, tQUATERNION);
+        if (m_CollisionIgnoreList)
+            m_CollisionIgnoreList->m_Orientation = orient;
+
+        m_Position->m_Orientation = orient;
+    }
+}
+
+void Node::FastSetOrient(const Orientation& orient)
+{
+    SetOrientFast_Impl(orient);
+}
+
+void Node::SetPosFast_Impl(const Vector4f& pos)
+{
+    if (!m_Position)
+        return;
+
+    if (m_Position->m_Owner != this)
+        return;
+
+    if (m_Position->m_Position == pos)
+        return;
+
+    SetParam(3, &m_Position->m_Position, tVECTOR);
+    if (m_CollisionIgnoreList)
+    {
+        const float dist =
+            ( (pos.z - m_CollisionIgnoreList->m_Position_1.z) * (pos.z - m_CollisionIgnoreList->m_Position_1.z) ) +
+            ( (pos.y - m_CollisionIgnoreList->m_Position_1.y) * (pos.y - m_CollisionIgnoreList->m_Position_1.y) ) +
+            ( (pos.x - m_CollisionIgnoreList->m_Position_1.x) * (pos.x - m_CollisionIgnoreList->m_Position_1.x) );
+        if (dist > 100)
+            m_CollisionIgnoreList->m_Position_1 = pos;
+    }
+
+    m_Position->m_Position = pos;
+}
+
+void Node::PurgeNames(const int dummy)
+{
+    PurgeNames_Impl(false);
+}
+
+void Node::PurgeNames_Impl(bool onlyChildren)
+{
+    if (m_Flags.m_FlagBits.PurgeNames)
+        onlyChildren = true;
+
+    if (onlyChildren)
+        delete[] m_Name;
+
+    for (Node* child = m_FirstChild; child; child = child->m_NextSibling)
+        PurgeNames_Impl(onlyChildren);
+}
+
+void Node::ResetIgnoreList()
+{
+    if (!m_CollisionIgnoreList)
+        return;
+
+    const char* const ignorelist = GetIgnoreList();
+    SetParam(7, &ignorelist, tSTRING);
+
+    m_CollisionIgnoreList->m_CollisionProbesList.clear();
+}
+
+void Node::ForceLodCalculation()
+{
+    if (m_QuadTree)
+        m_QuadTree->UpdateLodDistance();
+}
+
+//  TODO: find a better way.
+void Node::GetPlatform(int* args) const
+{
+    static const int PlatformNumber[3] =
+    {
+        0, 1, 2
+    };
+
+#ifdef INCLUDE_FIXES
+    #ifdef PLATFORM_PC
+        *args = PlatformNumber[0];
+    #endif
+    #ifdef PLATFORM_PS2
+        *args = PlatformNumber[1];
+    #endif
+    #ifdef PLATFORM_XBOX
+        *args = PlatformNumber[2];
+    #endif
+#else
+    *args = NULL;
+#endif
+}
+
+void Node::GetScreenSize(Vector3f& size) const
+{
+    ScreenResolution resolution;
+    g_GfxInternal->GetScreenResolution(resolution);
+
+    size = { resolution.x, resolution.y, 0 };
+}
+
+void Node::GetSharedProbe(CollisionProbe** probe) const
+{
+    *probe = Scene::SceneInstance->m_SharedProbe;
+}
+
+void Node::GetCurrentCamera(Camera** camera) const
+{
+    *camera = Scene::SceneInstance->m_ActiveCamera;
+}
+
+void Node::SetCurrentCamera(Camera** camera) const
+{
+    Scene::SceneInstance->m_GameCamera = *camera;
+    Scene::SceneInstance->StoreGameCamera();
+}
+
+void Node::CreateNode(int* args) const
+{
+    *args = (int)DataType::GetScriptEntityByName((const char*)args[1])->CreateNode();
+}
+
+void Node::CommitCollision()
+{
+    if (m_CollisionIgnoreList)
+        m_CollisionIgnoreList->CommitCollision();
+}
+
+void Node::SetSafePos(const Vector4f& pos, const Orientation& orient)
+{
+    if (!m_CollisionIgnoreList)
+        return;
+
+    m_CollisionIgnoreList->m_SafePosition = pos;
+    m_CollisionIgnoreList->m_SafeOrientation = orient;
+}
+
 void Node::SetFlags(int flags)
 {
     if (!m_Flags.m_FlagBits.Volatile && (flags & 0x20) == 0 && flags != (m_Flags.m_Flags & 0xFFF))
     {
         unsigned int _flags = m_Flags.m_Flags & 0xFFF;
-        SetParam(2, &_flags, (DataType*)tINTEGER);
+        SetParam(2, &_flags, tINTEGER);
     }
 
     if (((flags ^ m_Flags.m_FlagBits.Dynamic) & 2) != 0)
@@ -687,7 +880,7 @@ void Node::SetFlags(int flags)
     _88E6A0(this);
 
     if (m_QuadTree || (m_Parent && m_Parent->GetEntityQuadTreeOrParentQuadTree()))
-        m_Parent->GetEntityQuadTreeOrParentQuadTree()->m_Owner->m_Id |= 8;
+        m_Parent->GetEntityQuadTreeOrParentQuadTree()->m_Owner->m_Id._3 = true;
 }
 
 void Node::Instantiate()
@@ -1076,11 +1269,6 @@ void Node::_869F80(const unsigned int paramind, const void* paramptr, DataType& 
     }
 
     field_8[paramind / 8 + 5] |= 1 << (paramind & 7);
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-void Node::Project_Impl(Vector2f& outvec, const Vector4f& invec)
-{
 }
 
 #pragma message(TODO_IMPLEMENTATION)

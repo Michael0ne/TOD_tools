@@ -10,6 +10,8 @@
 #define NODE_MASK_FRAGMENT  4
 
 class Folder_;
+class CollisionProbe;
+class Camera;
 
 class INodeMatrix
 {
@@ -158,7 +160,6 @@ public:
     AuxQuadTree*        GetEntityQuadTreeOrParentQuadTree() const;  //  @88C260
     void                _869EC0(const unsigned int paramind, const void* paramptr, DataType& paramtype);    //  @869EC0
     void                _869F80(const unsigned int paramind, const void* paramptr, DataType& paramtype);    //  @869F80
-    void                Project_Impl(Vector2f& outvec, const Vector4f& invec);  //  @87DA10
     void                TriggerGlobalScript(int scriptId, void* args);  //  @86A340
     void                _88C310(struct CameraMatrix* cammat);  //  @88C310
     void                InstantiateAllChildren();   //  @88C2B0
@@ -227,6 +228,23 @@ public:
     void                SetNewPos(const Vector4f& pos); //  @891280
     void                MoveLocal(const Vector4f& pos); //  @88E4B0
     void                MoveLocal_Impl(const Vector4f& pos);    //  @4836D0
+    void                GetBlockIdBelow(int* outBlockId) const; //  @88D140
+    void                GetBlockId(int* outBlockId) const;  //  @5A18B0
+    void                SetOrientFast_Impl(const Orientation& orient);  //  @5A1710
+    void                FastSetOrient(const Orientation& orient);   //  @5A1830
+    void                SetPosFast_Impl(const Vector4f& pos);   //  @88BB20
+    void                PurgeNames(const int dummy);    //  @891CC0
+    void                PurgeNames_Impl(bool onlyChildren);   //  @88E150
+    void                ResetIgnoreList();  //  @88F490
+    void                ForceLodCalculation();  //  @88D0F0
+    void                GetPlatform(int* args) const;   //  @88C860
+    void                GetScreenSize(Vector3f& size) const;    //  @88C7B0
+    void                GetSharedProbe(CollisionProbe** probe) const;   //  @88C790
+    void                GetCurrentCamera(Camera** camera) const;    //  @88C770
+    void                SetCurrentCamera(Camera** camera) const;  //  @88C750
+    void                CreateNode(int* args) const;    //  @88D0C0
+    void                CommitCollision();  //  @88C8F0
+    void                SetSafePos(const Vector4f& pos, const Orientation& orient); //  @88D000
 
     static AuxQuadTree* _8A0810(Node* node);    //  @8A0810
     static void         _891E70(const String& s, String& sout); //  @891E70

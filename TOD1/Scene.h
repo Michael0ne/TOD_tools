@@ -144,6 +144,7 @@ public:
     char            GetInitMode() const;    //  @892C90
     void            SetInitMode(const char initmode);   //  @70EEA0
     float           GetWindSize() const;    //  @896110 //  NOTE: wind = rewind.
+    void            _894810(const int index, const bool enabled);    //  @894810
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4

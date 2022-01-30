@@ -438,6 +438,18 @@ void Scene::SetInitMode(const char initmode)
     m_InitMode = initmode;
 }
 
+void Scene::_894810(const int index, const bool enabled)
+{
+    if (index == -1)
+        return;
+
+    //  NOTE: wtf?
+    if (enabled)
+        *(int*)&(m_CollisionListList[index]->m_Owner) |= 1;
+    else
+        *(int*)&(m_CollisionListList[index]->m_Owner) &= ~1;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::Start()
 {

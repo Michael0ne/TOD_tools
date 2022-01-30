@@ -24,7 +24,7 @@ public:
 public:
     Camera(); // @87D8F0
 
-    void   GetMatrix(DirectX::XMMATRIX& outmat) const; // @87BC60
+    void            GetMatrix(DirectX::XMMATRIX& outmat) const; // @87BC60
 
     float           GetOffset() const; // @91CE60
     void            SetOffset(const float offset); // @4843E0
@@ -43,6 +43,7 @@ public:
 
     void            GetCameraPos(Vector3f* pos); // @87D860
     void            Project(float* params); // @87E4F0
+    void            Project_Impl(Vector4f& projectedPos, const Vector4f& inpos) const;
 
     static Vector4f ActiveCameraPosition; // @A3D898
 

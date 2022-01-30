@@ -30,6 +30,20 @@ struct Vector3 {
     Vector3()
         : x(0), y(0), z(0)
     {}
+
+    operator=(const Vector4<T>& rhs)
+    {
+        x = rhs.x;
+        y = rhs.y;
+        z = rhs.z;
+    }
+
+    operator=(Vector4<T>& rhs)
+    {
+        x = rhs.x;
+        y = rhs.y;
+        z = rhs.z;
+    }
 };
 
 typedef Vector3<float> Vector3f;
@@ -57,6 +71,24 @@ struct Vector4 {
     Vector4(const Vector3<T>& rhs)
         : x(rhs.x), y(rhs.y), z(rhs.z), a(0)
     {}
+
+    const bool operator==(const Vector4<T>& rhs)
+    {
+        return
+            (x == rhs.x) &&
+            (y == rhs.y) &&
+            (z == rhs.z) &&
+            (a == rhs.a);
+    }
+
+    const bool operator==(Vector4<T>& rhs)
+    {
+        return
+            (x == rhs.x) &&
+            (y == rhs.y) &&
+            (z == rhs.z) &&
+            (a == rhs.a);
+    }
 };
 
 struct ColorRGB {
