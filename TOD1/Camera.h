@@ -23,6 +23,7 @@ public:
     Vector4f        field_4C;
 public:
     Camera(); // @87D8F0
+    virtual void    Update() override;  //  @87E420
 
     void            GetMatrix(DirectX::XMMATRIX& outmat) const; // @87BC60
 
@@ -43,7 +44,7 @@ public:
 
     void            GetCameraPos(Vector3f* pos); // @87D860
     void            Project(float* params); // @87E4F0
-    void            Project_Impl(Vector4f& projectedPos, const Vector4f& inpos) const;
+    void            Project_Impl(Vector4f& projectedPos, const Vector4f& inpos) const;  //  @87DA10
 
     static Vector4f ActiveCameraPosition; // @A3D898
 

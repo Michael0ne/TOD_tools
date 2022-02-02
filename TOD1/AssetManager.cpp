@@ -648,7 +648,7 @@ Entity* AssetManager::FindFirstEntity()
 
 Entity* AssetManager::FindNextEntity(Entity* node)
 {
-    unsigned int nodeid = FindNodeById(node->m_Id >> 8);
+    unsigned int nodeid = FindNodeById(node->m_Id.Id >> 8);
     if (nodeid)
         return (m_NodesList[(nodeid >> 20) & 7][nodeid & 0xFF8FFFFF]);
     else

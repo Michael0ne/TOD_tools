@@ -48,7 +48,7 @@ public:
 
     const char* const   GetTarget1() const; //  @9058A0
     void                SetTarget1(const char* const target1);  //  @906380
-    const float         GetSpeed() const;   //  @9058C0
+    const float         GetSpeedReal() const;   //  @9058C0
     LoopMode            GetLoopmode1() const;   //  @900F90
     void                SetLoopmode1(const LoopMode loopmode); //  @9057D0
     const float         GetSpeed() const;   //  @905800
@@ -74,9 +74,9 @@ public:
     const AnimFlags     GetAnimFlags() const;   //  @4A66A0
     void                SetAnimFlags(const AnimFlags flags); //  @9057C0
 
-    void                GetGamePivotStartPos(int *args);    //  @905990
-    void                GetGamePivotEndPos(int *args);  //  @9059E0
-    void                GetGamePivotPos(int *args); //  @905A40
+    void                GetGamePivotStartPos(int *args) const;    //  @905990
+    void                GetGamePivotEndPos(int *args) const;  //  @9059E0
+    void                GetGamePivotPos(int *args) const; //  @905A40
 
     static void         Register(); //  @905EA0
     static AnimSlot*    Create(AllocatorIndex); //  @905E60

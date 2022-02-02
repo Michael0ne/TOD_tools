@@ -154,8 +154,8 @@ void Node::_86A930(const int size, int* value, int* const outval, const int a4)
 {
     EntityType* ent = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
     *Scene::_A3CEE8++ = 
-        ( ((m_Id & 0x7FFF00) << 8) | ( ((m_Id & 0xFFFF) & 0x7000) - 1 ) & 0xF000 ) |
-        ( (short)size + ent->m_PropertiesList.size() + ent->field_6C) & 0xFFF;
+        ( (m_Id.Id << 8) | ( (*(short*)&m_Id & 0x7000) - 1 ) & 0xF000 ) |
+        ( (short)size + (short)ent->m_LocalPropertiesList.size() + (short)ent->field_6C) & 0xFFF;
     Scene::_A3CEE8 += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->stub9((char*)value, (char*)Scene::_A3CEE8);
     if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::_A3CEE8) < 0x4000)
         Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::_A3CEE8);
@@ -324,6 +324,67 @@ void Node::SetOrder(const short order)
     }
 }
 
+void Node::SetChildrenPositionToSame()
+{
+    if (!m_Position || m_Position->m_Owner != this)
+    {
+        m_Position = nullptr;
+        for (Node* child = m_FirstChild; child; child = child->m_NextSibling)
+            child->SetEntityPositionRecursively(nullptr);
+    }
+
+    SetAndUpdateChildrenAuxQuadTree(nullptr);
+
+    if (m_Parent->m_FirstChild == this)
+    {
+        m_Parent->m_FirstChild = m_NextSibling;
+        m_Parent = nullptr;
+    }
+    else
+    {
+        Node* parentsfirstchild = m_Parent->m_FirstChild;
+        Node* parentssibling = parentsfirstchild->m_NextSibling;
+
+        if (parentssibling)
+        {
+            while (parentssibling != this)
+            {
+                parentsfirstchild = parentssibling;
+                parentssibling = parentssibling->m_NextSibling;
+                if (!parentssibling)
+                    return;
+            }
+
+            parentsfirstchild->m_NextSibling = parentssibling->m_NextSibling;
+            m_Parent = nullptr;
+        }
+    }
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::SetAndUpdateChildrenAuxQuadTree(AuxQuadTree* qdtree)
+{
+    if (m_QuadTree)
+    {
+        //  TODO: methods implementation for QuadTree.
+    }
+    else
+    {
+        for (Node* child = m_FirstChild; child; child = child->m_NextSibling)
+            child->SetAndUpdateChildrenAuxQuadTree(qdtree);
+    }
+}
+
+void Node::SetEntityPositionRecursively(NodeMatrix* position)
+{
+    if (!m_Position || m_Position->m_Owner != this)
+    {
+        m_Position = position;
+        for (Node* child = m_FirstChild; child; child = child->m_NextSibling)
+            child->SetEntityPositionRecursively(position);
+    }
+}
+
 const int Node::GetRenderOrderGroup() const
 {
     return m_Flags.m_FlagBits.RenderOrderGroup;
@@ -413,8 +474,8 @@ void Node::SetLodThreshold(float threshold)
     if (!m_QuadTree)
         return;
 
-    const float threshold = m_QuadTree->field_3C * 0.0049999999f;
-    SetParam(8, &threshold, tNUMBER);
+    const float thresholdcurrent = m_QuadTree->field_3C * 0.0049999999f;
+    SetParam(8, &thresholdcurrent, tNUMBER);
 
     if (threshold > 1)
         threshold = 1;
@@ -751,7 +812,7 @@ void Node::SetPosFast_Impl(const Vector4f& pos)
             ( (pos.y - m_CollisionIgnoreList->m_Position_1.y) * (pos.y - m_CollisionIgnoreList->m_Position_1.y) ) +
             ( (pos.x - m_CollisionIgnoreList->m_Position_1.x) * (pos.x - m_CollisionIgnoreList->m_Position_1.x) );
         if (dist > 100)
-            m_CollisionIgnoreList->m_Position_1 = pos;
+            m_CollisionIgnoreList->m_Position_1 = { pos.x, pos.y, pos.z };
     }
 
     m_Position->m_Position = pos;
@@ -819,7 +880,7 @@ void Node::GetScreenSize(Vector3f& size) const
     ScreenResolution resolution;
     g_GfxInternal->GetScreenResolution(resolution);
 
-    size = { resolution.x, resolution.y, 0 };
+    size = { (float)resolution.x, (float)resolution.y, 0 };
 }
 
 void Node::GetSharedProbe(CollisionProbe** probe) const
@@ -854,7 +915,7 @@ void Node::SetSafePos(const Vector4f& pos, const Orientation& orient)
     if (!m_CollisionIgnoreList)
         return;
 
-    m_CollisionIgnoreList->m_SafePosition = pos;
+    m_CollisionIgnoreList->m_SafePosition = { pos.x, pos.y, pos.z };
     m_CollisionIgnoreList->m_SafeOrientation = orient;
 }
 
@@ -1248,7 +1309,7 @@ void Node::_869EC0(const unsigned int paramind, const void* paramptr, DataType& 
     if (!Scene::_A3CEE4)
         return;
 
-    *Scene::_A3CEE4++ = paramind & 0xFFF | ((m_Id & 0x7FFF00) << 8) | (((short)m_Id & 0x7000) - 1) & 0xF000;
+    *Scene::_A3CEE4++ = paramind & 0xFFF | (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000;
     Scene::_A3CEE4 += paramtype.stub9((char*)paramptr, (char*)Scene::_A3CEE4);
 
     TransactionBuffer* tb = Scene::SceneInstance->m_RewindBuffer1;
@@ -1260,12 +1321,12 @@ void Node::_869EC0(const unsigned int paramind, const void* paramptr, DataType& 
 
 void Node::_869F80(const unsigned int paramind, const void* paramptr, DataType& paramtype)
 {
-    int* v1 = g_SceneSaveLoad->_873BA0(m_Id >> 8);
+    int* v1 = g_SceneSaveLoad->_873BA0(m_Id.Id);
     if (v1)
     {
-        *v1 = paramind & 0xFFF | ((m_Id & 0x7FFF00) << 8) | (((short)m_Id & 0x7000) - 1) & 0xF000;
+        *v1 = paramind & 0xFFF | (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000;
         v1++;
-        g_SceneSaveLoad->_873C00(m_Id >> 8, &v1[paramtype.stub9((char*)paramptr, (char*)v1)]);
+        g_SceneSaveLoad->_873C00(m_Id.Id, &v1[paramtype.stub9((char*)paramptr, (char*)v1)]);
     }
 
     field_8[paramind / 8 + 5] |= 1 << (paramind & 7);
@@ -1279,21 +1340,9 @@ void Node::TriggerGlobalScript(int scriptId, void* args)
         EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_IsBaseEntity ? &m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : &m_ScriptEntity->m_ScriptsList[scriptId];
         if (scriptinfo)
             if (scriptinfo->field_C)
-                /*
-                * ESI = this
-                * EAX = scriptinfo
-                * ECX = scriptinfo->field_C
-                *
-                * EDX = *(scriptinfo->field_8)
-                * EDI = *( (*(scriptinfo->field_8)) + this)
-                * ECX = *( (*( (*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)
-                * ECX = (*( (*( (*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)) + *(scriptinfo->field_4)
-                * ECX = ((*( (*( (*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)) + *(scriptinfo->field_4)) + (*(scriptinfo->field_8))
-                * ECX = ((*( (*( (*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)) + *(scriptinfo->field_4)) + (*(scriptinfo->field_8)) + this
-                */
-                scriptinfo->m_ScriptPtr(((*((*((*(scriptinfo->field_8)) + this)) + scriptinfo->field_C)) + *(scriptinfo->field_4)) + (*(scriptinfo->field_8)) + this, args);
+                scriptinfo->m_ScriptPtr((void*)(this + (int)scriptinfo->field_4 + (int)scriptinfo->field_8), args);    //  NOTE: never used, since field_C is usually 0, same as field_4.
             else
-                scriptinfo->m_ScriptPtr(this + scriptinfo->field_4, args);
+                scriptinfo->m_ScriptPtr((void*)(this + (int)scriptinfo->field_4), args);
     }
 }
 
@@ -1508,6 +1557,8 @@ void Node::Register()
     tNode->RegisterScript("IsSuspended:truth", &IsSuspended, NULL, NULL, NULL, nullptr, "IsSuspendedMSG");
     tNode->RegisterScript("move(vector)", &Move, NULL, NULL, NULL, nullptr, "MoveMSG");
     tNode->RegisterScript("movelocal(vector)", &MoveLocal, NULL, NULL, NULL, nullptr, "MoveLocalMSG");
+
+    tNode->PropagateProperties();
 }
 
 Node* Node::Create(AllocatorIndex)

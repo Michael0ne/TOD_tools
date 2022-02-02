@@ -65,7 +65,7 @@ namespace Input
         int      _439860(int unk1); // @439860
         bool     KeyPressed(const unsigned int button); // @4398A0
         bool     _439910(int unk1); // @439910
-        char     _439970(int unk1); // @439970
+        char     IsButtonPressed(int unk1); // @439970
         double     _4399D0(int unk1); // @4399D0
         bool     IsDInputDeviceFound(); // @439A00 // NOTE: unused.
         void     SetControllerVibration(signed int controllerIndex, float force); // @439B10
@@ -80,7 +80,7 @@ namespace Input
         static Gamepad** GamepadsArray; // @A35E6C
         static LPDIRECTINPUT8 DirectInput8Interface; // @A35E78
         static unsigned int  _A08FD8[]; // @A08FD8
-        static unsigned int  _A09018[]; // @A09018
+        static unsigned int  SmartJoyButtons[]; // @A09018
     };
 }
 

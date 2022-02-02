@@ -8,6 +8,7 @@
 #include "ScriptType.h"
 #include "Entity.h"
 #include "Scene.h"
+#include "ScriptThread.h"
 
 std::vector<GlobalProperty>  GlobalPropertiesList;
 std::map<String, unsigned int> GlobalPropertiesMap;
@@ -871,6 +872,7 @@ void LoadScripts()
     #include "scripts/Ladder_Root.h"
     #include "scripts/Magnet.h"
     #include "scripts/MarcoDist.h"
+    #include "scripts/Pathtype.h"
     // TODO: much much more.
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)
@@ -1106,7 +1108,19 @@ void GlobalScript::CalculateSize()
 #pragma message(TODO_IMPLEMENTATION)
 bool GlobalScript::_48A7E0(Node* node, int scriptId, void* args)
 {
-    return true;
+    if (scriptId == -1)
+        return false;
+
+    if (!node->field_20)
+        return false;
+
+    if (!node->field_20->m_ScriptThread)
+        return false;
+
+    if (node->field_20->m_ScriptThread->m_ThreadFlags.m_FlagBits.Suspended)
+        return false;
+
+    return false;
 }
 
 void GlobalScript::ClearEntityProperties(Entity* ent)

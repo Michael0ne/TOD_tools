@@ -15,7 +15,7 @@ public:
         MODE_INGAME = 0,
         MODE_UNKNOWN_1 = 1,
         MODE_PAUSED = 2,
-        MODE_UNKNOWN_3 = 3
+        MODE_REWIND = 3
     };
 
     enum SaveOperationStatus

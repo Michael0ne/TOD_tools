@@ -58,6 +58,8 @@ const char* Character::GetAttachment() const
 {
     if (!m_AttachedNodesList.size())
         return nullptr;
+
+    return nullptr;
 }
 
 const char* Character::GetModelRes() const

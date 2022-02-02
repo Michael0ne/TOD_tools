@@ -56,7 +56,7 @@ void Shadow::Instantiate()
     if (m_QuadTree)
         m_QuadTree->Refresh();
 
-    m_Id |= 8;
+    m_Id._3 = true;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

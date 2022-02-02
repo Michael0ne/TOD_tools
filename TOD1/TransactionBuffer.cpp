@@ -1,5 +1,7 @@
 #include "TransactionBuffer.h"
 
+float TransactionBuffer::_A11C90 = 1.f;
+
 #pragma message(TODO_IMPLEMENTATION)
 TransactionBuffer::TransactionBuffer(unsigned int bufferSize)
 {

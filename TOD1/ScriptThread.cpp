@@ -19,7 +19,7 @@ bool ScriptThread::IsThreadExists(const ScriptThread* scriptthread)
     if (CurrentThread <= NULL)
         return false;
 
-    unsigned int i = 0;
+    int i = 0;
     while (Threads[i] != scriptthread)
         if (++i >= CurrentThread)
             return false;

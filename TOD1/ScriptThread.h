@@ -13,6 +13,7 @@ class ScriptThread : public IScriptThread
 {
     friend class Entity;
     friend class Node;
+    friend class GlobalScript;
 
     struct ThreadList_1
     {
@@ -84,7 +85,7 @@ public:
     void                        _48F2E0();  //  @48F2E0 //  NOTE: 'SetSleepTime'?
     void                        DecreaseStateMessageCount();    //  @48CD50
     void                        SetScriptNode(Node* scriptnode);    //  @48CCD0
-    void      DumpState(String&); // @48D690
+    void                        DumpState(String&); // @48D690
 
     static bool                 IsThreadExists(const ScriptThread* scriptthread);
     static int                  GetCurrentThreadIndex();    //  @48CC40

@@ -43,20 +43,20 @@ TextBox::TextBox() : Sprite()
     field_B8 = NULL;
     m_TextSlotsContents = nullptr;
     m_VerticalScroll = 0.0f;
-    m_Id = m_Id | 8;
+    m_Id._3 = true;
 
     m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x8000000;
 }
 
 void TextBox::SetTextScale(const float* args)
 {
-    m_Id |= 8;
+    m_Id._3 = true;
     if (m_QuadTree)
         m_QuadTree->Refresh();
 
     m_ScaleY = args[1];
 
-    m_Id |= 8;
+    m_Id._3 = true;
     m_ScaleX = args[0];
 
     if (m_QuadTree)
@@ -107,7 +107,7 @@ void TextBox::SetFont(const char* fontName)
      m_FontRes->ApplyLoadedResource(res);
     }*/
 
-    m_Id |= 8;
+    m_Id._3 = true;
 
     if (m_QuadTree)
         m_QuadTree->Refresh();
@@ -130,7 +130,7 @@ const int TextBox::GetAsciiOffset() const
 
 void TextBox::SetAsciiOffset(const int offset)
 {
-    m_Id |= 8;
+    m_Id._3 = true;
 }
 
 const bool TextBox::GetShouldScaleIfWidescreen() const

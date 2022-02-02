@@ -42,7 +42,10 @@ Entity::Entity()
 
     m_Defragmentator = NULL;
     field_20 = nullptr;
-    m_Id._0 = 255;
+    m_Id.HasPosition = true;
+    m_Id.HasFragment = true;
+    m_Id.HasQuadTree = true;
+    m_Id._3 = 0x1F; //  NOTE: what is this?
     m_ScriptEntity = nullptr;
     m_Parameters = nullptr;
     field_20 = nullptr;

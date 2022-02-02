@@ -38,7 +38,7 @@ void Fragment::ApplyFragment() const
     if (m_FragmentRes && m_FragmentRes->m_ResourceTimestamp)
     {
         g_AssetManager->SetSceneName(m_FragmentRes->m_ResourcePath);
-        m_FragmentRes->ApplyFragmentResource(m_Owner->m_Id >> 8, true);
+        m_FragmentRes->ApplyFragmentResource(m_Owner->m_Id.Id, true);
         g_AssetManager->RemoveLastSceneName();
     }
 }

@@ -9,8 +9,8 @@ class EntityType : public DataType
     struct ScriptInfo
     {
         void            (__thiscall* m_ScriptPtr)(void*, void*) = nullptr;
-        int            *field_4 = NULL;
-        int            *field_8 = NULL;
+        int             field_4 = NULL;
+        int             field_8 = NULL;
         int             field_C = NULL;
     };
 
@@ -26,29 +26,8 @@ class EntityType : public DataType
         unsigned int    field_1C = NULL;
         unsigned int    field_20 = NULL;
         int             field_24 = NULL;
-        union
-        {
-            struct
-            {
-                unsigned GlobalIndex : 15;
-                unsigned _16 : 1;
-                unsigned _17 : 1;
-                unsigned _18 : 1;
-                unsigned _19 : 1;
-                unsigned _20 : 1;
-                unsigned _21 : 1;
-                unsigned _22 : 1;
-                unsigned _23 : 1;
-                unsigned _24 : 1;
-                unsigned _25 : 1;
-                unsigned _26 : 1;
-                unsigned _27 : 1;
-                unsigned _28 : 1;
-                unsigned _29 : 1;
-                unsigned _30 : 1;
-            }           m_FlagsBits;
-            unsigned int m_Flags;
-        }               m_Flags;
+        short           m_GlobalPropertyIndex = -1;
+        short           m_LocalPropertyIndex = -1;
         unsigned int    field_2C = NULL;
     };
 
@@ -63,8 +42,8 @@ protected:
     int                 field_38;
     std::map<unsigned short, unsigned short> field_3C; // NOTE: could be list with properties id's and their values.
     int                 field_48;
-    std::vector<PropertyInfo> m_PropertiesList; // NOTE: could be list with methods for THIS exact class only.
-    std::vector<PropertyInfo> m_PropertiesList_1; // NOTE: another list same as above, but there are more methods in this list.
+    std::vector<PropertyInfo> m_LocalPropertiesList;
+    std::vector<PropertyInfo> m_GlobalPropertiesList;
     int                 field_6C;   //  NOTE: 'TotalProperties' including parent's properties?
     int                 field_70;   //  NOTE: same as above, but for second list.
     bool                m_IsBaseEntity;
@@ -73,7 +52,7 @@ public:
     EntityType(const char* const entityname); // @86CC00
     virtual ~EntityType(); // @4886C0
 
-    void*               CreateNode() const; // @86C770
+    void*               CreateNode(); // @86C770
     void                InheritFrom(EntityType* from); // @86CB40
     inline void         SetCreator(CREATOR creator)
     {
@@ -90,7 +69,9 @@ public:
         _asm mov sptr, eax
         _asm pop eax
 
-        m_ScriptsList[RegisterGlobalCommand(scriptname, true)] = { (void(__thiscall*)(void*, void*))sptr, a3, a4, a5 };
+        const int commandId = RegisterGlobalCommand(scriptname, true);
+
+        m_ScriptsList[commandId] = { (void(__thiscall*)(void*, void*))sptr, a3, a4, a5 };
     }
 
     template <typename T, typename T1>
@@ -98,7 +79,7 @@ public:
     {
         char propstr[128] = {};
         sprintf(propstr, "%s:%s", propertyname, returntype->m_TypeName.m_Str);
-        unsigned int ind = RegisterGlobalProperty(propstr, true);
+        int ind = RegisterGlobalProperty(propstr, true);
 
         // NOTE: a workaround to insert a method pointer to a list.
         int gptr = 0, sptr = 0;
@@ -109,39 +90,32 @@ public:
         _asm mov sptr, eax
         _asm pop eax
 
+        PropertyInfo propinfo;
+        propinfo.m_GetterPtr = (void* (__thiscall*)(void*))gptr;
+        propinfo.m_SetterPtr = (void (__thiscall*)(void*, void*))sptr;
+        propinfo.field_C = a4;
+        propinfo.field_C = a4;
+        propinfo.field_10 = a5;
+        propinfo.field_14 = a6;
+        propinfo.m_ReturnType = returntype;
+        propinfo.field_1C = a8;
+        propinfo.field_20 = a9;
+        propinfo.field_24 = a10;
+        propinfo.m_LocalPropertyIndex = propertyind;
+
         if (propertyind < 0)
         {
-            PropertyInfo tmp;
-            tmp.m_GetterPtr = (void* (__thiscall*)(void*))gptr;
-            tmp.m_SetterPtr = (void(__thiscall*)(void*, void*))sptr;
-            tmp.field_C = a4;
-            tmp.field_10 = a5;
-            tmp.field_14 = a6;
-            tmp.m_ReturnType = returntype;
-            tmp.field_1C = a8;
-            tmp.field_20 = a9;
-            tmp.field_24 = a10;
-            tmp.m_Flags.m_FlagsBits.GlobalIndex = m_PropertiesList_1.size() + field_70;
+            propinfo.m_GlobalPropertyIndex = (short)(m_GlobalPropertiesList.size() + field_70);
 
-            m_PropertiesList_1.push_back(tmp);
+            m_GlobalPropertiesList.push_back(propinfo);
         }
         else
         {
-            PropertyInfo tmp;
-            tmp.m_GetterPtr = (void* (__thiscall*)(void*))gptr;
-            tmp.m_SetterPtr = (void(__thiscall*)(void*, void*))sptr;
-            tmp.m_ReturnType = returntype;
-            tmp.field_C = a4;
-            tmp.field_10 = a5;
-            tmp.field_14 = a6;
-            tmp.field_1C = a8;
-            tmp.field_20 = a9;
-            tmp.field_24 = a10;
-            tmp.m_Flags.m_FlagsBits.GlobalIndex = ind;
+            propinfo.m_GlobalPropertyIndex = (short)ind;
 
-            if (propertyind - field_6C >= (int)m_PropertiesList.size())
-                m_PropertiesList.resize(propertyind - field_6C + 1);
-            m_PropertiesList.insert(m_PropertiesList.begin() + (propertyind - field_6C), tmp);
+            if (propertyind - field_6C >= (int)m_LocalPropertiesList.size())
+                m_LocalPropertiesList.resize(propertyind - field_6C + 1);
+            m_LocalPropertiesList.insert(m_LocalPropertiesList.begin() + (propertyind - field_6C), propinfo);
         }
     }
     void    PropagateProperties(); // @86E9B0

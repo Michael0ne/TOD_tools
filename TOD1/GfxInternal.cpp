@@ -360,6 +360,11 @@ void GfxInternal::_420390()
     m_MeshBuffer = new MeshBuffer(m_Mesh, NULL);
 }
 
+void GfxInternal::GetBackBufferResolution(ScreenResolution& outResolution, const unsigned int bufferindex) const
+{
+    outResolution = m_RenderBufferArray[bufferindex].m_ViewportDimensions_1;
+}
+
 AssetManager::RegionCode GfxInternal::GetRegion()
 {
     return AssetManager::REGION_EUROPE;

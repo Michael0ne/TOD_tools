@@ -16,7 +16,8 @@ Navigator::Navigator() : Node(NODE_MASK_EMPTY)
     m_PathFraction = 0.0f;
     m_MoveCtrl = 0;
     m_MoveCtrlCommand = GetCommandByName("command_run");
-    m_Flags = m_Flags & 0xFFFFFFFC;
+    m_Flags.Active = false;
+    m_Flags.Looping = false;
     m_ObstacleFound = 0;
     m_NextObstacleCheckTime = 0;
     m_MaxLookAhead = 4.0f;

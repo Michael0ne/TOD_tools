@@ -94,6 +94,7 @@ public:
     void                            CreateCheckerboardTextures();    //  @4210E0
     void                            GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsigned int ind) const;  //  @45EE30
     void                            _420390();  //  @420390
+    void                            GetBackBufferResolution(ScreenResolution& outResolution, const unsigned int bufferindex) const; //  @41FD20
 
     static AssetManager::RegionCode  GetRegion(); // @420160
     static bool                     IsWideScreen(); // @420120

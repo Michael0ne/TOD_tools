@@ -4,6 +4,7 @@
 #include "AnimSlot.h"
 #include "IntegerType.h"
 #include "NumberType.h"
+#include "TransactionBuffer.h"
 
 EntityType* tAnimLayer;
 
@@ -84,7 +85,7 @@ void AnimLayer::SetIsPlaying(const bool playing)
 
 void AnimLayer::SetIsLooping(const bool loop)
 {
-    const int loopflag = m_Flags.Looping;
+    const bool loopflag = m_Flags.Looping;
 
     if (loop != loopflag)
         SetParam(11, &loopflag, tTRUTH);
@@ -129,13 +130,13 @@ void AnimLayer::SetTargetCrossBlendFactor(const float blend)
 
     if (m_TargetAnim_Entity)
     {
-        if (_A11C90 == 1)
+        if (TransactionBuffer::_A11C90 == 1)
         {
             m_CrossBlendFactor = blend;
             field_140 = blend;
         }
         else
-            m_CrossBlendFactor = ((1 - _A11C90) * field_140) + (_A11C90 * blend);
+            m_CrossBlendFactor = ((1 - TransactionBuffer::_A11C90) * field_140) + (TransactionBuffer::_A11C90 * blend);
     }
     else
         if (m_TargetAnim_Entity_2)

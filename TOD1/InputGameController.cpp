@@ -32,11 +32,11 @@ namespace Input
     LPDIRECTINPUT8 Gamepad::DirectInput8Interface = nullptr;
     unsigned int Gamepad::_A08FD8[] =
     {
-     8, 9, 10, 11
+        8, 9, 10, 11
     };
-    unsigned int Gamepad::_A09018[] =
+    unsigned int Gamepad::SmartJoyButtons[] =
     {
-     9, 10, 11, 8
+        9, 10, 11, 8
     };
 
     Gamepad::Gamepad(int controllerIndex, int unk1)
@@ -410,7 +410,7 @@ namespace Input
             return _A08FD8[unk1];
 
         if (m_SmartJoyGamepad == 1)
-            return _A09018[unk1];
+            return SmartJoyButtons[unk1];
 
         return unk1;
     }
@@ -429,7 +429,7 @@ namespace Input
         if (m_SmartJoyGamepad != 1)
             return (m_ButtonsStates[button] & 2) && (m_ButtonsStates[button] & 1);
 
-        return (m_ButtonsStates[_A09018[button]] & 2) && (m_ButtonsStates[_A09018[button]] & 1);
+        return (m_ButtonsStates[SmartJoyButtons[button]] & 2) && (m_ButtonsStates[SmartJoyButtons[button]] & 1);
     }
 
     bool Gamepad::_439910(int unk1)
@@ -446,27 +446,27 @@ namespace Input
         if (m_SmartJoyGamepad != 1)
             return (~m_ButtonsStates[unk1] & 2) && (m_ButtonsStates[unk1] & 1);
 
-        return (~m_ButtonsStates[_A09018[unk1]] & 2) && (m_ButtonsStates[_A09018[unk1]] & 1);
+        return (~m_ButtonsStates[SmartJoyButtons[unk1]] & 2) && (m_ButtonsStates[SmartJoyButtons[unk1]] & 1);
     }
 
-    char Gamepad::_439970(int unk1)
+    char Gamepad::IsButtonPressed(int button)
     {
         if (!m_DirectInputDevice)
             return NULL;
 
         if (field_B4 != 1)
-            return (m_ButtonsStates[unk1] >> 1) & 1;
+            return (m_ButtonsStates[button] >> 1) & 1;
         if (!m_SmartJoyGamepad)
-            return (m_ButtonsStates[_A08FD8[unk1]] >> 1) & 1;
+            return (m_ButtonsStates[_A08FD8[button]] >> 1) & 1;
         if (m_SmartJoyGamepad != 1)
-            return (m_ButtonsStates[unk1] >> 1) & 1;
+            return (m_ButtonsStates[button] >> 1) & 1;
 
-        return (m_ButtonsStates[_A09018[unk1]] >> 1) & 1;
+        return (m_ButtonsStates[SmartJoyButtons[button]] >> 1) & 1;
     }
 
     double Gamepad::_4399D0(int unk1)
     {
-        if (!_439970(unk1))
+        if (!IsButtonPressed(unk1))
             return 0.0;
         else
             return 1.0;

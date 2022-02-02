@@ -165,7 +165,7 @@ void AnimSlot::SetAnimFlags(const AnimFlags flags)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void AnimSlot::GetGamePivotStartPos(int* args)
+void AnimSlot::GetGamePivotStartPos(int* args) const
 {
 /*
     Vector4f pivotpos;
@@ -180,7 +180,7 @@ void AnimSlot::GetGamePivotStartPos(int* args)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void AnimSlot::GetGamePivotEndPos(int* args)
+void AnimSlot::GetGamePivotEndPos(int* args) const
 {
 /*
     Vector4f pivotpos;
@@ -194,14 +194,14 @@ void AnimSlot::GetGamePivotEndPos(int* args)
 */
 }
 
-void AnimSlot::GetGamePivotPos(int* args)
+void AnimSlot::GetGamePivotPos(int* args) const
 {
     Vector4f pos;
     GetGamePivotPos_Impl(pos, *(float*)(args + 3));
 
-    args[0] = pos.x;
-    args[1] = pos.y;
-    args[2] = pos.z;
+    args[0] = (int)pos.x;
+    args[1] = (int)pos.y;
+    args[2] = (int)pos.z;
 }
 
 void AnimSlot::Register()

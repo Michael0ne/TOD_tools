@@ -1,34 +1,67 @@
 #include "EditorCamera.h"
+#include "FrameBuffer.h"
+#include "BuiltinType.h"
 #include "NumberType.h"
 
-EditorCamera* tEditorCamera = nullptr;
+EntityType* tEditorCamera;
 
-#pragma message(TODO_IMPLEMENTATION)
+void EditorCamera::AddToFov(const float val)
+{
+    m_Fov += val;
+}
+
 EditorCamera::EditorCamera()
 {
- MESSAGE_CLASS_CREATED(EditorCamera);
+    MESSAGE_CLASS_CREATED(EditorCamera);
 
- m_Orient_1 = Orientation(0.0f, 0.0f, 0.0f, 1.0f);
- m_Orient_2 = Orientation(0.0f, 0.0f, 0.0f, 1.0f);
- m_fD8 = 10.0f;
- m_fDC = 50.0f;
+    m_Orient_1 = BuiltinType::Orient;
+    m_Orient_2 = BuiltinType::Orient;
 
- field_D4 = field_D5 = field_E0 = NULL;
- SetParam(10, &m_Offset, tNUMBER);
- m_Offset = 50.0f;
- m_Order = 1000;
+    field_D4 = 0;
+    field_D5 = 0;
+    field_D8 = 10.f;
+    field_DC = 50.f;
+    m_HasParentNode = false;
 
- if (m_Parent)
- {
-#ifdef _EXE
-  MESSAGE_NOT_IMPLEMENTED("Node::SetChildrenPositionToSame");
-  MESSAGE_NOT_IMPLEMENTED("Node::SetParent_Impl");
-#else
-  (*(void(__thiscall*)(Node*))0x88D3B0)(this); // Node::SetChildrenPositionToSame() // TODO: implementation!
-  (*(void(__thiscall*)(Node*, Node*))0x88E8A0)(this, m_Parent); // Node::SetParent_Impl() // TODO: implementation!
-#endif
- }
+    SetParam(10, &m_Offset, tNUMBER);
+    m_Offset = 50.f;
 
- field_108 = field_134 = 0;
- field_130 = -1;
+    m_Order = 1000;
+    if (m_Parent)
+    {
+        SetChildrenPositionToSame();
+        SetParent(m_Parent);
+    }
+
+    field_108 = 0;
+    m_FrameBuffer = nullptr;
+    m_GamepadIndex = -1;
+}
+
+EditorCamera::~EditorCamera()
+{
+    MESSAGE_CLASS_DESTROYED(EditorCamera);
+
+    delete m_FrameBuffer;
+}
+
+EditorCamera* EditorCamera::Create(AllocatorIndex)
+{
+    return new EditorCamera;
+}
+
+void EditorCamera::Register()
+{
+    using CREATOR = EntityType::CREATOR;
+
+    tEditorCamera = new EntityType("EditorCamera");
+    tEditorCamera->InheritFrom(tCamera);
+    tEditorCamera->SetCreator((CREATOR)Create);
+
+    tEditorCamera->PropagateProperties();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void EditorCamera::Update()
+{
 }

@@ -278,7 +278,7 @@ bool SceneSaveLoad::WriteSavePointFileData(class SavePoint* savepoint, SaveInfo*
 
                     for (unsigned int i = 0; i < 6; ++i)
                     {
-                        const int folderid = savedata->m_LoadedFolders[i] ? savedata->m_LoadedFolders[i]->m_Id >> 8 : -1;
+                        const int folderid = savedata->m_LoadedFolders[i] ? savedata->m_LoadedFolders[i]->m_Id.Id : -1;
                         if (savefilehelper.WriteBufferWithSize((const char*)&folderid, sizeof(folderid)) != sizeof(folderid))
                             break;
                     }
@@ -325,7 +325,7 @@ bool SceneSaveLoad::WriteSavePointFileData(class SavePoint* savepoint, SaveInfo*
         {
             for (unsigned int i = 0; i < 6; ++i)
             {
-                const int folderid = savedata->m_LoadedFolders[i] ? savedata->m_LoadedFolders[i]->m_Id >> 8 : -1;
+                const int folderid = savedata->m_LoadedFolders[i] ? savedata->m_LoadedFolders[i]->m_Id.Id : -1;
                 if (savefilehelper.WriteBufferWithSize((const char*)&folderid, sizeof(folderid)) != sizeof(folderid))
                     break;
             }

@@ -538,25 +538,33 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 
     if (!Script::Fullscreen)
     {
-        Camera* sceneCamera = (Camera*)Scene::SceneInstance->m_FirstChild;
-        if (sceneCamera)
+        Node* scenechild = Scene::SceneInstance->m_FirstChild;
+        if (scenechild)
         {
             do
             {
-                EditorCamera* editorCamera = (EditorCamera*)sceneCamera;
+                EntityType* editorCamera = scenechild->m_ScriptEntity;
                 if (editorCamera)
                 {
+                    bool noparent = false;
                     while (tEditorCamera != editorCamera)
                     {
-                        editorCamera = (EditorCamera*)editorCamera->m_Parent;
+                        editorCamera = editorCamera->m_Parent;
                         if (!editorCamera)
+                        {
+                            noparent = true;
                             break;
+                        }
                     }
-                    Scene::SceneInstance->m_GameCamera = sceneCamera;
+
+                    if (noparent)
+                        continue;
+
+                    Scene::SceneInstance->m_GameCamera = (Camera*)scenechild;
                     Scene::SceneInstance->StoreGameCamera();
                 }
-                sceneCamera = (Camera*)sceneCamera->m_NextSibling;
-            } while (sceneCamera);
+                scenechild = scenechild->m_NextSibling;
+            } while (scenechild);
         }
     }
 

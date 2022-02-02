@@ -27,6 +27,27 @@ Camera::Camera() : Node(NODE_MASK_POSITION)
     field_4C = BuiltinType::ZeroVector;
 }
 
+void Camera::Update()
+{
+    Orientation orient;
+    if (m_Position)
+        orient = m_Position->m_Orientation;
+    else
+        orient = { 0.f, 0.f, 0.f, BuiltinType::Orient.z };
+
+    const float d = (1.f / sqrtf((orient.x * orient.x) + (orient.w * orient.w) + (orient.y * orient.y) + (orient.z * orient.z)));
+    Orientation normalisedOrient =
+    {
+        orient.w * d,
+        orient.x * d,
+        orient.y * d,
+        orient.z * d
+    };
+
+    SetOrient(normalisedOrient);
+    StoreActiveCameraPosition();
+}
+
 void Camera::GetMatrix(DirectX::XMMATRIX& outmat) const
 {
     DirectX::XMMATRIX nodeMatrix;
@@ -137,11 +158,21 @@ void Camera::Project(float* params)
     } *args = (ParamsStruct*)params;
 
     Vector4f invec = { args->m_PosVector.x, args->m_PosVector.y, args->m_PosVector.z, 0 };
-    Vector2f outvec;
+    Vector4f outvec;
 
     Project_Impl(outvec, invec);
 
     args->m_ReturnVector = { outvec.x, outvec.y, 0 };
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Camera::Project_Impl(Vector4f& projectedPos, const Vector4f& inpos) const
+{
+    if (inpos.z <= 0)
+    {
+        projectedPos = { -10000, -10000, 0, 0 };
+        return;
+    }
 }
 
 void Camera::Register()

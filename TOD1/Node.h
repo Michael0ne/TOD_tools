@@ -152,7 +152,7 @@ public:
     void                GetWorldMatrix(DirectX::XMMATRIX& outMat) const;    //  @4842C0
     void                SetParent(const Node* parent);  //  @88E9A0
     void                DestroyAddon(); //  @88EB00 //  NOTE: actually unused.
-    void                SetName(const char*);   //  @88D610
+    void                SetName(const char* const name);   //  @88D610
     void                SetPos(const Vector4f&);    //  @88D6C0
     const char*         GetFragment() const;    //  @88DEA0
     void                ForceLodCalculation(unsigned int);  //  @88D100
@@ -190,6 +190,8 @@ public:
     const short         GetOrder() const;   //  @87F4A0
     void                SetOrder(const short order);    //  @4843B0
     void                SetChildrenPositionToSame();    //  @88D3B0
+    void                SetAndUpdateChildrenAuxQuadTree(AuxQuadTree* qdtree);   //  @88D1E0
+    void                SetEntityPositionRecursively(NodeMatrix* position); //  @88D1A0
     const int           GetRenderOrderGroup() const;    //  @67B880
     void                SetRenderOrderGroup(int renderordergroup);    //  @67FB40
     const bool          ShouldDisableOnCutscene() const;    //  @728D00
@@ -199,7 +201,6 @@ public:
     const bool          ShouldUseAuxQuadTree() const;   //  @88C870
     void                SetShouldUseAuxQuadTree(const bool use);    //  @88C890
     const char* const   GetName() const;    //  @48C3E0
-    void                SetName(const char* const name);  //  @88D610
     const float         GetLodThreshold() const;    //  @53FA20
     void                SetLodThreshold(float threshold); //  @5406A0
     void                _88BA60();  //  @88BA60
@@ -227,7 +228,7 @@ public:
     void                Move(const Vector4f& pos);  //  @88E470
     void                SetNewPos(const Vector4f& pos); //  @891280
     void                MoveLocal(const Vector4f& pos); //  @88E4B0
-    void                MoveLocal_Impl(const Vector4f& pos);    //  @4836D0
+    void                MoveLocal_Impl(const Vector4f& pos);    //  @4836D0 //  NOTE: moves this node within it's coordinates (pos coords are relative).
     void                GetBlockIdBelow(int* outBlockId) const; //  @88D140
     void                GetBlockId(int* outBlockId) const;  //  @5A18B0
     void                SetOrientFast_Impl(const Orientation& orient);  //  @5A1710
