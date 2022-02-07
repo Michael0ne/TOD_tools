@@ -91,10 +91,7 @@ protected:
     int                 field_110;
     int                 field_114;
     int                 field_118;
-    int                 field_11C;
-    int                 field_120;
-    int                 field_124;
-    int                 field_128;
+    Vector4f            field_11C;
     int                 field_12C;
     int                 field_130;
     int                 field_134;

@@ -86,7 +86,7 @@ void Node::Destroy()
 
     if (m_GlobalIdInBlockigList >= 0)
     {
-        NodesWithUpdateOrBlockingScripts[m_GlobalIdInBlockigList].m_Enabled = false;
+        NodesWithUpdateOrBlockingScripts[m_GlobalIdInBlockigList].m_Flags.m_Id = NULL;
         m_GlobalIdInBlockigList = -1;
     }
 
@@ -290,7 +290,7 @@ void Node::IsSuspended(bool* suspended) const
 {
     *suspended = field_20 &&
         field_20->m_ScriptThread &&
-        field_20->m_ScriptThread->m_ThreadFlags.m_FlagBits.Suspended != false;
+        field_20->m_ScriptThread->m_ThreadFlags.Suspended != false;
 }
 
 void Node::IsDisabled(bool* disabled) const

@@ -52,7 +52,7 @@ protected:
     short           field_3E;
     int             field_40;
     ParticleA      *m_Particles;
-    Particle       *m_Particles_1;
+    Particle       *m_ParticlesArray;
     int             field_4C;
     int             field_50;
     int             field_54;

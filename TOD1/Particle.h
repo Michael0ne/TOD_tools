@@ -11,8 +11,8 @@ protected:
     int             field_4;
     int             field_8;
     int             field_C;
-    int             field_10;
-    int             field_14;
+    Particle       *m_Previous;
+    Particle       *m_Next;
     NodePosition   *m_PositionMethods;
     Vector4f        field_1C;
     Vector4f        field_2C;
@@ -34,7 +34,7 @@ public:
 
     virtual ~Particle();   //  @424DC0
 
-    virtual void    SetParticlesListSize() = 0;
+    virtual void    SetParticlesListSize(const unsigned int size) = 0;
     virtual const unsigned int  GetParticlesListSize() const = 0;
 };
 
@@ -50,8 +50,8 @@ public:
 
     virtual ~ParticleA();   //  @42E310
 
-    virtual void    SetParticlesListSize() override; //  @42E350
-    virtual const unsigned int  GetParticlesListSize() const override;  //  @42E300
+    virtual void            SetParticlesListSize(const unsigned int size) override; //  @42E350
+    virtual const size_t    GetParticlesListSize() const override;  //  @42E300
 };
 
 ASSERT_CLASS_SIZE(ParticleA, 136);

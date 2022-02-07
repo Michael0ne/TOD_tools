@@ -256,7 +256,11 @@ public:
     struct NodeInfo
     {
         Node           *m_Node;
-        bool            m_Enabled;
+        union
+        {
+            unsigned    m_Id : 16;
+            unsigned    m_GlobalId : 8;
+        }               m_Flags;
     };
 
     struct NodePosInfo

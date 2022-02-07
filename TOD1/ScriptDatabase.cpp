@@ -1117,7 +1117,7 @@ bool GlobalScript::_48A7E0(Node* node, int scriptId, void* args)
     if (!node->field_20->m_ScriptThread)
         return false;
 
-    if (node->field_20->m_ScriptThread->m_ThreadFlags.m_FlagBits.Suspended)
+    if (node->field_20->m_ScriptThread->m_ThreadFlags.Suspended)
         return false;
 
     return false;

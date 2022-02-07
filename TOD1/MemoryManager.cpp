@@ -162,8 +162,9 @@ char MemoryManager::_477BC0(void* ptr, int a2)
     return GetAllocatorByMemoryPointer(ptr)->stub34((int*)ptr, a2);
 }
 
-DefragmentatorBase* MemoryManager::_4777F0(AllocatorIndex allocind)
+DefragmentatorBase* MemoryManager::GetDefragmentator(AllocatorIndex allocind)
 {
+    //  NOTE: this is always called with the 'DEFRAGMENTATOR' allocator index.
     return AllocatorsList[allocind]->m_Defragmentator;
 }
 

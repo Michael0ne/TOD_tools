@@ -90,7 +90,7 @@ int Entity::GetScriptPriority() const
     if (!field_20 || !field_20->m_ScriptThread)
         return NULL;
 
-    return field_20->m_ScriptThread->m_ThreadFlags.m_FlagBits.Priority;
+    return field_20->m_ScriptThread->m_ThreadFlags.Priority;
 }
 
 void Entity::SetScriptPriority(const unsigned char priority)
@@ -98,11 +98,11 @@ void Entity::SetScriptPriority(const unsigned char priority)
     if (!field_20 || !field_20->m_ScriptThread)
         return;
 
-    field_20->m_ScriptThread->m_ThreadFlags.m_FlagBits.Priority = priority;
+    field_20->m_ScriptThread->m_ThreadFlags.Priority = priority;
     
     const short globid = field_20->m_ScriptThread->m_ScriptNode->m_GlobalIdInBlockigList;
     if (globid >= 0)
-        Node::NodesWithUpdateOrBlockingScripts[globid].m_Enabled = Node::NodesWithUpdateOrBlockingScripts[globid].m_Enabled ^ ( Node::NodesWithUpdateOrBlockingScripts[globid].m_Enabled ^ (field_20->m_ScriptThread->m_ThreadFlags.m_ThreadFlags >> 8) & 0xC00000);
+        Node::NodesWithUpdateOrBlockingScripts[globid].m_Flags.m_GlobalId = field_20->m_ScriptThread->m_ThreadFlags.Priority;
 }
 
 void Entity::GetPropertyId(int* args) const

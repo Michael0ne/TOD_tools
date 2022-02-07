@@ -847,7 +847,7 @@ AssetManager::AssetManager(bool loadBlocks)
 {
     MESSAGE_CLASS_CREATED(AssetManager);
 
-    m_Defragmentator = MemoryManager::_4777F0(DEFRAGMENTING);
+    m_Defragmentator = MemoryManager::GetDefragmentator(DEFRAGMENTING);
     m_LoadBlocks = loadBlocks;
 
     g_AssetManager = this;

@@ -91,7 +91,10 @@ int DataType::stub9(char* a1, char* a2)
         {
             int len = &a2[m_Size] - &a1[m_Size];
             for (int _size = m_Size; _size; --_size)
-                *(int*)((int)lastsym + len) = *lastsym--;
+            {
+                *(lastsym + len) = *lastsym;
+                --lastsym;
+            }
 
             return m_Size;
         }
@@ -100,9 +103,12 @@ int DataType::stub9(char* a1, char* a2)
     if (m_Size <= 0)
         return m_Size;
 
-    char* _a1 = a1;
+    char* firstsym = a1;
     for (int _size = m_Size; _size; --_size)
-        *(int*)((int)_a1 + (char*)a2 - (char*)a1) = *_a1++;
+    {
+        *(firstsym + (a2 - a1)) = *a1;
+        firstsym++;
+    }
 
     return m_Size;
 }

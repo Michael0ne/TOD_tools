@@ -53,9 +53,9 @@ public:
     class CollisionProbe*       m_SharedProbe;
     class TransactionBuffer*    m_RewindBuffer1;
     class TransactionBuffer*    m_RewindBuffer2;
-    float           field_B4;
-    float           field_B8;
-    float           field_BC;
+    int             field_B4;
+    int             m_NextRewindUpdateTime;
+    int             field_BC;
     int             field_C0;
     int             m_RewindResumeTimeMs;
     int             field_C8;
@@ -192,6 +192,10 @@ public:
     static int      InvalidatePlaceholderModelCommand; // @A12098
     static int      RewindOrRetryFinishedCommand; // @A1209C
 
+private:
+    static const int    RewindCollectInterval = 2000;   //  @A12084 //  NOTE: interval when rewind buffer is updated.
+
+public:
     static void     CreateQuadTrees(const unsigned int num, const AllocatorIndex allocind); //  @89A370
     static void     TriggerScriptForAllChildren(int scriptId, Node* node, int* args); // @892F10
     static void     Register(); // @899CC0

@@ -2,11 +2,13 @@
 #include "ScriptDatabase.h"
 #include "Defragmentator.h"
 
+class Node;
+
 class IScriptThread
 {
 public:
-    virtual         ~IScriptThread();
-    virtual int     stub1(void*);
+    virtual         ~IScriptThread();   //  @48CC00
+    virtual int     CopyTo(void*);   //  @47BFD0
 };
 
 class ScriptThread : public IScriptThread
@@ -15,46 +17,66 @@ class ScriptThread : public IScriptThread
     friend class Node;
     friend class GlobalScript;
 
-    struct ThreadList_1
+    struct StackElement
     {
         unsigned int   field_0;
-        int*     field_4; // NOTE: pointer to another list. Contents vary.
+        int           *m_Contents;
         unsigned int   field_8;
     };
 
     struct CallStackElement
     {
-        class Node* m_NodePtr;
-        void     (*m_FuncPtr)(ScriptThread*);
-        unsigned int   m_Current;
+        Node                   *m_NodePtr;
+        void                    (*m_FuncPtr)(ScriptThread*);
+        unsigned int            m_Current;
         unsigned short          m_ParameterOffset;
         unsigned short          m_LocalOffset;
         short                   m_OnParameterOffset;
     };
 
-    struct ThreadCallStack
+    struct CallStackElements
     {
-        unsigned int            field_0;
-        CallStackElement       *m_Addresses;
-        int                    *field_8;
+        int                     field_0;
+        CallStackElement        *m_Elements;
     };
 
     struct MethodStruct
     {
-        void     (*field_0)(ScriptThread*);
-        int      field_4;
-        void     (*field_8)(ScriptThread*);
-        Node*     field_C;
-        GlobalScript*   field_10;
-        unsigned int   field_14;
+        void                    (*field_0)(ScriptThread*);
+        int                     field_4;
+        void                    (*field_8)(ScriptThread*);
+        Node                   *field_C;
+        GlobalScript           *field_10;
+        unsigned int            field_14;
     };
+
 protected:
-    Defragmentator*    m_Defragmentator;
-    std::vector<ThreadList_1> m_List_1; // NOTE: this is the list with a Defragmentator allocator attached to it.
-    Defragmentator*    m_Defragmentator_1;
-    std::vector<ThreadCallStack>m_CallStack;
-    int       m_SleepUntil;
-    int       m_WaitForFrame;
+    Defragmentator             *m_StackListAllocator;    //  NOTE: allocator for vector below. Same goes for callstack.
+    std::vector<StackElement>   m_Stack;
+
+    Defragmentator             *m_CallStackListAllocator;
+    std::vector<CallStackElement>m_CallStack;
+
+    int                         m_SleepUntil;
+    int                         m_WaitForFrame;
+#ifdef INCLUDE_FIXES
+    //  NOTE: this way it looks better & clear, but original code access these from 'threadflags' member.
+    unsigned short              m_StackSize;
+    unsigned char               m_StateMessageCount;
+    union
+    {
+        struct
+        {
+            unsigned char       Sleeping : 1;
+            unsigned char       SleepRealTime : 1;
+            unsigned char       Suspended : 1;
+            unsigned char       MarkedForSuspend : 1;
+            unsigned char       _28 : 1;
+            unsigned char       HasScriptNode : 1;
+            unsigned char       Priority : 2;
+        };
+    }                           m_ThreadFlags;
+#else
     union
     {
         struct
@@ -68,24 +90,28 @@ protected:
             unsigned char       _28 : 1;
             unsigned char       HasScriptNode : 1;
             unsigned char       Priority : 2;
-        }                       m_FlagBits;
-        unsigned int            m_ThreadFlags;
+        };
     }                           m_ThreadFlags;
-    class Node*     m_ScriptNode;
-    MethodStruct*    field_3C;
-    CallStackElement*   m_CurrentStackElement;
-public:
-    virtual      ~ScriptThread(); // @48ED10
-    virtual int     stub1(void*);
+#endif
+    Node                       *m_ScriptNode;
+    MethodStruct               *m_MethodInfo;
+    CallStackElement           *m_CurrentStackElement;
 
-    ScriptThread(class Node*); // @48EC70
+public:
+    virtual                     ~ScriptThread(); // @48ED10
+    virtual int                 CopyTo(void*) override;   //  @48F220
+
+    ScriptThread(Node* node); // @48EC70
 
     void                        Reset();    //  @48E930
     void                        _48E390();  //  @48E390 //  NOTE: 'Execute'?
     void                        _48F2E0();  //  @48F2E0 //  NOTE: 'SetSleepTime'?
+    const int                   _48CD00() const;    //  @48CD00
     void                        DecreaseStateMessageCount();    //  @48CD50
     void                        SetScriptNode(Node* scriptnode);    //  @48CCD0
-    void                        DumpState(String&); // @48D690
+    void                        DumpState(String& outString) const; // @48D690
+    void                        AdjustStackSize(const unsigned int size);   //  @48E6A0
+    void                        PushToCallStack( void (*funcPtr)(ScriptThread*), const short argNumber, Node* node, void* dummy);   //  @48E700
 
     static bool                 IsThreadExists(const ScriptThread* scriptthread);
     static int                  GetCurrentThreadIndex();    //  @48CC40
@@ -93,3 +119,5 @@ public:
     static int                  CurrentThread;  //  @A3B758
     static ScriptThread*        Threads[100];   //  @A3B5C8
 };
+
+ASSERT_CLASS_SIZE(ScriptThread, 68);
