@@ -98,7 +98,7 @@ const float ControlSetup::GetControlPressure_Impl(float control) const
 
 void ControlSetup::GetControlRealPressure(int* args) const
 {
-    *args = GetControlRealPressure_Impl((float)args[1]);
+    *args = (int)GetControlRealPressure_Impl((float)args[1]);
 }
 
 const float ControlSetup::GetControlRealPressure_Impl(const float control) const
@@ -164,7 +164,7 @@ void ControlSetup::SetVibration_Impl(const int controller, const float force) co
 
 void ControlSetup::GetVibration(int* args) const
 {
-    *args = GetVibration_Impl(args[1]);
+    *args = (int)GetVibration_Impl(args[1]);
 }
 
 const float ControlSetup::GetVibration_Impl(const int controller) const
@@ -283,10 +283,10 @@ void ControlSetup::Register()
 {
     tControlSetup = new EntityType("ControlSetup");
     tControlSetup->InheritFrom(tNode);
-    tControlSetup->SetCreator((EntityType::CREATOR)Create);
+    tControlSetup->SetCreator((CREATOR)Create);
 
-    tControlSetup->RegisterScript("getcontrolid(string):integer", &GetControlId, NULL, NULL, NULL, nullptr, nullptr);
-    tControlSetup->RegisterScript("iscontroldown(integer):truth", &IsControlDown, NULL, NULL, NULL, nullptr, nullptr);
-    tControlSetup->RegisterScript("iscontrolpressed(integer):truth", &IsControlPressed, NULL, NULL, NULL, nullptr, nullptr);
-    tControlSetup->RegisterScript("iscontrolreleased(integer):truth", &IsControlReleased, NULL, NULL, NULL, nullptr, nullptr);
+    tControlSetup->RegisterScript("getcontrolid(string):integer", (EntityFunctionMember)&GetControlId, NULL, NULL, NULL, nullptr, nullptr);
+    tControlSetup->RegisterScript("iscontroldown(integer):truth", (EntityFunctionMember)&IsControlDown, NULL, NULL, NULL, nullptr, nullptr);
+    tControlSetup->RegisterScript("iscontrolpressed(integer):truth", (EntityFunctionMember)&IsControlPressed, NULL, NULL, NULL, nullptr, nullptr);
+    tControlSetup->RegisterScript("iscontrolreleased(integer):truth", (EntityFunctionMember)&IsControlReleased, NULL, NULL, NULL, nullptr, nullptr);
 }

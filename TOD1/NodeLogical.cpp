@@ -6,7 +6,7 @@ void NodeLogical::Register()
 {
     tNodeLogical = new EntityType("NodeLogical");
     tNodeLogical->InheritFrom(tNode);
-    tNodeLogical->SetCreator((EntityType::CREATOR)Create);
+    tNodeLogical->SetCreator((CREATOR)Create);
     tNodeLogical->PropagateProperties();
 }
 

@@ -13,7 +13,7 @@ void Group::Register()
 {
     tGroup = new EntityType("Group");
     tGroup->InheritFrom(tNode);
-    tGroup->SetCreator((EntityType::CREATOR)Create);
+    tGroup->SetCreator((CREATOR)Create);
     tGroup->PropagateProperties();
 }
 

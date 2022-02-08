@@ -483,7 +483,7 @@ void Node::SetLodThreshold(float threshold)
     if (threshold < 0)
         threshold = 0;
 
-    m_QuadTree->field_3C = (threshold * 200.0f);
+    m_QuadTree->field_3C = (char)(threshold * 200.0f);
     _88BA60();
 }
 
@@ -1121,6 +1121,11 @@ void Node::GetWorldMatrix(DirectX::XMMATRIX& outMat) const
         outMat = DirectX::XMMatrixIdentity();
 }
 
+Node* Node::GetParent() const
+{
+    return m_Parent;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void Node::SetParent(const Node* parent)
 {
@@ -1339,10 +1344,16 @@ void Node::TriggerGlobalScript(int scriptId, void* args)
     {
         EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_IsBaseEntity ? &m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : &m_ScriptEntity->m_ScriptsList[scriptId];
         if (scriptinfo)
+#ifdef INCLUDE_FIXES
+            //  TODO: THIS IS VERY UGLY! I don't think original code had something like this!
+            ((Entity*)(this + (int)scriptinfo->field_4)->*(scriptinfo->m_ScriptPtr))(args);
+#else
+            //  NOTE: this code is probably bugged so don't use it.
             if (scriptinfo->field_C)
                 scriptinfo->m_ScriptPtr((void*)(this + (int)scriptinfo->field_4 + (int)scriptinfo->field_8), args);    //  NOTE: never used, since field_C is usually 0, same as field_4.
             else
                 scriptinfo->m_ScriptPtr((void*)(this + (int)scriptinfo->field_4), args);
+#endif
     }
 }
 
@@ -1518,45 +1529,43 @@ void Node::_891E70(const String& s, String& outs)
 #pragma message(TODO_IMPLEMENTATION)
 void Node::Register()
 {
-    using CREATOR = EntityType::CREATOR;
-
     tNode = new EntityType("Node");
     tNode->InheritFrom(tEntity);
     tNode->SetCreator((CREATOR)Create);
 
-    tNode->RegisterProperty(tSTRING, "typename", &GetTypename, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=static", NULL, NULL, -1);
-    tNode->RegisterProperty(tSTRING, "script", &GetScript, NULL, NULL, NULL, &SetScript, NULL, NULL, NULL, "control=resource|type=*.script", NULL, NULL, -1);
-    tNode->RegisterProperty(tINTEGER, "order", &GetOrder, NULL, NULL, NULL, &SetOrder, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tINTEGER, "renderordergroup", &GetRenderOrderGroup, NULL, NULL, NULL, &SetRenderOrderGroup, NULL, NULL, NULL, "control=slider|min=-1|max=4", NULL, NULL, -1);
-    tNode->RegisterProperty(tEntity, "parent", &GetParent, NULL, NULL, NULL, &SetParent, NULL, NULL, NULL, nullptr, NULL, NULL, 1);
-    tNode->RegisterProperty(tTRUTH, "disable_on_cutscene", &ShouldDisableOnCutscene, NULL, NULL, NULL, &SetShouldDisableOnCutscene, NULL, NULL, NULL, "control=truth", NULL, NULL, -1);
-    tNode->RegisterProperty(tSTRING, "fragment", &GetFragment, NULL, NULL, NULL, &SetFragment, NULL, NULL, NULL, "control=resource|type=*.fragment", NULL, NULL, -1);
-    tNode->RegisterProperty(tINTEGER, "flags", &GetFlags, NULL, NULL, NULL, &SetFlags, NULL, NULL, NULL, "control=flags|flag0=disable|flag1=dynamic|flag2=invisible|flag3=lock|flag4=open|flag5=volatile|flag6=disable collision|flag7=d.b.r.|flag8=l.s.r.|flag9=purge names|flag10=e.r.r|flag11=f.r.r", NULL, NULL, 2);
-    tNode->RegisterProperty(tINTEGER, "representation", &GetRepresentation, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tVECTOR, "pos", &GetPos, NULL, NULL, NULL, &SetPos, NULL, NULL, NULL, "control=string", NULL, NULL, 3);
-    tNode->RegisterProperty(tQUATERNION, "orient", &GetOrient, NULL, NULL, NULL, &SetOrient, NULL, NULL, NULL, "control=string", NULL, NULL, 4);
-    tNode->RegisterProperty(tTRUTH, "use_aux_quadtree", &ShouldUseAuxQuadTree, NULL, NULL, NULL, &SetShouldUseAuxQuadTree, NULL, NULL, NULL, "control=truth", NULL, NULL, 5);
-    tNode->RegisterProperty(tSTRING, "name", &GetName, NULL, NULL, NULL, &SetName, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
-    tNode->RegisterProperty(tNUMBER, "lod_threshold", &GetLodThreshold, NULL, NULL, NULL, &SetLodThreshold, NULL, NULL, NULL, "control=slider|min=0|max=0.4|step=0.01", NULL, NULL, 8);
-    tNode->RegisterProperty(tNUMBER, "fade_threshold", &GetFadeThreshold, NULL, NULL, NULL, &SetFadeThreshold, NULL, NULL, NULL, "control=slider|min=0|max=0.2|step=0.01", NULL, NULL, 9);
-    tNode->RegisterProperty(tTRUTH, "slow_fade", &ShouldSlowFade, NULL, NULL, NULL, &SetShouldSlowFade, NULL, NULL, NULL, "control=truth", NULL, NULL, -1);
-    tNode->RegisterProperty(tNUMBER, "traverse_distance", &GetTraverseDistance, NULL, NULL, NULL, &SetTraverseDistance, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tEntity, "scene", &GetScene, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tEntity, "firstchild", &GetFirstChild, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tEntity, "nextsibling", &GetNextSibling, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tNUMBER, "lod_distance", &GetLodDistance, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tNUMBER, "lod_fade", &GetLodFade, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tINTEGER, "lod", &GetLod, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tTRUTH, "is_tagged_for_unload", &GetIsTaggedForUnload, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tINTEGER, "unique_id0", &GetUniqueId0, NULL, NULL, NULL, &SetUniqueId0, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tINTEGER, "unique_id1", &GetUniqueId1, NULL, NULL, NULL, &SetUniqueId1, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
-    tNode->RegisterProperty(tINTEGER, "UserType", &GetUserType, NULL, NULL, NULL, &SetUserType, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
-    tNode->RegisterProperty(tSTRING, "IgnoreList", &GetIgnoreList, NULL, NULL, NULL, &SetIgnoreList, NULL, NULL, NULL, "control=string", NULL, NULL, 7);
+    tNode->RegisterProperty(tSTRING, "typename", (EntityGetterFunction)&GetTypename, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=static", NULL, NULL, -1);
+    tNode->RegisterProperty(tSTRING, "script", (EntityGetterFunction)&GetScript, NULL, NULL, NULL, (EntitySetterFunction)&SetScript, NULL, NULL, NULL, "control=resource|type=*.script", NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "order", (EntityGetterFunction)&GetOrder, NULL, NULL, NULL, (EntitySetterFunction)&SetOrder, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "renderordergroup", (EntityGetterFunction)&GetRenderOrderGroup, NULL, NULL, NULL, (EntitySetterFunction)&SetRenderOrderGroup, NULL, NULL, NULL, "control=slider|min=-1|max=4", NULL, NULL, -1);
+    tNode->RegisterProperty(tEntity, "parent", (EntityGetterFunction)&GetParent, NULL, NULL, NULL, (EntitySetterFunction)&SetParent, NULL, NULL, NULL, nullptr, NULL, NULL, 1);
+    tNode->RegisterProperty(tTRUTH, "disable_on_cutscene", (EntityGetterFunction)&ShouldDisableOnCutscene, NULL, NULL, NULL, (EntitySetterFunction)&SetShouldDisableOnCutscene, NULL, NULL, NULL, "control=truth", NULL, NULL, -1);
+    tNode->RegisterProperty(tSTRING, "fragment", (EntityGetterFunction)&GetFragment, NULL, NULL, NULL, (EntitySetterFunction)&SetFragment, NULL, NULL, NULL, "control=resource|type=*.fragment", NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "flags", (EntityGetterFunction)&GetFlags, NULL, NULL, NULL, (EntitySetterFunction)&SetFlags, NULL, NULL, NULL, "control=flags|flag0=disable|flag1=dynamic|flag2=invisible|flag3=lock|flag4=open|flag5=volatile|flag6=disable collision|flag7=d.b.r.|flag8=l.s.r.|flag9=purge names|flag10=e.r.r|flag11=f.r.r", NULL, NULL, 2);
+    tNode->RegisterProperty(tINTEGER, "representation", (EntityGetterFunction)&GetRepresentation, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tVECTOR, "pos", (EntityGetterFunction)&GetPos, NULL, NULL, NULL, (EntitySetterFunction)&SetPos, NULL, NULL, NULL, "control=string", NULL, NULL, 3);
+    tNode->RegisterProperty(tQUATERNION, "orient", (EntityGetterFunction)&GetOrient, NULL, NULL, NULL, (EntitySetterFunction)&SetOrient, NULL, NULL, NULL, "control=string", NULL, NULL, 4);
+    tNode->RegisterProperty(tTRUTH, "use_aux_quadtree", (EntityGetterFunction)&ShouldUseAuxQuadTree, NULL, NULL, NULL, (EntitySetterFunction)&SetShouldUseAuxQuadTree, NULL, NULL, NULL, "control=truth", NULL, NULL, 5);
+    tNode->RegisterProperty(tSTRING, "name", (EntityGetterFunction)&GetName, NULL, NULL, NULL, (EntitySetterFunction)&SetName, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+    tNode->RegisterProperty(tNUMBER, "lod_threshold", (EntityGetterFunction)&GetLodThreshold, NULL, NULL, NULL, (EntitySetterFunction)&SetLodThreshold, NULL, NULL, NULL, "control=slider|min=0|max=0.4|step=0.01", NULL, NULL, 8);
+    tNode->RegisterProperty(tNUMBER, "fade_threshold", (EntityGetterFunction)&GetFadeThreshold, NULL, NULL, NULL, (EntitySetterFunction)&SetFadeThreshold, NULL, NULL, NULL, "control=slider|min=0|max=0.2|step=0.01", NULL, NULL, 9);
+    tNode->RegisterProperty(tTRUTH, "slow_fade", (EntityGetterFunction)&ShouldSlowFade, NULL, NULL, NULL, (EntitySetterFunction)&SetShouldSlowFade, NULL, NULL, NULL, "control=truth", NULL, NULL, -1);
+    tNode->RegisterProperty(tNUMBER, "traverse_distance", (EntityGetterFunction)&GetTraverseDistance, NULL, NULL, NULL, (EntitySetterFunction)&SetTraverseDistance, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tEntity, "scene", (EntityGetterFunction)&GetScene, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tEntity, "firstchild", (EntityGetterFunction)&GetFirstChild, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tEntity, "nextsibling", (EntityGetterFunction)&GetNextSibling, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tNUMBER, "lod_distance", (EntityGetterFunction)&GetLodDistance, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tNUMBER, "lod_fade", (EntityGetterFunction)&GetLodFade, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "lod", (EntityGetterFunction)&GetLod, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tTRUTH, "is_tagged_for_unload", (EntityGetterFunction)&GetIsTaggedForUnload, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "unique_id0", (EntityGetterFunction)&GetUniqueId0, NULL, NULL, NULL, (EntitySetterFunction)&SetUniqueId0, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "unique_id1", (EntityGetterFunction)&GetUniqueId1, NULL, NULL, NULL, (EntitySetterFunction)&SetUniqueId1, NULL, NULL, NULL, nullptr, NULL, NULL, -1);
+    tNode->RegisterProperty(tINTEGER, "UserType", (EntityGetterFunction)&GetUserType, NULL, NULL, NULL, (EntitySetterFunction)&SetUserType, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+    tNode->RegisterProperty(tSTRING, "IgnoreList", (EntityGetterFunction)&GetIgnoreList, NULL, NULL, NULL, (EntitySetterFunction)&SetIgnoreList, NULL, NULL, NULL, "control=string", NULL, NULL, 7);
 
-    tNode->RegisterScript("IsDisabled:truth", &IsDisabled, NULL, NULL, NULL, nullptr, "IsDisabledMSG");
-    tNode->RegisterScript("IsSuspended:truth", &IsSuspended, NULL, NULL, NULL, nullptr, "IsSuspendedMSG");
-    tNode->RegisterScript("move(vector)", &Move, NULL, NULL, NULL, nullptr, "MoveMSG");
-    tNode->RegisterScript("movelocal(vector)", &MoveLocal, NULL, NULL, NULL, nullptr, "MoveLocalMSG");
+    tNode->RegisterScript("IsDisabled:truth", (EntityFunctionMember)&IsDisabled, NULL, NULL, NULL, nullptr, "IsDisabledMSG");
+    tNode->RegisterScript("IsSuspended:truth", (EntityFunctionMember)&IsSuspended, NULL, NULL, NULL, nullptr, "IsSuspendedMSG");
+    tNode->RegisterScript("move(vector)", (EntityFunctionMember)&Move, NULL, NULL, NULL, nullptr, "MoveMSG");
+    tNode->RegisterScript("movelocal(vector)", (EntityFunctionMember)&MoveLocal, NULL, NULL, NULL, nullptr, "MoveLocalMSG");
 
     tNode->PropagateProperties();
 }

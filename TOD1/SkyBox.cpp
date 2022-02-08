@@ -67,7 +67,7 @@ void SkyBox::Register()
 {
     tSkyBox = new EntityType("SkyBox");
     tSkyBox->InheritFrom(tModel);
-    tSkyBox->SetCreator((EntityType::CREATOR)Create);
+    tSkyBox->SetCreator((CREATOR)Create);
 
     tSkyBox->PropagateProperties();
 }

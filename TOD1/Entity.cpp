@@ -209,16 +209,16 @@ const int Entity::SaveScriptData(SavePoint * savefilehelper)
 void Entity::Register()
 {
     tEntity = new EntityType("Entity");
-    tEntity->RegisterScript("getpropertyid(string):integer", &GetPropertyId, NULL, NULL, NULL, nullptr, "GetPropertyIDMSG");
-    tEntity->RegisterScript("hasproperty(string):truth", &HasProperty, NULL, NULL, NULL, nullptr, "HasPropertyMSG");
-    tEntity->RegisterScript("haspropertyid(integer):truth", &HasPropertyId, NULL, NULL, NULL, nullptr, "HasPropertyIDMSG");
-    tEntity->RegisterScript("savescriptdatatofile(entity,integer,integer,string):truth", &SaveScriptDataToFile, NULL, NULL, NULL, nullptr, nullptr);
-    tEntity->RegisterScript("loadscriptdatafromfile(entity,integer,integer):integer", &LoadScriptDataFromFile, NULL, NULL, NULL, nullptr, nullptr);
+    tEntity->RegisterScript("getpropertyid(string):integer", (EntityFunctionMember)&GetPropertyId, NULL, NULL, NULL, nullptr, "GetPropertyIDMSG");
+    tEntity->RegisterScript("hasproperty(string):truth", (EntityFunctionMember)&HasProperty, NULL, NULL, NULL, nullptr, "HasPropertyMSG");
+    tEntity->RegisterScript("haspropertyid(integer):truth", (EntityFunctionMember)&HasPropertyId, NULL, NULL, NULL, nullptr, "HasPropertyIDMSG");
+    tEntity->RegisterScript("savescriptdatatofile(entity,integer,integer,string):truth", (EntityFunctionMember)&SaveScriptDataToFile, NULL, NULL, NULL, nullptr, nullptr);
+    tEntity->RegisterScript("loadscriptdatafromfile(entity,integer,integer):integer", (EntityFunctionMember)&LoadScriptDataFromFile, NULL, NULL, NULL, nullptr, nullptr);
 
-    tEntity->RegisterProperty(tINTEGER, "id", &GetId, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=string", NULL, NULL, -1);
-    tEntity->RegisterProperty(tINTEGER, "script_priority", &GetScriptPriority, NULL, NULL, NULL, &SetScriptPriority, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+    tEntity->RegisterProperty(tINTEGER, "id", (EntityGetterFunction)&GetId, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=string", NULL, NULL, -1);
+    tEntity->RegisterProperty(tINTEGER, "script_priority", (EntityGetterFunction)&GetScriptPriority, NULL, NULL, NULL, (EntitySetterFunction)&SetScriptPriority, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
 
-    tEntity->SetCreator((EntityType::CREATOR)Create);
+    tEntity->SetCreator((CREATOR)Create);
     tEntity->PropagateProperties();
 }
 

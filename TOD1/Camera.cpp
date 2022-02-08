@@ -179,16 +179,16 @@ void Camera::Register()
 {
     tCamera = new EntityType("Camera");
     tCamera->InheritFrom(tNode);
-    tCamera->SetCreator((EntityType::CREATOR)Create);
+    tCamera->SetCreator((CREATOR)Create);
 
-    tCamera->RegisterProperty(tNUMBER, "offset", &GetOffset, 0, 0, 0, &SetOffset, 0, 0, 0, nullptr, 0, 0, 10);
-    tCamera->RegisterProperty(tNUMBER, "nearclip", &GetNearClip, 0, 0, 0, &SetNearClip, 0, 0, 0, "control=slider|min=0.1|max=1.0", 0, 0, 12);
-    tCamera->RegisterProperty(tNUMBER, "farclip", &GetFarClip, 0, 0, 0, &SetFarClip, 0, 0, 0, "control=slider|min=100|max=1000", 0, 0, 13);
-    tCamera->RegisterProperty(tNUMBER, "fov", &GetFov, 0, 0, 0, &SetFov, 0, 0, 0, "control=slider|min=20|max=170", 0, 0, 11);
-    tCamera->RegisterProperty(tNUMBER, "dynlightcullrange", &GetDynlightCullRange, 0, 0, 0, &SetDynlightCullRange, 0, 0, 0, "control=slider|min=20|max=1000", 0, 0, -1);
+    tCamera->RegisterProperty(tNUMBER, "offset", (EntityGetterFunction)&GetOffset, 0, 0, 0, (EntitySetterFunction)&SetOffset, 0, 0, 0, nullptr, 0, 0, 10);
+    tCamera->RegisterProperty(tNUMBER, "nearclip", (EntityGetterFunction)&GetNearClip, 0, 0, 0, (EntitySetterFunction)&SetNearClip, 0, 0, 0, "control=slider|min=0.1|max=1.0", 0, 0, 12);
+    tCamera->RegisterProperty(tNUMBER, "farclip", (EntityGetterFunction)&GetFarClip, 0, 0, 0, (EntitySetterFunction)&SetFarClip, 0, 0, 0, "control=slider|min=100|max=1000", 0, 0, 13);
+    tCamera->RegisterProperty(tNUMBER, "fov", (EntityGetterFunction)&GetFov, 0, 0, 0, (EntitySetterFunction)&SetFov, 0, 0, 0, "control=slider|min=20|max=170", 0, 0, 11);
+    tCamera->RegisterProperty(tNUMBER, "dynlightcullrange", (EntityGetterFunction)&GetDynlightCullRange, 0, 0, 0, (EntitySetterFunction)&SetDynlightCullRange, 0, 0, 0, "control=slider|min=20|max=1000", 0, 0, -1);
 
-    tCamera->RegisterScript("getcamerapos:vector", &GetCameraPos, 0, 0, 0, nullptr, nullptr);
-    tCamera->RegisterScript("project(vector):vector", &Project, 0, 0, 0, nullptr, nullptr);
+    tCamera->RegisterScript("getcamerapos:vector", (EntityFunctionMember)&GetCameraPos, 0, 0, 0, nullptr, nullptr);
+    tCamera->RegisterScript("project(vector):vector", (EntityFunctionMember)&Project, 0, 0, 0, nullptr, nullptr);
 
     tCamera->PropagateProperties();
 }

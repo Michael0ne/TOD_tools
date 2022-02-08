@@ -57,13 +57,13 @@ void GuideBox::Register()
 {
     tGuideBox = new EntityType("GuideBox");
     tGuideBox->InheritFrom(tNode);
-    tGuideBox->SetCreator((EntityType::CREATOR)Create);
+    tGuideBox->SetCreator((CREATOR)Create);
 
-    tGuideBox->RegisterProperty(tNUMBER, "left", &GetLeft, NULL, NULL, NULL, &SetLeft, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
-    tGuideBox->RegisterProperty(tNUMBER, "right", &GetRight, NULL, NULL, NULL, &SetRight, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
-    tGuideBox->RegisterProperty(tNUMBER, "front", &GetFront, NULL, NULL, NULL, &SetFront, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
-    tGuideBox->RegisterProperty(tNUMBER, "back", &GetBack, NULL, NULL, NULL, &SetBack, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
-    tGuideBox->RegisterProperty(tNUMBER, "height", &GetHeight, NULL, NULL, NULL, &SetHeight, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
+    tGuideBox->RegisterProperty(tNUMBER, "left", (EntityGetterFunction)&GetLeft, NULL, NULL, NULL, (EntitySetterFunction)&SetLeft, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
+    tGuideBox->RegisterProperty(tNUMBER, "right", (EntityGetterFunction)&GetRight, NULL, NULL, NULL, (EntitySetterFunction)&SetRight, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
+    tGuideBox->RegisterProperty(tNUMBER, "front", (EntityGetterFunction)&GetFront, NULL, NULL, NULL, (EntitySetterFunction)&SetFront, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
+    tGuideBox->RegisterProperty(tNUMBER, "back", (EntityGetterFunction)&GetBack, NULL, NULL, NULL, (EntitySetterFunction)&SetBack, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
+    tGuideBox->RegisterProperty(tNUMBER, "height", (EntityGetterFunction)&GetHeight, NULL, NULL, NULL, (EntitySetterFunction)&SetHeight, NULL, NULL, NULL, "control=slider|min=-20|max=20", NULL, NULL, -1);
 
     tGuideBox->PropagateProperties();
 }

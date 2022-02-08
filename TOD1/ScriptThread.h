@@ -118,6 +118,7 @@ public:
 
     static int                  CurrentThread;  //  @A3B758
     static ScriptThread*        Threads[100];   //  @A3B5C8
+    static bool                 WarnDelayedException;   //  @A3B770
 };
 
 ASSERT_CLASS_SIZE(ScriptThread, 68);

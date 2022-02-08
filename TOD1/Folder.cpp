@@ -160,9 +160,9 @@ void Folder_::Register()
 {
     tFolder = new EntityType("Folder");
     tFolder->InheritFrom(tNode);
-    tFolder->SetCreator((EntityType::CREATOR)Create);
+    tFolder->SetCreator((CREATOR)Create);
 
-    tFolder->RegisterProperty(tINTEGER, "block_id", &GetBlockId, 0, 0, 0, &SetBlockId, 0, 0, 0, "control=dropdown|All=0|Map=1|Submap=2|Mission=3|Cutscene=4|Playerdata=5", 0, 0, -1);
+    tFolder->RegisterProperty(tINTEGER, "block_id", (EntityGetterFunction)&GetBlockId, 0, 0, 0, (EntitySetterFunction)&SetBlockId, 0, 0, 0, "control=dropdown|All=0|Map=1|Submap=2|Mission=3|Cutscene=4|Playerdata=5", 0, 0, -1);
 
     tFolder->PropagateProperties();
 }

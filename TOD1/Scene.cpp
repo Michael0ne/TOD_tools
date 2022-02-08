@@ -21,6 +21,7 @@ AuxQuadTree* Scene::SceneTree;
 unsigned int Scene::QuadTreesAllocated;
 Scene::QuadTree* Scene::QuadTrees;
 short Scene::_A120E8 = -1;
+int Scene::_A3DD40;
 
 int Scene::RealTimeMs;
 int Scene::GameTimeMs;
@@ -127,6 +128,54 @@ Scene::Scene() : Folder_()
     AllocateRewindBuffer();
 
     m_AssetBlockInfo = new AssetInfo();
+}
+
+Scene::~Scene()
+{
+    MESSAGE_CLASS_DESTROYED(Scene);
+
+    FreeRewindBuffer();
+    ReleaseQuadTreeAndRenderlist();
+    m_SharedProbe->Destroy();
+
+    for (unsigned int i = 0; i < 31; ++i)
+    {
+        if (m_FrameBuffers[i])
+            delete m_FrameBuffers[i];
+        g_GfxInternal->SetBufferRenderBufferPointerByIndex(i, nullptr);
+    }
+
+    delete m_FrameBuffer_1;
+    delete m_FrameBuffer_2;
+
+    if (IsRewindBufferInUse && m_RewindBuffer1)
+    {
+        LogDump::LogA("Free rewind buffer\n");
+        ResetRewindBuffer(true);
+
+        if (m_RewindBuffer1)
+            delete m_RewindBuffer1;
+
+        if (m_RewindBuffer2)
+            delete m_RewindBuffer2;
+    }
+
+    _A3DD40 = NULL;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::Destroy()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::Update()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::Render()
+{
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -764,9 +813,10 @@ void Scene::Register()
 {
     tScene = new EntityType("Scene");
     tScene->InheritFrom(tNode);
-    tScene->SetCreator((EntityType::CREATOR)Create);
+    tScene->SetCreator((CREATOR)Create);
 
     // TODO: register properties/scripts.
+    tScene->RegisterProperty(tNUMBER, "timemultiplier", (EntityGetterFunction)&GetTimeMultiplier, NULL, NULL, NULL, (EntitySetterFunction)&SetTimeMultiplier, NULL, NULL, NULL, nullptr, NULL, NULL, 10);
 
     PreBlocksUnloadedCommand = RegisterGlobalCommand("pre_blocks_unloaded", true);
     BlocksUnloadedCommand = RegisterGlobalCommand("blocks_unloaded", true);

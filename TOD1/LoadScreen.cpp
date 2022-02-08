@@ -64,13 +64,13 @@ void LoadScreenNode::Register()
 {
     tLoadScreenNode = new EntityType("LoadScreenNode");
     tLoadScreenNode->InheritFrom(tNode);
-    tLoadScreenNode->SetCreator((EntityType::CREATOR)Create);
+    tLoadScreenNode->SetCreator((CREATOR)Create);
 
-    tLoadScreenNode->RegisterProperty(tSTRING, "imagefile", &GetImageFile, 0, 0, 0, &SetImageFile, 0, 0, 0, "control=resource|type=*.bmp", 0, 0, -1);
-    tLoadScreenNode->RegisterScript("activate", &Activate, 0, 0, 0, "control=button|text=Activate", nullptr);
-    tLoadScreenNode->RegisterScript("deactivate", &Deactivate, 0, 0, 0, "control=button|Deactivate", nullptr);
-    tLoadScreenNode->RegisterScript("setrenderontopnode(entity)", &SetRenderOnTopNode, 0, 0, 0, nullptr, nullptr);
-    tLoadScreenNode->RegisterScript("setloadbarsprite(entity)", &SetLoadbarSprite, 0, 0, 0, nullptr, nullptr);
+    tLoadScreenNode->RegisterProperty(tSTRING, "imagefile", (EntityGetterFunction)&GetImageFile, 0, 0, 0, (EntitySetterFunction)&SetImageFile, 0, 0, 0, "control=resource|type=*.bmp", 0, 0, -1);
+    tLoadScreenNode->RegisterScript("activate", (EntityFunctionMember)&Activate, 0, 0, 0, "control=button|text=Activate", nullptr);
+    tLoadScreenNode->RegisterScript("deactivate", (EntityFunctionMember)&Deactivate, 0, 0, 0, "control=button|Deactivate", nullptr);
+    tLoadScreenNode->RegisterScript("setrenderontopnode(entity)", (EntityFunctionMember)&SetRenderOnTopNode, 0, 0, 0, nullptr, nullptr);
+    tLoadScreenNode->RegisterScript("setloadbarsprite(entity)", (EntityFunctionMember)&SetLoadbarSprite, 0, 0, 0, nullptr, nullptr);
 
     tLoadScreenNode->PropagateProperties();
 }

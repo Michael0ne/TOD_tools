@@ -136,7 +136,7 @@ public:
     std::vector<Entity*>        m_NodesList[6];
     std::vector<Asset*>         m_ResourcesInstancesList;
     std::vector<String>         m_SceneNames;
-    int                         m_NodesInNodeList[6];
+    unsigned int                m_NodesInNodeList[6];
     int                         field_1C8;
     bool                        m_BlocksUnloaded;
     std::map<int, int>         *field_1D0;
@@ -206,7 +206,7 @@ public:
     Asset*                      GetAssetIfExists(const Asset* a) const; //  @875720
     void                        _878030();  //  @878030
     void                        _877AE0();  //  @877AE0
-    bool                        _878220(Asset& asset);  //  @878220
+    bool                        _878220(Asset * asset);  //  @878220
     Asset*                      FindLoadedAsset(const char* const assetname);   //  @876140
     void                        InstantiateAssetsAndClearAssetsList();  //  @875EB0
 

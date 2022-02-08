@@ -22,14 +22,14 @@ void TextSlot::Register()
 {
     tTextSlot = new EntityType("TextSlot");
     tTextSlot->InheritFrom(tNode);
-    tTextSlot->SetCreator((EntityType::CREATOR)Create);
+    tTextSlot->SetCreator((CREATOR)Create);
 
-    tTextSlot->RegisterProperty(tSTRING, "textres", &GetTextRes, NULL, NULL, NULL, &SetTextRes, NULL, NULL, NULL, "control=resource|type=*.txt", NULL, NULL, -1);
-    tTextSlot->RegisterProperty(tINTEGER, "current_index", &GetCurrentIndex, NULL, NULL, NULL, &SetCurrentIndex, NULL, NULL, NULL, "control=slider|min=0|max=48", NULL, NULL, -1);
-    tTextSlot->RegisterProperty(tSTRING, "text_string_identifier", &GetTextStringIdentifier, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=string", NULL, NULL, -1);
-    tTextSlot->RegisterProperty(tINTEGER, "number_of_text_indices", &GetNumberOfTextIndicies, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tTextSlot->RegisterProperty(tSTRING, "current_text_content", &GetCurrentTextContent, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
-    tTextSlot->RegisterScript("Dump", &Dump, NULL, NULL, NULL, "control=button|text=dump", nullptr);
+    tTextSlot->RegisterProperty(tSTRING, "textres", (EntityGetterFunction)&GetTextRes, NULL, NULL, NULL, (EntitySetterFunction)&SetTextRes, NULL, NULL, NULL, "control=resource|type=*.txt", NULL, NULL, -1);
+    tTextSlot->RegisterProperty(tINTEGER, "current_index", (EntityGetterFunction)&GetCurrentIndex, NULL, NULL, NULL, (EntitySetterFunction)&SetCurrentIndex, NULL, NULL, NULL, "control=slider|min=0|max=48", NULL, NULL, -1);
+    tTextSlot->RegisterProperty(tSTRING, "text_string_identifier", (EntityGetterFunction)&GetTextStringIdentifier, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=string", NULL, NULL, -1);
+    tTextSlot->RegisterProperty(tINTEGER, "number_of_text_indices", (EntityGetterFunction)&GetNumberOfTextIndicies, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tTextSlot->RegisterProperty(tSTRING, "current_text_content", (EntityGetterFunction)&GetCurrentTextContent, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+    tTextSlot->RegisterScript("Dump", (EntityFunctionMember)&Dump, NULL, NULL, NULL, "control=button|text=dump", nullptr);
 
     tTextSlot->PropagateProperties();
 }

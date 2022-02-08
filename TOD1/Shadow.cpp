@@ -69,7 +69,7 @@ void Shadow::Register()
 {
     tShadow = new EntityType("Shadow");
     tShadow->InheritFrom(tNode);
-    tShadow->SetCreator((EntityType::CREATOR)Create);
+    tShadow->SetCreator((CREATOR)Create);
 }
 
 Shadow* Shadow::Create(AllocatorIndex)

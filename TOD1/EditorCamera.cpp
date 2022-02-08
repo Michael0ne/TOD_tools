@@ -52,8 +52,6 @@ EditorCamera* EditorCamera::Create(AllocatorIndex)
 
 void EditorCamera::Register()
 {
-    using CREATOR = EntityType::CREATOR;
-
     tEditorCamera = new EntityType("EditorCamera");
     tEditorCamera->InheritFrom(tCamera);
     tEditorCamera->SetCreator((CREATOR)Create);

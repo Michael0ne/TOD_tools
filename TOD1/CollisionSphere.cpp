@@ -63,11 +63,11 @@ void CollisionSphere::Register()
 {
     tCollisionSphere = new EntityType("CollisionSphere");
     tCollisionSphere->InheritFrom(tNode);
-    tCollisionSphere->SetCreator((EntityType::CREATOR)Create);
+    tCollisionSphere->SetCreator((CREATOR)Create);
 
-    tCollisionSphere->RegisterProperty(tNUMBER, "radius", &GetRadius, NULL, NULL, NULL, &SetRadius, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, 10);
-    tCollisionSphere->RegisterProperty(tNUMBER, "extrusion", &GetExtrusion, NULL, NULL, NULL, &SetExtrusion, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, 11);
-    tCollisionSphere->RegisterProperty(tINTEGER, "CollisionFlags", &GetCollisionFlags, NULL, NULL, NULL, &SetCollisionFlags, NULL, NULL, NULL, "control=flags|flag0=Solid|flag1=BulletProof|flag2=Opaque|flag3=CameraBlock|flag4=Trigger|flag5=NavigationBlock|flag6=Physics|flag7=Activate triggers", NULL, NULL, 12);
+    tCollisionSphere->RegisterProperty(tNUMBER, "radius", (EntityGetterFunction)&GetRadius, NULL, NULL, NULL, (EntitySetterFunction)&SetRadius, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, 10);
+    tCollisionSphere->RegisterProperty(tNUMBER, "extrusion", (EntityGetterFunction)&GetExtrusion, NULL, NULL, NULL, (EntitySetterFunction)&SetExtrusion, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, 11);
+    tCollisionSphere->RegisterProperty(tINTEGER, "CollisionFlags", (EntityGetterFunction)&GetCollisionFlags, NULL, NULL, NULL, (EntitySetterFunction)&SetCollisionFlags, NULL, NULL, NULL, "control=flags|flag0=Solid|flag1=BulletProof|flag2=Opaque|flag3=CameraBlock|flag4=Trigger|flag5=NavigationBlock|flag6=Physics|flag7=Activate triggers", NULL, NULL, 12);
 
     tCollisionSphere->PropagateProperties();
 }

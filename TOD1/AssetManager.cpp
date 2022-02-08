@@ -460,8 +460,12 @@ void AssetHeaderStruct_t::Header_t::_4011A0(char* key)
 #pragma message(TODO_IMPLEMENTATION)
 Asset* AssetManager::LoadResourceFile(const char* const respath)
 {
-    size_t respathlen = strlen(respath);
-    if (!respath || !*respath || !respathlen)
+    const size_t respathlen = strlen(respath);
+#ifdef INCLUDE_FIXES
+    if (!respath || !respath[0] || !respathlen)
+#else
+    if (!respathlen)
+#endif
         return nullptr;
 
     AssetInstance* assinst = AssetInstance::GetAssetInstanceByName(respath);
@@ -485,7 +489,7 @@ Asset* AssetManager::LoadResourceFile(const char* const respath)
     {
         Asset* asset = assinst->m_Creator();
         asset->SetResourcePath(respath);
-        _878220(*asset);
+        _878220(asset);
 
         return asset;
     }
@@ -737,30 +741,30 @@ void AssetManager::_877AE0()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-bool AssetManager::_878220(Asset& asset)
+bool AssetManager::_878220(Asset * asset)
 {    
     char assetdir[1024] = {};
     char assetfilename[256] = {};
     char assetext[16] = {};
 
-    File::ExtractFilePath(asset.m_ResourcePath, assetdir, assetfilename, assetext);
+    File::ExtractFilePath(asset->m_ResourcePath, assetdir, assetfilename, assetext);
 
     if (assetext && strcmp(assetext, "stream") == NULL)
-        strcpy(strstr(asset.m_ResourcePath, "stream"), "wav");
+        strcpy(strstr(asset->m_ResourcePath, "stream"), "wav");
 
-    if (!asset.m_ResourcePath || !*asset.m_ResourcePath)
+    if (!asset->m_ResourcePath || !*asset->m_ResourcePath)
         return false;
 
-    if (asset.m_ResourceTimestamp > NULL)
+    if (asset->m_ResourceTimestamp > NULL)
     {
         String resdir;
-        asset.GetResourcesDir(resdir, Asset::PlatformId::PC);
+        asset->GetResourcesDir(resdir, Asset::PlatformId::PC);
 
         if (!resdir.Empty())
             return false;
 
-        if (File::FindFileEverywhere(asset.m_ResourcePath))
-            if (asset.GetResourceCountryCode() != Script::GetCurrentCountryCode())
+        if (File::FindFileEverywhere(asset->m_ResourcePath))
+            if (asset->GetResourceCountryCode() != Script::GetCurrentCountryCode())
                 return false;
     }
 

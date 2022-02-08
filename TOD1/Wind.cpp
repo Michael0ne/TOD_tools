@@ -47,13 +47,13 @@ void Wind::Register()
 {
     tWind = new EntityType("Wind");
     tWind->InheritFrom(tNode);
-    tWind->SetCreator((EntityType::CREATOR)Create);
+    tWind->SetCreator((CREATOR)Create);
     
-    tWind->RegisterProperty(tNUMBER, "WindSpeed", &GetWindSpeed, NULL, NULL, NULL, &SetWindSpeed, NULL, NULL, NULL, "control=slider|min=0|max=10", NULL, NULL, -1);
-    tWind->RegisterProperty(tNUMBER, "WindFlux", &GetWindFlux, NULL, NULL, NULL, &SetWindFlux, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, -1);
-    tWind->RegisterProperty(tNUMBER, "WindFrenzy", &GetWindFrenzy, NULL, NULL, NULL, &SetWindFrenzy, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, -1);
-    tWind->RegisterProperty(tNUMBER, "FrenzyAngle", &GetFrenzyAngle, NULL, NULL, NULL, &SetFrenzyAngle, NULL, NULL, NULL, "control=slider|min=0|max=180", NULL, NULL, -1);
-    tWind->RegisterProperty(tNUMBER, "VariationSpeed", &GetVariationSpeed, NULL, NULL, NULL, &SetVariationSpeed, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, -1);
+    tWind->RegisterProperty(tNUMBER, "WindSpeed", (EntityGetterFunction)&GetWindSpeed, NULL, NULL, NULL, (EntitySetterFunction)&SetWindSpeed, NULL, NULL, NULL, "control=slider|min=0|max=10", NULL, NULL, -1);
+    tWind->RegisterProperty(tNUMBER, "WindFlux", (EntityGetterFunction)&GetWindFlux, NULL, NULL, NULL, (EntitySetterFunction)&SetWindFlux, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, -1);
+    tWind->RegisterProperty(tNUMBER, "WindFrenzy", (EntityGetterFunction)&GetWindFrenzy, NULL, NULL, NULL, (EntitySetterFunction)&SetWindFrenzy, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, -1);
+    tWind->RegisterProperty(tNUMBER, "FrenzyAngle", (EntityGetterFunction)&GetFrenzyAngle, NULL, NULL, NULL, (EntitySetterFunction)&SetFrenzyAngle, NULL, NULL, NULL, "control=slider|min=0|max=180", NULL, NULL, -1);
+    tWind->RegisterProperty(tNUMBER, "VariationSpeed", (EntityGetterFunction)&GetVariationSpeed, NULL, NULL, NULL, (EntitySetterFunction)&SetVariationSpeed, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, -1);
 
     tWind->PropagateProperties();
 

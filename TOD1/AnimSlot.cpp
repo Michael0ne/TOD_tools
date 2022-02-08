@@ -208,28 +208,28 @@ void AnimSlot::Register()
 {
     tAnimSlot = new EntityType("AnimSlot");
     tAnimSlot->InheritFrom(tNode);
-    tAnimSlot->SetCreator((EntityType::CREATOR)Create);
+    tAnimSlot->SetCreator((CREATOR)Create);
 
-    tAnimSlot->RegisterProperty(tSTRING, "target1", &GetTarget1, NULL, NULL, NULL, &SetTarget1, NULL, NULL, NULL, "control=resource|type=*.animation", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tINTEGER, "loopmode1", &GetLoopmode1, NULL, NULL, NULL, &SetLoopmode1, NULL, NULL, NULL, "control=dropdown|LOOP=0|ONESHOT=1|RANDOM=2", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tNUMBER, "speed", &GetSpeed, NULL, NULL, NULL, &SetSpeed, NULL, NULL, NULL, "control=slider|min=0|max=10", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tNUMBER, "crossblendspeed", &GetCrossBlendSpeed, NULL, NULL, NULL, &SetCrossBlendSpeed, NULL, NULL, NULL, "control=slider|min=0|max=10", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tNUMBER, "crossblendframes", &GetCrossBlendFrames, NULL, NULL, NULL, &SetCrossBlendFrames, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tTRUTH, "stallfirstframe", &GetShouldStallFirstFrame, NULL, NULL, NULL, &SetShouldStallFirstFrame, NULL, NULL, NULL, "control=truth", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tSTRING, "target1", (EntityGetterFunction)&GetTarget1, NULL, NULL, NULL, (EntitySetterFunction)&SetTarget1, NULL, NULL, NULL, "control=resource|type=*.animation", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tINTEGER, "loopmode1", (EntityGetterFunction)&GetLoopmode1, NULL, NULL, NULL, (EntitySetterFunction)&SetLoopmode1, NULL, NULL, NULL, "control=dropdown|LOOP=0|ONESHOT=1|RANDOM=2", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "speed", (EntityGetterFunction)&GetSpeed, NULL, NULL, NULL, (EntitySetterFunction)&SetSpeed, NULL, NULL, NULL, "control=slider|min=0|max=10", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "crossblendspeed", (EntityGetterFunction)&GetCrossBlendSpeed, NULL, NULL, NULL, (EntitySetterFunction)&SetCrossBlendSpeed, NULL, NULL, NULL, "control=slider|min=0|max=10", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "crossblendframes", (EntityGetterFunction)&GetCrossBlendFrames, NULL, NULL, NULL, (EntitySetterFunction)&SetCrossBlendFrames, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tTRUTH, "stallfirstframe", (EntityGetterFunction)&GetShouldStallFirstFrame, NULL, NULL, NULL, (EntitySetterFunction)&SetShouldStallFirstFrame, NULL, NULL, NULL, "control=truth", NULL, NULL, -1);
 
-    tAnimSlot->RegisterProperty(tNUMBER, "override_average_x", &GetOverrideAverageX, NULL, NULL, NULL, &SetOverrideAverageX, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tNUMBER, "override_average_y", &GetOverrideAverageY, NULL, NULL, NULL, &SetOverrideAverageY, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tNUMBER, "override_average_z", &GetOverrideAverageZ, NULL, NULL, NULL, &SetOverrideAverageZ, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "override_average_x", (EntityGetterFunction)&GetOverrideAverageX, NULL, NULL, NULL, (EntitySetterFunction)&SetOverrideAverageX, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "override_average_y", (EntityGetterFunction)&GetOverrideAverageY, NULL, NULL, NULL, (EntitySetterFunction)&SetOverrideAverageY, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "override_average_z", (EntityGetterFunction)&GetOverrideAverageZ, NULL, NULL, NULL, (EntitySetterFunction)&SetOverrideAverageZ, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
 
-    tAnimSlot->RegisterProperty(tNUMBER, "override_escape_x", &GetOverrideEscapeX, NULL, NULL, NULL, &SetOverrideEscapeX, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tNUMBER, "override_escape_y", &GetOverrideEscapeY, NULL, NULL, NULL, &SetOverrideEscapeY, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
-    tAnimSlot->RegisterProperty(tNUMBER, "override_escape_z", &GetOverrideEscapeZ, NULL, NULL, NULL, &SetOverrideEscapeZ, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "override_escape_x", (EntityGetterFunction)&GetOverrideEscapeX, NULL, NULL, NULL, (EntitySetterFunction)&SetOverrideEscapeX, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "override_escape_y", (EntityGetterFunction)&GetOverrideEscapeY, NULL, NULL, NULL, (EntitySetterFunction)&SetOverrideEscapeY, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tNUMBER, "override_escape_z", (EntityGetterFunction)&GetOverrideEscapeZ, NULL, NULL, NULL, (EntitySetterFunction)&SetOverrideEscapeZ, NULL, NULL, NULL, "control=slider|min=-10|max=10", NULL, NULL, -1);
 
-    tAnimSlot->RegisterProperty(tINTEGER, "anim_flags", &GetAnimFlags, NULL, NULL, NULL, &SetAnimFlags, NULL, NULL, NULL, "control=flags|flag0=freeze root node|flag1=override average z|flag2=override escape x|flag3=override escape y|flag4=override escape z|flag5=override average x|flag6=override all", NULL, NULL, -1);
+    tAnimSlot->RegisterProperty(tINTEGER, "anim_flags", (EntityGetterFunction)&GetAnimFlags, NULL, NULL, NULL, (EntitySetterFunction)&SetAnimFlags, NULL, NULL, NULL, "control=flags|flag0=freeze root node|flag1=override average z|flag2=override escape x|flag3=override escape y|flag4=override escape z|flag5=override average x|flag6=override all", NULL, NULL, -1);
 
-    tAnimSlot->RegisterScript("getgamepivotstartpos:vector", &GetGamePivotStartPos, NULL, NULL, NULL, nullptr, nullptr);
-    tAnimSlot->RegisterScript("getgamepivotendpos:vector", &GetGamePivotEndPos, NULL, NULL, NULL, nullptr, nullptr);
-    tAnimSlot->RegisterScript("getgamepivotpos(number):vector", &GetGamePivotPos, NULL, NULL, NULL, nullptr, nullptr);
+    tAnimSlot->RegisterScript("getgamepivotstartpos:vector", (EntityFunctionMember)&GetGamePivotStartPos, NULL, NULL, NULL, nullptr, nullptr);
+    tAnimSlot->RegisterScript("getgamepivotendpos:vector", (EntityFunctionMember)&GetGamePivotEndPos, NULL, NULL, NULL, nullptr, nullptr);
+    tAnimSlot->RegisterScript("getgamepivotpos(number):vector", (EntityFunctionMember)&GetGamePivotPos, NULL, NULL, NULL, nullptr, nullptr);
 
     tAnimSlot->PropagateProperties();
 }

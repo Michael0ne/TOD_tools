@@ -40,12 +40,12 @@ void Bone::Register()
 {
     tBone = new EntityType("Bone");
     tBone->InheritFrom(tNode);
-    tBone->SetCreator((EntityType::CREATOR)Create);
+    tBone->SetCreator((CREATOR)Create);
 
-    tBone->RegisterScript("setboneworldpos(vector)", &SetBoneWorldPos, NULL, NULL, NULL, nullptr, "SetBoneWorldPosMSG");
-    tBone->RegisterScript("setboneworldorient(quaternion)", &SetBoneWorldOrient, NULL, NULL, NULL, nullptr, "SetBoneWorldOrientMSG");
-    tBone->RegisterScript("setboneorient(quaternion)", &SetBoneOrient, NULL, NULL, NULL, nullptr, "SetBoneOrientMSG");
-    tBone->RegisterScript("setbonepos(vector)", &SetBonePos, NULL, NULL, NULL, nullptr, "SetBonePosMSG");
+    tBone->RegisterScript("setboneworldpos(vector)", (EntityFunctionMember)&SetBoneWorldPos, NULL, NULL, NULL, nullptr, "SetBoneWorldPosMSG");
+    tBone->RegisterScript("setboneworldorient(quaternion)", (EntityFunctionMember)&SetBoneWorldOrient, NULL, NULL, NULL, nullptr, "SetBoneWorldOrientMSG");
+    tBone->RegisterScript("setboneorient(quaternion)", (EntityFunctionMember)&SetBoneOrient, NULL, NULL, NULL, nullptr, "SetBoneOrientMSG");
+    tBone->RegisterScript("setbonepos(vector)", (EntityFunctionMember)&SetBonePos, NULL, NULL, NULL, nullptr, "SetBonePosMSG");
 
     tBone->PropagateProperties();
 }

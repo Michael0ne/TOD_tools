@@ -150,9 +150,9 @@ void AnimLayer::Register()
 {
     tAnimLayer = new EntityType("AnimLayer");
     tAnimLayer->InheritFrom(tNode);
-    tAnimLayer->SetCreator((EntityType::CREATOR)Create);
+    tAnimLayer->SetCreator((CREATOR)Create);
     
-    tAnimLayer->RegisterProperty(tTRUTH, "playing", &GetIsPlaying, NULL, NULL, NULL, &SetIsPlaying, NULL, NULL, NULL, nullptr, NULL, NULL, 10);
+    tAnimLayer->RegisterProperty(tTRUTH, "playing", (EntityGetterFunction)&GetIsPlaying, NULL, NULL, NULL, (EntitySetterFunction)&SetIsPlaying, NULL, NULL, NULL, nullptr, NULL, NULL, 10);
 }
 
 AnimLayer* AnimLayer::Create(AllocatorIndex)

@@ -35,7 +35,7 @@ void Model::Register()
 {
     tModel = new EntityType("Model");
     tModel->InheritFrom(tNode);
-    tModel->SetCreator((EntityType::CREATOR)Create);
+    tModel->SetCreator((CREATOR)Create);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

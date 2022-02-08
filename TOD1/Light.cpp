@@ -100,7 +100,7 @@ void Light::Register()
 {
     tLight = new EntityType("Light");
     tLight->InheritFrom(tNode);
-    tLight->SetCreator((EntityType::CREATOR)Create);
+    tLight->SetCreator((CREATOR)Create);
 
     tLight->PropagateProperties();
 }

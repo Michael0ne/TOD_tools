@@ -190,6 +190,12 @@ public:
     const char*         GetAttachment() const;  //  @90F9F0
     const char*         GetModelRes() const;    //  @9159E0
     void                SetModelRes(const char* const modelname);   //  @9147E0
+    const bool          IsFrozen() const;   //  @908140
+    void                SetIsFrozen(const bool frozen); //  @5AB010
+    const bool          IsBoneControl() const;  //  @7552B0
+    void                SetIsBoneControl(const bool bonecontrol);   //  @50B410
+    const float         GetOpacity() const; //  @4A5B90
+    void                SetOpacity(const float opacity);    //  @4A5BA0
 
     static void         Register(); //  @914A20
     static Character*   Create(AllocatorIndex); //  @9149A0

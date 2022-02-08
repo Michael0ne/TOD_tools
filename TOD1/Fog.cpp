@@ -28,13 +28,13 @@ void Fog::Register()
 {
     tFog = new EntityType("Fog");
     tFog->InheritFrom(tNode);
-    tFog->SetCreator((EntityType::CREATOR)Create);
+    tFog->SetCreator((CREATOR)Create);
 
-    tFog->RegisterProperty(tINTEGER, "fog_type", &GetFogType, 0, 0, 0, &SetFogType, 0, 0, 0, "control=string", 0, 0, -1);
-    tFog->RegisterProperty(tNUMBER, "start", &GetStart, 0, 0, 0, &SetStart, 0, 0, 0, "control=string", 0, 0, 10);
-    tFog->RegisterProperty(tNUMBER, "end", &GetEnd, 0, 0, 0, &SetEnd, 0, 0, 0, "control=string", 0, 0, 11);
-    tFog->RegisterProperty(tNUMBER, "density", &GetDensity, 0, 0, 0, &SetDensity, 0, 0, 0, "control=string", 0, 0, -1);
-    tFog->RegisterProperty(tVECTOR, "color_rgb", &GetColorRGB, 0, 0, 0, &SetColorRGB, 0, 0, 0, "control=colorrgb", 0, 0, 12);
+    tFog->RegisterProperty(tINTEGER, "fog_type", (EntityGetterFunction)&GetFogType, 0, 0, 0, (EntitySetterFunction)&SetFogType, 0, 0, 0, "control=string", 0, 0, -1);
+    tFog->RegisterProperty(tNUMBER, "start", (EntityGetterFunction)&GetStart, 0, 0, 0, (EntitySetterFunction)&SetStart, 0, 0, 0, "control=string", 0, 0, 10);
+    tFog->RegisterProperty(tNUMBER, "end", (EntityGetterFunction)&GetEnd, 0, 0, 0, (EntitySetterFunction)&SetEnd, 0, 0, 0, "control=string", 0, 0, 11);
+    tFog->RegisterProperty(tNUMBER, "density", (EntityGetterFunction)&GetDensity, 0, 0, 0, (EntitySetterFunction)&SetDensity, 0, 0, 0, "control=string", 0, 0, -1);
+    tFog->RegisterProperty(tVECTOR, "color_rgb", (EntityGetterFunction)&GetColorRGB, 0, 0, 0, (EntitySetterFunction)&SetColorRGB, 0, 0, 0, "control=colorrgb", 0, 0, 12);
 
     tFog->PropagateProperties();
 }

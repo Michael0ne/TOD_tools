@@ -158,7 +158,7 @@ void MoviePlayer::Register()
 {
     tMoviePlayer = new EntityType("MoviePlayer");
     tMoviePlayer->InheritFrom(tNode);
-    tMoviePlayer->SetCreator((EntityType::CREATOR)Create);
+    tMoviePlayer->SetCreator((CREATOR)Create);
 
 }
 

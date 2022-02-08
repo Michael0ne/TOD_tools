@@ -83,12 +83,12 @@ void CollisionBox::Register()
 {
     tCollisionBox = new EntityType("CollisionBox");
     tCollisionBox->InheritFrom(tNode);
-    tCollisionBox->SetCreator((EntityType::CREATOR)Create);
+    tCollisionBox->SetCreator((CREATOR)Create);
 
-    tCollisionBox->RegisterProperty(tNUMBER, "width", &GetWidth, NULL, NULL, NULL, &SetWidth, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, -1);
-    tCollisionBox->RegisterProperty(tNUMBER, "height", &GetHeight, NULL, NULL, NULL, &SetHeight, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, -1);
-    tCollisionBox->RegisterProperty(tNUMBER, "length", &GetLength, NULL, NULL, NULL, &SetLength, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, -1);
-    tCollisionBox->RegisterProperty(tINTEGER, "CollisionFlags", &GetCollisionFlags, NULL, NULL, NULL, &SetCollisionFlags, NULL, NULL, NULL, "control=flags|flag0=Solid|flag1=BulletProof|flag2=Opaque|flag3=CameraBlock|flag4=Trigger|flag5=NavigationBlock|flag6=Physics|flag7=Activate triggers", NULL, NULL, 10);
+    tCollisionBox->RegisterProperty(tNUMBER, "width", (EntityGetterFunction)&GetWidth, NULL, NULL, NULL, (EntitySetterFunction)&SetWidth, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, -1);
+    tCollisionBox->RegisterProperty(tNUMBER, "height", (EntityGetterFunction)&GetHeight, NULL, NULL, NULL, (EntitySetterFunction)&SetHeight, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, -1);
+    tCollisionBox->RegisterProperty(tNUMBER, "length", (EntityGetterFunction)&GetLength, NULL, NULL, NULL, (EntitySetterFunction)&SetLength, NULL, NULL, NULL, "control=slider|min=0|max=20", NULL, NULL, -1);
+    tCollisionBox->RegisterProperty(tINTEGER, "CollisionFlags", (EntityGetterFunction)&GetCollisionFlags, NULL, NULL, NULL, (EntitySetterFunction)&SetCollisionFlags, NULL, NULL, NULL, "control=flags|flag0=Solid|flag1=BulletProof|flag2=Opaque|flag3=CameraBlock|flag4=Trigger|flag5=NavigationBlock|flag6=Physics|flag7=Activate triggers", NULL, NULL, 10);
 
     tCollisionBox->PropagateProperties();
 }

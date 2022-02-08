@@ -25,5 +25,5 @@ void CharacterPlaceHolder::Register()
 {
     tCharacterPlaceHolder = new EntityType("CharacterPlaceHolder");
     tCharacterPlaceHolder->InheritFrom(tNode);
-    tCharacterPlaceHolder->SetCreator((EntityType::CREATOR)Create);
+    tCharacterPlaceHolder->SetCreator((CREATOR)Create);
 }

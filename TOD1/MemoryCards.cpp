@@ -53,30 +53,30 @@ void MemoryCards::Register()
 {
     tMemoryCards = new EntityType("MemoryCards");
     tMemoryCards->InheritFrom(tNode);
-    tMemoryCards->SetCreator((EntityType::CREATOR)Create);
+    tMemoryCards->SetCreator((CREATOR)Create);
 
-    tMemoryCards->RegisterProperty(tSTRING, "gamename", &GetGamename, 0, 0, 0, &SetGamename, 0, 0, 0, "control=string", 0, 0, -1);
-    tMemoryCards->RegisterProperty(tSTRING, "ps2sleslicense", &GetPs2SlesLicense, 0, 0, 0, &SetPs2SlesLicense, 0, 0, 0, "control=string", 0, 0, -1);
-    tMemoryCards->RegisterProperty(tSTRING, "ps2sluslicense", &GetPs2SlusLicense, 0, 0, 0, &SetPs2SlusLicense, 0, 0, 0, "control=string", 0, 0, -1);
-    tMemoryCards->RegisterProperty(tINTEGER, "savefilesize", &GetSaveFileSize, 0, 0, 0, &SetSaveFileSize, 0, 0, 0, nullptr, 0, 0, 10);
+    tMemoryCards->RegisterProperty(tSTRING, "gamename", (EntityGetterFunction)&GetGamename, 0, 0, 0, (EntitySetterFunction)&SetGamename, 0, 0, 0, "control=string", 0, 0, -1);
+    tMemoryCards->RegisterProperty(tSTRING, "ps2sleslicense", (EntityGetterFunction)&GetPs2SlesLicense, 0, 0, 0, (EntitySetterFunction)&SetPs2SlesLicense, 0, 0, 0, "control=string", 0, 0, -1);
+    tMemoryCards->RegisterProperty(tSTRING, "ps2sluslicense", (EntityGetterFunction)&GetPs2SlusLicense, 0, 0, 0, (EntitySetterFunction)&SetPs2SlusLicense, 0, 0, 0, "control=string", 0, 0, -1);
+    tMemoryCards->RegisterProperty(tINTEGER, "savefilesize", (EntityGetterFunction)&GetSaveFileSize, 0, 0, 0, (EntitySetterFunction)&SetSaveFileSize, 0, 0, 0, nullptr, 0, 0, 10);
 
-    tMemoryCards->RegisterScript("ispresent(integer):truth", &IsPresent, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("createsavepoint(integer,integer,entity,integer,entity)", &CreateSavePoint, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("restoresavepoint(integer,integer,entity)", &RestoreSavePoint, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("loadsavepointsummary(integer,integer,entity)", &LoadSavePointSummary, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("deletesavepoint(integer,integer):truth", &DeleteSavePoint, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("savepointoperationerror:integer", &SavePointOperationError, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("savepointexists(integer,integer):truth", &SavePointExists, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("preparecardforsavegames(integer):truth", &PrepareCardForSavegames, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("unpreparecardforsavegames(integer):truth", &UnPrepareCardForSavegames, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("iscardprepared(integer):truth", &IsCardPrepared, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("isformatted(integer):truth", &IsFormatted, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("formatcard(integer):truth", &FormatCard, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("unformatcard(integer):truth", &UnformatCard, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("getfreespace(integer):integer", &GetCardFreeSpace, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("getsavepointsize(integer,integer):integer", &GetSavePointSize, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("ispresent(integer):truth", (EntityFunctionMember)&IsPresent, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("createsavepoint(integer,integer,entity,integer,entity)", (EntityFunctionMember)&CreateSavePoint, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("restoresavepoint(integer,integer,entity)", (EntityFunctionMember)&RestoreSavePoint, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("loadsavepointsummary(integer,integer,entity)", (EntityFunctionMember)&LoadSavePointSummary, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("deletesavepoint(integer,integer):truth", (EntityFunctionMember)&DeleteSavePoint, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("savepointoperationerror:integer", (EntityFunctionMember)&SavePointOperationError, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("savepointexists(integer,integer):truth", (EntityFunctionMember)&SavePointExists, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("preparecardforsavegames(integer):truth", (EntityFunctionMember)&PrepareCardForSavegames, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("unpreparecardforsavegames(integer):truth", (EntityFunctionMember)&UnPrepareCardForSavegames, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("iscardprepared(integer):truth", (EntityFunctionMember)&IsCardPrepared, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("isformatted(integer):truth", (EntityFunctionMember)&IsFormatted, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("formatcard(integer):truth", (EntityFunctionMember)&FormatCard, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("unformatcard(integer):truth", (EntityFunctionMember)&UnformatCard, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("getfreespace(integer):integer", (EntityFunctionMember)&GetCardFreeSpace, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("getsavepointsize(integer,integer):integer", (EntityFunctionMember)&GetSavePointSize, 0, 0, 0, nullptr, nullptr);
     // TODO: 'GetLastModifiedTime' methods here.
-    tMemoryCards->RegisterScript("hascardchanged(integer):truth", &HasCardChanged, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("hascardchanged(integer):truth", (EntityFunctionMember)&HasCardChanged, 0, 0, 0, nullptr, nullptr);
 
     tMemoryCards->PropagateProperties();
 }

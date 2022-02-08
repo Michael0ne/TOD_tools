@@ -99,6 +99,10 @@ public:
 
 public:
     Scene(); // @896D40
+    virtual ~Scene();   //  @8971F0
+    virtual void Destroy() override;    //  @895E40
+    virtual void Update() override; //  @897450
+    virtual void Render() override; //  @896370
 
     void* operator new (size_t size)
     {
@@ -158,7 +162,8 @@ public:
     static float    RealTimePassed; // @A3DCC0
     static float    TimePassed; // @A3DCC4
     static UINT64   CreationTime; // @A3DD00
-    static int     *_A3CEE4; // @A3CEE4
+    static int     *_A3CEE4; // @A3CEE4 //  NOTE:   it looks like this stores entities properties with format (int, int*), 
+                                        //          where first int is a bitfield (propertyIndex, entity Id, entity block Id) and second is a pointer to the actual property value.
     static int     *_A3CEE8; // @A3CEE8
     static int      _A3DA80[100]; // @A3DA80
     static int      _A3D8D8[100]; // @A3D8D8
@@ -186,6 +191,7 @@ public:
     static unsigned int QuadTreesAllocated; //  @A3DD70
     static QuadTree*    QuadTrees;  //  @A3B580
     static short    _A120E8;    //  @A120E8
+    static int      _A3DD40;    //  @A3DD40
 
     static int      PreBlocksUnloadedCommand; // @A3DCF8
     static int      BlocksUnloadedCommand; // @A3DCFC

@@ -19,10 +19,10 @@ void Control::Register()
 {
     tControl = new EntityType("Control");
     tControl->InheritFrom(tNode);
-    tControl->SetCreator((EntityType::CREATOR)Create);
+    tControl->SetCreator((CREATOR)Create);
 
-    tControl->RegisterProperty(tINTEGER, "key", &GetKey, NULL, NULL, NULL, &SetKey, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
-    tControl->RegisterProperty(tSTRING, "keystr", &GetKeyStr, NULL, NULL, NULL, &SetKeyStr, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+    tControl->RegisterProperty(tINTEGER, "key", (EntityGetterFunction)&GetKey, NULL, NULL, NULL, (EntitySetterFunction)&SetKey, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
+    tControl->RegisterProperty(tSTRING, "keystr", (EntityGetterFunction)&GetKeyStr, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyStr, NULL, NULL, NULL, "control=string", NULL, NULL, -1);
 
     tControl->PropagateProperties();
 }

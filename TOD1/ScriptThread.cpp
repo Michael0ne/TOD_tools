@@ -4,6 +4,7 @@
 
 int ScriptThread::CurrentThread;
 ScriptThread* ScriptThread::Threads[100];
+bool ScriptThread::WarnDelayedException;
 
 ScriptThread::~ScriptThread()
 {

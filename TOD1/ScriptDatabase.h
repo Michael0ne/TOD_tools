@@ -147,10 +147,10 @@ public:
     bool                        HasPropertyId(const unsigned int propertyid) const; //  @489A30
     void                        CopyScriptParameters(Entity* entity);    //  @489BE0
 
-    class EntityType* AssignScriptToEntity(EntityType * parent); // @48A3F0
+    class EntityType*           AssignScriptToEntity(EntityType * parent); // @48A3F0
 
-    static GlobalScript* GetGlobalScriptByName(const char* name); // @48C590
-    static GlobalScript* GetGlobalScriptById(const unsigned int id); // @48C580
+    static GlobalScript*        GetGlobalScriptByName(const char* name); // @48C590
+    static GlobalScript*        GetGlobalScriptById(const unsigned int id); // @48C580
     static int                  GetScriptIdByName(const char* const name); // @48C910
     static void                 InstantiateGlobalScripts();  //  @48C960
     static void                 AssignCommonNodes();    //  @48C7D0

@@ -150,6 +150,7 @@ public:
     void                SetOrient(const Orientation& orient);   //  @88DB20
     Vector4f*           GetPos(Vector4f& outVec);   //  @483620
     void                GetWorldMatrix(DirectX::XMMATRIX& outMat) const;    //  @4842C0
+    Node*               GetParent() const;  //  @48F380
     void                SetParent(const Node* parent);  //  @88E9A0
     void                DestroyAddon(); //  @88EB00 //  NOTE: actually unused.
     void                SetName(const char* const name);   //  @88D610
