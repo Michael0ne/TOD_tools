@@ -120,8 +120,6 @@ public:
     void            FinishCreation(const char* logTitle); // @8935F0
     void            StoreGameCamera(); // @893480
     void            EnumSceneCamerasAndUpdate(); // @893870
-    void            UpdateLoadedBlocks(int unk1, Node* unk2); // @8986E0
-    void            _896810(); // @896810
     void            AllocateRewindBuffer(); // @894C50
     void            BuildSceneTree(); // @896BA0
     void            FreeRewindBuffer(); // @896CD0
@@ -149,6 +147,20 @@ public:
     void            SetInitMode(const char initmode);   //  @70EEA0
     float           GetWindSize() const;    //  @896110 //  NOTE: wind = rewind.
     void            _894810(const int index, const bool enabled);    //  @894810
+    const int       GetPlaymode() const;    //  @4B3FB0
+    const float     GetRewindResumeTime() const;    //  @892D30
+    const int       GetRewindResumeTimeMs() const;  //  @917880
+    void            SetWindMode(const int* args);   //  @892CC0
+    void            SetWindPause(const int* args);  //  @892CF0
+    void            SetPauseMode(const int* args);  //  @89A5A0
+    void            FlushRewind(const int* args);   //  @892D20
+    void            ResetGame(const int* args); //  @892D50
+    void            GetLoadedBlock(int* args);  //  @89A4F0
+    void            SetLoadedBlock(int* args);  //  @89A510
+    void            UpdateLoadedBlocks(int* args);  //  @89A810
+    void            UpdateLoadedBlocks_Impl(const int dummy, Node* callbackEntity); //  @8986E0
+    void            BuildFastFindNodeVector(int* args); //  @892CA0
+    void            DeleteFastFindNodeVector(int* args);    //  @892CB0
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4

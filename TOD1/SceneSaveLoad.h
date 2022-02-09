@@ -49,7 +49,7 @@ class SceneSaveLoad
     };
 
 private:
-    int*    field_0;
+    int*    field_0;    //  NOTE: pointer to the end of the SaveInfo's transaction buffer's end.
     SaveInfo   m_SaveInfo; // NOTE: this is used when WRITING savepoint data.
     ScenePlayMode  m_SavedPlayMode;
     ScenePlayMode  m_CurrentPlayMode;
@@ -82,8 +82,8 @@ public:
     bool    LoadSavePointData(class SavePoint*, EntityType*, class Node* readFinishedCb); // @874F40
     bool    CompressAndWriteSaveData(class SavePoint*, EntityType*); // @874A00
     bool    ResetGame(class Node** loadedBlocksArray); // @874D00
-    int*                _873BA0(const unsigned int nodeid); // @873BA0
-    void                _873C00(const unsigned int, const int* a2); // @873C00
+    int*    _873BA0(const unsigned int nodeid); // @873BA0
+    void    _873C00(const unsigned int, const int* a2); // @873C00
     void    Adapt(); // @873D30
     
     static bool   WriteDummySavePointData(class SavePoint* savepoint, unsigned int); // @8743F0

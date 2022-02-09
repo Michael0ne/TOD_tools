@@ -123,6 +123,12 @@ bool SceneSaveLoad::LoadSavePointData(class SavePoint* sp, EntityType* ent, clas
     return false;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+bool SceneSaveLoad::ResetGame(Node** loadedBlocksArray)
+{
+    return false;
+}
+
 int* SceneSaveLoad::_873BA0(const unsigned int nodeid)
 {
     if (!Scene::SceneInstance)

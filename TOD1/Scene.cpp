@@ -13,6 +13,10 @@
 #include "ModelAsset.h"
 #include "CollisionList.h"
 #include "NumberType.h"
+#include "TruthType.h"
+#include "IntegerType.h"
+#include "SceneSaveLoad.h"
+#include "StreamedSoundBuffers.h"
 
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
@@ -487,6 +491,23 @@ void Scene::SetInitMode(const char initmode)
     m_InitMode = initmode;
 }
 
+float Scene::GetWindSize() const
+{
+    if (!m_RewindBuffer1 || !m_RewindBuffer2)
+        return 0.f;
+
+    int windsize1 = m_RewindBuffer1->m_List_1.size() ? m_RewindBuffer1->m_List_1.end()->m_WindSize : NULL;
+    int windsize2 = m_RewindBuffer2->m_List_1.size() ? m_RewindBuffer2->m_List_1.end()->m_WindSize : NULL;
+
+    if (!windsize1 || !windsize2)
+        return 0.f;
+
+    if (windsize1 > windsize2)
+        windsize2 = windsize1;
+
+    return (GameTimeMs - windsize2) * 0.001f;
+}
+
 void Scene::_894810(const int index, const bool enabled)
 {
     if (index == -1)
@@ -499,14 +520,97 @@ void Scene::_894810(const int index, const bool enabled)
         *(int*)&(m_CollisionListList[index]->m_Owner) &= ~1;
 }
 
+const int Scene::GetPlaymode() const
+{
+    return m_PlayMode;
+}
+
+const float Scene::GetRewindResumeTime() const
+{
+    return (float)(m_RewindResumeTimeMs * 0.001f);
+}
+
+const int Scene::GetRewindResumeTimeMs() const
+{
+    return m_RewindResumeTimeMs;
+}
+
+void Scene::SetWindMode(const int* args)
+{
+    field_1A8 = *args != false;
+    m_WindMode = *args == false;
+}
+
+void Scene::SetWindPause(const int* args)
+{
+    field_1AA = *args != false;
+    m_WindPause = *args == false;
+}
+
+void Scene::SetPauseMode(const int* args)
+{
+    if (*args)
+    {
+        m_PlayMode = MODE_PAUSED;
+        StoreGameCamera();
+    }
+    else
+    {
+        if (m_PlayMode == MODE_PAUSED)
+            m_PlayMode = MODE_INGAME;
+        StoreGameCamera();
+    }
+}
+
+void Scene::FlushRewind(const int* args)
+{
+    m_FlushRewindRequested = true;
+}
+
+void Scene::ResetGame(const int* args)
+{
+    Node* blocks[6] = {};
+    g_SceneSaveLoad->ResetGame(blocks);
+}
+
+void Scene::GetLoadedBlock(int* args)
+{
+    *args = (int)m_LoadedBlocks[args[1]];
+}
+
+void Scene::SetLoadedBlock(int* args)
+{
+    LoadMap(args[0], (Node*)args[1]);
+}
+
+void Scene::UpdateLoadedBlocks(int* args)
+{
+    UpdateLoadedBlocks_Impl(1, (Node*)args[0]);
+}
+
 #pragma message(TODO_IMPLEMENTATION)
+void Scene::UpdateLoadedBlocks_Impl(const int dummy, Node* callbackEntity)
+{
+    g_StreamedSoundBuffers->MeasureWaitForSoftPause();
+}
+
+void Scene::BuildFastFindNodeVector(int* args)
+{
+    g_AssetManager->BuildFastFindNodeVector();
+}
+
+void Scene::DeleteFastFindNodeVector(int* args)
+{
+    g_AssetManager->DeleteFastFindNodeVector();
+}
+
 void Scene::Start()
 {
     if (m_PlayMode != MODE_UNKNOWN_1)
         return;
 
     m_PlayMode = MODE_INGAME;
-    UpdateLoadedBlocks(1, 0);
+    UpdateLoadedBlocks_Impl(1, nullptr);
     EnumSceneCamerasAndUpdate();
     RealTimeMs = NULL;
     GameTimeMs = NULL;
@@ -514,13 +618,11 @@ void Scene::Start()
     TotalFrames = NULL;
     NewFrameNumber = NULL;
 
-    // FIXME: this is stupid! Make something about it, like templated structure for passing parameters...
-    //const char* params[] = { NULL, "start" };
-    //tBuiltin->GetMessageId(params);
-    //if ((int)params[0] >= 0)
-     //TriggerScriptForAllChildren((int)params[0], this, nullptr);
+    const int startCommandId = GetCommandByName("start");
+    if (startCommandId >= 0)
+        TriggerScriptForAllChildren(startCommandId, this, nullptr);
 
-    _896810();
+    InstantiateAssetsToLists();
     g_SceneSaveLoad->_874940();
 
     if (IsRewindBufferInUse)
@@ -597,7 +699,7 @@ void Scene::Load(const char* sceneName)
         LoadingAssetBlock = false;
         alloctotalbefore = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
         LogDump::LogA("asset block took %0.1f Kb\n", (mainAssetAllocMem - MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations()) * 0.0009765625f);
-        }
+    }
 
     LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load main asset block", Timer::GetMilliseconds() - m_StartTimeMs, Timer::GetMilliseconds() - m_StartTimeMs);
 
@@ -663,7 +765,7 @@ void Scene::Load(const char* sceneName)
     NewFrameNumber = 0;
     InstantiateAssetsToLists();
     g_Progress->Complete();
-        }
+}
 
 void Scene::FinishCreation(const char* logTitle)
 {
@@ -726,17 +828,6 @@ void Scene::EnumSceneCamerasAndUpdate()
     }
 
     StoreGameCamera();
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-void Scene::UpdateLoadedBlocks(int unk1, Node* unk2)
-{
-    // NOTE: this is potentially a method that updates current scenery objects.
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-void Scene::_896810()
-{
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -808,15 +899,30 @@ void Scene::TriggerScriptForAllChildren(int scriptId, Node* node, int* args)
         TriggerScriptForAllChildren(scriptId, n, args);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Scene::Register()
 {
     tScene = new EntityType("Scene");
     tScene->InheritFrom(tNode);
     tScene->SetCreator((CREATOR)Create);
 
-    // TODO: register properties/scripts.
-    tScene->RegisterProperty(tNUMBER, "timemultiplier", (EntityGetterFunction)&GetTimeMultiplier, NULL, NULL, NULL, (EntitySetterFunction)&SetTimeMultiplier, NULL, NULL, NULL, nullptr, NULL, NULL, 10);
+    tScene->RegisterProperty(tNUMBER, "timemultiplier", (EntityGetterFunction)&GetTimeMultiplier, (EntitySetterFunction)&SetTimeMultiplier, nullptr, 10);
+    tScene->RegisterProperty(tNUMBER, "rewindtimemultiplier", (EntityGetterFunction)&GetRewindTimeMultiplier, (EntitySetterFunction)&SetRewindTimeMultiplier, nullptr, NULL);
+    tScene->RegisterProperty(tTRUTH, "initmode", (EntityGetterFunction)&GetInitMode, (EntitySetterFunction)&SetInitMode, nullptr, NULL);
+    tScene->RegisterProperty(tNUMBER, "windsize", (EntityGetterFunction)&GetWindSize, nullptr, nullptr, NULL);
+    tScene->RegisterProperty(tINTEGER, "playmode", (EntityGetterFunction)&GetPlaymode, nullptr, nullptr, NULL);
+    tScene->RegisterProperty(tNUMBER, "rewindresumetime", (EntityGetterFunction)&GetRewindResumeTime, nullptr, nullptr, NULL);
+    tScene->RegisterProperty(tINTEGER, "rewindresumetime_ms", (EntityGetterFunction)&GetRewindResumeTimeMs, nullptr, nullptr, NULL);
+
+    tScene->RegisterScript("setwindmode(truth)", (EntityFunctionMember)&SetWindMode, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("setwindpause(truth)", (EntityFunctionMember)&SetWindPause, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("setpausemode(truth)", (EntityFunctionMember)&SetPauseMode, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("flushrewind", (EntityFunctionMember)&FlushRewind, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("ResetGame", (EntityFunctionMember)&ResetGame, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("getloadedblock(integer):entity", (EntityFunctionMember)&GetLoadedBlock, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("setloadedblock(integer,entity)", (EntityFunctionMember)&SetLoadedBlock, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("updateloadedblocks(entity)", (EntityFunctionMember)&UpdateLoadedBlocks, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("buildfastfindnodevector", (EntityFunctionMember)&BuildFastFindNodeVector, NULL, NULL, NULL, nullptr, nullptr);
+    tScene->RegisterScript("deletefastfindnodevector", (EntityFunctionMember)&DeleteFastFindNodeVector, NULL, NULL, NULL, nullptr, nullptr);
 
     PreBlocksUnloadedCommand = RegisterGlobalCommand("pre_blocks_unloaded", true);
     BlocksUnloadedCommand = RegisterGlobalCommand("blocks_unloaded", true);

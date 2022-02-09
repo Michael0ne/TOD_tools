@@ -104,6 +104,12 @@ public:
             m_LocalPropertiesList.insert(m_LocalPropertiesList.begin() + (propertyind - field_6C), propinfo);
         }
     }
+
+    void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, EntitySetterFunction setterptr, const char* const editorcontrolstring, const int propertyind)
+    {
+        RegisterProperty(returntype, propertyname, getterptr, NULL, NULL, NULL, setterptr, NULL, NULL, NULL, editorcontrolstring, NULL, NULL, propertyind);
+    }
+
     void    PropagateProperties(); // @86E9B0
     bool    HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
 

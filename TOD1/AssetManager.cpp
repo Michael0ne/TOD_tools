@@ -155,6 +155,11 @@ void AssetManager::BuildFastFindNodeVector()
     m_FastFindNodeVector.push_back(ffi);
 }
 
+void AssetManager::DeleteFastFindNodeVector()
+{
+    m_FastFindNodeVector.clear();
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void AssetManager::FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi)
 {

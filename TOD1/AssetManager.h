@@ -193,6 +193,7 @@ public:
     void                        DecreaseResourceReferenceCount(Asset*); // @875330
     const char*                 GetCurrentSceneName() const;
     void                        BuildFastFindNodeVector(); // @877DA0
+    void                        DeleteFastFindNodeVector(); //  @876340
     void                        FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi); // @877B00 // NOTE: this goes through 'baseNode' children and fills vector.
     Asset*                      LoadResourceFile(const char* const respath); // @878AB0
     void*                       LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid); // @8759E0
