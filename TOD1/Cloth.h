@@ -29,7 +29,6 @@ protected:
             unsigned    AllwaysUpdate : 1;
             unsigned    AddBlend : 1;
         };
-        unsigned int    m_Flags;
     }                   m_Flags;
     std::vector<int>    m_List_1;
     std::vector<int>    m_List_2;
@@ -56,14 +55,39 @@ public:
         ptr = nullptr;
     }
 
+    const char          GetActiveTextureSet() const;    //  @929D20
+    void                SetActiveTextureSet(const char set);    //  @92A490
+    const int           GetNumberOfTexturesSets() const;    //  @929E20
+    const float         GetOpacity() const; //  @89AD10
+    void                SetOpacity(const float opacity);    //  @8D5040
+    const bool          ShouldAddBlend() const; //  @929CF0
+    void                SetShouldAddBlend(const bool add);  //  @929D00
+    const char*         GetModelRes() const;    //  @92B4E0
+    void                SetModelRes(const char* modelres);  //  @92AA30
+    const float         GetWeight() const;  //  @905860
+    void                SetWeight(const float weight);    //  @92B500
+    const float         GetWindInfluence() const;   //  @905880
+    void                SetWindInfluence(const float influence);    //  @929C50
+    const float         GetDamping() const; //  @905870
+    void                SetDamping(const float damping);    //  @929C30
+    const int           GetIterations() const;  //  @929C90
+    void                SetIterations(const char iterations);    //  @929C70
+    const float         GetBoundingRadius() const;  //  @905800
+    void                SetBoundingRadius(const float radius);  //  @929CA0
+    const bool          ShouldAlwaysUpdate() const; //  @929CE0
+    void                SetShouldAlwaysUpdate(const bool update);   //  @929CC0
+    void                ApplyImpulse(int* args);    //  @92B530
+
     static void         Register(); //  @92B0C0
 
 private:
-    void                ApplyImpulse(const Vector4f& v1, const Vector4f& v2, const float force);    //  @929E60
+    void                ApplyImpulse_Impl(const Vector4f& v1, const Vector4f& v2, const float force);    //  @929E60
 
     static Cloth*       Create(AllocatorIndex); //  @92B5A0
 
     static const float  MaximumImpulse; //  @9D722C
 };
+
+extern EntityType* tCloth;  //  @A3E180
 
 ASSERT_CLASS_SIZE(Cloth, 180);

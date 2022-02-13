@@ -6,6 +6,8 @@ class SkinnedMeshBuffer;
 class ModelAsset : public Asset
 {
     friend class Model;
+    friend class Cloth;
+
 public:
     struct TextureSet
     {

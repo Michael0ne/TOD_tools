@@ -9,6 +9,8 @@ class SkinnedMeshBuffer
 {
     friend class Model;
     friend class ModelAsset;
+    friend class Cloth;
+
 protected:
     MeshBuffer         *m_MeshBuffer;
     Mesh               *m_Mesh;

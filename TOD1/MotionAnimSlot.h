@@ -167,7 +167,7 @@ public:
         ptr = nullptr;
     }
 
-    static void         Register(); //  @918700
+    static void             Register(); //  @918700
     static MotionAnimSlot*  Create(AllocatorIndex); //  @9186C0
 };
 

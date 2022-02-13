@@ -63,7 +63,7 @@ public:
         m_Creator = creator;
     };
 
-    void RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7) // @86EC70
+    void RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3 = 0, const int a4 = 0, const int a5 = 0, const char* const editorcontrolstr = nullptr, const char* const a7 = nullptr) // @86EC70
     {
         const int commandId = RegisterGlobalCommand(scriptname, true);
 
@@ -105,7 +105,7 @@ public:
         }
     }
 
-    void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, EntitySetterFunction setterptr, const char* const editorcontrolstring, const int propertyind)
+    void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, EntitySetterFunction setterptr, const char* const editorcontrolstring, const int propertyind = -1)
     {
         RegisterProperty(returntype, propertyname, getterptr, NULL, NULL, NULL, setterptr, NULL, NULL, NULL, editorcontrolstring, NULL, NULL, propertyind);
     }

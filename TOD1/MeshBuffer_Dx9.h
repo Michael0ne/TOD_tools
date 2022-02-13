@@ -62,6 +62,7 @@ public:
     void                GetNormalFromVertexBuffer(Vector4f& outNormal, const unsigned int vertexindex) const;   //  @44BD70
     void                SetPositionAndNormal(const unsigned int vertexindex, const Vector3f& pos, const Vector3f& norm);    //  @44BDC0
     const unsigned short    GetFaceIndex(const unsigned int vertexindex) const;  //  @44BE60
+    void                LockDataBuffers(const int lockmode);    //  @44BCC0
 
     static void         CreateStaticVertexDeclaration();    //  @461D30
 

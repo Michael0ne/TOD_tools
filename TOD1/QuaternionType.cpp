@@ -15,13 +15,13 @@ QuaternionType::~QuaternionType()
     MESSAGE_CLASS_DESTROYED(QuaternionType);
 }
 
-void* QuaternionType::stub3(void* a1) const
+void* QuaternionType::ReturnNew(void* a1) const
 {
     *(Orientation*)a1 = BuiltinType::Orient;
     return a1;
 }
 
-String& QuaternionType::stub6(String& outstr, void* val, int precision) const
+String& QuaternionType::PrintFormattedValue(String& outstr, void* val, int precision) const
 {
     char _outstr[16] = {};
 
@@ -44,7 +44,7 @@ String& QuaternionType::stub6(String& outstr, void* val, int precision) const
     }
 }
 
-int QuaternionType::stub7(char* a1, void* a2) const
+int QuaternionType::StrToType(char* a1, void* a2) const
 {
     int digitsread = ParseFloatNumberString(a1, (float*)a2);
     if (digitsread < 0)
@@ -82,19 +82,19 @@ int QuaternionType::stub7(char* a1, void* a2) const
     return digitsread + digitsread_2 + digitsread_3 + digitsread_4;
 }
 
-void QuaternionType::stub13(int a1, void* a2, int a3, int a4, int a5, void* const a6) const
+void QuaternionType::stub13(int a1, int(__thiscall* procptr)(void*, void*), int a3, int a4, int a5, void* const outResult) const
 {
     int* retval = nullptr;
 
     if (a5)
-        retval = ((int* (__thiscall*)(int, int))a2)(a1 + a3 + a4 + *(int*)(*(int*)(a4 + a1) + a5), (int)a2);
+        retval = (int*)procptr((void*)(a1 + a3 + a4 + *(int*)(*(int*)(a1 + a4))), nullptr);
     else
-        retval = ((int* (__thiscall*)(int, int))a2)(a3 + a1, (int)a2);
+        retval = (int*)procptr((void*)(a1 + a3), nullptr);
 
-    *(int*)a6 = *retval;
-    *((int*)a6 + 1) = retval[1];
-    *((int*)a6 + 2) = retval[2];
-    *((int*)a6 + 3) = retval[3];
+    *(int*)outResult = *retval;
+    *((int*)outResult + 1) = retval[1];
+    *((int*)outResult + 2) = retval[2];
+    *((int*)outResult + 3) = retval[3];
 }
 
 void QuaternionType::stub14(int* a1, int a2, void* a3, int a4, int a5, int a6) const
@@ -115,7 +115,7 @@ void QuaternionType::stub14(int* a1, int a2, void* a3, int a4, int a5, int a6) c
         ((void(__thiscall*)(int, int**))_a3)(_a4 + a2, (int**)&a3);
 }
 
-bool QuaternionType::stub16(void* a1, void* a2) const
+bool QuaternionType::NotEqualTo(void* a1, void* a2) const
 {
     float a = 0.f;
     float b = 0.f;
@@ -150,7 +150,7 @@ bool QuaternionType::stub16(void* a1, void* a2) const
     return _A3A064 < a;
 }
 
-void QuaternionType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const
+void QuaternionType::ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const
 {
     *a4 = 0;
 
@@ -306,7 +306,7 @@ void QuaternionType::stub17(const char* const operation, int* outopid, DataType*
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void QuaternionType::stub18(int operationId, void* params) const
+void QuaternionType::PerformOperation(int operationId, void* params) const
 {
     switch (operationId)
     {
@@ -325,10 +325,10 @@ void QuaternionType::stub18(int operationId, void* params) const
     }
     break;
     case 1:
-        *(bool*)params = stub15((int*)params + 5, (int*)params + 1);
+        *(bool*)params = AreEqual((int*)params + 5, (int*)params + 1);
         break;
     case 2:
-        *(bool*)params = stub16((int*)params + 5, (int*)params + 1);
+        *(bool*)params = NotEqualTo((int*)params + 5, (int*)params + 1);
         break;
     case 3:
     {
@@ -513,7 +513,7 @@ void QuaternionType::stub18(int operationId, void* params) const
     }
 }
 
-bool QuaternionType::stub20(void* a1) const
+bool QuaternionType::IsValidValueForType(void* a1) const
 {
     return (!isnan(*(float*)a1)) &&
         (!isnan(*((float*)a1 + 1))) &&

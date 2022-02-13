@@ -42,6 +42,46 @@
 #include "CollisionBox.h"
 #include "CollisionSphere.h"
 #include "GuideBox.h"
+#include "BuiltinType.h"
+#include "MockupBox.h"
+#include "Character.h"
+#include "Bone.h"
+#include "AnimSlot.h"
+#include "MotionAnimSlot.h"
+#include "MotionLayer.h"
+#include "CutscenePlayer.h"
+#include "WayPoint.h"
+#include "TrackPoint.h"
+#include "Navigator.h"
+#include "SignPost.h"
+#include "RigidBody.h"
+#include "OverdoseVehicle.h"
+#include "StretchModel.h"
+#include "Cloth.h"
+#include "GFXEffect.h"
+#include "Shadow.h"
+#include "LensFlare.h"
+#include "LensFlareManager.h"
+#include "DecalManager.h"
+#include "SurroundGeometry.h"
+#include "DynamicSurroundGeometry.h"
+#include "TextBox.h"
+#include "Bullet.h"
+#include "SoundSlot.h"
+#include "SoundEmitter.h"
+#include "StaticLighting.h"
+#include "MoviePlayer.h"
+#include "ParticleSystem.h"
+#include "GeometryEffect.h"
+#include "ProfilerInput.h"
+#include "RealtimeFolder.h"
+#include "BuiltinType.h"
+#include "PlaceHolder.h"
+#include "CharacterPlaceHolder.h"
+#include "HavocPlaceHolder.h"
+#include "GoodiePlaceHolder.h"
+#include "WeaponPlaceHolder.h"
+#include "MemoryCards.h"
 
 namespace Script
 {
@@ -633,7 +673,6 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 #endif
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void KapowEngineClass::InitEntitiesDatabase()
 {
     Entity::Register();
@@ -645,7 +684,6 @@ void KapowEngineClass::InitEntitiesDatabase()
     Model::Register();
     Folder_::Register();
     Scene::Register();
-    /*
     MockupBox::Register();
     EditorCamera::Register();
     Character::Register();
@@ -655,28 +693,23 @@ void KapowEngineClass::InitEntitiesDatabase()
     AnimLayer::Register();
     CutscenePlayer::Register();
     MotionLayer::Register();
-    */
     CollisionBox::Register();
     CollisionSphere::Register();
-    /*WayPoint::Register();
+    WayPoint::Register();
     TrackPoint::Register();
     Navigator::Register();
     SignPost::Register();
-    */
     Track::Register();
     ControlSetup::Register();
     Control::Register();
     Group::Register();
     CollisionProbe::Register();
-    /*
     RigidBody::Register();
     OverdoseVehicle::Register();
     StretchModel::Register();
-    */
     SkyBox::Register();
     Fog::Register();
     Wind::Register();
-    /*
     Cloth::Register();
     GFXEffect::Register();
     Shadow::Register();
@@ -685,35 +718,28 @@ void KapowEngineClass::InitEntitiesDatabase()
     DecalManager::Register();
     SurroundGeometry::Register();
     DynamicSurroundGeometry::Register();
-    */
     Light::Register();
-    /*
     Sprite::Register();
     TextBox::Register();
-    */
     TextSlot::Register();
     GuideBox::Register();
-    /*
     Bullet::Register();
     SoundSlot::Register();
     SoundEmitter::Register();
     StaticLighting::Register();
     MoviePlayer::Register();
     ParticleSystem::Register();
-    */
     GEKeyFrame::Register();
-    /*
     GeometryEffect::Register();
     ProfilerInput::Register();
     RealtimeFolder::Register();
-    ScriptType_Builtin::Register();
+    BuiltinType::Register();
     PlaceHolder::Register();
     CharacterPlaceHolder::Register();
     HavocPlaceHolder::Register();
     GoodiePlaceHolder::Register();
     WeaponPlaceHolder::Register();
     MemoryCards::Register();
-    */
     LoadScreenNode::Register();
 
     m_PropertiesBuiltinChecksum = GetGlobalPropertyListChecksum();

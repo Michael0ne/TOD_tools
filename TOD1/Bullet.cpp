@@ -1,6 +1,11 @@
 #include "Bullet.h"
+#include "NumberType.h"
+#include "IntegerType.h"
 
-Bullet* tBullet = nullptr;
+EntityType* tBullet;
+
+int Bullet::TakeAHitCommand;
+int Bullet::BulletImpactCommand;
 
 #pragma message(TODO_IMPLEMENTATION)
 Bullet::~Bullet()
@@ -31,7 +36,7 @@ Bullet::Bullet()
     m_DamageType = NULL;
     m_ImpulseMultiplier = 1.0f;
     m_BulletShellsTotal = 10;
-    field_138 = NULL;
+    m_CurrentBulletShellsNumber = NULL;
 
     for (unsigned int i = 0; i < m_BulletShellsTotal; i++)
     {
@@ -58,9 +63,90 @@ void Bullet::ClearShells()
     }
 }
 
+const float Bullet::GetSpeed() const
+{
+    return m_Speed;
+}
+
+void Bullet::SetSpeed(const float speed)
+{
+    m_Speed = speed;
+}
+
+const float Bullet::GetRange() const
+{
+    return m_Range;
+}
+
+void Bullet::SetRange(const float range)
+{
+    m_Range = range;
+}
+
+const int Bullet::GetDamageType() const
+{
+    return m_DamageType;
+}
+
+void Bullet::SetDamageType(const int damagetype)
+{
+    m_DamageType = damagetype;
+}
+
+const float Bullet::GetImpulseMultiplier() const
+{
+    return m_ImpulseMultiplier;
+}
+
+void Bullet::SetImpulseMultiplier(const float multiplier)
+{
+    m_ImpulseMultiplier = multiplier;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Bullet::Shoot_Impl(const Vector4f& inVec1, const Vector4f& inVec2, EntityType* ignoredNode1, bool a4, bool a5, const float a6, const int iterations, const int a8, const int a9, bool a10, const float speedMultiplier, EntityType* ignoredNode2)
+{
+    if (iterations <= 0)
+        return;
+
+    for (int i = iterations; i; --i);
+    {
+        BulletShell& bs = m_BulletShellsList[m_CurrentBulletShellsNumber];
+    }
+}
+
+void Bullet::Shoot(int* args)
+{
+    const Vector4f vec1(args[0], args[1], args[2], 0);
+    const Vector4f vec2(args[3], args[4], args[5], 0);
+    EntityType* ent = (EntityType*)args[6];
+    EntityType* ent2 = (EntityType*)args[15];
+
+    Shoot_Impl(vec1, vec2, ent, args[7], args[8], args[9], args[10], args[11], args[12], args[13], args[14], ent2);
+}
+
 Bullet* Bullet::Create(AllocatorIndex)
 {
     return new Bullet();
+}
+
+void Bullet::Register()
+{
+    tBullet = new EntityType("Bullet");
+    tBullet->InheritFrom(tModel);
+    tBullet->SetCreator((CREATOR)Create);
+
+    tBullet->RegisterProperty(tNUMBER, "speed", (EntityGetterFunction)&GetSpeed, (EntitySetterFunction)&SetSpeed, "control=slider|min=0|max=100");
+    tBullet->RegisterProperty(tNUMBER, "range", (EntityGetterFunction)&GetRange, (EntitySetterFunction)&SetRange, "control=slider|min=0|max=500");
+    tBullet->RegisterProperty(tINTEGER, "damage_type", (EntityGetterFunction)&GetDamageType, (EntitySetterFunction)&SetDamageType, "control=autodropdown|DamageType");
+    tBullet->RegisterProperty(tNUMBER, "impulse_multiplier", (EntityGetterFunction)&GetImpulseMultiplier, (EntitySetterFunction)&SetImpulseMultiplier, "control=string");
+
+    tBullet->RegisterScript("shoot(vector,vector,entity,truth,truth,number,integer,integer,number,truth,number,entity)", (EntityFunctionMember)&Shoot, NULL, NULL, NULL, nullptr, nullptr);
+
+    Bullet::TakeAHitCommand = RegisterGlobalCommand("take_a_hit(number,entity,entity,entity,vector,vector,integer)", true);
+    Bullet::BulletImpactCommand = RegisterGlobalCommand("bullet_impact(entity,entity,integer,vector,vector,vector,entity,integer)", true);
+
+    tBullet->PropagateProperties();
 }
 
 Bullet::BulletShell::BulletShell()

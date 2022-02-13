@@ -17,8 +17,6 @@ protected:
     String&         MakeSaveSlotString(String& outStr, unsigned int slotind) const; // @926540
     const char* const GetSaveDirectory(const unsigned int slot) const;  //  @926940
 
-    static void     Register(); // @9281B0
-
 private:
     static MemoryCards* Create(AllocatorIndex allocInd); // @928F90
 
@@ -59,6 +57,8 @@ public:
     virtual ~MemoryCards(); //  @928A10
 
     unsigned int    GetLastModifiedTimeAsNumber(unsigned int memcardind, unsigned int slotind) const; // @928090
+
+    static void     Register(); // @9281B0
 };
 
 extern EntityType* tMemoryCards; // @A3E178

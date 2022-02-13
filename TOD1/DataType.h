@@ -40,31 +40,31 @@ public:
     };
 
 public:
-    String   m_TypeName;
-    ScriptTypeId m_TypeId;
-    unsigned int m_Size;
-    unsigned int m_GlobalId;
+    String          m_TypeName;
+    ScriptTypeId    m_TypeId;
+    unsigned int    m_Size;
+    unsigned int    m_GlobalId;
 
-    virtual   ~DataType(); // @867A70
-    virtual int  stub2(int*, int*); // @489370
-    virtual void* stub3(void*) const; // NOTE: this pointer type is actually class-dependent. Returns zero (default value?).
-    virtual void stub4(char*);
-    virtual void stub5(int*, int*); // @4893A0
-    virtual String& stub6(String&, void*, int) const; // @862F50 // NOTE: lowest word is number of digits after dot, highest - total number of digits.
-    virtual int  stub7(char*, void*) const; // @862AA0
-    virtual int  stub8(char*); // @489410
-    virtual int  stub9(char*, char*); // @863760
-    virtual int  stub10(char*, char*); // @863760
-    virtual int  stub11(char*, String&, int); // @8637F0
-    virtual int  stub12(char*, char*, int*); // @862A50
-    virtual void stub13(int, void*, int, int, int, void* const) const;
-    virtual void stub14(int*, int, void*, int, int, int) const;
-    virtual bool stub15(void*, void*) const; // @7A1F00
-    virtual bool stub16(void*, void*) const; // @862AB0
-    virtual void stub17(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const; // @8637D0 // NOTE: possible name is 'ParseOperationString'.
-    virtual void stub18(int operationId, void* params) const; // @8C4D60 // NOTE: possible name is 'PerformOperation'.
-    virtual char stub19(int, int); // @8637E0
-    virtual bool stub20(void*) const; // @489440 // NOTE: possible name is 'IsValidValueForType'.
+    virtual         ~DataType(); // @867A70
+    virtual int     stub2(int*, int*); // @489370  //  NOTE: increments the second argument's array value with index being this type's ID by type size.
+    virtual void*   ReturnNew(void*) const; // NOTE: probably 'operator new'. Returns new instance of the type into the first argument. Placement new.
+    virtual void    Delete(char*);  //  NOTE: destroys an object at first argument.
+    virtual void    stub5(int*, int*); // @4893A0  //  NOTE: essentialy, an '=' operator overload, copies object into the second argument. Both arguments should be of the same type.
+    virtual String& PrintFormattedValue(String&, void*, int) const; // @862F50 // NOTE: lowest word is number of digits after dot, highest - total number of digits.
+    virtual int     StrToType(char*, void*) const; // @862AA0  //  NOTE: parse string and pass it to second argument as it's the underlying type.
+    virtual int     stub8(char*); // @489410
+    virtual int     stub9(char*, char*); // @863760    //  NOTE: copy first argument into second, store additional information in second argument.
+    virtual int     Copy(char*, char*); // @863760
+    virtual int     stub11(char*, String&, int); // @8637F0
+    virtual int     stub12(char*, char*, int*); // @862A50
+    virtual void    stub13(int, int (__thiscall*procptr)(void*, void*), int, int, int, void* const outResult) const;   //  NOTE: execute procptr and return result into result variable.
+    virtual void    stub14(int*, int, void*, int, int, int) const;
+    virtual bool    AreEqual(void*, void*) const; // @7A1F00
+    virtual bool    NotEqualTo(void*, void*) const; // @862AB0
+    virtual void    ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const; // @8637D0
+    virtual void    PerformOperation(int operationId, void* params) const; // @8C4D60
+    virtual char    stub19(int, int); // @8637E0
+    virtual bool    IsValidValueForType(void*) const; // @489440
 
 private:
     void   _4893C0(int*, int*, int); // @4893C0

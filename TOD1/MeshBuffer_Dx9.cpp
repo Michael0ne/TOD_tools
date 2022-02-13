@@ -73,6 +73,12 @@ const unsigned short MeshBuffer_Dx9::GetFaceIndex(const unsigned int vertexindex
 	return m_IndexBuffer->GetBufferPtr()[vertexindex];
 }
 
+void MeshBuffer_Dx9::LockDataBuffers(const int lockmode)
+{
+	m_VertexBuffer->LockAndGetBufferPtr(lockmode);
+	m_IndexBuffer->LockAndGetBufferPtr(lockmode);
+}
+
 void MeshBuffer_Dx9::CreateStaticVertexDeclaration()
 {
 	D3DVERTEXELEMENT9 Vert1[] =

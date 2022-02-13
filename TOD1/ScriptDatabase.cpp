@@ -1128,7 +1128,7 @@ void GlobalScript::ClearEntityProperties(Entity* ent)
     if (m_PropertiesList.size())
     {
         for (unsigned int i = 0; i < m_PropertiesList.size(); ++i)
-            m_PropertiesList[i].m_Info->m_PropertyType->stub4((char*)&ent->m_Parameters[m_PropertiesList[i].m_Offset]);
+            m_PropertiesList[i].m_Info->m_PropertyType->Delete((char*)&ent->m_Parameters[m_PropertiesList[i].m_Offset]);
 
         delete ent->m_Parameters;
     }
@@ -1168,9 +1168,9 @@ void GlobalScript::CopyScriptParameters(Entity* entity)
 
     for (unsigned int i = 0; i < m_PropertiesList.size(); ++i)
         if (m_PropertiesList[i].m_DefaultValue)
-            m_PropertiesList[i].m_Info->m_PropertyType->stub7(m_PropertiesList[i].m_DefaultValue, &parameters[m_PropertiesList[i].m_Offset]);
+            m_PropertiesList[i].m_Info->m_PropertyType->StrToType(m_PropertiesList[i].m_DefaultValue, &parameters[m_PropertiesList[i].m_Offset]);
         else
-            m_PropertiesList[i].m_Info->m_PropertyType->stub3(&parameters[m_PropertiesList[i].m_Offset]);
+            m_PropertiesList[i].m_Info->m_PropertyType->ReturnNew(&parameters[m_PropertiesList[i].m_Offset]);
 
     if (m_PropertiesBlocksTotal)
         memset(parameters, NULL, m_PropertiesBlocksTotal * sizeof(*parameters));

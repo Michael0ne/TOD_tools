@@ -56,6 +56,19 @@ void OverdoseVehicle::Instantiate()
     RigidBody::Instantiate();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void OverdoseVehicle::Register()
+{
+    tOverdoseVehicle = new EntityType("OverdoseVehicle");
+    tOverdoseVehicle->InheritFrom(tRigidBody);
+    tOverdoseVehicle->SetCreator((CREATOR)Create);
+
+    //tOverdoseVehicle->RegisterProperty(tVECTOR, "current_velocity", (EntityGetterFunction)&GetCurrentVelocity, (EntitySetterFunction)&SetCurrentVelocity, nullptr);
+    //tOverdoseVehicle->RegisterProperty(tNUMBER, "spring_k", (EntityGetterFunction)&GetSpringKoefficient, (EntitySetterFunction)&SetSpringKoefficient, nullptr, 26);
+
+    tOverdoseVehicle->PropagateProperties();
+}
+
 void OverdoseVehicle::CalculateNormalisedDirection(Vector4f& outDirection) const
 {
     const float d = (m_FrontPointT.x - m_RearPointT.x) + (m_FrontPointT.z - m_RearPointT.z) + (m_FrontPointT.y - m_FrontPointT.y);

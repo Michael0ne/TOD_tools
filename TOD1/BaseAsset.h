@@ -20,6 +20,13 @@ public:
         LoadAssetByName(name);
     };
 
+    inline AssetLoader()
+    {
+        MESSAGE_CLASS_CREATED(AssetLoader);
+
+        field_4 = (int*)1;
+    }
+
     ~AssetLoader();  //  NOTE: destructor inlined (should be).
 
     void* operator new(size_t size)

@@ -2,6 +2,7 @@
 #include "StringsPool.h"
 #include "Texture.h"
 #include <vector>
+#include <map>
 
 class Font
 {
@@ -21,16 +22,8 @@ class Font
     {
         unsigned int    m_TotalGlyphs;
         unsigned int    field_4;
-        Glyph          *m_ActualGlyphsArray;
-        void           *field_C;
-    };
-
-    struct Fld50
-    {
-        int             field_0;
-        int            *field_4;
-        int            *field_8;
-        int            *field_C;
+        Glyph          *m_GlyphsInfoArray;
+        const unsigned int   *m_FontColorsTable;
     };
 
 private:
@@ -51,9 +44,9 @@ private:
     int                 field_38;
     Texture            *m_FontTexture;
     std::vector<Glyph>  m_GlyphsList;
-    Fld50              *field_50;   //  NOTE: this is a pointer to some sort of list.
+    std::map<short, Glyph*> *m_GlyphsMap;   //  NOTE: key - character index, value - pointer to a glyph information.
     int                 field_54;
-    float               field_58;
+    float               m_GlyphsTotalWidth;
     float               field_5C;
     float               field_60;
 
@@ -72,6 +65,7 @@ public:
     }
 
     void                CreateBakedFont(const GlyphInfo& GlyphsInfo);   //  @41E6D0
+    void                FillGlyphMapInfo(); //  @41E4B0
 
     static void         MakeCharactersMap(GlyphInfo& GlyphsInfo);   //  @938E10
 
@@ -79,6 +73,7 @@ public:
     static const float  _9B38D8; //  @9B38D8
     static GlyphInfo    GlyphsInfo;    //  @A1B698
     static Glyph        Glyphs[138];    //  @A5D5C0
+    static const unsigned int GlyphsColorsArray[8192];    //  @A13698
 };
 
 extern Font* g_Font;

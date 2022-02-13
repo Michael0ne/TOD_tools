@@ -6,7 +6,7 @@ int Shadow::TotalShadows;
 Vector4f Shadow::_A12B70 = { 1000, 1000, 1000, 0 };
 std::vector<Vector4f> Shadow::_A12B60;
 std::vector<int> Shadow::_A3E09C;
-int* Shadow::_A3E090;
+MeshBuffer* Shadow::ShadowMeshBuffer;
 
 EntityType* tShadow;
 
@@ -30,7 +30,7 @@ void Shadow::Destroy()
     TotalShadows--;
 
     if (TotalShadows == 1)
-        delete _A3E090;
+        delete ShadowMeshBuffer;
 
     delete m_FrameBuffer_1;
     delete m_FrameBuffer_2;

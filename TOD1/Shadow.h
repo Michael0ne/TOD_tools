@@ -53,7 +53,7 @@ private:
     static Vector4f _A12B70;    //  @A12B70
     static std::vector<Vector4f> _A12B60;    //  @A12B60    //  NOTE: a list of closest shadow points?
     static std::vector<int> _A3E09C;    //  @A3E09C
-    static int     *_A3E090;    //  @A3E090
+    static MeshBuffer      *ShadowMeshBuffer;    //  @A3E090
 
     static Shadow*  Create(AllocatorIndex);  //  @8F1D20
 };

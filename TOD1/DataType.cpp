@@ -43,12 +43,12 @@ int DataType::stub2(int* a1, int* a2)
     return m_Size * 4;
 }
 
-void* DataType::stub3(void*) const
+void* DataType::ReturnNew(void*) const
 {
     return nullptr;
 }
 
-void DataType::stub4(char*)
+void DataType::Delete(char*)
 {
     return;
 }
@@ -58,13 +58,13 @@ void DataType::stub5(int* a1, int* a2)
     _4893C0(a1, a2, m_Size);
 }
 
-String& DataType::stub6(String& outstr, void*, int) const
+String& DataType::PrintFormattedValue(String& outstr, void*, int) const
 {
     outstr = {};
     return outstr;
 }
 
-int DataType::stub7(char*, void*) const
+int DataType::StrToType(char*, void*) const
 {
     return -1;
 }
@@ -73,8 +73,8 @@ int DataType::stub8(char* a1)
 {
     char str[16] = {};
 
-    int result = stub10(a1, str);
-    stub4(str);
+    int result = Copy(a1, str);
+    Delete(str);
 
     return result;
 }
@@ -113,7 +113,7 @@ int DataType::stub9(char* a1, char* a2)
     return m_Size;
 }
 
-int DataType::stub10(char* a1, char* a2)
+int DataType::Copy(char* a1, char* a2)
 {
     return stub9(a1, a2);
 }
@@ -123,9 +123,9 @@ int DataType::stub11(char* a1, String& a2, int a3)
     char str[16] = {};
     String str1;
 
-    int result = stub10(a1, str);
-    a2 = stub6(str1, str, a3);
-    stub4(str);
+    int result = Copy(a1, str);
+    a2 = PrintFormattedValue(str1, str, a3);
+    Delete(str);
 
     return result;
 }
@@ -134,14 +134,14 @@ int DataType::stub12(char* a1, char* a2, int* a3)
 {
     char str[16] = {};
 
-    int result = stub7(a1, str);
+    int result = StrToType(a1, str);
     *a3 = stub9(str, a2);
-    stub4(str);
+    Delete(str);
 
     return result;
 }
 
-void DataType::stub13(int, void*, int, int, int, void* const) const
+void DataType::stub13(int, int (__thiscall*procptr)(void*, void*), int, int, int, void* const outResult) const
 {
     return;
 }
@@ -151,22 +151,22 @@ void DataType::stub14(int*, int, void*, int, int, int) const
     return;
 }
 
-bool DataType::stub15(void* a1, void* a2) const
+bool DataType::AreEqual(void* a1, void* a2) const
 {
-    return stub16(a1, a2) == false;
+    return NotEqualTo(a1, a2) == false;
 }
 
-bool DataType::stub16(void* a1, void* a2) const
+bool DataType::NotEqualTo(void* a1, void* a2) const
 {
     return true;
 }
 
-void DataType::stub17(const char* const operation, int* outopid, DataType** outoprestype, char*) const
+void DataType::ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char*) const
 {
     *outopid = -1;
 }
 
-void DataType::stub18(int operationId, void* params) const
+void DataType::PerformOperation(int operationId, void* params) const
 {
     return;
 }
@@ -176,7 +176,7 @@ char DataType::stub19(int a1, int a2)
     return true;
 }
 
-bool DataType::stub20(void*) const
+bool DataType::IsValidValueForType(void*) const
 {
     return true;
 }
