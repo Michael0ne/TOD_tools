@@ -290,6 +290,16 @@ const bool Model::GetDepthSorted() const
     return m_ModelFlags.m_FlagBits.DepthSorted;
 }
 
+void Model::SetLightingFromAsset(AssetLoader* assload, Folder_* associatedFolderPtr)
+{
+    m_ModelLighting = (MeshColorAsset*)assload->m_AssetPtr;
+    m_AssocFolder = associatedFolderPtr;
+
+    TryInstantiate();
+
+    m_Id._3 = true;
+}
+
 Model* Model::Create(AllocatorIndex)
 {
     return new Model();

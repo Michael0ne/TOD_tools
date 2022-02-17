@@ -1,9 +1,9 @@
-class MarcoDist : public GlobalScript
+class MarcoDist : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("MarcoDist", "Node", false, false);
+		static Scriptbaked* inst = new Scriptbaked("MarcoDist", "Node", false, false);
 		
 		inst->AddStructElement(GetScriptIdByFullName("MarcoDist:number"), "10.000000", NULL);
 		

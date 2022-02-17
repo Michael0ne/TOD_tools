@@ -1,9 +1,9 @@
-class Pathtype : public GlobalScript
+class Pathtype : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("Pathtype", "Node", false, false);
+		static Scriptbaked* inst = new Scriptbaked("Pathtype", "Node", false, false);
 
 		inst->AddStructElement(GetScriptIdByFullName("PathType:integer"), "0", NULL);
 

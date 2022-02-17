@@ -14,14 +14,14 @@ std::vector<GlobalProperty>  GlobalPropertiesList;
 std::map<String, unsigned int> GlobalPropertiesMap;
 std::vector<GlobalCommand>  GlobalCommandsList;
 std::map<String, unsigned int> GlobalCommandsMap;
-std::vector<GlobalScript*> GlobalScript::ScriptsList;
-std::vector<Node*> GlobalScript::SceneScriptEntitiesList;
+std::vector<Scriptbaked*> Scriptbaked::ScriptsList;
+std::vector<Node*> Scriptbaked::SceneScriptEntitiesList;
 
 unsigned int GlobalPropertyListChecksum;
 bool   GlobalPropertyListChecksumObtained;
 unsigned int GlobalCommandListChecksum;
 bool   GlobalCommandListChecksumObtained;
-DataType*       GlobalScriptsArray[410];
+DataType* GlobalScriptsArray[410];
 Node* CacheScriptNode;
 Node* CommonScriptNode;
 Node* CommonAnimSlotScriptNode;
@@ -861,19 +861,19 @@ void LoadScripts()
     GlobalScriptsArray[15] = DataType::LoadScript("s_uniquecombomove");
     GlobalScriptsArray[221] = DataType::LoadScript("s_ctrlbone");
     GlobalScriptsArray[400] = DataType::LoadScript("random_sound");
-    
+
     // NOTE: register game scripts.
     //  TODO: probably, these should be moved on top of this source file, only call actual Create functions here.
-    #include "scripts/common.h"
-    #include "scripts/HUD_health_bar.h"
-    #include "scripts/master_mission_ctrl.h"
-    #include "scripts/Trigger_Activate_Weapons.h"
-    #include "scripts/Hydrant_Root.h"
-    #include "scripts/Ladder_Root.h"
-    #include "scripts/Magnet.h"
-    #include "scripts/MarcoDist.h"
-    #include "scripts/Pathtype.h"
-    // TODO: much much more.
+#include "scripts/common.h"
+#include "scripts/HUD_health_bar.h"
+#include "scripts/master_mission_ctrl.h"
+#include "scripts/Trigger_Activate_Weapons.h"
+#include "scripts/Hydrant_Root.h"
+#include "scripts/Ladder_Root.h"
+#include "scripts/Magnet.h"
+#include "scripts/MarcoDist.h"
+#include "scripts/Pathtype.h"
+// TODO: much much more.
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)
         GetGlobalCommandListChecksum();
@@ -932,10 +932,10 @@ void GlobalCommand::AddArgumentType(DataType* argtype)
 {
 #ifdef INCLUDE_FIXES
     if (!argtype)
-{
-    LogDump::LogA("GlobalCommand::AddArgumentType(\"%s\") empty DataType argument passed!\n", m_CommandName);
-    return;
-}
+    {
+        LogDump::LogA("GlobalCommand::AddArgumentType(\"%s\") empty DataType argument passed!\n", m_CommandName);
+        return;
+    }
 #endif
     String emptystr;
     m_Arguments.m_ArgumentsList.emplace_back(emptystr, argtype, m_Arguments.m_TotalSizeBytes);
@@ -954,7 +954,7 @@ void GlobalCommand::GetReturnTypeString(String& outStr)
         strcpy(buf, m_ArgumentsString);
         strcat(buf, ":");
         strcat(buf, m_Arguments.m_ArgumentsList[0].m_ScriptType->m_TypeName.m_Str);
-        
+
         size_t buflen = strlen(buf);
 
         delete[] m_ArgumentsString;
@@ -1021,7 +1021,7 @@ GlobalCommand::GlobalCommand(const char* const commandname, const unsigned int c
                 }
                 else
 #endif     
-                AddArgumentType(argscripttype);
+                    AddArgumentType(argscripttype);
                 tok = strtok(NULL, ",");
             }
         }
@@ -1041,7 +1041,7 @@ GlobalCommand::~GlobalCommand()
     delete m_CommandName;
 }
 
-GlobalScript::GlobalScript(const char* const scriptName, const char* const parentName, bool a3, bool a4)
+Scriptbaked::Scriptbaked(const char* const scriptName, const char* const parentName, bool a3, bool a4)
 {
     m_ScriptSize = 0;
     field_5C = field_5C & 0xFFFFFFFC | (a3 != 0) | (2 * (a4 != 0));
@@ -1054,12 +1054,12 @@ GlobalScript::GlobalScript(const char* const scriptName, const char* const paren
     field_60 = 0;
 }
 
-void GlobalScript::AddStructElement(const int fieldId, const char* const defaultValue, const int a3)
+void Scriptbaked::AddStructElement(const int fieldId, const char* const defaultValue, const int a3)
 {
 #ifdef INCLUDE_FIXES
     if (fieldId == -1)
     {
-        LogDump::LogA("GlobalScript::AddStructElement(%d, \"%s\", %d) FAILED!\n", fieldId, defaultValue, a3);
+        LogDump::LogA("Scriptbaked::AddStructElement(%d, \"%s\", %d) FAILED!\n", fieldId, defaultValue, a3);
         return;
     }
 #endif
@@ -1067,12 +1067,12 @@ void GlobalScript::AddStructElement(const int fieldId, const char* const default
     m_PropertiesList.push_back({ &GlobalProperty::GetById(fieldId), m_PropertiesValues.size(), (char*)defaultValue, a3 });
 }
 
-void GlobalScript::AddMethod(short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*))
+void Scriptbaked::AddMethod(short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*))
 {
     m_MethodsList.push_back({ methodid, 0, scriptthreadhandler, methodptr });
 }
 
-void GlobalScript::CalculateSize()
+void Scriptbaked::CalculateSize()
 {
     m_PropertiesBlocksTotal = ((2 * m_PropertiesList.size() + 31) / 32);
     m_ScriptSize = m_ScriptSize + m_PropertiesBlocksTotal;
@@ -1106,7 +1106,7 @@ void GlobalScript::CalculateSize()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-bool GlobalScript::_48A7E0(Node* node, int scriptId, void* args)
+bool Scriptbaked::_48A7E0(Node* node, int scriptId, void* args)
 {
     if (scriptId == -1)
         return false;
@@ -1123,7 +1123,7 @@ bool GlobalScript::_48A7E0(Node* node, int scriptId, void* args)
     return false;
 }
 
-void GlobalScript::ClearEntityProperties(Entity* ent)
+void Scriptbaked::ClearEntityProperties(Entity* ent)
 {
     if (m_PropertiesList.size())
     {
@@ -1134,20 +1134,20 @@ void GlobalScript::ClearEntityProperties(Entity* ent)
     }
 }
 
-class EntityType* GlobalScript::GetScriptEntity() const
+class EntityType* Scriptbaked::GetScriptEntity() const
 {
     char buf[256] = {};
     sprintf(buf, "%s(%s)", m_Name.m_Str, m_BaseEntity->m_TypeName.m_Str);
-    
+
     return DataType::GetScriptEntityByName(buf);
 }
 
-const int GlobalScript::GetPropertiesListSize() const
+const int Scriptbaked::GetPropertiesListSize() const
 {
     return m_PropertiesList.size();
 }
 
-void GlobalScript::GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue)
+void Scriptbaked::GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue)
 {
     unsigned int propertyvaluesize = m_PropertiesList[propertyindex].m_Info->m_PropertyType->m_Size;
     int* entpropertyvalue = &ent->m_Parameters[m_PropertiesList[propertyindex].m_Offset];
@@ -1157,14 +1157,14 @@ void GlobalScript::GetEntityPropertyValue(Entity* ent, const unsigned int proper
             *outPropValue++ = *entpropertyvalue++;
 }
 
-bool GlobalScript::HasPropertyId(const unsigned int propertyid) const
+bool Scriptbaked::HasPropertyId(const unsigned int propertyid) const
 {
     return m_PropertiesValues.find(propertyid) != m_PropertiesValues.end();
 }
 
-void GlobalScript::CopyScriptParameters(Entity* entity)
+void Scriptbaked::CopyScriptParameters(Entity* entity)
 {
-    int *parameters = new int[m_ScriptSize];
+    int* parameters = new int[m_ScriptSize];
 
     for (unsigned int i = 0; i < m_PropertiesList.size(); ++i)
         if (m_PropertiesList[i].m_DefaultValue)
@@ -1178,7 +1178,29 @@ void GlobalScript::CopyScriptParameters(Entity* entity)
     entity->m_Parameters = parameters;
 }
 
-EntityType* GlobalScript::AssignScriptToEntity(EntityType * parent)
+void Scriptbaked::GetMethodParams(void(*methodPtr)(void*), std::vector<DataType*>& outParams) const
+{
+    if (!m_ParametersList.size())
+        return;
+
+    int paramOffset = 0;
+    for (unsigned int i = 0; i < m_ParametersList.size(); ++i, paramOffset++)
+        if (m_ParametersList[i].m_ProcPtr == methodPtr)
+            break;
+
+    if (paramOffset >= m_ParametersList.size())
+        return;
+
+    for (; paramOffset < m_ParametersList.size(); ++paramOffset)
+    {
+        if (m_ParametersList[paramOffset].m_ProcPtr != methodPtr || !m_ParametersList[paramOffset].m_ParamType)
+            break;
+
+        outParams.push_back(m_ParametersList[paramOffset].m_ParamType);
+    }
+}
+
+EntityType* Scriptbaked::AssignScriptToEntity(EntityType* parent)
 {
     if (!m_BaseEntity)
         return nullptr;
@@ -1229,7 +1251,7 @@ EntityType* GlobalScript::AssignScriptToEntity(EntityType * parent)
     return ent;
 }
 
-GlobalScript* GlobalScript::GetGlobalScriptByName(const char* name)
+Scriptbaked* Scriptbaked::GetGlobalScriptByName(const char* name)
 {
     if (!name || !*name)
         return nullptr;
@@ -1245,12 +1267,12 @@ GlobalScript* GlobalScript::GetGlobalScriptByName(const char* name)
     return nullptr;
 }
 
-GlobalScript* GlobalScript::GetGlobalScriptById(const unsigned int id)
+Scriptbaked* Scriptbaked::GetGlobalScriptById(const unsigned int id)
 {
     return ScriptsList[id];
 }
 
-int GlobalScript::GetScriptIdByName(const char* const name)
+int Scriptbaked::GetScriptIdByName(const char* const name)
 {
     if (ScriptsList.size() <= 0)
         return -1;
@@ -1263,7 +1285,7 @@ int GlobalScript::GetScriptIdByName(const char* const name)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void GlobalScript::InstantiateGlobalScripts()
+void Scriptbaked::InstantiateGlobalScripts()
 {
     if (!Scene::SceneInstance)
         return;
@@ -1286,7 +1308,7 @@ void GlobalScript::InstantiateGlobalScripts()
     AssignCommonNodes();
 }
 
-void GlobalScript::AssignCommonNodes()
+void Scriptbaked::AssignCommonNodes()
 {
     if (ScriptsList.size() > 0 && ScriptsList.size() > SceneScriptEntitiesList.size())
         SceneScriptEntitiesList.resize(ScriptsList.size());
@@ -1316,7 +1338,7 @@ void GlobalScript::AssignCommonNodes()
     }
 }
 
-unsigned int GlobalScript::GetScriptIdByFullName(const char* const name)
+unsigned int Scriptbaked::GetScriptIdByFullName(const char* const name)
 {
     // TODO: there's a trouble when looking for an Entity-specific properties. Take that into account?
     const char* ddpos = strchr(name, ':');

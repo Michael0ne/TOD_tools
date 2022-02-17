@@ -13,7 +13,7 @@ public:
     enum PlayMode
     {
         MODE_INGAME = 0,
-        MODE_UNKNOWN_1 = 1,
+        MODE_STOP = 1,
         MODE_PAUSED = 2,
         MODE_REWIND = 3
     };
@@ -161,6 +161,7 @@ public:
     void            UpdateLoadedBlocks_Impl(const int dummy, Node* callbackEntity); //  @8986E0
     void            BuildFastFindNodeVector(int* args); //  @892CA0
     void            DeleteFastFindNodeVector(int* args);    //  @892CB0
+    void            UnloadLoadedFolders();  //  @8953E0
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4
@@ -200,10 +201,17 @@ public:
         int             field_1C;
     };
 
+    struct EntityReference
+    {
+        int            *m_AddressRegionBeginPtr;
+        int            *m_AddressRegionEndPtr;
+    };
+
     static unsigned int QuadTreesAllocated; //  @A3DD70
     static QuadTree*    QuadTrees;  //  @A3B580
     static short    _A120E8;    //  @A120E8
     static int      _A3DD40;    //  @A3DD40
+    static std::vector<EntityReference>* DanglingEntityReferences;  //  @A3CEEC
 
     static int      PreBlocksUnloadedCommand; // @A3DCF8
     static int      BlocksUnloadedCommand; // @A3DCFC

@@ -43,8 +43,7 @@ protected:
             unsigned char   ViewAllSlotIndices : 1;
             unsigned char   UseGlyphIgnoreColor : 1;
             unsigned char   ScaleIfWidescreen : 1;
-        }           m_FlagsBits;
-        unsigned int    m_Flags;
+        };
     }               m_Flags;
 
 public:

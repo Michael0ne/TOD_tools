@@ -394,7 +394,7 @@ DataType* DataType::LoadScript(const char* script)
             if (!rettype)
                 return nullptr;
 
-            GlobalScript* glob_script = GlobalScript::GetGlobalScriptByName(script_name.m_Str);
+            Scriptbaked* glob_script = Scriptbaked::GetGlobalScriptByName(script_name.m_Str);
             if (!glob_script)
             {
                 LogDump::LogA("Unable to load script '%s'\n", script_name.m_Str);
@@ -481,7 +481,7 @@ void DataType::ClearScriptLists()
 
 void DataType::ClearGlobalScriptList()
 {
-    GlobalScript::ScriptsList.clear();
+    Scriptbaked::ScriptsList.clear();
 }
 
 unsigned int DataType::GetTypesListChecksum()

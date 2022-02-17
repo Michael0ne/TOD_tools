@@ -43,6 +43,8 @@ public:
 
     const int       GetBlockId() const; // @87E630
     void            SetBlockId(unsigned int blockid); // @87E6A0
+    void            FixDanglingAssets(AssetInfo* assinfo);  //  @87EB90
+    void            UnloadAssets(); //  @87F000
 
     static void  Register(); // @87E810
     static Folder_* Create(); // @87E730

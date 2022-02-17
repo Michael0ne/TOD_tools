@@ -1,9 +1,9 @@
-class master_mission_ctrl : public GlobalScript
+class master_mission_ctrl : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("master_mission_ctrl", "Node", false, true);
+		static Scriptbaked* inst = new Scriptbaked("master_mission_ctrl", "Node", false, true);
 
 		inst->AddStructElement(GetScriptIdByFullName("Base_Type:integer"), nullptr, 0);
 		inst->AddStructElement(GetScriptIdByFullName("Show_Data:truth"), nullptr, 0);

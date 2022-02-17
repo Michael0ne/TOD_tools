@@ -40,7 +40,8 @@ class EntityType : public DataType
 public:
     CREATOR             m_Creator;
     EntityType         *m_Parent;
-    GlobalScript       *m_Script;
+    Scriptbaked        *m_Script;
+
 protected:
     std::map<unsigned short, ScriptInfo> m_ScriptsList; // NOTE: each 'derived' script derives it's parent scripts.
     int                 field_38;
@@ -48,8 +49,8 @@ protected:
     int                 field_48;
     std::vector<PropertyInfo> m_LocalPropertiesList;
     std::vector<PropertyInfo> m_GlobalPropertiesList;
-    int                 field_6C;   //  NOTE: 'TotalProperties' including parent's properties?
-    int                 field_70;   //  NOTE: same as above, but for second list.
+    int                 m_TotalLocalProperties;
+    int                 m_TotalGlobalProperties;
     bool                m_IsBaseEntity;
 
 public:
@@ -91,7 +92,7 @@ public:
 
         if (propertyind < 0)
         {
-            propinfo.m_GlobalPropertyIndex = (short)(m_GlobalPropertiesList.size() + field_70);
+            propinfo.m_GlobalPropertyIndex = (short)(m_GlobalPropertiesList.size() + m_TotalGlobalProperties);
 
             m_GlobalPropertiesList.push_back(propinfo);
         }
@@ -99,9 +100,9 @@ public:
         {
             propinfo.m_GlobalPropertyIndex = (short)ind;
 
-            if (propertyind - field_6C >= (int)m_LocalPropertiesList.size())
-                m_LocalPropertiesList.resize(propertyind - field_6C + 1);
-            m_LocalPropertiesList.insert(m_LocalPropertiesList.begin() + (propertyind - field_6C), propinfo);
+            if (propertyind - m_TotalLocalProperties >= (int)m_LocalPropertiesList.size())
+                m_LocalPropertiesList.resize(propertyind - m_TotalLocalProperties + 1);
+            m_LocalPropertiesList.insert(m_LocalPropertiesList.begin() + (propertyind - m_TotalLocalProperties), propinfo);
         }
     }
 

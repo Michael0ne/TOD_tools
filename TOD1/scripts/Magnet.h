@@ -1,9 +1,9 @@
-class Magnet : public GlobalScript
+class Magnet : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("Magnet", "Node", false, false);
+		static Scriptbaked* inst = new Scriptbaked("Magnet", "Node", false, false);
 		
 		inst->CalculateSize();
 		return inst;

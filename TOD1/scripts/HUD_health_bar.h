@@ -1,9 +1,9 @@
-class HUD_health_bar : public GlobalScript
+class HUD_health_bar : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("HUD_health_bar", "Node", true, false);
+		static Scriptbaked* inst = new Scriptbaked("HUD_health_bar", "Node", true, false);
 
 		//inst->field_60 = _6A6780();
 

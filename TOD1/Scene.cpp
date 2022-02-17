@@ -21,6 +21,7 @@
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
 AuxQuadTree* Scene::SceneTree;
+std::vector<Scene::EntityReference>* Scene::DanglingEntityReferences;
 
 unsigned int Scene::QuadTreesAllocated;
 Scene::QuadTree* Scene::QuadTrees;
@@ -68,7 +69,7 @@ Scene::Scene() : Folder_()
 {
     MESSAGE_CLASS_CREATED(Scene);
 
-    m_PlayMode = MODE_UNKNOWN_1;
+    m_PlayMode = MODE_STOP;
     m_NodesWithUpdateOrBlockingScripts = NULL;
     m_FrameBuffer_1 = new FrameBuffer(0, 36, 2);
     m_FrameBuffer_2 = new FrameBuffer(0, 36, 2);
@@ -331,7 +332,7 @@ Folder_* Scene::GetLoadedBlockByIndex(const unsigned int index) const
 void Scene::LoadSceneSession(void) const
 {
     if (!GetFragment() ||
-        m_PlayMode != MODE_UNKNOWN_1 ||
+        m_PlayMode != MODE_STOP ||
         g_AssetManager->m_LoadBlocks)
         return;
 
@@ -606,7 +607,7 @@ void Scene::DeleteFastFindNodeVector(int* args)
 
 void Scene::Start()
 {
-    if (m_PlayMode != MODE_UNKNOWN_1)
+    if (m_PlayMode != MODE_STOP)
         return;
 
     m_PlayMode = MODE_INGAME;
@@ -759,7 +760,7 @@ void Scene::Load(const char* sceneName)
     currtimems = Timer::GetMilliseconds();
     LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Compile 'test' folder scripts", currtimems - m_StartTimeMs, currtimems - m_StartTimeMs);
     m_StartTimeMs = currtimems;
-    GlobalScript::InstantiateGlobalScripts();
+    Scriptbaked::InstantiateGlobalScripts();
     EnumSceneCamerasAndUpdate();
     TotalFrames = 0;
     NewFrameNumber = 0;

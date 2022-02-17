@@ -1,9 +1,9 @@
-class Hydrant_Root : public GlobalScript
+class Hydrant_Root : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("Hydrant_Root", "Node", false, false);
+		static Scriptbaked* inst = new Scriptbaked("Hydrant_Root", "Node", false, false);
 
 		inst->CalculateSize();
 

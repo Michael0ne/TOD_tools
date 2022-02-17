@@ -223,8 +223,8 @@ void Cloth::SetShouldAlwaysUpdate(const bool update)
 
 void Cloth::ApplyImpulse(int* args)
 {
-    const Vector4f vec1(args[0], args[1], args[2], 0);
-    const Vector4f vec2(args[3], args[4], args[5], 0);
+    const Vector4f vec1((float)args[0], (float)args[1], (float)args[2], 0);
+    const Vector4f vec2((float)args[3], (float)args[4], (float)args[5], 0);
     const float force = args[6];
 
     ApplyImpulse_Impl(vec1, vec2, force);

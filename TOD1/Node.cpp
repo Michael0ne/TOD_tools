@@ -155,7 +155,7 @@ void Node::_86A930(const int size, int* value, int* const outval, const int a4)
     EntityType* ent = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
     *Scene::_A3CEE8++ = 
         ( (m_Id.Id << 8) | ( (*(short*)&m_Id & 0x7000) - 1 ) & 0xF000 ) |
-        ( (short)size + (short)ent->m_LocalPropertiesList.size() + (short)ent->field_6C) & 0xFFF;
+        ( (short)size + (short)ent->m_LocalPropertiesList.size() + (short)ent->m_TotalLocalProperties) & 0xFFF;
     Scene::_A3CEE8 += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->stub9((char*)value, (char*)Scene::_A3CEE8);
     if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::_A3CEE8) < 0x4000)
         Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::_A3CEE8);

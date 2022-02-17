@@ -211,14 +211,15 @@ public:
             short			field_38;
             short           field_3A;
             CompiledTextureAsset::GfxTexture   *m_FontTexture;
+
             Glyph          *m_GlyphsList;
             unsigned int    m_GlyphsInList;
             int             field_48;
             int             field_4C;
 
-            int				field_50;
+            int            *m_GlyphsMap;
             int				field_54;
-            float			field_58;
+            float			m_GlyphsTotalWidth;
             float			field_5C;
             float			field_60;
         };

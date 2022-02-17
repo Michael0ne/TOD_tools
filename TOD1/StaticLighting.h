@@ -1,6 +1,43 @@
 #pragma once
 #include "Node.h"
 #include "MeshColorAsset.h"
+#include <vector>
+
+class Scene;
+
+//  NOTE: unused entirely.
+class GeometryPhotonTracer
+{
+private:
+    std::vector<int> field_0;
+    int field_10;
+    int field_14;
+    int field_18;
+    int field_1C;
+    int field_20;
+    int field_24;
+    int field_28;
+    std::vector<int> field_2C;
+    std::vector<int> field_3C;
+    int field_4C;
+    int field_50;
+    int field_54;
+    int field_58;
+    std::vector<int> field_5C;
+    std::vector<int> field_6C;
+    int* field_7C;
+    std::vector<int> field_80;
+    std::vector<int> field_90;
+
+public:
+    GeometryPhotonTracer(const float a1, const int a2); //  @470690
+    ~GeometryPhotonTracer();    //  @4707A0
+
+    void    Process();  //  @4709A0
+    void    PerformSamplePass1(const int a1, const float a2);   //  @46DD80
+    void    PerformSamplePass2(const int a1);   //  @46E2E0
+    void    PerformSamplePass3();   //  @470920
+};
 
 //  NOTE: this lighting is used on static geometry only (buildings, roads).
 class StaticLighting : public Node
@@ -65,10 +102,14 @@ public:
 private:
     Node*                   _8A6EB0();    //  @8A6EB0
     void                    _8A6E10(Node*, Node*);  //  @8A6E10
+    void                    ClearSceneModelsLights(Scene* scene) const;   //  @8A8A40
 
     static StaticLighting*  Create(AllocatorIndex); // @8A9A30
+
+    static GeometryPhotonTracer*    GeometryPhotonTracer;   //  @A3DDFC
 };
 
 extern EntityType* tStaticLighting; //  @A3DDF4
 
 ASSERT_CLASS_SIZE(StaticLighting, 148);
+ASSERT_CLASS_SIZE(GeometryPhotonTracer, 160);

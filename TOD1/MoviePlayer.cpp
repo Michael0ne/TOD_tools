@@ -33,7 +33,7 @@ void MoviePlayer::Play(int args)
     m_StreamScriptId = -1;
     m_Flags.m_FlagsBits.MovieClosed = true;
 
-    if (Scene::SceneInstance->m_PlayMode == Scene::PlayMode::MODE_UNKNOWN_1)
+    if (Scene::SceneInstance->m_PlayMode == Scene::PlayMode::MODE_STOP)
         TriggerGlobalScript(PlayPressedCommand, nullptr);
 
     m_FrameInfo.PlayAllocated();

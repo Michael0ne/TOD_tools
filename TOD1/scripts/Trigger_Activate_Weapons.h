@@ -1,9 +1,9 @@
-class Trigger_Activate_Weapons : public GlobalScript
+class Trigger_Activate_Weapons : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("Trigger_Activate_Weapons", "Node", false, false);
+		static Scriptbaked* inst = new Scriptbaked("Trigger_Activate_Weapons", "Node", false, false);
 
 		inst->AddStructElement(GetScriptIdByFullName("ActionType:integer"), "51", 0);
 		inst->AddStructElement(GetScriptIdByFullName("Sub_Type:integer"), "0", 0);

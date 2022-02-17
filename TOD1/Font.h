@@ -41,7 +41,8 @@ private:
     float               field_2C;
     int                 field_30;
     float               field_34;
-    int                 field_38;
+    short               field_38;
+    short               field_3A;
     Texture            *m_FontTexture;
     std::vector<Glyph>  m_GlyphsList;
     std::map<short, Glyph*> *m_GlyphsMap;   //  NOTE: key - character index, value - pointer to a glyph information.

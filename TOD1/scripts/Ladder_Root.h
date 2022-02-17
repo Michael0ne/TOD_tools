@@ -1,9 +1,9 @@
-class Ladder_Root : public GlobalScript
+class Ladder_Root : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("Ladder_Root", "Group", false, false);
+		static Scriptbaked* inst = new Scriptbaked("Ladder_Root", "Group", false, false);
 
 		inst->AddStructElement(GetScriptIdByFullName("top_step:vector"), nullptr, NULL);
 		inst->AddStructElement(GetScriptIdByFullName("bottom_step_y:number"), nullptr, NULL);

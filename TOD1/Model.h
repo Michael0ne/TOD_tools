@@ -132,6 +132,8 @@ private:
     void                SetDepthSorted(const bool enabled); //  @883E40
     const bool          GetDepthSorted() const; //  @883E60
 
+    void                SetLightingFromAsset(AssetLoader* assload, Folder_* associatedFolderPtr);   //  @888DE0
+
     static Model*       Create(AllocatorIndex);   //  @88AA70
 };
 

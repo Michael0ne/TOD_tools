@@ -15,7 +15,7 @@ class ScriptThread : public IScriptThread
 {
     friend class Entity;
     friend class Node;
-    friend class GlobalScript;
+    friend class Scriptbaked;
 
     struct StackElement
     {
@@ -46,7 +46,7 @@ class ScriptThread : public IScriptThread
         int                     field_4;
         void                    (*field_8)(ScriptThread*);
         Node                   *field_C;
-        GlobalScript           *field_10;
+        Scriptbaked            *field_10;
         unsigned int            field_14;
     };
 

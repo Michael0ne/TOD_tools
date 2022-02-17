@@ -93,7 +93,7 @@ extern std::vector<GlobalCommand>       GlobalCommandsList; // @A11470
 extern std::map<String, unsigned int>   GlobalCommandsMap; // @A3CF08
 
 //  NOTE: actual path to header file "/Kernel/Script/Interface/Scriptbaked.h".
-class GlobalScript
+class Scriptbaked
 {
     friend class Node;
     friend class Entity;
@@ -134,7 +134,7 @@ protected:
     void            (*field_60)(int*);
 
 public:
-    GlobalScript(const char* const scriptName, const char* const parentName, bool a3, bool a4); // @48A530
+    Scriptbaked(const char* const scriptName, const char* const parentName, bool a3, bool a4); // @48A530
 
     void                        AddStructElement(const int fieldId, const char* const defaultValue, const int); // @48AF10
     void                        AddMethod(short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*)); // @48A690
@@ -146,18 +146,19 @@ public:
     void                        GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue);   //  @489E50
     bool                        HasPropertyId(const unsigned int propertyid) const; //  @489A30
     void                        CopyScriptParameters(Entity* entity);    //  @489BE0
+    void                        GetMethodParams(void (*methodPtr)(void*), std::vector<DataType*>& outParams) const;   //  @48A750
 
     class EntityType*           AssignScriptToEntity(EntityType * parent); // @48A3F0
 
-    static GlobalScript*        GetGlobalScriptByName(const char* name); // @48C590
-    static GlobalScript*        GetGlobalScriptById(const unsigned int id); // @48C580
+    static Scriptbaked*        GetGlobalScriptByName(const char* name); // @48C590
+    static Scriptbaked*        GetGlobalScriptById(const unsigned int id); // @48C580
     static int                  GetScriptIdByName(const char* const name); // @48C910
     static void                 InstantiateGlobalScripts();  //  @48C960
     static void                 AssignCommonNodes();    //  @48C7D0
 
     static unsigned int   GetScriptIdByFullName(const char* const name);  //  NOTE: a special version of 'GetTypeByName' to be used when loading game-specific scripts. Not in original code.
 
-    static std::vector<GlobalScript*> ScriptsList; // @A0B424
+    static std::vector<Scriptbaked*> ScriptsList; // @A0B424
     static std::vector<Node*>           SceneScriptEntitiesList;    //  @A3B5A4
 };
 
@@ -168,7 +169,7 @@ extern Node* CommonAnimSlotScriptNode;   //  @A3B594
 extern Node* CommonTriggerScriptNode;    //  @A3B598
 extern Node* IntroCommonScriptNode;  //  @A3B59C
 
-ASSERT_CLASS_SIZE(GlobalScript, 100);
+ASSERT_CLASS_SIZE(Scriptbaked, 100);
 
 extern unsigned int GlobalPropertyListChecksum; // @A3CF40
 extern bool   GlobalPropertyListChecksumObtained; // @A3CF1C

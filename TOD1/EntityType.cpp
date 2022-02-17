@@ -9,9 +9,9 @@ EntityType::EntityType(const char* const entityname) : DataType(TYPE_ENTITY, ent
     m_Creator = nullptr;
     m_Script = nullptr;
     m_Parent = nullptr;
-    field_6C = NULL;
+    m_TotalLocalProperties = NULL;
     m_IsBaseEntity = false;
-    field_70 = 1;
+    m_TotalGlobalProperties = 1;
 }
 
 EntityType::~EntityType()
@@ -29,8 +29,8 @@ void* EntityType::CreateNode()
 
 void EntityType::InheritFrom(EntityType* from)
 {
-    field_6C = from->m_IsBaseEntity ? from->m_Parent->m_LocalPropertiesList.size() + from->m_Parent->field_6C : from->m_LocalPropertiesList.size() + from->field_6C;
-    field_70 = from->m_IsBaseEntity ? from->m_Parent->m_GlobalPropertiesList.size() + from->m_Parent->field_70 : from->m_GlobalPropertiesList.size() + from->field_70;
+    m_TotalLocalProperties = from->m_IsBaseEntity ? from->m_Parent->m_LocalPropertiesList.size() + from->m_Parent->m_TotalLocalProperties : from->m_LocalPropertiesList.size() + from->m_TotalLocalProperties;
+    m_TotalGlobalProperties = from->m_IsBaseEntity ? from->m_Parent->m_GlobalPropertiesList.size() + from->m_Parent->m_TotalGlobalProperties : from->m_GlobalPropertiesList.size() + from->m_TotalGlobalProperties;
     m_Creator = from->m_Creator;
     m_Parent = from;
 }

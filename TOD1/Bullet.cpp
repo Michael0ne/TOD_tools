@@ -117,12 +117,12 @@ void Bullet::Shoot_Impl(const Vector4f& inVec1, const Vector4f& inVec2, EntityTy
 
 void Bullet::Shoot(int* args)
 {
-    const Vector4f vec1(args[0], args[1], args[2], 0);
-    const Vector4f vec2(args[3], args[4], args[5], 0);
+    const Vector4f vec1((float)args[0], (float)args[1], (float)args[2], 0);
+    const Vector4f vec2((float)args[3], (float)args[4], (float)args[5], 0);
     EntityType* ent = (EntityType*)args[6];
     EntityType* ent2 = (EntityType*)args[15];
 
-    Shoot_Impl(vec1, vec2, ent, args[7], args[8], args[9], args[10], args[11], args[12], args[13], args[14], ent2);
+    Shoot_Impl(vec1, vec2, ent, args[7], (float)args[8], (float)args[9], args[10], args[11], args[12], args[13], (float)args[14], ent2);
 }
 
 Bullet* Bullet::Create(AllocatorIndex)

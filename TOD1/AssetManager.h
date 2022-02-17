@@ -210,6 +210,7 @@ public:
     bool                        _878220(Asset * asset);  //  @878220
     Asset*                      FindLoadedAsset(const char* const assetname);   //  @876140
     void                        InstantiateAssetsAndClearAssetsList();  //  @875EB0
+    Node*                       FindEntityById(const int id);   //  @879740
 
     static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, PlatformId platform); // @876500
     static RegionCode           RegionIdByName(const String& region); // @875450

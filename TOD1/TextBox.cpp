@@ -13,7 +13,7 @@ TextBox::~TextBox()
 
 Vector4f* TextBox::GetBounds(Vector4f& outBounds) const
 {
-    if (!m_Flags.m_FlagsBits.VerticalAlignment)
+    if (!m_Flags.VerticalAlignment)
         return (outBounds = Vector4f(0.f, 0.f, 0.f, 10000.f), &outBounds);
 
     Vector4f boxSize;
@@ -33,12 +33,13 @@ TextBox::TextBox() : Sprite()
     m_TextColor = m_TextColor2 = -1;
     m_ScaleX = 1.0f;
     m_ScaleY = 1.0f;
-    m_Flags.m_Flags = m_Flags.m_Flags & 0xFFFFFF00;
+    m_Flags.HorizontalAlignment = 0;
+    m_Flags.VerticalAlignment = 0;
     m_HorizontalSpacing = m_VerticalSpacing = 0.0f;
     field_94 = 0;
-    m_Flags.m_FlagsBits.TextResMode = false;
-    m_Text = new String();
-    m_Flags.m_Flags = m_Flags.m_Flags & 0xFFFFA5FF | 0x7FF2000;
+    m_Flags.TextResMode = false;
+    m_Text = new String;
+    m_Flags.UseGlyphIgnoreColor = true;
     m_TextSlot = nullptr;
     field_B8 = NULL;
     m_TextSlotsContents = nullptr;
@@ -72,11 +73,9 @@ Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
     return nullptr;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void TextBox::SetFont(const char* fontName)
 {
     String fontPath;
-    //AssetTemplate res;
 
     g_AssetManager->GetResourcePath(fontPath, fontName);
 
@@ -93,19 +92,8 @@ void TextBox::SetFont(const char* fontName)
         LogDump::LogA("remapped %s to %s\n", fontName, fontPath.m_Str);
     }
 
-    /*if (fontName)
-    {
-     res.LoadResourceFromBlock(fontPath.m_szString);
-     m_FontRes->ApplyLoadedResource(res);
-
-     if (res.m_Resource)
-      g_AssetManager->DecreaseResourceReferenceCount(res.m_Resource);
-    }
-    else
-    {
-     res.m_Resource = nullptr;
-     m_FontRes->ApplyLoadedResource(res);
-    }*/
+    AssetLoader assload(fontPath.m_Str);
+    m_FontRes = (FontAsset*)assload.m_AssetPtr;
 
     m_Id._3 = true;
 
@@ -135,12 +123,12 @@ void TextBox::SetAsciiOffset(const int offset)
 
 const bool TextBox::GetShouldScaleIfWidescreen() const
 {
-    return m_Flags.m_FlagsBits.ScaleIfWidescreen;
+    return m_Flags.ScaleIfWidescreen;
 }
 
 const bool TextBox::GetUseGlyphIgnoreColor() const
 {
-    return m_Flags.m_FlagsBits.UseGlyphIgnoreColor;
+    return m_Flags.UseGlyphIgnoreColor;
 }
 
 const char* TextBox::GetTextSlotByName() const
@@ -193,22 +181,22 @@ const float TextBox::GetVerticalSpacing() const
 
 const bool TextBox::GetVerticalClip() const
 {
-    return m_Flags.m_FlagsBits.VerticalClip;
+    return m_Flags.VerticalClip;
 }
 
 const bool TextBox::GetViewAllSlotIndicies() const
 {
-    return m_Flags.m_FlagsBits.ViewAllSlotIndices;
+    return m_Flags.ViewAllSlotIndices;
 }
 
 const bool TextBox::GetUseSlotIndex() const
 {
-    return m_Flags.m_FlagsBits.UseSlotIndex;
+    return m_Flags.UseSlotIndex;
 }
 
 const bool TextBox::GetTextresMode() const
 {
-    return m_Flags.m_FlagsBits.TextResMode;
+    return m_Flags.TextResMode;
 }
 
 void TextBox::SetTextSlotParam(unsigned int slotindex, short* slotvalue)

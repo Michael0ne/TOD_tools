@@ -1,9 +1,9 @@
-class common : public GlobalScript
+class common : public Scriptbaked
 {
 public:
-	static GlobalScript* Create()
+	static Scriptbaked* Create()
 	{
-		static GlobalScript* inst = new GlobalScript("common", "Node", true, false);
+		static Scriptbaked* inst = new Scriptbaked("common", "Node", true, false);
 
 		inst->AddStructElement(GetScriptIdByFullName("identity_quaternion:quaternion"), "1.000000 0.000000 0.000000 0.000000", 0);
 		inst->AddStructElement(GetScriptIdByFullName("default_Gravity:vector"), "0.000000 -10.000000 0.000000", 0);

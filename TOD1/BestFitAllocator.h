@@ -6,13 +6,25 @@ class BestFitAllocator : public Allocator
     struct BestFitAllocInfo
     {
         int* field_0;
-        int      field_4;
-        int      field_8;
+        int field_4;
+        int field_8;
+        int field_C;
+        int field_10;
+        int field_14;
+        int field_18;
+        int field_1C;
+        int field_20;
+        int field_24;
+        int field_28;
+        int field_2C;
+        int field_30;
+        int field_34;
+        int field_38;
     };
 
 protected:
-    BestFitAllocInfo   field_24[20];
-    int* m_Contents;
+    BestFitAllocInfo   field_24[4];
+    int      *m_Contents;
     int       field_118;
     int       field_11C;
     int       field_120;
@@ -25,13 +37,13 @@ private:
 public:
     BestFitAllocator(); // @478740
 
-    virtual void* Allocate_A(size_t size, int filler, int unk) override; // @478800
-    virtual void* AllocateAligned(size_t size, size_t alignment, int filler, int unk) override; // @478820
+    virtual void*   Allocate_A(size_t size, int filler, int unk) override; // @478800
+    virtual void*   AllocateAligned(size_t size, size_t alignment, int filler, int unk) override; // @478820
 
     virtual void    Free(void* ptr) override; // @479210
     virtual void    FreeAligned(void* ptr) override; // @4788E0
 
-    virtual void* Realloc(void* oldptr, size_t newsize, int filler, int unk) override; // @4795C0
+    virtual void*   Realloc(void* oldptr, size_t newsize, int filler, int unk) override; // @4795C0
     virtual int     stub8(int* unk) override; // @478AA0
     virtual void    stub9();
     virtual void    CallMethodAtOffset20() override; // @478A90
