@@ -70,7 +70,7 @@ public:
     LPDIRECTSOUNDBUFFER   m_DirectSoundBuffer_1;
     class DieselPower*   m_DieselPower;
     int*      field_50; // NOTE: pointer to some DieselPower structure, size unknown.
-    int*      field_54;
+    class DieselPower*      m_DieselPower_1;
     LPDIRECTSOUND    m_DirectSound;
     std::vector<DieselPower*>   m_DieselPowerSoundBuffers;
     std::vector<StreamedSoundBuffer*> m_StreamDataBufferList;

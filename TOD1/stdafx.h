@@ -55,6 +55,7 @@
 #define ASSERT_CLASS_SIZE(x, size) static_assert(sizeof(x) == size, MESSAGE_WRONG_CLASS_SIZE(x))
 
 #define ALIGN_4BYTES(x) ((int)(x) & 0xFFFFFFFC)
+#define ALIGN_4BYTESUP(x) ((int)(x + 3) & 0xFFFFFFFC)
 #define D3DCOLOR_DWORD(r, g, b, a) (DWORD)((unsigned char)(b * 255.f) | (((unsigned char)(g * 255.f) | (((unsigned char)(r * 255.f) | ((unsigned char)(a * 255.f) << 8)) << 8)) << 8))
 #define DEG2RAD(deg) (0.017453292f * deg)
 

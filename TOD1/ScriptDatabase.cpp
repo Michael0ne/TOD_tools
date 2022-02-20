@@ -1178,7 +1178,7 @@ void Scriptbaked::CopyScriptParameters(Entity* entity)
     entity->m_Parameters = parameters;
 }
 
-void Scriptbaked::GetMethodParams(void(*methodPtr)(void*), std::vector<DataType*>& outParams) const
+void Scriptbaked::GetMethodParams(void(*methodPtr)(ScriptThread*), std::vector<DataType*>& outParams) const
 {
     if (!m_ParametersList.size())
         return;
@@ -1198,6 +1198,17 @@ void Scriptbaked::GetMethodParams(void(*methodPtr)(void*), std::vector<DataType*
 
         outParams.push_back(m_ParametersList[paramOffset].m_ParamType);
     }
+}
+
+int Scriptbaked::GetParameterProcedureIndex(void(*procedure)(ScriptThread*)) const
+{
+    if (!m_ParametersList.size())
+        return -1;
+
+    int index = 0;
+    for (std::vector<Parameter>::const_iterator it = m_ParametersList.cbegin(); it->m_ProcPtr != procedure; it++, ++index);
+
+    return index >= m_ParametersList.size() ? -1 : index;
 }
 
 EntityType* Scriptbaked::AssignScriptToEntity(EntityType* parent)

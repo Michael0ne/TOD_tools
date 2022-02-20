@@ -505,26 +505,31 @@ Asset* AssetManager::LoadResourceFile(const char* const respath)
 #pragma message(TODO_IMPLEMENTATION)
 void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid)
 {
-    AssetHeaderStruct_t assetHeaderStruct;
-
     LogDump::LogA("Loading resource block with ID=%i...\n", resblockid);
     unsigned int timeStart = Timer::GetMilliseconds();
 
     if (resblockid == 1)
     {
-        //  NOTE: ID 1 used for 'map/submap'.
-        char keydatabuf[256] = {};
+        AssetHeaderStruct_t assetHeaderStruct;
 
+        //  NOTE: ID 1 used for 'map/submap'.
+        //      For some reason, these have 'fingerprint' stuff before header. Engine doesn't use them anyway, maybe some editor leftover stuff?
+        char keydatabuf[256] = {};
+        char filekey[56] = {};
+
+        //  NOTE: this part is ignored.
         for (unsigned int i = 0; i < 36; i++)
-            assetHeaderStruct.m_AssetId[i] = file->ReadBlock();
+            filekey[i] = file->ReadBlock();
+
+        //  NOTE: this reads 255 bytes, but next function will only read this buffer until the point null terminator is found.
         for (unsigned int i = 0; i < 255; i++)
             keydatabuf[i] = file->ReadBlock();
 
         assetHeaderStruct.field_38.DecodeFingerprintKey("1E564E3B-D243-4ec5-AFB7", keydatabuf);
         strcpy(m_FingerprintKey, keydatabuf);
 
-        int buf_ = NULL;
-        file->Read(&buf_, sizeof(buf_));
+        int dummy = NULL;
+        file->Read(&dummy, sizeof(dummy));
         file->Read(&field_108, sizeof(field_108));
     }
 

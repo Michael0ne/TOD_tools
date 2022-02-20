@@ -8,7 +8,7 @@
 
 SceneSaveLoad* g_SceneSaveLoad = nullptr;
 z_stream SceneSaveLoad::BufferStream;
-char SceneSaveLoad::CompressedSaveData[2048];
+char SceneSaveLoad::CompressedRewindData[2048];
 
 SceneSaveLoad::SceneSaveLoad()
 {
@@ -16,8 +16,8 @@ SceneSaveLoad::SceneSaveLoad()
 
     m_SavedPlayMode = MODE_NONE;
     m_SavePoint = nullptr;
-    field_38 = nullptr;
-    field_3C = NULL;
+    m_RewindDataBuffer = nullptr;
+    m_RewindDataBufferSize = NULL;
     m_SaveInfo_1.m_TransactionBuffer = new TransactionBuffer(0x96000);
 }
 
@@ -134,16 +134,16 @@ int* SceneSaveLoad::_873BA0(const unsigned int nodeid)
     if (!Scene::SceneInstance)
         return nullptr;
 
-    if (!Scene::SceneInstance->m_PlayMode || Scene::SceneInstance->m_PlayMode == 2)
+    if (Scene::SceneInstance->m_PlayMode == Scene::PlayMode::MODE_INGAME || Scene::SceneInstance->m_PlayMode == Scene::PlayMode::MODE_PAUSED)
     {
         switch (m_SavedPlayMode)
         {
         case 2:
             return ((nodeid >> 20) & 7) == 1 ? field_0 : nullptr;
         case 3:
-            return field_38[field_3C];
+            return m_RewindDataBuffer[m_RewindDataBufferSize];
         case 4:
-            return (int*)&m_SaveInfo_1.m_TransactionBuffer->m_Buffer[m_SaveInfo_1.m_TransactionBuffer->m_Size + field_74];
+            return (int*)&m_SaveInfo_1.m_TransactionBuffer->m_Buffer[m_SaveInfo_1.m_TransactionBuffer->m_Size + m_TransactionBufferSize];
         }
     }
 
@@ -156,27 +156,27 @@ void SceneSaveLoad::_873C00(const unsigned int, const int* a2)
     {
     case MODE_3:
     {
-        field_3C = ((char*)a2 - (char*)field_38) >> 2;
-        BufferStream.avail_in = field_3C * 4;
-        BufferStream.next_in = (Bytef*)field_38;
+        m_RewindDataBufferSize = ((char*)a2 - (char*)m_RewindDataBuffer) >> 2;
+        BufferStream.avail_in = m_RewindDataBufferSize * 4;
+        BufferStream.next_in = (Bytef*)m_RewindDataBuffer;
 
-        if (field_3C * 4 >= 8192)
+        if (m_RewindDataBufferSize * 4 >= 8192)
         {
-            field_3C = 0;
+            m_RewindDataBufferSize = 0;
             while (BufferStream.avail_in)
             {
                 BufferStream.avail_out = 2048;
-                BufferStream.next_out = (Bytef*)CompressedSaveData;
+                BufferStream.next_out = (Bytef*)CompressedRewindData;
                 deflate(&BufferStream, 0);
 
-                if (m_SavePoint->WriteBufferWithSize(CompressedSaveData, 2048 - BufferStream.avail_out) != 2048 - BufferStream.avail_out)
-                    field_44 = 0;
+                if (m_SavePoint->WriteBufferWithSize(CompressedRewindData, 2048 - BufferStream.avail_out) != 2048 - BufferStream.avail_out)
+                    m_RewindDataBufferFull = 0;
             }
         }
         break;
     }
     case MODE_4:
-        field_74 += (char*)&a2[-field_74 - m_SaveInfo_1.m_TransactionBuffer->m_Size] - m_SaveInfo_1.m_TransactionBuffer->m_Buffer;
+        m_TransactionBufferSize += (char*)&a2[-m_TransactionBufferSize - m_SaveInfo_1.m_TransactionBuffer->m_Size] - m_SaveInfo_1.m_TransactionBuffer->m_Buffer;
         break;
     default:
         field_0 = (int*)a2;

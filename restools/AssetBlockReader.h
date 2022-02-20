@@ -195,7 +195,7 @@ public:
         struct Font
         {
             int				field_0;
-            int				field_4;
+            int				field_4;    //  NOTE: maybe bits per sample.
             int				field_8;
             int				field_C;
             int				field_10;

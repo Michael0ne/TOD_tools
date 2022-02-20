@@ -131,16 +131,7 @@ public:
         unsigned short  m_ReferenceCount;
         struct
         {
-            unsigned _0 : 8;
-
-            unsigned _8 : 1;
-            unsigned _9 : 1;
-            unsigned _10 : 1;
-            unsigned _11 : 1;
-            unsigned _12 : 1;
-            unsigned _13 : 1;
-            unsigned _14 : 1;
-            unsigned _15 : 1;
+            unsigned ReferenceCount : 15;
 
             unsigned NotUsed : 1;
             unsigned _17 : 1;
@@ -178,9 +169,7 @@ public:
 
     void* operator new(size_t size)
     {
-        return AssetInstance::AssetAlignment[0]
-            ? MemoryManager::AllocatorsList[TextureAssetAllocatorId]->AllocateAligned(size, AssetInstance::AssetAlignment[0], NULL, NULL)
-            : MemoryManager::AllocatorsList[TextureAssetAllocatorId]->Allocate(size, NULL, NULL);
+        return Asset::CreateInstance(size);
     }
     void operator delete(void* ptr)
     {

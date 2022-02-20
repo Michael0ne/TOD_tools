@@ -564,6 +564,8 @@ void AssetBlockReader::CompiledFontAsset::PrintInfo() const
     printf("\t\tVertical spacing:\t%f\n", m_FontInfo->m_VerticalSpacing);
     printf("\t\tScale X:\t%f\n", m_FontInfo->m_ScaleX);
     printf("\t\tScale Y:\t%f\n", m_FontInfo->m_ScaleY);
+    printf("\t\tTexture:\t%p\n", m_FontInfo->m_FontTexture);
+    printf("\t\tTexture size:\t%d x %d\n", m_FontInfo->m_FontTexture->m_Resolution[0], m_FontInfo->m_FontTexture->m_Resolution[1]);
 }
 
 void AssetBlockReader::CompiledFontAsset::SkipAlignment(unsigned char** infobuffer)

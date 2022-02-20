@@ -136,16 +136,21 @@ void Asset::Destroy(Asset* res)
 {
     res->~Asset();
 
-    if ((res->m_Flags.m_FlagBits._0 & 1) != 0)
+    if ((res->m_Flags.m_FlagBits.NotUsed & 1) != 0)
         MemoryManager::ReleaseMemory(res, false);
 }
 
 Asset* Asset::CreateInstance(size_t classsize)
 {
-    Asset* a = (Asset*)new char[classsize];
-    a->m_Flags.m_FlagBits.NotUsed = true;
+    Asset* asset = nullptr;
+    if (AssetInstance::AssetAlignment[0])
+        asset = (Asset*)MemoryManager::AllocatorsList[TextureAssetAllocatorId]->AllocateAligned(classsize, AssetInstance::AssetAlignment[0], NULL, NULL);
+    else
+        asset = (Asset*)MemoryManager::AllocatorsList[TextureAssetAllocatorId]->Allocate(classsize, NULL, NULL);
 
-    return a;
+    asset->m_Flags.m_FlagBits.NotUsed = 1;
+
+    return asset;
 }
 
 void Asset::AllocateResourceForBlockLoad(const unsigned int size, int** bufaligned, int* buf, const unsigned int blockid)
@@ -218,6 +223,7 @@ AssetInstance::AssetInstance(const char* const assetname, Asset* (*creatorptr)()
     Assets.push_back(this);
 
     // NOTE: this is temporary just to get VMT pointer, so destroy after use.
+    //      The custom 'new' operator for Asset will set a special flag, so the object is not free'd, but only constructor is called.
     Asset* asset = m_Creator();
     m_ResourceTypeMethods = (void*)(*(int*)asset);
     Asset::Destroy(asset);

@@ -312,7 +312,7 @@ void StreamedSoundBuffers::InitDieselPower()
 void StreamedSoundBuffers::GetMaxDistance(Vector4f& outVec) const
 {
     if (m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
-        (*(void(__stdcall*)(Vector4f&))(field_54 + 16))(outVec);
+        (*(void(__stdcall*)(Vector4f&))(m_DieselPower_1 + 16))(outVec);
     else
         m_DirectSound3DBuffer->GetMaxDistance((D3DVALUE*)&outVec);
 }
@@ -470,9 +470,9 @@ void StreamedSoundBuffers::SetListener3DPos(const Vector4f& pos)
 
     if (m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
     {
-        (*(void(__stdcall*)(float, float, float))field_54)(pos.x, pos.y, pos.z);
-        (*(void(__stdcall*)(float, float, float))(field_54 + 8))(maxDistanceVec.x * (1.0f / dist), maxDistanceVec.y * (1.0f / dist), maxDistanceVec.z * (1.0f / dist));
-        (*(void(__stdcall*)())(field_54 + 40))();
+        (*(void(__stdcall*)(float, float, float))m_DieselPower_1)(pos.x, pos.y, pos.z);
+        (*(void(__stdcall*)(float, float, float))(m_DieselPower_1 + 8))(maxDistanceVec.x * (1.0f / dist), maxDistanceVec.y * (1.0f / dist), maxDistanceVec.z * (1.0f / dist));
+        (*(void(__stdcall*)())(m_DieselPower_1 + 40))();
     }
     else
     {
@@ -492,7 +492,7 @@ void StreamedSoundBuffers::SetListener3DOrientation(const Orientation& orient)
 void StreamedSoundBuffers::GetListener3DOrientation(Orientation& outOrient)
 {
     if (m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
-        (*(void(__stdcall*)(Orientation&))(field_54 + 20))(outOrient);
+        (*(void(__stdcall*)(Orientation&))(m_DieselPower_1 + 20))(outOrient);
     else
         if (FAILED(m_DirectSound3DBuffer->GetConeOrientation((D3DVECTOR*)&outOrient)))
             LogDump::LogA("Failed to get 3D listener orientation\n");

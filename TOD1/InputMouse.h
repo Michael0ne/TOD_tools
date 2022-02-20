@@ -30,7 +30,7 @@ namespace Input
         tagPOINT    m_WindowedMousePosition;
         int      m_Position_X;
         int      m_Position_Y;
-        int      field_44;
+        int      m_WindowsCaptured;
         bool     m_ShouldBeProcessed;
         LPDIRECTINPUT8   m_DirectInputInterface;
         LPDIRECTINPUTDEVICE8 m_DirectInputDevice;

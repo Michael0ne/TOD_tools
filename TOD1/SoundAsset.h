@@ -42,17 +42,6 @@ public:
     virtual AssetInstance* GetInstancePtr() const override;
     virtual void        LoadResource(const char* const resPath) override;    //  @85BE70
 
-    void*               operator new(size_t size)
-    {
-        return MemoryManager::Released ? nullptr : MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-    }
-    void                operator delete(void* ptr)
-    {
-        if (ptr)
-            MemoryManager::ReleaseMemory(ptr, false);
-        ptr = nullptr;
-    }
-
     static void         CreateInstance(); // @85C010
     static SoundAsset*  Create(); // @85C430
 

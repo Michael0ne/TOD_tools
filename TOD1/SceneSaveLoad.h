@@ -2,6 +2,8 @@
 #include "MemoryManager.h"
 #include "EntityType.h"
 #include "TransactionBuffer.h"
+#include "Scene.h"
+
 #include "zlib121/zlib.h"
 
 // NOTE: saveslot data is compressed using deflate (version 1.2.1, stream size = 56).
@@ -39,26 +41,17 @@ struct SaveFile
 
 class SceneSaveLoad
 {
-    enum ScenePlayMode
-    {
-        MODE_NONE = 0,
-        MODE_1 = 1,
-        MODE_2 = 2,
-        MODE_3 = 3,
-        MODE_4 = 4
-    };
-
 private:
-    int*    field_0;    //  NOTE: pointer to the end of the SaveInfo's transaction buffer's end.
-    SaveInfo   m_SaveInfo; // NOTE: this is used when WRITING savepoint data.
-    ScenePlayMode  m_SavedPlayMode;
-    ScenePlayMode  m_CurrentPlayMode;
-    int**    field_38;
-    int     field_3C;
-    class SavePoint* m_SavePoint;
-    char    field_44;
-    SaveInfo   m_SaveInfo_1; // NOTE: this is used when READING savepoint data.
-    int     field_74;
+    int                *field_0;    //  NOTE: pointer to the end of the SaveInfo transaction buffer.
+    SaveInfo            m_SaveInfo; // NOTE: this is used when WRITING savepoint data.
+    Scene::PlayMode     m_SavedPlayMode;
+    Scene::PlayMode     m_CurrentPlayMode;
+    char               *m_RewindDataBuffer;
+    int                 m_RewindDataBufferSize;
+    SavePoint          *m_SavePoint;
+    bool                m_RewindDataBufferFull;
+    SaveInfo            m_SaveInfo_1; // NOTE: this is used when READING savepoint data.
+    int                 m_TransactionBufferSize;
 
 public:
     SceneSaveLoad(); // @874510
@@ -75,22 +68,22 @@ public:
         ptr = nullptr;
     }
 
-    void    _874940(); // @874940
-    void    ResetSavedPlayMode(); // @873B90
-    bool    LoadSaveSummaryToBuffer(class SavePoint* savepoint, SaveInfo* saveinfo); // @874570
-    bool    LoadSaveSummary(class SavePoint* savepoint, const class Node* summarynode); // @874910
-    bool    LoadSavePointData(class SavePoint*, EntityType*, class Node* readFinishedCb); // @874F40
-    bool    CompressAndWriteSaveData(class SavePoint*, EntityType*); // @874A00
-    bool    ResetGame(class Node** loadedBlocksArray); // @874D00
-    int*    _873BA0(const unsigned int nodeid); // @873BA0
-    void    _873C00(const unsigned int, const int* a2); // @873C00
-    void    Adapt(); // @873D30
+    void                _874940(); // @874940
+    void                ResetSavedPlayMode(); // @873B90
+    bool                LoadSaveSummaryToBuffer(class SavePoint* savepoint, SaveInfo* saveinfo); // @874570
+    bool                LoadSaveSummary(class SavePoint* savepoint, const class Node* summarynode); // @874910
+    bool                LoadSavePointData(class SavePoint*, EntityType*, class Node* readFinishedCb); // @874F40
+    bool                CompressAndWriteSaveData(class SavePoint*, EntityType*); // @874A00
+    bool                ResetGame(class Node** loadedBlocksArray); // @874D00
+    int*                _873BA0(const unsigned int nodeid); // @873BA0
+    void                _873C00(const unsigned int, const int* a2); // @873C00
+    void                Adapt(); // @873D30
     
-    static bool   WriteDummySavePointData(class SavePoint* savepoint, unsigned int); // @8743F0
+    static bool         WriteDummySavePointData(class SavePoint* savepoint, unsigned int); // @8743F0
     static bool         WriteSavePointFileData(class SavePoint* savepoint, SaveInfo* savedata); // @873DA0
 
-    static z_stream  BufferStream; // @A3D748
-    static char   CompressedSaveData[2048]; // @A3CF48
+    static z_stream     BufferStream; // @A3D748
+    static char         CompressedRewindData[2048]; // @A3CF48
 };
 
 extern SceneSaveLoad* g_SceneSaveLoad;

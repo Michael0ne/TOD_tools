@@ -58,11 +58,11 @@ private:
 public:
     // TODO: complete these methods. There are 69 of them. Nice.
     virtual void stub1() {};
-    virtual void stub2() {};
+    virtual void stub2(const float, const float, const float, const float, const float, const float) {};    //  NOTE: It's used in 'SetListener3DOrientation' method.
     virtual char* GetSoundBufferPtr() const { return nullptr; };
     virtual void stub4() {};
     virtual void stub5() {};
-    virtual void stub6() {};
+    virtual void IsLooped() {};
     virtual void stub7() {};
     virtual void stub8() {};
     virtual int stub9() { return NULL; };
@@ -77,7 +77,7 @@ public:
     virtual void stub18() {};
     virtual void stub19() {};
     virtual void stub20() {};
-    virtual int* stub21(DWORD, LPWAVEFORMATEX) { return nullptr; };
+    virtual const float GetVolume() { return 0; };
     virtual void stub22() {};
     virtual int* stub23() { return nullptr; };
     virtual int* stub24() { return nullptr; };
@@ -160,4 +160,4 @@ public:
 
 extern DieselPower* g_DieselPower; // @A5E848
 
-static_assert(sizeof(DieselPower) == AUDIO_DIESELPO_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(DieselPower));
+ASSERT_CLASS_SIZE(DieselPower, 40);

@@ -47,17 +47,6 @@ private:
     TextureAsset(); // NOTE: always inlined.
 
 public:
-    void* operator new (size_t size)
-    {
-        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-    }
-    void operator delete(void* ptr)
-    {
-        if (ptr)
-            MemoryManager::ReleaseMemory(ptr, 0);
-        ptr = nullptr;
-    }
-
     virtual                    ~TextureAsset(); // @853690
     virtual AssetInstance*      GetInstancePtr() const override; // @853AE0
     virtual void                stub5(int); // @853720

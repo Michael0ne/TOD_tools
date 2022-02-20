@@ -21,17 +21,6 @@ private:
     }
 
 public:
-    void* operator new (size_t size)
-    {
-        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
-    }
-    void operator delete(void* ptr)
-    {
-        if (ptr)
-            MemoryManager::ReleaseMemory(ptr, false);
-        ptr = nullptr;
-    }
-
     virtual         ~FontAsset();   //  @85B730
     virtual AssetInstance* GetInstancePtr() const override;
     virtual void    ApplyAssetData(int*) override;  //  @85B560

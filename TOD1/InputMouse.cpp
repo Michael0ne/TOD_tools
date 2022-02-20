@@ -24,7 +24,7 @@ namespace Input {
         m_FullscreenMousePosition.x = m_FullscreenMousePosition.y = NULL;
         m_Position_X = m_Position_Y = m_Position_Z = NULL;
         m_WindowedMousePosition.x = m_WindowedMousePosition.y = NULL;
-        field_44 = NULL;
+        m_WindowsCaptured = NULL;
         m_ShouldBeProcessed = true;
         m_DirectInputInterface = nullptr;
         m_DirectInputDevice = nullptr;
@@ -103,17 +103,17 @@ namespace Input {
 
     void Mouse::SetWindowCapture(HWND window)
     {
-        if (++field_44 == 1)
+        if (++m_WindowsCaptured == 1)
             SetCapture(window ? window : g_Window->m_WindowHandle);
     }
 
     void Mouse::ReleaseWindowCapture()
     {
-        if (field_44-- == 1)
+        if (m_WindowsCaptured-- == 1)
             ReleaseCapture();
 
-        if (field_44 < 0)
-            field_44 = NULL;
+        if (m_WindowsCaptured < 0)
+            m_WindowsCaptured = NULL;
     }
 
     void Mouse::ResetButtonsState()

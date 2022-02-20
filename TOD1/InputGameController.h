@@ -73,13 +73,14 @@ namespace Input
         void     StartRumbleEffect(); // @439C60 // NOTE: unused.
         const char* GetModelNameString() const; // @439DF0 // NOTE: unused.
         void     ProcessController(); // @439E00
+        const int   TranslateToActualGamepadButton(const unsigned int buttonIndex) const;   //  @439860
 
         static unsigned int  ControllersCreated; // @A35E74
         static LPDIENUMDEVICESCALLBACK EnumCallback; // @43A1D0
         static int    DirectInputGamepadsFound; // @A08FD0
         static Gamepad** GamepadsArray; // @A35E6C
         static LPDIRECTINPUT8 DirectInput8Interface; // @A35E78
-        static unsigned int  _A08FD8[]; // @A08FD8
+        static unsigned int  GamepadNormalButtons[]; // @A08FD8
         static unsigned int  SmartJoyButtons[]; // @A09018
     };
 }

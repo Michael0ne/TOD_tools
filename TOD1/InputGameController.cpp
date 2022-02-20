@@ -30,7 +30,7 @@ namespace Input
     int Gamepad::DirectInputGamepadsFound = -1;
     Gamepad** Gamepad::GamepadsArray = nullptr;
     LPDIRECTINPUT8 Gamepad::DirectInput8Interface = nullptr;
-    unsigned int Gamepad::_A08FD8[] =
+    unsigned int Gamepad::GamepadNormalButtons[] =
     {
         8, 9, 10, 11
     };
@@ -407,7 +407,7 @@ namespace Input
             return unk1;
 
         if (!m_SmartJoyGamepad)
-            return _A08FD8[unk1];
+            return GamepadNormalButtons[unk1];
 
         if (m_SmartJoyGamepad == 1)
             return SmartJoyButtons[unk1];
@@ -424,7 +424,7 @@ namespace Input
             return (m_ButtonsStates[button] & 2) && (m_ButtonsStates[button] & 1);
 
         if (!m_SmartJoyGamepad)
-            return (m_ButtonsStates[_A08FD8[button]] & 2) && (m_ButtonsStates[_A08FD8[button]] & 1);
+            return (m_ButtonsStates[GamepadNormalButtons[button]] & 2) && (m_ButtonsStates[GamepadNormalButtons[button]] & 1);
 
         if (m_SmartJoyGamepad != 1)
             return (m_ButtonsStates[button] & 2) && (m_ButtonsStates[button] & 1);
@@ -441,7 +441,7 @@ namespace Input
             return (~m_ButtonsStates[unk1] & 2) && (m_ButtonsStates[unk1] & 1);
 
         if (!m_SmartJoyGamepad)
-            return (~m_ButtonsStates[_A08FD8[unk1]] & 2) && (m_ButtonsStates[_A08FD8[unk1]] & 1);
+            return (~m_ButtonsStates[GamepadNormalButtons[unk1]] & 2) && (m_ButtonsStates[GamepadNormalButtons[unk1]] & 1);
 
         if (m_SmartJoyGamepad != 1)
             return (~m_ButtonsStates[unk1] & 2) && (m_ButtonsStates[unk1] & 1);
@@ -457,7 +457,7 @@ namespace Input
         if (field_B4 != 1)
             return (m_ButtonsStates[button] >> 1) & 1;
         if (!m_SmartJoyGamepad)
-            return (m_ButtonsStates[_A08FD8[button]] >> 1) & 1;
+            return (m_ButtonsStates[GamepadNormalButtons[button]] >> 1) & 1;
         if (m_SmartJoyGamepad != 1)
             return (m_ButtonsStates[button] >> 1) & 1;
 
@@ -640,5 +640,15 @@ namespace Input
             MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
             RELEASE_SAFE(m_DirectInputDevice);
         }
+    }
+    const int Gamepad::TranslateToActualGamepadButton(const unsigned int buttonIndex) const
+    {
+        if (field_B4 != 1)
+            return buttonIndex;
+
+        if (!m_SmartJoyGamepad)
+            return GamepadNormalButtons[buttonIndex];
+        if (m_SmartJoyGamepad)
+            return SmartJoyButtons[buttonIndex];
     }
 }
