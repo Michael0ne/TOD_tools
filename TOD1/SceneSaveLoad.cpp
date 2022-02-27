@@ -14,7 +14,7 @@ SceneSaveLoad::SceneSaveLoad()
 {
     MESSAGE_CLASS_CREATED(SceneSaveLoad);
 
-    m_SavedPlayMode = MODE_NONE;
+    m_SavedPlayMode = Scene::PlayMode::MODE_INGAME;
     m_SavePoint = nullptr;
     m_RewindDataBuffer = nullptr;
     m_RewindDataBufferSize = NULL;
@@ -29,7 +29,7 @@ void SceneSaveLoad::_874940()
 
 void SceneSaveLoad::ResetSavedPlayMode()
 {
-    m_SavedPlayMode = MODE_NONE;
+    m_SavedPlayMode = Scene::PlayMode::MODE_INGAME;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -141,7 +141,7 @@ int* SceneSaveLoad::_873BA0(const unsigned int nodeid)
         case 2:
             return ((nodeid >> 20) & 7) == 1 ? field_0 : nullptr;
         case 3:
-            return m_RewindDataBuffer[m_RewindDataBufferSize];
+            return (int*)&m_RewindDataBuffer[m_RewindDataBufferSize];
         case 4:
             return (int*)&m_SaveInfo_1.m_TransactionBuffer->m_Buffer[m_SaveInfo_1.m_TransactionBuffer->m_Size + m_TransactionBufferSize];
         }
@@ -154,7 +154,7 @@ void SceneSaveLoad::_873C00(const unsigned int, const int* a2)
 {
     switch (m_SavedPlayMode)
     {
-    case MODE_3:
+    case Scene::PlayMode::MODE_REWIND:
     {
         m_RewindDataBufferSize = ((char*)a2 - (char*)m_RewindDataBuffer) >> 2;
         BufferStream.avail_in = m_RewindDataBufferSize * 4;
@@ -175,7 +175,7 @@ void SceneSaveLoad::_873C00(const unsigned int, const int* a2)
         }
         break;
     }
-    case MODE_4:
+    case Scene::PlayMode::MODE_4:
         m_TransactionBufferSize += (char*)&a2[-m_TransactionBufferSize - m_SaveInfo_1.m_TransactionBuffer->m_Size] - m_SaveInfo_1.m_TransactionBuffer->m_Buffer;
         break;
     default:

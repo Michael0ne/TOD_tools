@@ -47,7 +47,12 @@ class ScriptThread : public IScriptThread
         void                    (*field_8)(ScriptThread*);
         Node                   *field_C;
         Scriptbaked            *field_10;
-        unsigned int            field_14;
+    };
+
+    struct NodeScriptDataInfo
+    {
+        Defragmentator             *m_Defragmentator;
+        EntityScriptData           *m_ScriptData;
     };
 
 protected:
@@ -112,13 +117,21 @@ public:
     void                        DumpState(String& outString) const; // @48D690
     void                        AdjustStackSize(const unsigned int size);   //  @48E6A0
     void                        PushToCallStack( void (*funcPtr)(ScriptThread*), const short argNumber, Node* node, void* dummy);   //  @48E700
+    void                        AdjustAndPopStack();    //  @48E630
 
+    static void                 _48CE30();  //  @48CE30
     static bool                 IsThreadExists(const ScriptThread* scriptthread);
     static int                  GetCurrentThreadIndex();    //  @48CC40
 
     static int                  CurrentThread;  //  @A3B758
     static ScriptThread*        Threads[100];   //  @A3B5C8
     static bool                 WarnDelayedException;   //  @A3B770
+    static int                  LatestMethodIndex;    //  @A3B76C
+    static MethodStruct         RecentMethodsArray[4];  //  @A3B5B8
+    static NodeScriptDataInfo   ScriptDataCache[6];    //  @A3B778
+    static int                  LatestScriptDataCacheIndex; //  @A3B768
+    static int                  CurrentLocalOffset; //  @A3B760
+    static int                  CurrentParameterOffset; //  @A3B764
 };
 
 ASSERT_CLASS_SIZE(ScriptThread, 68);

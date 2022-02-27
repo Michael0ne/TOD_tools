@@ -807,13 +807,81 @@ bool KapowEngineClass::CheckAssetChecksum(File& file, const unsigned int propert
     return true;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 bool KapowEngineClass::UpdateGame()
 {
     if (!Scene::SceneInstance)
         return true;
 
-    return true;
+    Scene::SceneInstance->m_FrameBuffer_1->Reset();
+    Scene::SceneInstance->m_FrameBuffer_2->Reset();
+
+    ((Defragmentator*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator)->DefragmentIfNecessary();
+
+    DWORD64 timeBeforeRender = __rdtsc();
+    Scene::SceneInstance->Update();
+    g_GfxInternal->SetClearFlagsForBufferIndex(3, 0);
+
+    bool notLoadingNow = false;
+    if (!g_LoadScreenInfo->m_Enabled)
+    {
+        Scene::SceneInstance->Render();
+        notLoadingNow = true;
+    }
+
+    Scene::TotalFrames++;
+    Scene::SceneInstance->m_RenderTimeMs = (unsigned int)(__rdtsc() - timeBeforeRender);
+#if defined VERBOSE_LOG && defined INCLUDE_FIXES
+    LogDump::LogA("Scene render took %d ms\n", Scene::SceneInstance->m_RenderTimeMs);
+#endif
+
+    const Camera* sceneCamera = Scene::SceneInstance->m_ActiveCamera;
+    if (g_StreamedSoundBuffers && sceneCamera)
+    {
+        Vector4f cameraPos;
+        DirectX::XMMATRIX cameraMat;
+        DirectX::XMVECTOR cameraRotVec;
+        Orientation cameraOrient;
+
+        sceneCamera->GetWorldPos(cameraPos);
+        g_StreamedSoundBuffers->SetListener3DPos(cameraPos);
+        sceneCamera->GetWorldMatrix(cameraMat);
+        cameraRotVec = DirectX::XMQuaternionRotationMatrix(cameraMat);
+        //  NOTE: I'm not sure if compiler will make good conversion out of 128 bit into 3 32 bit floating points, so here goes.
+        cameraOrient.w = *(float*)&cameraMat;
+        cameraOrient.x = *(float*)(&cameraMat + (int)1);
+        cameraOrient.y = *(float*)(&cameraMat + (int)2);
+        cameraOrient.z = 0;
+
+        g_StreamedSoundBuffers->SetListener3DOrientation(cameraOrient);
+        SoundSlot::UpdateSoundGroups(Scene::RealTimePassed);
+        g_StreamedSoundBuffers->UpdateSoundBuffers();
+    }
+
+    if (notLoadingNow)
+    {
+        Scene::SceneInstance->m_FrameBuffer_1->_436BF0();
+        Scene::SceneInstance->m_FrameBuffer_2->_436BF0();
+        Scene::SceneInstance->m_FrameBuffer_1->_436040(19, 0);
+        Scene::SceneInstance->m_FrameBuffer_2->_436040(29, 0);
+
+        if (g_GfxInternal->m_RenderBufferEmpty)
+            g_AssetManager->DestroySceneNodesFrameBuffers(1);
+        else
+            g_GfxInternal->Render(nullptr, true, -1, -1);
+    }
+
+    if (g_KapowEngine->m_SceneName.Empty())
+    {
+        Scene::SceneInstance->Reset();
+        Scene::SceneInstance->Destroy();
+        g_Progress->Enable();
+        g_KapowEngine->OpenScene(g_KapowEngine->m_SceneName.m_Str);
+        g_Progress->Disable();
+        g_KapowEngine->m_SceneName.Clear();
+        Scene::SceneInstance->Start();
+    }
+
+    return false;
 }
 
 void KapowEngineClass::_93CDA0(const char* const str)

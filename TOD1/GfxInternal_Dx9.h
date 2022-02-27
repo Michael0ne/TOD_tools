@@ -10,6 +10,7 @@
 #include <directxmath\include\DirectXMath.h>
 #include <vector>
 
+//  NOTE: actual class path could be 'libs/adapter/dx9/gfxdx9.h".
 class GfxInternal_Dx9
 {
     friend class GfxInternal;

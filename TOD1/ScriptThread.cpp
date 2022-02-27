@@ -5,6 +5,12 @@
 int ScriptThread::CurrentThread;
 ScriptThread* ScriptThread::Threads[100];
 bool ScriptThread::WarnDelayedException;
+int ScriptThread::LatestMethodIndex;
+ScriptThread::MethodStruct ScriptThread::RecentMethodsArray[4];
+ScriptThread::NodeScriptDataInfo ScriptThread::ScriptDataCache[6];
+int ScriptThread::LatestScriptDataCacheIndex;
+int ScriptThread::CurrentLocalOffset;
+int ScriptThread::CurrentParameterOffset;
 
 ScriptThread::~ScriptThread()
 {
@@ -43,6 +49,11 @@ void ScriptThread::Reset()
         m_ThreadFlags.Suspended = false;
         m_ThreadFlags.MarkedForSuspend = false;
     }
+}
+
+void ScriptThread::_48CE30()
+{
+    
 }
 
 const int ScriptThread::_48CD00() const

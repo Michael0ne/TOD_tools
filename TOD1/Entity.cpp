@@ -21,10 +21,10 @@ Entity::~Entity()
 {
     MESSAGE_CLASS_DESTROYED(Entity);
 
-    if (field_20 && field_20->m_ScriptThread)
+    if (m_ScriptData && m_ScriptData->m_ScriptThread)
     {
         //m_Defragmentator->stub4((field_20 - m_Defragmentator->m_AllocatedSpace) / 12);
-        field_20 = nullptr;
+        m_ScriptData = nullptr;
     }
 
     if (m_Parameters)
@@ -41,16 +41,25 @@ Entity::Entity()
     MESSAGE_CLASS_CREATED(Entity);
 
     m_Defragmentator = NULL;
-    field_20 = nullptr;
+    m_ScriptData = nullptr;
     m_Id.HasPosition = true;
     m_Id.HasFragment = true;
     m_Id.HasQuadTree = true;
     m_Id._3 = 0x1F; //  NOTE: what is this?
     m_ScriptEntity = nullptr;
     m_Parameters = nullptr;
-    field_20 = nullptr;
+    m_ScriptData = nullptr;
 
-    memset(field_8, NULL, sizeof(field_8));
+    field_8 = 0;
+    field_9 = 0;
+    field_A = 0;
+    field_B = 0;
+    field_C = 0;
+    field_D = 0;
+    field_E = 0;
+    field_F = 0;
+    field_10 = 0;
+    field_11 = 0;
 
     m_Id.Id = g_AssetManager->AddEntity(this);
 }
@@ -87,22 +96,22 @@ int Entity::GetId() const
 
 int Entity::GetScriptPriority() const
 {
-    if (!field_20 || !field_20->m_ScriptThread)
+    if (!m_ScriptData || !m_ScriptData->m_ScriptThread)
         return NULL;
 
-    return field_20->m_ScriptThread->m_ThreadFlags.Priority;
+    return m_ScriptData->m_ScriptThread->m_ThreadFlags.Priority;
 }
 
 void Entity::SetScriptPriority(const unsigned char priority)
 {
-    if (!field_20 || !field_20->m_ScriptThread)
+    if (!m_ScriptData || !m_ScriptData->m_ScriptThread)
         return;
 
-    field_20->m_ScriptThread->m_ThreadFlags.Priority = priority;
+    m_ScriptData->m_ScriptThread->m_ThreadFlags.Priority = priority;
     
-    const short globid = field_20->m_ScriptThread->m_ScriptNode->m_GlobalIdInBlockigList;
+    const short globid = m_ScriptData->m_ScriptThread->m_ScriptNode->m_GlobalIdInBlockigList;
     if (globid >= 0)
-        Node::NodesWithUpdateOrBlockingScripts[globid].m_Flags.m_GlobalId = field_20->m_ScriptThread->m_ThreadFlags.Priority;
+        Node::NodesWithUpdateOrBlockingScripts[globid].m_Flags.m_GlobalId = m_ScriptData->m_ScriptThread->m_ThreadFlags.Priority;
 }
 
 void Entity::GetPropertyId(int* args) const

@@ -15,7 +15,8 @@ public:
         MODE_INGAME = 0,
         MODE_STOP = 1,
         MODE_PAUSED = 2,
-        MODE_REWIND = 3
+        MODE_REWIND = 3,
+        MODE_4 = 4
     };
 
     enum SaveOperationStatus
@@ -94,6 +95,7 @@ public:
     class FrameBuffer*   m_FrameBuffers[31];
     class FrameBuffer*   m_FrameBuffer_1;
     class FrameBuffer*   m_FrameBuffer_2;
+    unsigned int    m_RenderTimeMs;
     UINT64          m_StartTimeMs;
     int             field_268;
 
@@ -162,6 +164,8 @@ public:
     void            BuildFastFindNodeVector(int* args); //  @892CA0
     void            DeleteFastFindNodeVector(int* args);    //  @892CB0
     void            UnloadLoadedFolders();  //  @8953E0
+    void            Reset();    //  @89A1A0
+    void            CountBlockingScriptNodes(); //  @895480
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4
@@ -230,5 +234,5 @@ public:
 
 extern EntityType* tScene; // @A3DCB8
 
-ASSERT_CLASS_SIZE(Scene, 616); // FIXME: actual size is 620 (0x26C).
+ASSERT_CLASS_SIZE(Scene, 620);
 ASSERT_CLASS_SIZE(Scene::QuadTree, 32);

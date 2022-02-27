@@ -34,19 +34,8 @@ public:
     }               m_Id;
     int            *m_Parameters; // NOTE: an array of properties values.
     Defragmentator *m_Defragmentator;
-    
-    struct EntityScriptData
-    {
-        int         field_0;    //  NOTE: flags of some sort.
-        ScriptThread*m_ScriptThread;
-        void        (*m_Handler)();
-        int         field_C;
-        int        *field_10;
-        int         field_14;
-        int         field_18;
-        int        *field_1C;
-        int        *field_20;
-    }              *field_20;
+
+    EntityScriptData   *m_ScriptData;
 
     int             SaveScriptDataToFile_Impl(MemoryCards* memcard, int memcardindex, int savegameslot, const char* a4); // @86B650
     unsigned char   LoadScriptDataFromFile_Impl(EntityType*, int, int); // @86B8B0

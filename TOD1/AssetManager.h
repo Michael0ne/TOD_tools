@@ -130,8 +130,10 @@ public:
     int                         m_ActiveBlockId;
     char                        m_FingerprintKey[256]; // NOTE: default value is 'THIS IS THE DEFAULT FINGERPRINT KEY, PLEASE CHANGE IT!". LOLZ.
     int                         field_108;
+
     DefragmentatorBase*         m_Defragmentator;
     std::vector<AssetInfo>      m_DefragmentatorList;
+
     std::vector<FastFindInfo>   m_FastFindNodeVector;
     std::vector<Entity*>        m_NodesList[6];
     std::vector<Asset*>         m_ResourcesInstancesList;
@@ -211,6 +213,7 @@ public:
     Asset*                      FindLoadedAsset(const char* const assetname);   //  @876140
     void                        InstantiateAssetsAndClearAssetsList();  //  @875EB0
     Node*                       FindEntityById(const int id);   //  @879740
+    void                        _8794B0(const char* const respath);  //  @8794B0    //  NOTE: only two references are present 
 
     static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, PlatformId platform); // @876500
     static RegionCode           RegionIdByName(const String& region); // @875450

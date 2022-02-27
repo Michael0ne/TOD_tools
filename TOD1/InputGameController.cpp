@@ -650,5 +650,7 @@ namespace Input
             return GamepadNormalButtons[buttonIndex];
         if (m_SmartJoyGamepad)
             return SmartJoyButtons[buttonIndex];
+
+        return buttonIndex;
     }
 }

@@ -139,6 +139,7 @@ public:
     IFile(); // NOTE: no actual constructor since it's interface.
 };
 
+//  NOTE: actual class path is "libs/adapter/filebuffer.h".
 class File : public IFile
 {
     friend class FileWrapper;

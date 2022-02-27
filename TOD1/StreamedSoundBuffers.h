@@ -132,7 +132,7 @@ public:
     void      SetListener3DPos(const Vector4f& pos); // @43D560
     void      SetListener3DOrientation(const Orientation& orient); // @43D6F0
     void      GetListener3DOrientation(Orientation& outOrient); // @43DFD0
-    void      WaitForSoftPause(); // @43E640
+    void      UpdateSoundBuffers(); // @43E640
     int       GetPlayingSoundsNumber(); // @43E7B0 // NOTE: unused
     void      MeasureWaitForSoftPause(); // @43E800
     void      _43E850(); // @43E850 // NOTE: unused

@@ -43,6 +43,7 @@ public:
 
     SoundSlot(); // @89D590
 
+    static void                 UpdateSoundGroups(const float time);    //  @89D120
     static bool                 AllocateGlobalStreamedSound(const char* const filename, const bool ismono, const int a3);  //  @89CF90
     static void                 DeallocateGlobalStreamedSound();    //  @89CEB0
 

@@ -143,6 +143,11 @@ SoundSlot::SoundSlot() : Node(NODE_MASK_EMPTY)
     // TODO: initialize more lists here.
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void SoundSlot::UpdateSoundGroups(const float time)
+{
+}
+
 bool SoundSlot::AllocateGlobalStreamedSound(const char* const filename, const bool ismono, const int a3)
 {
     if (StreamedSoundBuffer::GlobalStreamedSound)

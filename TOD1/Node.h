@@ -146,6 +146,8 @@ public:
     const char*         GetScript() const;  //  @86A230
     unsigned int        GetFlags() const;   //  @495DB0
 
+    void                SetScriptData(Defragmentator* defrag, EntityScriptData* data);  //  @48B700
+    void                GetWorldPos(Vector4f& pos) const; //  @484370
     void                SetParam(const int index, const void* param, DataType* type);   //  @86A3C0 //  NOTE: probably it's 'SetScriptParam'.
     void                SetOrient(const Orientation& orient);   //  @88DB20
     Vector4f*           GetPos(Vector4f& outVec);   //  @483620
@@ -259,8 +261,9 @@ public:
         Node           *m_Node;
         union
         {
-            unsigned    m_Id : 16;
-            unsigned    m_GlobalId : 8;
+            signed      m_Id : 16;
+            signed      m_GlobalId : 6;
+            signed      PositionInStack : 2;
         }               m_Flags;
     };
 

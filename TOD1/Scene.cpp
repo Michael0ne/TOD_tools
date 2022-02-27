@@ -17,6 +17,7 @@
 #include "IntegerType.h"
 #include "SceneSaveLoad.h"
 #include "StreamedSoundBuffers.h"
+#include "ScriptThread.h"
 
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
@@ -603,6 +604,56 @@ void Scene::BuildFastFindNodeVector(int* args)
 void Scene::DeleteFastFindNodeVector(int* args)
 {
     g_AssetManager->DeleteFastFindNodeVector();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Scene::UnloadLoadedFolders()
+{
+}
+
+void Scene::Reset()
+{
+    if (m_PlayMode == MODE_STOP)
+        return;
+
+    if (IsRewindBufferInUse)
+        ResetRewindBuffer(true);
+
+    g_SceneSaveLoad->ResetSavedPlayMode();
+    const int playmodeStopCommand = GetCommandByName("playmode_stop");
+    if (playmodeStopCommand >= 0)
+        TriggerScriptForAllChildren(playmodeStopCommand, this, nullptr);
+
+    if (g_AssetManager->m_LoadBlocks)
+        UnloadLoadedFolders();
+
+    g_AssetManager->m_BlocksUnloaded = true;
+    DestroyAllChildren();
+    g_AssetManager->m_BlocksUnloaded = false;
+
+    m_LoadedBlocks[0] = nullptr;
+    m_LoadedBlocks[1] = nullptr;
+    m_LoadedBlocks[2] = nullptr;
+    m_LoadedBlocks[3] = nullptr;
+    m_LoadedBlocks[4] = nullptr;
+    m_LoadedBlocks[5] = nullptr;
+    m_LoadedBlocks[6] = nullptr;
+    m_LoadedBlocks[7] = nullptr;
+
+    ClearNodesLists();
+    InstantiateAssetsToLists();
+    ScriptThread::_48CE30();
+    m_SharedProbe->Reset();
+    m_Fragment->m_FragmentRes->ApplyFragmentResource(m_Id.Id, true);
+    g_AssetManager->_8794B0(0);
+    Scriptbaked::AssignCommonNodes();
+    NextUpdateTime = 0;
+    GameTimeMs = 0;
+    InstantiateAllChildren();
+    UpdateLoadedBlocks_Impl(1, nullptr);
+    EnumSceneCamerasAndUpdate();
+    TotalFrames = 0;
+    NewFrameNumber = 0;
 }
 
 void Scene::Start()

@@ -826,6 +826,11 @@ void AssetManager::InstantiateAssetsAndClearAssetsList()
     m_AssetsList.clear();
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void AssetManager::_8794B0(const char* const respath)
+{
+}
+
 void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)
 {
     m_ResourcesInstancesList.insert(m_ResourcesInstancesList.begin(), index, {});

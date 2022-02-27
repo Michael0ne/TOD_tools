@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 
+//  NOTE: original class path is '/kernel/database/datatype.h".
 class DataType
 {
 public:

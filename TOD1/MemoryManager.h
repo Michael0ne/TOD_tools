@@ -27,7 +27,7 @@ public:
     MemoryManager(); // @478040
     ~MemoryManager(); // @9B1AF0
 
-    static char     _477BC0(void* ptr, int a2); // @477BC0
+    static char     CheckIfCanExpandMemoryBySize(void* ptr, int a2); // @477BC0
     static class DefragmentatorBase* GetDefragmentator(AllocatorIndex allocind); // @4777F0
     static void     ReleaseMemory(void* ptr, bool aligned); // @4778D0
     static Allocator* GetAllocatorByMemoryPointer(void* ptr); // @4777B0

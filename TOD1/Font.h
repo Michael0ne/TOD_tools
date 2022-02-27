@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 
+//  NOTE: actual class path 'libs/adapter/fontbuffer.h".
 class Font
 {
     struct Glyph

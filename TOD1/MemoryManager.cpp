@@ -154,7 +154,7 @@ MemoryManager::~MemoryManager()
     Released = true;
 }
 
-char MemoryManager::_477BC0(void* ptr, int a2)
+char MemoryManager::CheckIfCanExpandMemoryBySize(void* ptr, int a2)
 {
     if (a2 <= NULL)
         return 1;

@@ -59,9 +59,9 @@ void NodeMatrix::GetMatrix(DirectX::XMMATRIX& outMat) const
 
 void NodeMatrix::SetTransformationFromMatrix(const DirectX::XMMATRIX& mat)
 {
-    m_RightVector  = *(Vector4f*)&mat.r[0];
-    m_UpVector   = *(Vector4f*)&mat.r[1];
-    m_ForwardVector  = *(Vector4f*)&mat.r[2];
+    m_RightVector = *(Vector4f*)&mat.r[0];
+    m_UpVector = *(Vector4f*)&mat.r[1];
+    m_ForwardVector = *(Vector4f*)&mat.r[2];
     m_PositionVector = *(Vector4f*)&mat.r[3];
 }
 
@@ -76,7 +76,7 @@ void Node::Destroy()
     SetParent(nullptr);
 
     delete m_Fragment;
-    
+
     if (m_Position && m_Position->m_Owner == this)
         delete m_Position;
 
@@ -153,9 +153,9 @@ void Node::_86B4B0(const int size)
 void Node::_86A930(const int size, int* value, int* const outval, const int a4)
 {
     EntityType* ent = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
-    *Scene::_A3CEE8++ = 
-        ( (m_Id.Id << 8) | ( (*(short*)&m_Id & 0x7000) - 1 ) & 0xF000 ) |
-        ( (short)size + (short)ent->m_LocalPropertiesList.size() + (short)ent->m_TotalLocalProperties) & 0xFFF;
+    *Scene::_A3CEE8++ =
+        ((m_Id.Id << 8) | ((*(short*)&m_Id & 0x7000) - 1) & 0xF000) |
+        ((short)size + (short)ent->m_LocalPropertiesList.size() + (short)ent->m_TotalLocalProperties) & 0xFFF;
     Scene::_A3CEE8 += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->stub9((char*)value, (char*)Scene::_A3CEE8);
     if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::_A3CEE8) < 0x4000)
         Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::_A3CEE8);
@@ -288,9 +288,9 @@ void Node::TouchThisPivot(const int)
 
 void Node::IsSuspended(bool* suspended) const
 {
-    *suspended = field_20 &&
-        field_20->m_ScriptThread &&
-        field_20->m_ScriptThread->m_ThreadFlags.Suspended != false;
+    *suspended = m_ScriptData &&
+        m_ScriptData->m_ScriptThread &&
+        m_ScriptData->m_ScriptThread->m_ThreadFlags.Suspended != false;
 }
 
 void Node::IsDisabled(bool* disabled) const
@@ -808,9 +808,9 @@ void Node::SetPosFast_Impl(const Vector4f& pos)
     if (m_CollisionIgnoreList)
     {
         const float dist =
-            ( (pos.z - m_CollisionIgnoreList->m_Position_1.z) * (pos.z - m_CollisionIgnoreList->m_Position_1.z) ) +
-            ( (pos.y - m_CollisionIgnoreList->m_Position_1.y) * (pos.y - m_CollisionIgnoreList->m_Position_1.y) ) +
-            ( (pos.x - m_CollisionIgnoreList->m_Position_1.x) * (pos.x - m_CollisionIgnoreList->m_Position_1.x) );
+            ((pos.z - m_CollisionIgnoreList->m_Position_1.z) * (pos.z - m_CollisionIgnoreList->m_Position_1.z)) +
+            ((pos.y - m_CollisionIgnoreList->m_Position_1.y) * (pos.y - m_CollisionIgnoreList->m_Position_1.y)) +
+            ((pos.x - m_CollisionIgnoreList->m_Position_1.x) * (pos.x - m_CollisionIgnoreList->m_Position_1.x));
         if (dist > 100)
             m_CollisionIgnoreList->m_Position_1 = { pos.x, pos.y, pos.z };
     }
@@ -861,17 +861,17 @@ void Node::GetPlatform(int* args) const
     };
 
 #ifdef INCLUDE_FIXES
-    #ifdef PLATFORM_PC
-        *args = PlatformNumber[0];
-    #endif
-    #ifdef PLATFORM_PS2
-        *args = PlatformNumber[1];
-    #endif
-    #ifdef PLATFORM_XBOX
-        *args = PlatformNumber[2];
-    #endif
+#ifdef PLATFORM_PC
+    * args = PlatformNumber[0];
+#endif
+#ifdef PLATFORM_PS2
+    * args = PlatformNumber[1];
+#endif
+#ifdef PLATFORM_XBOX
+    * args = PlatformNumber[2];
+#endif
 #else
-    *args = NULL;
+    * args = NULL;
 #endif
 }
 
@@ -1078,6 +1078,30 @@ unsigned int Node::GetFlags() const
     return m_Flags.m_Flags & 0xFFF;
 }
 
+void Node::SetScriptData(Defragmentator* defrag, EntityScriptData* data)
+{
+    const int blockinglistid = m_GlobalIdInBlockigList;
+    if (blockinglistid >= 0)
+    {
+        NodesWithUpdateOrBlockingScripts[blockinglistid].m_Flags.m_GlobalId = -1;
+        NodesWithUpdateOrBlockingScripts[blockinglistid].m_Flags.m_Id = -1;
+
+        if (data && data->m_ScriptThread)
+            NodesWithUpdateOrBlockingScripts[blockinglistid].m_Flags.PositionInStack = data->m_ScriptThread->m_StackSize;
+    }
+
+    m_ScriptData = data;
+    m_Defragmentator = defrag;
+}
+
+void Node::GetWorldPos(Vector4f& pos) const
+{
+    DirectX::XMMATRIX mat;
+    GetWorldMatrix(mat);
+
+    pos = *(Vector4f*)&mat.r[3].m128_f32;
+}
+
 void Node::SetParam(const int index, const void* param, DataType* type)
 {
     if (!m_ScriptEntity)
@@ -1191,7 +1215,7 @@ void Node::SetPos(const Vector4f& newpos)
             float vecdiffx = newpos.x - m_CollisionIgnoreList->m_Position_1.x;
             float vecdiffy = newpos.y - m_CollisionIgnoreList->m_Position_1.y;
             float vecdiffz = newpos.z - m_CollisionIgnoreList->m_Position_1.z;
-            if ( ((vecdiffz * vecdiffz) + (vecdiffy * vecdiffy) + (vecdiffx * vecdiffx)) <= 100.f)
+            if (((vecdiffz * vecdiffz) + (vecdiffy * vecdiffy) + (vecdiffx * vecdiffx)) <= 100.f)
             {
                 float negflt = 1.f - Script::_A11C90;
                 m_Position->m_Position =
@@ -1321,7 +1345,7 @@ void Node::_869EC0(const unsigned int paramind, const void* paramptr, DataType& 
     if (tb->m_Buffer[tb->m_Chunks - (int)Scene::_A3CEE4] < 1024)
         tb->_8AA1F0(&Scene::_A3CEE4);
 
-    field_8[paramind / 8] |= 1 << (paramind & 7);
+    *(&field_8 + (paramind / 8)) |= 1 << (paramind & 7);
 }
 
 void Node::_869F80(const unsigned int paramind, const void* paramptr, DataType& paramtype)
@@ -1334,7 +1358,7 @@ void Node::_869F80(const unsigned int paramind, const void* paramptr, DataType& 
         g_SceneSaveLoad->_873C00(m_Id.Id, &v1[paramtype.stub9((char*)paramptr, (char*)v1)]);
     }
 
-    field_8[paramind / 8 + 5] |= 1 << (paramind & 7);
+    *(&field_8 + (paramind / 8 + 5)) |= 1 << (paramind & 7);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -1399,11 +1423,11 @@ void Node::ClearFromSceneList()
 
 void Node::_86A190()
 {
-    field_8[5] = NULL;
-    field_8[6] = NULL;
-    field_8[7] = NULL;
-    field_8[8] = NULL;
-    field_8[9] = NULL;
+    field_D = 0;
+    field_E = 0;
+    field_F = 0;
+    field_10 = 0;
+    field_11 = 0;
 }
 
 void Node::SetFragment(const char* const fragmentpath)
@@ -1412,7 +1436,7 @@ void Node::SetFragment(const char* const fragmentpath)
     if (child)
     {
         Node* sibling;
-        do 
+        do
         {
             sibling = child->m_NextSibling;
             child->Destroy();

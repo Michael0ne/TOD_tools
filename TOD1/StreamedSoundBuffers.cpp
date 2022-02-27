@@ -499,7 +499,7 @@ void StreamedSoundBuffers::GetListener3DOrientation(Orientation& outOrient)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffers::WaitForSoftPause()
+void StreamedSoundBuffers::UpdateSoundBuffers()
 {
     // TODO: SoundBuffer class is not fully researched yet, so no implementation for now...
 }
@@ -520,14 +520,14 @@ void StreamedSoundBuffers::MeasureWaitForSoftPause()
 
     while (m_GlobalPauseCalled)
     {
-        WaitForSoftPause();
+        UpdateSoundBuffers();
         Sleep(10);
     }
 
     int interval = Timer::GetMilliseconds() - startTime;
 
     if (interval > 10)
-        LogDump::LogA("WaitForSoftPause slept %dms\n", interval);
+        LogDump::LogA("MeasureWaitForSoftPause slept %dms\n", interval);
 }
 
 void StreamedSoundBuffers::_43E850()

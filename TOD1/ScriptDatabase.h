@@ -31,6 +31,21 @@
 class DataType;
 class EntityType;
 class Entity;
+class ScriptThread;
+
+//  NOTE: this is here, because both ScriptThread nad Entity classes are dependant on this header.
+struct EntityScriptData
+{
+    int         field_0;    //  NOTE: flags of some sort.
+    ScriptThread*m_ScriptThread;
+    void        (*m_Handler)();
+    int         field_C;
+    int        *field_10;
+    int         field_14;
+    int         field_18;
+    int        *field_1C;
+    int        *field_20;
+};
 
 struct GlobalProperty
 {
