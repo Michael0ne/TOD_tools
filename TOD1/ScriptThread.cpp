@@ -51,9 +51,70 @@ void ScriptThread::Reset()
     }
 }
 
+void ScriptThread::_48E390()
+{
+    if (m_ThreadFlags.Suspended)
+        return;
+
+    if (m_ThreadFlags.Sleeping)
+    {
+        unsigned int nextWakeTimeMs;
+        if (m_ThreadFlags.SleepRealTime)
+            nextWakeTimeMs = Scene::RealTimeMs;
+        else
+            if (m_ThreadFlags._28)
+                nextWakeTimeMs = Scene::NextUpdateTime;
+            else
+                nextWakeTimeMs = Scene::GameTimeMs;
+
+        if (m_SleepUntil <= nextWakeTimeMs)
+        {
+            m_CurrentStackElement = &m_CallStack[m_CallStack.size() - 1];
+            m_ScriptNode->_86B610();
+            m_WaitForFrame = -1;
+            m_ThreadFlags.Sleeping = false;
+            Threads[CurrentThread++] = this;
+            m_CurrentStackElement->m_FuncPtr(this);
+
+            while (m_CallStack.size())
+            {
+                if (m_ThreadFlags.Sleeping || m_WaitForFrame != -1)
+                    break;
+
+                m_CurrentStackElement->m_FuncPtr(this);
+            }
+
+            --CurrentThread;
+        }
+    }
+    else
+    {
+        int nextWakeFrame = m_ThreadFlags._28 ? Scene::TotalFrames : Scene::NewFrameNumber;
+        if (m_WaitForFrame == -1 || nextWakeFrame)
+        {
+            m_CurrentStackElement = &m_CallStack[m_CallStack.size() - 1];
+            m_ScriptNode->_86B610();
+            m_WaitForFrame = -1;
+            m_ThreadFlags.Sleeping = false;
+            Threads[CurrentThread++] = this;
+            m_CurrentStackElement->m_FuncPtr(this);
+
+            while (m_CallStack.size())
+            {
+                if (m_ThreadFlags.Sleeping || m_WaitForFrame != -1)
+                    break;
+
+                m_CurrentStackElement->m_FuncPtr(this);
+            }
+
+            --CurrentThread;
+        }
+    }
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 void ScriptThread::_48CE30()
 {
-    
 }
 
 const int ScriptThread::_48CD00() const

@@ -64,7 +64,7 @@ public:
     virtual bool    NotEqualTo(void*, void*) const; // @862AB0
     virtual void    ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const; // @8637D0
     virtual void    PerformOperation(int operationId, void* params) const; // @8C4D60
-    virtual char    stub19(int, int); // @8637E0
+    virtual char    IsReferenced(int* a1, int); // @8637E0
     virtual bool    IsValidValueForType(void*) const; // @489440
 
 private:

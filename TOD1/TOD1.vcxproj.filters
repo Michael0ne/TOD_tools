@@ -155,7 +155,7 @@
     <ClInclude Include="Random.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
-    <ClInclude Include="RenderBuffer.h">
+    <ClInclude Include="RenderList.h">
       <Filter>Header files\KapowSystems\Render</Filter>
     </ClInclude>
     <ClInclude Include="LogDump.h">
@@ -661,7 +661,7 @@
     <ClCompile Include="Random.cpp">
       <Filter>Source files\KapowSystems\System</Filter>
     </ClCompile>
-    <ClCompile Include="RenderBuffer.cpp">
+    <ClCompile Include="RenderList.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="LogDump.cpp">

@@ -21,7 +21,7 @@ public:
     virtual bool NotEqualTo(void*, void*) const; // @868240
     virtual void ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const; // @8682D0
     virtual void PerformOperation(int operationId, void* params) const; // @868C30
-    virtual char stub19(int, int); // @8685A0
+    virtual char IsReferenced(int, int); // @8685A0
 
     void* operator new (size_t size)
     {

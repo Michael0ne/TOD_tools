@@ -79,7 +79,7 @@ void DictType::PerformOperation(int operationId, void* params) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-char DictType::stub19(int, int)
+char DictType::IsReferenced(int, int)
 {
     return 0;
 }

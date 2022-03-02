@@ -6,6 +6,7 @@ class FrameBuffer;
 // NOTE: actual path to header file "/Editor/EditorCamera.h".
 class EditorCamera : public Camera
 {
+    friend class Scene;
 protected:
     char            field_D4;
     char            field_D5;

@@ -166,6 +166,7 @@ public:
     void            UnloadLoadedFolders();  //  @8953E0
     void            Reset();    //  @89A1A0
     void            CountBlockingScriptNodes(); //  @895480
+    void            SyncEditorCamera(const bool kdtreealloc, const int gamepadindex);   //  @893780
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4
@@ -215,12 +216,16 @@ public:
     static QuadTree*    QuadTrees;  //  @A3B580
     static short    _A120E8;    //  @A120E8
     static int      _A3DD40;    //  @A3DD40
-    static std::vector<EntityReference>* DanglingEntityReferences;  //  @A3CEEC
+    static std::vector<EntityReference>    *DanglingEntityReferences;  //  @A3CEEC
+    static std::map<int*, int>             *DanglingEntityReferencesMap;    //  @A3CEF0
 
     static int      PreBlocksUnloadedCommand; // @A3DCF8
     static int      BlocksUnloadedCommand; // @A3DCFC
     static int      InvalidatePlaceholderModelCommand; // @A12098
     static int      RewindOrRetryFinishedCommand; // @A1209C
+    static float    FrameRateHistory[100];  //  @A3DA80 //  NOTE: only calculated, but not used anywhere. Maybe an editor leftover.
+    static int      FrameRateHistoryIndex;  //  @A3DCDC
+    static float    FrameTimeTotal; //  @A3DCD8 //  NOTE: only calculated, but not used anywhere. Maybe an editor leftover.
 
 private:
     static const int    RewindCollectInterval = 2000;   //  @A12084 //  NOTE: interval when rewind buffer is updated.

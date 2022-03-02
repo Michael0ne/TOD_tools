@@ -6,7 +6,7 @@
 #define RENDERBUFFER_DEFAULT_BUFFER_SIZE 128
 #define RENDERBUFFER_MAX_PARAMS_SIZE 250
 
-class RenderBuffer
+class RenderList
 {
     friend class FrameBuffer;
 public:
@@ -155,8 +155,8 @@ protected:
     void            SetBufferSize(const unsigned int size); // @415350
 
 public:
-    RenderBuffer(const unsigned int maxParams, AllocatorIndex allocatorType); // @415400
-    RenderBuffer();
+    RenderList(const unsigned int maxParams, AllocatorIndex allocatorType); // @415400
+    RenderList();
 
     void* operator new(size_t size)
     {
@@ -220,6 +220,6 @@ public:
     static int      MeshBuffersDrawn;   //  @A35E64
 };
 
-extern RenderBuffer*    g_RenderBuffer; // @A35E60
+extern RenderList*    g_RenderBuffer; // @A35E60
 
-ASSERT_CLASS_SIZE(RenderBuffer, 20);
+ASSERT_CLASS_SIZE(RenderList, 20);

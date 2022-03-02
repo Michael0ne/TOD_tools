@@ -15,6 +15,7 @@ protected:
 public:
     LoadScreenNode(); // @87CAE0
     virtual ~LoadScreenNode();  //  @87CB50
+    virtual void Instantiate() override;    //  @87C6F0
 
     const char* GetImageFile() const; // @8A9B10
     void        SetImageFile(const char*); // @87C800

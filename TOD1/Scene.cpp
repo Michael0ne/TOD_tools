@@ -18,11 +18,14 @@
 #include "SceneSaveLoad.h"
 #include "StreamedSoundBuffers.h"
 #include "ScriptThread.h"
+#include "ControlSetup.h"
+#include "EditorCamera.h"
 
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
 AuxQuadTree* Scene::SceneTree;
 std::vector<Scene::EntityReference>* Scene::DanglingEntityReferences;
+std::map<int*, int>* Scene::DanglingEntityReferencesMap;
 
 unsigned int Scene::QuadTreesAllocated;
 Scene::QuadTree* Scene::QuadTrees;
@@ -46,6 +49,9 @@ int Scene::_A3D8D8[100];
 int Scene::_A3DC38[4];
 int Scene::UpdateOrBlockingListSize;
 bool Scene::_A3D858;
+float   Scene::FrameRateHistory[100];
+int Scene::FrameRateHistoryIndex;
+float   Scene::FrameTimeTotal;
 
 int Scene::PreBlocksUnloadedCommand;
 int Scene::BlocksUnloadedCommand;
@@ -498,8 +504,8 @@ float Scene::GetWindSize() const
     if (!m_RewindBuffer1 || !m_RewindBuffer2)
         return 0.f;
 
-    int windsize1 = m_RewindBuffer1->m_List_1.size() ? m_RewindBuffer1->m_List_1.end()->m_WindSize : NULL;
-    int windsize2 = m_RewindBuffer2->m_List_1.size() ? m_RewindBuffer2->m_List_1.end()->m_WindSize : NULL;
+    int windsize1 = m_RewindBuffer1->m_List_1.size() ? m_RewindBuffer1->m_List_1.end()->m_GameTimeMs : NULL;
+    int windsize2 = m_RewindBuffer2->m_List_1.size() ? m_RewindBuffer2->m_List_1.end()->m_GameTimeMs : NULL;
 
     if (!windsize1 || !windsize2)
         return 0.f;
@@ -593,7 +599,7 @@ void Scene::UpdateLoadedBlocks(int* args)
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::UpdateLoadedBlocks_Impl(const int dummy, Node* callbackEntity)
 {
-    g_StreamedSoundBuffers->MeasureWaitForSoftPause();
+    g_StreamedSoundBuffers->WaitForSoftPause();
 }
 
 void Scene::BuildFastFindNodeVector(int* args)
@@ -654,6 +660,48 @@ void Scene::Reset()
     EnumSceneCamerasAndUpdate();
     TotalFrames = 0;
     NewFrameNumber = 0;
+}
+
+void Scene::SyncEditorCamera(const bool kdtreealloc, const int gamepadindex)
+{
+    m_QuadTreesAllocated = kdtreealloc;
+    if (!kdtreealloc)
+    {
+        ControlSetup::ControllersUsedByEditor[0] = false;
+        ControlSetup::ControllersUsedByEditor[1] = false;
+
+        StoreGameCamera();
+        return;
+    }
+
+    if (m_GameCamera && m_EditorCamera && m_PlayMode != MODE_STOP)
+    {
+        Vector4f cameraPos;
+        Orientation cameraOrient;
+        m_GameCamera->GetWorldPos(cameraPos);
+        m_EditorCamera->SetPos(cameraPos);
+
+        m_GameCamera->GetOrient(cameraOrient);
+        m_EditorCamera->SetOrient(cameraOrient);
+        m_EditorCamera->SetParam(11, &m_EditorCamera->m_Fov, tNUMBER);
+        m_EditorCamera->m_Fov = m_GameCamera->m_Fov;
+
+        if (EntityType::IsParentOf(tEditorCamera, m_EditorCamera))
+            m_EditorCamera->m_GamepadIndex = gamepadindex;
+    }
+
+    if (gamepadindex >= 0)
+    {
+        ControlSetup::ControllersUsedByEditor[gamepadindex] = true;
+        StoreGameCamera();
+    }
+    else
+    {
+        ControlSetup::ControllersUsedByEditor[0] = false;
+        ControlSetup::ControllersUsedByEditor[1] = false;
+
+        StoreGameCamera();
+    }
 }
 
 void Scene::Start()

@@ -15,7 +15,6 @@
 #include "LoadScreenInfo.h"
 #include "Scene.h"
 #include "Progress.h"
-#include "RenderBuffer.h"
 #include "MemoryCard.h"
 #include "LogDump.h"
 #include "EditorCamera.h"
@@ -210,7 +209,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     VertexBuffer::CreateVerticesMap();
     Texture::InitTexturesMap();
 
-    RenderBuffer::CreateRenderBuffer();
+    RenderList::CreateRenderBuffer();
 
     Light::InitLightsList();
 

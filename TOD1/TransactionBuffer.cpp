@@ -9,7 +9,7 @@ TransactionBuffer::TransactionBuffer(unsigned int bufferSize)
 
     m_Chunks = bufferSize / 4;
     m_Buffer = (char*)MemoryManager::AllocatorsList[MemoryManager::GetAllocatorByMemoryPointer(this)->m_AllocatorIndex]->Allocate(bufferSize, NULL, NULL);
-    field_C = 0;
+    m_ReadCompressedBufferData = nullptr;
     m_Size = 0;
     field_20 = 0;
     m_List_1.resize(1);

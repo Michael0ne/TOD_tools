@@ -514,7 +514,7 @@ int StreamedSoundBuffers::GetPlayingSoundsNumber()
     return res;
 }
 
-void StreamedSoundBuffers::MeasureWaitForSoftPause()
+void StreamedSoundBuffers::WaitForSoftPause()
 {
     int startTime = Timer::GetMilliseconds();
 

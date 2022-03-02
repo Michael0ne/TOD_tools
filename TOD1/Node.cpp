@@ -1078,6 +1078,26 @@ unsigned int Node::GetFlags() const
     return m_Flags.m_Flags & 0xFFF;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_86ACB0()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_86B610()
+{
+    if (!m_ScriptEntity || m_Flags.m_FlagBits._29 || m_Flags.m_FlagBits.Volatile)
+        return;
+
+    if (!field_8)
+        _86ACB0();
+
+    if (!field_D[0])
+    {
+
+    }
+}
+
 void Node::SetScriptData(Defragmentator* defrag, EntityScriptData* data)
 {
     const int blockinglistid = m_GlobalIdInBlockigList;
@@ -1104,13 +1124,10 @@ void Node::GetWorldPos(Vector4f& pos) const
 
 void Node::SetParam(const int index, const void* param, DataType* type)
 {
-    if (!m_ScriptEntity)
+    if (!m_ScriptEntity || m_Flags.m_FlagBits.HasFragment || m_Flags.m_FlagBits.Volatile)
         return;
 
-    if (m_Flags.m_FlagBits.HasFragment && m_Flags.m_FlagBits.Volatile)
-        return;
-
-    unsigned char paramInd = 1 << (index & 7);
+    const unsigned char paramInd = 1 << (index & 7);
     char* paramsMap = (char*)this + index / 8;
 
     if ((paramInd & paramsMap[8]) == NULL)
@@ -1423,11 +1440,7 @@ void Node::ClearFromSceneList()
 
 void Node::_86A190()
 {
-    field_D = 0;
-    field_E = 0;
-    field_F = 0;
-    field_10 = 0;
-    field_11 = 0;
+    memset(field_D, NULL, sizeof(field_D));
 }
 
 void Node::SetFragment(const char* const fragmentpath)

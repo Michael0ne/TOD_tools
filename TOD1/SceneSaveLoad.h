@@ -78,9 +78,11 @@ public:
     int*                _873BA0(const unsigned int nodeid); // @873BA0
     void                _873C00(const unsigned int, const int* a2); // @873C00
     void                Adapt(); // @873D30
+    bool                LoadSaveInformation(SavePoint* sp, SaveInfo* outSaveInfo, char** outDeflatedBufferPtr, int* outDeflatedBufferSize); //  @8747F0
     
     static bool         WriteDummySavePointData(class SavePoint* savepoint, unsigned int); // @8743F0
     static bool         WriteSavePointFileData(class SavePoint* savepoint, SaveInfo* savedata); // @873DA0
+    static int          UncompressSaveDataBuffer(char* outBuffer, const int size);  //  @873B40
 
     static z_stream     BufferStream; // @A3D748
     static char         CompressedRewindData[2048]; // @A3CF48

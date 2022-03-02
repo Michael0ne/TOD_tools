@@ -383,7 +383,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="Progress.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="RealtimeFolder.h" />
-    <ClInclude Include="RenderBuffer.h" />
+    <ClInclude Include="RenderList.h" />
     <ClInclude Include="GfxInternal.h" />
     <ClInclude Include="Fragment.h" />
     <ClInclude Include="InputGameController.h" />
@@ -543,7 +543,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClCompile Include="Progress.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="RealtimeFolder.cpp" />
-    <ClCompile Include="RenderBuffer.cpp" />
+    <ClCompile Include="RenderList.cpp" />
     <ClCompile Include="GfxInternal.cpp" />
     <ClCompile Include="Fragment.cpp" />
     <ClCompile Include="InputGameController.cpp" />

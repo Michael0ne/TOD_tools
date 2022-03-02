@@ -21,7 +21,7 @@ public:
 
 private:
     FragmentAsset(char a1); // @85DD80
-    virtual ~FragmentAsset();   //  @85E3C0
+    virtual ~FragmentAsset();   //  @85E3C0 //  NOTE: another d-tor @85DD60, virtual destructor uses inlined version.
 
 public:
     virtual AssetInstance*  GetInstancePtr() const override;

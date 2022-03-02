@@ -8,6 +8,8 @@
 
 EntityType* tControlSetup;
 
+bool ControlSetup::ControllersUsedByEditor[8];
+
 void ControlSetup::GetControlId(int* args) const
 {
     *args = GetControlId_Impl((const char* const)args[1]);

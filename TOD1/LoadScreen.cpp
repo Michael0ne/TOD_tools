@@ -28,6 +28,15 @@ LoadScreenNode::~LoadScreenNode()
     MESSAGE_CLASS_DESTROYED(LoadScreenNode);
 }
 
+void LoadScreenNode::Instantiate()
+{
+    Node::Instantiate();
+
+    m_LoadBarSprite = nullptr;
+    if (g_Progress)
+        g_Progress->SetLoadScreenSprite(nullptr);
+}
+
 const char* LoadScreenNode::GetImageFile() const
 {
     return m_ImageFile.m_Str;

@@ -1235,7 +1235,7 @@ EntityType* Scriptbaked::AssignScriptToEntity(EntityType* parent)
         return nullptr;
     }
 
-    EntityType* parentent = (EntityType*)parent;
+    EntityType* parentent = parent;
     while (m_BaseEntity != parentent)
     {
         parentent = parent->m_Parent;

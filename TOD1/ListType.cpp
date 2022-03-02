@@ -93,7 +93,7 @@ void ListType::PerformOperation(int operationId, void* params) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-char ListType::stub19(int, int)
+char ListType::IsReferenced(int, int)
 {
     return 0;
 }

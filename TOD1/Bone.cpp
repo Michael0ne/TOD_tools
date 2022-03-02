@@ -2,6 +2,9 @@
 
 EntityType* tBone;
 
+std::map<int, short>    Bone::BonesList;
+BoneRewindData         *Bone::BonePositionData;
+
 Bone* Bone::Create(AllocatorIndex)
 {
     return new Bone;

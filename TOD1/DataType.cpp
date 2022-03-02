@@ -171,7 +171,7 @@ void DataType::PerformOperation(int operationId, void* params) const
     return;
 }
 
-char DataType::stub19(int a1, int a2)
+char DataType::IsReferenced(int* a1, int a2)
 {
     return true;
 }

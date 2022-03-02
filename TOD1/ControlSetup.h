@@ -63,6 +63,7 @@ public:
     static ControlSetup*    CurrentController; // @A3E16C
     static bool&            WaitForController; // @A3E168
     static short*           WaitForControllerText; // @A3E164
+    static bool             ControllersUsedByEditor[8]; //  @A3E170 //  NOTE: index - controller id. If true, then controller with this index is being used with the editor.
 
     static void             Register(); // @925BA0
 };

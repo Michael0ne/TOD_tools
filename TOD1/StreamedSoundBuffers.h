@@ -134,7 +134,7 @@ public:
     void      GetListener3DOrientation(Orientation& outOrient); // @43DFD0
     void      UpdateSoundBuffers(); // @43E640
     int       GetPlayingSoundsNumber(); // @43E7B0 // NOTE: unused
-    void      MeasureWaitForSoftPause(); // @43E800
+    void      WaitForSoftPause(); // @43E800
     void      _43E850(); // @43E850 // NOTE: unused
     void      StopAllSounds(); // @43E880 // NOTE: unused
     bool      IsStreamBufferAlreadyExists(const StreamedSoundBuffer& streamedsound) const; // @43E8B0

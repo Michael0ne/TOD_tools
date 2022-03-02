@@ -13,12 +13,11 @@ public:
     bool            field_9;
     bool            field_A;
     bool            field_B;
+
     bool            field_C;
-    bool            field_D;
-    bool            field_E;
-    bool            field_F;
-    bool            field_10;
-    bool            field_11;
+
+    bool            field_D[5];
+
     short           m_Order;
     union
     {

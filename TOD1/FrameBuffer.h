@@ -1,5 +1,5 @@
 #pragma once
-#include "RenderBuffer.h"
+#include "RenderList.h"
 #include "Texture.h"
 #include "MeshBuffer_Dx9.h"
 #include "SkinnedMeshBuffer.h"
@@ -49,7 +49,7 @@ protected:
         }               m_FlagBits;
         unsigned int    m_Flags;
     }                   m_Flags;
-    RenderBuffer        m_RenderBuffer[3];
+    RenderList        m_RenderBuffer[3];
     float               field_54;
     FrameBuffer        *field_58;
 
@@ -74,7 +74,7 @@ public:
     void                _431510();  //  @431510
     void                _4315A0(const DirectX::XMMATRIX& mat, const unsigned int index);    //  @4315A0
 
-    void                ExecuteRenderCommand(RenderBuffer& buf) const;  //  @4342C0
+    void                ExecuteRenderCommand(RenderList& buf) const;  //  @4342C0
     void                CmdCall();  //  @434290
     void                Reset();    //  @436AE0
     void                SubmitRenderFullscreenTextureCommand(Texture* tex);   //  @4320E0

@@ -888,7 +888,7 @@ AssetManager::AssetManager(bool loadBlocks)
     m_ResourcesInstancesList.reserve(1);
     field_1C8 = NULL;
     m_BlocksUnloaded = NULL;
-    field_1D0 = nullptr;
+    m_EntityIdsMap = nullptr;
     m_CheckTimestamp = false;
     m_EngineVersionTimestamp = NULL;
     m_ActiveBlockId = -1;

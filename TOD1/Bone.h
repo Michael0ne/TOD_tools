@@ -1,19 +1,23 @@
 #pragma once
 #include "Node.h"
+#include <map>
 
-#define BONE_CLASS_SIZE 80
+struct BoneRewindData
+{
+    Vector4f    m_Position;
+    Orientation m_Orientation;
+};
 
 class Bone : public Node
 {
 protected:
-
     static Bone* Create(AllocatorIndex); // @907220
+
 public:
-    Bone() : Node(NODE_MASK_POSITION) // NOTE: has no constructor.
+    inline Bone() : Node(NODE_MASK_POSITION) // NOTE: has no constructor.
     {
         MESSAGE_CLASS_CREATED(Bone);
     };
-
     virtual ~Bone();
 
     void            SetBoneWorldPos(float* args);   //  @907100
@@ -22,6 +26,9 @@ public:
     void            SetBoneOrient(float* args); //  @9071E0
 
     static void  Register(); // @907270
+
+    static std::map<int, short>     BonesList;    //  @A3D8C0 //  NOTE: key - bone entity ID, value - ?
+    static BoneRewindData          *BonePositionData;    //  @A3D894
 };
 
 extern EntityType* tBone; // @A3E124

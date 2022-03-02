@@ -1,6 +1,7 @@
 #include "EntityType.h"
 #include "AssetManager.h"
 #include "Node.h"
+#include "Scene.h"
 
 EntityType::EntityType(const char* const entityname) : DataType(TYPE_ENTITY, entityname, TYPE_ENTITY_SIZE)
 {
@@ -17,6 +18,45 @@ EntityType::EntityType(const char* const entityname) : DataType(TYPE_ENTITY, ent
 EntityType::~EntityType()
 {
     MESSAGE_CLASS_DESTROYED(EntityType);
+}
+
+char EntityType::IsReferenced(int* a1, int fixdangling)
+{
+    if (!a1)
+        return true;
+
+    if (Scene::DanglingEntityReferences)
+    {
+        if (Scene::DanglingEntityReferences->size())
+        {
+            int i = 0;
+            for (Scene::EntityReference& entref = (*Scene::DanglingEntityReferences)[i]; (int*)*a1 < entref.m_AddressRegionBeginPtr || (int*)*a1 >= entref.m_AddressRegionEndPtr; i++)
+                if (i + 1 >= Scene::DanglingEntityReferences->size())
+                    return true;
+
+            if (fixdangling)
+            {
+                LogDump::LogA("FIXED ");
+                *a1 = NULL;
+            }
+
+            LogDump::LogA("DANGLING ENTITY REF (0x%x) ", *a1);
+            return false;
+        }
+        return true;
+    }
+
+    if (Scene::DanglingEntityReferencesMap->find((int*)a1) != Scene::DanglingEntityReferencesMap->end())
+        return true;
+
+    if (fixdangling)
+    {
+        LogDump::LogA("FIXED ");
+        *a1 = NULL;
+    }
+
+    LogDump::LogA("DANGLING ENTITY REF (0x%x) ", *a1);
+    return false;
 }
 
 void* EntityType::CreateNode()

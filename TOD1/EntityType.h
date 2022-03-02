@@ -56,6 +56,7 @@ protected:
 public:
     EntityType(const char* const entityname); // @86CC00
     virtual ~EntityType(); // @4886C0
+    virtual char IsReferenced(int* a1, int a2) override;  //  @86CF60
 
     void*               CreateNode(); // @86C770
     void                InheritFrom(EntityType* from); // @86CB40

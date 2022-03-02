@@ -1,23 +1,25 @@
 #pragma once
 #include "MemoryManager.h"
 
+class EntityType;
+
 class TransactionBuffer
 {
     struct BufferList
     {
-        int         field_0;
+        int         m_DataBufferSize;
         int         field_4;
-        int         field_8;
-        int         field_C;
-        int         m_WindSize;
-        int         field_14;
+        int         m_TransactionBufferSize;
+        EntityType *m_Script;
+        int         m_GameTimeMs;
+        int         m_RealTimeMs;
     };
 
 public:
     char           *m_Buffer;
     int             m_Chunks;
     int             m_Size;
-    int             (*field_C)(char* a1, int a2);
+    int             (*m_ReadCompressedBufferData)(char* outBuffer, int size);
     std::list<BufferList>  m_List_1;
     void           *field_1C;
     class Entity   *field_20;

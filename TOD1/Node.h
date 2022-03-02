@@ -65,36 +65,36 @@ public:
     {
         struct
         {
-            unsigned Disable : 1;
-            unsigned Dynamic : 1;
-            unsigned Invisible : 1;
-            unsigned Lock : 1;
-            unsigned Open : 1;
-            unsigned Volatile : 1;
-            unsigned CollisionDisabled : 1;
-            unsigned DBR : 1;
-            unsigned LSR : 1;
-            unsigned PurgeNames : 1;
-            unsigned ERR : 1;
-            unsigned FRR : 1;
+            unsigned Disable : 1;               //  0
+            unsigned Dynamic : 1;               //  1
+            unsigned Invisible : 1;             //  2
+            unsigned Lock : 1;                  //  3
+            unsigned Open : 1;                  //  4
+            unsigned Volatile : 1;              //  5
+            unsigned CollisionDisabled : 1;     //  6
+            unsigned DBR : 1;                   //  7
+            unsigned LSR : 1;                   //  8
+            unsigned PurgeNames : 1;            //  9
+            unsigned ERR : 1;                   //  10
+            unsigned FRR : 1;                   //  11
 
-            unsigned RenderOrderGroup : 3;
-            unsigned _15 : 1;
-            unsigned _16 : 1;
-            unsigned _17 : 1;
-            unsigned _18 : 1;
-            unsigned _19 : 1;
-            unsigned _20 : 1;
-            unsigned _21 : 1;
-            unsigned _22 : 1;
-            unsigned _23 : 1;
-            unsigned _24 : 1;
-            unsigned _25 : 1;
-            unsigned _26 : 1;
-            unsigned _27 : 1;
-            unsigned DisabledOnCutscene : 1;
-            unsigned _29 : 1;
-            unsigned HasFragment : 1;
+            unsigned RenderOrderGroup : 3;      //  12
+            unsigned _15 : 1;                   //  15
+            unsigned _16 : 1;                   //  16
+            unsigned _17 : 1;                   //  17
+            unsigned _18 : 1;                   //  18
+            unsigned _19 : 1;                   //  19
+            unsigned _20 : 1;                   //  20
+            unsigned _21 : 1;                   //  21
+            unsigned _22 : 1;                   //  22
+            unsigned _23 : 1;                   //  23
+            unsigned _24 : 1;                   //  24
+            unsigned _25 : 1;                   //  25
+            unsigned _26 : 1;                   //  26
+            unsigned _27 : 1;                   //  27
+            unsigned DisabledOnCutscene : 1;    //  28
+            unsigned _29 : 1;                   //  29
+            unsigned HasFragment : 1;           //  30
         }               m_FlagBits;
         unsigned int    m_Flags;
     }                   m_Flags;
@@ -124,7 +124,7 @@ public:
     virtual void        ExecuteScript();                        //  @88C610
     virtual void        nullsub_4(int);                         //  @883EC0
     virtual void        DestroyFrameBuffers();                  //  @8CB190
-    virtual void        nullsub_6(const std::vector<Node*>);    //  @883EC0 //  NOTE: used when checking for dangling entities.
+    virtual void        nullsub_6(const std::vector<Node*>);    //  @883EC0
     virtual String*     GetResourceName(String* unk);           //  @484E80
     virtual Vector4f*   GetBounds(Vector4f& unk) const;         //  @484DC0
 
@@ -146,6 +146,8 @@ public:
     const char*         GetScript() const;  //  @86A230
     unsigned int        GetFlags() const;   //  @495DB0
 
+    void                _86ACB0(); //  @_86ACB0
+    void                _86B610();  //  @86B610
     void                SetScriptData(Defragmentator* defrag, EntityScriptData* data);  //  @48B700
     void                GetWorldPos(Vector4f& pos) const; //  @484370
     void                SetParam(const int index, const void* param, DataType* type);   //  @86A3C0 //  NOTE: probably it's 'SetScriptParam'.

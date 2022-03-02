@@ -161,7 +161,7 @@ void Window::UpdateVisibility()
         else
         {
             g_StreamedSoundBuffers->SetGlobalPause(true);
-            g_StreamedSoundBuffers->MeasureWaitForSoftPause();
+            g_StreamedSoundBuffers->WaitForSoftPause();
         }
     }
 }

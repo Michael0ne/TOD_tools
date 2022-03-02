@@ -55,11 +55,11 @@ Entity::Entity()
     field_A = 0;
     field_B = 0;
     field_C = 0;
-    field_D = 0;
-    field_E = 0;
-    field_F = 0;
-    field_10 = 0;
-    field_11 = 0;
+    field_D[0] = 0;
+    field_D[1] = 0;
+    field_D[2] = 0;
+    field_D[3] = 0;
+    field_D[4] = 0;
 
     m_Id.Id = g_AssetManager->AddEntity(this);
 }
