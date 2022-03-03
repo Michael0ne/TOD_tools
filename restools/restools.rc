@@ -54,7 +54,7 @@ STRINGTABLE
 BEGIN
     IDS_USAGESTRING1        "**** Total Overdose resources tool ****\n**** A part of TOD_Tools project. ****\n"
     IDS_USAGESTRING2        "Use this tool to view (and sometimes extract) information from game assets.\n\n"
-    IDS_USAGESTRING3        "Arguments are:\n\t<resource type> - supported now ""texture"", ""save"", ""asset"", ""scriptdb""\n\t<full resource path without extension>\n"
+    IDS_USAGESTRING3        "Arguments are:\n\t<resource type> - supported now ""texture"", ""save"", ""asset"" (""submap"", ""map"", ""mission"", ""playerdata""), ""scriptdb""\n\t<full resource path without extension>\n"
     IDS_UNKNOWNRESTYPE      "Unknown resource type specified (%s)!"
     IDS_INVALIDRESPATH      "Invalid resource path specified!"
     IDS_INVALIDPARAMS       "One or more parameters specified are invalid!"

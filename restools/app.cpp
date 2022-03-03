@@ -42,20 +42,27 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
 	//	NOTE: first argument - resource type (right now let's trust the user with their choice).
 	GenericResourceReader* resreader = nullptr;
 
-	if (*argv[1] == 't' &&
-		strcmp(argv[1], "texture") == NULL)
+	if (strcmp(argv[1], "texture") == NULL)
 		resreader = new TextureResourceReader(lastslashpos + 1, GenericResourceReader::PlatformDefinition::PC);
 
-	if ((*argv[1] == 's' && argv[1][1] == 'a') &&
-		strcmp(argv[1], "save") == NULL)
+	if (strcmp(argv[1], "save") == NULL)
 		resreader = new SaveResourceReader(lastslashpos + 1);
 
-	if ((*argv[1] == 's' && argv[1][1] == 'c') &&
-		strcmp(argv[1], "scriptdb") == NULL)
+	if (strcmp(argv[1], "scriptdb") == NULL)
 		resreader = new ScriptDatabaseReader(lastslashpos + 1);
 
-	if (*argv[1] == 'a' && argv[1][1] == 's' && argv[1][2] == 's' && argv[1][3] == 'e' && argv[1][4] == 't')
+	if (strcmp(argv[1], "asset") == NULL)
 		resreader = new AssetBlockReader(lastslashpos + 1);
+
+	//	NOTE: Future-proof. Just in case it will be better to handle different assets in a different way.
+	if (strcmp(argv[1], "mission") == NULL)
+		resreader = new AssetBlockReader(lastslashpos + 1, ".mission");
+
+	if (strcmp(argv[1], "submap") == NULL)
+		resreader = new AssetBlockReader(lastslashpos + 1, ".submap");
+
+	if (strcmp(argv[1], "playerdata") == NULL)
+		resreader = new AssetBlockReader(lastslashpos + 1, ".playerdata");
 
 	if (resreader == nullptr)
 	{

@@ -64,7 +64,7 @@ public:
         virtual void    SkipNameRead(unsigned char** infobuffer);
         virtual void    SkipAlignment(unsigned char** infobuffer);
         virtual void    SkipSpecificData(unsigned char** infobuffer) = 0;
-        virtual void    DumpData(const AssetBlockReader* reader);
+        virtual void    DumpData(const AssetBlockReader* reader) = 0;
     };
 
     struct CompiledTextureAsset : CompiledAsset
@@ -171,6 +171,10 @@ public:
         GfxTexture     *m_GfxTexture;
         unsigned int	field_2C;
 
+        //  Utility.
+        int             m_FileSize;
+        char           *m_DataBuffer;
+
         CompiledTextureAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
@@ -233,6 +237,7 @@ public:
         virtual void    PrintInfo() const override;
         virtual void    SkipAlignment(unsigned char** infobuffer) override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledTextAsset : CompiledAsset
@@ -270,6 +275,7 @@ public:
         virtual void    PrintInfo() const override;
         virtual void    SkipAlignment(unsigned char** infobuffer) override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledModelAsset : CompiledAsset
@@ -336,6 +342,7 @@ public:
         virtual void    PrintInfo() const override;
         virtual void    SkipAlignment(unsigned char** infobuffer) override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledFragmentAsset : CompiledAsset
@@ -348,6 +355,7 @@ public:
 
         virtual void    PrintInfo() const override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledMovieAsset : CompiledAsset
@@ -359,6 +367,7 @@ public:
         CompiledMovieAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledCutsceneAsset : CompiledAsset
@@ -375,6 +384,7 @@ public:
         CompiledCutsceneAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledSoundAsset : CompiledAsset
@@ -414,6 +424,7 @@ public:
         virtual void    PrintInfo() const override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
         virtual void    SkipAlignment(unsigned char** infobuffer) override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledStreamedSoundInfoAsset : CompiledAsset
@@ -445,6 +456,7 @@ public:
         virtual void    PrintInfo() const override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
         virtual void    SkipAlignment(unsigned char** infobuffer) override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledAnimationAsset : CompiledAsset
@@ -478,6 +490,7 @@ public:
 
         virtual void    PrintInfo() const override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledMeshColorAsset : CompiledAsset
@@ -493,6 +506,7 @@ public:
         CompiledMeshColorAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
+        virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     //  NOTE: this header is shared between all asset blocks (localised/non-localised).
@@ -514,7 +528,7 @@ public:
     mutable std::vector<CompiledAsset*> m_AssetsList;
 
 public:
-    AssetBlockReader(LPCSTR filename);
+    AssetBlockReader(LPCSTR filename, LPCSTR ext = ".main");
     ~AssetBlockReader();
 
     virtual void	ReadInfo() override;
