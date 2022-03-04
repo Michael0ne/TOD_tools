@@ -141,7 +141,7 @@ int DataType::stub12(char* a1, char* a2, int* a3)
     return result;
 }
 
-void DataType::stub13(int, int (__thiscall*procptr)(void*, void*), int, int, int, void* const outResult) const
+void DataType::stub13(int, int(__thiscall* procptr)(void*, void*), int, int, int, void* const outResult) const
 {
     return;
 }
@@ -345,9 +345,24 @@ DataType* DataType::GetTypeByName(const char* name)
     if (!TypesList.size())
         return nullptr;
 
-    for (std::vector<DataType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
-        if (strncmp((*it)->m_TypeName.m_Str, name, strlen(name)) == NULL)
-            return (*it);
+    const size_t nameLen = strlen(name);
+    for (size_t i = 0; i < TypesList.size(); ++i)
+    {
+        int j = 0;
+        while (true)
+        {
+            if (j == TypesList[i]->m_TypeName.m_Length)
+                break;
+
+            if (tolower(TypesList[i]->m_TypeName.m_Str[j]) == name[j])
+                j++;
+            else
+                break;
+        }
+
+        if (j == nameLen)
+            return TypesList[i];
+    }
 
 #if defined(INCLUDE_FIXES) && defined(VERBOSELOG)
     debug("GetTypeByName(\"%s\") FAILED!", name);
@@ -450,14 +465,14 @@ bool DataType::ParseVariableString(const char* variable, String& variableName, S
 
 void DataType::InitScriptTypes()
 {
-    static NothingType* tyNothing       = new NothingType(ScriptTypeId::TYPE_NOTHING, "nothing", ScriptTypeSize::TYPE_NOTHING_SIZE);
-    static NumberType* tyNumber         = new NumberType(ScriptTypeId::TYPE_NUMBER, "number", ScriptTypeSize::TYPE_NUMBER_SIZE);
-    static IntegerType* tyInteger       = new IntegerType(ScriptTypeId::TYPE_INTEGER, "integer", ScriptTypeSize::TYPE_INTEGER_SIZE);
-    static TruthType* tyBoolean         = new TruthType(ScriptTypeId::TYPE_TRUTH, "truth", ScriptTypeSize::TYPE_TRUTH_SIZE);
-    static VectorType* tyVector         = new VectorType(ScriptTypeId::TYPE_VECTOR, "vector", ScriptTypeSize::TYPE_VECTOR_SIZE);
+    static NothingType* tyNothing = new NothingType(ScriptTypeId::TYPE_NOTHING, "nothing", ScriptTypeSize::TYPE_NOTHING_SIZE);
+    static NumberType* tyNumber = new NumberType(ScriptTypeId::TYPE_NUMBER, "number", ScriptTypeSize::TYPE_NUMBER_SIZE);
+    static IntegerType* tyInteger = new IntegerType(ScriptTypeId::TYPE_INTEGER, "integer", ScriptTypeSize::TYPE_INTEGER_SIZE);
+    static TruthType* tyBoolean = new TruthType(ScriptTypeId::TYPE_TRUTH, "truth", ScriptTypeSize::TYPE_TRUTH_SIZE);
+    static VectorType* tyVector = new VectorType(ScriptTypeId::TYPE_VECTOR, "vector", ScriptTypeSize::TYPE_VECTOR_SIZE);
     static QuaternionType* tyQuaternion = new QuaternionType(ScriptTypeId::TYPE_QUATERNION, "quaternion", ScriptTypeSize::TYPE_QUATERNION_SIZE);
-    static ColorType* tyColor           = new ColorType(ScriptTypeId::TYPE_COLOR, "color", ScriptTypeSize::TYPE_COLOR_SIZE);
-    static StringType* tyString         = new StringType(ScriptTypeId::TYPE_STRING, "string", ScriptTypeSize::TYPE_STRING_SIZE);
+    static ColorType* tyColor = new ColorType(ScriptTypeId::TYPE_COLOR, "color", ScriptTypeSize::TYPE_COLOR_SIZE);
+    static StringType* tyString = new StringType(ScriptTypeId::TYPE_STRING, "string", ScriptTypeSize::TYPE_STRING_SIZE);
 
     tNOTHING = tyNothing;
     tNUMBER = tyNumber;

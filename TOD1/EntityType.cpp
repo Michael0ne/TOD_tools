@@ -29,7 +29,7 @@ char EntityType::IsReferenced(int* a1, int fixdangling)
     {
         if (Scene::DanglingEntityReferences->size())
         {
-            int i = 0;
+            unsigned int i = 0;
             for (Scene::EntityReference& entref = (*Scene::DanglingEntityReferences)[i]; (int*)*a1 < entref.m_AddressRegionBeginPtr || (int*)*a1 >= entref.m_AddressRegionEndPtr; i++)
                 if (i + 1 >= Scene::DanglingEntityReferences->size())
                     return true;
@@ -75,7 +75,39 @@ void EntityType::InheritFrom(EntityType* from)
     m_Parent = from;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
+void EntityType::RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7)
+{
+    const unsigned short commandId = RegisterGlobalCommand(scriptname, true);
+
+    m_ScriptsList.insert(std::make_pair(commandId, new ScriptInfo(scriptptr, a3, a4, a5)));
+}
+
+void EntityType::RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, const int a4, const int a5, const int a6, EntitySetterFunction setterptr, const int a8, const int a9, const int a10, const char* const editorcontrolstring, const int a12, const int a13, const int propertyind)
+{
+    char propstr[512] = {};
+    sprintf(propstr, "%s:%s", propertyname, returntype->m_TypeName.m_Str);
+    const unsigned short globalIndex = (unsigned short)RegisterGlobalProperty(propstr, true);
+
+    PropertyInfo propinfo(getterptr, a4, a5, a6, setterptr, returntype, a8, a9, a10);
+    if (propertyind < 0)
+    {
+        propinfo.m_GlobalIndex = globalIndex;
+        propinfo.m_LocalIndex = (unsigned short)m_GlobalPropertiesList.size() + m_TotalGlobalProperties;
+
+        m_GlobalPropertiesList.push_back(propinfo);
+    }
+    else
+    {
+        propinfo.m_GlobalIndex = globalIndex;
+        propinfo.m_LocalIndex = propertyind;
+
+        if (propertyind - m_TotalLocalProperties >= (int)m_LocalPropertiesList.size())
+            m_LocalPropertiesList.resize(propertyind - m_TotalLocalProperties + 1);
+
+        m_LocalPropertiesList[propertyind - m_TotalLocalProperties] = propinfo;
+    }
+}
+
 void EntityType::PropagateProperties()
 {
     if (!m_Parent ||
@@ -88,7 +120,7 @@ void EntityType::PropagateProperties()
 
         m_IsBaseEntity = false;
 
-        std::map<unsigned short, EntityType::ScriptInfo> parentScripts;
+        std::map<unsigned short, ScriptInfo*> parentScripts;
         if (m_Parent)
             parentScripts = m_Parent->m_ScriptsList;
 
@@ -99,69 +131,34 @@ void EntityType::PropagateProperties()
         m_ScriptsList = parentScripts;
 
         std::map<unsigned short, unsigned short> parentProperties;
-        std::map<unsigned short, unsigned short>::iterator* propertyIterator = nullptr;
         if (m_Parent)
-        {
-            parentProperties = m_Parent->field_3C;
-            propertyIterator = &parentProperties.begin();
-        }
+            parentProperties = m_Parent->m_PropertiesMappings;
 
-        //  TODO: local and global properties lists are cursed right now. Fix them! Otherwise code is legit.
         if (m_LocalPropertiesList.size() > 0)
         {
-            for (unsigned int i = 0; i < m_LocalPropertiesList.size(); ++i)
+            for (unsigned int i = 0; i < m_LocalPropertiesList.size(); i++)
             {
-                const short globalpropindex = m_LocalPropertiesList[i].m_GlobalPropertyIndex;
+                const short globalpropindex = m_LocalPropertiesList[i].m_GlobalIndex;
                 if (globalpropindex < 0)
                     continue;
 
-                auto it = propertyIterator;
-                while (it)
-                {
-                    if (globalpropindex <= (*it)->first)
-                    {
-                        if (globalpropindex >= (*it)->first)
-                            break;
-
-                        it--;
-                    }
-                    else
-                        it++;
-                }
-
-                parentProperties[globalpropindex] = m_LocalPropertiesList[i].m_GlobalPropertyIndex >> 16;
-                propertyIterator = &parentProperties.begin();
+                parentProperties[globalpropindex] = m_LocalPropertiesList[i].m_LocalIndex;
             }
         }
 
         if (m_GlobalPropertiesList.size() > 0)
         {
-            for (unsigned int i = 0; i < m_GlobalPropertiesList.size(); ++i)
+            for (unsigned int i = 0; i < m_GlobalPropertiesList.size(); i++)
             {
-                const short globalpropindex = m_GlobalPropertiesList[i].m_GlobalPropertyIndex;
+                const short globalpropindex = m_GlobalPropertiesList[i].m_GlobalIndex;
                 if (globalpropindex < 0)
                     continue;
 
-                auto it = propertyIterator;
-                while (it)
-                {
-                    if (globalpropindex <= (*it)->first)
-                    {
-                        if (globalpropindex >= (*it)->first)
-                            break;
-
-                        it--;
-                    }
-                    else
-                        it++;
-
-                    parentProperties[globalpropindex] = m_GlobalPropertiesList[i].m_GlobalPropertyIndex >> 16;
-                    propertyIterator = &parentProperties.begin();
-                }
+                parentProperties[globalpropindex] = m_GlobalPropertiesList[i].m_LocalIndex;
             }
         }
 
-        field_3C = parentProperties;
+        m_PropertiesMappings = parentProperties;
     }
     else
         m_IsBaseEntity = true;
@@ -169,7 +166,7 @@ void EntityType::PropagateProperties()
 
 bool EntityType::HasPropertyId(const unsigned int propertyId) const
 {
-    bool found = m_IsBaseEntity ? m_Parent->field_3C.find((const unsigned short)propertyId) != m_Parent->field_3C.end() : field_3C.find((const unsigned short)propertyId) != field_3C.end();
+    bool found = m_IsBaseEntity ? m_Parent->m_PropertiesMappings.find((const unsigned short)propertyId) != m_Parent->m_PropertiesMappings.end() : m_PropertiesMappings.find((const unsigned short)propertyId) != m_PropertiesMappings.end();
     if (found)
         return true;
 

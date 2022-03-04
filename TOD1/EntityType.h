@@ -15,48 +15,75 @@ class EntityType : public DataType
     struct ScriptInfo
     {
         EntityFunctionMember    m_ScriptPtr = nullptr;
-        int                     field_4 = NULL;
-        int                     field_8 = NULL;
-        int                     field_C = NULL;
+        int                     field_4 = 0;
+        int                     field_8 = 0;
+        int                     field_C = 0;
+
+        ScriptInfo()
+        {};
+
+        ScriptInfo(EntityFunctionMember scriptptr, int _f4, int _f8, int _fC)
+        {
+            m_ScriptPtr = scriptptr;
+            field_4 = _f4;
+            field_8 = _f8;
+            field_C = _fC;
+        }
     };
 
     struct PropertyInfo
     {
-        DataType               *m_ReturnType = nullptr;
-        int                    *field_4 = nullptr;
+        DataType* m_ReturnType = nullptr;
+        int* field_4 = nullptr;
         EntityGetterFunction    m_GetterPtr = nullptr;
-        unsigned int            field_C = NULL;
-        unsigned int            field_10 = NULL;
-        unsigned int            field_14 = NULL;
-        EntitySetterFunction    m_SetterPtr;
-        unsigned int            field_1C = NULL;
-        unsigned int            field_20 = NULL;
-        int                     field_24 = NULL;
-        short                   m_GlobalPropertyIndex = -1;
-        short                   m_LocalPropertyIndex = -1;
-        unsigned int            field_2C = NULL;
+        int                     field_C = 0;
+        int                     field_10 = 0;
+        int                     field_14 = 0;
+        EntitySetterFunction    m_SetterPtr = nullptr;
+        int                     field_1C = 0;
+        int                     field_20 = 0;
+        int                     field_24 = 0;
+        unsigned short          m_GlobalIndex = 0;
+        unsigned short          m_LocalIndex = 0;
+        int                     field_2C = 0;
+
+        PropertyInfo()
+        {};
+
+        inline PropertyInfo(EntityGetterFunction getter, int _fC, int _f10, int _f14, EntitySetterFunction setter, DataType* rettype, int _f1C, int _f20, int _f24)
+        {
+            m_GetterPtr = getter;
+            field_C = _fC;
+            field_10 = _f10;
+            field_14 = _f14;
+            m_SetterPtr = setter;
+            m_ReturnType = rettype;
+            field_1C = _f1C;
+            field_20 = _f20;
+            field_24 = _f24;
+        }
     };
 
 public:
-    CREATOR             m_Creator;
-    EntityType         *m_Parent;
-    Scriptbaked        *m_Script;
+    CREATOR                                     m_Creator;
+    EntityType                                 *m_Parent;
+    Scriptbaked                                *m_Script;
 
 protected:
-    std::map<unsigned short, ScriptInfo> m_ScriptsList; // NOTE: each 'derived' script derives it's parent scripts.
-    int                 field_38;
-    std::map<unsigned short, unsigned short> field_3C; // NOTE: could be list with properties id's and their values.
-    int                 field_48;
-    std::vector<PropertyInfo> m_LocalPropertiesList;
-    std::vector<PropertyInfo> m_GlobalPropertiesList;
-    int                 m_TotalLocalProperties;
-    int                 m_TotalGlobalProperties;
-    bool                m_IsBaseEntity;
+    std::map<unsigned short, ScriptInfo*>       m_ScriptsList; // NOTE: each 'derived' script derives it's parent scripts.
+    int                                         field_38;
+    std::map<unsigned short, unsigned short>    m_PropertiesMappings;
+    int                                         field_48;
+    std::vector<PropertyInfo>                   m_LocalPropertiesList;
+    std::vector<PropertyInfo>                   m_GlobalPropertiesList;
+    int                                         m_TotalLocalProperties;
+    int                                         m_TotalGlobalProperties;
+    bool                                        m_IsBaseEntity;
 
 public:
     EntityType(const char* const entityname); // @86CC00
-    virtual ~EntityType(); // @4886C0
-    virtual char IsReferenced(int* a1, int a2) override;  //  @86CF60
+    virtual             ~EntityType(); // @4886C0
+    virtual char        IsReferenced(int* a1, int a2) override;  //  @86CF60
 
     void*               CreateNode(); // @86C770
     void                InheritFrom(EntityType* from); // @86CB40
@@ -65,55 +92,15 @@ public:
         m_Creator = creator;
     };
 
-    void RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3 = 0, const int a4 = 0, const int a5 = 0, const char* const editorcontrolstr = nullptr, const char* const a7 = nullptr) // @86EC70
-    {
-        const int commandId = RegisterGlobalCommand(scriptname, true);
-
-        m_ScriptsList[commandId] = { scriptptr, a3, a4, a5 };
-    }
-
-    void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, const int a4, const int a5, const int a6, EntitySetterFunction setterptr, const int a8, const int a9, const int a10, const char* const editorcontrolstring, const int a12, const int a13, const int propertyind) // @86D370
-    {
-        char propstr[128] = {};
-        sprintf(propstr, "%s:%s", propertyname, returntype->m_TypeName.m_Str);
-        int ind = RegisterGlobalProperty(propstr, true);
-
-        PropertyInfo propinfo;
-        propinfo.m_GetterPtr = getterptr;
-        propinfo.m_SetterPtr = setterptr;
-        propinfo.field_C = a4;
-        propinfo.field_C = a4;
-        propinfo.field_10 = a5;
-        propinfo.field_14 = a6;
-        propinfo.m_ReturnType = returntype;
-        propinfo.field_1C = a8;
-        propinfo.field_20 = a9;
-        propinfo.field_24 = a10;
-        propinfo.m_LocalPropertyIndex = propertyind;
-
-        if (propertyind < 0)
-        {
-            propinfo.m_GlobalPropertyIndex = (short)(m_GlobalPropertiesList.size() + m_TotalGlobalProperties);
-
-            m_GlobalPropertiesList.push_back(propinfo);
-        }
-        else
-        {
-            propinfo.m_GlobalPropertyIndex = (short)ind;
-
-            if (propertyind - m_TotalLocalProperties >= (int)m_LocalPropertiesList.size())
-                m_LocalPropertiesList.resize(propertyind - m_TotalLocalProperties + 1);
-            m_LocalPropertiesList.insert(m_LocalPropertiesList.begin() + (propertyind - m_TotalLocalProperties), propinfo);
-        }
-    }
-
+    void RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3 = 0, const int a4 = 0, const int a5 = 0, const char* const editorcontrolstr = nullptr, const char* const a7 = nullptr); // @86EC70
+    void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, const int a4, const int a5, const int a6, EntitySetterFunction setterptr, const int a8, const int a9, const int a10, const char* const editorcontrolstring, const int a12, const int a13, const int propertyind); // @86D370
     void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, EntitySetterFunction setterptr, const char* const editorcontrolstring, const int propertyind = -1)
     {
         RegisterProperty(returntype, propertyname, getterptr, NULL, NULL, NULL, setterptr, NULL, NULL, NULL, editorcontrolstring, NULL, NULL, propertyind);
     }
 
-    void    PropagateProperties(); // @86E9B0
-    bool    HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
+    void                PropagateProperties(); // @86E9B0
+    bool                HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
 
     static Entity*      IsParentOf(EntityType* ett, Entity* ent);   //  @48C3B0
 };

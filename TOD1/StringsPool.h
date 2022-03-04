@@ -31,7 +31,7 @@ public:
 
     bool operator<(const String& _r) const
     {
-        return m_Length < _r.m_Length;
+        return operator<(_r.m_Str);
     }
 
     bool operator<(const char* const _r) const
@@ -41,7 +41,7 @@ public:
 
     bool operator==(const String& _r) const
     {
-        return strncmp(m_Str, _r.m_Str, m_Length) == 0;
+        return operator==(_r.m_Str);
     }
 
     bool operator!=(const String& _r) const
@@ -51,7 +51,7 @@ public:
 
     bool operator==(const char* const _r) const
     {
-        return m_Str == _r;
+        return strncmp(m_Str, _r, m_Length) == 0;
     }
 
     void   Append(const char* str);

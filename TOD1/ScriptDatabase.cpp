@@ -122,7 +122,7 @@ int GetCommandByName(const char* const commandname)
         return GetCommandByName_Impl(commandname);
 }
 
-int RegisterGlobalProperty(const char* const propertyname, bool existingProperty)
+short RegisterGlobalProperty(const char* const propertyname, bool existingProperty)
 {
     if (!GlobalPropertiesList.size())
         GlobalPropertiesList.reserve(6100);

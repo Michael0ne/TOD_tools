@@ -16,7 +16,6 @@ Vector4f* NodeSpatial::GetBounds(Vector4f& outBounds) const
     return &outBounds;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void NodeSpatial::Register()
 {
     tNodeSpatial = new EntityType("NodeSpatial");

@@ -1383,7 +1383,7 @@ void Node::TriggerGlobalScript(int scriptId, void* args)
 {
     if (!m_ScriptEntity->m_Script || !m_ScriptEntity->m_Script->_48A7E0(this, scriptId, args))
     {
-        EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_IsBaseEntity ? &m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : &m_ScriptEntity->m_ScriptsList[scriptId];
+        EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : m_ScriptEntity->m_ScriptsList[scriptId];
         if (scriptinfo)
 #ifdef INCLUDE_FIXES
             //  TODO: THIS IS VERY UGLY! I don't think original code had something like this!
