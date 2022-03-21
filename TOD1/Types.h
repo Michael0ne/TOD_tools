@@ -30,6 +30,16 @@ struct Vector3 {
     Vector3()
         : x(0), y(0), z(0)
     {}
+
+    const float Magnitude() const
+    {
+        return sqrtf( (x * x) + (y * y) + (z * z) );
+    }
+
+    inline const float Magnitude(const Vector3<T>& rvec) const
+    {
+        return ( ((x - rvec.x) * (x - rvec.x)) + ((y - rvec.y) * (y - rvec.y)) + ((z - rvec.z) * (z - rvec.z)) );
+    }
 };
 
 typedef Vector3<float> Vector3f;
@@ -74,6 +84,16 @@ struct Vector4 {
             (y == rhs.y) &&
             (z == rhs.z) &&
             (a == rhs.a);
+    }
+
+    const float Magnitude() const
+    {
+        return sqrtf((x * x) + (y * y) + (z * z) + (a * a));
+    }
+
+    inline const float Magnitude(const Vector4<T>& rvec) const
+    {
+        return ( ((x - rvec.x) * (x - rvec.x)) + ((y - rvec.y) * (y - rvec.y)) + ((z - rvec.z) * (z - rvec.z)) + ((a - rvec.a) * (a - rvec.a)) );
     }
 };
 

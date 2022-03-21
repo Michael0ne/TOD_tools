@@ -139,7 +139,7 @@ unsigned int MemoryCards::GetSaveFileSize() const
 void MemoryCards::SetSaveFileSize(unsigned int savesize)
 {
     m_SaveFileSize = savesize;
-    SetParam(10, &m_SaveFileSize, tINTEGER);
+    StoreProperty(10, &m_SaveFileSize, tINTEGER);
 }
 
 unsigned int MemoryCards::GetSavePointSize(unsigned int memcardind, unsigned int slotind) const

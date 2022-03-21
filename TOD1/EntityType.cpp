@@ -173,6 +173,55 @@ bool EntityType::HasPropertyId(const unsigned int propertyId) const
     return m_Script && m_Script->HasPropertyId(propertyId);
 }
 
+DataType* EntityType::PropertyByIndex(const int index) const
+{
+    const int localPropertiesTotal = m_IsBaseEntity
+        ? m_Parent->m_LocalPropertiesList.size() + m_Parent->m_TotalLocalProperties
+        : m_LocalPropertiesList.size() + m_TotalLocalProperties;
+
+    if (index >= localPropertiesTotal)
+    {
+        return m_Script->m_PropertiesList[index - localPropertiesTotal].m_Info->m_PropertyType;
+    }
+    else
+    {
+        EntityType* parentEntity = m_Parent;
+        if (index >= 0)
+        {
+            while (index < parentEntity->m_TotalLocalProperties)
+                parentEntity = parentEntity->m_Parent;
+
+            return parentEntity->m_LocalPropertiesList[index - parentEntity->m_TotalLocalProperties].m_ReturnType;
+        }
+        else
+        {
+            int i = -index;
+            while (i < parentEntity->m_TotalLocalProperties)
+                parentEntity = parentEntity->m_Parent;
+
+            return parentEntity->m_GlobalPropertiesList[i - parentEntity->m_TotalGlobalProperties].m_ReturnType;
+        }
+    }
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void EntityType::ExecuteScript(Node* node) const
+{
+    unsigned int localPropertyTotal = m_IsBaseEntity
+        ? (m_Parent->m_LocalPropertiesList.size() + m_Parent->m_TotalLocalProperties)
+        : (m_LocalPropertiesList.size() + m_TotalLocalProperties);
+
+    localPropertyTotal = localPropertyTotal > 40 ? 40 : localPropertyTotal;
+
+    if (localPropertyTotal > 1)
+    {
+        for (unsigned int i = 0; i < localPropertyTotal; ++i)
+        {
+
+        }
+    }
+}
+
 Entity* EntityType::IsParentOf(EntityType* ett, Entity* ent)
 {
     if (!ent)

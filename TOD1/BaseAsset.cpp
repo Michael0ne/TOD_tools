@@ -10,6 +10,35 @@ const char* const Asset::BlockTypeExtension[] = { ".", "map", "submap", "mission
 unsigned int AssetInstance::AssetAlignment[3];
 std::vector<AssetInstance*> AssetInstance::Assets;
 
+AssetLoader::~AssetLoader()
+{
+    MESSAGE_CLASS_DESTROYED(AssetLoader);
+
+    if (m_AssetPtr)
+        g_AssetManager->DecreaseResourceReferenceCount(m_AssetPtr);
+
+    delete field_4;
+}
+
+AssetLoader& AssetLoader::operator=(const AssetLoader& rhs)
+{
+    MESSAGE_CLASS_CREATED(AssetLoader);
+
+    if (ALIGN_4BYTES(field_4) != 0 && (!field_4 || ((unsigned char)field_4 & 1) != NULL))
+        MemoryManager::ReleaseMemory((int*)ALIGN_4BYTES(field_4), false);
+    field_4 = nullptr;
+
+    if (m_AssetPtr)
+        g_AssetManager->DecreaseResourceReferenceCount(m_AssetPtr);
+
+    m_AssetPtr = rhs.m_AssetPtr;
+
+    if (rhs.m_AssetPtr)
+        g_AssetManager->IncreaseResourceReferenceCount(rhs.m_AssetPtr);
+
+    return *this;
+}
+
 AssetInstance* AssetInstance::GetAssetInstanceByName(const char* const asspath)
 {
     if (Assets.size() <= 0)
@@ -286,14 +315,4 @@ void AssetLoader::LoadAssetByName(const char* const name)
         m_AssetPtr = g_AssetManager->LoadResourceFile(respath.m_Str);
 
     g_AssetManager->IncreaseResourceReferenceCount(m_AssetPtr);
-}
-
-AssetLoader::~AssetLoader()
-{
-    MESSAGE_CLASS_DESTROYED(AssetLoader);
-
-    if (m_AssetPtr)
-        g_AssetManager->DecreaseResourceReferenceCount(m_AssetPtr);
-
-    delete field_4;
 }

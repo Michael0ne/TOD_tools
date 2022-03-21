@@ -9,7 +9,7 @@ OverdoseVehicle::OverdoseVehicle()
 
     m_Vec_8 = { 0, 1, 0, 0 };
     m_Vec_7 = { 0, 0, 1, 0 };
-    m_OldUpVec = { 0, 1, 0, 0 };
+    m_LocalDirectionVector = { 0, 1, 0, 0 };
     m_GroundProbe = nullptr;
     m_RealWheelLF = nullptr;
     m_RealWheelLR = nullptr;

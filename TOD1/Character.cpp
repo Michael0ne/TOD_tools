@@ -25,7 +25,7 @@ void Character::Instantiate()
 
 void Character::AttachNode(const unsigned int index, Node* node, const String& nodeName1, const String& nodeName2)
 {
-    SetParam(16, GetAttachment(), tSTRING);
+    StoreProperty(16, GetAttachment(), tSTRING);
     if (m_AttachedNodesList.size() < index)
         m_AttachedNodesList.resize(index + 1);
 
@@ -36,7 +36,7 @@ void Character::AttachNode(const unsigned int index, Node* node, const String& n
 
 void Character::DetachNode(const unsigned int index)
 {
-    SetParam(16, GetAttachment(), tSTRING);
+    StoreProperty(16, GetAttachment(), tSTRING);
     if (m_AttachedNodesList.size() < index)
         m_AttachedNodesList.resize(index + 1);
 
@@ -72,7 +72,7 @@ const char* Character::GetModelRes() const
 void Character::SetModelRes(const char* const modelname)
 {
     const char* const modelname_ = m_ModelRes ? m_ModelRes->AddResToOpenListAndReturnName() : nullptr;
-    SetParam(17, modelname_, tSTRING);
+    StoreProperty(17, modelname_, tSTRING);
 
     AssetLoader assload(modelname);
     m_ModelRes = (ModelAsset*)assload.m_AssetPtr;
@@ -88,7 +88,7 @@ const bool Character::IsFrozen() const
 void Character::SetIsFrozen(const bool frozen)
 {
     if (frozen != m_Flags_1.Freeze)
-        SetParam(10, &frozen, tTRUTH);
+        StoreProperty(10, &frozen, tTRUTH);
 
     m_Id._3 = true;
     m_Flags_1.Freeze = frozen;
@@ -102,7 +102,7 @@ const bool Character::IsBoneControl() const
 void Character::SetIsBoneControl(const bool bonecontrol)
 {
     const bool bonecontrolcurrent = m_Flags_1.BoneControl;
-    SetParam(11, &bonecontrolcurrent, tTRUTH);
+    StoreProperty(11, &bonecontrolcurrent, tTRUTH);
     m_Flags_1.BoneControl = bonecontrol;
 }
 
@@ -114,7 +114,7 @@ const float Character::GetOpacity() const
 void Character::SetOpacity(const float opacity)
 {
     if (opacity != m_Opacity)
-        SetParam(12, &m_Opacity, tNUMBER);
+        StoreProperty(12, &m_Opacity, tNUMBER);
 
     m_Opacity = opacity;
 }

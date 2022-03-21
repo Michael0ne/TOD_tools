@@ -3,6 +3,7 @@
 #include "Defragmentator.h"
 
 class Node;
+class Scriptbaked;
 
 class IScriptThread
 {
@@ -76,7 +77,7 @@ protected:
             unsigned char       SleepRealTime : 1;
             unsigned char       Suspended : 1;
             unsigned char       MarkedForSuspend : 1;
-            unsigned char       _28 : 1;
+            unsigned char       SceneTimeSynced : 1;
             unsigned char       HasScriptNode : 1;
             unsigned char       Priority : 2;
         };
@@ -92,9 +93,9 @@ protected:
             unsigned char       SleepRealTime : 1;  //  25
             unsigned char       Suspended : 1;  //  26
             unsigned char       MarkedForSuspend : 1;   //  27
-            unsigned char       _28 : 1;
-            unsigned char       HasScriptNode : 1;
-            unsigned char       Priority : 2;
+            unsigned char       SceneTimeSynced : 1;    //  28
+            unsigned char       HasScriptNode : 1;  //  29
+            unsigned char       Priority : 2;   //  30
         };
     }                           m_ThreadFlags;
 #endif
@@ -108,10 +109,13 @@ public:
 
     ScriptThread(Node* node); // @48EC70
 
+    void                        PopFromCallstack();  //  @48E470
+    const int                   RestoreFromBuffer(int* buffer); //  @48E9E0
+    void                        StoreMethodInformation(void (*a1)(ScriptThread*), int a2, void (*a3)(ScriptThread*), Node* a4, Scriptbaked* a5);   //  @48CD70
     void                        Reset();    //  @48E930
     void                        _48E390();  //  @48E390 //  NOTE: 'Execute'?
-    void                        _48F2E0();  //  @48F2E0 //  NOTE: 'SetSleepTime'?
-    const int                   _48CD00() const;    //  @48CD00
+    void                        SetSleepTime(const float sleepfor, const bool sleepRealTime);  //  @48F2E0
+    const int                   GetSceneTime() const;    //  @48CD00
     void                        DecreaseStateMessageCount();    //  @48CD50
     void                        SetScriptNode(Node* scriptnode);    //  @48CCD0
     void                        DumpState(String& outString) const; // @48D690
@@ -127,11 +131,12 @@ public:
     static ScriptThread*        Threads[100];   //  @A3B5C8
     static bool                 WarnDelayedException;   //  @A3B770
     static int                  LatestMethodIndex;    //  @A3B76C
-    static MethodStruct         RecentMethodsArray[4];  //  @A3B5B8
+    static MethodStruct        *RecentMethodsArray[4];  //  @A3B5B8
     static NodeScriptDataInfo   ScriptDataCache[6];    //  @A3B778
     static int                  LatestScriptDataCacheIndex; //  @A3B768
     static int                  CurrentLocalOffset; //  @A3B760
     static int                  CurrentParameterOffset; //  @A3B764
+    static Node*                CurrentScriptNode;  //  @A3B75C //  NOTE: used as 'this' for TNT scripts.
 };
 
 ASSERT_CLASS_SIZE(ScriptThread, 68);

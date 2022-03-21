@@ -42,8 +42,18 @@ public:
     void            SetLodLevel(const Vector4f& pos);   //  @8A0B80
     void        CopyOwnerBounds(); //  @89F4D0
     void        _8A36A0(const bool use);    //  @8A36A0
+    void        _8A3320();  //  @8A3320
+    const int   GetContactMaterialID(const int a1) const; //  @8A2BE0
+    const int   GetContactSurfacePropFields(const int a1) const;    //  @8A2AF0
+    const int   GetContactFlags(const int index) const; //  @8A2A80
+    Node*       GetRealNode(const int index) const; //  @8A0F40
+    Node*       GetContactNode(const int index) const;  //  @8A2A60
+    Vector4f*   GetPeerContactPoint(const int index) const; //  @8A2A10
+    Vector4f*   GetContactPoint(const int index) const; //  @8A29C0
+    Vector4f*   GetContactNormal(Vector4f& outNormal, const int index) const;   //  @8A2840
+    int         Contacts() const;   //  @8A0CA0
 
-    static AuxQuadTree*    GetNodeQuadTree(Node* node);    //  @8A0810
+    static AuxQuadTree*    GetForNode(Node* node);    //  @8A0810
 };
 
 ASSERT_CLASS_SIZE(AuxQuadTree, 88);

@@ -213,6 +213,7 @@ public:
     void            PushVector2f(const Vector2f& vec);  //  @431180
     void            PushMatrix(const DirectX::XMMATRIX& mat, const unsigned int ind);   //  @430F80
     void            PushModelMatrix(const DirectX::XMMATRIX& mat);  //  @430D60
+    void            Dump() const;   //  @42E8B0
 
     static void     CreateRenderBuffer(); // @436070
 

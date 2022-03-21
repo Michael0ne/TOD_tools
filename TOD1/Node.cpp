@@ -81,7 +81,7 @@ void Node::Destroy()
         delete m_Position;
 
     delete m_QuadTree;
-    delete m_CollisionIgnoreList;
+    delete m_Collision;
     delete[] m_Name;
 
     if (m_GlobalIdInBlockigList >= 0)
@@ -135,7 +135,7 @@ void Node::SetWorldOrient(const Orientation& orientation)
 
 void Node::_86B4B0(const int size)
 {
-    if (m_Flags.m_FlagBits.HasFragment || m_Flags.m_FlagBits.Volatile)
+    if (m_Flags.HasFragment || m_Flags.Volatile)
         return;
 
     const unsigned int block = 2 * (size & 15);
@@ -295,7 +295,7 @@ void Node::IsSuspended(bool* suspended) const
 
 void Node::IsDisabled(bool* disabled) const
 {
-    *disabled = m_Flags.m_FlagBits._16 | m_Flags.m_FlagBits.Disable;
+    *disabled = m_Flags._16 | m_Flags.Disable;
 }
 
 const int Node::GetUserType() const
@@ -387,7 +387,7 @@ void Node::SetEntityPositionRecursively(NodeMatrix* position)
 
 const int Node::GetRenderOrderGroup() const
 {
-    return m_Flags.m_FlagBits.RenderOrderGroup;
+    return m_Flags.RenderOrderGroup;
 }
 
 void Node::SetRenderOrderGroup(int renderordergroup)
@@ -400,18 +400,18 @@ void Node::SetRenderOrderGroup(int renderordergroup)
     else
         renderordergroup = -1;
 
-    m_Flags.m_FlagBits.RenderOrderGroup = renderordergroup;
+    m_Flags.RenderOrderGroup = renderordergroup;
     m_Id._3 = true;
 }
 
 const bool Node::ShouldDisableOnCutscene() const
 {
-    return m_Flags.m_FlagBits.DisabledOnCutscene;
+    return m_Flags.DisabledOnCutscene;
 }
 
 void Node::SetShouldDisableOnCutscene(const bool disable)
 {
-    m_Flags.m_FlagBits.DisabledOnCutscene = disable;
+    m_Flags.DisabledOnCutscene = disable;
 }
 
 const int Node::GetRepresentation() const
@@ -421,7 +421,7 @@ const int Node::GetRepresentation() const
     if (m_QuadTree)
         representation |= 2;
 
-    if (m_Flags.m_FlagBits.HasFragment)
+    if (m_Flags.HasFragment)
         representation |= 4;
 
     return representation;
@@ -443,7 +443,7 @@ void Node::SetShouldUseAuxQuadTree(const bool use)
         return;
 
     const bool flag = (m_QuadTree->field_4D >> 6) & 1;
-    SetParam(5, &flag, tTRUTH);
+    StoreProperty(5, &flag, tTRUTH);
     m_QuadTree->_8A36A0(use);
 }
 
@@ -475,7 +475,7 @@ void Node::SetLodThreshold(float threshold)
         return;
 
     const float thresholdcurrent = m_QuadTree->field_3C * 0.0049999999f;
-    SetParam(8, &thresholdcurrent, tNUMBER);
+    StoreProperty(8, &thresholdcurrent, tNUMBER);
 
     if (threshold > 1)
         threshold = 1;
@@ -503,7 +503,7 @@ void Node::SetFadeThreshold(float threshold)
         return;
 
     const float fadethreshold = (m_QuadTree->field_3D & 127) * 0.0099999998f;
-    SetParam(9, &fadethreshold, tNUMBER);
+    StoreProperty(9, &fadethreshold, tNUMBER);
 
     if (threshold < 0)
         threshold = 0;
@@ -654,26 +654,26 @@ void Node::SetUserType(const int type)
 {
     if (m_QuadTree)
     {
-        SetParam(6, &m_QuadTree->m_UserType, tINTEGER);
+        StoreProperty(6, &m_QuadTree->m_UserType, tINTEGER);
         m_QuadTree->m_UserType ^= (type ^ m_QuadTree->m_UserType) & 0xFFFFFF;
     }
 }
 
 const char* const Node::GetIgnoreList() const
 {
-    if (!m_CollisionIgnoreList)
+    if (!m_Collision)
         return nullptr;
 
-    if (!m_CollisionIgnoreList->m_CollisionProbesList.size())
+    if (!m_Collision->m_CollisionProbesList.size())
         return IgnoredCollisionNodes.m_Str;
 
     char buffer[12] = {};
-    for (int i = 0; i < m_CollisionIgnoreList->m_CollisionProbesList.size(); ++i)
+    for (int i = 0; i < m_Collision->m_CollisionProbesList.size(); ++i)
     {
-        if (!m_CollisionIgnoreList->m_CollisionProbesList[i])
+        if (!m_Collision->m_CollisionProbesList[i])
             continue;
 
-        sprintf(buffer, "%010d;", m_CollisionIgnoreList->m_CollisionProbesList[i]->m_Id.Id);
+        sprintf(buffer, "%010d;", m_Collision->m_CollisionProbesList[i]->m_Id.Id);
         IgnoredCollisionNodes.Append(buffer);
 
         memset(buffer, NULL, 12);
@@ -685,10 +685,10 @@ const char* const Node::GetIgnoreList() const
 #pragma message(TODO_IMPLEMENTATION)
 void Node::SetIgnoreList(const char* list)
 {
-    if (!m_CollisionIgnoreList || !list)
+    if (!m_Collision || !list)
         return;
 
-    m_CollisionIgnoreList->m_CollisionProbesList.clear();
+    m_Collision->m_CollisionProbesList.clear();
     const size_t listlen = strlen(list);
     const size_t blocksize = 11;
 
@@ -699,7 +699,7 @@ void Node::SetIgnoreList(const char* list)
     {
         //  TODO: find probe by it's id and add it to the list.
         CollisionProbe* colprobe;
-        m_CollisionIgnoreList->m_CollisionProbesList.push_back(colprobe);
+        m_Collision->m_CollisionProbesList.push_back(colprobe);
         list += blocksize;
     }
 }
@@ -780,9 +780,9 @@ void Node::SetOrientFast_Impl(const Orientation& orient)
 
     if (0 < deltaMin)
     {
-        SetParam(4, &m_Position, tQUATERNION);
-        if (m_CollisionIgnoreList)
-            m_CollisionIgnoreList->m_Orientation = orient;
+        StoreProperty(4, &m_Position, tQUATERNION);
+        if (m_Collision)
+            m_Collision->m_Orientation = orient;
 
         m_Position->m_Orientation = orient;
     }
@@ -804,15 +804,15 @@ void Node::SetPosFast_Impl(const Vector4f& pos)
     if (m_Position->m_Position == pos)
         return;
 
-    SetParam(3, &m_Position->m_Position, tVECTOR);
-    if (m_CollisionIgnoreList)
+    StoreProperty(3, &m_Position->m_Position, tVECTOR);
+    if (m_Collision)
     {
         const float dist =
-            ((pos.z - m_CollisionIgnoreList->m_Position_1.z) * (pos.z - m_CollisionIgnoreList->m_Position_1.z)) +
-            ((pos.y - m_CollisionIgnoreList->m_Position_1.y) * (pos.y - m_CollisionIgnoreList->m_Position_1.y)) +
-            ((pos.x - m_CollisionIgnoreList->m_Position_1.x) * (pos.x - m_CollisionIgnoreList->m_Position_1.x));
+            ((pos.z - m_Collision->m_Position.z) * (pos.z - m_Collision->m_Position.z)) +
+            ((pos.y - m_Collision->m_Position.y) * (pos.y - m_Collision->m_Position.y)) +
+            ((pos.x - m_Collision->m_Position.x) * (pos.x - m_Collision->m_Position.x));
         if (dist > 100)
-            m_CollisionIgnoreList->m_Position_1 = { pos.x, pos.y, pos.z };
+            m_Collision->m_Position = { pos.x, pos.y, pos.z };
     }
 
     m_Position->m_Position = pos;
@@ -825,7 +825,7 @@ void Node::PurgeNames(const int dummy)
 
 void Node::PurgeNames_Impl(bool onlyChildren)
 {
-    if (m_Flags.m_FlagBits.PurgeNames)
+    if (m_Flags.PurgeNames)
         onlyChildren = true;
 
     if (onlyChildren)
@@ -837,13 +837,13 @@ void Node::PurgeNames_Impl(bool onlyChildren)
 
 void Node::ResetIgnoreList()
 {
-    if (!m_CollisionIgnoreList)
+    if (!m_Collision)
         return;
 
     const char* const ignorelist = GetIgnoreList();
-    SetParam(7, &ignorelist, tSTRING);
+    StoreProperty(7, &ignorelist, tSTRING);
 
-    m_CollisionIgnoreList->m_CollisionProbesList.clear();
+    m_Collision->m_CollisionProbesList.clear();
 }
 
 void Node::ForceLodCalculation()
@@ -906,38 +906,546 @@ void Node::CreateNode(int* args) const
 
 void Node::CommitCollision()
 {
-    if (m_CollisionIgnoreList)
-        m_CollisionIgnoreList->CommitCollision();
+    if (m_Collision)
+        m_Collision->CommitCollision();
 }
 
 void Node::SetSafePos(const Vector4f& pos, const Orientation& orient)
 {
-    if (!m_CollisionIgnoreList)
+    if (!m_Collision)
         return;
 
-    m_CollisionIgnoreList->m_SafePosition = { pos.x, pos.y, pos.z };
-    m_CollisionIgnoreList->m_SafeOrientation = orient;
+    m_Collision->m_SafePosition = { pos.x, pos.y, pos.z };
+    m_Collision->m_SafeOrientation = orient;
+}
+
+void Node::Rotate(float* args)
+{
+    Orientation rot = *(Orientation*)args;
+    Rotate_Impl(rot);
+}
+
+void Node::RotateX(const float* args)
+{
+    RotateX_Impl(args[0]);
+}
+
+void Node::RotateY(const float* args)
+{
+    RotateY_Impl(args[0]);
+}
+
+void Node::RotateZ(const float* args)
+{
+    RotateZ_Impl(args[0]);
+}
+
+void Node::RotateLocal(const float* args)
+{
+    Orientation orient = *(Orientation*)args;
+    SetOrientation(orient);
+}
+
+void Node::TouchPivot(const int dummy)
+{
+    _484CC0(0);
+
+    if (m_QuadTree)
+        m_QuadTree->_8A3320();
+
+    for (Node* child = m_FirstChild; child; child = child->m_NextSibling)
+    {
+        child->_484CC0(0);
+        child->_88D230(0);
+    }
+}
+
+void Node::FastSetPos(int* args)
+{
+    FastSetPos_Impl({ (float)args[0], (float)args[1], (float)args[2], 0.f });
+}
+
+void Node::RemoveIgnoreNode(int* args)
+{
+    if (!m_Collision)
+        return;
+
+    const char* ignoreList = GetIgnoreList();
+    StoreProperty(7, &ignoreList, tSTRING);
+    m_Collision->RemoveNode((Node*)args[0]);
+}
+
+void Node::IgnoreNode(int* args)
+{
+    if (!m_Collision)
+        return;
+
+    const char* ignoreList = GetIgnoreList();
+    StoreProperty(7, &ignoreList, tSTRING);
+    m_Collision->AddNode((Node*)args[0]);
+}
+
+void Node::AnnotateSphere(int* args) const
+{
+    const Vector4f spherePos((float)args[0], (float)args[1], (float)args[2], 0.f);
+    const int unk1 = args[3],
+        unk2 = args[4],
+        unk3 = args[5];
+
+    Scene::SceneInstance->AnnotateSphere_Impl(spherePos, unk1, unk2, unk3);
+}
+
+void Node::AnnotateLine(int* args) const
+{
+    const Vector4f lineStart((float)args[0], (float)args[1], (float)args[2], 0.f);
+    const Vector4f lineEnd((float)args[3], (float)args[4], (float)args[5], 0.f);
+    const int unk1 = args[6], unk2 = args[7];
+
+    Scene::SceneInstance->AnnotateLine_Impl(lineStart, lineEnd, unk1, unk2);
+}
+
+void Node::AnnotatePoint(int* args) const
+{
+    const Vector4f point((float)args[0], (float)args[1], (float)args[2], 0.f);
+    const int unk1 = args[3], unk2 = args[4];
+
+    Scene::SceneInstance->AnnotatePoint_Impl(point, unk1, unk2);
+}
+
+void Node::DestroyNode(int* args) const
+{
+    ((Entity*)args[0])->Destroy();
+}
+
+void Node::ResolveObjectUsingProbe(int* args) const
+{
+    ResolveObjectUsingProbe_Impl(this, (int*)args[0], (CollisionProbe*)args[1]);
+}
+
+void Node::ResolveObject(int* args) const
+{
+    ResolveObject_Impl(this, args[0]);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::GetContactRegion(int* args) const
+{
+}
+
+void Node::GetContactMaterialID(int* args) const
+{
+    if (m_QuadTree)
+        args[0] = m_QuadTree->GetContactMaterialID(args[1]);
+    else
+        args[0] = 0;
+}
+
+void Node::GetContactSurfacePropFields(int* args) const
+{
+    if (m_QuadTree)
+        args[0] = m_QuadTree->GetContactSurfacePropFields(args[1]);
+    else
+        args[0] = ModelAsset::DefaultSurfacePropFields;
+}
+
+void Node::GetRealNode(int* args) const
+{
+    if (!m_QuadTree)
+        args[0] = NULL;
+    else
+        args[0] = (int)m_QuadTree->GetRealNode(args[1]);
+}
+
+void Node::GetContactNode(int* args) const
+{
+    if (!m_QuadTree)
+        args[0] = NULL;
+    else
+        args[0] = (int)m_QuadTree->GetContactNode(args[1]);
+}
+
+void Node::GetSelfRealNode(int* args) const
+{
+    if (!m_QuadTree)
+        args[0] = NULL;
+    else
+        args[0] = (int)m_QuadTree->GetRealNode(args[1]);
+}
+
+void Node::GetPeerContactPoint(int* args) const
+{
+    Vector4f contactpoint = BuiltinType::ZeroVector;
+    if (m_QuadTree)
+        contactpoint = *m_QuadTree->GetPeerContactPoint(args[3]);
+
+    *(Vector3f*)args = { contactpoint.x, contactpoint.y, contactpoint.z };
+}
+
+void Node::GetContactPoint(int* args) const
+{
+    Vector4f contactpoint = BuiltinType::ZeroVector;
+    if (m_QuadTree)
+        contactpoint = *m_QuadTree->GetContactPoint(args[3]);
+
+    *(Vector3f*)args = { contactpoint.x, contactpoint.y, contactpoint.z };
+}
+
+void Node::GetContactNormal(int* args) const
+{
+    Vector4f contactnormal = BuiltinType::ZeroVector;
+    Vector4f dummy;
+    if (m_QuadTree)
+        contactnormal = *m_QuadTree->GetContactNormal(dummy, args[3]);
+
+    *(Vector3f*)args = { contactnormal.x, contactnormal.y, contactnormal.z };
+}
+
+void Node::Contacts(int* args) const
+{
+    args[0] = m_QuadTree ? m_QuadTree->Contacts() : NULL;
+}
+
+void Node::SetContactFilter(int* args) const
+{
+    if (m_QuadTree)
+        m_QuadTree->m_ContactFilter = args[0];
+}
+
+void Node::SetWorldPos(int* args)
+{
+    Vector4f pos;
+    m_Parent->ConvertFromWorldSpace(pos, { (float)args[0], (float)args[1], (float)args[2], 0.f });
+    SetPos(pos);
+}
+
+void Node::GetWorldOrient(int* args) const
+{
+    DirectX::XMMATRIX mat;
+    GetWorldMatrix(mat);
+    DirectX::XMVECTOR quat = DirectX::XMQuaternionRotationMatrix(mat);
+
+    *(DirectX::XMVECTOR*)args = quat;
+}
+
+void Node::ConvertDirectionFromWorldSpace(int* args) const
+{
+    Vector4f offset((float)args[3], (float)args[4], (float)args[5], 0.f);
+    Vector4f dir;
+
+    GetWorldSpaceDirection(dir, offset);
+
+    *(Vector3f*)args = { dir.x, dir.y, dir.z };
+}
+
+void Node::ConvertDirectionToWorldSpace(int* args) const
+{
+    Vector4f offset((float)args[3], (float)args[4], (float)args[5], 0.f);
+    Vector4f dir;
+
+    GetLocalSpaceDirection(dir, offset);
+
+    *(Vector3f*)args = { dir.x, dir.y, dir.z };
+}
+
+void Node::Rotate_Impl(const Orientation& orient)
+{
+    Orientation currentOrient = BuiltinType::Orient;
+    Orientation newOrientation;
+
+    if (m_Position)
+        currentOrient = m_Position->m_Orientation;
+
+    newOrientation.w = (currentOrient.w * orient.z) + (currentOrient.z * orient.w) + ((currentOrient.y * orient.x) - (currentOrient.x * orient.y));
+    newOrientation.y = (currentOrient.y * orient.z) + (currentOrient.z * orient.y) + ((currentOrient.x * orient.w) - (currentOrient.w * orient.x));
+    newOrientation.x = (currentOrient.x * orient.z) + (currentOrient.z * orient.x) + ((currentOrient.w * orient.y) - (currentOrient.y * orient.w));
+    newOrientation.z = (currentOrient.z * orient.z) - ((currentOrient.x * orient.x) + (currentOrient.w * orient.w)) + (currentOrient.y * orient.y);
+
+    SetOrient(newOrientation);
+}
+
+void Node::RotateX_Impl(const float orientX)
+{
+    const float negHalfOrientX = orientX * -0.5f;
+    const float nhoxCos = cosf(negHalfOrientX);
+    const float nhoxSin = sinf(negHalfOrientX);
+    Orientation currentOrientation = BuiltinType::Orient;
+    Orientation newOrientation;
+
+    if (m_Position)
+        currentOrientation = m_Position->m_Orientation;
+
+    newOrientation.x = (currentOrientation.x * nhoxCos) + (currentOrientation.y * nhoxSin);
+    newOrientation.w = (currentOrientation.z * nhoxSin) + (currentOrientation.w * nhoxCos);
+    newOrientation.y = (currentOrientation.y * nhoxCos) - (currentOrientation.x * nhoxSin);
+    newOrientation.z = (currentOrientation.z * nhoxCos) - (currentOrientation.w * nhoxSin);
+
+    SetOrient(newOrientation);
+}
+
+void Node::RotateY_Impl(const float orientY)
+{
+    const float negHalfOrientY = orientY * -0.5f;
+    const float nhoyCos = cosf(negHalfOrientY);
+    const float nhoySin = sinf(negHalfOrientY);
+    Orientation currentOrientation = BuiltinType::Orient;
+    Orientation newOrientation;
+
+    if (m_Position)
+        currentOrientation = m_Position->m_Orientation;
+
+    newOrientation.x = (currentOrientation.z * nhoySin) + (currentOrientation.x * nhoyCos);
+    newOrientation.w = (currentOrientation.w * nhoyCos) - (currentOrientation.y * nhoySin);
+    newOrientation.y = (currentOrientation.y * nhoyCos) + (currentOrientation.w * nhoySin);
+    newOrientation.z = (currentOrientation.z * nhoyCos) - (currentOrientation.x * nhoySin);
+
+    SetOrient(newOrientation);
+}
+
+void Node::RotateZ_Impl(const float orientZ)
+{
+    const float negHalfOrientZ = orientZ * -0.5f;
+    const float nhozCos = cosf(negHalfOrientZ);
+    const float nhozSin = sinf(negHalfOrientZ);
+    Orientation currentOrientation = BuiltinType::Orient;
+    Orientation newOrientation;
+
+    if (m_Position)
+        currentOrientation = m_Position->m_Orientation;
+
+    newOrientation.w = (currentOrientation.w * nhozCos) + (currentOrientation.x * nhozSin);
+    newOrientation.x = (currentOrientation.x * nhozCos) - (currentOrientation.w * nhozSin);
+    newOrientation.y = (currentOrientation.z * nhozSin) + (currentOrientation.y * nhozCos);
+    newOrientation.z = (currentOrientation.z * nhozCos) - (currentOrientation.y * nhozSin);
+
+    SetOrient(newOrientation);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::SetOrientation(const Orientation& orient)
+{
+    DirectX::XMMATRIX finalMatrix;
+    Orientation currentOrientation = BuiltinType::Orient;
+
+    if (m_Position)
+        memcpy(finalMatrix.r[0].m128_f32, &m_Position->m_Orientation, sizeof(Orientation));
+    else
+        memcpy(finalMatrix.r[0].m128_f32, &BuiltinType::Orient, sizeof(Orientation));
+
+    finalMatrix.r[1].m128_f32[0] = -finalMatrix.r[0].m128_f32[0];
+    finalMatrix.r[1].m128_f32[1] = -finalMatrix.r[0].m128_f32[1];
+    finalMatrix.r[1].m128_f32[2] = -finalMatrix.r[0].m128_f32[2];
+
+    if (m_Position)
+        currentOrientation = m_Position->m_Orientation;
+}
+
+void Node::GetBlockIDBelow(int* args) const
+{
+    EntityType* script = m_ScriptEntity;
+    const int blockId = m_Id.BlockId - 1;
+    if (!script)
+    {
+        args[0] = blockId;
+        return;
+    }
+
+    while (tFolder != script)
+    {
+        script = script->m_Parent;
+        if (!script)
+        {
+            args[0] = blockId;
+            return;
+        }
+    }
+
+    const int folderBlockId = ((Folder_*)this)->GetBlockId();
+    if (folderBlockId)
+        args[0] = folderBlockId;
+    else
+        args[0] = blockId;
+}
+
+void Node::GetBlockID(int* args) const
+{
+    args[0] = m_Id.BlockId - 1;
+}
+
+void Node::FastSetPos_Impl(const Vector4f& pos)
+{
+    if (!m_Position || m_Position->m_Owner != this || m_Position->m_Position == pos)
+        return;
+
+    StoreProperty(3, &m_Position->m_Position, tVECTOR);
+    if (m_Collision)
+    {
+        if (pos.Magnitude(m_Collision->m_Position) > 100.f)
+            m_Collision->m_Position = { pos.x, pos.y, pos.z };
+    }
+
+    m_Position->m_Position = pos;
+}
+
+void Node::Project(float* args)
+{
+    const Vector4f inVec(args[3], args[4], args[5], 0.f);
+    Vector2f projectedPos;
+    Scene::SceneInstance->m_ActiveCamera->Project_Impl(projectedPos, inVec);
+
+    *(Vector3f*)args = { projectedPos.x, projectedPos.y, 0.f };
+}
+
+void Node::HasContactFlags(int* args) const
+{
+    if (!m_QuadTree)
+        args[0] = NULL;
+    else
+        args[0] = (args[2] & m_QuadTree->GetContactFlags(args[1])) != NULL;
+}
+
+void Node::GetContactFlags(int* args) const
+{
+    if (!m_QuadTree)
+        args[0] = NULL;
+    else
+        args[0] = m_QuadTree->GetContactFlags(args[2]);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::ResolveObjectUsingProbe_Impl(const Node* node, int* a1, CollisionProbe* probe)
+{
+    if (!node)
+    {
+        LogDump::LogA("ResolveObject() can only be used on dynamic nodes");
+        return;
+    }
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::ResolveObject_Impl(const Node* node, const int a2)
+{
+    if (!node->m_Collision)
+    {
+        LogDump::LogA("ResolveObject() can only be used on dynamic nodes");
+        return;
+    }
+}
+
+void Node::GetLocalSpaceDirection(Vector4f& outDir, const Vector4f& inOffset) const
+{
+    if (!m_Position)
+        return;
+
+    if (m_Id.HasQuadTree)
+        m_Position->ApplyMatrixFromQuadTree();
+
+    DirectX::XMMATRIX mat;
+    m_Position->GetMatrix(mat);
+
+    const float x = (inOffset.z * mat.r[2].m128_f32[0]) + (inOffset.y * mat.r[1].m128_f32[0]) + (inOffset.x * mat.r[0].m128_f32[0]);
+    const float y = (inOffset.z * mat.r[2].m128_f32[1]) + (inOffset.y * mat.r[1].m128_f32[1]) + (inOffset.x * mat.r[0].m128_f32[1]);
+    const float z = (inOffset.z * mat.r[2].m128_f32[2]) + (inOffset.y * mat.r[1].m128_f32[2]) + (inOffset.x * mat.r[0].m128_f32[2]);
+    const float a = 0.f;
+
+    outDir = { x, y, z, a };
+}
+
+void Node::GetWorldSpaceDirection(Vector4f& outDir, const Vector4f& inOffset) const
+{
+    if (!m_Position)
+        return;
+
+    if (m_Id.HasQuadTree)
+        m_Position->ApplyMatrixFromQuadTree();
+
+    DirectX::XMMATRIX matOriginal;
+    m_Position->GetMatrix(matOriginal);
+    DirectX::XMMATRIX mat = DirectX::XMMatrixTranspose(matOriginal);
+
+    const float x = (inOffset.y * mat.r[1].m128_f32[0]) + (inOffset.z * mat.r[2].m128_f32[0]) + (inOffset.x * mat.r[0].m128_f32[0]);
+    const float y = (inOffset.y * mat.r[1].m128_f32[1]) + (inOffset.z * mat.r[2].m128_f32[1]) + (inOffset.x * mat.r[0].m128_f32[1]);
+    const float z = (inOffset.y * mat.r[1].m128_f32[2]) + (inOffset.z * mat.r[2].m128_f32[2]) + (inOffset.x * mat.r[0].m128_f32[2]);
+    const float a = inOffset.a;
+    outDir = { x, y, z, a };
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_88D230(const int a1)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::GetAllUniqueIds(std::vector<Utils::UniqueId>& outList) const
+{
+    /*outList.clear();
+
+    if (!m_Parent)
+        return;
+
+    outList.push_back(m_Fragment ? m_Fragment->m_UniqueId : Utils::UniqueId::Instance);
+
+    Node* parent = m_Parent;
+    Folder_* folderParent = (Folder_*)parent;
+    while (true)
+    {
+        EntityType* script = parent->m_ScriptEntity;
+        if (script)
+        {
+            while (tFolder != script)
+            {
+                script = script->m_Parent;
+                if (!script)
+                {
+                    folderParent = nullptr;
+                    break;
+                }
+            }
+        }
+
+        if (!parent->m_Fragment)
+            break;
+
+        const char* fragmentName;
+        if (parent->m_Flags.HasFragment)
+            if (!parent->m_Fragment->m_FragmentRes)
+                break;
+            else
+                fragmentName = parent->m_Fragment->m_FragmentRes->AddResToOpenListAndReturnName();
+        else
+            fragmentName = parent->m_Fragment->m_Name;
+
+        if (!fragmentName || !parent->m_Parent)
+            break;
+
+        outList.push_back(parent->m_Fragment ? parent->m_Fragment->m_UniqueId : Utils::UniqueId::Instance);
+
+        parent = parent->m_Parent;
+        if (!parent)
+            return;
+    }
+
+    if (!folderParent || !folderParent->GetBlockId())*/
 }
 
 void Node::SetFlags(int flags)
 {
-    if (!m_Flags.m_FlagBits.Volatile && (flags & 0x20) == 0 && flags != (m_Flags.m_Flags & 0xFFF))
+    if (!m_Flags.Volatile && (flags & 0x20) == 0 && flags != (*(int*)&m_Flags & 0xFFF))
     {
-        unsigned int _flags = m_Flags.m_Flags & 0xFFF;
-        SetParam(2, &_flags, tINTEGER);
+        unsigned int _flags = *(int*)&m_Flags & 0xFFF;
+        StoreProperty(2, &_flags, tINTEGER);
     }
 
-    if (((flags ^ m_Flags.m_FlagBits.Dynamic) & 2) != 0)
+    if (((flags ^ m_Flags.Dynamic) & 2) != 0)
     {
         if (m_QuadTree && m_QuadTree->field_38)
         {
-            CollisionList* collst = _8A0810(this)->m_Owner->m_CollisionIgnoreList;
+            CollisionInfo* collst = AuxQuadTree::GetForNode(this)->m_Owner->m_Collision;
             if (collst)
                 collst->field_78 |= 0x80000000;
         }
     }
 
-    m_Flags.m_Flags ^= (flags ^ (unsigned short)m_Flags.m_Flags) & 0xFFF;
+    *(unsigned short*)&m_Flags ^= (flags ^ *(unsigned short*)&m_Flags) & 0xFFF;
     _88E6A0(this);
 
     if (m_QuadTree || (m_Parent && m_Parent->GetEntityQuadTreeOrParentQuadTree()))
@@ -946,8 +1454,8 @@ void Node::SetFlags(int flags)
 
 void Node::Instantiate()
 {
-    if (m_CollisionIgnoreList)
-        m_CollisionIgnoreList->field_78 |= 0x80000000;
+    if (m_Collision)
+        m_Collision->field_78 |= 0x80000000;
 
     m_Id.HasPosition = false;
     m_Id.HasQuadTree = true;
@@ -991,10 +1499,9 @@ void Node::nullsub_3(int)
     return;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Node::ExecuteScript()
 {
-    (*(void(__thiscall*)(void*, Node*))0x86CFF0)(m_ScriptEntity, this);
+    m_ScriptEntity->ExecuteScript(this);
 }
 
 void Node::nullsub_4(int)
@@ -1029,12 +1536,12 @@ Node::Node(unsigned char allocationBitmask)
 {
     MESSAGE_CLASS_CREATED(Node);
 
-    m_Flags.m_FlagBits.HasFragment = true;
+    m_Flags.HasFragment = true;
 
     m_GlobalIdInSceneList = NULL;
     m_QuadTree = nullptr;
     m_NextSibling = nullptr;
-    m_CollisionIgnoreList = nullptr;
+    m_Collision = nullptr;
     m_Position = nullptr;
     m_Parent = nullptr;
     m_FirstChild = nullptr;
@@ -1052,7 +1559,7 @@ Node::Node(unsigned char allocationBitmask)
     if (allocationBitmask & NODE_MASK_FRAGMENT)
         m_Fragment = new Fragment(this);
 
-    m_Flags.m_FlagBits.HasFragment = m_Fragment != nullptr;
+    m_Flags.HasFragment = m_Fragment != nullptr;
 
     m_GlobalIdInSceneList = m_GlobalIdInSceneList | 0xFFFFFFFF;
 }
@@ -1075,7 +1582,7 @@ const char* Node::GetScript() const
 
 unsigned int Node::GetFlags() const
 {
-    return m_Flags.m_Flags & 0xFFF;
+    return *(unsigned int*)&m_Flags & 0xFFF;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -1086,7 +1593,7 @@ void Node::_86ACB0()
 #pragma message(TODO_IMPLEMENTATION)
 void Node::_86B610()
 {
-    if (!m_ScriptEntity || m_Flags.m_FlagBits._29 || m_Flags.m_FlagBits.Volatile)
+    if (!m_ScriptEntity || m_Flags._29 || m_Flags.Volatile)
         return;
 
     if (!field_8)
@@ -1122,9 +1629,9 @@ void Node::GetWorldPos(Vector4f& pos) const
     pos = *(Vector4f*)&mat.r[3].m128_f32;
 }
 
-void Node::SetParam(const int index, const void* param, DataType* type)
+void Node::StoreProperty(const int index, const void* param, DataType* type)
 {
-    if (!m_ScriptEntity || m_Flags.m_FlagBits.HasFragment || m_Flags.m_FlagBits.Volatile)
+    if (!m_ScriptEntity || m_Flags.HasFragment || m_Flags.Volatile)
         return;
 
     const unsigned char paramInd = 1 << (index & 7);
@@ -1173,7 +1680,7 @@ void Node::SetParent(const Node* parent)
     if (m_Parent == parent)
         return;
 
-    SetParam(1, &m_Parent, tEntity);
+    StoreProperty(1, &m_Parent, tEntity);
 
     if (parent)
     {
@@ -1223,23 +1730,23 @@ void Node::SetPos(const Vector4f& newpos)
         Script::_A11C90 == 1.f)
         return;
 
-    SetParam(3, &m_Position, tVECTOR);
+    StoreProperty(3, &m_Position, tVECTOR);
 
-    if (m_CollisionIgnoreList)
+    if (m_Collision)
     {
         if (Script::_A11C90 != 1.f)
         {
-            float vecdiffx = newpos.x - m_CollisionIgnoreList->m_Position_1.x;
-            float vecdiffy = newpos.y - m_CollisionIgnoreList->m_Position_1.y;
-            float vecdiffz = newpos.z - m_CollisionIgnoreList->m_Position_1.z;
+            float vecdiffx = newpos.x - m_Collision->m_Position.x;
+            float vecdiffy = newpos.y - m_Collision->m_Position.y;
+            float vecdiffz = newpos.z - m_Collision->m_Position.z;
             if (((vecdiffz * vecdiffz) + (vecdiffy * vecdiffy) + (vecdiffx * vecdiffx)) <= 100.f)
             {
                 float negflt = 1.f - Script::_A11C90;
                 m_Position->m_Position =
                 {
-                    (m_CollisionIgnoreList->m_Position_1.x * negflt) + (newpos.x * Script::_A11C90),
-                    (m_CollisionIgnoreList->m_Position_1.y * negflt) + (newpos.y * Script::_A11C90),
-                    (m_CollisionIgnoreList->m_Position_1.z * negflt) + (newpos.z * Script::_A11C90),
+                    (m_Collision->m_Position.x * negflt) + (newpos.x * Script::_A11C90),
+                    (m_Collision->m_Position.y * negflt) + (newpos.y * Script::_A11C90),
+                    (m_Collision->m_Position.z * negflt) + (newpos.z * Script::_A11C90),
                     0.f
                 };
 
@@ -1269,7 +1776,7 @@ void Node::SetPos(const Vector4f& newpos)
             }
         }
 
-        m_CollisionIgnoreList->m_Position_1 = { newpos.x, newpos.y, newpos.z };
+        m_Collision->m_Position = { newpos.x, newpos.y, newpos.z };
     }
     else
     {
@@ -1308,7 +1815,7 @@ const char* Node::GetFragment() const
     if (!m_Fragment)
         return nullptr;
 
-    if (!m_Flags.m_FlagBits.HasFragment)
+    if (!m_Flags.HasFragment)
         return m_Fragment->m_Name;
 
     if (m_Fragment->m_FragmentRes)
@@ -1317,13 +1824,13 @@ const char* Node::GetFragment() const
     return nullptr;
 }
 
-void Node::ForceLodCalculation(unsigned int a1)
+void Node::CalculateLod(unsigned int a1)
 {
     if (m_QuadTree)
         m_QuadTree->CalculateLodForAllChildren();
     else
         for (Node* chld = m_FirstChild; chld; chld = chld->m_NextSibling)
-            chld->ForceLodCalculation(a1);
+            chld->CalculateLod(a1);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -1480,7 +1987,7 @@ void Node::SetFragment(const char* const fragmentpath)
     if (strcmp(fullfragmpath.m_Str, fragmentpath))
         LogDump::LogA("unmapped %s -> %s\n", fragmentpath, fullfragmpath.m_Str);
 
-    if (m_Flags.m_FlagBits.HasFragment)
+    if (m_Flags.HasFragment)
     {
         m_Fragment->LoadResourceFile(fullfragmpath.m_Str);
         m_Fragment->ApplyFragment();
@@ -1495,52 +2002,6 @@ void Node::TryInstantiate()
         m_Id.HasPosition = true;
     else
         Instantiate();
-}
-
-AuxQuadTree* Node::_8A0810(Node* node)
-{
-    if (node->m_QuadTree)
-    {
-        AuxQuadTree* qdtr = node->m_QuadTree;
-        while (!qdtr->m_Owner->m_CollisionIgnoreList)
-        {
-            qdtr = qdtr->field_4;
-            if (!qdtr)
-                return node->m_QuadTree;
-        }
-
-        return qdtr;
-    }
-    else
-    {
-        Node* nd = node->m_Parent;
-        if (nd)
-        {
-            while (!nd->m_QuadTree)
-            {
-                nd = nd->m_Parent;
-                if (!nd)
-                    return nullptr;
-            }
-
-            AuxQuadTree* qdtr = nd->m_QuadTree;
-            if (qdtr)
-            {
-                while (!qdtr->m_Owner->m_CollisionIgnoreList)
-                {
-                    qdtr = qdtr->field_4;
-                    if (!qdtr)
-                        return nd->m_QuadTree;
-                }
-
-                return nd->m_QuadTree;
-            }
-        }
-        else
-            return nullptr;
-    }
-
-    return nullptr;
 }
 
 void Node::_891E70(const String& s, String& outs)
@@ -1563,7 +2024,6 @@ void Node::_891E70(const String& s, String& outs)
     outs = s;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Node::Register()
 {
     tNode = new EntityType("Node");
@@ -1603,6 +2063,65 @@ void Node::Register()
     tNode->RegisterScript("IsSuspended:truth", (EntityFunctionMember)&IsSuspended, NULL, NULL, NULL, nullptr, "IsSuspendedMSG");
     tNode->RegisterScript("move(vector)", (EntityFunctionMember)&Move, NULL, NULL, NULL, nullptr, "MoveMSG");
     tNode->RegisterScript("movelocal(vector)", (EntityFunctionMember)&MoveLocal, NULL, NULL, NULL, nullptr, "MoveLocalMSG");
+    tNode->RegisterScript("setrotationx(number)", (EntityFunctionMember)&SetRotationX, NULL, NULL, NULL, nullptr, "SetRotationXMSG");
+    tNode->RegisterScript("setrotationy(number)", (EntityFunctionMember)&SetRotationY, NULL, NULL, NULL, nullptr, "SetRotationYMSG");
+    tNode->RegisterScript("setrotationz(number)", (EntityFunctionMember)&SetRotationZ, NULL, NULL, NULL, nullptr, "SetRotationZMSG");
+    tNode->RegisterScript("rotate(quaternion)", (EntityFunctionMember)&Rotate, NULL, NULL, NULL, nullptr, "RotateMSG");
+    tNode->RegisterScript("rotatex(number)", (EntityFunctionMember)&RotateX, NULL, NULL, NULL, nullptr, "RotateXMSG");
+    tNode->RegisterScript("rotatey(number)", (EntityFunctionMember)&RotateY, NULL, NULL, NULL, nullptr, "RotateYMSG");
+    tNode->RegisterScript("rotatez(number)", (EntityFunctionMember)&RotateZ, NULL, NULL, NULL, nullptr, "RotateZMSG");
+    tNode->RegisterScript("rotatelocal(quaternion)", (EntityFunctionMember)&RotateLocal, NULL, NULL, NULL, nullptr, "RotateLocalMSG");
+    tNode->RegisterScript("rotatelocalx(number)", (EntityFunctionMember)&RotateLocalX, NULL, NULL, NULL, nullptr, "RotateLocalXMSG");
+    tNode->RegisterScript("rotatelocaly(number)", (EntityFunctionMember)&RotateLocalY, NULL, NULL, NULL, nullptr, "RotateLocalYMSG");
+    tNode->RegisterScript("rotatelocalz(number)", (EntityFunctionMember)&RotateLocalZ, NULL, NULL, NULL, nullptr, "RotateLocalZMSG");
+    tNode->RegisterScript("converttoworldspace(vector):vector", (EntityFunctionMember)&ConvertToWorldSpace, NULL, NULL, NULL, nullptr, "ConvertToWorldSpaceMSG");
+    tNode->RegisterScript("convertfromworldspace(vector):vector", (EntityFunctionMember)&ConvertFromWorldSpace, NULL, NULL, NULL, nullptr, "ConvertFromWorldSpaceMSG");
+    tNode->RegisterScript("convertdirectiontoworldspace(vector):vector", (EntityFunctionMember)&ConvertDirectionToWorldSpace, NULL, NULL, NULL, nullptr, "ConvertDirectionToWorldSpaceMSG");
+    tNode->RegisterScript("convertdirectionfromworldspace(vector):vector", (EntityFunctionMember)&ConvertDirectionFromWorldSpace, NULL, NULL, NULL, nullptr, "ConvertDirectionFromWorldSpaceMSG");
+    tNode->RegisterScript("getworldpos:vector", (EntityFunctionMember)&GetWorldPos, NULL, NULL, NULL, nullptr, "GetWorldPosMSG");
+    tNode->RegisterScript("getworldorient:quaternion", (EntityFunctionMember)&GetWorldOrient, NULL, NULL, NULL, nullptr, "GetWorldOrientMSG");
+    tNode->RegisterScript("setworldpos(vector)", (EntityFunctionMember)&SetWorldPos, NULL, NULL, NULL, nullptr, "SetWorldPosMSG");
+    tNode->RegisterScript("setworldorient(quaternion)", (EntityFunctionMember)&SetWorldOrient, NULL, NULL, NULL, nullptr, "SetWorldOrientMSG");
+    tNode->RegisterScript("findnode(string):entity", (EntityFunctionMember)&FindNode, NULL, NULL, NULL, nullptr, "FindNodeMSG");
+    tNode->RegisterScript("setcontactfilter(integer)", (EntityFunctionMember)&SetContactFilter, NULL, NULL, NULL, nullptr, "SetContactFilterMSG");
+    tNode->RegisterScript("contacts:integer", (EntityFunctionMember)&Contacts, NULL, NULL, NULL, nullptr, "ContactsMSG");
+    tNode->RegisterScript("getcontactnormal(integer):vector", (EntityFunctionMember)&GetContactNormal, NULL, NULL, NULL, nullptr, "GetContactNormalMSG");
+    tNode->RegisterScript("getcontactpoint(integer):vector", (EntityFunctionMember)&GetContactPoint, NULL, NULL, NULL, nullptr, "GetContactPointMSG");
+    tNode->RegisterScript("getpeercontactpoint(integer):vector", (EntityFunctionMember)&GetPeerContactPoint, NULL, NULL, NULL, nullptr, "GetPeerContactPointMSG");
+    tNode->RegisterScript("getselfrealnode(integer):entity", (EntityFunctionMember)&GetSelfRealNode, NULL, NULL, NULL, nullptr, "GetSelfRealNodeMSG");
+    tNode->RegisterScript("getcontactnode(integer):entity", (EntityFunctionMember)&GetContactNode, NULL, NULL, NULL, nullptr, "GetContactNodeMSG");
+    tNode->RegisterScript("getrealnode(integer):entity", (EntityFunctionMember)&GetRealNode, NULL, NULL, NULL, nullptr, "GetRealNodeMSG");
+    tNode->RegisterScript("getcontactflags(integer):integer", (EntityFunctionMember)&GetContactFlags, NULL, NULL, NULL, nullptr, "GetContactFlagsMSG");
+    tNode->RegisterScript("hascontactflags(integer,integer):truth", (EntityFunctionMember)&HasContactFlags, NULL, NULL, NULL, nullptr, "HasContactFlagsMSG");
+    tNode->RegisterScript("getcontactsurfacepropfields(integer):integer", (EntityFunctionMember)&GetContactSurfacePropFields, NULL, NULL, NULL, nullptr, "GetContactSurfacePropFieldsMSG");
+    tNode->RegisterScript("getcontactmaterialid(integer):integer", (EntityFunctionMember)&GetContactMaterialID, NULL, NULL, NULL, nullptr, "GetContactMaterialIDMSG");
+    tNode->RegisterScript("getcontactregion(integer,list(vector),integer)", (EntityFunctionMember)&GetContactRegion, NULL, NULL, NULL, nullptr, "GetContactRegionMSG");
+    tNode->RegisterScript("SetSafePos(vector,quaternion)", (EntityFunctionMember)&SetSafePos, NULL, NULL, NULL, nullptr, "SetSafePosMSG");
+    tNode->RegisterScript("resolveobject(integer)", (EntityFunctionMember)&ResolveObject, NULL, NULL, NULL, nullptr, "ResolveObjectMSG");
+    tNode->RegisterScript("resolveobjectusingprobe(integer,entity)", (EntityFunctionMember)&ResolveObjectUsingProbe, NULL, NULL, NULL, nullptr, "ResolveObjectUsingProbeMSG");
+    tNode->RegisterScript("commitcollision", (EntityFunctionMember)&CommitCollision, NULL, NULL, NULL, nullptr, "CommitCollisionMSG");
+    tNode->RegisterScript("createnode(string):entity", (EntityFunctionMember)&CreateNode);
+    tNode->RegisterScript("destroynode(entity)", (EntityFunctionMember)&DestroyNode);
+    tNode->RegisterScript("annotatepoint(vector,integer,integer)", (EntityFunctionMember)&AnnotatePoint);
+    tNode->RegisterScript("annotateline(vector,vector,integer,integer)", (EntityFunctionMember)&AnnotateLine);
+    tNode->RegisterScript("annotatesphere(vector,number,integer,integer)", (EntityFunctionMember)&AnnotateSphere);
+    tNode->RegisterScript("setcurrentcamera(entity)", (EntityFunctionMember)&SetCurrentCamera, NULL, NULL, NULL, nullptr, "SetCurrentCameraMSG");
+    tNode->RegisterScript("getcurrentcamera:entity", (EntityFunctionMember)&GetCurrentCamera, NULL, NULL, NULL, nullptr, "GetCurrentCameraMSG");
+    tNode->RegisterScript("GetSharedProbe:entity", (EntityFunctionMember)&GetSharedProbe, NULL, NULL, NULL, nullptr, "GetSharedProbeMSG");
+    tNode->RegisterScript("project(vector):vector", (EntityFunctionMember)&Project, NULL, NULL, NULL, nullptr, "ProjectMSG");
+    tNode->RegisterScript("getscreensize:vector", (EntityFunctionMember)&GetScreenSize, NULL, NULL, NULL, nullptr, "GetScreenSizeMSG");
+    tNode->RegisterScript("getplatform:integer", (EntityFunctionMember)&GetPlatform, NULL, NULL, NULL, nullptr, "GetPlatformMSG");
+    tNode->RegisterScript("forcelodcalculation", (EntityFunctionMember)&ForceLodCalculation, NULL, NULL, NULL, nullptr, "ForceLodCalculationMSG");
+    tNode->RegisterScript("ignorenode(entity)", (EntityFunctionMember)&IgnoreNode, NULL, NULL, NULL, nullptr, "IgnoreNodeMSG");
+    tNode->RegisterScript("removeignorenode(entity)", (EntityFunctionMember)&RemoveIgnoreNode, NULL, NULL, NULL, nullptr, "RemoveIgnoreNodeMSG");
+    tNode->RegisterScript("resetignorelist", (EntityFunctionMember)&ResetIgnoreList, NULL, NULL, NULL, nullptr, "ResetIgnoreListMSG");
+    tNode->RegisterScript("purgenames", (EntityFunctionMember)&PurgeNames, NULL, NULL, NULL, nullptr, "PurgeNamesMSG");
+    tNode->RegisterScript("fastsetpos(vector)", (EntityFunctionMember)&FastSetPos, NULL, NULL, NULL, nullptr, "FastSetPosMSG");
+    tNode->RegisterScript("fastsetorient(quaternion)", (EntityFunctionMember)&FastSetOrient, NULL, NULL, NULL, nullptr, "FastSetOrientMSG");
+    tNode->RegisterScript("touchpivot", (EntityFunctionMember)&TouchPivot, NULL, NULL, NULL, nullptr, "TouchPivotMSG");
+    tNode->RegisterScript("touchthispivot", (EntityFunctionMember)&TouchThisPivot);
+    tNode->RegisterScript("getblockid:integer", (EntityFunctionMember)&GetBlockID, NULL, NULL, NULL, nullptr, "GetBlockIDMSG");
+    tNode->RegisterScript("getblockidbelow:integer", (EntityFunctionMember)&GetBlockIDBelow, NULL, NULL, NULL, nullptr, "GetBlockIDBelowMSG");
 
     tNode->PropagateProperties();
 }

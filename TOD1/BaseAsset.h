@@ -27,7 +27,9 @@ public:
         field_4 = (int*)1;
     }
 
-    ~AssetLoader();  //  NOTE: destructor inlined (should be).
+    AssetLoader& operator=(const AssetLoader& rhs); //  @89F190
+
+    ~AssetLoader();
 
     void* operator new(size_t size)
     {

@@ -6,7 +6,6 @@
 
 #define EDITOR_SESSION_FILE_VERSION 3
 
-//#pragma pack(4)
 class Scene : public Folder_
 {
 public:
@@ -63,7 +62,7 @@ public:
     std::vector<int>            m_List_1;
     std::vector<AuxQuadTree*>   m_QuadTreesList;
     std::vector<class ParticleSystem*>  m_ParticleSystemsList;
-    std::vector<CollisionList*> m_CollisionListList;
+    std::vector<CollisionInfo*> m_CollisionListList;
     int             m_NodesWithUpdateOrBlockingScripts;
     char            m_InitMode;
     float           m_TimeMultiplier;
@@ -138,8 +137,8 @@ public:
     Folder_*        GetLoadedBlockByIndex(const unsigned int index) const;   //  @893290
     void            LoadSceneSession(void) const;   //  @8956D0
     void            InstantiateAssetsToLists(); //  @896810
-    void            AddCollisionList(CollisionList* list); //  @896B40
-    void            RemoveCollisionList(CollisionList* list);   //  @895AD0
+    void            AddCollisionList(CollisionInfo* list); //  @896B40
+    void            RemoveCollisionList(CollisionInfo* list);   //  @895AD0
     void            LoadMap(const unsigned int blockind, Node* foldernode); //  @8932A0
     float           GetTimeMultiplier() const;  //  @4B3FC0
     void            SetTimeMultiplier(const float multiplier);  //  @70EE70
@@ -167,6 +166,9 @@ public:
     void            Reset();    //  @89A1A0
     void            CountBlockingScriptNodes(); //  @895480
     void            SyncEditorCamera(const bool kdtreealloc, const int gamepadindex);   //  @893780
+    void            AnnotateSphere_Impl(const Vector4f& pos, const int a2, const int a3, const int a4) const;   //  @8935E0
+    void            AnnotateLine_Impl(const Vector4f& lineStart, const Vector4f& lineEnd, const int a3, const int a4) const;    //  @8935D0
+    void            AnnotatePoint_Impl(const Vector4f& point, const int a2, const int a3) const;    //  @8935C0
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4
@@ -189,21 +191,19 @@ public:
     static int      UpdateOrBlockingListSize;   //  @A3DD08
     static bool     _A3D858;    //  @A3D858
 
-    static Scene   *SceneInstance; // @A3DCBC
-    static AuxQuadTree* SceneTree; // @A3DCE8
+    static Scene   *SceneInstance;      // @A3DCBC
+    static AuxQuadTree* MainQuadTree;   // @A3DCE8
+    static AuxQuadTree* AuxQuadTree;    //  @A3DCEC
 
-    struct QuadTree
+    struct QuadTreeNode
     {
-        unsigned short  m_Index;
-        unsigned short  field_2;
-        int             field_4;
-        int             field_8[2];
-        int             field_10;
-        int             field_14;
-        unsigned short  field_18;
-        char            field_1A;
-        char            field_1B;
-        int             field_1C;
+        short   field_0[4];
+        int     field_8[4];
+        short   field_18;
+        char    field_1A;
+        char    field_1B;
+        short   field_1C;
+        short   field_1E;
     };
 
     struct EntityReference
@@ -213,7 +213,7 @@ public:
     };
 
     static unsigned int QuadTreesAllocated; //  @A3DD70
-    static QuadTree*    QuadTrees;  //  @A3B580
+    static QuadTreeNode*    QuadTrees;  //  @A3B580
     static short    _A120E8;    //  @A120E8
     static int      _A3DD40;    //  @A3DD40
     static std::vector<EntityReference>    *DanglingEntityReferences;  //  @A3CEEC
@@ -240,4 +240,4 @@ public:
 extern EntityType* tScene; // @A3DCB8
 
 ASSERT_CLASS_SIZE(Scene, 620);
-ASSERT_CLASS_SIZE(Scene::QuadTree, 32);
+ASSERT_CLASS_SIZE(Scene::QuadTreeNode, 32);

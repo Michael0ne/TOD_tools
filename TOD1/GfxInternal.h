@@ -100,14 +100,6 @@ public:
     static float                    RatioXY; // @A119F4
     static float                    _A3A064;    //  @A3A064
     static DirectX::XMMATRIX        _A3A268;    //  @A3A268
-    
-    struct Renderer_Buffer2
-    {
-        unsigned int field_0;
-        unsigned int field_4;
-    };
-
-    static Renderer_Buffer2         _A08704[28]; // @A08704
 };
 
 extern GfxInternal* g_GfxInternal;

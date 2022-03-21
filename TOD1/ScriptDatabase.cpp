@@ -1054,12 +1054,12 @@ Scriptbaked::Scriptbaked(const char* const scriptName, const char* const parentN
     field_60 = 0;
 }
 
-void Scriptbaked::AddStructElement(const int fieldId, const char* const defaultValue, const int a3)
+void Scriptbaked::AddMember(const int fieldId, const char* const defaultValue, const int a3)
 {
 #ifdef INCLUDE_FIXES
     if (fieldId == -1)
     {
-        LogDump::LogA("Scriptbaked::AddStructElement(%d, \"%s\", %d) FAILED!\n", fieldId, defaultValue, a3);
+        LogDump::LogA("Scriptbaked::AddMember(%d, \"%s\", %d) FAILED!\n", fieldId, defaultValue, a3);
         return;
     }
 #endif
@@ -1067,7 +1067,7 @@ void Scriptbaked::AddStructElement(const int fieldId, const char* const defaultV
     m_PropertiesList.push_back({ &GlobalProperty::GetById(fieldId), m_PropertiesValues.size(), (char*)defaultValue, a3 });
 }
 
-void Scriptbaked::AddMethod(short methodid, void (*scriptthreadhandler)(class ScriptThread*), void (*methodptr)(int*))
+void Scriptbaked::AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(ScriptThread*, void*))
 {
     m_MethodsList.push_back({ methodid, 0, scriptthreadhandler, methodptr });
 }
@@ -1134,7 +1134,7 @@ void Scriptbaked::ClearEntityProperties(Entity* ent)
     }
 }
 
-class EntityType* Scriptbaked::GetScriptEntity() const
+class EntityType* Scriptbaked::GetAttachedScript() const
 {
     char buf[256] = {};
     sprintf(buf, "%s(%s)", m_Name.m_Str, m_BaseEntity->m_TypeName.m_Str);
@@ -1209,6 +1209,20 @@ int Scriptbaked::GetParameterProcedureIndex(void(*procedure)(ScriptThread*)) con
     for (std::vector<Parameter>::const_iterator it = m_ParametersList.cbegin(); it->m_ProcPtr != procedure; it++, ++index);
 
     return index >= m_ParametersList.size() ? -1 : index;
+}
+
+const int Scriptbaked::GetPropertyValueByIndex(const int index) const
+{
+    auto& it = m_PropertiesValues.find(index);
+    if (it != m_PropertiesValues.end())
+        return (*it).first;
+    else
+        return -1;
+}
+
+void Scriptbaked::AddLocal(void(*procPtr)(ScriptThread*), DataType* localType)
+{
+    m_ParametersList.push_back({ procPtr, localType });
 }
 
 EntityType* Scriptbaked::AssignScriptToEntity(EntityType* parent)
@@ -1295,7 +1309,6 @@ int Scriptbaked::GetScriptIdByName(const char* const name)
     return -1;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Scriptbaked::InstantiateGlobalScripts()
 {
     if (!Scene::SceneInstance)
@@ -1303,16 +1316,71 @@ void Scriptbaked::InstantiateGlobalScripts()
 
     for (unsigned int i = 0; i < ScriptsList.size(); ++i)
     {
-        if (!ScriptsList[i]->field_5C & 1)
+        auto script = ScriptsList[i];
+        if (!(script->field_5C & 1))
             continue;
 
-        if (Scene::SceneInstance->m_FirstChild)
+        Node* child = Scene::SceneInstance->m_FirstChild;
+        if (child)
         {
+            bool foundScript = false;
+            while (!foundScript)
+            {
+                if (script->GetAttachedScript() == child->m_ScriptEntity &&
+                    String::EqualIgnoreCase(script->GetAttachedScript()->m_TypeName.m_Str, child->m_Name, strlen(child->m_Name)))
+                        foundScript = true;
 
+                child = child->m_NextSibling;
+                if (!child)
+                {
+                    if (foundScript)
+                        break;
+
+                    Node* newNode = (Node*)(script->GetAttachedScript()->CreateNode());
+                    if (newNode)
+                    {
+                        EntityType* nnEnt = newNode->m_ScriptEntity;
+                        if (nnEnt)
+                        {
+                            while (tNode != nnEnt)
+                            {
+                                nnEnt = nnEnt->m_Parent;
+                                if (!nnEnt)
+                                {
+                                    newNode = nullptr;
+                                    break;
+                                }
+                            }
+                        }
+
+                        newNode->SetName(script->GetAttachedScript()->m_TypeName.m_Str);
+                        newNode->SetParent(Scene::SceneInstance);
+                    }
+                }
+            }
         }
         else
         {
+            Node* newNode = (Node*)(script->GetAttachedScript()->CreateNode());
+            if (newNode)
+            {
+                EntityType* nnEnt = newNode->m_ScriptEntity;
+                if (nnEnt)
+                {
+                    while (tNode != nnEnt)
+                    {
+                        nnEnt = nnEnt->m_Parent;
+                        if (!nnEnt)
+                        {
+                            newNode = nullptr;
+                            break;
+                        }
+                    }
+                }
 
+                newNode->SetName(script->GetAttachedScript()->m_TypeName.m_Str);
+                newNode->SetParent(Scene::SceneInstance);
+            }
         }
     }
 
@@ -1333,7 +1401,7 @@ void Scriptbaked::AssignCommonNodes()
         if (!(sc->field_5C & 1))
             continue;
 
-        Node* scriptnode = (Node*)Scene::SceneInstance->FindNode(sc->GetScriptEntity()->m_TypeName.m_Str);
+        Node* scriptnode = (Node*)Scene::SceneInstance->FindNode(sc->GetAttachedScript()->m_TypeName.m_Str);
         SceneScriptEntitiesList[i] = scriptnode;
 
         if (_stricmp(sc->m_Name.m_Str, "cache") == NULL)

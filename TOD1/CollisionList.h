@@ -6,11 +6,11 @@
 class Entity;
 class CollisionProbe;
 
-class CollisionList
+class CollisionInfo
 {
 public:
     Entity         *m_Owner;
-    Vector3f        m_Position_1;
+    Vector3f        m_Position;
     Orientation     m_Orientation;
     Vector3f        m_SafePosition;
     Vector3f        m_Position_3;
@@ -22,11 +22,13 @@ public:
     short           m_GlobalIndex;
 
 public:
-    CollisionList(Entity* owner); // @8A2D00
-    ~CollisionList();   //  @8A2E60
+    CollisionInfo(Entity* owner); // @8A2D00
+    ~CollisionInfo();   //  @8A2E60
 
     void            SetListGlobalIndex(const int index);    //  @89FBE0
     void            CommitCollision();  //  @89FC20
+    void            RemoveNode(Entity* node); //  @891DB0
+    void            AddNode(Entity* node);  //  @8A6410
 };
 
-ASSERT_CLASS_SIZE(CollisionList, 124);
+ASSERT_CLASS_SIZE(CollisionInfo, 124);

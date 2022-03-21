@@ -27,7 +27,7 @@ void AuxQuadTree::UpdateLodDistance()
 {
     AuxQuadTree* n = this;
 
-    while (!n->m_Owner->m_CollisionIgnoreList)
+    while (!n->m_Owner->m_Collision)
     {
         n = n->field_4;
         if (!n)
@@ -91,4 +91,109 @@ void AuxQuadTree::CopyOwnerBounds()
 #pragma message(TODO_IMPLEMENTATION)
 void AuxQuadTree::_8A36A0(const bool use)
 {
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void AuxQuadTree::_8A3320()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+const int AuxQuadTree::GetContactMaterialID(const int a1) const
+{
+    return 0;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+const int AuxQuadTree::GetContactSurfacePropFields(const int a1) const
+{
+    return 0;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+const int AuxQuadTree::GetContactFlags(const int index) const
+{
+    return 0;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Node* AuxQuadTree::GetRealNode(const int index) const
+{
+    return nullptr;
+}
+
+Node* AuxQuadTree::GetContactNode(const int index) const
+{
+    Node* node = GetRealNode(index);
+    return AuxQuadTree::GetForNode(node)->m_Owner;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Vector4f* AuxQuadTree::GetPeerContactPoint(const int index) const
+{
+    return nullptr;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Vector4f* AuxQuadTree::GetContactPoint(const int index) const
+{
+    return nullptr;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Vector4f* AuxQuadTree::GetContactNormal(Vector4f& outNormal, const int index) const
+{
+    return nullptr;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+int AuxQuadTree::Contacts() const
+{
+    return 0;
+}
+
+AuxQuadTree* AuxQuadTree::GetForNode(Node* node)
+{
+    if (node->m_QuadTree)
+    {
+        AuxQuadTree* qdtr = node->m_QuadTree;
+        while (!qdtr->m_Owner->m_Collision)
+        {
+            qdtr = qdtr->field_4;
+            if (!qdtr)
+                return node->m_QuadTree;
+        }
+
+        return qdtr;
+    }
+    else
+    {
+        Node* nd = node->m_Parent;
+        if (nd)
+        {
+            while (!nd->m_QuadTree)
+            {
+                nd = nd->m_Parent;
+                if (!nd)
+                    return nullptr;
+            }
+
+            AuxQuadTree* qdtr = nd->m_QuadTree;
+            if (qdtr)
+            {
+                while (!qdtr->m_Owner->m_Collision)
+                {
+                    qdtr = qdtr->field_4;
+                    if (!qdtr)
+                        return nd->m_QuadTree;
+                }
+
+                return nd->m_QuadTree;
+            }
+        }
+        else
+            return nullptr;
+    }
+
+    return nullptr;
 }

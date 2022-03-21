@@ -8,7 +8,37 @@
 class FrameBuffer
 {
 protected:
-    int                 field_0;
+    union
+    {
+        struct
+        {
+            unsigned    ModelMatrix : 1;
+            unsigned    Texture : 1;
+            unsigned    EnableLighting : 1;
+            unsigned    EnableLight : 1;
+            unsigned    ZWrite : 1;
+            unsigned    Fog : 1;
+            unsigned    FogProperties : 1;
+            unsigned    Filter : 1;
+            unsigned    CullMode : 1;
+            unsigned    ZBias : 1;
+            unsigned    BlendMode : 1;
+            unsigned    Opacity : 1;
+            unsigned    Viewport : 1;
+            unsigned    Projection : 1;
+            unsigned    MipMapBias : 1;
+            unsigned    MipMapping : 1;
+            unsigned    EnvironmentMap : 1;
+            unsigned    EnvironmentMapCoef : 1;
+            unsigned    Brightness : 1;
+            unsigned    ZTest : 1;
+            unsigned    TextureAddressMode : 1;
+            unsigned    RenderTarget : 1;
+            unsigned    AlphaChannel : 1;
+            unsigned    SetAlphaTestThreshold : 1;
+            unsigned    EnableAlphaTest : 1;
+        };
+    }                   m_CommandsBits;
     std::vector<int*>   m_LightsList;
     union
     {
@@ -72,7 +102,10 @@ public:
     void                _436BF0();  //  @436BF0
     bool                _436030();  //  @436030
     void                _431510();  //  @431510
-    void                _4315A0(const DirectX::XMMATRIX& mat, const unsigned int index);    //  @4315A0
+    void                UpdateMatrixAtIndex(const DirectX::XMMATRIX& mat, const unsigned int index);    //  @4315A0
+    void                PropagateRenderListPushCmd(RenderList* rb) const; //  @436240
+    void                PropagateRenderListPopCmd(RenderList* rb) const;    //  @436690
+    const int           GetRenderCommandsTotal() const; //  @4360C0
 
     void                ExecuteRenderCommand(RenderList& buf) const;  //  @4342C0
     void                CmdCall();  //  @434290
@@ -143,6 +176,8 @@ public:
     unsigned int        SubmitSetModelMatrixCommand(const DirectX::XMMATRIX& mat);  //  @431540
 
     void                SubmitIndexedParam(const void* param, const int index); //  @4337E0
+
+    static int          _A08704[57];    //  @A08704
 
 private:
     void                SetRenderBufferSize(const unsigned int size);   //  @4314F0

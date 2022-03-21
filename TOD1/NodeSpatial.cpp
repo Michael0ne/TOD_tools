@@ -34,7 +34,7 @@ const float NodeSpatial::GetBoundRadius() const
 
 void NodeSpatial::SetBoundRadius(const float radius)
 {
-    SetParam(10, &m_BoundRadius, tNUMBER);
+    StoreProperty(10, &m_BoundRadius, tNUMBER);
     m_BoundRadius = radius;
 
     if (m_QuadTree)

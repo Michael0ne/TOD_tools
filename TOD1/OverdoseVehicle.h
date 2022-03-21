@@ -60,7 +60,7 @@ protected:
     Node               *m_DamageCtrl;
     Vector4f            m_Vec_8;
     Vector4f            m_Vec_7;
-    Vector4f            m_OldUpVec;
+    Vector4f            m_LocalDirectionVector;
 
 public:
     OverdoseVehicle();  //  @92D3B0

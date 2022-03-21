@@ -18,7 +18,7 @@ class SkyBox : public Model
     };
 
 protected:
-    int                         field_100;
+    int                         m_ModelMatrixIndex;
 
 public:
     SkyBox();
@@ -29,11 +29,11 @@ public:
     static void                 Register(); // @8F22A0
 
 private:
-    void               CreateStaticMesh() const; // @8F20B0
+    void                        CreateStaticMesh() const; // @8F20B0
 
     static int                 *StaticMesh[5]; // @A3E0B0
     static const SkyBoxMesh     StaticMeshInfo[5]; //  @A12BC4
-    static const unsigned short StaticMeshIndicies[12]; //  @A12E28
+    static const int            StaticMeshIndicies[7]; //  @A12E28
 
     static SkyBox*              Create(AllocatorIndex); // @8F23B0
 };

@@ -1,6 +1,14 @@
 #include "FrameBuffer.h"
 #include "GfxInternal.h"
 
+int FrameBuffer::_A08704[57] =
+{
+    0, 1, 0, 2, 1, 3, 1, 4, 1, 5, 0, 6, 2, 7, 0, 8, 1, 9,
+    1, 10, 1, 11, 1, 12, 1, 13, 2, 14, 1, 15, 1, 16,
+    1, 17, 1, 18, 1, 19, 2, 20, 2, 21, 1, 22, 1, 23,
+    2, 24, 2, 25, 1, 26, 1, 27, 1, 2
+};
+
 FrameBuffer::FrameBuffer(unsigned int a1, unsigned char a2, unsigned int a3)
 {
     MESSAGE_CLASS_CREATED(FrameBuffer);
@@ -19,7 +27,7 @@ FrameBuffer::FrameBuffer(unsigned int a1, unsigned char a2, unsigned int a3)
     m_Flags.m_Flags = m_Flags.m_Flags ^ ((unsigned char)m_Flags.m_Flags ^ (unsigned char)(4 * (((a2 & 4) != 0) || ((m_Flags.m_Flags & 8) != 0)))) & 4;
     m_Flags.m_Flags = m_Flags.m_Flags & 0xFFFFFFCD | (2 * (((a2 & 2) != 0) || ((m_Flags.m_Flags & 4) == 0)));
 
-    field_0 = NULL;
+    memset(&m_CommandsBits, NULL, sizeof(m_CommandsBits));
     field_54 = 0;
     field_58 = NULL;
 }
@@ -61,7 +69,7 @@ void FrameBuffer::_431510()
     m_Flags.m_FlagBits._4 = 1;
 }
 
-void FrameBuffer::_4315A0(const DirectX::XMMATRIX& mat, const unsigned int index)
+void FrameBuffer::UpdateMatrixAtIndex(const DirectX::XMMATRIX& mat, const unsigned int index)
 {
     m_RenderBuffer[0].PushMatrix(mat, index);
 }
@@ -273,7 +281,7 @@ void FrameBuffer::ExecuteRenderCommand(RenderList& buf) const
             {
                 MeshBuffer_Dx9* smb = (MeshBuffer_Dx9*)buf.m_ParamsArray[buf.m_PrevParamIndex++];
 
-                g_GfxInternal_Dx9->RenderIndexedGeometry(smb);
+                g_GfxInternal_Dx9->DrawSkinnedMeshBuffer(smb);
             }
             break;
         case RenderList::RenderCommand::CMD_SETBONEMATRIX:
@@ -1027,7 +1035,7 @@ void FrameBuffer::Reset()
     m_RenderBuffer[2].m_CurrentParamIndex = 0;
     m_RenderBuffer[2].m_PrevParamIndex = 0;
 
-    field_0 = 0;
+    memset(&m_CommandsBits, NULL, sizeof(m_CommandsBits));
     m_LightsList.clear();
 }
 
@@ -1093,7 +1101,7 @@ void FrameBuffer::SubmitSetOpacityCommand(const float opacity, short* a2)
 
     m_RenderBuffer[0].push_back(opacity);
 
-    field_0 ^= ((unsigned short)field_0 ^ ((GfxInternal::_A08704[18].field_0 == 1) << 12)) & 0x1000;
+    m_CommandsBits ^= ((unsigned short)m_CommandsBits ^ ((GfxInternal::_A08704[18].m_CommandsBits == 1) << 12)) & 0x1000;
 }
 
 void FrameBuffer::SubmitSetParticleColorCommand(const int color)
@@ -1142,7 +1150,7 @@ void FrameBuffer::SubmitSetCullModeCommand(const int cullmode)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_SETCULLMODE);
     m_RenderBuffer[0].push_back(cullmode);
 
-    field_0 ^= ((unsigned char)field_0 ^ (unsigned char)((GfxInternal::_A08704[14].field_0 == 1) << 7)) & 0x80;
+    m_CommandsBits ^= ((unsigned char)m_CommandsBits ^ (unsigned char)((GfxInternal::_A08704[14].m_CommandsBits == 1) << 7)) & 0x80;
 }
 
 void FrameBuffer::SubmitSetAxisAlignCommand(const int alignment)
@@ -1156,7 +1164,7 @@ void FrameBuffer::SubmitEnableAlphaTestCommand(const bool alphatest)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_ENABLEALPHATEST);
     m_RenderBuffer[0].push_back(alphatest != false);
 
-    field_0 ^= (field_0 ^ ((GfxInternal::_A08704[27].field_0 == 1) << 23)) & 0x800000;
+    m_CommandsBits ^= (m_CommandsBits ^ ((GfxInternal::_A08704[27].m_CommandsBits == 1) << 23)) & 0x800000;
 }
 
 void FrameBuffer::SubmitEnableLightingCommand(const bool lighting)
@@ -1164,7 +1172,7 @@ void FrameBuffer::SubmitEnableLightingCommand(const bool lighting)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_ENABLELIGHTING);
     m_RenderBuffer[0].push_back(lighting != false);
 
-    field_0 ^= ((unsigned char)field_0 ^ (unsigned char)(4 * (GfxInternal::_A08704[6].field_0 == 1))) & 4;
+    m_CommandsBits ^= ((unsigned char)m_CommandsBits ^ (unsigned char)(4 * (GfxInternal::_A08704[6].m_CommandsBits == 1))) & 4;
 }
 
 void FrameBuffer::SubmitEnableAlphaChannelCommand(const bool alphachannel)
@@ -1172,7 +1180,7 @@ void FrameBuffer::SubmitEnableAlphaChannelCommand(const bool alphachannel)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_ENABLEALPHACHANNEL);
     m_RenderBuffer[0].push_back(alphachannel != false);
 
-    field_0 ^= (field_0 ^ ((GfxInternal::_A08704[25].field_0 == 1) << 21)) & 0x200000;
+    m_CommandsBits ^= (m_CommandsBits ^ ((GfxInternal::_A08704[25].m_CommandsBits == 1) << 21)) & 0x200000;
 }
 
 void FrameBuffer::SubmitSetBlendModeCommand(const int blendmode)
@@ -1180,7 +1188,7 @@ void FrameBuffer::SubmitSetBlendModeCommand(const int blendmode)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_SETBLENDMODE);
     m_RenderBuffer[0].push_back(blendmode);
 
-    field_0 ^= ((unsigned short)field_0 ^ ((GfxInternal::_A08704[17].field_0 == 1) << 11)) & 0x800;
+    m_CommandsBits ^= ((unsigned short)m_CommandsBits ^ ((GfxInternal::_A08704[17].m_CommandsBits == 1) << 11)) & 0x800;
 }
 
 void FrameBuffer::SubmitSetZBiasCommand(const int zbias)
@@ -1188,7 +1196,7 @@ void FrameBuffer::SubmitSetZBiasCommand(const int zbias)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_SETZBIAS);
     m_RenderBuffer[0].push_back(zbias);
 
-    field_0 ^= ((unsigned short)field_0 ^ ((GfxInternal::_A08704[15].field_0 == 1) << 8)) & 0x100;
+    m_CommandsBits ^= ((unsigned short)m_CommandsBits ^ ((GfxInternal::_A08704[15].m_CommandsBits == 1) << 8)) & 0x100;
 }
 
 void FrameBuffer::SubmitEnableZTestCommand(const bool ztest)
@@ -1196,7 +1204,7 @@ void FrameBuffer::SubmitEnableZTestCommand(const bool ztest)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_ENABLEZTEST);
     m_RenderBuffer[0].push_back(ztest != false);
 
-    field_0 ^= (field_0 ^ ((GfxInternal::_A08704[10].field_0 == 1) << 19)) & 0x80000;
+    m_CommandsBits ^= (m_CommandsBits ^ ((GfxInternal::_A08704[10].m_CommandsBits == 1) << 19)) & 0x80000;
 }
 
 void FrameBuffer::SubmitSetAlphaThreshholdCommand(const float threshhold)
@@ -1204,7 +1212,7 @@ void FrameBuffer::SubmitSetAlphaThreshholdCommand(const float threshhold)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_SETALPHATESTTHRESHHOLD);
     m_RenderBuffer[0].push_back(threshhold);
 
-    field_0 ^= (field_0 ^ ((GfxInternal::_A08704[26].field_0 == 1) << 22)) & 0x400000;
+    m_CommandsBits ^= (m_CommandsBits ^ ((GfxInternal::_A08704[26].m_CommandsBits == 1) << 22)) & 0x400000;
 }
 
 void FrameBuffer::SubmitSetRenderTargetCommand(const int* rt)
@@ -1212,7 +1220,7 @@ void FrameBuffer::SubmitSetRenderTargetCommand(const int* rt)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_SETRENDERTARGET);
     m_RenderBuffer[0].push_back((int)rt);
 
-    field_0 ^= (field_0 ^ ((GfxInternal::_A08704[24].field_0 == 1) << 20)) & 0x100000;
+    m_CommandsBits ^= (m_CommandsBits ^ ((GfxInternal::_A08704[24].m_CommandsBits == 1) << 20)) & 0x100000;
 }
 
 void FrameBuffer::SubmitSetTextureAddressModeCommand(const int a1, const int a2)
@@ -1221,7 +1229,7 @@ void FrameBuffer::SubmitSetTextureAddressModeCommand(const int a1, const int a2)
     m_RenderBuffer[0].push_back(a2);
     m_RenderBuffer[0].push_back(a1);
 
-    field_0 ^= (field_0 ^ ((GfxInternal::_A08704[23].field_0 == 1) << 18)) & 0x40000;
+    m_CommandsBits ^= (m_CommandsBits ^ ((GfxInternal::_A08704[23].m_CommandsBits == 1) << 18)) & 0x40000;
 }
 
 void FrameBuffer::SubmitEnableZWriteCommand(const bool zwrite)
@@ -1229,7 +1237,7 @@ void FrameBuffer::SubmitEnableZWriteCommand(const bool zwrite)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_ENABLEZWRITE);
     m_RenderBuffer[0].push_back(zwrite);
 
-    field_0 ^= ((unsigned char)field_0 ^ (unsigned char)(8 * (GfxInternal::_A08704[9].field_0 == 1))) & 8;
+    m_CommandsBits ^= ((unsigned char)m_CommandsBits ^ (unsigned char)(8 * (GfxInternal::_A08704[9].m_CommandsBits == 1))) & 8;
 }
 
 void FrameBuffer::SubmitEnableMipMappingCommand(const bool mipmapping)
@@ -1237,7 +1245,7 @@ void FrameBuffer::SubmitEnableMipMappingCommand(const bool mipmapping)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_ENABLEMIPMAPPING);
     m_RenderBuffer[0].push_back(mipmapping != false);
 
-    field_0 ^= ((unsigned short)field_0 ^ ((GfxInternal::_A08704[22].field_0 == 1) << 14)) & 0x4000;
+    m_CommandsBits ^= ((unsigned short)m_CommandsBits ^ ((GfxInternal::_A08704[22].m_CommandsBits == 1) << 14)) & 0x4000;
 }
 
 void FrameBuffer::SubmitSetEnvironmentMapCoefCommand(const float coeff)
@@ -1245,7 +1253,7 @@ void FrameBuffer::SubmitSetEnvironmentMapCoefCommand(const float coeff)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_SETENVIRONMENTMAPCOEF);
     m_RenderBuffer[0].push_back(coeff);
 
-    field_0 ^= (field_0 ^ ((GfxInternal::_A08704[3].field_0 == 1) << 16)) & 0x10000;
+    m_CommandsBits ^= (m_CommandsBits ^ ((GfxInternal::_A08704[3].m_CommandsBits == 1) << 16)) & 0x10000;
 }
 
 void FrameBuffer::SubmitEnableLightCommand(int* light, const bool enabled)
@@ -1254,7 +1262,7 @@ void FrameBuffer::SubmitEnableLightCommand(int* light, const bool enabled)
     m_RenderBuffer[0].push_back((int)light);
     m_RenderBuffer[0].push_back(enabled != false);
 
-    if (GfxInternal::_A08704[7].field_0 == 1)
+    if (_A08704[14] == 1)
         m_LightsList.push_back(light);
 }
 
@@ -1638,7 +1646,7 @@ unsigned int FrameBuffer::SubmitSetModelMatrixCommand(const DirectX::XMMATRIX& m
     unsigned int ret = m_RenderBuffer[0].m_CurrentParamIndex;
     m_RenderBuffer[0].PushModelMatrix(mat);
 
-    field_0 ^= ((unsigned char)field_0 ^ (GfxInternal::_A08704[0].field_0 == 1)) & 1;
+    m_CommandsBits ^= ((unsigned char)m_CommandsBits ^ (_A08704[0] == 1)) & 1;
 
     return ret;
 }
@@ -1648,7 +1656,7 @@ void FrameBuffer::SubmitEnableEnvironmentMapCommand(const bool enabled)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_ENABLEENVIRONMENTMAP);
     m_RenderBuffer[0].push_back(enabled != false);
 
-    field_0 ^= ((unsigned short)field_0 ^ (unsigned short)((GfxInternal::_A08704[2].field_0 == 1) << 15)) & 0x8000;
+    m_CommandsBits ^= ((unsigned short)m_CommandsBits ^ (unsigned short)((_A08704[2] == 1) << 15)) & 0x8000;
 }
 
 void FrameBuffer::SubmitSetFilterModeCommand(const int filtermode)
@@ -1656,7 +1664,7 @@ void FrameBuffer::SubmitSetFilterModeCommand(const int filtermode)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_SETFILTERMODE);
     m_RenderBuffer[0].push_back(filtermode);
 
-    field_0 ^= ((unsigned char)field_0 ^ ((GfxInternal::_A08704[13].field_0 == 1) << 6)) & 0x40;
+    m_CommandsBits ^= ((unsigned char)m_CommandsBits ^ ((_A08704[13] == 1) << 6)) & 0x40;
 }
 
 void FrameBuffer::SubmitSetFogPropertiesCommand(const int fogtype, const ColorRGB& fogcolor, const float fogstart, const float fogend, const float fogdensity)
@@ -1670,7 +1678,7 @@ void FrameBuffer::SubmitSetFogPropertiesCommand(const int fogtype, const ColorRG
     m_RenderBuffer[0].push_back(fogstart);
     m_RenderBuffer[0].push_back(fogend);
 
-    field_0 ^= ((unsigned char)field_0 ^ (unsigned char)(32 * (GfxInternal::_A08704[12].field_0 == 1))) & 0x20;
+    m_CommandsBits ^= ((unsigned char)m_CommandsBits ^ (unsigned char)(32 * (_A08704[12] == 1))) & 0x20;
 }
 
 void FrameBuffer::SubmitEnableFogCommand(const bool enabled)
@@ -1678,7 +1686,7 @@ void FrameBuffer::SubmitEnableFogCommand(const bool enabled)
     m_RenderBuffer[0].push_back(RenderList::RenderCommand::CMD_ENABLEFOG);
     m_RenderBuffer[0].push_back(enabled != false);
 
-    field_0 ^= ((unsigned char)field_0 ^ (unsigned char)(16 * (GfxInternal::_A08704[11].field_0 == 1))) & 0x10;
+    m_CommandsBits ^= ((unsigned char)m_CommandsBits ^ (unsigned char)(16 * (_A08704[11] == 1))) & 0x10;
 }
 
 void FrameBuffer::SubmitCallCommand(const int callcmd)
@@ -1739,7 +1747,7 @@ void FrameBuffer::SubmitSetCurrentTextureCommand(const Texture* tex, const int s
     m_RenderBuffer[0].push_back(tex);
     m_RenderBuffer[0].push_back(stage);
 
-    field_0 ^= ((unsigned char)field_0 ^ (unsigned char)(2 * (GfxInternal::_A08704[1].field_0 == 1))) & 2;
+    *(unsigned char*)&m_CommandsBits ^= (*(unsigned char*)&m_CommandsBits ^ (unsigned char)(2 * (_A08704[1] == 1))) & 2;
 }
 
 void FrameBuffer::SubmitSetTextureScrollCommand(const float a1, const int a2)

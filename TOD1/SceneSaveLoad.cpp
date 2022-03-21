@@ -176,7 +176,7 @@ void SceneSaveLoad::_873C00(const unsigned int, const int* a2)
         break;
     }
     case Scene::PlayMode::MODE_4:
-        m_TransactionBufferSize += (char*)&a2[-m_TransactionBufferSize - m_SaveInfo_1.m_TransactionBuffer->m_Size] - m_SaveInfo_1.m_TransactionBuffer->m_Buffer;
+        m_TransactionBufferSize += (int*)&a2[-m_TransactionBufferSize - m_SaveInfo_1.m_TransactionBuffer->m_Size] - m_SaveInfo_1.m_TransactionBuffer->m_Buffer;
         break;
     default:
         field_0 = (int*)a2;

@@ -484,7 +484,10 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     Vector3<float> ScreenBuffers[31];
     ScreenBuffers[11].x = ScreenBuffers[12].x = 2.f;
 
-    g_GfxInternal = new GfxInternal(ScreenSize, 32, 16, (Script::Fullscreen ? (GfxInternal::FSAA != 0 ? 0x200 : 0) : 130), 31, 20, ScreenBuffers);
+    if (Script::Fullscreen)
+        g_GfxInternal = new GfxInternal(ScreenSize, 32, 16, 130, 31, 20, ScreenBuffers);
+    else
+        g_GfxInternal = new GfxInternal(ScreenSize, 32, 16, (GfxInternal::FSAA ? 512 : 0) | 128, 31, 20, ScreenBuffers);
 
     Script::Region = GfxInternal::GetRegion() ? "europe" : "usa";
 
@@ -507,9 +510,9 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     g_GfxInternal->SetClearColorForBufferIndex(*((ColorRGB*)&m_Background), -1);
 
     // TODO: what is this?
-    GfxInternal::_A08704[0].field_0 = 0;
-    GfxInternal::_A08704[1].field_0 = 0;
-    GfxInternal::_A08704[5].field_0 = 0;
+    FrameBuffer::_A08704[0] = 0;
+    FrameBuffer::_A08704[1] = 0;
+    FrameBuffer::_A08704[5] = 0;
 
     if (m_ConfigurationVariables->IsVariableSet("version_name"))
         m_ConfigurationVariables->GetParamValueString(Script::VersionName, "version_name");

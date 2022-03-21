@@ -3,9 +3,9 @@
 #include "Scene.h"
 #include "BuiltinType.h"
 
-CollisionList::CollisionList(Entity* owner)
+CollisionInfo::CollisionInfo(Entity* owner)
 {
-    MESSAGE_CLASS_CREATED(CollisionList);
+    MESSAGE_CLASS_CREATED(CollisionInfo);
 
     m_Owner = owner;
     field_78 = 10'000;
@@ -19,19 +19,19 @@ CollisionList::CollisionList(Entity* owner)
     m_Unknown_1 = (Vector4f)BuiltinType::Orient;
 }
 
-CollisionList::~CollisionList()
+CollisionInfo::~CollisionInfo()
 {
-    MESSAGE_CLASS_DESTROYED(CollisionList);
+    MESSAGE_CLASS_DESTROYED(CollisionInfo);
 
     Scene::SceneInstance->RemoveCollisionList(this);
 }
 
-void CollisionList::SetListGlobalIndex(const int index)
+void CollisionInfo::SetListGlobalIndex(const int index)
 {
     m_GlobalIndex = index;
 }
 
-void CollisionList::CommitCollision()
+void CollisionInfo::CommitCollision()
 {
     DirectX::XMMATRIX mat;
     ((Node*)m_Owner)->GetWorldMatrix(mat);
@@ -41,4 +41,25 @@ void CollisionList::CommitCollision()
     m_SafeOrientation = *(Orientation*)&rotvec;
 
     Scene::SceneInstance->_894810((field_78 * 2) >> 17, 0);
+}
+
+void CollisionInfo::RemoveNode(Entity* node)
+{
+    std::vector<CollisionProbe*>::const_iterator it = std::find(m_CollisionProbesList.begin(), m_CollisionProbesList.end(), node);
+#ifdef INCLUDE_FIXES
+    if (it == m_CollisionProbesList.end())
+    {
+        debug("RemoveNode failed! Node %x not found!\n", node);
+        return;
+    }
+#endif
+    m_CollisionProbesList.erase(it);
+}
+
+void CollisionInfo::AddNode(Entity* node)
+{
+    if (!node)
+        return;
+
+    m_CollisionProbesList.push_back((CollisionProbe*)node);
 }

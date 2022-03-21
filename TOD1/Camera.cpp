@@ -93,7 +93,7 @@ float Camera::GetOffset() const
 
 void Camera::SetOffset(const float offset)
 {
-    SetParam(10, &m_Offset, tNUMBER);
+    StoreProperty(10, &m_Offset, tNUMBER);
     m_Offset = offset;
 }
 
@@ -104,7 +104,7 @@ float Camera::GetNearClip() const
 
 void Camera::SetNearClip(const float nearclip)
 {
-    SetParam(12, &m_NearClip, tNUMBER);
+    StoreProperty(12, &m_NearClip, tNUMBER);
     m_NearClip = nearclip;
 }
 
@@ -115,7 +115,7 @@ float Camera::GetFarClip() const
 
 void Camera::SetFarClip(const float farclip)
 {
-    SetParam(13, &m_FarClip, tNUMBER);
+    StoreProperty(13, &m_FarClip, tNUMBER);
     m_FarClip = farclip;
 }
 
@@ -126,7 +126,7 @@ float Camera::GetFov() const
 
 void Camera::SetFov(const float fov)
 {
-    SetParam(11, &m_Fov, tNUMBER);
+    StoreProperty(11, &m_Fov, tNUMBER);
     m_Fov = fov;
 }
 
@@ -150,23 +150,16 @@ void Camera::GetCameraPos(Vector3f* pos)
 
 void Camera::Project(float* params)
 {
-    // TODO: this probably should be a macro or something.
-    struct ParamsStruct
-    {
-        Vector3f  m_ReturnVector;
-        Vector3f  m_PosVector;
-    } *args = (ParamsStruct*)params;
-
-    Vector4f invec = { args->m_PosVector.x, args->m_PosVector.y, args->m_PosVector.z, 0 };
-    Vector4f outvec;
+    const Vector4f invec(params[3], params[4], params[5], 0.f);
+    Vector2f outvec;
 
     Project_Impl(outvec, invec);
 
-    args->m_ReturnVector = { outvec.x, outvec.y, 0 };
+    *(Vector2f*)params = outvec;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Camera::Project_Impl(Vector4f& projectedPos, const Vector4f& inpos) const
+void Camera::Project_Impl(Vector2f& projectedPos, const Vector4f& inpos) const
 {
     if (inpos.z <= 0)
     {

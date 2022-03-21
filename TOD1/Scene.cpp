@@ -23,12 +23,12 @@
 
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
-AuxQuadTree* Scene::SceneTree;
+AuxQuadTree* Scene::MainQuadTree;
 std::vector<Scene::EntityReference>* Scene::DanglingEntityReferences;
 std::map<int*, int>* Scene::DanglingEntityReferencesMap;
 
 unsigned int Scene::QuadTreesAllocated;
-Scene::QuadTree* Scene::QuadTrees;
+Scene::QuadTreeNode* Scene::QuadTrees;
 short Scene::_A120E8 = -1;
 int Scene::_A3DD40;
 
@@ -64,12 +64,13 @@ void Scene::CreateQuadTrees(const unsigned int num, const AllocatorIndex allocin
         return;
 
     QuadTreesAllocated = num;
-    QuadTrees = new QuadTree[num];
+    QuadTrees = new QuadTreeNode[num];
 
     for (unsigned int i = 0; i < num - 1; ++i)
-        QuadTrees[i].m_Index = i;
+        QuadTrees[i].field_0[0] = i;
 
-    QuadTrees[num - 1].m_Index = -1;
+    QuadTrees[num - 1].field_0[0] = -1;
+    _A120E8 = 0;
 }
 
 Scene::Scene() : Folder_()
@@ -193,7 +194,7 @@ void Scene::Render()
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::ReleaseQuadTreeAndRenderlist()
 {
-    if (!SceneTree)
+    if (!MainQuadTree)
     {
         LogDump::LogA("quadtrees and renderlists not allocated\n");
         return;
@@ -437,13 +438,13 @@ void Scene::InstantiateAssetsToLists()
 {
 }
 
-void Scene::AddCollisionList(CollisionList* list)
+void Scene::AddCollisionList(CollisionInfo* list)
 {
     m_CollisionListList.push_back(list);
     list->SetListGlobalIndex(m_CollisionListList.size());
 }
 
-void Scene::RemoveCollisionList(CollisionList* list)
+void Scene::RemoveCollisionList(CollisionInfo* list)
 {
     if (!m_CollisionListList.size())
         return;
@@ -475,7 +476,7 @@ float Scene::GetTimeMultiplier() const
 
 void Scene::SetTimeMultiplier(const float multiplier)
 {
-    SetParam(10, &m_TimeMultiplier, tNUMBER);
+    StoreProperty(10, &m_TimeMultiplier, tNUMBER);
     m_TimeMultiplier = multiplier;
 }
 
@@ -683,7 +684,7 @@ void Scene::SyncEditorCamera(const bool kdtreealloc, const int gamepadindex)
 
         m_GameCamera->GetOrient(cameraOrient);
         m_EditorCamera->SetOrient(cameraOrient);
-        m_EditorCamera->SetParam(11, &m_EditorCamera->m_Fov, tNUMBER);
+        m_EditorCamera->StoreProperty(11, &m_EditorCamera->m_Fov, tNUMBER);
         m_EditorCamera->m_Fov = m_GameCamera->m_Fov;
 
         if (EntityType::IsParentOf(tEditorCamera, m_EditorCamera))
@@ -961,7 +962,7 @@ void Scene::AllocateRewindBuffer()
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::BuildSceneTree()
 {
-    if (SceneTree)
+    if (MainQuadTree)
         return;
 
     /*g_Blocks->ResetSceneChildrenNodes(true);

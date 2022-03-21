@@ -42,7 +42,7 @@ void Model::Register()
 void Model::SetModelAsset(Model* model)
 {
     const char* val = m_ModelRes ? m_ModelRes->AddResToOpenListAndReturnName() : nullptr;
-    SetParam(10, val, tSTRING);
+    StoreProperty(10, val, tSTRING);
 }
 
 void Model::_884530()
@@ -89,7 +89,7 @@ void Model::SetOpacity(float op)
     {
         m_ModelFlags.m_FlagBits._25 = true;
         const float v = m_ModelFlags.m_FlagBits.Opacity * (float)(1 / 255);
-        SetParam(12, &v, tNUMBER);
+        StoreProperty(12, &v, tNUMBER);
     }
 
     m_ModelFlags.m_FlagBits.Opacity = (unsigned int)op;
@@ -143,7 +143,7 @@ void Model::SetActiveTextureSet(const unsigned int set)
 {
     if (m_ActiveTextureSet != set)
     {
-        SetParam(11, &m_ActiveTextureSet, tINTEGER);
+        StoreProperty(11, &m_ActiveTextureSet, tINTEGER);
         m_ActiveTextureSet = set;
         m_Id._3 = true;
     }

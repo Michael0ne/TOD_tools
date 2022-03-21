@@ -10,6 +10,8 @@
 #include <directxmath\include\DirectXMath.h>
 #include <vector>
 
+#define D3DFVF_3DNUV (D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ)
+
 //  NOTE: actual class path could be 'libs/adapter/dx9/gfxdx9.h".
 class GfxInternal_Dx9
 {
@@ -75,31 +77,45 @@ class GfxInternal_Dx9
         Vector2f                    m_BottomRightUV;
 
         static const unsigned int   VerticesTotal = 3;
+    };
 
+    struct Triangle3D
+    {
+        Vector3f                    m_Top;
+        int                         m_TopColor;
+
+        Vector3f                    m_BottomLeft;
+        int                         m_BottomLeftColor;
+
+        Vector3f                    m_BottomRight;
+        int                         m_BottomRightColor;
+
+        static const unsigned int   VerticesTotal = 3;
     };
 
     struct DisplayModeInfo
     {
-        unsigned int             m_Width;
-        unsigned int             m_Height;
-        bool               m_Available;
-        unsigned int             m_RefreshRate;
-        int                m_Format;
+        unsigned int                m_Width;
+        unsigned int                m_Height;
+        bool                        m_Available;
+        unsigned int                m_RefreshRate;
+        int                         m_Format;
     };
 
+    //  NOTE: it might be used to hold not vertices information but character glyphs.
     struct VerticesBuffer
     {
-        float                     field_0;
-        float                     field_4;
-        float                     field_8;
-        float                     field_C;
-        int                      field_10;
-        Vector2f                    field_14;
+        float                       m_X;
+        float                       m_Y;
+        float                       m_Width;
+        float                       m_Height;
+        int                         m_Color;
+        Vector2f                    m_Padding;
     };
 
     struct LightStatus
     {
-        bool                     m_Enabled;
+        bool                        m_Enabled;
         Light                      *m_Light;
     };
 
@@ -366,15 +382,15 @@ public:
     void                            ResetTextures(); // @44F8A0
     void                            SetFlushDirectly(); // @44F910 // NOTE: unused completely.
     void                            SetupViewportSurface(); // @44F940
-    void                            HandleDeviceLost(); // @44F960
+    void                            Present(); // @44F960
     void                            Clear(unsigned char flags, const ColorRGB& clearcolor); // @44F9D0
     void                            SetZBias(unsigned int); // @44FAA0
     void                            SetFogProperties(unsigned int, const ColorRGB& color, float start, float end, float density); // @44FAE0
-    void                            DrawIndexedPrimitive(int startindex, const int a2, int minvertexindex, const int a4); // @44FC40
+    void                            RenderIndexedGeometry(int startindex, const int a2, int minvertexindex, const int a4); // @44FC40
     void                            SetupRenderer(); // @44FD00 // NOTE: setup initial parameters for Direct 3D renderer.
     void                            CreateVertexBuffersObjects(const unsigned int size); // @450610
     void                            DestroyVertexBuffersObjects(); // @450710
-    void                            RenderIndexedGeometry(MeshBuffer_Dx9* meshbuffer); // @4507B0
+    void                            DrawSkinnedMeshBuffer(MeshBuffer_Dx9* meshbuffer); // @4507B0
     void                            ResetStream(); // @450810
     DisplayModeInfo*                IsScreenResolutionAvailable(unsigned int width, unsigned int height, bool dontignoreunavailable); // @450890
     void                            EnumDisplayModes(); // @4508F0
@@ -403,8 +419,8 @@ public:
     void                            DrawBrightness(const float brightness); // @45A9A0
     void                            DrawSaturation(const float sat); // @45AC00
     void                            DrawVignette(const Texture*, const Vector3<float>&, float, float, float); // @45AE60
-    void                            SetupWindowParamsAntialiased(unsigned int width, unsigned int height); // @45BE30
-    void                            SetupWindowParamsNoAntiAliasing(const ScreenResolution resolution); // @45BEF0
+    void                            SetupFullScreenRenderer(unsigned int width, unsigned int height); // @45BE30
+    void                            SetupWindowedRenderer(const ScreenResolution resolution); // @45BEF0
     bool                            SetScreenResolution(unsigned int width, unsigned int height); // @45BF90
     bool                            SetupScreenRes(); // @45C0D0
     void                            RenderTriangle(const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const ColorRGB& color); // @45C250

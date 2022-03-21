@@ -23,7 +23,7 @@ EditorCamera::EditorCamera()
     field_DC = 50.f;
     m_HasParentNode = false;
 
-    SetParam(10, &m_Offset, tNUMBER);
+    StoreProperty(10, &m_Offset, tNUMBER);
     m_Offset = 50.f;
 
     m_Order = 1000;

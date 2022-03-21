@@ -54,7 +54,7 @@ public:
 
 ASSERT_CLASS_SIZE(NodeMatrix, 100);
 
-class CollisionList;
+class CollisionInfo;
 
 //  NOTE: this is actual base class for game 'entities'.
 class Node : public Entity
@@ -95,14 +95,13 @@ public:
             unsigned DisabledOnCutscene : 1;    //  28
             unsigned _29 : 1;                   //  29
             unsigned HasFragment : 1;           //  30
-        }               m_FlagBits;
-        unsigned int    m_Flags;
+        };
     }                   m_Flags;
     short               m_GlobalIdInBlockigList;
     short               m_GlobalIdInSceneList;
     AuxQuadTree        *m_QuadTree;
     Node               *m_NextSibling;
-    CollisionList      *m_CollisionIgnoreList;
+    CollisionInfo      *m_Collision;
     NodeMatrix         *m_Position;
     Node               *m_Parent;
     Node               *m_FirstChild;
@@ -150,7 +149,7 @@ public:
     void                _86B610();  //  @86B610
     void                SetScriptData(Defragmentator* defrag, EntityScriptData* data);  //  @48B700
     void                GetWorldPos(Vector4f& pos) const; //  @484370
-    void                SetParam(const int index, const void* param, DataType* type);   //  @86A3C0 //  NOTE: probably it's 'SetScriptParam'.
+    void                StoreProperty(const int index, const void* param, DataType* type);   //  @86A3C0 //  NOTE: probably it's 'SetScriptParam'.
     void                SetOrient(const Orientation& orient);   //  @88DB20
     Vector4f*           GetPos(Vector4f& outVec);   //  @483620
     void                GetWorldMatrix(DirectX::XMMATRIX& outMat) const;    //  @4842C0
@@ -160,7 +159,7 @@ public:
     void                SetName(const char* const name);   //  @88D610
     void                SetPos(const Vector4f&);    //  @88D6C0
     const char*         GetFragment() const;    //  @88DEA0
-    void                ForceLodCalculation(unsigned int);  //  @88D100
+    void                CalculateLod(unsigned int);  //  @88D100
     void                _88E6A0(Node* node);    //  @88E6A0
     AuxQuadTree*        GetEntityQuadTreeOrParentQuadTree() const;  //  @88C260
     void                _869EC0(const unsigned int paramind, const void* paramptr, DataType& paramtype);    //  @869EC0
@@ -251,8 +250,60 @@ public:
     void                CreateNode(int* args) const;    //  @88D0C0
     void                CommitCollision();  //  @88C8F0
     void                SetSafePos(const Vector4f& pos, const Orientation& orient); //  @88D000
+    void                Rotate(float* args);    //  @88E4F0
+    void                RotateX(const float* args); //  @88E560
+    void                RotateY(const float* args); //  @88E570
+    void                RotateZ(const float* args); //  @88E580
+    void                RotateLocal(const float* args); //  @88E590
+    void                TouchPivot(const int dummy);    //  @5A16D0
+    void                FastSetPos(int* args);  //  @4CEEB0
+    void                RemoveIgnoreNode(int* args);    //  @88F450
+    void                IgnoreNode(int* args);  //  @88F4D0
+    void                AnnotateSphere(int* args) const;  //  @88C6F0
+    void                AnnotateLine(int* args) const;  //  @88C670
+    void                AnnotatePoint(int* args) const; //  @88C620
+    void                DestroyNode(int* args) const; //  @88D0E0
+    void                ResolveObjectUsingProbe(int* args) const;   //  @88D0A0
+    void                ResolveObject(int* args) const; //  @88D080
+    void                GetContactRegion(int* args) const;  //  @88FB40
+    void                GetContactMaterialID(int* args) const;  //  @88CFD0
+    void                GetContactSurfacePropFields(int* args) const;   //  @88CFA0
+    void                GetRealNode(int* args) const;   //  @88CF00
+    void                GetContactNode(int* args) const; //  @88CED0
+    void                GetSelfRealNode(int* args) const;   //  @88CEA0
+    void                GetPeerContactPoint(int* args) const;   //  @88CE30
+    void                GetContactPoint(int* args) const;   //  @88CDC0
+    void                GetContactNormal(int* args) const;  //  @88CD50
+    void                Contacts(int* args) const;  //  @88CD30
+    void                SetContactFilter(int* args) const;  //  @88CD10
+    void                SetWorldPos(int* args);   //  @88E600
+    void                GetWorldOrient(int* args) const;    //  @88CAE0
+    void                ConvertDirectionFromWorldSpace(int* args) const;    //  @88CA20
+    void                ConvertDirectionToWorldSpace(int* args) const;  //  @88C9C0
 
-    static AuxQuadTree* _8A0810(Node* node);    //  @8A0810
+private:
+    void                Rotate_Impl(const Orientation& orient); //  @891420
+    void                RotateX_Impl(const float orientX);  //  @891640
+    void                RotateY_Impl(const float orientY);  //  @483BD0
+    void                RotateZ_Impl(const float orientZ);  //  @891850
+    void                SetOrientation(const Orientation& orient);  //  @8806C0
+    void                GetBlockIDBelow(int* args) const;   //  @88D140
+    void                GetBlockID(int* args) const;    //  @5A18B0
+    void                FastSetPos_Impl(const Vector4f& pos);   //  @88BB20
+    void                Project(float* args); //  @88C7F0
+    void                HasContactFlags(int* args) const; //  @88CF60
+    void                GetContactFlags(int* args) const;   //  @88CF30
+
+    static void         ResolveObjectUsingProbe_Impl(const Node* node, int* a1, CollisionProbe* probe); //  @8C73C0
+    static void         ResolveObject_Impl(const Node* node, const int a2);  //  @8C7C30
+
+protected:
+    void                GetLocalSpaceDirection(Vector4f& outDir, const Vector4f& inOffset) const; //  @88BF10
+    void                GetWorldSpaceDirection(Vector4f& outDir, const Vector4f& inOffset) const; //  @88C060
+    void                _88D230(const int a1);  //  @88D230
+    void                GetAllUniqueIds(std::vector<Utils::UniqueId>& outList) const;  //  @88F510
+
+public:
     static void         _891E70(const String& s, String& sout); //  @891E70
 
     static void         Register(); //  @88FCD0

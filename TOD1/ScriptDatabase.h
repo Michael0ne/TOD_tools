@@ -115,6 +115,7 @@ class Scriptbaked
 {
     friend class Node;
     friend class Entity;
+    friend class EntityType;
 
     struct Property
     {
@@ -129,7 +130,7 @@ class Scriptbaked
         short       m_Id;
         short       m_PropertyBlockId;
         void        (*m_ThreadHandler)(ScriptThread*);
-        void        (*m_MethodPtr)(int* args);
+        void        (*m_MethodPtr)(ScriptThread*, void* args);
     };
 
     struct Parameter
@@ -141,31 +142,33 @@ class Scriptbaked
 protected:
     std::vector<Property>   m_PropertiesList;
     std::map<int, int>      m_PropertiesValues;
-    int             field_1C;
-    int             m_ScriptSize;
+    int                     field_1C;
+    int                     m_ScriptSize;
     std::vector<Method>     m_MethodsList;
     std::vector<Parameter>  m_ParametersList;
-    int             m_PropertiesBlocksTotal;
-    EntityType     *m_BaseEntity;
-    String          m_Name;
-    char            field_5C;
-    void            (*field_60)(int*);
+    int                     m_PropertiesBlocksTotal;
+    EntityType             *m_BaseEntity;
+    String                  m_Name;
+    char                    field_5C;
+    void                    (*field_60)(int*);
 
 public:
     Scriptbaked(const char* const scriptName, const char* const parentName, bool a3, bool a4); // @48A530
 
-    void                        AddStructElement(const int fieldId, const char* const defaultValue, const int); // @48AF10
-    void                        AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(int*)); // @48A690
+    void                        AddMember(const int fieldId, const char* const defaultValue, const int); // @48AF10
+    void                        AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(ScriptThread*, void*)); // @48A690
     void                        CalculateSize(); // @48AA60
     bool                        _48A7E0(Node* node, int scriptId, void* args); // @48A7E0
     void                        ClearEntityProperties(Entity* ent); //  @489C90
-    EntityType*                 GetScriptEntity() const;  //  @489AE0
+    EntityType*                 GetAttachedScript() const;  //  @489AE0
     const int                   GetPropertiesListSize() const;  //  @489A20
     void                        GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue);   //  @489E50
     bool                        HasPropertyId(const unsigned int propertyid) const; //  @489A30
     void                        CopyScriptParameters(Entity* entity);    //  @489BE0
     void                        GetMethodParams(void (*methodPtr)(ScriptThread*), std::vector<DataType*>& outParams) const;   //  @48A750
     int                         GetParameterProcedureIndex(void (*procedure)(ScriptThread*)) const; //  @489F50
+    const int                   GetPropertyValueByIndex(const int index) const; //  @489A70
+    void                        AddLocal(void (*procPtr)(ScriptThread*), DataType* localType);  //  @48A700
 
     EntityType*                 AssignScriptToEntity(EntityType * parent); // @48A3F0
 
@@ -178,7 +181,7 @@ public:
     static unsigned int         GetScriptIdByFullName(const char* const name);  //  NOTE: a special version of 'GetTypeByName' to be used when loading game-specific scripts. Not in original code.
 
     static std::vector<Scriptbaked*> ScriptsList; // @A0B424
-    static std::vector<Node*>           SceneScriptEntitiesList;    //  @A3B5A4
+    static std::vector<Node*>   SceneScriptEntitiesList;    //  @A3B5A4
 };
 
 extern DataType* GlobalScriptsArray[410]; // @A3B7A4 // TODO: this could be just a global 'scripts space' where mixed objects are contained.

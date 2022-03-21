@@ -61,7 +61,7 @@ const float Fog::GetStart() const
 
 void Fog::SetStart(const float fogstart)
 {
-    SetParam(10, &m_FogStart, tNUMBER);
+    StoreProperty(10, &m_FogStart, tNUMBER);
     m_FogStart = fogstart;
 }
 
@@ -72,7 +72,7 @@ const float Fog::GetEnd() const
 
 void Fog::SetEnd(float fogend)
 {
-    SetParam(11, &m_FogEnd, tNUMBER);
+    StoreProperty(11, &m_FogEnd, tNUMBER);
     m_FogEnd = fogend;
 }
 

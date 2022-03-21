@@ -39,24 +39,6 @@ void MoviePlayer::Play(int args)
     m_FrameInfo.PlayAllocated();
 }
 
-MoviePlayer::MoviePlayer() : Node(NODE_MASK_EMPTY)
-{
-    MESSAGE_CLASS_CREATED(MoviePlayer);
-
-    m_StreamScriptId = -1;
-    m_StopEventScriptId = -1;
-    m_DisplacementX = 0;
-    m_ScaleX = 1;
-    m_ScaleY = 1;
-    m_DisplacementY = 0;
-    m_Opacity = 1;
-    m_FrameBuffer = nullptr;
-    m_SubtitleNode = nullptr;
-    m_Flags.m_FlagsBits.HasFrameBuffer = 0;
-    m_Flags.m_FlagsBits.MovieClosed = 1;
-    m_Volume = 0;
-}
-
 MoviePlayer::~MoviePlayer()
 {
     MESSAGE_CLASS_DESTROYED(MoviePlayer);

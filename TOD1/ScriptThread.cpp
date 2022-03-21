@@ -6,11 +6,12 @@ int ScriptThread::CurrentThread;
 ScriptThread* ScriptThread::Threads[100];
 bool ScriptThread::WarnDelayedException;
 int ScriptThread::LatestMethodIndex;
-ScriptThread::MethodStruct ScriptThread::RecentMethodsArray[4];
+ScriptThread::MethodStruct *ScriptThread::RecentMethodsArray[4];
 ScriptThread::NodeScriptDataInfo ScriptThread::ScriptDataCache[6];
 int ScriptThread::LatestScriptDataCacheIndex;
 int ScriptThread::CurrentLocalOffset;
 int ScriptThread::CurrentParameterOffset;
+Node* ScriptThread::CurrentScriptNode;
 
 ScriptThread::~ScriptThread()
 {
@@ -35,10 +36,54 @@ ScriptThread::ScriptThread(Node* node)
     m_Stack.reserve(9);
     m_CallStack.reserve(9);
     m_ScriptNode = node;
-    m_ThreadFlags._28 = node->m_Flags.m_FlagBits._29;
+    m_ThreadFlags.SceneTimeSynced = node->m_Flags._29;
     m_MethodInfo = nullptr;
 
     Reset();
+}
+
+void ScriptThread::PopFromCallstack()
+{
+    m_CallStack.pop_back();
+    const size_t callstackSize = m_CallStack.size();
+    m_ThreadFlags.HasScriptNode = true;
+
+    if (callstackSize)
+    {
+        m_CurrentStackElement = &m_CallStack[m_CallStack.size()];
+    }
+    else
+    {
+        m_CurrentStackElement = nullptr;
+        if (m_MethodInfo)
+        {
+            if (LatestMethodIndex == 4)
+            {
+                delete m_MethodInfo;
+                return;
+            }
+
+            RecentMethodsArray[LatestMethodIndex++] = m_MethodInfo;
+        }
+        m_MethodInfo = nullptr;
+    }
+}
+
+void ScriptThread::StoreMethodInformation(void(*a1)(ScriptThread*), int a2, void(*a3)(ScriptThread*), Node* a4, Scriptbaked* a5)
+{
+    if (!m_MethodInfo)
+    {
+        if (LatestMethodIndex)
+            m_MethodInfo = RecentMethodsArray[--LatestMethodIndex];
+        else
+            m_MethodInfo = new MethodStruct;
+    }
+
+    m_MethodInfo->field_0 = a1;
+    m_MethodInfo->field_8 = a3;
+    m_MethodInfo->field_C = a4;
+    m_MethodInfo->field_10 = a5;
+    m_MethodInfo->field_4 = a2;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -62,7 +107,7 @@ void ScriptThread::_48E390()
         if (m_ThreadFlags.SleepRealTime)
             nextWakeTimeMs = Scene::RealTimeMs;
         else
-            if (m_ThreadFlags._28)
+            if (m_ThreadFlags.SceneTimeSynced)
                 nextWakeTimeMs = Scene::NextUpdateTime;
             else
                 nextWakeTimeMs = Scene::GameTimeMs;
@@ -89,7 +134,7 @@ void ScriptThread::_48E390()
     }
     else
     {
-        int nextWakeFrame = m_ThreadFlags._28 ? Scene::TotalFrames : Scene::NewFrameNumber;
+        int nextWakeFrame = m_ThreadFlags.SceneTimeSynced ? Scene::TotalFrames : Scene::NewFrameNumber;
         if (m_WaitForFrame == -1 || nextWakeFrame)
         {
             m_CurrentStackElement = &m_CallStack[m_CallStack.size() - 1];
@@ -112,14 +157,25 @@ void ScriptThread::_48E390()
     }
 }
 
+void ScriptThread::SetSleepTime(const float sleepfor, const bool sleepRealTime)
+{
+    m_ThreadFlags.SleepRealTime = sleepRealTime;
+    const int sceneTime = sleepRealTime ? Scene::RealTimeMs : GetSceneTime();
+
+    if ((sleepfor * 1000.0f) >= 0.f)
+        m_SleepUntil = sceneTime - (sleepfor * -1000.0f);
+    else
+        m_SleepUntil = -1;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void ScriptThread::_48CE30()
 {
 }
 
-const int ScriptThread::_48CD00() const
+const int ScriptThread::GetSceneTime() const
 {
-    return m_ThreadFlags._28 ? Scene::NextUpdateTime : Scene::GameTimeMs;
+    return m_ThreadFlags.SceneTimeSynced ? Scene::NextUpdateTime : Scene::GameTimeMs;
 }
 
 void ScriptThread::DecreaseStateMessageCount()

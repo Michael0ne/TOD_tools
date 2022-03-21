@@ -5,7 +5,7 @@ public:
 	{
 		static Scriptbaked* inst = new Scriptbaked("MarcoDist", "Node", false, false);
 		
-		inst->AddStructElement(GetScriptIdByFullName("MarcoDist:number"), "10.000000", NULL);
+		inst->AddMember(GetScriptIdByFullName("MarcoDist:number"), "10.000000", NULL);
 		
 		inst->CalculateSize();
 		return inst;

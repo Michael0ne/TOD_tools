@@ -41,7 +41,7 @@ public:
         ~Mesh();    //  @857820
     };
 
-protected:
+public:
     int                 field_1C;
     std::vector<TextureSet> m_TextureResources;
     std::vector<Mesh>  m_MeshList;
@@ -66,6 +66,7 @@ public:
     static ModelAsset*  Create(); // @8581F0
 
     static AssetInstance*   Instance;   //  @A3BE30
+    static const int        DefaultSurfacePropFields = 0x2007C00;   //  @A11090
 };
 
 

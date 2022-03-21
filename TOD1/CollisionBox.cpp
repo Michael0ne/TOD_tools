@@ -73,7 +73,7 @@ const char CollisionBox::GetCollisionFlags() const
 
 void CollisionBox::SetCollisionFlags(const char flags)
 {
-    SetParam(10, &m_CollisionFlags.m_Flags, tINTEGER);
+    StoreProperty(10, &m_CollisionFlags.m_Flags, tINTEGER);
     m_CollisionFlags.m_Flags = flags;
 
     Instantiate();

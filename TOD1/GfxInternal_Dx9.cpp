@@ -115,9 +115,9 @@ GfxInternal_Dx9::GfxInternal_Dx9(const ScreenResolution& resolution, unsigned in
     }
 
     if (FSAA & 2)
-        SetupWindowParamsAntialiased(m_DisplayModeResolution.x, m_DisplayModeResolution.y);
+        SetupFullScreenRenderer(m_DisplayModeResolution.x, m_DisplayModeResolution.y);
     else
-        SetupWindowParamsNoAntiAliasing(m_DisplayModeResolution);
+        SetupWindowedRenderer(m_DisplayModeResolution);
 
     field_9758 = 0.f;
     m_ActiveViewportSurfaceIndex = NULL;
@@ -170,7 +170,7 @@ void GfxInternal_Dx9::SetupViewportSurface()
         SetRenderTarget(m_ViewportTexturesArray[m_ActiveViewportSurfaceIndex]);
 }
 
-void GfxInternal_Dx9::HandleDeviceLost()
+void GfxInternal_Dx9::Present()
 {
     HRESULT presentresult = m_Direct3DDevice->Present(nullptr, nullptr, NULL, nullptr);
 
@@ -237,7 +237,7 @@ void GfxInternal_Dx9::SetFogProperties(unsigned int fogmode, const ColorRGB& col
     m_FogMode = fogmode;
 }
 
-void GfxInternal_Dx9::DrawIndexedPrimitive(int startindex, const int a2, int minvertexindex, const int a4)
+void GfxInternal_Dx9::RenderIndexedGeometry(int startindex, const int a2, int minvertexindex, const int a4)
 {
     int numvert, primtotal;
 
@@ -482,19 +482,19 @@ void GfxInternal_Dx9::DestroyVertexBuffersObjects()
             delete m_VertexBuffer[i];
 }
 
-void GfxInternal_Dx9::RenderIndexedGeometry(MeshBuffer_Dx9* meshbuffer)
+void GfxInternal_Dx9::DrawSkinnedMeshBuffer(MeshBuffer_Dx9* meshbuffer)
 {
     meshbuffer->SetMeshDataAsCurrent();
     meshbuffer->SWSkin();
 
-    if (m_FVF != (D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ))
+    if (m_FVF != D3DFVF_3DNUV)
     {
-        m_Direct3DDevice->SetFVF(D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ);
-        m_FVF = D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ;
+        m_Direct3DDevice->SetFVF(D3DFVF_3DNUV);
+        m_FVF = D3DFVF_3DNUV;
         m_Direct3DVertexDeclaration = nullptr;
     }
 
-    DrawIndexedPrimitive(-1, -1, -1, -1);
+    RenderIndexedGeometry(-1, -1, -1, -1);
 }
 
 void GfxInternal_Dx9::ResetStream()
@@ -1029,7 +1029,7 @@ void GfxInternal_Dx9::DrawVignette(const Texture*, const Vector3<float>&, float,
 {
 }
 
-void GfxInternal_Dx9::SetupWindowParamsAntialiased(unsigned int width, unsigned int height)
+void GfxInternal_Dx9::SetupFullScreenRenderer(unsigned int width, unsigned int height)
 {
     const DisplayModeInfo* mode = IsScreenResolutionAvailable(width, height, true);
 
@@ -1053,7 +1053,7 @@ void GfxInternal_Dx9::SetupWindowParamsAntialiased(unsigned int width, unsigned 
     }
 }
 
-void GfxInternal_Dx9::SetupWindowParamsNoAntiAliasing(const ScreenResolution mode)
+void GfxInternal_Dx9::SetupWindowedRenderer(const ScreenResolution mode)
 {
     D3DDISPLAYMODE _mode;
 

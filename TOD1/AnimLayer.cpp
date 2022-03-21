@@ -55,13 +55,13 @@ void AnimLayer::Play(AnimLayer* animation, const unsigned int event)
     SetIsLooping(false);
 
     if (m_TargetAnim != 1)
-        SetParam(13, &m_TargetAnim, tINTEGER);
+        StoreProperty(13, &m_TargetAnim, tINTEGER);
 
     SetCrossTarget1(animation);
     SetTargetCrossBlendFactor(0);
 
     if (m_CrossBlendSpeed != 0)
-        SetParam(21, &m_CrossBlendSpeed, tNUMBER);
+        StoreProperty(21, &m_CrossBlendSpeed, tNUMBER);
 
     m_CrossBlendSpeed = 0;
     SetPlayPos2(0);
@@ -78,7 +78,7 @@ void AnimLayer::SetIsPlaying(const bool playing)
     const bool isplaying = m_Flags.Playing;
 
     if (m_Flags.Playing != playing)
-        SetParam(10, &isplaying, tTRUTH);
+        StoreProperty(10, &isplaying, tTRUTH);
 
     m_Flags.Playing = playing;
 }
@@ -88,7 +88,7 @@ void AnimLayer::SetIsLooping(const bool loop)
     const bool loopflag = m_Flags.Looping;
 
     if (loop != loopflag)
-        SetParam(11, &loopflag, tTRUTH);
+        StoreProperty(11, &loopflag, tTRUTH);
 
     m_Flags.Looping = loop;
 }
@@ -126,7 +126,7 @@ void AnimLayer::SetCrossTarget1(AnimLayer* target)
 void AnimLayer::SetTargetCrossBlendFactor(const float blend)
 {
     if (m_CrossBlendFactor != blend)
-        SetParam(19, &m_CrossBlendFactor, tNUMBER);
+        StoreProperty(19, &m_CrossBlendFactor, tNUMBER);
 
     if (m_TargetAnim_Entity)
     {

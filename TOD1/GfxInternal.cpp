@@ -10,38 +10,6 @@ float               GfxInternal::RatioXY = 1.0f; // @A119F4
 float               GfxInternal::_A3A064;
 DirectX::XMMATRIX   GfxInternal::_A3A268;
 
-GfxInternal::Renderer_Buffer2   GfxInternal::_A08704[28] =
-{
-    {0, 1},
-    {0, 2},
-    {1, 3},
-    {1, 4},
-    {1, 5},
-    {0, 6},
-    {2, 7},
-    {0, 8},
-    {1, 9},
-    {1, 10},
-    {1, 11},
-    {1, 12},
-    {1, 13},
-    {2, 14},
-    {1, 15},
-    {1, 16},
-    {1, 17},
-    {1, 18},
-    {1, 19},
-    {2, 20},
-    {2, 21},
-    {1, 22},
-    {1, 23},
-    {2, 24},
-    {2, 25},
-    {1, 26},
-    {1, 27},
-    {1, 0}
-};
-
 #pragma message(TODO_IMPLEMENTATION)
 GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
 {
@@ -162,7 +130,7 @@ void GfxInternal::Render(Surface* screenshotDumpSurface, const bool shouldRender
                 frmclbckcalled = true;
             }
 
-            g_GfxInternal_Dx9->HandleDeviceLost();
+            g_GfxInternal_Dx9->Present();
             m_FrameEndTime = __rdtsc();
         } while (g_GfxInternal_Dx9->ProcessGameInput());
     }
@@ -223,7 +191,7 @@ void GfxInternal::PrepareForNewLevel()
             if (g_GfxInternal_Dx9->m_RenderingScene)
                 g_GfxInternal_Dx9->m_Direct3DDevice->EndScene();
             g_GfxInternal_Dx9->m_RenderingScene = false;
-            g_GfxInternal_Dx9->HandleDeviceLost();
+            g_GfxInternal_Dx9->Present();
         }
 
         g_GfxInternal_Dx9->field_975C = g_GfxInternal->m_FramesRendered;

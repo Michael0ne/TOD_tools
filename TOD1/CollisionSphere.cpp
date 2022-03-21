@@ -28,7 +28,7 @@ const float CollisionSphere::GetRadius() const
 
 void CollisionSphere::SetRadius(const float radius)
 {
-    SetParam(10, &m_Radius, tNUMBER);
+    StoreProperty(10, &m_Radius, tNUMBER);
     m_Radius = radius;
 
     Instantiate();
@@ -53,7 +53,7 @@ const char CollisionSphere::GetCollisionFlags() const
 
 void CollisionSphere::SetCollisionFlags(const char flags)
 {
-    SetParam(12, &m_CollisionFlags, tINTEGER);
+    StoreProperty(12, &m_CollisionFlags, tINTEGER);
     m_CollisionFlags.m_CollisionFlags = flags;
 
     Instantiate();

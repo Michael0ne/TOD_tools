@@ -44,7 +44,7 @@ class SceneSaveLoad
 private:
     int                *field_0;    //  NOTE: pointer to the end of the SaveInfo transaction buffer.
     SaveInfo            m_SaveInfo; // NOTE: this is used when WRITING savepoint data.
-    Scene::PlayMode     m_SavedPlayMode;
+    Scene::PlayMode     m_SavedPlayMode;    //  NOTE: 1 - when saving/loading, 2 - anything else
     Scene::PlayMode     m_CurrentPlayMode;
     char               *m_RewindDataBuffer;
     int                 m_RewindDataBufferSize;

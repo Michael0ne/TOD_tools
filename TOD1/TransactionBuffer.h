@@ -2,6 +2,7 @@
 #include "MemoryManager.h"
 
 class EntityType;
+class Entity;
 
 class TransactionBuffer
 {
@@ -16,13 +17,13 @@ class TransactionBuffer
     };
 
 public:
-    char           *m_Buffer;
+    int            *m_Buffer;   //  NOTE: This holds all entities information. Probably, it was a struct or two structs.
     int             m_Chunks;
     int             m_Size;
     int             (*m_ReadCompressedBufferData)(char* outBuffer, int size);
     std::list<BufferList>  m_List_1;
     void           *field_1C;
-    class Entity   *field_20;
+    Entity         *field_20;
 
 public:
     TransactionBuffer(unsigned int bufferSize); // @8AADA0

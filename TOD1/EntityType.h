@@ -101,6 +101,8 @@ public:
 
     void                PropagateProperties(); // @86E9B0
     bool                HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
+    DataType*           PropertyByIndex(const int index) const; //  @86CCB0
+    void                ExecuteScript(Node* node) const;  //  @86CFF0
 
     static Entity*      IsParentOf(EntityType* ett, Entity* ent);   //  @48C3B0
 };

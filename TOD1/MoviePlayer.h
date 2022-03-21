@@ -57,7 +57,24 @@ protected:
     }                       m_Flags;
 
 public:
-    MoviePlayer();  // NOTE: no constructor.
+    inline MoviePlayer() : Node(NODE_MASK_EMPTY)
+    {
+        MESSAGE_CLASS_CREATED(MoviePlayer);
+
+        m_StreamScriptId = -1;
+        m_StopEventScriptId = -1;
+        m_DisplacementX = 0;
+        m_ScaleX = 1;
+        m_ScaleY = 1;
+        m_DisplacementY = 0;
+        m_Opacity = 1;
+        m_FrameBuffer = nullptr;
+        m_SubtitleNode = nullptr;
+        m_Flags.m_FlagsBits.HasFrameBuffer = 0;
+        m_Flags.m_FlagsBits.MovieClosed = 1;
+        m_Volume = 0;
+    }
+
     virtual ~MoviePlayer(); //  @88ADC0
 
     virtual void            Update();  //  @88AC60
