@@ -205,108 +205,6 @@ void AssetBlockReader::DumpData() const
         printf("\tDumping \"%s\"...\n", assname);
 
         m_AssetsList[i]->DumpData(this);
-
-        /*
-                if (strstr(assetext, "txt"))
-                {
-                    //	TODO: this doesn't work right now...
-                    CompiledTextAsset* txt = (CompiledTextAsset*)m_AssetsList[i];
-                    FILE* f = nullptr;
-                    errno_t err = fopen_s(&f, assname, "wb");
-                    if (!f)
-                    {
-                        printf("Failed to create TXT file! fopen returned error %d\n", err);
-                        continue;
-                    }
-
-                    for (unsigned int slot = 0; slot < txt->m_TextIndicies_Size; ++slot)
-                    {
-                        if (!txt->m_TextIndicies_Elements[slot])
-                            continue;
-
-                        AssetBlockReader::CompiledTextAsset::Dictionary::Offset = NULL;
-                        AssetBlockReader::CompiledTextAsset::Dictionary::Indicy = &txt->m_List_3_Elements[txt->m_TextIndicies_Elements[slot]];
-                        AssetBlockReader::CompiledTextAsset::Dictionary* dic = nullptr;
-
-                        unsigned short buf[2048] = {};
-                        unsigned short* buf_ptr = buf;
-
-                        do
-                        {
-                            dic = AssetBlockReader::CompiledTextAsset::Dictionary::GetCharacterInfo(txt->field_50);
-
-                            *buf_ptr++ = dic->m_Contents;
-
-                        } while (*(char*)&dic->m_Contents);
-
-                        unsigned int slen = NULL;
-                        for (unsigned int i = 0; i < 1023; ++i, ++slen)
-                            buf[i + 1024] = buf[i];
-                        printf("String length is: %d\n", slen * 2 + 2);
-
-                        fwrite("SLOT", 4, 1, f);
-                        fwrite(&slen, sizeof(slen), 1, f);
-                        fwrite(buf, sizeof(unsigned short), slen, f);
-                    }
-
-                    fclose(f);
-                }
-                else if (strstr(assetext, "font"))
-                {
-                    //	TODO: output is wrong: resolution is incorrect, colors are messed up.
-                    CompiledFontAsset* fnt = (CompiledFontAsset*)m_AssetsList[i];
-
-                    CompiledTextureAsset::DDS_HEADER ddsheader;
-                    ddsheader.size = sizeof(CompiledTextureAsset::DDS_HEADER);
-                    ddsheader.flags = (CompiledTextureAsset::DDS_HEADER::DDSFLAGS)(
-                        CompiledTextureAsset::DDS_HEADER::DDSD_CAPS |
-                        CompiledTextureAsset::DDS_HEADER::DDSD_HEIGHT |
-                        CompiledTextureAsset::DDS_HEADER::DDSD_WIDTH |
-                        CompiledTextureAsset::DDS_HEADER::DDSD_PIXELFORMAT |
-                        CompiledTextureAsset::DDS_HEADER::DDSD_LINEARSIZE);
-                    ddsheader.height = fnt->m_FontInfo->m_FontTexture->m_SurfaceSize[1];
-                    ddsheader.width = fnt->m_FontInfo->m_FontTexture->m_SurfaceSize[0];
-                    ddsheader.pitchOrLinearSize = m_AssetsSizes[i];
-                    ddsheader.depth = NULL;
-                    ddsheader.mipMapCount = fnt->m_FontInfo->m_FontTexture->m_Levels & 512;
-
-                    ddsheader.ddspf.size = sizeof(CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT);
-                    ddsheader.ddspf.flags = CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT::DDPF_FOURCC;
-                    strcpy(ddsheader.ddspf.fourcc, "DXT1");// CompiledTextureAsset::TextureFormatString[fnt->m_FontInfo->m_FontTexture->m_Format]);
-                    ddsheader.ddspf.RGBBitCount = NULL;
-                    ddsheader.ddspf.RBitMask = NULL;
-                    ddsheader.ddspf.GBitMask = NULL;
-                    ddsheader.ddspf.BBitMask = NULL;
-                    ddsheader.ddspf.ABitMask = NULL;
-
-                    ddsheader.caps = CompiledTextureAsset::DDS_HEADER::DDSCAPS_TEXTURE;
-                    ddsheader.caps2 = NULL;
-                    ddsheader.caps3 = NULL;
-                    ddsheader.caps4 = NULL;
-                    ddsheader.reserved2 = NULL;
-
-                    FILE* f = nullptr;
-                    strcat(assname, ".dds");
-                    errno_t err = fopen_s(&f, assname, "wb");
-                    if (!f)
-                    {
-                        printf("Failed to create font texture file! fopen returned error %d\n", err);
-                        continue;
-                    }
-                    fwrite((const void*)&CompiledTextureAsset::DDS_HEADER::magick, sizeof(CompiledTextureAsset::DDS_HEADER::magick), 1, f);
-                    fwrite((const void*)&ddsheader, sizeof(CompiledTextureAsset::DDS_HEADER), 1, f);
-                    fwrite(m_AssetsDataBuffer[i], m_AssetsSizes[i], 1, f);
-
-                    fclose(f);
-                }
-                else
-                {
-                    printf("Trying to dump an asset with unsupported format '%s'! Skipped...\n", assetext);
-                    continue;
-                }
-
-                printf("Saved asset dump: %s\n", assname);
-        */
     }
 }
 
@@ -715,6 +613,31 @@ void AssetBlockReader::CompiledTextAsset::SkipSpecificData(unsigned char** infob
 
 void AssetBlockReader::CompiledTextAsset::DumpData(const AssetBlockReader* reader)
 {
+    unsigned char str[2048] = {};
+    unsigned int slen = NULL;
+    FILE* textFile = nullptr;
+
+    char* textName = strrchr(m_AssetName, '/') + 1;
+    fopen_s(&textFile, textName, "wb");
+
+    for (unsigned int i = 0; i < m_TextIndicies_Size; ++i)
+    {
+        GetGameString(m_TextIndicies_Elements[i], str, &slen, false);
+        if (*str == NULL)
+        {
+            printf("\tSkipped empty text slot %d\n", i);
+            continue;
+        }
+
+        fwrite(str, slen - 1, 1, textFile);
+        fwrite("=", 1, 1, textFile);
+        memset(str, NULL, slen);
+        GetGameString(m_TextIndicies_Elements[i], str, &slen, true);
+        fwrite(str, slen - 1, 1, textFile);
+        fwrite("\n", 1, 1, textFile);
+    }
+
+    fclose(textFile);
 }
 
 AssetBlockReader::CompiledSoundAsset::CompiledSoundAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -945,24 +868,60 @@ void AssetBlockReader::CompiledAnimationAsset::DumpData(const AssetBlockReader* 
 {
 }
 
+void AssetBlockReader::CompiledTextAsset::GetGameString(const unsigned short indicieslistindex, unsigned char* outString, unsigned int* outStringLength, const bool contents) const
+{
+    //  NOTE: argument 'contents' decides what information should be in the output - only text identifier OR actual contents.
+    Dictionary::Indicy = (unsigned char*)&m_List_3_Elements[indicieslistindex];
+    Dictionary::Offset = 0;
+
+    unsigned int ind = 0;
+    Dictionary* charinfo = nullptr;
+    do
+    {
+        charinfo = Dictionary::GetCharacterInfo(field_50);
+        if (!contents)
+            outString[ind++] = (unsigned char)charinfo->m_Contents;
+    } while ((unsigned char)charinfo->m_Contents);
+    *outStringLength = ind;
+
+    if (!contents)
+        return;
+
+    charinfo = nullptr;
+    do
+    {
+        charinfo = Dictionary::GetCharacterInfo(field_50);
+        outString[ind++] = (unsigned char)charinfo->m_Contents;
+    } while ((unsigned char)charinfo->m_Contents);
+    *outStringLength = ind;
+}
+
 AssetBlockReader::CompiledTextAsset::Dictionary* AssetBlockReader::CompiledTextAsset::Dictionary::GetCharacterInfo(Dictionary* dic)
 {
-    if (dic->m_Contents == (unsigned short)0xA74)
-    {
-        do
-        {
-            if (Offset >= 8)
-            {
-                Indicy++;
-                Offset -= 8;
-            }
+    if (dic->m_Contents != 0xA74)
+        return dic;
 
-            if (((*Indicy >> Offset++) & 1) != 0)
-                dic = (Dictionary*)((unsigned int*)dic + offsetof(Dictionary, field_4) + (unsigned int)dic->field_4);
-            else
-                dic = (Dictionary*)((unsigned int*)dic + offsetof(Dictionary, field_0) + (unsigned int)dic->field_0);
-        } while (dic->m_Contents == (unsigned short)0xA74);
-    }
+    do
+    {
+        if (Offset >= 8)
+        {
+            Indicy++;
+            Offset -= 8;
+        }
+
+        //  NOTE: not part of the original code, but needs to be done, since 'pointers' are not adjusted right.
+        if ((unsigned int)dic->m_Next <= 0xFFFF)
+            RESTORE_POINTER(Dictionary, dic, m_Next);
+
+        if ((unsigned int)dic->m_Previous <= 0xFFFF)
+            RESTORE_POINTER(Dictionary, dic, m_Previous);
+
+        const unsigned char currchar = *Indicy >> Offset++;
+        if ((currchar & 1) != 0)
+            dic = (Dictionary*)((int)dic->m_Previous & 0xFFFFFFFC);
+        else
+            dic = (Dictionary*)((int)dic->m_Next & 0xFFFFFFFC);
+    } while (dic->m_Contents == 0xA74);
 
     return dic;
 }

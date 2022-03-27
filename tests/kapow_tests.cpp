@@ -2,11 +2,16 @@
 
 bool test_main()
 {
-	debug("test_main BEGIN\n");
-	//	TODO: put tests here.
-	debug("test_main ENDS\n");
+	#pragma message("[MAIN] Checking CRC32 implementation...");
+	static_assert(check_crc() == true, "[MAIN] CRC32 has FAILED!");
+	#pragma message("[MAIN] Checking CRC32 success!");
 	
 	return true;
+}
+
+bool check_crc()
+{
+	Utils::generic_crc32()
 }
 
 int main(int argc, char** argv)

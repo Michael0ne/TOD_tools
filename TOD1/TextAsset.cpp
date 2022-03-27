@@ -35,7 +35,7 @@ void TextAsset::GetIdentifierByIndex(String& outString, const unsigned int ind) 
     if (ind >= m_TextIndicies.size())
         return;
 
-    short gamestring[1024] = {};
+    unsigned short gamestring[1024] = {};
     GetGameString(m_TextIndicies[ind], gamestring, 1024, 0);
     const int slen = GetGameStringLength(gamestring);
 
@@ -56,7 +56,7 @@ void TextAsset::GetTextContents(String& outString, const unsigned int ind) const
     if (ind >= m_TextIndicies.size())
         return;
 
-    short gamestring[1024] = {};
+    unsigned short gamestring[1024] = {};
     GetGameString(m_TextIndicies[ind], gamestring, 1024, true);
     const int slen = GetGameStringLength(gamestring);
 
@@ -72,7 +72,7 @@ void TextAsset::GetTextContents(String& outString, const unsigned int ind) const
     }
 }
 
-void TextAsset::GetGameString(const unsigned short indicieslistindex, short* outString, const unsigned int maxlength, const bool contents) const
+void TextAsset::GetGameString(const unsigned short indicieslistindex, unsigned short* outString, const unsigned int maxlength, const bool contents) const
 {
     //  NOTE: argument 'contents' decides what information should be in the output - only text identifier OR actual contents.
     _A3CE80 = (char*)&m_List_3[indicieslistindex];
@@ -88,7 +88,7 @@ void TextAsset::GetGameString(const unsigned short indicieslistindex, short* out
             outString[i++] = charinfo->m_Contents;
 }
 
-int TextAsset::GetGameStringLength(short* str)
+int TextAsset::GetGameStringLength(unsigned short* str)
 {
     int len = 0;
 
@@ -100,22 +100,23 @@ int TextAsset::GetGameStringLength(short* str)
 
 TextAsset::Dictionary* TextAsset::GetCharacterInfo(Dictionary* dict)
 {
-    if (dict->m_Contents == 0xA74)
-    {
-        for (; dict->m_Contents == 0xA74;)
-        {
-            if (_A3CE84 >= 8)
-            {
-                _A3CE80++;
-                _A3CE84 -= 8;
-            }
+    if (dict->m_Contents != 0xA74)
+        return dict;
 
-            if ((*_A3CE80 >> _A3CE84++) != 0)
-                dict = dict->m_Prev;
-            else
-                dict = dict->m_Next;
+    do
+    {
+        if (_A3CE84 >= 8)
+        {
+            _A3CE80++;
+            _A3CE84 -= 8;
         }
-    }
+
+        const unsigned char currchar = *_A3CE80 >> _A3CE84++;
+        if ( (currchar & 1) != 0)
+            dict = (Dictionary*)ALIGN_4BYTES(dict->m_Prev);
+        else
+            dict = (Dictionary*)ALIGN_4BYTES(dict->m_Next);
+    } while (dict->m_Contents == 0xA74);
 
     return dict;
 }

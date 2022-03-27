@@ -6,31 +6,26 @@ namespace Utils
     static char LastSavedCRCString[5] = {}; // @9B6F84
     static unsigned int _A3A060 = NULL; // @A3A060
 
-    static const char* generic_crc32(int* t, char* base, size_t len) // @465840
+    static void generic_crc32(int* checksum, const char* string, const unsigned int stringlen)  //  @465840
     {
-        char* base_ptr = base;
-        unsigned int charsread = 0;
-        char* result = nullptr;
+        unsigned int charactersRead = 0;
+        char* stringBase = (char*)string;
 
         while (true)
         {
-            if (*t < NULL)
-                *t = ((2 * *t) | (*base_ptr >> charsread) & 1) ^ 0x4C11DB7;
-            else
-                *t = ((2 * *t) | (*base_ptr >> charsread) & 1);
+            *checksum = 2 * *checksum;
+            *checksum = *checksum | (*stringBase >> charactersRead) & 1;
 
-            if (++charsread == 8)
+            if (*checksum < 0)
+                *checksum = *checksum ^ 0x4C11DB7;
+
+            if (++charactersRead == 8)
             {
-                charsread = NULL;
-                ++base_ptr;
-
-                result = &base[len];
-                if (base_ptr == &base[len])
+                charactersRead = 0;
+                if (++stringBase == &string[stringlen])
                     break;
             }
         }
-
-        return result;
     }
 
     static void crc32_init_default(int* str) // @A3A060

@@ -1,6 +1,9 @@
 #pragma once
 #include "GenericResourceReader.h"
 
+#define RESTORE_POINTER(type, ptr, field) \
+    ptr->field = (type*)((int)ptr + offsetof(type, field) + (int)ptr->field)
+
 class AssetBlockReader : public GenericResourceReader
 {
 public:
@@ -244,8 +247,8 @@ public:
     {
         struct Dictionary
         {
-            Dictionary         *field_0;
-            Dictionary         *field_4;
+            Dictionary         *m_Next;
+            Dictionary         *m_Previous;
             unsigned short      m_Contents;
 
             static Dictionary*  GetCharacterInfo(Dictionary* dic);  //  @861760
@@ -271,6 +274,8 @@ public:
         unsigned int    field_54;
 
         CompiledTextAsset(unsigned char** infobuffer);
+
+        void            GetGameString(const unsigned short indicieslistindex, unsigned char* outString, unsigned int* maxlength, const bool contents) const;
 
         virtual void    PrintInfo() const override;
         virtual void    SkipAlignment(unsigned char** infobuffer) override;

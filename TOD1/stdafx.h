@@ -9,7 +9,7 @@
  * TODO -- things that need to be done sometime (sooner the better);
  * NOTE -- a note, obviously, explaining why stuff is like that;
  * FIXME -- uh-oh, this code MUST be fixed as soon as possible.
- * 
+ *
  * Preprocessor defines and their usage:
  * INCLUDE_FIXES -- includes fixes to obvious bugs and improvements;
  * VERBOSELOG  -- verbose logging for certain functions;
@@ -107,47 +107,46 @@ extern DINPUT8CREATEORIGINAL DirectInput8Create_Hooked;
 
 // --------------------------------------------------------
 // Useful functions.
+// by SilentPL (https://github.com/CookiePLMonster)
 
 #define nop(a, s) _nop((void*)(a), (s))
 static void _nop(void* pAddress, DWORD size)
 {
- DWORD dwAddress = (DWORD)pAddress;
- if ( size % 2 )
- {
-  *(BYTE*)pAddress = 0x90;
-  dwAddress++;
- }
- if ( size - ( size % 2 ) )
- {
-  DWORD sizeCopy = size - ( size % 2 );
-  do
-  {
-   *(WORD*)dwAddress = 0xFF8B;
-   dwAddress += 2;
-   sizeCopy -= 2;
-  }
-  while ( sizeCopy ); 
- }
+    DWORD dwAddress = (DWORD)pAddress;
+    if (size % 2)
+    {
+        *(BYTE*)pAddress = 0x90;
+        dwAddress++;
+    }
+    if (size - (size % 2))
+    {
+        DWORD sizeCopy = size - (size % 2);
+        do
+        {
+            *(WORD*)dwAddress = 0xFF8B;
+            dwAddress += 2;
+            sizeCopy -= 2;
+        } while (sizeCopy);
+    }
 }
 
-// by SilentPL (https://github.com/CookiePLMonster)
 #define PATCH_NOTHING 0x00
 #define PATCH_CALL  0xE8
 #define PATCH_JUMP_SHORT 0xEB
 #define PATCH_JUMP  0xE9
 
 // TODO: add version for 2 byte "jmp near short".
-static void hook (DWORD address, void * function, BYTE type) {
- BYTE * patch = (BYTE *)address;
- if (type) *patch = type; // JMP
-// if (type != PATCH_JUMP_SHORT)
- *(DWORD*)(patch + 1) = ((DWORD)function - (address + 5));
-// else
-//  if (((int)function - address) > (char)-127 && ((int)function - address) < (char)127)
-//   *(char*)(patch + 1) = (char)((int)function - address);
+static void hook(DWORD address, void* function, BYTE type) {
+    BYTE* patch = (BYTE*)address;
+    if (type) *patch = type; // JMP
+   // if (type != PATCH_JUMP_SHORT)
+    *(DWORD*)(patch + 1) = ((DWORD)function - (address + 5));
+    // else
+    //  if (((int)function - address) > (char)-127 && ((int)function - address) < (char)127)
+    //   *(char*)(patch + 1) = (char)((int)function - address);
 }
 
-extern void debug (char * message, ...);
+extern void debug(char* message, ...);
 
 // --------------------------------------------------------
 
