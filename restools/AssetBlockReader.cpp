@@ -140,8 +140,12 @@ void AssetBlockReader::PrintInfo() const
             break;
         }
         case FONT:
+        {
             asset = new CompiledFontAsset(&infobuffer);
+            ((CompiledFontAsset*)asset)->m_FileSize = m_AssetsSizes[i];
+            ((CompiledFontAsset*)asset)->m_DataBuffer = m_AssetsDataBuffer[i];
             break;
+        }
         case TEXT:
             asset = new CompiledTextAsset(&infobuffer);
             break;
@@ -194,7 +198,7 @@ void AssetBlockReader::DumpData() const
         return;
     }
 
-    printf("\tDumping \"%s\" (%d assets)...\n", m_ResourceName.c_str(), m_SharedHeader.m_ResourcesTotal);
+    printf("\tDumping \"%s\" (%d assets):\n", m_ResourceName.c_str(), m_SharedHeader.m_ResourcesTotal);
 
     for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
     {
@@ -304,26 +308,29 @@ void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* re
     CompiledTextureAsset::DDS_HEADER ddsheader;
 
     ddsheader.size = sizeof(CompiledTextureAsset::DDS_HEADER);
-    ddsheader.flags = (CompiledTextureAsset::DDS_HEADER::DDSFLAGS)(
-        CompiledTextureAsset::DDS_HEADER::DDSD_CAPS |
-        CompiledTextureAsset::DDS_HEADER::DDSD_HEIGHT |
-        CompiledTextureAsset::DDS_HEADER::DDSD_WIDTH |
-        CompiledTextureAsset::DDS_HEADER::DDSD_PIXELFORMAT |
-        CompiledTextureAsset::DDS_HEADER::DDSD_LINEARSIZE);
+    ddsheader.flags = (CompiledTextureAsset::DDS_FLAGS)(
+        CompiledTextureAsset::DDS_FLAGS::DDSD_CAPS |
+        CompiledTextureAsset::DDS_FLAGS::DDSD_HEIGHT |
+        CompiledTextureAsset::DDS_FLAGS::DDSD_WIDTH |
+        CompiledTextureAsset::DDS_FLAGS::DDSD_PIXELFORMAT |
+        (m_GfxTexture->m_Format == 1 ? CompiledTextureAsset::DDS_FLAGS::DDSD_PITCH : CompiledTextureAsset::DDS_FLAGS::DDSD_LINEARSIZE));
     ddsheader.height = m_GfxTexture->m_SurfaceSize[1];
     ddsheader.width = m_GfxTexture->m_SurfaceSize[0];
-    ddsheader.pitchOrLinearSize = m_FileSize;
+    ddsheader.pitchOrLinearSize = m_GfxTexture->m_Format == 1 ? 4 : m_FileSize;
     ddsheader.depth = NULL;
     ddsheader.mipMapCount = m_GfxTexture->m_MipMapLevels;
 
     ddsheader.ddspf.size = sizeof(CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT);
-    ddsheader.ddspf.flags = CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT::DDPF_FOURCC;
-    strcpy(ddsheader.ddspf.fourcc, CompiledTextureAsset::TextureFormatString[m_GfxTexture->m_Format]);
-    ddsheader.ddspf.RGBBitCount = NULL;
-    ddsheader.ddspf.RBitMask = NULL;
-    ddsheader.ddspf.GBitMask = NULL;
-    ddsheader.ddspf.BBitMask = NULL;
-    ddsheader.ddspf.ABitMask = NULL;
+    ddsheader.ddspf.flags = m_GfxTexture->m_Format == 1 ? (CompiledTextureAsset::DDS_PIXELFORMAT::DDPF_RGB | CompiledTextureAsset::DDS_PIXELFORMAT::DDPF_ALPHAPIXELS) : CompiledTextureAsset::DDS_PIXELFORMAT::DDPF_FOURCC;
+    if (m_GfxTexture->m_Format != 1)
+        strcpy(ddsheader.ddspf.fourcc, CompiledTextureAsset::TextureFormatString[m_GfxTexture->m_Format]);
+    else
+        *(int*)&ddsheader.ddspf.fourcc = 0;
+    ddsheader.ddspf.RGBBitCount = m_GfxTexture->m_Format == 1 ? 32 : NULL;
+    ddsheader.ddspf.RBitMask = m_GfxTexture->m_Format == 1 ? 0x00ff0000 : NULL;
+    ddsheader.ddspf.GBitMask = m_GfxTexture->m_Format == 1 ? 0x0000ff00 : NULL;
+    ddsheader.ddspf.BBitMask = m_GfxTexture->m_Format == 1 ? 0x000000ff : NULL;
+    ddsheader.ddspf.ABitMask = m_GfxTexture->m_Format == 1 ? 0xFF000000 : NULL;
 
     ddsheader.caps = CompiledTextureAsset::DDS_HEADER::DDSCAPS_TEXTURE;
     ddsheader.caps2 = NULL;
@@ -347,6 +354,8 @@ void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* re
     fwrite(m_DataBuffer, m_FileSize, 1, f);
 
     fclose(f);
+
+    printf("\tDone!\n");
 }
 
 AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -382,7 +391,7 @@ void AssetBlockReader::CompiledFragmentAsset::SkipSpecificData(unsigned char** i
 
 void AssetBlockReader::CompiledFragmentAsset::DumpData(const AssetBlockReader* reader)
 {
-    printf("NOT IMPLEMENTED!\n");
+    printf("\tNOT IMPLEMENTED!\n");
 }
 
 AssetBlockReader::CompiledStreamedSoundInfoAsset::CompiledStreamedSoundInfoAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -440,6 +449,7 @@ void AssetBlockReader::CompiledStreamedSoundInfoAsset::SkipAlignment(unsigned ch
 
 void AssetBlockReader::CompiledStreamedSoundInfoAsset::DumpData(const AssetBlockReader* reader)
 {
+    printf("\tNOT IMPLEMENTED!\n");
 }
 
 AssetBlockReader::CompiledFontAsset::CompiledFontAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -506,6 +516,57 @@ void AssetBlockReader::CompiledFontAsset::SkipSpecificData(unsigned char** infob
 
 void AssetBlockReader::CompiledFontAsset::DumpData(const AssetBlockReader* reader)
 {
+    CompiledTextureAsset::DDS_HEADER ddsheader;
+
+    ddsheader.size = sizeof(CompiledTextureAsset::DDS_HEADER);
+    ddsheader.flags = (CompiledTextureAsset::DDS_FLAGS)(
+        CompiledTextureAsset::DDS_FLAGS::DDSD_CAPS |
+        CompiledTextureAsset::DDS_FLAGS::DDSD_HEIGHT |
+        CompiledTextureAsset::DDS_FLAGS::DDSD_WIDTH |
+        CompiledTextureAsset::DDS_FLAGS::DDSD_PIXELFORMAT |
+        ( m_FontInfo->m_FontTexture->m_Format == 1 ? CompiledTextureAsset::DDS_FLAGS::DDSD_PITCH : CompiledTextureAsset::DDS_FLAGS::DDSD_LINEARSIZE) );
+    ddsheader.height = m_FontInfo->m_FontTexture->m_Resolution[1];
+    ddsheader.width = m_FontInfo->m_FontTexture->m_Resolution[0];
+    ddsheader.pitchOrLinearSize = m_FontInfo->m_FontTexture->m_Format == 1 ? 4 : m_FileSize;
+    ddsheader.depth = NULL;
+    ddsheader.mipMapCount = m_FontInfo->m_FontTexture->m_MipMapLevels;
+
+    ddsheader.ddspf.size = sizeof(CompiledTextureAsset::DDS_HEADER::DDS_PIXELFORMAT);
+    ddsheader.ddspf.flags = m_FontInfo->m_FontTexture->m_Format == 1 ? (CompiledTextureAsset::DDS_PIXELFORMAT::DDPF_RGB | CompiledTextureAsset::DDS_PIXELFORMAT::DDPF_ALPHAPIXELS) : CompiledTextureAsset::DDS_PIXELFORMAT::DDPF_FOURCC;
+    if (m_FontInfo->m_FontTexture->m_Format != 1)
+        strcpy(ddsheader.ddspf.fourcc, CompiledTextureAsset::TextureFormatString[m_FontInfo->m_FontTexture->m_Format]);
+    else
+        *(int*)&ddsheader.ddspf.fourcc = 0;
+    ddsheader.ddspf.RGBBitCount = m_FontInfo->m_FontTexture->m_Format == 1 ? 32 : NULL;
+    ddsheader.ddspf.RBitMask = m_FontInfo->m_FontTexture->m_Format == 1 ? 0x00ff0000 : NULL;
+    ddsheader.ddspf.GBitMask = m_FontInfo->m_FontTexture->m_Format == 1 ? 0x0000ff00 : NULL;
+    ddsheader.ddspf.BBitMask = m_FontInfo->m_FontTexture->m_Format == 1 ? 0x000000ff : NULL;
+    ddsheader.ddspf.ABitMask = m_FontInfo->m_FontTexture->m_Format == 1 ? 0xFF000000 : NULL;
+
+    ddsheader.caps = CompiledTextureAsset::DDS_HEADER::DDSCAPS_TEXTURE;
+    ddsheader.caps2 = NULL;
+    ddsheader.caps3 = NULL;
+    ddsheader.caps4 = NULL;
+    ddsheader.reserved2 = NULL;
+
+    FILE* f = nullptr;
+    char* assetname = strrchr(m_AssetName, '.');
+    strcat(assetname, ".dds");
+    char* assetfilename = strrchr(m_AssetName, '/') + 1;
+    errno_t err = fopen_s(&f, assetfilename, "wb");
+    //  TODO: generate missing folders or give choice to user.
+    if (!f)
+    {
+        printf("Failed to create font texture file '%s'! fopen returned error %d\n", assetfilename, err);
+        return;
+    }
+    fwrite((const void*)&CompiledTextureAsset::DDS_HEADER::magick, sizeof(CompiledTextureAsset::DDS_HEADER::magick), 1, f);
+    fwrite((const void*)&ddsheader, sizeof(CompiledTextureAsset::DDS_HEADER), 1, f);
+    fwrite(m_DataBuffer, m_FileSize, 1, f);
+
+    fclose(f);
+
+    printf("\tDone!\n");
 }
 
 AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -540,7 +601,7 @@ AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffe
     field_48[1] = **(int**)infobuffer;
     *infobuffer += sizeof(int);
 
-    field_50 = (Dictionary*)(*infobuffer + **(unsigned int**)infobuffer);
+    m_CharactersMap = (Dictionary*)(*infobuffer + **(unsigned int**)infobuffer);
     *infobuffer += sizeof(unsigned int);
 
     field_54 = **(unsigned int**)infobuffer;
@@ -559,14 +620,14 @@ void AssetBlockReader::CompiledTextAsset::PrintInfo() const
     printf("\tList 1 size:\t%d\n", m_List_1_Size);
     printf("\tText indicies list size:\t%d\n", m_TextIndicies_Size);
     printf("\tText 3 size:\t%d\n", m_List_3_Size);
-    printf("\tfield_50:\t%p\n", field_50);
-    printf("\tfield_54:\t%d\n", field_54);
+    printf("\tCharacters map:\t%p\n", m_CharactersMap);
+    printf("\tfield_54:\t%x\n", field_54);
 }
 
 void AssetBlockReader::CompiledTextAsset::SkipAlignment(unsigned char** infobuffer)
 {
     while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D)
-        if (*infobuffer == (unsigned char*)field_50)
+        if (*infobuffer == (unsigned char*)m_CharactersMap)
             break;
         else
             *infobuffer += (char)1;
@@ -638,6 +699,8 @@ void AssetBlockReader::CompiledTextAsset::DumpData(const AssetBlockReader* reade
     }
 
     fclose(textFile);
+
+    printf("\tDone!\n");
 }
 
 AssetBlockReader::CompiledSoundAsset::CompiledSoundAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -696,6 +759,7 @@ void AssetBlockReader::CompiledSoundAsset::SkipAlignment(unsigned char** infobuf
 
 void AssetBlockReader::CompiledSoundAsset::DumpData(const AssetBlockReader* reader)
 {
+    printf("\tNOT IMPLEMENTED!\n");
 }
 
 AssetBlockReader::CompiledModelAsset::CompiledModelAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -779,6 +843,7 @@ void AssetBlockReader::CompiledModelAsset::SkipSpecificData(unsigned char** info
 
 void AssetBlockReader::CompiledModelAsset::DumpData(const AssetBlockReader* reader)
 {
+    printf("\tNOT IMPLEMENTED!\n");
 }
 
 AssetBlockReader::CompiledAnimationAsset::CompiledAnimationAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -866,6 +931,7 @@ void AssetBlockReader::CompiledAnimationAsset::SkipSpecificData(unsigned char** 
 
 void AssetBlockReader::CompiledAnimationAsset::DumpData(const AssetBlockReader* reader)
 {
+    printf("\tNOT IMPLEMENTED!\n");
 }
 
 void AssetBlockReader::CompiledTextAsset::GetGameString(const unsigned short indicieslistindex, unsigned char* outString, unsigned int* outStringLength, const bool contents) const
@@ -878,7 +944,7 @@ void AssetBlockReader::CompiledTextAsset::GetGameString(const unsigned short ind
     Dictionary* charinfo = nullptr;
     do
     {
-        charinfo = Dictionary::GetCharacterInfo(field_50);
+        charinfo = Dictionary::GetCharacterInfo(m_CharactersMap);
         if (!contents)
             outString[ind++] = (unsigned char)charinfo->m_Contents;
     } while ((unsigned char)charinfo->m_Contents);
@@ -890,7 +956,7 @@ void AssetBlockReader::CompiledTextAsset::GetGameString(const unsigned short ind
     charinfo = nullptr;
     do
     {
-        charinfo = Dictionary::GetCharacterInfo(field_50);
+        charinfo = Dictionary::GetCharacterInfo(m_CharactersMap);
         outString[ind++] = (unsigned char)charinfo->m_Contents;
     } while ((unsigned char)charinfo->m_Contents);
     *outStringLength = ind;
@@ -928,12 +994,15 @@ AssetBlockReader::CompiledTextAsset::Dictionary* AssetBlockReader::CompiledTextA
 
 void AssetBlockReader::CompiledMovieAsset::DumpData(const AssetBlockReader* reader)
 {
+    printf("\tNOT IMPLEMENTED!\n");
 }
 
 void AssetBlockReader::CompiledCutsceneAsset::DumpData(const AssetBlockReader* reader)
 {
+    printf("\tNOT IMPLEMENTED!\n");
 }
 
 void AssetBlockReader::CompiledMeshColorAsset::DumpData(const AssetBlockReader* reader)
 {
+    printf("\tNOT IMPLEMENTED!\n");
 }
