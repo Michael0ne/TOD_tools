@@ -145,29 +145,31 @@ void TextureResourceReader::DumpData() const
 	FILE* f = nullptr;
 
 	ddsheader.size = sizeof(DDS_HEADER);
-	ddsheader.flags = (DDS_HEADER::DDSFLAGS)(
-		DDS_HEADER::DDSD_CAPS |
-		DDS_HEADER::DDSD_HEIGHT |
-		DDS_HEADER::DDSD_WIDTH |
-		DDS_HEADER::DDSD_PIXELFORMAT |
-		DDS_HEADER::DDSD_MIPMAPCOUNT |
-		DDS_HEADER::DDSD_LINEARSIZE);
+	ddsheader.flags = (DDS_FLAGS)(
+		DDS_FLAGS::DDSD_CAPS |
+		DDS_FLAGS::DDSD_HEIGHT |
+		DDS_FLAGS::DDSD_WIDTH |
+		DDS_FLAGS::DDSD_PIXELFORMAT |
+		(m_GfxTexture->m_Format == 1 ? DDS_FLAGS::DDSD_PITCH : DDS_FLAGS::DDSD_LINEARSIZE));
 	ddsheader.height = m_GfxTexture->m_SurfaceSize[1];
 	ddsheader.width = m_GfxTexture->m_SurfaceSize[0];
-	ddsheader.pitchOrLinearSize = m_Header.m_AssetDataSize;
+	ddsheader.pitchOrLinearSize = m_GfxTexture->m_Format == 1 ? (m_GfxTexture->m_BitsPerPixel / 8) : m_Header.m_AssetDataSize;
 	ddsheader.depth = NULL;
 	ddsheader.mipMapCount = m_GfxTexture->m_MipMapLevels;
 
 	ddsheader.ddspf.size = sizeof(DDS_HEADER::DDS_PIXELFORMAT);
-	ddsheader.ddspf.flags = DDS_HEADER::DDS_PIXELFORMAT::DDPF_FOURCC;
-	strcpy(ddsheader.ddspf.fourcc, TextureFormatString[m_GfxTexture->m_Format]);
-	ddsheader.ddspf.RGBBitCount = NULL;
-	ddsheader.ddspf.RBitMask = NULL;
-	ddsheader.ddspf.GBitMask = NULL;
-	ddsheader.ddspf.BBitMask = NULL;
-	ddsheader.ddspf.ABitMask = NULL;
+	ddsheader.ddspf.flags = m_GfxTexture->m_Format == 1 ? (DDS_PIXELFORMAT::DDPF_RGB | DDS_PIXELFORMAT::DDPF_ALPHAPIXELS) : DDS_PIXELFORMAT::DDPF_FOURCC;
+	if (m_GfxTexture->m_Format != 1)
+		strcpy(ddsheader.ddspf.fourcc, TextureFormatString[m_GfxTexture->m_Format]);
+	else
+		*(int*)&ddsheader.ddspf.fourcc = 0;
+	ddsheader.ddspf.RGBBitCount = m_GfxTexture->m_Format == 1 ? m_GfxTexture->m_BitsPerPixel : NULL;
+	ddsheader.ddspf.RBitMask = m_GfxTexture->m_Format == 1 ? 0x00ff0000 : NULL;
+	ddsheader.ddspf.GBitMask = m_GfxTexture->m_Format == 1 ? 0x0000ff00 : NULL;
+	ddsheader.ddspf.BBitMask = m_GfxTexture->m_Format == 1 ? 0x000000ff : NULL;
+	ddsheader.ddspf.ABitMask = m_GfxTexture->m_Format == 1 ? 0xFF000000 : NULL;
 
-	ddsheader.caps = (DDS_HEADER::DDSCAPS)(DDS_HEADER::DDSCAPS_TEXTURE | DDS_HEADER::DDSCAPS_MIPMAP | DDS_HEADER::DDSCAPS_COMPLEX);
+	ddsheader.caps = DDS_HEADER::DDSCAPS_TEXTURE;
 	ddsheader.caps2 = NULL;
 	ddsheader.caps3 = NULL;
 	ddsheader.caps4 = NULL;

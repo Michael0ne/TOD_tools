@@ -69,20 +69,32 @@ private:
         const vec2              GetSize(const unsigned char level) const;
     };
 
+    enum DDS_FLAGS
+    {
+        DDSD_CAPS = 0x1,
+        DDSD_HEIGHT = 0x2,
+        DDSD_WIDTH = 0x4,
+        DDSD_PITCH = 0x8,
+        DDSD_PIXELFORMAT = 0x1000,
+        DDSD_MIPMAPCOUNT = 0x20000,
+        DDSD_LINEARSIZE = 0x80000,
+        DDSD_DEPTH = 0x800000
+    };
+
+    enum DDS_PIXELFORMAT
+    {
+        DDPF_ALPHAPIXELS = 1,
+        DDPF_FOURCC = 4,
+        DDPF_RGB = 64,
+        DDPF_YUV = 512,
+        DDPF_LUDDPF_ALPHA = 2,
+        DMINANCE = 131072
+    };
+
     struct DDS_HEADER
     {
         unsigned int	size;
-        enum DDSFLAGS
-        {
-            DDSD_CAPS = 0x1,
-            DDSD_HEIGHT = 0x2,
-            DDSD_WIDTH = 0x4,
-            DDSD_PITCH = 0x8,
-            DDSD_PIXELFORMAT = 0x1000,
-            DDSD_MIPMAPCOUNT = 0x20000,
-            DDSD_LINEARSIZE = 0x80000,
-            DDSD_DEPTH = 0x800000
-        }               flags;
+        unsigned int    flags;
         unsigned int	height;
         unsigned int	width;
         unsigned int	pitchOrLinearSize;
@@ -93,15 +105,7 @@ private:
         struct DDS_PIXELFORMAT
         {
             unsigned int	size;
-            enum
-            {
-                DDPF_ALPHAPIXELS = 1,
-                DDPF_ALPHA = 2,
-                DDPF_FOURCC = 4,
-                DDPF_RGB = 64,
-                DDPF_YUV = 512,
-                DDPF_LUMINANCE = 131072
-            }               flags;
+            unsigned int    flags;
             char			fourcc[4];
             unsigned int	RGBBitCount;
             unsigned int	RBitMask;
