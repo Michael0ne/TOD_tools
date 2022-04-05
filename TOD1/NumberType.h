@@ -9,9 +9,9 @@ public:
 
     virtual void* ReturnNew(void*) const override; // @863890
     virtual String& PrintFormattedValue(String&, void*, int) const override; // @863E90
-    virtual int  StrToType(char*, void*) const override; // @862AA0
-    virtual void stub13(int, int(__thiscall* procptr)(void*, void*), int, int, int, void* const outResult) const override;  //  @8638C0
-    virtual void stub14(int*, int, void*, int, int, int) const override; // @4894A0
+    virtual int  MakeFromString(const char* const input, char* const outdata) const override; // @862AA0
+    virtual void CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const override;  //  @8638C0
+    virtual void CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const override; // @4894A0
     virtual bool NotEqualTo(void*, void*) const override; // @863980
     virtual void ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const override; // @8639B0
     virtual void PerformOperation(int operationId, void* params) const override; // @863C10

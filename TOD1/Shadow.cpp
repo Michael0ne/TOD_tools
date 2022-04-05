@@ -201,5 +201,5 @@ void Shadow::SetTexture(const char* const texturepath)
 
 const char* const Shadow::GetTexture() const
 {
-    return m_Texture.m_AssetPtr ? m_Texture.m_AssetPtr->AddResToOpenListAndReturnName() : nullptr;
+    return m_Texture.m_AssetPtr ? m_Texture.m_AssetPtr->GetName() : nullptr;
 }

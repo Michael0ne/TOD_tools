@@ -14,7 +14,7 @@ const char* SoundSlot::GetStreamingSound()
         return nullptr;
 
     char buf[MAX_PATH] = {};
-    strcpy(buf, m_StreamingSoundResource->AddResToOpenListAndReturnName());
+    strcpy(buf, m_StreamingSoundResource->GetName());
     strcpy(strstr(buf, ".stream"), ".wav");
 
     m_StreamingSoundName = new char[strlen(buf) + 1];
@@ -60,7 +60,7 @@ void SoundSlot::StopSound()
 void SoundSlot::GetSoundName(String& outName)
 {
     if (m_SoundResource)
-        outName = m_SoundResource->AddResToOpenListAndReturnName();
+        outName = m_SoundResource->GetName();
     else
         if (m_Sound.m_Length)
             outName = m_Sound;

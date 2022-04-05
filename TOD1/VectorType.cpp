@@ -2,6 +2,7 @@
 #include "BuiltinType.h"
 #include "NumberType.h"
 #include "TruthType.h"
+#include "Node.h"
 
 VectorType::VectorType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
@@ -43,66 +44,44 @@ String& VectorType::PrintFormattedValue(String& outstr, void* val, int precision
     }
 }
 
-int VectorType::StrToType(char* a1, void* a2) const
+int VectorType::MakeFromString(const char* const input, char* const outdata) const
 {
-    int digitsread = ParseFloatNumberString(a1, (float*)a2);
+    int digitsread = ParseFloatNumberString(input, (float*)outdata);
     if (digitsread < 0)
         return -1;
 
-    if (!isspace(a1[digitsread]))
+    if (!isspace(input[digitsread]))
         return -1;
 
-    for (char ch = a1[digitsread]; isspace(ch); ++digitsread);
+    for (char ch = input[digitsread]; isspace(ch); ++digitsread);
 
-    int digitsread_2 = ParseFloatNumberString(&a1[digitsread], (float*)a2 + 1);
+    int digitsread_2 = ParseFloatNumberString(&input[digitsread], (float*)outdata + 1);
     if (digitsread_2 < 0)
         return -1;
 
-    if (!isspace(a1[digitsread + digitsread_2]))
+    if (!isspace(input[digitsread + digitsread_2]))
         return -1;
 
-    for (char ch = a1[digitsread + digitsread_2]; isspace(ch); ++digitsread_2);
+    for (char ch = input[digitsread + digitsread_2]; isspace(ch); ++digitsread_2);
 
-    int digitsread_3 = ParseFloatNumberString(&a1[digitsread + digitsread_2], (float*)a2 + 2);
+    int digitsread_3 = ParseFloatNumberString(&input[digitsread + digitsread_2], (float*)outdata + 2);
     if (digitsread_3 < 0)
         return -1;
 
-    if (!isspace(a1[digitsread + digitsread_2 + digitsread_3]))
+    if (!isspace(input[digitsread + digitsread_2 + digitsread_3]))
         return -1;
 
     return digitsread + digitsread_2 + digitsread_3;
 }
 
-void VectorType::stub13(int a1, int(__thiscall* procptr)(void*, void*), int a3, int a4, int a5, void* const a6) const
+#pragma message(TODO_IMPLEMENTATION)
+void VectorType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
-    int* retval = nullptr;
-
-    if (a5)
-        retval = (int*)procptr((void*)(a1 + a3 + a4 + *(int*)(*(int*)(a4 + a1) + a5) ), nullptr);
-    else
-        retval = (int*)procptr((void*)(a1 + a3), nullptr);
-
-    *(int*)a6 = *retval;
-    *((int*)a6 + 1) = retval[1];
-    *((int*)a6 + 2) = retval[2];
 }
 
-void VectorType::stub14(int* a1, int a2, void* a3, int a4, int a5, int a6) const
+#pragma message(TODO_IMPLEMENTATION)
+void VectorType::CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const
 {
-    int* _a3 = (int*)a3;
-    int _a4 = a4;
-    int _a5 = a5;
-    int _a6 = a6;
-
-    *(int**)&a3 = (int*)*a1;
-    a4 = a1[1];
-    a5 = a1[2];
-    a6 = 0;
-
-    if (a6)
-        ((void(__thiscall*)(int, int**))_a3)(_a4 + a2, (int**)&a3);
-    else
-        ((void(__thiscall*)(int, int**))_a3)(_a4 + a2, (int**)&a3);
 }
 
 bool VectorType::NotEqualTo(void* a1, void* a2) const

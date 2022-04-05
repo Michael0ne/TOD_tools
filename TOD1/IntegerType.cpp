@@ -1,6 +1,7 @@
 #include "IntegerType.h"
 #include "NumberType.h"
 #include "TruthType.h"
+#include "Node.h"
 
 IntegerType::IntegerType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
@@ -41,17 +42,22 @@ String& IntegerType::PrintFormattedValue(String& outstr, void* val, int precisio
     }
 }
 
-int IntegerType::StrToType(char* operation, void* outval) const
+int IntegerType::MakeFromString(const char* const input, char* const outdata) const
 {
-    return ParseNumberString(operation, (int*)outval);
+    return ParseNumberString(input, (int*)outdata);
 }
 
-void IntegerType::stub13(int a1, int(__thiscall* procptr)(void*, void*), int a3, int a4, int a5, void* const a6) const
+void IntegerType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
+    int result;
+
+    //  TODO: this is ridiculous!
     if (a5)
-        *(int*)a6 = procptr((void*)(a1 + a3 + a4 + *(int*)(*(int*)(a1 + a4) + a5)), nullptr);
+        result = *(int*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
     else
-        *(int*)a6 = procptr((void*)(a1 + a3), nullptr);
+        result = *(int*)((Node*)(callerNode + a3)->*(getterPtr))();
+
+    *outResult = result;
 }
 
 bool IntegerType::NotEqualTo(void* a1, void* a2) const

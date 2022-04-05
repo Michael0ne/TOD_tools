@@ -10,7 +10,7 @@ ListType::ListType(DataType* elementsType) : DataType(TYPE_LIST, "list", TYPE_LI
     char str[64] = {};
     sprintf(str, "list(%s)", elementsType->m_TypeName.m_Str);
 
-    m_ComplexType = (elementsType->m_TypeId == TYPE_STRING || elementsType->m_TypeId == TYPE_LIST || elementsType->m_TypeId == TYPE_DICT || elementsType->m_TypeId == TYPE_SCRIPT);
+    m_ComplexType = (elementsType->m_TypeId == TYPE_STRING || elementsType->m_TypeId == TYPE_LIST || elementsType->m_TypeId == TYPE_DICT || elementsType->m_TypeId == TYPE_STRUCT);
 }
 
 ListType::~ListType()
@@ -19,7 +19,7 @@ ListType::~ListType()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int ListType::stub2(int*, int*)
+int ListType::GetSize(int*, int*)
 {
     return 0;
 }
@@ -36,7 +36,7 @@ void ListType::Delete(char*)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void ListType::stub5(int*, int*)
+void ListType::Clone(int*, int*)
 {
 }
 
@@ -47,25 +47,25 @@ String& ListType::PrintFormattedValue(String& outstr, void*, int) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int ListType::StrToType(char*, void*) const
+int ListType::MakeFromString(char*, void*) const
 {
     return 0;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int ListType::stub9(char*, char*)
+int ListType::CopyNoAllocate(char*, char*)
 {
     return 0;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int ListType::Copy(char*, char*)
+int ListType::CopyAndAllocate(char*, char*)
 {
     return 0;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int ListType::stub11(char*, String&, int)
+int ListType::AsString(char*, String&, int)
 {
     return 0;
 }

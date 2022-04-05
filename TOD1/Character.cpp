@@ -66,12 +66,12 @@ const char* Character::GetAttachment() const
 
 const char* Character::GetModelRes() const
 {
-    return m_ModelRes ? m_ModelRes->AddResToOpenListAndReturnName() : nullptr;
+    return m_ModelRes ? m_ModelRes->GetName() : nullptr;
 }
 
 void Character::SetModelRes(const char* const modelname)
 {
-    const char* const modelname_ = m_ModelRes ? m_ModelRes->AddResToOpenListAndReturnName() : nullptr;
+    const char* const modelname_ = m_ModelRes ? m_ModelRes->GetName() : nullptr;
     StoreProperty(17, modelname_, tSTRING);
 
     AssetLoader assload(modelname);

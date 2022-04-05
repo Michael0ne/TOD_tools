@@ -17,7 +17,7 @@ DictType::~DictType()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int DictType::stub2(int*, int*)
+int DictType::GetSize(int*, int*)
 {
     return 0;
 }
@@ -34,7 +34,7 @@ void DictType::Delete(char*)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void DictType::stub5(int*, int*)
+void DictType::Clone(int*, int*)
 {
 }
 
@@ -45,19 +45,19 @@ String& DictType::PrintFormattedValue(String& outstr, void*, int) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int DictType::StrToType(char*, void*) const
+int DictType::MakeFromString(char*, void*) const
 {
     return 0;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int DictType::stub9(char*, char*)
+int DictType::CopyNoAllocate(char*, char*)
 {
     return 0;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int DictType::Copy(char*, char*)
+int DictType::CopyAndAllocate(char*, char*)
 {
     return 0;
 }

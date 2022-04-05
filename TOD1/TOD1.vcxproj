@@ -327,7 +327,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="QuaternionType.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ScriptThread.h" />
-    <ClInclude Include="ScriptType.h" />
+    <ClInclude Include="StructType.h" />
     <ClInclude Include="SequentialSubAllocator.h" />
     <ClInclude Include="SingletonSubAllocator.h" />
     <ClInclude Include="StackBasedSubAllocator.h" />
@@ -490,7 +490,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClCompile Include="PoolSubAllocator.cpp" />
     <ClCompile Include="QuaternionType.cpp" />
     <ClCompile Include="ScriptThread.cpp" />
-    <ClCompile Include="ScriptType.cpp" />
+    <ClCompile Include="StructType.cpp" />
     <ClCompile Include="SequentialSubAllocator.cpp" />
     <ClCompile Include="BestFitAllocator.cpp" />
     <ClCompile Include="SingletonSubAllocator.cpp" />

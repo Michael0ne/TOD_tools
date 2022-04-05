@@ -108,7 +108,7 @@ const char* TextBox::GetText() const
 
 const char* TextBox::GetFont() const
 {
-    return m_FontRes ? m_FontRes->AddResToOpenListAndReturnName() : nullptr;
+    return m_FontRes ? m_FontRes->GetName() : nullptr;
 }
 
 const int TextBox::GetAsciiOffset() const
@@ -199,7 +199,7 @@ const bool TextBox::GetTextresMode() const
     return m_Flags.TextResMode;
 }
 
-void TextBox::SetTextSlotParam(unsigned int slotindex, short* slotvalue)
+void TextBox::SetTextSlotParam(unsigned int slotindex, unsigned short* slotvalue)
 {
     if (slotindex >= 0)
     {
@@ -223,6 +223,6 @@ void TextBox::SetTextSlotParam(unsigned int slotindex, short* slotvalue)
     if (slotvalue)
     {
         m_TextSlotsContents[slotindex] = new short[TextAsset::GetGameStringLength(slotvalue) + 2];
-        TextAsset::EncodeGameString(m_TextSlotsContents[slotindex], slotvalue);
+        TextAsset::EncodeGameString(m_TextSlotsContents[slotindex], (short*)slotvalue);
     }
 }

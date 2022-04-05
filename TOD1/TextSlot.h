@@ -8,20 +8,18 @@ class TextSlot : public Node
 protected:
     char       *m_CurrentText;
     int         m_CurrentIndex;
-    TextAsset  *m_TextRes;
-    int        *field_5C;
+    AssetLoader m_TextAsset;
 
 public:
     TextSlot() : Node(NODE_MASK_EMPTY) // NOTE: no constructor.
     {
         MESSAGE_CLASS_CREATED(TextSlot);
 
-        m_TextRes = nullptr;
-        field_5C = (int*)1;
         m_CurrentText = 0;
         m_CurrentIndex = 0;
     };
-    ~TextSlot();    //  @8A9B90
+
+    virtual ~TextSlot();    //  @8A9B90
 
     static void     Register(); //  @8A9C60
 

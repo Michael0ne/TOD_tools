@@ -63,7 +63,7 @@ void Sprite::TriggerMouseCallbacks()
     for (std::vector<Sprite*>::const_iterator it = SpritesList.cbegin(); it != SpritesList.cend(); ++it)
     {
         if ((*it)->m_SpriteState.MouseEventsEnabled &&
-            ((*it)->m_SpriteFlags & 0x10) == 0 && (((*it)->m_Flags.m_FlagBits.Disable | (*it)->m_Flags.m_FlagBits.Invisible) & 1) == 0)
+            ((*it)->m_SpriteFlags & 0x10) == 0 && (((*it)->m_Flags.Disable | (*it)->m_Flags.Invisible) & 1) == 0)
         {
             Vector4f spritepos;
             (*it)->GetPos(spritepos);

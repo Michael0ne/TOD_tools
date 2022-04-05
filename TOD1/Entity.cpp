@@ -205,7 +205,7 @@ const int Entity::SaveScriptData(SavePoint * savefilehelper)
         for (unsigned int propindex = 0; propindex < propertiessize; ++propindex)
         {
             m_ScriptEntity->m_Script->GetEntityPropertyValue(this, propindex, propval);
-            const unsigned int entvalsize = m_ScriptEntity->m_Script->m_PropertiesList[propindex].m_Info->m_PropertyType->stub9((char*)propval, buf);
+            const unsigned int entvalsize = m_ScriptEntity->m_Script->m_PropertiesList[propindex].m_Info->m_PropertyType->CopyNoAllocate((char*)propval, buf);
 
             writtendatasize += savefilehelper->WriteBufferWithSize((const char*)&entvalsize, sizeof(entvalsize));
             writtendatasize += savefilehelper->WriteBufferWithSize(buf, entvalsize * sizeof(entvalsize));

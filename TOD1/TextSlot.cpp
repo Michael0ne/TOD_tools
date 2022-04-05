@@ -11,11 +11,6 @@ TextSlot::~TextSlot()
     MESSAGE_CLASS_DESTROYED(TextSlot);
 
     delete[] m_CurrentText;
-
-    if (m_TextRes)
-        g_AssetManager->DecreaseResourceReferenceCount(m_TextRes);
-
-    delete field_5C;
 }
 
 void TextSlot::Register()
@@ -36,13 +31,12 @@ void TextSlot::Register()
 
 const char* TextSlot::GetTextRes() const
 {
-    return m_TextRes ? m_TextRes->AddResToOpenListAndReturnName() : nullptr;
+    return m_TextAsset.m_AssetPtr ? m_TextAsset.m_AssetPtr->GetName() : nullptr;
 }
 
 void TextSlot::SetTextRes(const char* text)
 {
-    AssetLoader assload(text);
-    m_TextRes = (TextAsset*)assload.m_AssetPtr;
+    m_TextAsset = AssetLoader(text);
 }
 
 int TextSlot::GetCurrentIndex() const
@@ -54,8 +48,8 @@ void TextSlot::SetCurrentIndex(unsigned int index)
 {
     index = index < 0 ? 0 : index;
 
-    if (m_TextRes && index >= m_TextRes->m_TextIndicies.size())
-        index = m_TextRes->m_TextIndicies.size() - 1;
+    if (m_TextAsset.m_AssetPtr && index >= ((TextAsset*)m_TextAsset.m_AssetPtr)->m_TextIndicies.size())
+        index = ((TextAsset*)m_TextAsset.m_AssetPtr)->m_TextIndicies.size() - 1;
 
     m_CurrentIndex = index;
 }
@@ -64,8 +58,8 @@ char* TextSlot::GetTextStringIdentifier()
 {
     String textident;
 
-    if (m_TextRes)
-        m_TextRes->GetIdentifierByIndex(textident, m_CurrentIndex);
+    if (m_TextAsset.m_AssetPtr)
+        ((TextAsset*)m_TextAsset.m_AssetPtr)->GetIdentifierByIndex(textident, m_CurrentIndex);
 
     delete[] m_CurrentText;
 
@@ -75,15 +69,15 @@ char* TextSlot::GetTextStringIdentifier()
 
 int TextSlot::GetNumberOfTextIndicies() const
 {
-    return m_TextRes ? m_TextRes->m_TextIndicies.size() : NULL;
+    return m_TextAsset.m_AssetPtr ? ((TextAsset*)m_TextAsset.m_AssetPtr)->m_TextIndicies.size() : NULL;
 }
 
 char* TextSlot::GetCurrentTextContent()
 {
     String textcontent;
 
-    if (m_TextRes)
-        m_TextRes->GetTextContents(textcontent, m_CurrentIndex);
+    if (m_TextAsset.m_AssetPtr)
+        ((TextAsset*)m_TextAsset.m_AssetPtr)->GetTextContents(textcontent, m_CurrentIndex);
 
     delete[] m_CurrentText;
 
@@ -93,15 +87,15 @@ char* TextSlot::GetCurrentTextContent()
 
 void TextSlot::Dump(const int)
 {
-    if (!m_TextRes)
+    if (!m_TextAsset.m_AssetPtr)
         return;
 
     String textident, textcont;
-    for (unsigned int i = 0; i < m_TextRes->m_TextIndicies.size(); ++i)
+    for (unsigned int i = 0; i < ((TextAsset*)m_TextAsset.m_AssetPtr)->m_TextIndicies.size(); ++i)
     {
-        m_TextRes->GetIdentifierByIndex(textident, i);
+        ((TextAsset*)m_TextAsset.m_AssetPtr)->GetIdentifierByIndex(textident, i);
         LogDump::LogA("Index: %d |   StrID: '%s'\n", i, textident.m_Str);
-        m_TextRes->GetTextContents(textcont, i);
+        ((TextAsset*)m_TextAsset.m_AssetPtr)->GetTextContents(textcont, i);
         LogDump::LogA("Index: %d | Content: '%s'\n", i, textcont.m_Str);
     }
 }

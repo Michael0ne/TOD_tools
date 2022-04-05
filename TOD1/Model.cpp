@@ -41,7 +41,7 @@ void Model::Register()
 #pragma message(TODO_IMPLEMENTATION)
 void Model::SetModelAsset(Model* model)
 {
-    const char* val = m_ModelRes ? m_ModelRes->AddResToOpenListAndReturnName() : nullptr;
+    const char* val = m_ModelRes ? m_ModelRes->GetName() : nullptr;
     StoreProperty(10, val, tSTRING);
 }
 
@@ -74,7 +74,7 @@ void Model::ForceInstantiate()
 
 const char* Model::GetModelRes() const
 {
-    return m_ModelRes ? m_ModelRes->AddResToOpenListAndReturnName() : nullptr;
+    return m_ModelRes ? m_ModelRes->GetName() : nullptr;
 }
 
 const float Model::GetOpacity() const

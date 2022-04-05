@@ -1,4 +1,5 @@
 #include "TruthType.h"
+#include "Node.h"
 
 TruthType::TruthType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
@@ -22,38 +23,44 @@ String& TruthType::PrintFormattedValue(String& outstr, void* a2, int) const
     return outstr;
 }
 
-int TruthType::StrToType(char* a1, void* a2) const
+int TruthType::MakeFromString(const char* const input, char* const outdata) const
 {
-    if (strcmp(a1, "true") == NULL)
+    if (strcmp(input, "true") == NULL)
     {
-        *(bool*)a2 = true;
+        *(bool*)outdata = true;
         return 4;
     }
 
-    if (strcmp(a1, "false") == NULL ||
-        strcmp(a1, "0") == NULL)
+    if (strcmp(input, "false") == NULL ||
+        strcmp(input, "0") == NULL)
     {
-        *(bool*)a2 = false;
+        *(bool*)outdata = false;
         return 5;
     }
 
     return -1;
 }
 
-void TruthType::stub13(int a1, int(__thiscall* procptr)(void*, void*), int a3, int a4, int a5, void* const outResult) const
+void TruthType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
+    bool result;
+
+    //  TODO: this is ridiculous!
     if (a5)
-        *(char*)outResult = procptr((void*)(a1 + a3 + a4 + *(int*)(*(int*)(a4 + a1) + a5)), nullptr);
+        result = *(bool*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
     else
-        *(char*)outResult = procptr((void*)(a3 + a1), nullptr);
+        result = *(bool*)((Node*)(callerNode + a3)->*(getterPtr))();
+
+    *outResult = result;
 }
 
-void TruthType::stub14(int* a1, int a2, void* a3, int a4, int a5, int a6) const
+void TruthType::CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const
 {
+    //  TODO: this is ridiculous!
     if (a6)
-        ((void(__thiscall*)(int, int))a3)(a2 + a4 + a5 + *(int*)(*(int*)(a5 + a2) + a6), *a1 != 0);
+        ((Node*)(callerNode + a4 + virtualMethodIndex + *(int*)(*(int*)(virtualMethodIndex + callerNode) + a6))->*(setterPtr))(*(const void**)data);
     else
-        ((void(__thiscall*)(int, int))a3)(a4 + a2, *a1 != 0);
+        ((Node*)(callerNode + a4)->*(setterPtr))(*(const void**)data);
 }
 
 void TruthType::ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const

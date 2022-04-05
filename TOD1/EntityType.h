@@ -2,9 +2,6 @@
 #include "DataType.h"
 #include "ScriptDatabase.h"
 
-typedef void (Entity::* EntityFunctionMember)(void*);
-typedef void* (Entity::* EntityGetterFunction)(void);
-typedef void (Entity::* EntitySetterFunction)(void*);
 typedef void* (*CREATOR)(AllocatorIndex);
 
 class EntityType : public DataType

@@ -35,10 +35,10 @@ DataType::~DataType()
     RemoveTypeFromList(m_TypeName.m_Str);
 }
 
-int DataType::stub2(int* a1, int* a2)
+int DataType::GetSize(int* dummy, int* list) const
 {
-    if (a2)
-        a2[m_TypeId] += m_Size * 4;
+    if (list)
+        list[m_TypeId] += m_Size * 4;
 
     return m_Size * 4;
 }
@@ -53,9 +53,9 @@ void DataType::Delete(char*)
     return;
 }
 
-void DataType::stub5(int* a1, int* a2)
+void DataType::Clone(const int* from, int* to)
 {
-    _4893C0(a1, a2, m_Size);
+    CopyValue(to, from, m_Size);
 }
 
 String& DataType::PrintFormattedValue(String& outstr, void*, int) const
@@ -64,32 +64,32 @@ String& DataType::PrintFormattedValue(String& outstr, void*, int) const
     return outstr;
 }
 
-int DataType::StrToType(char*, void*) const
+int DataType::MakeFromString(const char* const input, char* const outdata) const
 {
     return -1;
 }
 
-int DataType::stub8(char* a1)
+int DataType::MakeCopy(char* a1)
 {
     char str[16] = {};
 
-    int result = Copy(a1, str);
+    int result = CopyAndAllocate(a1, str);
     Delete(str);
 
     return result;
 }
 
-int DataType::stub9(char* a1, char* a2)
+int DataType::CopyNoAllocate(const char* const from, char* to)
 {
-    if (a1 == a2)
+    if (to == from)
         return m_Size;
 
-    if (a2 >= a1)
+    if (from >= to)
     {
-        char* lastsym = &a1[m_Size - 1];
+        char* lastsym = &to[m_Size - 1];
         if (m_Size - 1 >= 0)
         {
-            int len = &a2[m_Size] - &a1[m_Size];
+            int len = &from[m_Size] - &to[m_Size];
             for (int _size = m_Size; _size; --_size)
             {
                 *(lastsym + len) = *lastsym;
@@ -103,50 +103,50 @@ int DataType::stub9(char* a1, char* a2)
     if (m_Size <= 0)
         return m_Size;
 
-    char* firstsym = a1;
+    char* firstsym = to;
     for (int _size = m_Size; _size; --_size)
     {
-        *(firstsym + (a2 - a1)) = *a1;
+        *(firstsym + (from - to)) = *to;
         firstsym++;
     }
 
     return m_Size;
 }
 
-int DataType::Copy(char* a1, char* a2)
+int DataType::CopyAndAllocate(const char* const from, char* to)
 {
-    return stub9(a1, a2);
+    return CopyNoAllocate(from, to);
 }
 
-int DataType::stub11(char* a1, String& a2, int a3)
+int DataType::AsString(const char* const from, String& outString, int format)
 {
     char str[16] = {};
     String str1;
 
-    int result = Copy(a1, str);
-    a2 = PrintFormattedValue(str1, str, a3);
+    int result = CopyAndAllocate(from, str);
+    outString = PrintFormattedValue(str1, str, format);
     Delete(str);
 
     return result;
 }
 
-int DataType::stub12(char* a1, char* a2, int* a3)
+int DataType::MakeFromString_A(const char* const inputstr, char* outtype, int* const outsize)
 {
     char str[16] = {};
 
-    int result = StrToType(a1, str);
-    *a3 = stub9(str, a2);
+    int result = MakeFromString(inputstr, str);
+    *outsize = CopyNoAllocate(str, outtype);
     Delete(str);
 
     return result;
 }
 
-void DataType::stub13(int, int(__thiscall* procptr)(void*, void*), int, int, int, void* const outResult) const
+void DataType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
     return;
 }
 
-void DataType::stub14(int*, int, void*, int, int, int) const
+void DataType::CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const
 {
     return;
 }
@@ -181,29 +181,29 @@ bool DataType::IsValidValueForType(void*) const
     return true;
 }
 
-void DataType::_4893C0(int* a1, int* a2, int a3)
+void DataType::CopyValue(int* to, const int* from, const size_t size)
 {
-    if (a1 == a2)
+    if (to == from)
         return;
 
-    if (a1 >= a2)
+    if (to >= from)
     {
-        char* _a1 = (char*)&a1[a3 - 1];
-        char* _a2 = (char*)&a2[a3 - 1];
+        char* _a1 = (char*)&to[size - 1];
+        char* _a2 = (char*)&from[size - 1];
 
-        if (a3 - 1 >= 0)
+        if (size - 1 >= 0)
         {
-            for (int i = a3; i; --i)
+            for (int i = size; i; --i)
                 *_a1-- = *_a2--;
         }
     }
     else
-        if (a3 > 0)
+        if (size > 0)
         {
-            char* _a1 = (char*)a1;
-            char* _a2 = (char*)a2;
+            char* _a1 = (char*)to;
+            char* _a2 = (char*)from;
 
-            for (int i = a3; i; --i)
+            for (int i = size; i; --i)
                 *_a1++ = *_a2++;
         }
 
@@ -229,7 +229,7 @@ unsigned int DataType::GetTypeSize_Impl(const DataType* type)
     case TYPE_LIST:
     case TYPE_DICT:
     case TYPE_ENTITY:
-    case TYPE_SCRIPT:
+    case TYPE_STRUCT:
         return 1;
         break;
     case TYPE_VECTOR:
@@ -338,6 +338,16 @@ DataType::DataType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSi
 unsigned int DataType::GetTypeSize() const
 {
     return GetTypeSize_Impl(this);
+}
+
+//  NOTE: simple in terms of 'has no pointers inside it'.
+const bool DataType::IsSimpleType(const DataType* t)
+{
+    return
+        t->m_TypeId != TYPE_STRING &&
+        t->m_TypeId != TYPE_LIST &&
+        t->m_TypeId != TYPE_DICT &&
+        t->m_TypeId != TYPE_STRUCT;
 }
 
 DataType* DataType::GetTypeByName(const char* name)

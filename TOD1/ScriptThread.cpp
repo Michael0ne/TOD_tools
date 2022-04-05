@@ -163,7 +163,7 @@ void ScriptThread::SetSleepTime(const float sleepfor, const bool sleepRealTime)
     const int sceneTime = sleepRealTime ? Scene::RealTimeMs : GetSceneTime();
 
     if ((sleepfor * 1000.0f) >= 0.f)
-        m_SleepUntil = sceneTime - (sleepfor * -1000.0f);
+        m_SleepUntil = sceneTime - (int)(sleepfor * -1000.0f);
     else
         m_SleepUntil = -1;
 }

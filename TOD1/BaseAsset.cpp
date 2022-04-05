@@ -146,8 +146,9 @@ Asset::Asset(bool dontmakeglobal)
     m_Flags.m_FlagBits.NotUsed = m_Flags.m_FlagBits._17 = m_Flags.m_FlagBits._18 = m_Flags.m_FlagBits._19 = 1;
 }
 
-const char* Asset::AddResToOpenListAndReturnName() const
+const char* Asset::GetName() const
 {
+    //  NOTE: a special list to keep last open resources is an editor leftover.
     static unsigned int LastOpenResourceIndex;
     unsigned int resind = LastOpenResourceIndex;
     LastOpenResourceIndex = (LastOpenResourceIndex + 1) % 10;

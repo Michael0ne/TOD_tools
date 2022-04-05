@@ -138,7 +138,7 @@ void Cloth::SetShouldAddBlend(const bool add)
 
 const char* Cloth::GetModelRes() const
 {
-    return m_ModelAsset ? m_ModelAsset->AddResToOpenListAndReturnName() : nullptr;
+    return m_ModelAsset ? m_ModelAsset->GetName() : nullptr;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

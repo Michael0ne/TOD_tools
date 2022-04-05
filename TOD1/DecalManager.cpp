@@ -54,7 +54,7 @@ DecalManager::~DecalManager()
 
 const char* DecalManager::GetTexture() const
 {
-    return m_Texture.m_AssetPtr ? m_Texture.m_AssetPtr->AddResToOpenListAndReturnName() : nullptr;
+    return m_Texture.m_AssetPtr ? m_Texture.m_AssetPtr->GetName() : nullptr;
 }
 
 void DecalManager::SetTexture(const char* texturepath)

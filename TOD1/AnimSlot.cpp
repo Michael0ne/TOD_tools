@@ -29,7 +29,7 @@ AnimSlot::~AnimSlot()
 
 const char* const AnimSlot::GetTarget1() const
 {
-    return m_TargetAnimation ? m_TargetAnimation->AddResToOpenListAndReturnName() : nullptr;
+    return m_TargetAnimation ? m_TargetAnimation->GetName() : nullptr;
 }
 
 void AnimSlot::SetTarget1(const char* const target1)

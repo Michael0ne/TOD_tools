@@ -156,7 +156,7 @@ void Node::_86A930(const int size, int* value, int* const outval, const int a4)
     *Scene::_A3CEE8++ =
         ((m_Id.Id << 8) | ((*(short*)&m_Id & 0x7000) - 1) & 0xF000) |
         ((short)size + (short)ent->m_LocalPropertiesList.size() + (short)ent->m_TotalLocalProperties) & 0xFFF;
-    Scene::_A3CEE8 += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->stub9((char*)value, (char*)Scene::_A3CEE8);
+    Scene::_A3CEE8 += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->CopyNoAllocate((char*)value, (char*)Scene::_A3CEE8);
     if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::_A3CEE8) < 0x4000)
         Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::_A3CEE8);
 
@@ -547,7 +547,7 @@ void Node::SetTraverseDistance(const float distance)
     if (distance > 65535)
         m_QuadTree->m_TraverseDistance = -1;
     else
-        m_QuadTree->m_TraverseDistance = distance;
+        m_QuadTree->m_TraverseDistance = (short)distance;
 }
 
 Entity* Node::GetScene() const
@@ -1147,6 +1147,69 @@ void Node::ConvertDirectionToWorldSpace(int* args) const
     *(Vector3f*)args = { dir.x, dir.y, dir.z };
 }
 
+void Node::CallPropertySetter(const unsigned short propertyId, const void* data)
+{
+    std::map<unsigned short, unsigned short>::const_iterator propertyIndex = m_ScriptEntity->m_IsBaseEntity
+        ? m_ScriptEntity->m_Parent->m_PropertiesMappings.find(propertyId)
+        : m_ScriptEntity->m_PropertiesMappings.find(propertyId);
+
+    if (propertyIndex->first)
+    {
+        EntityType* script = m_ScriptEntity;
+        unsigned short propargind = propertyIndex->first;
+        EntityType::PropertyInfo* scriptpropertyinfo = nullptr;
+
+        if (propargind >= 0)
+        {
+            if (propargind < m_ScriptEntity->m_TotalLocalProperties)
+            {
+                do
+                {
+                    script = script->m_Parent;
+                }while (propargind < script->m_TotalLocalProperties);
+            }
+
+            scriptpropertyinfo = &script->m_LocalPropertiesList[propargind - script->m_TotalLocalProperties];
+        }
+        else
+        {
+            propargind = -propargind;
+            if (propargind < m_ScriptEntity->m_TotalGlobalProperties)
+            {
+                do
+                {
+                    script = script->m_Parent;
+                }while (propargind < script->m_TotalGlobalProperties);
+            }
+
+            scriptpropertyinfo = &script->m_GlobalPropertiesList[propargind - script->m_TotalGlobalProperties];
+        }
+
+        if (scriptpropertyinfo && scriptpropertyinfo->m_SetterPtr)
+            scriptpropertyinfo->m_ReturnType->CallSetterFunction(
+                data,
+                this,
+                scriptpropertyinfo->m_SetterPtr,
+                scriptpropertyinfo->field_1C,
+                scriptpropertyinfo->field_20,
+                scriptpropertyinfo->field_24);
+    }
+    else
+    {
+        if (m_ScriptEntity->m_Script)
+            m_ScriptEntity->m_Script->_489D40(this, propertyId, data);
+    }
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Node::_86B560(const unsigned int propertyId, void* data)
+{
+    if (!m_ScriptEntity || m_Flags._29 || m_Flags.Volatile)
+        return;
+
+    //  ...
+}
+
 void Node::Rotate_Impl(const Orientation& orient)
 {
     Orientation currentOrient = BuiltinType::Orient;
@@ -1410,7 +1473,7 @@ void Node::GetAllUniqueIds(std::vector<Utils::UniqueId>& outList) const
             if (!parent->m_Fragment->m_FragmentRes)
                 break;
             else
-                fragmentName = parent->m_Fragment->m_FragmentRes->AddResToOpenListAndReturnName();
+                fragmentName = parent->m_Fragment->m_FragmentRes->GetName();
         else
             fragmentName = parent->m_Fragment->m_Name;
 
@@ -1819,7 +1882,7 @@ const char* Node::GetFragment() const
         return m_Fragment->m_Name;
 
     if (m_Fragment->m_FragmentRes)
-        return m_Fragment->m_FragmentRes->AddResToOpenListAndReturnName();
+        return m_Fragment->m_FragmentRes->GetName();
 
     return nullptr;
 }
@@ -1863,7 +1926,7 @@ void Node::_869EC0(const unsigned int paramind, const void* paramptr, DataType& 
         return;
 
     *Scene::_A3CEE4++ = paramind & 0xFFF | (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000;
-    Scene::_A3CEE4 += paramtype.stub9((char*)paramptr, (char*)Scene::_A3CEE4);
+    Scene::_A3CEE4 += paramtype.CopyNoAllocate((char*)paramptr, (char*)Scene::_A3CEE4);
 
     TransactionBuffer* tb = Scene::SceneInstance->m_RewindBuffer1;
     if (tb->m_Buffer[tb->m_Chunks - (int)Scene::_A3CEE4] < 1024)
@@ -1879,7 +1942,7 @@ void Node::_869F80(const unsigned int paramind, const void* paramptr, DataType& 
     {
         *v1 = paramind & 0xFFF | (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000;
         v1++;
-        g_SceneSaveLoad->_873C00(m_Id.Id, &v1[paramtype.stub9((char*)paramptr, (char*)v1)]);
+        g_SceneSaveLoad->_873C00(m_Id.Id, &v1[paramtype.CopyNoAllocate((char*)paramptr, (char*)v1)]);
     }
 
     *(&field_8 + (paramind / 8 + 5)) |= 1 << (paramind & 7);

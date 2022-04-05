@@ -1,6 +1,7 @@
 #include "NumberType.h"
 #include "VectorType.h"
 #include "TruthType.h"
+#include "Node.h"
 
 NumberType::NumberType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
@@ -41,25 +42,31 @@ String& NumberType::PrintFormattedValue(String& outstr, void* val, int precision
     }
 }
 
-int NumberType::StrToType(char* operation, void* outval) const
+int NumberType::MakeFromString(const char* const input, char* const outdata) const
 {
-    return ParseFloatNumberString(operation, (float*)outval);
+    return ParseFloatNumberString(input, (float*)outdata);
 }
 
-void NumberType::stub13(int a1, int(__thiscall* methodptr)(void*, void*), int a3, int a4, int a5, void* const outResult) const
+void NumberType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
+    int result;
+
+    //  TODO: this is ridiculous!
     if (a5)
-        *(float*)outResult = ((float(__thiscall*)(int, void*))methodptr)(a1 + a3 + a4 + *(int*)(*(int*)(a4 + a1) + a5), methodptr);
+        result = *(int*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
     else
-        *(float*)outResult = ((float(__thiscall*)(int, void*))methodptr)(a3 + a1, methodptr);
+        result = *(int*)((Node*)(callerNode + a3)->*(getterPtr))();
+
+    *outResult = result;
 }
 
-void NumberType::stub14(int* a1, int a2, void* a3, int a4, int a5, int a6) const
+void NumberType::CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const
 {
+    //  TODO: this is ridiculous!
     if (a6)
-        (*(int(__thiscall*)(int, int))a3)(a2 + a4 + a5 + *(int*)(*(int*)(a5 + a2) + a6), *a1);
+        ((Node*)(callerNode + a4 + virtualMethodIndex + *(int*)(*(int*)(virtualMethodIndex + callerNode) + a6))->*(setterPtr))(*(const void**)data);
     else
-        (*(int(__thiscall*)(int, int))a3)(a4 + a2, *a1);
+        ((Node*)(callerNode + a4)->*(setterPtr))(*(const void**)data);
 }
 
 bool NumberType::NotEqualTo(void* a1, void* a2) const

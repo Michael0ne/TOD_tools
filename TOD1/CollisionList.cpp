@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "Scene.h"
 #include "BuiltinType.h"
+#include "CollisionProbe.h"
 
 CollisionInfo::CollisionInfo(Entity* owner)
 {
@@ -45,7 +46,7 @@ void CollisionInfo::CommitCollision()
 
 void CollisionInfo::RemoveNode(Entity* node)
 {
-    std::vector<CollisionProbe*>::const_iterator it = std::find(m_CollisionProbesList.begin(), m_CollisionProbesList.end(), node);
+    std::vector<CollisionProbe*>::iterator it = std::find(m_CollisionProbesList.begin(), m_CollisionProbesList.end(), node);
 #ifdef INCLUDE_FIXES
     if (it == m_CollisionProbesList.end())
     {

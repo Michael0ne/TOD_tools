@@ -96,6 +96,7 @@ public:
             unsigned _29 : 1;                   //  29
             unsigned HasFragment : 1;           //  30
         };
+        unsigned int    m_Flags;
     }                   m_Flags;
     short               m_GlobalIdInBlockigList;
     short               m_GlobalIdInSceneList;
@@ -280,6 +281,8 @@ public:
     void                GetWorldOrient(int* args) const;    //  @88CAE0
     void                ConvertDirectionFromWorldSpace(int* args) const;    //  @88CA20
     void                ConvertDirectionToWorldSpace(int* args) const;  //  @88C9C0
+    void                CallPropertySetter(const unsigned short propertyId, const void* data);  //  @86A6C0
+    void                _86B560(const unsigned int propertyId, void* data); //  @86B560
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

@@ -163,7 +163,7 @@ void Camera::Project_Impl(Vector2f& projectedPos, const Vector4f& inpos) const
 {
     if (inpos.z <= 0)
     {
-        projectedPos = { -10000, -10000, 0, 0 };
+        projectedPos = { -10000, -10000 };
         return;
     }
 }

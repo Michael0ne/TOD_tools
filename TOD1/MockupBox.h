@@ -13,8 +13,7 @@ private:
     float               m_Front;
     float               m_Back;
     float               m_Height;
-    TextureAsset       *m_Texture;
-    int                *field_68;
+    AssetLoader         m_TextureAsset;
     float               m_Opacity;
     FrameBuffer        *m_FrameBuffer;
     MeshBuffer         *m_MeshBuffer;

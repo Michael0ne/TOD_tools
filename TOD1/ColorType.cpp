@@ -1,6 +1,7 @@
 #include "ColorType.h"
 #include "IntegerType.h"
 #include "NumberType.h"
+#include "Node.h"
 
 ColorType::ColorType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSize typeSize) : DataType(typeId, typeName, typeSize)
 {
@@ -21,12 +22,12 @@ String& ColorType::PrintFormattedValue(String& outstr, void* val, int precision)
     return outstr;
 }
 
-void ColorType::stub13(int a1, int(__thiscall* procptr)(void*, void*), int a3, int a4, int a5, void* const outResult) const
+void ColorType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
-    ((IntegerType*)this)->stub13(a1, procptr, a3, a4, a5, outResult);
+    ((IntegerType*)this)->CallGetterFunction(callerNode, getterPtr, a3, virtualMethodIndex, a5, outResult);
 }
 
-void ColorType::stub14(int* a1, int a2, void* a3, int a4, int a5, int a6) const
+void ColorType::CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const
 {
-    ((NumberType*)this)->stub14(a1, a2, a3, a4, a5, a6);
+    ((NumberType*)this)->CallSetterFunction(data, callerNode, setterPtr, a4, virtualMethodIndex, a6);
 }

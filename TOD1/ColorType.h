@@ -8,8 +8,8 @@ public:
     virtual ~ColorType();
 
     virtual String& PrintFormattedValue(String&, void*, int) const override; // @867A50
-    virtual void stub13(int, int(__thiscall* procptr)(void*, void*), int, int, int, void* const outResult) const override;
-    virtual void stub14(int*, int, void*, int, int, int) const override;
+    virtual void CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const override;
+    virtual void CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const override;
 
     void* operator new (size_t size)
     {

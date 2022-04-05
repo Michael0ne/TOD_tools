@@ -139,7 +139,7 @@ public:
     std::vector<Asset*>         m_ResourcesInstancesList;
     std::vector<String>         m_SceneNames;
     unsigned int                m_NodesInNodeList[6];
-    int                         field_1C8;
+    int                         m_FragmentMainNodeId;
     bool                        m_BlocksUnloaded;
     std::map<int, int>         *m_EntityIdsMap; //  NOTE: not sure why it's here, but it's used in 
     int                         m_EngineVersionTimestamp;

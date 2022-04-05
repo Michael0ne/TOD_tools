@@ -886,7 +886,7 @@ AssetManager::AssetManager(bool loadBlocks)
     field_0 = NULL;
     m_RegionId = REGION_NOT_SET;
     m_ResourcesInstancesList.reserve(1);
-    field_1C8 = NULL;
+    m_FragmentMainNodeId = NULL;
     m_BlocksUnloaded = NULL;
     m_EntityIdsMap = nullptr;
     m_CheckTimestamp = false;
@@ -953,10 +953,10 @@ unsigned int AssetManager::AddEntity(Entity* ent)
     unsigned int listind = m_ActiveBlockId == -1 ? 0 : m_ActiveBlockId;
     unsigned int listcap;
 
-    if (field_1C8)
+    if (m_FragmentMainNodeId)
     {
-        listcap = field_1C8;
-        field_1C8 = NULL;
+        listcap = m_FragmentMainNodeId;
+        m_FragmentMainNodeId = NULL;
     }
     else
         listcap = m_NodesInNodeList[listind];
@@ -1082,7 +1082,7 @@ void CompiledAssetInfo::GetAssetName(char** dataptr, char flags) const
     if (flags & 1 || !dataptr)
         return;
 
-    if (*dataptr == (char*)0x80000000)
+    if ((int)*dataptr == 0x80000000)
         *dataptr = nullptr;
 
     *dataptr = *dataptr + **dataptr;

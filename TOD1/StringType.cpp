@@ -10,7 +10,7 @@ StringType::~StringType()
     MESSAGE_CLASS_DESTROYED(StringType);
 }
 
-int StringType::stub2(int* a1, int* a2)
+int StringType::GetSize(int* a1, int* a2)
 {
     int retsize = m_Size * 4;
 
@@ -34,7 +34,7 @@ void StringType::Delete(char* a1)
     delete (char*)*a1;
 }
 
-void StringType::stub5(int* a1, int* a2)
+void StringType::Clone(int* a1, int* a2)
 {
     if (*a1)
         *(char**)&a2 = new char[45];

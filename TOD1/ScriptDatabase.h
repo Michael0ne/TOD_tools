@@ -169,6 +169,7 @@ public:
     int                         GetParameterProcedureIndex(void (*procedure)(ScriptThread*)) const; //  @489F50
     const int                   GetPropertyValueByIndex(const int index) const; //  @489A70
     void                        AddLocal(void (*procPtr)(ScriptThread*), DataType* localType);  //  @48A700
+    void                        _489D40(Node* callerNode, const int propertyInd, const void* data); //  @489D40
 
     EntityType*                 AssignScriptToEntity(EntityType * parent); // @48A3F0
 

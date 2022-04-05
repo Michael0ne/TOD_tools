@@ -83,7 +83,7 @@ public:
     const bool      GetViewAllSlotIndicies() const; //  @8FCDF0
     const bool      GetUseSlotIndex() const;    //  @8FCDC0
     const bool      GetTextresMode() const; //  @8FCDB0
-    void            SetTextSlotParam(unsigned int slotindex, short* slotvalue);   //  @8FD740
+    void            SetTextSlotParam(unsigned int slotindex, unsigned short* slotvalue);   //  @8FD740
 };
 
 ASSERT_CLASS_SIZE(TextBox, 220);

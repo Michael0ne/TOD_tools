@@ -5,7 +5,7 @@
 #include "EntityType.h"
 #include "AssetManager.h"
 #include "NothingType.h"
-#include "ScriptType.h"
+#include "StructType.h"
 #include "Entity.h"
 #include "Scene.h"
 #include "ScriptThread.h"
@@ -275,7 +275,7 @@ bool FindScript(const char* const scriptname, String& zipname)
 void LoadScripts()
 {
     // NOTE: register built-in scripts.
-    ScriptType::ScriptFieldsList fields;
+    StructType::ScriptFieldsList fields;
     fields.Add("RecievingEntity", DataType::LoadScript("Entity"), 0);
     fields.Add("Damage", DataType::LoadScript("number"), 0);
     fields.Add("Owner", DataType::LoadScript("Entity"), 0);
@@ -285,19 +285,19 @@ void LoadScripts()
     fields.Add("Peercontactpoint", DataType::LoadScript("vector"), 0);
     fields.Add("Damage_type", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("Take_a_hit_info", fields);
+    new StructType("Take_a_hit_info", fields);
     fields.Clear();
 
     fields.Add("pBlock", DataType::LoadScript("Entity"), 0);
     fields.Add("sTeleportName", DataType::LoadScript("string"), 0);
 
-    new ScriptType("s_BlockLoad", fields);
+    new StructType("s_BlockLoad", fields);
     fields.Clear();
 
     fields.Add("pResource", DataType::LoadScript("Entity"), 0);
     fields.Add("pPlaceholder", DataType::LoadScript("Entity"), 0);
 
-    new ScriptType("s_GenericRes", fields);
+    new StructType("s_GenericRes", fields);
     fields.Clear();
 
     fields.Add("pPlaceholder", DataType::LoadScript("Entity"), 0);
@@ -305,7 +305,7 @@ void LoadScripts()
     fields.Add("bInView", DataType::LoadScript("truth"), 0);
     fields.Add("bIsVisible", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_PlaceholderPriority", fields);
+    new StructType("s_PlaceholderPriority", fields);
     fields.Clear();
 
     fields.Add("RightHandGunList", DataType::LoadScript("list(truth)"), 0);
@@ -315,19 +315,19 @@ void LoadScripts()
     fields.Add("AmmoInPrimWeapon", DataType::LoadScript("list(integer)"), 0);
     fields.Add("AmmoInSecWeapon", DataType::LoadScript("list(integer)"), 0);
 
-    new ScriptType("s_Inventory", fields);
+    new StructType("s_Inventory", fields);
     fields.Clear();
 
     fields.Add("pPlaceHolder", DataType::LoadScript("Entity"), 0);
     fields.Add("vLocalPosition", DataType::LoadScript("vector"), 0);
 
-    new ScriptType("s_AIPassenger", fields);
+    new StructType("s_AIPassenger", fields);
     fields.Clear();
 
     fields.Add("PowerUpList", DataType::LoadScript("list(integer)"), 0);
     fields.Add("MaxPowerUpList", DataType::LoadScript("list(integer)"), 0);
 
-    new ScriptType("s_PowerUpInventory", fields);
+    new StructType("s_PowerUpInventory", fields);
     fields.Clear();
 
     fields.Add("Type", DataType::LoadScript("integer"), 0);
@@ -341,7 +341,7 @@ void LoadScripts()
     fields.Add("AmountTB", DataType::LoadScript("Entity"), 0);
     fields.Add("AmountTB_BG", DataType::LoadScript("Entity"), 0);
 
-    new ScriptType("s_PowerUpSprite", fields);
+    new StructType("s_PowerUpSprite", fields);
     fields.Clear();
 
     fields.Add("BlipSprite", DataType::LoadScript("Entity"), 0);
@@ -350,7 +350,7 @@ void LoadScripts()
     fields.Add("EntityType", DataType::LoadScript("integer"), 0);
     fields.Add("SubMapIndex", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_RadarBlip", fields);
+    new StructType("s_RadarBlip", fields);
     fields.Clear();
 
     fields.Add("OptionName", DataType::LoadScript("integer"), 0);
@@ -358,7 +358,7 @@ void LoadScripts()
     fields.Add("TextFieldBG", DataType::LoadScript("Entity"), 0);
     fields.Add("OptionAction", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_MenuOption", fields);
+    new StructType("s_MenuOption", fields);
     fields.Clear();
 
     fields.Add("TaxiZapEntry", DataType::LoadScript("Entity"), 0);
@@ -371,7 +371,7 @@ void LoadScripts()
     fields.Add("EntrySpacing", DataType::LoadScript("truth"), 0);
     fields.Add("IsActiveEntry", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_TaxiZapOptions", fields);
+    new StructType("s_TaxiZapOptions", fields);
     fields.Clear();
 
     fields.Add("IsAchieved", DataType::LoadScript("truth"), 0);
@@ -387,7 +387,7 @@ void LoadScripts()
     fields.Add("AwardModelListBg", DataType::LoadScript("list(Entity)"), 0);
     fields.Add("NumOfAwards", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_ScoreBar", fields);
+    new StructType("s_ScoreBar", fields);
     fields.Clear();
 
     fields.Add("TextBox", DataType::LoadScript("Entity"), 0);
@@ -397,7 +397,7 @@ void LoadScripts()
     fields.Add("MaxScale", DataType::LoadScript("number"), 0);
     fields.Add("Expand", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_BounceText", fields);
+    new StructType("s_BounceText", fields);
     fields.Clear();
 
     fields.Add("Placeholder", DataType::LoadScript("Entity"), 0);
@@ -407,7 +407,7 @@ void LoadScripts()
     fields.Add("currenttime", DataType::LoadScript("number"), 0);
     fields.Add("at_pos", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_ped_resource", fields);
+    new StructType("s_ped_resource", fields);
     fields.Clear();
 
     fields.Add("pBone", DataType::LoadScript("Entity"), 0);
@@ -417,14 +417,14 @@ void LoadScripts()
     fields.Add("eRotateSpace", DataType::LoadScript("integer"), 0);
     fields.Add("bActive", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_CtrlBone", fields);
+    new StructType("s_CtrlBone", fields);
     fields.Clear();
 
     fields.Add("Objective", DataType::LoadScript("Entity"), 0);
     fields.Add("Show", DataType::LoadScript("truth"), 0);
     fields.Add("Status", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_Mission_Objective", fields);
+    new StructType("s_Mission_Objective", fields);
     fields.Clear();
 
     fields.Add("Mission_Valid", DataType::LoadScript("truth"), 0);
@@ -445,7 +445,7 @@ void LoadScripts()
     fields.Add("MissionConditions", DataType::LoadScript("list(Entity)"), 0);
     fields.Add("ObjectiveList", DataType::LoadScript("list(Entity)"), 0);
 
-    new ScriptType("s_Mission_data", fields);
+    new StructType("s_Mission_data", fields);
     fields.Clear();
 
     fields.Add("TextBox", DataType::LoadScript("Entity"), 0);
@@ -461,7 +461,7 @@ void LoadScripts()
     fields.Add("StayTime", DataType::LoadScript("number"), 0);
     fields.Add("InUse", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_ComboAwardString", fields);
+    new StructType("s_ComboAwardString", fields);
     fields.Clear();
 
     fields.Add("MoveName", DataType::LoadScript("integer"), 0);
@@ -472,7 +472,7 @@ void LoadScripts()
     fields.Add("SoundFrequency", DataType::LoadScript("number"), 0);
     fields.Add("CCmove", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_UniqueComboMove", fields);
+    new StructType("s_UniqueComboMove", fields);
     fields.Clear();
 
     fields.Add("KillsNeeded", DataType::LoadScript("integer"), 0);
@@ -480,7 +480,7 @@ void LoadScripts()
     fields.Add("GoodieAwards", DataType::LoadScript("list(integer)"), 0);
     fields.Add("AwardString", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_ComboAward", fields);
+    new StructType("s_ComboAward", fields);
     fields.Clear();
 
     fields.Add("Position", DataType::LoadScript("vector"), 0);
@@ -488,7 +488,7 @@ void LoadScripts()
     fields.Add("CurrentWeapons", DataType::LoadScript("list(string)"), 0);
     fields.Add("AmmoActiveWeapon", DataType::LoadScript("number"), 0);
 
-    new ScriptType("s_StatusPoint", fields);
+    new StructType("s_StatusPoint", fields);
     fields.Clear();
 
     fields.Add("ActionsPoints", DataType::LoadScript("integer"), 0);
@@ -505,7 +505,7 @@ void LoadScripts()
     fields.Add("MostUsedWeapon", DataType::LoadScript("integer"), 0);
     fields.Add("Medals", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_Statistics", fields);
+    new StructType("s_Statistics", fields);
     fields.Clear();
 
     fields.Add("pCallBack", DataType::LoadScript("Entity"), 0);
@@ -513,7 +513,7 @@ void LoadScripts()
     fields.Add("nTimer", DataType::LoadScript("number"), 0);
     fields.Add("bRealTime", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_DelayedMessage", fields);
+    new StructType("s_DelayedMessage", fields);
     fields.Clear();
 
     fields.Add("HasCollided", DataType::LoadScript("truth"), 0);
@@ -525,7 +525,7 @@ void LoadScripts()
     fields.Add("ColPos", DataType::LoadScript("vector"), 0);
     fields.Add("SetDecal", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_CollisionInfo", fields);
+    new StructType("s_CollisionInfo", fields);
     fields.Clear();
 
     fields.Add("CollisionEntity", DataType::LoadScript("Entity"), 0);
@@ -533,7 +533,7 @@ void LoadScripts()
     fields.Add("CollisionPos", DataType::LoadScript("vector"), 0);
     fields.Add("ColliderEntity", DataType::LoadScript("Entity"), 0);
 
-    new ScriptType("s_VehicleCollision", fields);
+    new StructType("s_VehicleCollision", fields);
     fields.Clear();
 
     fields.Add("Sound", DataType::LoadScript("list(Entity)"), 0);
@@ -543,13 +543,13 @@ void LoadScripts()
     fields.Add("Position_Type", DataType::LoadScript("list(integer)"), 0);
     fields.Add("Position_Entity", DataType::LoadScript("list(Entity)"), 0);
 
-    new ScriptType("Random_sound", fields);
+    new StructType("Random_sound", fields);
     fields.Clear();
 
     fields.Add("ent_1", DataType::LoadScript("Entity"), 0);
     fields.Add("ent_2", DataType::LoadScript("Entity"), 0);
 
-    new ScriptType("s_Entity_pair", fields);
+    new StructType("s_Entity_pair", fields);
     fields.Clear();
 
     fields.Add("Watched", DataType::LoadScript("Entity"), 0);
@@ -558,7 +558,7 @@ void LoadScripts()
     fields.Add("InFocus", DataType::LoadScript("truth"), 0);
     fields.Add("LocalShowTime", DataType::LoadScript("number"), 0);
 
-    new ScriptType("s_HealthWatchedEntity", fields);
+    new StructType("s_HealthWatchedEntity", fields);
     fields.Clear();
 
     fields.Add("GamePulse", DataType::LoadScript("integer"), 0);
@@ -567,7 +567,7 @@ void LoadScripts()
     fields.Add("StayTime", DataType::LoadScript("number"), 0);
     fields.Add("toHighPulses", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_pulse", fields);
+    new StructType("s_pulse", fields);
     fields.Clear();
 
     fields.Add("at_entity", DataType::LoadScript("Entity"), 0);
@@ -577,26 +577,26 @@ void LoadScripts()
     fields.Add("at_pos", DataType::LoadScript("vector"), 0);
     fields.Add("LifeTime", DataType::LoadScript("number"), 0);
 
-    new ScriptType("s_particel_dam", fields);
+    new StructType("s_particel_dam", fields);
     fields.Clear();
 
     fields.Add("list_index", DataType::LoadScript("integer"), 0);
     fields.Add("dist", DataType::LoadScript("number"), 0);
 
-    new ScriptType("s_list_dist", fields);
+    new StructType("s_list_dist", fields);
     fields.Clear();
 
     fields.Add("PedestrianGroup", DataType::LoadScript("integer"), 0);
     fields.Add("Minimum", DataType::LoadScript("integer"), 0);
     fields.Add("Maximum", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_neighborhood_config", fields);
+    new StructType("s_neighborhood_config", fields);
     fields.Clear();
 
     fields.Add("PathPoint", DataType::LoadScript("Entity"), 0);
     fields.Add("Neighborhood", DataType::LoadScript("Entity"), 0);
 
-    new ScriptType("s_pedestrian_points", fields);
+    new StructType("s_pedestrian_points", fields);
     fields.Clear();
 
     fields.Add("Object", DataType::LoadScript("Entity"), 0);
@@ -604,14 +604,14 @@ void LoadScripts()
     fields.Add("paPerSec", DataType::LoadScript("number"), 0);
     fields.Add("DelayTimer", DataType::LoadScript("number"), 0);
 
-    new ScriptType("s_fadeEntity", fields);
+    new StructType("s_fadeEntity", fields);
     fields.Clear();
 
     fields.Add("Valid", DataType::LoadScript("truth"), 0);
     fields.Add("Type", DataType::LoadScript("integer"), 0);
     fields.Add("Relation", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_target_cache_info", fields);
+    new StructType("s_target_cache_info", fields);
     fields.Clear();
 
     fields.Add("TargetScore", DataType::LoadScript("integer"), 0);
@@ -619,20 +619,20 @@ void LoadScripts()
     fields.Add("AwardString", DataType::LoadScript("integer"), 0);
     fields.Add("TutAwardString", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_Overall_Award", fields);
+    new StructType("s_Overall_Award", fields);
     fields.Clear();
 
     fields.Add("NotifyThis", DataType::LoadScript("Entity"), 0);
     fields.Add("RequiredScore", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_ScoreNotification", fields);
+    new StructType("s_ScoreNotification", fields);
     fields.Clear();
 
     fields.Add("position", DataType::LoadScript("vector"), 0);
     fields.Add("normal", DataType::LoadScript("vector"), 0);
     fields.Add("type", DataType::LoadScript("integer"), 0);
 
-    new ScriptType("s_waiting_decal", fields);
+    new StructType("s_waiting_decal", fields);
     fields.Clear();
 
     fields.Add("particle", DataType::LoadScript("Entity"), 0);
@@ -640,7 +640,7 @@ void LoadScripts()
     fields.Add("impact_pos", DataType::LoadScript("vector"), 0);
     fields.Add("impact_orient", DataType::LoadScript("quaternion"), 0);
 
-    new ScriptType("s_waiting_particle", fields);
+    new StructType("s_waiting_particle", fields);
     fields.Clear();
 
     fields.Add("position", DataType::LoadScript("vector"), 0);
@@ -651,7 +651,7 @@ void LoadScripts()
     fields.Add("probe", DataType::LoadScript("Entity"), 0);
     fields.Add("ignore", DataType::LoadScript("Entity"), 0);
 
-    new ScriptType("s_waiting_blood_decal", fields);
+    new StructType("s_waiting_blood_decal", fields);
     fields.Clear();
 
     fields.Add("dist", DataType::LoadScript("number"), 0);
@@ -663,13 +663,13 @@ void LoadScripts()
     fields.Add("Type", DataType::LoadScript("integer"), 0);
     fields.Add("Queue", DataType::LoadScript("list(Entity)"), 0);
 
-    new ScriptType("s_traffic_section", fields);
+    new StructType("s_traffic_section", fields);
     fields.Clear();
 
     fields.Add("CaptionIndex", DataType::LoadScript("integer"), 0);
     fields.Add("Tutorials", DataType::LoadScript("list(Entity)"), 0);
 
-    new ScriptType("s_TutorialMenu", fields);
+    new StructType("s_TutorialMenu", fields);
     fields.Clear();
 
     fields.Add("obj_text", DataType::LoadScript("integer"), 0);
@@ -678,19 +678,19 @@ void LoadScripts()
     fields.Add("delay", DataType::LoadScript("number"), 0);
     fields.Add("justify", DataType::LoadScript("truth"), 0);
 
-    new ScriptType("s_TutorialPopUp", fields);
+    new StructType("s_TutorialPopUp", fields);
     fields.Clear();
 
     fields.Add("logic_condition", DataType::LoadScript("integer"), 0);
     fields.Add("actor", DataType::LoadScript("Entity"), 0);
 
-    new ScriptType("s_PendingLogicCondition", fields);
+    new StructType("s_PendingLogicCondition", fields);
     fields.Clear();
 
     fields.Add("TutorialText", DataType::LoadScript("integer"), 0);
     fields.Add("index_list", DataType::LoadScript("list(integer)"), 0);
 
-    new ScriptType("s_TutorialIndex", fields);
+    new StructType("s_TutorialIndex", fields);
     fields.Clear();
 
     fields.Add("LanguageName", DataType::LoadScript("string"), 0);
@@ -699,7 +699,7 @@ void LoadScripts()
     fields.Add("TextB", DataType::LoadScript("Entity"), 0);
     fields.Add("LanguageCode", DataType::LoadScript("string"), 0);
 
-    new ScriptType("s_Language", fields);
+    new StructType("s_Language", fields);
     fields.Clear();
 
     fields.Add("unit", DataType::LoadScript("Entity"), 0);
@@ -707,7 +707,7 @@ void LoadScripts()
     fields.Add("unit_orient", DataType::LoadScript("quaternion"), 0);
     fields.Add("unit_velocity", DataType::LoadScript("vector"), 0);
 
-    new ScriptType("element", fields);
+    new StructType("element", fields);
     fields.Clear();
 
     fields.Add("unit", DataType::LoadScript("Entity"), 0);
@@ -722,19 +722,19 @@ void LoadScripts()
     fields.Add("unit_bent_step", DataType::LoadScript("integer"), 0);
     fields.Add("unit_grav_direction", DataType::LoadScript("number"), 0);
 
-    new ScriptType("hinge_element", fields);
+    new StructType("hinge_element", fields);
     fields.Clear();
 
     fields.Add("parameter_name", DataType::LoadScript("string"), 0);
     fields.Add("parameter_value", DataType::LoadScript("number"), 0);
 
-    new ScriptType("parameter", fields);
+    new StructType("parameter", fields);
     fields.Clear();
 
     fields.Add("crossblend_speed", DataType::LoadScript("number"), 0);
     fields.Add("anim_slot", DataType::LoadScript("Entity"), 0);
 
-    new ScriptType("crossblend_override", fields);
+    new StructType("crossblend_override", fields);
     fields.Clear();
 
     if (GlobalPropertiesList.size() == SCRIPT_PROPERTIES_BUILTIN_TOTAL)
@@ -1168,7 +1168,7 @@ void Scriptbaked::CopyScriptParameters(Entity* entity)
 
     for (unsigned int i = 0; i < m_PropertiesList.size(); ++i)
         if (m_PropertiesList[i].m_DefaultValue)
-            m_PropertiesList[i].m_Info->m_PropertyType->StrToType(m_PropertiesList[i].m_DefaultValue, &parameters[m_PropertiesList[i].m_Offset]);
+            m_PropertiesList[i].m_Info->m_PropertyType->MakeFromString(m_PropertiesList[i].m_DefaultValue, (char*)&parameters[m_PropertiesList[i].m_Offset]);
         else
             m_PropertiesList[i].m_Info->m_PropertyType->ReturnNew(&parameters[m_PropertiesList[i].m_Offset]);
 
@@ -1223,6 +1223,38 @@ const int Scriptbaked::GetPropertyValueByIndex(const int index) const
 void Scriptbaked::AddLocal(void(*procPtr)(ScriptThread*), DataType* localType)
 {
     m_ParametersList.push_back({ procPtr, localType });
+}
+
+void Scriptbaked::_489D40(Node* callerNode, const int propertyInd, const void* data)
+{
+    std::map<int, int>::const_iterator propval = m_PropertiesValues.find(propertyInd);
+    if (propval->first)
+    {
+        DataType* proptype = m_PropertiesList[propval->first].m_Info->m_PropertyType;
+        int* propertyData = &callerNode->m_Parameters[m_PropertiesList[propval->first].m_Offset];
+        const unsigned int unkind = 1 << (2 * (propval->first & 15));
+        const int propdataunk = callerNode->m_Parameters[propval->first / 16];
+
+        if ( ( (propdataunk & unkind) == 0 || ((2 * unkind) & propdataunk) == 0 ) && !proptype->AreEqual(propertyData, (void*)data) )
+            callerNode->_86B560(propval->first, propertyData);
+
+        if (!DataType::IsSimpleType(proptype))
+        {
+            proptype->Delete((char*)propertyData);
+            proptype->Clone((const int*)data, propertyData);
+        }
+        else
+            DataType::CopyValue(propertyData, (const int*)data, proptype->m_Size);
+    }
+    else
+    {
+        String buf;
+        GlobalProperty::GetById(propertyInd).GetNameAndType(buf);
+#if defined(INCLUDE_FIXES) && defined(VERBOSE_LOGGING)
+        //  NOTE: editor/debug leftover?
+        debug("Scriptbaked::489D40: script does not have this propety! id=%d, type=%s", propertyInd, buf.m_Str);
+#endif
+    }
 }
 
 EntityType* Scriptbaked::AssignScriptToEntity(EntityType* parent)

@@ -77,7 +77,7 @@ Folder_::Folder_() : Node(NODE_MASK_EMPTY)
 
 void Folder_::UnloadBlocks()
 {
-    m_Flags.m_FlagBits.HasFragment = false;
+    m_Flags.HasFragment = false;
 
     if (m_Fragment)
     {
@@ -148,7 +148,7 @@ void Folder_::SetBlockId(unsigned int blockid)
 
     m_BlockId = m_BlockId ^ (blockid ^ m_BlockId) & 0x1FFFFFFF;
     if (blockid)
-        m_Flags.m_FlagBits.HasFragment = false;
+        m_Flags.HasFragment = false;
 
     if ((m_BlockId & 0x1FFFFFFF) != 0)
         m_AssetBlockInfo = new AssetInfo;

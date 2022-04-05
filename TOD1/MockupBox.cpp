@@ -16,9 +16,7 @@ MockupBox::MockupBox() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 {
     MESSAGE_CLASS_CREATED(MockupBox);
 
-    m_Texture = nullptr;
     m_FrameBuffer = nullptr;
-    field_68 = (int*)1;
     field_B8 = 0;
     field_BC = 1;
     field_C0 = -1;
@@ -65,11 +63,6 @@ MockupBox::~MockupBox()
 
     delete m_MeshBuffer;
     delete field_80;
-
-    if (m_Texture)
-        g_AssetManager->DecreaseResourceReferenceCount(m_Texture);
-
-    delete field_68;
 }
 
 void MockupBox::GetBounds(Vector4f& bounds)
@@ -153,13 +146,12 @@ void MockupBox::SetHeight(const float height)
 
 const char* MockupBox::GetTexture() const
 {
-    return m_Texture ? m_Texture->AddResToOpenListAndReturnName() : nullptr;
+    return m_TextureAsset.m_AssetPtr ? m_TextureAsset.m_AssetPtr->GetName() : nullptr;
 }
 
 void MockupBox::SetTexture(const char* const texturename)
 {
-    AssetLoader assload(texturename);
-    m_Texture = (TextureAsset*)assload.m_AssetPtr;
+    m_TextureAsset = AssetLoader(texturename);
 
     TryInstantiate();
 }

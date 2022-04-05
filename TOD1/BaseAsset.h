@@ -180,7 +180,7 @@ public:
         ptr = nullptr;
     }
 
-    const char*         AddResToOpenListAndReturnName() const; // @851720
+    const char*         GetName() const; // @851720
     void                _851800(String& outstr, const char* inpath, bool a3, bool a4) const; // @851800
     void                SetReferenceCount(unsigned char count); // @8513E0
     void                EncodeCountryCode(const char* const countrycode); // @851480

@@ -491,7 +491,7 @@
     <ClInclude Include="EntityType.h">
       <Filter>Header files\KapowSystems\Scripting\Types</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptType.h">
+    <ClInclude Include="StructType.h">
       <Filter>Header files\KapowSystems\Scripting\Types</Filter>
     </ClInclude>
     <ClInclude Include="ListType.h">
@@ -967,7 +967,7 @@
     <ClCompile Include="EntityType.cpp">
       <Filter>Source files\KapowSystems\Scripting\Types</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptType.cpp">
+    <ClCompile Include="StructType.cpp">
       <Filter>Source files\KapowSystems\Scripting\Types</Filter>
     </ClCompile>
     <ClCompile Include="ListType.cpp">
