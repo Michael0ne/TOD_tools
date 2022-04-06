@@ -184,7 +184,7 @@ public:
     static UINT64   CreationTime; // @A3DD00
     static int     *_A3CEE4; // @A3CEE4 //  NOTE:   it looks like this stores entities properties with format (int, int*), 
                                         //          where first int is a bitfield (propertyIndex, entity Id, entity block Id) and second is a pointer to the actual property value.
-    static int     *_A3CEE8; // @A3CEE8
+    static int     *_A3CEE8; // @A3CEE8 //  NOTE: this and above are allocated and tied to transaction buffer.
     static int      _A3DA80[100]; // @A3DA80
     static int      _A3D8D8[100]; // @A3D8D8
     static int      _A3DC38[4]; // @A3DC38

@@ -13,7 +13,7 @@ TransactionBuffer::TransactionBuffer(unsigned int bufferSize)
     m_Size = 0;
     field_20 = 0;
     m_List_1.resize(1);
-    field_1C = (void*)&m_List_1.begin();
+    m_ListHead = (void*)&m_List_1.begin();
 }
 
 TransactionBuffer::~TransactionBuffer()

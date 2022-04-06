@@ -112,7 +112,7 @@ public:
     virtual             ~Node();                                //  @86C6D0
     virtual void        Destroy();                              //  @88F770
     virtual void        _484CC0(int);                           //  @484CC0
-    virtual Entity*     FindNode(const char* nodeName) const;   //  @88EED0
+    virtual Node*       FindNode(const char* nodeName);         //  @88EED0
     virtual void        SetFlags(int);                          //  @88EC20 //  NOTE: this could be 'SetFlagsForChildren'.
     virtual void        Instantiate();                          //  @88DE70
     virtual void        Update();                               //  @8CB190
@@ -174,12 +174,12 @@ public:
     void                _86A190();  //  @86A190
     void                SetFragment(const char* const fragmentpath);    //  @88F8A0
     void                TryInstantiate(); //   @88C2D0
-    void                FindNode_Impl(int* args) const;  //  @88EB60
+    void                FindNode_Impl(int* args);  //  @88EB60
     void                ConvertFromWorldSpace(Vector4f& outPos, const Vector4f& inPos); //  @88BC90
     void                SetWorldOrient(const Orientation& orientation);   //  @87F240
     void                _86B4B0(const int size);    //  @86B4B0 //  NOTE: make space for field?
-    void                _86A930(const int size, int* value, int* const outval, const int a4);   //  @86A930
-    void                _86AA10(const int size, int* value, int* const outval, const int a4);   //  @86AA10
+    void                _86A930(const int size, const int* value, int* const outval, const int a4);   //  @86A930
+    void                _86AA10(const int size, const int* value, int* const outval, const int a4);   //  @86AA10
     void                RotateLocalX(const float x);    //  @483DE0
     void                RotateLocalY(const float y);    //  @891A50
     void                RotateLocalZ(const float z);    //  @484050
@@ -282,7 +282,9 @@ public:
     void                ConvertDirectionFromWorldSpace(int* args) const;    //  @88CA20
     void                ConvertDirectionToWorldSpace(int* args) const;  //  @88C9C0
     void                CallPropertySetter(const unsigned short propertyId, const void* data);  //  @86A6C0
-    void                _86B560(const unsigned int propertyId, void* data); //  @86B560
+    void                _86B560(const unsigned int propertyId, const void* data); //  @86B560
+    int                 ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize); //  @86B1F0
+    Node*               FindNodeSlowRecursive(const char* const nodeName); //  @88DFF0
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

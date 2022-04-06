@@ -12,7 +12,7 @@ public:
     virtual int  MakeFromString(const char* const input, char* const outdata) const override; // @8647A0
     virtual void CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const override; // @864850
     virtual void CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const override; // @8648B0
-    virtual bool NotEqualTo(void*, void*) const override; // @864A30
+    virtual bool NotEqualTo(const void* const arg1, const void* const arg2) const override; // @864A30
     virtual void ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const override; // @864B20
     virtual void PerformOperation(int operationId, void* params) const override; // @864E60
     virtual bool IsValidValueForType(void*) const override; // @864930

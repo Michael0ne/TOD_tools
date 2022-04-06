@@ -22,7 +22,7 @@ public:
     int             m_Size;
     int             (*m_ReadCompressedBufferData)(char* outBuffer, int size);
     std::list<BufferList>  m_List_1;
-    void           *field_1C;
+    void           *m_ListHead;
     Entity         *field_20;
 
 public:

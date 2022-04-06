@@ -157,7 +157,10 @@ public:
 
     void                        AddMember(const int fieldId, const char* const defaultValue, const int); // @48AF10
     void                        AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(ScriptThread*, void*)); // @48A690
+    void                        AddLocal(void (*procPtr)(ScriptThread*), DataType* localType);  //  @48A700
+    void                        AddProperty(Node* scriptNode, const unsigned int propertyIndex, const int* const propertyValue);    //  @489EA0
     void                        CalculateSize(); // @48AA60
+
     bool                        _48A7E0(Node* node, int scriptId, void* args); // @48A7E0
     void                        ClearEntityProperties(Entity* ent); //  @489C90
     EntityType*                 GetAttachedScript() const;  //  @489AE0
@@ -168,8 +171,7 @@ public:
     void                        GetMethodParams(void (*methodPtr)(ScriptThread*), std::vector<DataType*>& outParams) const;   //  @48A750
     int                         GetParameterProcedureIndex(void (*procedure)(ScriptThread*)) const; //  @489F50
     const int                   GetPropertyValueByIndex(const int index) const; //  @489A70
-    void                        AddLocal(void (*procPtr)(ScriptThread*), DataType* localType);  //  @48A700
-    void                        _489D40(Node* callerNode, const int propertyInd, const void* data); //  @489D40
+    void                        AddPropertyByReference(Node* callerNode, const int propertyInd, const void* data); //  @489D40
 
     EntityType*                 AssignScriptToEntity(EntityType * parent); // @48A3F0
 

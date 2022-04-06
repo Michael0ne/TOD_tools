@@ -103,15 +103,15 @@ void QuaternionType::CallSetterFunction(const void* data, Node* callerNode, Enti
 {
 }
 
-bool QuaternionType::NotEqualTo(void* a1, void* a2) const
+bool QuaternionType::NotEqualTo(const void* const arg1, const void* const arg2) const
 {
     float a = 0.f;
     float b = 0.f;
 
-    float ab_w = fabsf(*(float*)a1 - *(float*)a2);
-    float ab_x = fabsf(*((float*)a1 + 1) - *((float*)a2 + 1));
-    float ab_y = fabsf(*((float*)a1 + 2) - *((float*)a2 + 2));
-    float ab_z = fabsf(*((float*)a1 + 3) - *((float*)a2 + 3));
+    float ab_w = fabsf(*(float*)arg1 - *(float*)arg2);
+    float ab_x = fabsf(*((float*)arg1 + 1) - *((float*)arg2 + 1));
+    float ab_y = fabsf(*((float*)arg1 + 2) - *((float*)arg2 + 2));
+    float ab_z = fabsf(*((float*)arg1 + 3) - *((float*)arg2 + 3));
 
     if (ab_w >= 0.f)
     {

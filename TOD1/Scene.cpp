@@ -705,6 +705,18 @@ void Scene::SyncEditorCamera(const bool kdtreealloc, const int gamepadindex)
     }
 }
 
+void Scene::AnnotateSphere_Impl(const Vector4f& pos, const int a2, const int a3, const int a4) const
+{
+}
+
+void Scene::AnnotateLine_Impl(const Vector4f& lineStart, const Vector4f& lineEnd, const int a3, const int a4) const
+{
+}
+
+void Scene::AnnotatePoint_Impl(const Vector4f& point, const int a2, const int a3) const
+{
+}
+
 void Scene::Start()
 {
     if (m_PlayMode != MODE_STOP)
@@ -896,7 +908,7 @@ void Scene::StoreGameCamera()
             ((m_CameraPosition.y - Camera::ActiveCameraPosition.y) * (m_CameraPosition.y - Camera::ActiveCameraPosition.y))) > 100.f)
         {
             LogDump::LogA("Camera has moved more than 10m. Forcing Lod-calculation\n");
-            ForceLodCalculation(0);
+            CalculateLod(0);
         }
 
         m_CameraPosition = Camera::ActiveCameraPosition;
@@ -949,12 +961,12 @@ void Scene::AllocateRewindBuffer()
     }
 
     m_RewindBuffer1->m_List_1.resize(1);
-    m_RewindBuffer1->field_1C = (void*)&(m_RewindBuffer1->m_List_1.begin());
+    m_RewindBuffer1->m_ListHead = (void*)&(m_RewindBuffer1->m_List_1.begin());
     m_RewindBuffer1->m_Size = NULL;
     m_RewindBuffer1->field_20 = NULL;
 
     m_RewindBuffer2->m_List_1.resize(1);
-    m_RewindBuffer2->field_1C = (void*)&(m_RewindBuffer2->m_List_1.begin());
+    m_RewindBuffer2->m_ListHead = (void*)&(m_RewindBuffer2->m_List_1.begin());
     m_RewindBuffer2->m_Size = NULL;
     m_RewindBuffer2->field_20 = NULL;
 }

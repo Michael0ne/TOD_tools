@@ -151,12 +151,12 @@ void DataType::CallSetterFunction(const void* data, Node* callerNode, EntitySett
     return;
 }
 
-bool DataType::AreEqual(void* a1, void* a2) const
+bool DataType::AreEqual(const void* const a1, const void* const a2) const
 {
     return NotEqualTo(a1, a2) == false;
 }
 
-bool DataType::NotEqualTo(void* a1, void* a2) const
+bool DataType::NotEqualTo(const void* const a1, const void* const a2) const
 {
     return true;
 }

@@ -69,9 +69,9 @@ void NumberType::CallSetterFunction(const void* data, Node* callerNode, EntitySe
         ((Node*)(callerNode + a4)->*(setterPtr))(*(const void**)data);
 }
 
-bool NumberType::NotEqualTo(void* a1, void* a2) const
+bool NumberType::NotEqualTo(const void* const arg1, const void* const arg2) const
 {
-    return *(float*)a1 != *(float*)a2;
+    return *(float*)arg1 != *(float*)arg2;
 }
 
 void NumberType::ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const

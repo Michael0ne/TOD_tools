@@ -84,11 +84,11 @@ void VectorType::CallSetterFunction(const void* data, Node* callerNode, EntitySe
 {
 }
 
-bool VectorType::NotEqualTo(void* a1, void* a2) const
+bool VectorType::NotEqualTo(const void* const arg1, const void* const arg2) const
 {
-    return (*(float*)a1 != *(float*)a2) ||
-        (*((float*)a1 + 1) != *((float*)a2 + 1)) ||
-        (*((float*)a1 + 2) != *((float*)a2 + 2));
+    return (*(float*)arg1 != *(float*)arg2) ||
+        (*((float*)arg1 + 1) != *((float*)arg2 + 1)) ||
+        (*((float*)arg1 + 2) != *((float*)arg2 + 2));
 }
 
 void VectorType::ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const

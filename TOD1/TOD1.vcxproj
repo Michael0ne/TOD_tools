@@ -292,6 +292,8 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="scripts\MarcoDist.h" />
     <ClInclude Include="scripts\master_mission_ctrl.h" />
     <ClInclude Include="scripts\Pathtype.h" />
+    <ClInclude Include="scripts\reverse_sprite_fader.h" />
+    <ClInclude Include="scripts\Rotater.h" />
     <ClInclude Include="scripts\Trigger_Activate_Weapons.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="VertexBuffer.h" />

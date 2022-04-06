@@ -67,8 +67,8 @@ public:
     virtual int     MakeFromString_A(const char* const inputstr, char* outtype, int* const outsize); // @862A50 //  NOTE: same as 'strtotype' but makes a copy of already existing object found using input string.
     virtual void    CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const;   //  NOTE: execute procptr and return result into result variable.
     virtual void    CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const;
-    virtual bool    AreEqual(void* arg1, void* arg2) const; // @7A1F00
-    virtual bool    NotEqualTo(void* arg1, void* arg2) const; // @862AB0
+    virtual bool    AreEqual(const void* const arg1, const void* const arg2) const; // @7A1F00
+    virtual bool    NotEqualTo(const void* const arg1, const void* const arg2) const; // @862AB0
     virtual void    ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const; // @8637D0
     virtual void    PerformOperation(int operationId, void* params) const; // @8C4D60
     virtual char    IsReferenced(int* a1, int); // @8637E0

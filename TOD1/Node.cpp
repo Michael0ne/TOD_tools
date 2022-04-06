@@ -17,6 +17,8 @@
 #include "QuaternionType.h"
 #include "CollisionProbe.h"
 #include "GfxInternal.h"
+#include "Model.h"
+#include "SavePoint.h"
 
 EntityType* tNode;
 std::vector<Node::NodeInfo> Node::NodesWithUpdateOrBlockingScripts;
@@ -47,6 +49,8 @@ void NodeMatrix::GetMatrixForNode(DirectX::XMMATRIX& outMat)
 #pragma message(TODO_IMPLEMENTATION)
 void NodeMatrix::ApplyMatrixFromQuadTree()
 {
+    if (!m_Owner->m_Id.HasQuadTree)
+        return;
 }
 
 void NodeMatrix::GetMatrix(DirectX::XMMATRIX& outMat) const
@@ -106,18 +110,79 @@ void Node::_484CC0(int)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-Entity* Node::FindNode(const char* nodeName) const
+Node* Node::FindNode(const char* nodeName)
 {
-#ifdef _EXE
-    LogDump::LogA("Node::FindNode NOT IMPLEMENTED!\n");
+    if (!nodeName || !nodeName[0])
+        return nullptr;
 
-    return nullptr;
-#else
-    return (*(Entity * (__thiscall*)(const Node*, const char*))0x88EED0)(this, nodeName);
-#endif
+    if (g_AssetManager->m_FastFindNodeVector.size())
+    {
+
+    }
+    else
+    {
+        if (m_Name)
+        {
+            if (String::EqualIgnoreCase(m_Name, nodeName, strlen(m_Name)))
+                return this;
+        }
+        else
+        {
+            Model* modelEntity = (Model*)EntityType::IsParentOf(tModel, (Entity*)this);
+            if (modelEntity && modelEntity->m_ModelRes)
+            {
+                String fileName;
+                File::ExtractFileName(fileName, modelEntity->m_ModelRes->GetName());
+                if (String::EqualIgnoreCase(fileName.m_Str, nodeName, fileName.m_Length))
+                    return this;
+            }
+        }
+
+        return FindNodeSlowRecursive(nodeName);
+    }
 }
 
-void Node::FindNode_Impl(int* args) const
+#pragma message(TODO_IMPLEMENTATION)
+Node* Node::FindNodeSlowRecursive(const char* const nodeName)
+{
+    if (!m_FirstChild)
+        return nullptr;
+
+    while (true)
+    {
+        if (m_FirstChild->m_Name)
+            if (!_stricmp(m_FirstChild->m_Name, nodeName))
+                return m_FirstChild;
+
+        String nodeNameStr(nodeName);
+        nodeNameStr.ToLowerCase();
+        const int nodeNameCrc = Utils::CalcCRC32(nodeNameStr.m_Str, nodeNameStr.m_Length);
+
+        AssetManager::FastFindInfo ffiTemp { 0, nodeNameCrc, nullptr };
+        std::vector<AssetManager::FastFindInfo>::iterator ffindNode = std::find(g_AssetManager->m_FastFindNodeVector.begin(), g_AssetManager->m_FastFindNodeVector.end(), ffiTemp);
+
+        Node* result = nullptr;
+        if (ffindNode != g_AssetManager->m_FastFindNodeVector.end())
+        {
+            do
+            {
+                if (ffindNode->m_NodeNameCRC != nodeNameCrc)
+                    break;
+
+                if (ffindNode->m_Node)
+                {
+                    //  ...
+                }
+
+                ffindNode++;
+            }while(ffindNode != g_AssetManager->m_FastFindNodeVector.end());
+        }
+
+        return result;
+    }
+}
+
+void Node::FindNode_Impl(int* args)
 {
     *args = (int)FindNode((const char*)args[1]);
 }
@@ -150,7 +215,7 @@ void Node::_86B4B0(const int size)
     }
 }
 
-void Node::_86A930(const int size, int* value, int* const outval, const int a4)
+void Node::_86A930(const int size, const int* value, int* const outval, const int a4)
 {
     EntityType* ent = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
     *Scene::_A3CEE8++ =
@@ -163,9 +228,20 @@ void Node::_86A930(const int size, int* value, int* const outval, const int a4)
     *outval |= a4;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Node::_86AA10(const int size, int* value, int* const outval, const int a4)
+void Node::_86AA10(const int propertyId, const int* value, int* const outval, const int a4)
 {
+    int* buffptr = g_SceneSaveLoad->_873BA0(m_Id.Id);
+    if (buffptr)
+    {
+        DataType* propertyType = m_ScriptEntity->m_Script->m_PropertiesList[propertyId].m_Info->m_PropertyType;
+        EntityType* entityType = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
+
+        buffptr++[0] = (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000 | ((short)propertyId + (short)entityType->m_LocalPropertiesList.size() + (short)entityType->m_TotalLocalProperties) & 0xFFF;
+        const int propertynewsize = propertyType->CopyNoAllocate((const char*)value, (char*)(++buffptr));
+        g_SceneSaveLoad->_873C00(m_Id.Id, &buffptr[4 * propertynewsize]);
+    }
+
+    *outval |= a4;
 }
 
 void Node::RotateLocalX(const float x)
@@ -487,9 +563,14 @@ void Node::SetLodThreshold(float threshold)
     _88BA60();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Node::_88BA60()
 {
+    AuxQuadTree* qdt = m_QuadTree;
+    if (qdt->field_3C == 24 && ((qdt->field_3D & 127) == 3) && !m_Flags.LSR)
+    {
+        qdt->field_3C = 60;
+        SetFlags(m_Flags.m_Flags & 0xEFF | 0x100);
+    }
 }
 
 const float Node::GetFadeThreshold() const
@@ -518,6 +599,30 @@ void Node::SetFadeThreshold(float threshold)
 #pragma message(TODO_IMPLEMENTATION)
 void Node::_88BAA0()
 {
+    if (!m_ScriptEntity)
+        return;
+
+    EntityType* script = m_ScriptEntity;
+    while (tModel != script)
+    {
+        script = script->m_Parent;
+        if (!script)
+            return;
+    }
+
+    if (m_Flags.FRR)
+        return;
+
+#ifdef INCLUDE_FIXES
+    if (m_QuadTree && ((m_QuadTree->field_3D & 127) * 0.009) < 0.12f)
+#else
+    //  NOTE: this is the original code. Intentional?
+    if (!m_QuadTree || ((m_QuadTree->field_3D & 127) * 0.009) < 0.12f)
+#endif
+    {
+        m_QuadTree->field_3D = m_QuadTree->field_3D & 0x80 | 0xB;
+        SetFlags(m_Flags.m_Flags & 0x7FF | 0x800);
+    }
 }
 
 const bool Node::ShouldSlowFade() const
@@ -572,7 +677,7 @@ const float Node::GetLodDistance() const
 
 const float Node::GetLodFade() const
 {
-    return m_QuadTree ? m_QuadTree->m_LodFade * 0.0039215689f : 0.f;
+    return m_QuadTree ? m_QuadTree->m_LodFade * (float)(1 / 255) : (float)NULL;
 }
 
 const bool Node::GetIsTaggedForUnload() const
@@ -1166,7 +1271,7 @@ void Node::CallPropertySetter(const unsigned short propertyId, const void* data)
                 do
                 {
                     script = script->m_Parent;
-                }while (propargind < script->m_TotalLocalProperties);
+                } while (propargind < script->m_TotalLocalProperties);
             }
 
             scriptpropertyinfo = &script->m_LocalPropertiesList[propargind - script->m_TotalLocalProperties];
@@ -1179,7 +1284,7 @@ void Node::CallPropertySetter(const unsigned short propertyId, const void* data)
                 do
                 {
                     script = script->m_Parent;
-                }while (propargind < script->m_TotalGlobalProperties);
+                } while (propargind < script->m_TotalGlobalProperties);
             }
 
             scriptpropertyinfo = &script->m_GlobalPropertiesList[propargind - script->m_TotalGlobalProperties];
@@ -1197,17 +1302,74 @@ void Node::CallPropertySetter(const unsigned short propertyId, const void* data)
     else
     {
         if (m_ScriptEntity->m_Script)
-            m_ScriptEntity->m_Script->_489D40(this, propertyId, data);
+            m_ScriptEntity->m_Script->AddPropertyByReference(this, propertyId, data);
     }
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Node::_86B560(const unsigned int propertyId, void* data)
+void Node::_86B560(const unsigned int propertyId, const void* data)
 {
     if (!m_ScriptEntity || m_Flags._29 || m_Flags.Volatile)
         return;
 
-    //  ...
+    int* param = &m_Parameters[propertyId / 16];
+    const unsigned int index = 1 << (2 * (propertyId & 15));
+
+    if ((param[0] & index) == 0 || (param[0] & (2 * index)) == 0)
+    {
+        if (Scene::_A3CEE8 && (param[0] & index) == 0)
+            _86A930(propertyId, (const int*)data, param, index);
+
+        if ((param[0] & (2 * index)) == 0)
+            _86AA10(propertyId, (const int*)data, param, 2 * index);
+    }
+}
+
+int Node::ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize)
+{
+    if (!m_ScriptEntity->m_Script)
+        return 4;
+
+    *outsize = 0;
+
+    int proplistsize;
+    if (sp->Read(&proplistsize, sizeof(proplistsize)) != sizeof(proplistsize))
+        return 4;
+
+    *outsize += 4;
+
+    if (m_ScriptEntity->m_Script->GetPropertiesListSize() != proplistsize)
+        return 4;
+
+    if (proplistsize <= 0)
+        return 0;
+
+#ifdef INCLUDE_FIXES
+    char propertydata[8 * 1024] = {};
+#else
+    //  NOTE: 32 Kib seems to be an overkill.
+    char propertydata[32 * 1024] = {};
+#endif
+    for (unsigned int i = 0; i < proplistsize; ++i)
+    {
+        int propertysize;
+        if (sp->Read(&propertysize, sizeof(propertysize)) != sizeof(propertysize))
+            return 4;
+
+        const int propertysizeints = propertysize * 4;
+        *outsize += 4;
+
+        memset(propertydata, NULL, sizeof(propertydata));
+        if (sp->Read(propertydata, propertysizeints) != propertysizeints)
+            break;
+
+        *outsize += propertysizeints;
+
+        char newpropertydata[16] = {};
+        m_ScriptEntity->m_Script->m_PropertiesList[i].m_Info->m_PropertyType->CopyAndAllocate(propertydata, newpropertydata);
+        m_ScriptEntity->m_Script->AddProperty(this, i, (const int* const)newpropertydata);
+    }
+
+    return 4;
 }
 
 void Node::Rotate_Impl(const Orientation& orient)

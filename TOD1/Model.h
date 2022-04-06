@@ -8,6 +8,9 @@ class Folder_;
 
 class Model : public Node
 {
+    friend class Node;
+    friend class Entity;
+
     struct AttachedEffect
     {
         Node           *m_Node;

@@ -12,31 +12,31 @@ protected:
     {
         struct
         {
-            unsigned    ModelMatrix : 1;
-            unsigned    Texture : 1;
-            unsigned    EnableLighting : 1;
-            unsigned    EnableLight : 1;
-            unsigned    ZWrite : 1;
-            unsigned    Fog : 1;
-            unsigned    FogProperties : 1;
-            unsigned    Filter : 1;
-            unsigned    CullMode : 1;
-            unsigned    ZBias : 1;
-            unsigned    BlendMode : 1;
-            unsigned    Opacity : 1;
-            unsigned    Viewport : 1;
-            unsigned    Projection : 1;
-            unsigned    MipMapBias : 1;
-            unsigned    MipMapping : 1;
-            unsigned    EnvironmentMap : 1;
-            unsigned    EnvironmentMapCoef : 1;
-            unsigned    Brightness : 1;
-            unsigned    ZTest : 1;
-            unsigned    TextureAddressMode : 1;
-            unsigned    RenderTarget : 1;
-            unsigned    AlphaChannel : 1;
-            unsigned    SetAlphaTestThreshold : 1;
-            unsigned    EnableAlphaTest : 1;
+            unsigned    ModelMatrix : 1;            //  0
+            unsigned    Texture : 1;                //  1
+            unsigned    EnableLighting : 1;         //  2
+            unsigned    EnableLight : 1;            //  3
+            unsigned    ZWrite : 1;                 //  4
+            unsigned    Fog : 1;                    //  5
+            unsigned    FogProperties : 1;          //  6
+            unsigned    Filter : 1;                 //  7
+            unsigned    CullMode : 1;               //  8
+            unsigned    ZBias : 1;                  //  9
+            unsigned    BlendMode : 1;              //  10
+            unsigned    Opacity : 1;                //  11
+            unsigned    Viewport : 1;               //  12
+            unsigned    Projection : 1;             //  13
+            unsigned    MipMapBias : 1;             //  14
+            unsigned    MipMapping : 1;             //  15
+            unsigned    EnvironmentMap : 1;         //  16
+            unsigned    EnvironmentMapCoef : 1;     //  17
+            unsigned    Brightness : 1;             //  18
+            unsigned    ZTest : 1;                  //  19
+            unsigned    TextureAddressMode : 1;     //  20
+            unsigned    RenderTarget : 1;           //  21
+            unsigned    AlphaChannel : 1;           //  22
+            unsigned    SetAlphaTestThreshold : 1;  //  23
+            unsigned    EnableAlphaTest : 1;        //  24
         };
     }                   m_CommandsBits;
     std::vector<int*>   m_LightsList;

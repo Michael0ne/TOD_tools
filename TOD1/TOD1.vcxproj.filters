@@ -605,6 +605,12 @@
     <ClInclude Include="scripts\Pathtype.h">
       <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\Rotater.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\reverse_sprite_fader.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

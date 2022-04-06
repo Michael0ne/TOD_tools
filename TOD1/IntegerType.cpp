@@ -60,9 +60,9 @@ void IntegerType::CallGetterFunction(Node* callerNode, EntityGetterFunction gett
     *outResult = result;
 }
 
-bool IntegerType::NotEqualTo(void* a1, void* a2) const
+bool IntegerType::NotEqualTo(const void* const arg1, const void* const arg2) const
 {
-    return *(int*)a1 != *(int*)a2;
+    return *(int*)arg1 != *(int*)arg2;
 }
 
 void IntegerType::ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const

@@ -111,6 +111,12 @@ public:
         unsigned int            m_NodeNameCRC; // NOTE: CRC for Node name OR model name (if it's a model).
         unsigned int            m_Index; // NOTE: maybe?
         Node                   *m_Node;
+
+        //  NOTE: this is necessary for 'std::find' to work.
+        bool operator==(const FastFindInfo& rhs)
+        {
+            return m_NodeNameCRC == rhs.m_NodeNameCRC;
+        }
     };
 
     struct AssetInfo

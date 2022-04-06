@@ -1225,26 +1225,33 @@ void Scriptbaked::AddLocal(void(*procPtr)(ScriptThread*), DataType* localType)
     m_ParametersList.push_back({ procPtr, localType });
 }
 
-void Scriptbaked::_489D40(Node* callerNode, const int propertyInd, const void* data)
+void Scriptbaked::AddProperty(Node* scriptNode, const unsigned int propertyIndex, const int* const propertyValue)
+{
+    DataType* propertyType = m_PropertiesList[propertyIndex].m_Info->m_PropertyType;
+    int* nodePropertyPtr = &scriptNode->m_Parameters[m_PropertiesList[propertyIndex].m_Offset];
+    const unsigned int slot = scriptNode->m_Parameters[propertyIndex / 16];
+    const unsigned int index = 1 << (2 * (propertyIndex & 15));
+
+    if ( ((slot & index) == 0 || ((2 * index) & slot) == 0) && !propertyType->AreEqual(nodePropertyPtr, propertyValue) )
+        scriptNode->_86B560(propertyIndex, nodePropertyPtr);
+
+    if (DataType::IsSimpleType(propertyType))
+    {
+        DataType::CopyValue(nodePropertyPtr, propertyValue, propertyType->m_Size);
+    }
+    else
+    {
+        propertyType->Delete((char*)nodePropertyPtr);
+        propertyType->Clone(propertyValue, nodePropertyPtr);
+    }
+}
+
+void Scriptbaked::AddPropertyByReference(Node* callerNode, const int propertyInd, const void* data)
 {
     std::map<int, int>::const_iterator propval = m_PropertiesValues.find(propertyInd);
     if (propval->first)
     {
-        DataType* proptype = m_PropertiesList[propval->first].m_Info->m_PropertyType;
-        int* propertyData = &callerNode->m_Parameters[m_PropertiesList[propval->first].m_Offset];
-        const unsigned int unkind = 1 << (2 * (propval->first & 15));
-        const int propdataunk = callerNode->m_Parameters[propval->first / 16];
-
-        if ( ( (propdataunk & unkind) == 0 || ((2 * unkind) & propdataunk) == 0 ) && !proptype->AreEqual(propertyData, (void*)data) )
-            callerNode->_86B560(propval->first, propertyData);
-
-        if (!DataType::IsSimpleType(proptype))
-        {
-            proptype->Delete((char*)propertyData);
-            proptype->Clone((const int*)data, propertyData);
-        }
-        else
-            DataType::CopyValue(propertyData, (const int*)data, proptype->m_Size);
+        AddProperty(callerNode, propertyInd, (const int*)data);
     }
     else
     {
