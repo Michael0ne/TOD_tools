@@ -65,9 +65,10 @@ MockupBox::~MockupBox()
     delete field_80;
 }
 
-void MockupBox::GetBounds(Vector4f& bounds)
+Vector4f* MockupBox::GetBounds(Vector4f& bounds)
 {
     bounds = MeshBufferPtr ? m_Dimensions : Vector4f();
+    return &bounds;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

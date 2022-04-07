@@ -205,7 +205,7 @@ void IntegerType::PerformOperation(int operationId, void* params) const
     }
 }
 
-bool IntegerType::IsValidValueForType(void*) const
+bool IntegerType::IsValidValueForType(const void*) const
 {
     return true;
 }

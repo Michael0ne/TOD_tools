@@ -18,8 +18,7 @@ class Model : public Node
     };
 
 protected:
-    ModelAsset         *m_ModelRes;
-    int                 field_54;
+    AssetLoader         m_ModelRes;
     MeshColorAsset     *m_ModelLighting;
     int                 field_5C;
     Folder_            *m_AssocFolder;
@@ -90,6 +89,8 @@ public:
     Model();    //  @884BA0
 
     virtual ~Model();   //  @884D70
+    virtual Vector4f*   GetBounds(Vector4f& outBounds); //  @884450
+    virtual void        stub19();   //  @8CB190
     virtual void        SetStaticLightingEnabled(const bool enabled);   //  @884190
 
     static void         Register(); //  @889800
@@ -101,6 +102,7 @@ private:
     void                SetModelResFromModel(int* args);  //  @88AAB0
     void                ForceInstantiate();   //  @883EB0
     const char*         GetModelRes() const;    //  @884350
+    void                SetModelRes(const char* const arg);    //  @888E10
     const float         GetOpacity() const; //  @883F90
     void                SetOpacity(float op); //  @883FB0
     void                SetAddBlend(const bool enabled);    //  @883D40
@@ -134,6 +136,14 @@ private:
     const int*          GetPivotHideList();    //  @67B890
     void                SetDepthSorted(const bool enabled); //  @883E40
     const bool          GetDepthSorted() const; //  @883E60
+    void                GetMsep1() const;   //  @42F4F0
+    void                SetMsep1() const;   //  @883EC0
+    void                GetPivotRelativePos(int* args) const;   //  @88A250
+    void                GetPivotRelativePos_Impl(Vector4f& outPos, const unsigned int pivotId) const;   //  @884690
+    void                GetMsep2() const;   //  @42F4F0
+    void                SetMsep2() const;   //  @883EC0
+    void                GetMsep3() const;   //  @42F4F0
+    void                SetMsep3() const;   //  @883EC0
 
     void                SetLightingFromAsset(AssetLoader* assload, Folder_* associatedFolderPtr);   //  @888DE0
 

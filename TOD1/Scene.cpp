@@ -1019,12 +1019,12 @@ void Scene::Register()
     tScene->SetCreator((CREATOR)Create);
 
     tScene->RegisterProperty(tNUMBER, "timemultiplier", (EntityGetterFunction)&GetTimeMultiplier, (EntitySetterFunction)&SetTimeMultiplier, nullptr, 10);
-    tScene->RegisterProperty(tNUMBER, "rewindtimemultiplier", (EntityGetterFunction)&GetRewindTimeMultiplier, (EntitySetterFunction)&SetRewindTimeMultiplier, nullptr, NULL);
-    tScene->RegisterProperty(tTRUTH, "initmode", (EntityGetterFunction)&GetInitMode, (EntitySetterFunction)&SetInitMode, nullptr, NULL);
-    tScene->RegisterProperty(tNUMBER, "windsize", (EntityGetterFunction)&GetWindSize, nullptr, nullptr, NULL);
-    tScene->RegisterProperty(tINTEGER, "playmode", (EntityGetterFunction)&GetPlaymode, nullptr, nullptr, NULL);
-    tScene->RegisterProperty(tNUMBER, "rewindresumetime", (EntityGetterFunction)&GetRewindResumeTime, nullptr, nullptr, NULL);
-    tScene->RegisterProperty(tINTEGER, "rewindresumetime_ms", (EntityGetterFunction)&GetRewindResumeTimeMs, nullptr, nullptr, NULL);
+    tScene->RegisterProperty(tNUMBER, "rewindtimemultiplier", (EntityGetterFunction)&GetRewindTimeMultiplier, (EntitySetterFunction)&SetRewindTimeMultiplier, nullptr);
+    tScene->RegisterProperty(tTRUTH, "initmode", (EntityGetterFunction)&GetInitMode, (EntitySetterFunction)&SetInitMode, nullptr);
+    tScene->RegisterProperty(tNUMBER, "windsize", (EntityGetterFunction)&GetWindSize, nullptr, nullptr);
+    tScene->RegisterProperty(tINTEGER, "playmode", (EntityGetterFunction)&GetPlaymode, nullptr, nullptr);
+    tScene->RegisterProperty(tNUMBER, "rewindresumetime", (EntityGetterFunction)&GetRewindResumeTime, nullptr, nullptr);
+    tScene->RegisterProperty(tINTEGER, "rewindresumetime_ms", (EntityGetterFunction)&GetRewindResumeTimeMs, nullptr, nullptr);
 
     tScene->RegisterScript("setwindmode(truth)", (EntityFunctionMember)&SetWindMode, NULL, NULL, NULL, nullptr, nullptr);
     tScene->RegisterScript("setwindpause(truth)", (EntityFunctionMember)&SetWindPause, NULL, NULL, NULL, nullptr, nullptr);

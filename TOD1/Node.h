@@ -126,7 +126,7 @@ public:
     virtual void        DestroyFrameBuffers();                  //  @8CB190
     virtual void        nullsub_6(const std::vector<Node*>);    //  @883EC0
     virtual String*     GetResourceName(String* unk);           //  @484E80
-    virtual Vector4f*   GetBounds(Vector4f& unk) const;         //  @484DC0
+    virtual Vector4f*   GetBounds(Vector4f& outBounds);         //  @484DC0
 
 public:
     Node(unsigned char allocationBitmask);  //  @88D4B0

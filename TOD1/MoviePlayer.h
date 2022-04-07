@@ -30,7 +30,7 @@ class MoviePlayer : public Node
         void                Stop(); //  @443010
         void                ProcessFrame(FrameBuffer* fb); //  @442A90
         void                OpenMovie();    //  @442F50
-        bool                _442A70() const;    //  @442A70
+        bool                _442A70() const;    //  @442A70 //  NOTE: possibly 'IsStreamed'.
         void                PlayAllocated();    //  @442A80
     };
 
@@ -52,8 +52,7 @@ protected:
         {
             unsigned        HasFrameBuffer : 1;
             unsigned        MovieClosed : 1;
-        }                   m_FlagsBits;
-        unsigned int        m_Flags;
+        };
     }                       m_Flags;
 
 public:
@@ -70,8 +69,8 @@ public:
         m_Opacity = 1;
         m_FrameBuffer = nullptr;
         m_SubtitleNode = nullptr;
-        m_Flags.m_FlagsBits.HasFrameBuffer = 0;
-        m_Flags.m_FlagsBits.MovieClosed = 1;
+        m_Flags.HasFrameBuffer = 0;
+        m_Flags.MovieClosed = 1;
         m_Volume = 0;
     }
 
@@ -82,9 +81,27 @@ public:
     virtual String*         GetResourceName(String* resname);   //  @88B8F0
 
     const char*             GetMovie() const;   //  @88B020
+    void                    SetRenderSubtitleNode(int* args);   //  @88ABC0
+    void                    DeallocateStream(int* args);    //  @88B830
+    void                    AllocateStream(int* args);  //  @88B7E0
+    void                    PlayWithStopEventAllocated(int* args);  //  @88B790
+    void                    PlayWithStopEvent(int* args);   //  @88B7B0
+    void                    Stop(int* args);    //  @88AB90
+    void                    PlayAllocated(int* args);   //  @88AB80
 
 private:
     void                    Play(int args); //  @88B740
+    inline void             DeallocateStream_Impl()
+    {
+        LogDump::LogA("Deallocating movie\n");
+        if (Instance == this)
+        {
+            Instance = nullptr;
+            MovieOpen = false;
+            Scene::SceneInstance->_896BA0();
+            Scene::SceneInstance->AllocateRewindBuffer();
+        }
+    }
 
 public:
     static String           MovieName; // @A3D864

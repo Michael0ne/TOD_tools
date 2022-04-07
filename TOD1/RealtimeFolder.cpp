@@ -1,11 +1,18 @@
 #include "RealtimeFolder.h"
 
-RealtimeFolder* RealtimeFolder::RealtimeFolderInstance; // @A3D8D4
-RealtimeFolder* tRealtimeFolder = nullptr;
+RealtimeFolder* RealtimeFolder::Instance;
+EntityType* tRealtimeFolder;
 
-RealtimeFolder::RealtimeFolder() : Folder_()
+RealtimeFolder* RealtimeFolder::Create(AllocatorIndex)
 {
- MESSAGE_CLASS_CREATED(RealtimeFolder);
+    return new RealtimeFolder;
+}
 
- RealtimeFolderInstance = this;
+void RealtimeFolder::Register()
+{
+    tRealtimeFolder = new EntityType("RealtimeFolder");
+    tRealtimeFolder->InheritFrom(tFolder);
+    tRealtimeFolder->SetCreator((CREATOR)Create);
+
+    tRealtimeFolder->PropagateProperties();
 }

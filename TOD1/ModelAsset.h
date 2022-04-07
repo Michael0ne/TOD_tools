@@ -1,5 +1,6 @@
 #pragma once
 #include "TextureAsset.h"
+#include <directxmath\include\DirectXMath.h>
 
 class SkinnedMeshBuffer;
 
@@ -61,6 +62,8 @@ public:
 
     void                _856E60();  //  @856E60
     int                 PivotIndexByName(const char* const pivotname) const;    //  @88A060
+    void                GetPivotMatrix(DirectX::XMMATRIX& outMat, const int pivotIndex) const;  //  @8543F0
+    Vector4f&           GetBoundingRadius(Vector4f& outBoundings) const;    //  @854230
 
     static void         CreateInstance(); // @858210
     static ModelAsset*  Create(); // @8581F0

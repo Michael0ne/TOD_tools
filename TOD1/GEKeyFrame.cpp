@@ -128,22 +128,22 @@ void GEKeyFrame::Register()
     tGEKeyFrame = new EntityType("GEKeyFrame");
     tGEKeyFrame->InheritFrom(tNode);
     tGEKeyFrame->SetCreator((CREATOR)Create);
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTime", (EntityGetterFunction)&GetKeyTime, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyTime, NULL, NULL, NULL, "control=slider|min=0|max=10", NULL, NULL, -1);
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTime", (EntityGetterFunction)&GetKeyTime, (EntitySetterFunction)&SetKeyTime, "control=slider|min=0|max=10");
     
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTranslationX", (EntityGetterFunction)&GetKeyTranslationX, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyTranslationX, NULL, NULL, NULL, "control=slider|min=-2|max=2", NULL, NULL, -1);
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTranslationY", (EntityGetterFunction)&GetKeyTranslationY, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyTranslationY, NULL, NULL, NULL, "control=slider|min=-2|max=2", NULL, NULL, -1);
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTranslationZ", (EntityGetterFunction)&GetKeyTranslationZ, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyTranslationZ, NULL, NULL, NULL, "control=slider|min=-2|max=2", NULL, NULL, -1);
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTranslationX", (EntityGetterFunction)&GetKeyTranslationX, (EntitySetterFunction)&SetKeyTranslationX, "control=slider|min=-2|max=2");
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTranslationY", (EntityGetterFunction)&GetKeyTranslationY, (EntitySetterFunction)&SetKeyTranslationY, "control=slider|min=-2|max=2");
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTranslationZ", (EntityGetterFunction)&GetKeyTranslationZ, (EntitySetterFunction)&SetKeyTranslationZ,  "control=slider|min=-2|max=2");
 
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyScaleX", (EntityGetterFunction)&GetKeyScaleX, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyScaleX, NULL, NULL, NULL, "control=slider|min=0|max=2", NULL, NULL, -1);
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyScaleY", (EntityGetterFunction)&GetKeyScaleY, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyScaleY, NULL, NULL, NULL, "control=slider|min=0|max=2", NULL, NULL, -1);
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyScaleZ", (EntityGetterFunction)&GetKeyScaleZ, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyScaleZ, NULL, NULL, NULL, "control=slider|min=0|max=2", NULL, NULL, -1);
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyScaleX", (EntityGetterFunction)&GetKeyScaleX, (EntitySetterFunction)&SetKeyScaleX, "control=slider|min=0|max=2");
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyScaleY", (EntityGetterFunction)&GetKeyScaleY, (EntitySetterFunction)&SetKeyScaleY, "control=slider|min=0|max=2");
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyScaleZ", (EntityGetterFunction)&GetKeyScaleZ, (EntitySetterFunction)&SetKeyScaleZ, "control=slider|min=0|max=2");
 
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyRotationX", (EntityGetterFunction)&GetKeyRotationX, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyRotationX, NULL, NULL, NULL, "control=slider|min=-3|max=3", NULL, NULL, -1);
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyRotationY", (EntityGetterFunction)&GetKeyRotationY, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyRotationY, NULL, NULL, NULL, "control=slider|min=-3|max=3", NULL, NULL, -1);
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyRotationZ", (EntityGetterFunction)&GetKeyRotationZ, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyRotationZ, NULL, NULL, NULL, "control=slider|min=-3|max=3", NULL, NULL, -1);
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyRotationX", (EntityGetterFunction)&GetKeyRotationX, (EntitySetterFunction)&SetKeyRotationX, "control=slider|min=-3|max=3");
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyRotationY", (EntityGetterFunction)&GetKeyRotationY, (EntitySetterFunction)&SetKeyRotationY, "control=slider|min=-3|max=3");
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyRotationZ", (EntityGetterFunction)&GetKeyRotationZ, (EntitySetterFunction)&SetKeyRotationZ, "control=slider|min=-3|max=3");
 
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyOpacity", (EntityGetterFunction)&GetKeyOpacity, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyOpacity, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, -1);
-    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTextureScroll", (EntityGetterFunction)&GetKeyTextureScroll, NULL, NULL, NULL, (EntitySetterFunction)&SetKeyTextureScroll, NULL, NULL, NULL, "control=slider|min=0|max=10", NULL, NULL, -1);
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyOpacity", (EntityGetterFunction)&GetKeyOpacity, (EntitySetterFunction)&SetKeyOpacity, "control=slider|min=0|max=1");
+    tGEKeyFrame->RegisterProperty(tNUMBER, "KeyTextureScroll", (EntityGetterFunction)&GetKeyTextureScroll, (EntitySetterFunction)&SetKeyTextureScroll, "control=slider|min=0|max=10");
 
     tGEKeyFrame->PropagateProperties();
 }

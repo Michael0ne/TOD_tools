@@ -15,7 +15,7 @@ public:
     virtual bool NotEqualTo(const void* const arg1, const void* const arg2) const override; // @864A30
     virtual void ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const override; // @864B20
     virtual void PerformOperation(int operationId, void* params) const override; // @864E60
-    virtual bool IsValidValueForType(void*) const override; // @864930
+    virtual bool IsValidValueForType(const void*) const override; // @864930
 
     void* operator new (size_t size)
     {

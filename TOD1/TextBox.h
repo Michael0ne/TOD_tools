@@ -50,7 +50,7 @@ public:
     TextBox(); // @8FDAA0
 
     virtual ~TextBox(); // @8FDBE0
-    virtual Vector4f* GetBounds(Vector4f& outBounds) const override; // @8FF220
+    virtual Vector4f* GetBounds(Vector4f& outBounds) override; // @8FF220
 
     void* operator new (size_t size)
     {

@@ -2,8 +2,11 @@
 #include "NumberType.h"
 #include "IntegerType.h"
 #include "StringType.h"
+#include "TruthType.h"
 #include "Light.h"
 #include "SkinnedMeshBuffer.h"
+#include "Scene.h"
+#include "Placeholder.h"
 
 EntityType* tModel;
 
@@ -19,6 +22,25 @@ Model::~Model()
     MESSAGE_CLASS_DESTROYED(Model);
 }
 
+Vector4f* Model::GetBounds(Vector4f& unk)
+{
+    if (0)
+    {
+        if (m_ModelRes.m_AssetPtr)
+            ((ModelAsset*)m_ModelRes.m_AssetPtr)->GetBoundingRadius(unk);
+        else
+            m_Id._3 = 8;
+    }
+    else
+        unk = { 0, 0, 0, 1000.f };
+
+    return &unk;
+}
+
+void Model::stub19()
+{
+}
+
 void Model::SetStaticLightingEnabled(const bool enabled)
 {
     if (m_ModelFlags.m_FlagBits.StaticallyLit != enabled)
@@ -30,18 +52,47 @@ void Model::SetStaticLightingEnabled(const bool enabled)
     Light::GetGlobalList()->m_StaticLightsTotal++;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Model::Register()
 {
     tModel = new EntityType("Model");
     tModel->InheritFrom(tNode);
     tModel->SetCreator((CREATOR)Create);
+
+    //  NOTE: msep - Message SEParator?
+    tModel->RegisterProperty(tTRUTH, "msep1", (EntityGetterFunction)&GetMsep1, (EntitySetterFunction)&SetMsep1, "control=drawline|name=Assets");
+    tModel->RegisterProperty(tSTRING, "modelres", (EntityGetterFunction)&GetModelRes, (EntitySetterFunction)&SetModelAsset, "control=resource|type=*.model", 10);
+    tModel->RegisterProperty(tTRUTH, "msep2", (EntityGetterFunction)&GetMsep2, (EntitySetterFunction)&SetMsep2, "control=drawline|name=Rendering settings");
+    tModel->RegisterProperty(tNUMBER, "opacity", (EntityGetterFunction)&GetOpacity, (EntitySetterFunction)&SetOpacity, "control=slider|min=0|max=1", 12);
+    tModel->RegisterProperty(tTRUTH, "addblend", (EntityGetterFunction)&GetAddBlend, (EntitySetterFunction)&SetAddBlend, "control=truth|name=");
+    tModel->RegisterProperty(tTRUTH, "disablezwrite", (EntityGetterFunction)&GetZWriteDisabled, (EntitySetterFunction)&SetZWriteDisabled, "control=truth|name=");
+    tModel->RegisterProperty(tTRUTH, "use_hard_alpha_factor", (EntityGetterFunction)&GetUseHardAlphaFactor, (EntitySetterFunction)&SetUseHardAlphaFactor, "control=truth|name=");
+    tModel->RegisterProperty(tNUMBER, "hard_alpha_factor", (EntityGetterFunction)&GetHardAlphaFactor, (EntitySetterFunction)&SetHardAlphaFactor, "control=slider|min=0|max=1");
+    tModel->RegisterProperty(tINTEGER, "active_texture_set", (EntityGetterFunction)&GetActiveTextureSet, (EntitySetterFunction)&SetActiveTextureSet, "control=slider|min=0|max=32", 11);
+    tModel->RegisterProperty(tINTEGER, "number_of_textures_sets", (EntityGetterFunction)&GetNumberOfTextureSets, nullptr, nullptr);
+    tModel->RegisterProperty(tINTEGER, "solo_pivot", (EntityGetterFunction)&GetSoloPivot, (EntitySetterFunction)&SetSoloPivot, "control=slider|min=0|max=32");
+    tModel->RegisterProperty(tTRUTH, "place_in_hud", (EntityGetterFunction)&GetPlaceInHud, (EntitySetterFunction)&SetPlaceInHud, "control=truth|name=");
+    tModel->RegisterProperty(tTRUTH, "use_virtual_hud", (EntityGetterFunction)&GetUseVirtualHud, (EntitySetterFunction)&SetUseVirtualHud, "control=truth|name=");
+    tModel->RegisterProperty(tTRUTH, "msep3", (EntityGetterFunction)&GetMsep3, (EntitySetterFunction)&SetMsep3, "control=drawline|name=Light settings");
+    tModel->RegisterProperty(tTRUTH, "dynamically_lit", (EntityGetterFunction)&GetDynamicallyLit, (EntitySetterFunction)&SetDynamicallyLit, "control=truth|name=");
+    tModel->RegisterProperty(tTRUTH, "statically_lit", (EntityGetterFunction)&GetStaticallyLit, (EntitySetterFunction)&SetStaticallyLit, "control=truth|name=");
+    tModel->RegisterProperty(tTRUTH, "backside_transparent", (EntityGetterFunction)&GetBacksideTransparent, (EntitySetterFunction)&SetBacksideTransparent, "control=truth|name=");
+    tModel->RegisterProperty(tTRUTH, "single_color_mode", (EntityGetterFunction)&GetSingleColorMode, (EntitySetterFunction)&SetSingleColorMode, "control=truth|name=");
+    tModel->RegisterProperty(tTRUTH, "blocks_static_light", (EntityGetterFunction)&GetBlocksStaticLight, (EntitySetterFunction)&SetBlocksStaticLight, "control=truth|name=");
+    tModel->RegisterProperty(DataType::LoadScript("list(integer)"), "pivot_hide_list", (EntityGetterFunction)&GetPivotHideList, (EntitySetterFunction)&SetPivotHideList, nullptr);
+    tModel->RegisterProperty(tTRUTH, "depth_sorted", (EntityGetterFunction)&GetDepthSorted, (EntitySetterFunction)&SetDepthSorted, "control=truth|name=");
+
+    tModel->RegisterScript("findpivot(string):integer", (EntityFunctionMember)&FindPivot);
+    tModel->RegisterScript("setmodelresfrommodel(entity)", (EntityFunctionMember)&SetModelResFromModel);
+    tModel->RegisterScript("getpivotrelativepos(integer):vector", (EntityFunctionMember)&GetPivotRelativePos);
+    tModel->RegisterScript("forceinstantiate", (EntityFunctionMember)&ForceInstantiate);
+
+    tModel->PropagateProperties();
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void Model::SetModelAsset(Model* model)
 {
-    const char* val = m_ModelRes ? m_ModelRes->GetName() : nullptr;
+    const char* val = m_ModelRes.m_AssetPtr ? m_ModelRes.m_AssetPtr->GetName() : nullptr;
     StoreProperty(10, val, tSTRING);
 }
 
@@ -59,7 +110,7 @@ void Model::_884530()
 
 void Model::FindPivot(int* args) const
 {
-    *args = m_ModelRes->PivotIndexByName((const char* const)args[1]);
+    *args = ((ModelAsset*)m_ModelRes.m_AssetPtr)->PivotIndexByName((const char* const)args[1]);
 }
 
 void Model::SetModelResFromModel(int* args)
@@ -74,7 +125,52 @@ void Model::ForceInstantiate()
 
 const char* Model::GetModelRes() const
 {
-    return m_ModelRes ? m_ModelRes->GetName() : nullptr;
+    return m_ModelRes.m_AssetPtr ? m_ModelRes.m_AssetPtr->GetName() : nullptr;
+}
+
+void Model::SetModelRes(const char* const arg)
+{
+    char* respath = (char*)arg;
+    if (Scene::_A3D858 && this && m_ScriptEntity != nullptr)
+    {
+        EntityType* placeholderEntity = m_ScriptEntity;
+        while (tPlaceholder != placeholderEntity)
+        {
+            placeholderEntity = placeholderEntity->m_Parent;
+            if (!placeholderEntity)
+                break;
+        }
+
+        if (placeholderEntity)
+        {
+            if (arg && strlen(arg))
+                respath = nullptr;
+        }
+    }
+
+    if (m_ModelRes.m_AssetPtr)
+        respath = (char*)m_ModelRes.m_AssetPtr->GetName();
+    else
+        respath = nullptr;
+
+    StoreProperty(10, &respath, tSTRING);
+    m_ModelRes = AssetLoader(respath);
+    
+    //  TODO: flags...
+
+    TryInstantiate();
+    if (m_QuadTree)
+        m_QuadTree->Refresh();
+
+    m_Id._3 = 9;
+
+    if (m_ModelRes.m_AssetPtr && strstr(m_ModelRes.m_AssetPtr->GetName(), "_Marker_"))
+    {
+        SetFadeThreshold(0.0099999998f);
+        LogDump::LogA("repaired marker fade threshold to 0.01\n");
+    }
+
+    stub19();
 }
 
 const float Model::GetOpacity() const
@@ -157,10 +253,10 @@ const short Model::GetActiveTextureSet() const
 #pragma message(TODO_IMPLEMENTATION)
 const int Model::GetNumberOfTextureSets() const
 {
-    if (!m_ModelRes)
+    if (!m_ModelRes.m_AssetPtr)
         return 1;
 
-    if (m_ModelRes->m_MeshList.size() <= 0)
+    if (((ModelAsset*)m_ModelRes.m_AssetPtr)->m_MeshList.size() <= 0)
         return 1;
 
     //for (unsigned int i = 0; i < m_ModelRes->m_MeshList.size(); ++i)
@@ -288,6 +384,43 @@ void Model::SetDepthSorted(const bool enabled)
 const bool Model::GetDepthSorted() const
 {
     return m_ModelFlags.m_FlagBits.DepthSorted;
+}
+
+void Model::GetMsep1() const
+{
+}
+
+void Model::SetMsep1() const
+{
+}
+
+void Model::GetPivotRelativePos(int* args) const
+{
+    Vector4f pivotPos;
+    GetPivotRelativePos_Impl(pivotPos, args[3]);
+
+    *(Vector4f*)args = pivotPos;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Model::GetPivotRelativePos_Impl(Vector4f& outPos, const unsigned int pivotId) const
+{
+}
+
+void Model::GetMsep2() const
+{
+}
+
+void Model::SetMsep2() const
+{
+}
+
+void Model::GetMsep3() const
+{
+}
+
+void Model::SetMsep3() const
+{
 }
 
 void Model::SetLightingFromAsset(AssetLoader* assload, Folder_* associatedFolderPtr)

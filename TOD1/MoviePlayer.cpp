@@ -2,6 +2,9 @@
 #include "Scene.h"
 #include "AssetManager.h"
 #include "Camera.h"
+#include "StringType.h"
+#include "IntegerType.h"
+#include "NumberType.h"
 
 EntityType* tMoviePlayer;
 String MoviePlayer::MovieName;
@@ -27,11 +30,67 @@ const char* MoviePlayer::GetMovie() const
     return MovieName.m_Str;
 }
 
+void MoviePlayer::SetRenderSubtitleNode(int* args)
+{
+    m_SubtitleNode = (Node*)args[0];
+}
+
+void MoviePlayer::DeallocateStream(int* args)
+{
+    m_FrameInfo.Stop();
+    DeallocateStream_Impl();
+}
+
+void MoviePlayer::AllocateStream(int* args)
+{
+    if (args)
+    {
+        Instance = this;
+        m_StreamScriptId = args[0];
+        m_Flags.MovieClosed = true;
+    }
+    else
+    {
+        Instance = this;
+        m_StreamScriptId = -1;
+        m_Flags.MovieClosed = true;
+    }
+}
+
+void MoviePlayer::PlayWithStopEventAllocated(int* args)
+{
+    m_StopEventScriptId = args[0];
+    m_FrameInfo.PlayAllocated();
+}
+
+void MoviePlayer::PlayWithStopEvent(int* args)
+{
+    Instance = this;
+    m_Flags.MovieClosed = true;
+    m_StreamScriptId = -1;
+    m_StopEventScriptId = args[0];
+
+    m_FrameInfo.PlayAllocated();
+}
+
+void MoviePlayer::Stop(int* args)
+{
+    if (Scene::SceneInstance->m_PlayMode == Scene::MODE_STOP)
+        TriggerGlobalScript(StopPressedCommand, nullptr);
+
+    m_FrameInfo.Stop();
+}
+
+void MoviePlayer::PlayAllocated(int* args)
+{
+    m_FrameInfo.PlayAllocated();
+}
+
 void MoviePlayer::Play(int args)
 {
     Instance = this;
     m_StreamScriptId = -1;
-    m_Flags.m_FlagsBits.MovieClosed = true;
+    m_Flags.MovieClosed = true;
 
     if (Scene::SceneInstance->m_PlayMode == Scene::PlayMode::MODE_STOP)
         TriggerGlobalScript(PlayPressedCommand, nullptr);
@@ -44,33 +103,27 @@ MoviePlayer::~MoviePlayer()
     MESSAGE_CLASS_DESTROYED(MoviePlayer);
 
     if (Instance == this)
-    {
-        LogDump::LogA("Deallocating movie\n");
-        Instance = nullptr;
-        MovieOpen = false;
-        Scene::SceneInstance->_896BA0();
-        Scene::SceneInstance->AllocateRewindBuffer();
-    }
+        DeallocateStream_Impl();
 
     delete m_FrameBuffer;
 }
 
 void MoviePlayer::Update()
 {
-    if (m_Flags.m_FlagsBits.MovieClosed)
+    if (m_Flags.MovieClosed)
     {
         Scene::SceneInstance->FreeRewindBuffer();
         Scene::SceneInstance->ReleaseQuadTreeAndRenderlist();
 
         MovieOpen = true;
         m_FrameInfo.OpenMovie();
-        m_Flags.m_FlagsBits.MovieClosed = false;
+        m_Flags.MovieClosed = false;
     }
 
-    if (!m_Flags.m_FlagsBits.HasFrameBuffer)
+    if (!m_Flags.HasFrameBuffer)
         delete m_FrameBuffer;
 
-    m_Flags.m_FlagsBits.HasFrameBuffer = false;
+    m_Flags.HasFrameBuffer = false;
 
     if (m_FrameInfo.m_PlayingMovie)
     {
@@ -92,7 +145,7 @@ void MoviePlayer::Update()
 
     if (m_FrameInfo._442A70())
     {
-        int streamscriptid = m_StreamScriptId;
+        const int streamscriptid = m_StreamScriptId;
         if (streamscriptid >= 0)
         {
             m_StreamScriptId = -1;
@@ -109,7 +162,7 @@ void MoviePlayer::Render()
             m_FrameBuffer = new FrameBuffer(50, 6, 2);
 
         m_FrameBuffer->Reset();
-        m_Flags.m_FlagsBits.HasFrameBuffer = 1;
+        m_Flags.HasFrameBuffer = 1;
         m_FrameInfo.ProcessFrame(m_FrameBuffer);
         m_FrameBuffer->_436BF0();
         m_FrameBuffer->_436040(23, 0);
@@ -135,13 +188,33 @@ MoviePlayer* MoviePlayer::Create(AllocatorIndex)
     return new MoviePlayer;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void MoviePlayer::Register()
 {
     tMoviePlayer = new EntityType("MoviePlayer");
     tMoviePlayer->InheritFrom(tNode);
     tMoviePlayer->SetCreator((CREATOR)Create);
 
+    tMoviePlayer->RegisterProperty(tSTRING, "movie", (EntityGetterFunction)&GetMovie, (EntitySetterFunction)&SetMovie, "control=resource|type=*.*");
+    tMoviePlayer->RegisterProperty(tNUMBER, "volume", (EntityGetterFunction)&GetVolume, (EntitySetterFunction)&SetVolume, "control=slider|min=0|max=1");
+    tMoviePlayer->RegisterProperty(tNUMBER, "scaleX", (EntityGetterFunction)&GetScaleX, (EntitySetterFunction)&SetScaleX, "control=slider|min=0|max=1");
+    tMoviePlayer->RegisterProperty(tNUMBER, "scaleY", (EntityGetterFunction)&GetScaleY, (EntitySetterFunction)&SetScaleY, "control=slider|min=0|max=1");
+    tMoviePlayer->RegisterProperty(tINTEGER, "displacementX", (EntityGetterFunction)&GetDisplacementX, (EntitySetterFunction)&SetDisplacementX, "control=slider|min=-1024|max=1024");
+    tMoviePlayer->RegisterProperty(tINTEGER, "displacementY", (EntityGetterFunction)&GetDisplacementY, (EntitySetterFunction)&SetDisplacementY, "control=slider|min=-1024|max=1024");
+    tMoviePlayer->RegisterProperty(tNUMBER, "opacity", (EntityGetterFunction)&GetOpacity, (EntitySetterFunction)&SetOpacity, "control=slider|min=0|max=1");
+
+    tMoviePlayer->RegisterScript("play", (EntityFunctionMember)&Play, 0, 0, 0, "control=button|text=play");
+    tMoviePlayer->RegisterScript("play_allocated", (EntityFunctionMember)&PlayAllocated, 0, 0, 0, "control=button|text=play_allocated");
+    tMoviePlayer->RegisterScript("stop", (EntityFunctionMember)&Stop, 0, 0, 0, "control=button|text=stop");
+    tMoviePlayer->RegisterScript("playwithstopevent(integer)", (EntityFunctionMember)&PlayWithStopEvent);
+    tMoviePlayer->RegisterScript("playwithstopevent_allocated(integer)", (EntityFunctionMember)&PlayWithStopEventAllocated);
+    tMoviePlayer->RegisterScript("allocate_stream(integer)", (EntityFunctionMember)&AllocateStream, 0, 0, 0, "control=button|text=allocate_stream");
+    tMoviePlayer->RegisterScript("deallocate_stream", (EntityFunctionMember)&DeallocateStream);
+    tMoviePlayer->RegisterScript("setrendersubtitlenode(entity)", (EntityFunctionMember)&SetRenderSubtitleNode);
+
+    tMoviePlayer->PropagateProperties();
+
+    StopPressedCommand = RegisterGlobalCommand("stop_pressed", true);
+    PlayPressedCommand = RegisterGlobalCommand("play_command", true);
 }
 
 MoviePlayer::FrameInfo::FrameInfo()

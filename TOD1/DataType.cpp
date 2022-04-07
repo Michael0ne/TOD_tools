@@ -176,7 +176,7 @@ char DataType::IsReferenced(int* a1, int a2)
     return true;
 }
 
-bool DataType::IsValidValueForType(void*) const
+bool DataType::IsValidValueForType(const void*) const
 {
     return true;
 }
@@ -364,7 +364,7 @@ DataType* DataType::GetTypeByName(const char* name)
             if (j == TypesList[i]->m_TypeName.m_Length)
                 break;
 
-            if (tolower(TypesList[i]->m_TypeName.m_Str[j]) == name[j])
+            if (tolower(TypesList[i]->m_TypeName.m_Str[j]) == tolower(name[j]))
                 j++;
             else
                 break;

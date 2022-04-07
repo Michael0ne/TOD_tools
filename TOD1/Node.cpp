@@ -129,10 +129,10 @@ Node* Node::FindNode(const char* nodeName)
         else
         {
             Model* modelEntity = (Model*)EntityType::IsParentOf(tModel, (Entity*)this);
-            if (modelEntity && modelEntity->m_ModelRes)
+            if (modelEntity && modelEntity->m_ModelRes.m_AssetPtr)
             {
                 String fileName;
-                File::ExtractFileName(fileName, modelEntity->m_ModelRes->GetName());
+                File::ExtractFileName(fileName, modelEntity->m_ModelRes.m_AssetPtr->GetName());
                 if (String::EqualIgnoreCase(fileName.m_Str, nodeName, fileName.m_Length))
                     return this;
             }
@@ -156,7 +156,7 @@ Node* Node::FindNodeSlowRecursive(const char* const nodeName)
 
         String nodeNameStr(nodeName);
         nodeNameStr.ToLowerCase();
-        const int nodeNameCrc = Utils::CalcCRC32(nodeNameStr.m_Str, nodeNameStr.m_Length);
+        const unsigned int nodeNameCrc = (unsigned int)Utils::CalcCRC32(nodeNameStr.m_Str, nodeNameStr.m_Length);
 
         AssetManager::FastFindInfo ffiTemp { 0, nodeNameCrc, nullptr };
         std::vector<AssetManager::FastFindInfo>::iterator ffindNode = std::find(g_AssetManager->m_FastFindNodeVector.begin(), g_AssetManager->m_FastFindNodeVector.end(), ffiTemp);
@@ -1751,9 +1751,10 @@ String* Node::GetResourceName(String* unk)
     return unk;
 }
 
-Vector4f* Node::GetBounds(Vector4f& unk) const
+Vector4f* Node::GetBounds(Vector4f& outBounds)
 {
-    return (unk = Vector4f(), &unk);
+    outBounds = BuiltinType::ZeroVector;
+    return &outBounds;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

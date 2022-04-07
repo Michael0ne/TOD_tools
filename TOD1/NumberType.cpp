@@ -225,7 +225,7 @@ void NumberType::PerformOperation(int operationId, void* params) const
     }
 }
 
-bool NumberType::IsValidValueForType(void* a1) const
+bool NumberType::IsValidValueForType(const void* a1) const
 {
     return !isinf(*(float*)a1);
 }

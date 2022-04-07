@@ -1,28 +1,61 @@
 #pragma once
-
 #include "Placeholder.h"
-
-#define WEAPON_PLACEHOLDER_CLASS_SIZE 284
 
 class WeaponPlaceHolder : public PlaceHolder
 {
 protected:
- unsigned int m_Flags_15;
- float m_VIPTimer;
- unsigned int m_Flags_16;
- float m_RespawnTime;
+    union
+    {
+        struct
+        {
+            unsigned    ResourceType : 4;
+            unsigned    Status : 2;
+            unsigned    Locked : 1;
+            unsigned    PopSensitiveType : 2;
+            unsigned    IsVIP : 1;
+        };
+    }           m_Flags_15;
+    float       m_VIPTimer;
+    union
+    {
+        struct
+        {
+            unsigned    Priority : 3;
+            unsigned    WeaponSubType : 5;
+            unsigned    MeleeWeaponSubType : 3;
+            unsigned    BulletDropType : 3;
+            unsigned    Respawnable : 1;
+        };
+    }           m_Flags_16;
+    float       m_RespawnTime;
 
 public:
- WeaponPlaceHolder() : PlaceHolder() // NOTE: no constructor.
- {
-  MESSAGE_CLASS_CREATED(WeaponPlaceHolder);
+    WeaponPlaceHolder() : PlaceHolder()
+    {
+        MESSAGE_CLASS_CREATED(WeaponPlaceHolder);
 
-  m_Flags_15 = m_Flags_15 & 0xFFFFFC03 | 3;
-  m_Flags_16 = m_Flags_16 & 0xFFFF8000;
+        m_Flags_15.ResourceType = 3;
+        m_Flags_15.Status = 0;
+        m_Flags_15.Locked = false;
+        m_Flags_15.PopSensitiveType = 0;
+        m_Flags_15.IsVIP = false;
 
-  m_VIPTimer = 0.0f;
-  m_RespawnTime = 0.0f;
- }
+        m_Flags_16.Priority = 0;
+        m_Flags_16.WeaponSubType = 0;
+        m_Flags_16.MeleeWeaponSubType = 0;
+        m_Flags_16.BulletDropType = 0;
+        m_Flags_16.Respawnable = true;
+
+        m_VIPTimer = 0.f;
+        m_RespawnTime = 0.f;
+    }
+
+    static void     Register(); //  @8D1D00
+
+private:
+    static WeaponPlaceHolder*   Create(AllocatorIndex); //  @8D2100
 };
 
-static_assert(sizeof(WeaponPlaceHolder) == WEAPON_PLACEHOLDER_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(WeaponPlaceHolder));
+extern EntityType* tWeaponPlaceholder;  //  @A3DFEC
+
+ASSERT_CLASS_SIZE(WeaponPlaceHolder, 284);

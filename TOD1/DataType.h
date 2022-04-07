@@ -72,7 +72,7 @@ public:
     virtual void    ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char* a4) const; // @8637D0
     virtual void    PerformOperation(int operationId, void* params) const; // @8C4D60
     virtual char    IsReferenced(int* a1, int); // @8637E0
-    virtual bool    IsValidValueForType(void* value) const; // @489440
+    virtual bool    IsValidValueForType(const void* value) const; // @489440
 
 private:
     static void     RemoveTypeFromList(const char* const name); // @862B50

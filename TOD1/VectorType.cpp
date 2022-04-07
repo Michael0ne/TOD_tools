@@ -358,7 +358,7 @@ void VectorType::PerformOperation(int operationId, void* params) const
     }
 }
 
-bool VectorType::IsValidValueForType(void* a1) const
+bool VectorType::IsValidValueForType(const void* a1) const
 {
     return (!isnan(*(float*)a1)) &&
         (!isnan(*((float*)a1 + 1))) &&

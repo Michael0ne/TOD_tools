@@ -8,7 +8,7 @@ private:
 
 public:
     NodeSpatial();
-    virtual Vector4f* GetBounds(Vector4f& outBounds) const override;         //  @892130
+    virtual Vector4f* GetBounds(Vector4f& outBounds) override;         //  @892130
 
     const float     GetBoundRadius() const; //  @89A880
     void            SetBoundRadius(const float radius);    //  @5C1560

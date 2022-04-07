@@ -11,7 +11,7 @@ TextBox::~TextBox()
     delete m_Text;
 }
 
-Vector4f* TextBox::GetBounds(Vector4f& outBounds) const
+Vector4f* TextBox::GetBounds(Vector4f& outBounds)
 {
     if (!m_Flags.VerticalAlignment)
         return (outBounds = Vector4f(0.f, 0.f, 0.f, 10000.f), &outBounds);

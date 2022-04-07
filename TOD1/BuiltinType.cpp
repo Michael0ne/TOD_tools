@@ -56,7 +56,7 @@ void BuiltinType::RegisterMemberFunction(DataType* returntype, const char* membe
 {
     char funcproto[128] = {};
     sprintf(funcproto, "%s:%s", membername, returntype->m_TypeName.m_Str);
-    int registeredtype = RegisterGlobalProperty(funcproto, true);
+    const int registeredtype = RegisterGlobalProperty(funcproto, true);
 
     BuiltinMember member(returntype, getter, setter, memberproto, a6);
     m_MembersMap.insert({registeredtype, member});
@@ -901,4 +901,15 @@ void BuiltinType::Register()
     tBuiltin->RegisterHandler("getcoverdemoinactivetimeoutsec:integer", (BuiltinTypeMemberFunction)&GetCoverdemoInactiveTimeoutSec, "GetCoverdemoInactiveTimeoutSecMSG");
     tBuiltin->RegisterHandler("getcoverdemogameplaytimeoutsec:integer", (BuiltinTypeMemberFunction)&GetCoverdemoGameplayTimeoutSec, "GetCoverdemoGameplayTimeoutSecMSG");
     tBuiltin->RegisterHandler("coverdemoexit(integer)", (BuiltinTypeMemberFunction)&CoverdemoExit, "CoverdemoExitMSG");
+}
+
+BuiltinType::BuiltinMember::BuiltinMember(const BuiltinMember& rhs)
+{
+    MESSAGE_CLASS_CREATED(BuiltinMember);
+
+    m_RetType = rhs.m_RetType;
+    m_Getter = rhs.m_Getter;
+    m_Setter = rhs.m_Setter;
+    m_Proto = rhs.m_Proto;
+    m_Str_2 = rhs.m_Str_2;
 }

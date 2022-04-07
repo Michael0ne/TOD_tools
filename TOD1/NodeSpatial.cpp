@@ -10,7 +10,7 @@ NodeSpatial::NodeSpatial() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
     m_BoundRadius = 1.f;
 }
 
-Vector4f* NodeSpatial::GetBounds(Vector4f& outBounds) const
+Vector4f* NodeSpatial::GetBounds(Vector4f& outBounds)
 {
     outBounds = { 0, 0, 0, m_BoundRadius };
     return &outBounds;

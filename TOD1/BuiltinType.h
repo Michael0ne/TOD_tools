@@ -22,9 +22,15 @@ class BuiltinType : public EntityType
             m_RetType = returntype;
             m_Getter = getter;
             m_Setter = setter;
-            m_Proto = prototype;
-            m_Str_2 = dummy;
+
+            if (prototype)
+                m_Proto = prototype;
+
+            if (dummy)
+                m_Str_2 = dummy;
         }
+
+        BuiltinMember(const BuiltinMember& rhs);    //  @488CC0
 
         ~BuiltinMember()
         {

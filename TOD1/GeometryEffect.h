@@ -61,32 +61,8 @@ protected:
             unsigned TriggerAtStart : 1;
             unsigned Frozen : 1;
             unsigned TargetBracket : 1;
-            unsigned _8 : 1;
-            unsigned _9 : 1;
-            unsigned _10 : 1;
-            unsigned _11 : 1;
-            unsigned _12 : 1;
-            unsigned _13 : 1;
-            unsigned _14 : 1;
-            unsigned _15 : 1;
-            unsigned _16 : 1;
-            unsigned _17 : 1;
-            unsigned _18 : 1;
-            unsigned _19 : 1;
-            unsigned _20 : 1;
-            unsigned _21 : 1;
-            unsigned _22 : 1;
-            unsigned _23 : 1;
-            unsigned _24 : 1;
-            unsigned _25 : 1;
-            unsigned _26 : 1;
-            unsigned _27 : 1;
-            unsigned _28 : 1;
-            unsigned _29 : 1;
-            unsigned _30 : 1;
-        }    m_FlagBits;
-        unsigned int m_Flags;
-    }     m_GeometryEffectFlags;
+        };
+    }                   m_Flags;
     int                 field_10C;
     int                 field_110;
     int                 field_114;
@@ -104,12 +80,44 @@ protected:
     float               m_EffectFadeThreshold;
 
 public:
-    GeometryEffect();
-    virtual ~GeometryEffect();
+    inline GeometryEffect() : Model()
+    {
+        MESSAGE_CLASS_CREATED(GeometryEffect);
+
+        m_Flags.BlendMode = 0;
+        m_Flags.Looping = false;
+        m_Flags.TriggerAtStart = false;
+        m_Flags.Frozen = false;
+        m_Flags.TargetBracket = true;
+        m_EffectLifeTime = 2;
+        field_148 = nullptr;
+        m_Effect = nullptr;
+        m_TotalEffects = 0;
+        m_FrameBuffer[0] = nullptr;
+        field_134 = 0;
+
+        m_Flags.BlendMode = 15; //  NOTE: or -1 if signed. The whole code is strange *shrug*.
+        m_Flags.Looping = true;
+        m_Flags.TriggerAtStart = true;
+        m_Flags.Frozen = true;
+        m_Flags.TargetBracket = false;
+
+        m_EffectFadeThreshold = 0.02f;
+        m_EffectRadius = 5;
+        m_ModelFlags.m_FlagBits.PlaceInHud = false;
+    }
+    virtual ~GeometryEffect();  //  @8E2AB0
 
     Effect*             AddEffect();    //  @8DDD40
     void                SetTimeAndFreeze(float* args);  //  @8DDB50
     void                RemoveEffect(Effect* effect);   //  @8DDC10
+
+    static void         Register(); //  @8E2210
+
+private:
+    static GeometryEffect*      Create(AllocatorIndex); //  @8E2A70
 };
+
+extern EntityType* tGeometryEffect; //  @A3E000
 
 ASSERT_CLASS_SIZE(GeometryEffect, 364);

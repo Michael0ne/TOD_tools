@@ -78,6 +78,11 @@ public:
 
         m_HavocFlags_3.ReplacePivotID = 0;
     }
+
+    static void     Register(); //  @8CDB90
+
+private:
+    static HavocPlaceHolder*    Create(AllocatorIndex); //  @8CDFD0
 };
 
 extern EntityType* tHavocPlaceHolder;   //  @A3DFD0

@@ -47,7 +47,7 @@ private:
 public:
     MockupBox(); // @8CF870
     virtual            ~MockupBox();   //  @8D1170
-    virtual void        GetBounds(Vector4f& bounds);   //  @8CE330
+    virtual Vector4f*   GetBounds(Vector4f& bounds) override;   //  @8CE330
     virtual void        Render();   //  @8CE930
 
     const float         GetLeft() const;    //  @89A880

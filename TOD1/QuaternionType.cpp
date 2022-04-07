@@ -501,7 +501,7 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     }
 }
 
-bool QuaternionType::IsValidValueForType(void* a1) const
+bool QuaternionType::IsValidValueForType(const void* a1) const
 {
     return (!isnan(*(float*)a1)) &&
         (!isnan(*((float*)a1 + 1))) &&
