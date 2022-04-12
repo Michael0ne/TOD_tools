@@ -1,6 +1,11 @@
 #include "CharacterPlaceholder.h"
+#include "IntegerType.h"
+#include "TruthType.h"
+#include "NumberType.h"
+#include "StringType.h"
 
 EntityType* tCharacterPlaceHolder;
+int CharacterPlaceHolder::GetPlaceholderModelCommand = -1;
 
 CharacterPlaceHolder::~CharacterPlaceHolder()
 {
@@ -83,6 +88,8 @@ void CharacterPlaceHolder::Register()
     tCharacterPlaceHolder->RegisterProperty(tINTEGER, "StoreTrigType", (EntityGetterFunction)&GetStoreTrigType, (EntitySetterFunction)&SetStoreTrigType, nullptr, 28);
     tCharacterPlaceHolder->RegisterProperty(tINTEGER, "passenger_seat", (EntityGetterFunction)&GetPassengerSeat, (EntitySetterFunction)&SetPassengerSet, nullptr, 29);
     tCharacterPlaceHolder->RegisterProperty(tTRUTH, "was_passenger", (EntityGetterFunction)&WasPassenger, (EntitySetterFunction)&SetWasPassenger, nullptr, 30);
+
+    GetPlaceholderModelCommand = RegisterGlobalCommand("get_placeholder_model:entity", true);
 
     tCharacterPlaceHolder->PropagateProperties();
 }

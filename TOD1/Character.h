@@ -196,14 +196,16 @@ public:
     void                SetIsBoneControl(const bool bonecontrol);   //  @50B410
     const float         GetOpacity() const; //  @4A5B90
     void                SetOpacity(const float opacity);    //  @4A5BA0
+    void                SetRestPose();  //  @90B1E0
 
     static void         Register(); //  @914A20
     static Character*   Create(AllocatorIndex); //  @9149A0
 
     static String       CurrentAttachedNode;    //  @A13258
+    static int          UpdateBoneCtrlCommand;  //  @A1322C
 
 private:
-    void        InitPhysicsSystems();   //  @908490
+    void                InitPhysicsSystems();   //  @908490
 };
 
 extern EntityType* tCharacter;  //  @A3E128

@@ -19,8 +19,8 @@ class DecalManager : public Node
         ~DecalInfo();    //  @430B20
 
         void            _430760(const DirectX::XMMATRIX& mat, const float& opacity);   //  @430760
-        void            _430AA0(FrameBuffer* fb);   //  @430AA0
-        void            _430B50(const char bufferSize, const char perFrameFillSize);    //  @430B50
+        void            SubmitFrameBufferData(FrameBuffer* fb);   //  @430AA0
+        void            SetupParameters(const char bufferSize, const char perFrameFillSize);    //  @430B50
     };
 
 protected:

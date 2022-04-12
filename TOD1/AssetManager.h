@@ -42,6 +42,7 @@ struct AssetHeaderStruct_t
     } field_38;
 };
 
+//  NOTE: It looks like the purpose of this is just to fix raw compiled data that is inside an asset into game-ready data. Fix pointers, instantiate necessary classes etc. Could be templated.
 struct CompiledAssetInfo
 {
     struct ListAssetInfo
@@ -57,7 +58,7 @@ struct CompiledAssetInfo
         TWO,
         COMPILED,
         FOUR
-    }                   m_AssetType;
+    }                   m_AssetType;    //  NOTE: more likely it's a 'block' number. Like 'header', 'data', ...
     int                 m_AssetSize;
     int                 field_8;
     int                 m_Alignment;

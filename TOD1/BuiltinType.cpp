@@ -490,11 +490,10 @@ void BuiltinType::StartCleanupDashboard(int* arg)
 #endif
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::SetScreenResolution(int* arg)
 {
     g_GfxInternal_Dx9->SetScreenResolution(*arg, arg[1]);
-    //g_Blocks->ResetSceneChildrenNodes(NULL);
+    g_AssetManager->DestroySceneNodesFrameBuffers(0);
 }
 
 void BuiltinType::GetScreenResolution(float* arg)

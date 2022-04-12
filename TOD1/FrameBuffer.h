@@ -79,7 +79,7 @@ protected:
         }               m_FlagBits;
         unsigned int    m_Flags;
     }                   m_Flags;
-    RenderList        m_RenderBuffer[3];
+    RenderList          m_RenderBuffer[3];
     float               field_54;
     FrameBuffer        *field_58;
 

@@ -6,11 +6,11 @@ AssetInstance* ModelAsset::Instance;
 
 int ModelAsset::PivotIndexByName(const char* const pivotname) const
 {
-    if (m_MeshList.size() <= 0)
+    if (m_PivotsList.size() <= 0)
         return -1;
 
-    for (unsigned int i = 0; i < m_MeshList.size(); ++i)
-        if (_stricmp(m_MeshList[i].m_Name, pivotname) == NULL)
+    for (unsigned int i = 0; i < m_PivotsList.size(); ++i)
+        if (_stricmp(m_PivotsList[i].m_Name, pivotname) == NULL)
             return i;
 
     return -1;
@@ -25,6 +25,49 @@ Vector4f& ModelAsset::GetBoundingRadius(Vector4f& outBoundings) const
 {
     outBoundings = m_BoundingRadius;
     return outBoundings;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ModelAsset::CalculateBounds()
+{
+}
+
+void ModelAsset::AddPhysAttachmentRef(const int listIndex, const int physAttachmentIndex)
+{
+    if (physAttachmentIndex == -1)
+        return;
+
+    auto& attlist = *m_PhysAttachmentsList;
+
+    attlist.resize(listIndex + 1);
+    if (!attlist[listIndex].m_Attachments.size())
+        attlist[listIndex].m_Attachments.resize(64);
+
+    if (m_PivotsList[physAttachmentIndex].m_ParentIndex != -1)
+        AddPhysAttachmentRef(listIndex, m_PivotsList[physAttachmentIndex].m_ParentIndex);
+    attlist[listIndex].m_Attachments[physAttachmentIndex] = 1;
+}
+
+Texture* ModelAsset::GetPivotMeshTexture(const unsigned int pivotIndex, const unsigned int skinnedMeshIndex, const unsigned int textureSetIndex) const
+{
+    const SkinnedMeshBuffer* skMesh = m_PivotsList[pivotIndex].m_SkinnedMeshesList[skinnedMeshIndex];
+
+    if (!skMesh->m_TextureSets.size() || textureSetIndex >= skMesh->m_TextureSets.size())
+        return nullptr;
+
+    if (skMesh->m_TextureSets[textureSetIndex] < 0)
+        return nullptr;
+
+    return m_TextureResources[skMesh->m_TextureSets[textureSetIndex]].m_TextureResource->m_Texture_1;
+}
+
+const float ModelAsset::GetPivotMeshEnvMapCoefficient(const unsigned int pivotIndex, const unsigned int skinnedMeshIndex, const unsigned int textureSetIndex) const
+{
+    const SkinnedMeshBuffer* skMesh = m_PivotsList[pivotIndex].m_SkinnedMeshesList[skinnedMeshIndex];
+    if (textureSetIndex >= skMesh->m_EnvMapCoefficients.size())
+        return 0.5f;
+    else
+        return skMesh->m_EnvMapCoefficients[textureSetIndex];
 }
 
 void ModelAsset::CreateInstance()
@@ -46,19 +89,43 @@ ModelAsset::ModelAsset() : Asset(false)
 {
     MESSAGE_CLASS_CREATED(ModelAsset);
 
-    field_40 = 0;
+    m_PhysAttachmentsList = 0;
     field_54 = 0;
     field_58 = (int*)1;
-    field_5C &= 0xFFFFFFF0;
     m_BoundingRadius = {};
     SetReferenceCount(1);
-    field_5C &= 0xFFFFFF2F | 0x20;
+    m_PhysAttachmentsListsTotal = 47;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 int ModelAsset::LoadTexture(const char* const texname)
 {
-    return 0;
+    String fname;
+    File::ExtractFileName(fname, texname);
+
+    if (strstr(fname.m_Str, "nvisible") || strstr(fname.m_Str, "NVISIBLE"))
+        return -1;
+
+    String respath;
+    String existrespath;
+    unsigned int i = 0;
+    g_AssetManager->GetResourcePath(respath, texname);
+    if (m_TextureResources.size())
+    {
+        while (true)
+        {
+            g_AssetManager->GetResourcePath(existrespath, m_TextureResources[i].m_TextureResource->m_ResourcePath);
+            if (strncmp(existrespath.m_Str, respath.m_Str, existrespath.m_Length) == NULL)
+                return i;
+        }
+    }
+
+    AssetLoader assload(texname);
+    m_TextureResources.push_back(
+        { (TextureAsset*)assload.m_AssetPtr, 0 }
+    );
+    g_AssetManager->IncreaseResourceReferenceCount(assload.m_AssetPtr); //  NOTE: why? destructor will set this value back.
+
+    return m_TextureResources.size() - 1;
 }
 
 AssetInstance* ModelAsset::GetInstancePtr() const
@@ -74,12 +141,14 @@ char ModelAsset::SetResourcePlaceholder()
     skinnedmeshbuffer.m_Mesh = g_GfxInternal->m_Mesh;
     skinnedmeshbuffer.m_MeshBuffer = g_GfxInternal->m_MeshBuffer;
 
-    skinnedmeshbuffer.m_TextureSets.push_back(
-        { nullptr, LoadTexture("pinkyellowcheckers.bmp"), nullptr }
+    skinnedmeshbuffer.m_TextureReferences.push_back(
+        { LoadTexture("pinkyellowcheckers.bmp") }
     );
 
     mesh.m_SkinnedMeshesList.push_back(&skinnedmeshbuffer);
-    m_MeshList.push_back(mesh);
+    m_PivotsList.push_back(mesh);
+
+    CalculateBounds();
 
     return 1;
 }

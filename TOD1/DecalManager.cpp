@@ -44,6 +44,27 @@ DecalManager::DecalInfo::~DecalInfo()
     delete m_VertexBuffer;
 }
 
+void DecalManager::DecalInfo::SubmitFrameBufferData(FrameBuffer* fb)
+{
+    fb->SubmitEnableMipMappingCommand(false);
+    fb->SubmitSetTextureAddressModeCommand(1, 0);
+
+    if (m_VBFreeSpace < m_BufferSize)
+    {
+        fb->SubmitRenderVertexBufferCommand(m_VertexBuffer, 3 * (m_VBFreeSpace + m_PerFrameFillSize), m_BufferSize - m_VBFreeSpace);
+        if (m_VBFreeSpace)
+            fb->SubmitRenderVertexBufferCommand(m_VertexBuffer, 0, m_VBFreeSpace);
+    }
+    else
+    {
+        fb->SubmitRenderVertexBufferCommand(m_VertexBuffer, 3 * (m_VBFreeSpace - m_BufferSize), m_BufferSize);
+    }
+
+    fb->SubmitSetTextureAddressModeCommand(0, 0);
+    fb->SubmitEnableMipMappingCommand(true);
+    m_DecalsInThisFrame = 0;
+}
+
 DecalManager::~DecalManager()
 {
     MESSAGE_CLASS_DESTROYED(DecalManager);

@@ -83,8 +83,8 @@ void Cloth::SetActiveTextureSet(const char set)
 {
     int textureset = 1;
 
-    if (m_ModelAsset && m_ModelAsset->m_MeshList.size())
-        textureset = m_ModelAsset->m_MeshList[m_ModelAsset->m_MeshList.size()].m_SkinnedMeshesList[0]->m_TextureSets.size();
+    if (m_ModelAsset && m_ModelAsset->m_PivotsList.size())
+        textureset = m_ModelAsset->m_PivotsList[m_ModelAsset->m_PivotsList.size()].m_SkinnedMeshesList[0]->m_TextureReferences.size();
 
     if (set >= textureset)
         m_Flags.TextureSet = GetNumberOfTexturesSets() - 1;
@@ -99,21 +99,21 @@ const int Cloth::GetNumberOfTexturesSets() const
     if (!m_ModelAsset)
         return 1;
 
-    if (!m_ModelAsset->m_MeshList.size())
+    if (!m_ModelAsset->m_PivotsList.size())
         return 1;
 
     unsigned int sets = 0;
 
-    for (int meshIndex = 0; meshIndex < m_ModelAsset->m_MeshList.size(); ++meshIndex)
+    for (int meshIndex = 0; meshIndex < m_ModelAsset->m_PivotsList.size(); ++meshIndex)
     {
-        if (++sets >= m_ModelAsset->m_MeshList.size())
+        if (++sets >= m_ModelAsset->m_PivotsList.size())
             return 1;
         else
-            if (!m_ModelAsset->m_MeshList[meshIndex].m_SkinnedMeshesList.size())
+            if (!m_ModelAsset->m_PivotsList[meshIndex].m_SkinnedMeshesList.size())
                 break;
     }
 
-    return m_ModelAsset->m_MeshList[sets].m_SkinnedMeshesList.size();
+    return m_ModelAsset->m_PivotsList[sets].m_SkinnedMeshesList.size();
 }
 
 const float Cloth::GetOpacity() const
@@ -150,7 +150,7 @@ void Cloth::SetModelRes(const char* modelres)
     delete m_MeshBuffer;
     delete m_PhysSystem;
 
-    //m_MeshBuffer = new MeshBuffer_Dx9(m_ModelAsset->m_MeshList[0].m_SkinnedMeshesList[0], 1);
+    //m_MeshBuffer = new MeshBuffer_Dx9(m_ModelAsset->m_PivotsList[0].m_SkinnedMeshesList[0], 1);
     //m_PhysSystem = new PhysSystem(, this, 1);
 }
 

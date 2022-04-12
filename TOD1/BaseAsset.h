@@ -163,7 +163,7 @@ public:
     virtual void        ApplyAssetData(int*);
     virtual char        SetResourcePlaceholder();  //  @42F4F0
     virtual int         stub9() const;   //  @851EA0
-    virtual void        GetResourceName(String& outName, int a2);  //  @851DB0
+    virtual void        GetResourceName(String& outName, int originalVersionPath);  //  @851DB0
     virtual void        LoadResource(const char* const resPath);
     virtual void        DestroyResource(); //  @851E90
 
@@ -181,7 +181,7 @@ public:
     }
 
     const char*         GetName() const; // @851720
-    void                _851800(String& outstr, const char* inpath, bool a3, bool a4) const; // @851800
+    void                GetInfoFilePath(String& outstr, const char* inpath, bool a3, bool a4) const; // @851800
     void                SetReferenceCount(unsigned char count); // @8513E0
     void                EncodeCountryCode(const char* const countrycode); // @851480
     const char* const   GetResourceCountryCode() const; // @851CC0

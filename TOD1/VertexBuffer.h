@@ -24,7 +24,13 @@ public:
     char                        field_16;
     int                         m_FVFIndex;
     int                         m_Flags;
-    int                         m_LockMode; //  NOTE: 0 - released, 3 - locked.
+    enum LockMode
+    {
+        MODE_0 = 0,
+        MODE_1 = 1,
+        MODE_2 = 2,
+        MODE_READONLY = 3
+    }                           m_LockMode; //  NOTE: 0 - released, 3 - locked.
     LPDIRECT3DVERTEXBUFFER9     m_Direct3DVertexBuffer;
 
 public:
@@ -42,7 +48,7 @@ public:
         ptr = nullptr;
     }
 
-    char*                       LockAndGetBufferPtr(const int mode); // @464B60
+    char*                       LockAndGetBufferPtr(const LockMode mode); // @464B60
     void                        UnlockBuffer(); //  @464BB0
     int                         SetData(const unsigned int verticies, const void* indata, void* outdata); // @464C00
     void                        CreateDirect3DBuffer(); // @464CC0

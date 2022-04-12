@@ -30,7 +30,7 @@ VertexBuffer::VertexBuffer(int FVFindex, int size, int flags)
     m_VerticiesTotal = NULL;
     m_Flags = flags;
     m_FVFIndex = FVFindex;
-    m_LockMode = 0;
+    m_LockMode = MODE_0;
     m_BufferPtr = new char[m_Length];
 
     CreateDirect3DBuffer();
@@ -55,11 +55,11 @@ VertexBuffer::~VertexBuffer()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-char* VertexBuffer::LockAndGetBufferPtr(const int mode)
+char* VertexBuffer::LockAndGetBufferPtr(const LockMode mode)
 {
     m_LockMode = mode;
 
-    if (mode != 3)
+    if (mode != MODE_READONLY)
         return m_BufferPtr;
 
     char* buf = nullptr;
@@ -77,7 +77,7 @@ void VertexBuffer::UnlockBuffer()
         if (m_LockMode == 3)
             m_Direct3DVertexBuffer->Unlock();
 
-    m_LockMode = 0;
+    m_LockMode = MODE_0;
 }
 
 int VertexBuffer::SetData(const unsigned int verticies, const void* indata, void* outdata)

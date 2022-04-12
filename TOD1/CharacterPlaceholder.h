@@ -4,26 +4,94 @@
 class CharacterPlaceHolder : public Node
 {
 protected:
-    unsigned int    m_Flags_1;
+    union
+    {
+        unsigned    ResourceType : 4;
+        unsigned    Status : 2;
+        unsigned    PopSensitiveType : 2;
+        unsigned    Locked : 1;
+        unsigned    VIP : 1;
+    }               m_Flags_1;
     float           m_VIPTimer;
-    unsigned int    m_Flags_2;
+    union
+    {
+        unsigned    Priority : 3;
+        unsigned    Model : 5;
+        unsigned    RealActiveTextureSet : 5;
+    }               m_Flags_2;
     float           m_StoredDamage;
     float           m_OrgHealth;
-    unsigned int    m_Flags_3;
+    union
+    {
+        unsigned    CallBackNode : 1;
+        unsigned    PhysicModel : 3;
+    }               m_Flags_3;
     char           *m_DynamicNodeName;
-    unsigned int    m_Flags_4;
-    float           m_Wait_until_Aggressive;
-    int             m_DesiredRange;
+    union
+    {
+        unsigned    MissionObjectiveKill : 1;
+        unsigned    UseAISubTypeData : 1;
+        unsigned    AISubType : 5;
+        unsigned    Morale : 2;
+    }               m_Flags_4;
+    float           m_WaitUntilAggressiveTime;
+    enum
+    {
+        UseWeapon = 0,
+        Custom = 1
+    }               m_DesiredRange;
     float           m_CustomDesiredRange;
-    unsigned int    m_Flags_5;
+    union
+    {
+        unsigned    DontHunt : 1;
+        unsigned    WhenShot : 2;
+        unsigned    IgnoreActionBreaks : 1;
+        unsigned    IgnoreWeaponDrop : 1;
+        unsigned    IgnoreMagnet : 1;
+        unsigned    IgnoreHitAnim : 2;
+        unsigned    GotoMovement : 2;
+        unsigned    AlwaysCompleteGoto : 1;
+        unsigned    Ignore5MRule : 1;
+        unsigned    BackUpWeapon : 5;
+        unsigned    IsConeHead : 1;
+        unsigned    IsBuddy : 1;
+    }               m_Flags_5;
     float           m_GotopointDamage_mod;
-    unsigned int    m_Flags_6;
+    union
+    {
+        unsigned    HealthModify : 5;
+        unsigned    DamageModify : 4;
+        unsigned    HeadShotDamage : 2;
+    }               m_Flags_6;
     float           m_Health_mod;
     float           m_Damage_mod;
     float           m_Marco_sqr_dist;
-    int             m_Flags_7;
-    unsigned int    m_Flags_8;
-    unsigned int    m_Flags_9;
+    union
+    {
+        unsigned    PointValueMod : 8;
+        unsigned    InflictorValueMod : 8;
+        unsigned    FactionID : 6;
+        unsigned    UsingModifiedFaction : 1;
+        unsigned    UsingSecretFaction : 1;
+        unsigned    SecretFaction : 7;
+    }               m_Flags_7;
+    union
+    {
+        unsigned    PedestrianGroup : 4;
+        unsigned    LockedType : 1;
+        unsigned    FallbackModel : 6;
+        unsigned    CurrentModel : 6;
+        unsigned    PreviousModel : 6;
+        unsigned    StoreTrig : 1;
+        unsigned    StoreAlarm : 1;
+        unsigned    StorePriority : 1;
+        unsigned    StoreTrigType : 4;
+    }               m_Flags_8;
+    union
+    {
+        unsigned    PassengerSeat : 3;
+        unsigned    WasPassenger : 1;
+    }               m_Flags_9;
 
 public:
     #pragma message(TODO_IMPLEMENTATION)
@@ -36,8 +104,7 @@ public:
         m_VIPTimer = 0.0f;
         m_StoredDamage = 0.0f;
         m_OrgHealth = 0.0f;
-        m_DynamicNodeName = "";
-        m_Wait_until_Aggressive = 0.0f;
+        m_WaitUntilAggressiveTime = 0.0f;
         m_Health_mod = 1.0f;
         m_Damage_mod = 1.0f;
         m_Marco_sqr_dist = 0.0f;
@@ -47,6 +114,8 @@ public:
     virtual Vector4f* GetBounds(Vector4f& outbounds) override; // @8CC800
 
     static void                     Register(); //  @8CB680
+
+    static int                      GetPlaceholderModelCommand;    //  @A12710
 
 private:
     static CharacterPlaceHolder*    Create(AllocatorIndex); //  @8CC8A0

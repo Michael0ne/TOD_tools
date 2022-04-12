@@ -1,6 +1,7 @@
 #pragma once
 #include "MeshBuffer.h"
 #include <vector>
+#include <map>
 
 class MeshBuffer_Dx9 : public MeshBuffer
 {
@@ -14,7 +15,8 @@ class MeshBuffer_Dx9 : public MeshBuffer
         int field_14;
         int field_18;
         int field_1C;
-        int field_20;
+
+        int MatrixIndex;
         int field_24;
         int field_28;
         int field_2C;
@@ -30,11 +32,11 @@ class MeshBuffer_Dx9 : public MeshBuffer
         int field_54;
         int field_58;
         int field_5C;
-
     };
 
 private:
-    std::vector<Skin> field_44;   //  TODO: i dunno what this is.
+    std::map<Skin, unsigned short> field_44;
+    int field_50;
     std::vector<int> field_54;
 
 public:

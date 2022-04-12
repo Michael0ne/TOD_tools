@@ -35,6 +35,27 @@ RigidBody::RigidBody() : Node(NODE_MASK_EMPTY)
     m_Grounded = false;
 }
 
+void RigidBody::Instantiate()
+{
+    Node::Instantiate();
+
+    Vector4f pos;
+    GetPos(pos);
+
+    m_Position_t = pos;
+    m_UnkVec_7 = pos;
+    m_AngularMomentum.x = 0.f;
+    m_AngularMomentum.y = 0.f;
+    m_AngularMomentum.z = 0.f;
+    m_AngularMomentum.a = 0.f;
+    m_LinearSpeed.x = 0.f;
+    m_LinearSpeed.y = 0.f;
+    m_LinearSpeed.z = 0.f;
+    m_LinearSpeed.a = 0.f;
+
+    static int _A3E1A4 = 0; //  NOTE: never used.
+}
+
 const float RigidBody::GetCollMass() const
 {
     return m_CollMass;

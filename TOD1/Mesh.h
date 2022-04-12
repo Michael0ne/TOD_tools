@@ -3,6 +3,7 @@
 #include "MemoryManager.h"
 #include <vector>
 
+//  NOTE: 'GameMeshBuffer'? Most likely since this is created first every time.
 class Mesh
 {
     friend class MeshBuffer;
@@ -29,7 +30,7 @@ class Mesh
 protected:
     std::vector<Face>           m_FacesList;
     std::vector<unsigned short> m_IndiciesList;
-    std::vector<int>            field_20;
+    std::vector<int>            field_20;   //  NOTE: element size is 64 bytes.
     std::vector<int>            field_30;
     std::vector<int>            field_40;
     union
@@ -40,18 +41,14 @@ protected:
             unsigned char       IsBGRColor : 1;
             unsigned char       _2 : 1;
             unsigned char       TexCoordsLevel : 2;
-        }                       m_FlagsBits;
-        unsigned int            m_Flags;
+        };
     }                           m_Flags;
     int                         m_IsTrianglesList;
     int                         field_58;
-    int                         field_5C;
-    int                         field_60;
-    int                         field_64;
-    int                         field_68;
+    Vector4f                    field_5C;   //  NOTE: closest face to the center?
 
 public:
-    Mesh(const unsigned int a1, const char a2, const char a3); //  @422330
+    Mesh(const unsigned int isTrianglesList, const bool hasDiffuse, const char TexCoordsLevel); //  @422330
     Mesh(const Mesh& rhs);  //  @422830
     ~Mesh();    //  @421E30
 

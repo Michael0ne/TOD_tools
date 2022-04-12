@@ -1,5 +1,6 @@
 #pragma once
 #include "Node.h"
+#include "FrameBuffer.h"
 
 class Fog : public Node
 {
@@ -11,8 +12,21 @@ protected:
     ColorRGB    m_FogColor;
 
 public:
-    Fog();
-    virtual ~Fog();
+    inline Fog::Fog() : Node(NODE_MASK_QUADTREE)
+    {
+        MESSAGE_CLASS_CREATED(Fog);
+
+        m_FogStart = 100.0f;
+        m_FogEnd = 1000.0f;
+        m_FogType = 1;
+        m_Density = 0.02f;
+        m_FogColor = BuiltinType::ColorWhite;
+
+        m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x8000000;
+    };
+
+    virtual         ~Fog();
+    virtual void    Render();   //  @8CCA80
 
     static void Register(); // @8CCFB0
 
@@ -33,6 +47,27 @@ private:
 
     const ColorRGB& GetColorRGB() const; // @91CD80
     void        SetColorRGB(const ColorRGB& fogcolor); // @6814A0
+
+    inline void SetPropertiesForFrameBuffer(FrameBuffer* fb, const bool blackColor)  //  @8CC9F0
+    {
+        switch (m_FogType)
+        {
+            case 1:
+                fb->SubmitSetFogPropertiesCommand(0, blackColor ? BuiltinType::ColorBlack : m_FogColor, m_FogStart, m_FogEnd, m_Density);
+                fb->SubmitEnableFogCommand(true);
+                break;
+            case 2:
+                fb->SubmitSetFogPropertiesCommand(1, blackColor ? BuiltinType::ColorBlack : m_FogColor, m_FogStart, m_FogEnd, m_Density);
+                fb->SubmitEnableFogCommand(true);
+                break;
+            case 3:
+                fb->SubmitSetFogPropertiesCommand(2, blackColor ? BuiltinType::ColorBlack : m_FogColor, m_FogStart, m_FogEnd, m_Density);
+                fb->SubmitEnableFogCommand(true);
+                break;
+            default:
+                return;
+        }
+    }
 };
 
 extern EntityType* tFog; // @A3DFC4

@@ -58,7 +58,6 @@ void Model::Register()
     tModel->InheritFrom(tNode);
     tModel->SetCreator((CREATOR)Create);
 
-    //  NOTE: msep - Message SEParator?
     tModel->RegisterProperty(tTRUTH, "msep1", (EntityGetterFunction)&GetMsep1, (EntitySetterFunction)&SetMsep1, "control=drawline|name=Assets");
     tModel->RegisterProperty(tSTRING, "modelres", (EntityGetterFunction)&GetModelRes, (EntitySetterFunction)&SetModelAsset, "control=resource|type=*.model", 10);
     tModel->RegisterProperty(tTRUTH, "msep2", (EntityGetterFunction)&GetMsep2, (EntitySetterFunction)&SetMsep2, "control=drawline|name=Rendering settings");
@@ -256,12 +255,12 @@ const int Model::GetNumberOfTextureSets() const
     if (!m_ModelRes.m_AssetPtr)
         return 1;
 
-    if (((ModelAsset*)m_ModelRes.m_AssetPtr)->m_MeshList.size() <= 0)
+    if (((ModelAsset*)m_ModelRes.m_AssetPtr)->m_PivotsList.size() <= 0)
         return 1;
 
-    //for (unsigned int i = 0; i < m_ModelRes->m_MeshList.size(); ++i)
-    // if (!m_ModelRes->m_MeshList[i].m_SkinnedMeshesList)
-    //  return m_ModelRes->m_MeshList[i].m_SkinnedMeshesList->m_TextureSets;
+    //for (unsigned int i = 0; i < m_ModelRes->m_PivotsList.size(); ++i)
+    // if (!m_ModelRes->m_PivotsList[i].m_SkinnedMeshesList)
+    //  return m_ModelRes->m_PivotsList[i].m_SkinnedMeshesList->m_TextureSets;
 
     return 1;
 }

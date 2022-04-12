@@ -97,6 +97,13 @@ public:
     virtual                 ~StaticLighting();  //  @8A8D40
     virtual void            Instantiate();  //  @8A6F30
 
+    void                    CalculateAll(int* args);    //  @883EC0
+    void                    CalculateAnchor(int* args); //  @883EC0
+    void                    RedoSampling(int* args);    //  @8A6DB0
+    void                    RedoSamplingAnchor(int* args);  //  @8A6DD0
+    void                    Save(int* args);    //  @8A6F20
+    void                    SaveAs(int* args);   //  @8A6F10
+
     static void             Register(); //  @8A8E00
 
 private:

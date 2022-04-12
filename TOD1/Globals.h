@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
+//  TODO: get rid of this stuff!
 namespace Utils
 {
     static char LastSavedCRCString[5] = {}; // @9B6F84
@@ -115,5 +116,21 @@ namespace Utils
     static unsigned int GetEngineVersionBuild() // @401040
     {
         return KAPOW_ENGINE_VERSION_BUILD;
+    }
+
+    static bool IsSSESupported()
+    {
+        int sse = 0;
+
+        __asm   push eax
+        __asm   mov eax, 1
+        __asm   cpuid
+        __asm   mov eax, edx
+        __asm   and eax, 2000000h
+        __asm   shr eax, 19h
+        __asm   mov sse, eax
+        __asm   pop eax
+
+        return sse;
     }
 }

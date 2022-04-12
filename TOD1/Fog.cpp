@@ -3,25 +3,30 @@
 #include "IntegerType.h"
 #include "NumberType.h"
 #include "VectorType.h"
+#include "Scene.h"
 
 EntityType* tFog;
-
-Fog::Fog() : Node(NODE_MASK_QUADTREE)
-{
-    MESSAGE_CLASS_CREATED(Fog);
-
-    m_FogStart = 100.0f;
-    m_FogEnd = 1000.0f;
-    m_FogType = 1;
-    m_Density = 0.02f;
-    m_FogColor = BuiltinType::ColorWhite;
-
-    m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x8000000;
-}
 
 Fog::~Fog()
 {
     MESSAGE_CLASS_DESTROYED(Fog);
+}
+
+void Fog::Render()
+{
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[2], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[3], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[4], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[5], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[6], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[7], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[8], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[9], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[10], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[11], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[12], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[13], false);
+    SetPropertiesForFrameBuffer(Scene::SceneInstance->m_FrameBuffers[16], true);
 }
 
 void Fog::Register()
@@ -30,11 +35,11 @@ void Fog::Register()
     tFog->InheritFrom(tNode);
     tFog->SetCreator((CREATOR)Create);
 
-    tFog->RegisterProperty(tINTEGER, "fog_type", (EntityGetterFunction)&GetFogType, 0, 0, 0, (EntitySetterFunction)&SetFogType, 0, 0, 0, "control=string", 0, 0, -1);
-    tFog->RegisterProperty(tNUMBER, "start", (EntityGetterFunction)&GetStart, 0, 0, 0, (EntitySetterFunction)&SetStart, 0, 0, 0, "control=string", 0, 0, 10);
-    tFog->RegisterProperty(tNUMBER, "end", (EntityGetterFunction)&GetEnd, 0, 0, 0, (EntitySetterFunction)&SetEnd, 0, 0, 0, "control=string", 0, 0, 11);
-    tFog->RegisterProperty(tNUMBER, "density", (EntityGetterFunction)&GetDensity, 0, 0, 0, (EntitySetterFunction)&SetDensity, 0, 0, 0, "control=string", 0, 0, -1);
-    tFog->RegisterProperty(tVECTOR, "color_rgb", (EntityGetterFunction)&GetColorRGB, 0, 0, 0, (EntitySetterFunction)&SetColorRGB, 0, 0, 0, "control=colorrgb", 0, 0, 12);
+    tFog->RegisterProperty(tINTEGER, "fog_type", (EntityGetterFunction)&GetFogType, (EntitySetterFunction)&SetFogType, "control=string");
+    tFog->RegisterProperty(tNUMBER, "start", (EntityGetterFunction)&GetStart, (EntitySetterFunction)&SetStart, "control=string", 10);
+    tFog->RegisterProperty(tNUMBER, "end", (EntityGetterFunction)&GetEnd, (EntitySetterFunction)&SetEnd, "control=string", 11);
+    tFog->RegisterProperty(tNUMBER, "density", (EntityGetterFunction)&GetDensity, (EntitySetterFunction)&SetDensity, "control=string");
+    tFog->RegisterProperty(tVECTOR, "color_rgb", (EntityGetterFunction)&GetColorRGB, (EntitySetterFunction)&SetColorRGB, "control=colorrgb", 12);
 
     tFog->PropagateProperties();
 }

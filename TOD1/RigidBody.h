@@ -80,6 +80,7 @@ protected:
 
 public:
     RigidBody(); // @9376E0
+    virtual void Instantiate(); //  @931900
 
     const float         GetCollMass() const;    //  @89A880
     void                SetCollMass(const float mass);  //  @4CEF70

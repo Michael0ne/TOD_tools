@@ -106,11 +106,11 @@ int Asset::stub9() const
     return (m_Flags.m_FlagBits._19 != 0) + 1;
 }
 
-void Asset::GetResourceName(String& outName, int a2)
+void Asset::GetResourceName(String& outName, int originalVersionPath)
 {
 
-    if (a2)
-        _851800(outName, m_ResourcePath, 0, 0);
+    if (originalVersionPath)
+        GetInfoFilePath(outName, m_ResourcePath, 0, 0);
     else
         outName = m_ResourcePath;
 }
@@ -158,7 +158,7 @@ const char* Asset::GetName() const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void Asset::_851800(String& outstr, const char* inpath, bool a3, bool a4) const
+void Asset::GetInfoFilePath(String& outstr, const char* inpath, bool a3, bool a4) const
 {
 }
 

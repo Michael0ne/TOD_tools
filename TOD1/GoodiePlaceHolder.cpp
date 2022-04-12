@@ -1,4 +1,7 @@
 #include "GoodiePlaceHolder.h"
+#include "IntegerType.h"
+#include "TruthType.h"
+#include "NumberType.h"
 
 EntityType* tGoodiePlaceholder;
 

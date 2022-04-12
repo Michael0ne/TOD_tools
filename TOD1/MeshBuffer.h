@@ -8,16 +8,12 @@ class MeshBuffer
 {
 protected:
     Mesh           *m_Mesh;
-    int          field_4;
-    int          field_8;
+    int             field_4;
+    int             field_8;
     VertexBuffer   *m_VertexBuffer;
     IndexBuffer    *m_IndexBuffer;
     String          field_14;
-    float           field_24;
-    float           field_28;
-    float           field_2C;
-    float           field_30;   //  NOTE: adjacency information?
-
+    Vector4f        field_24;   //  NOTE: adjacency information?
     Vector4f        field_34;   //  NOTE: boundaries?
 
 public:

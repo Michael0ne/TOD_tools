@@ -11,10 +11,10 @@ protected:
     float               m_RFSpring;
     float               m_LRSpring;
     float               m_RRSpring;
-    float               field_254;
-    float               field_258;
-    float               field_25C;
-    float               field_260;
+    float               m_KoefAdjustedLFSpring;
+    float               m_KoefAdjustedRFSpring;
+    float               m_KoefAdjustedLRSpring;
+    float               m_KoefAdjustedRRSpring;
     Vector4f            m_CurrentVelocity;
     float               m_SpringKoefficient;
     float               m_SpringDamping;
@@ -28,21 +28,45 @@ protected:
     float               m_RollAngleT;
     float               m_TiltAngleSpeed;
     CollisionProbe*     m_GroundProbe;
-    int                *m_HintNodeList;
-    std::vector<int>    m_List_8;
-    std::vector<int>    m_LastNormalList;
-    std::vector<int>    m_NormalList;
+
+    struct
+    {
+        int                *_f0;
+        std::vector<int>    List;
+    }                   m_HintNodeList;
+
+    struct DoubleVector4f
+    {
+        Vector4f    Vec1;
+        Vector4f    Vec2;
+    };
+
+    std::vector<DoubleVector4f>    m_LastNormalList;
+    std::vector<Vector4f>    m_NormalList;
+
     int                 field_308;
     std::vector<int>    m_List_5;
+
     int                 field_31C;
     std::vector<int>    m_List_4;
+
     float               m_WheelRadius;
-    int                *m_DistList;
-    std::vector<int>    m_List_3;
-    int*                m_CVList;
-    std::vector<int>    m_List_2;
-    int*                m_CarContactList;
-    std::vector<int>    m_List_1;
+    struct
+    {
+        int                *_f0;
+        std::vector<float>  List;
+    }                   m_DistList;
+    struct
+    {
+        int                *_f0;
+        std::vector<int>    List;
+    }                   m_CVList;
+    struct
+    {
+        int                *_f0;
+        std::vector<int>    List;
+    }                   m_CarContactList;
+
     float               m_Tilt;
     bool                m_IsOutOfBounds;
     bool                m_IsDriveableGround;
@@ -50,7 +74,7 @@ protected:
     float               m_AxleHeight;
     float               m_Width;
     int                 m_LeftRearWheelMaterial;
-    int                 field_384;
+    int                 m_GroundMaterialID;
     char                m_IsCppPropertiesInited;
     Node               *m_RealWheelLF;
     Node               *m_RealWheelLR;
@@ -76,9 +100,15 @@ private:
     void                CalculateUpVector(Vector4f& outVec);  //  @92BB20
     void                ConvertForth(); //  @92CF10
     void                CheckGroundContact();   //  @92E100
-    void                CheckWheel(const Vector4f& a1, const Vector4f& a2, const unsigned int wheel, const Vector4f& a3);   //  @92D830
+    void                CheckWheel_Impl(const Vector4f& a1, const Vector4f& a2, const unsigned int wheel, const Vector4f& a3);   //  @92D830
+    void                StoreOldUpVector(int* args);    //  @92F720
+    void                CalcNormalizedDir(int* args);   //  @92F6C0
+    void                CheckWheel(int* args);  //  @92F860
 
     static OverdoseVehicle* Create(AllocatorIndex); //  @92F820
+
+    static int          UpdateAccelerationCommand;  //  @A3E188
+    static int          IsPlayerCarCommand; //  @A3E18C
 };
 
 extern EntityType*  tOverdoseVehicle;   //  @A3E184
