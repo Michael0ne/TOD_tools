@@ -53,10 +53,7 @@ protected:
             unsigned            _31 : 1;
         };
     }                           m_Flags;
-    FrameBuffer                *m_FrameBuffer;
-    int                         field_58;
-    int                         field_5C;
-    FrameBuffer                *m_FrameBuffer_1;
+    FrameBuffer                *m_FrameBuffers[4];
     union
     {
         struct
@@ -154,8 +151,7 @@ protected:
     float                       m_Opacity;
     std::vector<int>            m_List_1;
     int                         m_TextureSets;
-    ModelAsset                 *m_ModelRes;
-    int                         field_1D4;
+    AssetLoader                 m_ModelRes;
     std::vector<Node*>          m_PhysAttachments;
     std::vector<int>            m_List_3;
     std::vector<int>            m_List_4;
@@ -170,6 +166,7 @@ public:
     Character(); // @914320
     virtual                     ~Character();   //  @910DA0
     virtual void                Instantiate() override; //  @911070
+    virtual Vector4f*           GetBounds(Vector4f& outBounds);   //  @908220
 
     void* operator new (size_t size)
     {
@@ -187,7 +184,6 @@ public:
     void                AttachNode(const unsigned int index, Node* node, const String& nodeName1, const String& nodeName2); //  @910FC0
     void                DetachNode(const unsigned int index);   //  @915D00
     const int           GetPhysAttachmentIndex(const char* attachmentName) const;   //  @9083F0
-    const char*         GetAttachment() const;  //  @90F9F0
     const char*         GetModelRes() const;    //  @9159E0
     void                SetModelRes(const char* const modelname);   //  @9147E0
     const bool          IsFrozen() const;   //  @908140
@@ -197,6 +193,23 @@ public:
     const float         GetOpacity() const; //  @4A5B90
     void                SetOpacity(const float opacity);    //  @4A5BA0
     void                SetRestPose();  //  @90B1E0
+    const bool          ShouldDrawPhysData() const; //  @908100
+    void                SetShouldDrawPhysData(const bool drphdata); //  @9080E0
+    const int           GetActiveTextureSet() const;    //  @908190
+    void                SetActiveTextureSet(const int texset);  //  @90B380
+    const size_t        GetTextureSetSize() const;  //  @90B340
+    const char* const   GetAttachment() const;  //  @90F9F0
+    void                SetAttachment(const char* attachment);    //  @90FC00
+    const bool          IsPlayerCharacter() const;  //  @908150
+    void                SetIsPlayerCharacter(const bool playerchar);    //  @908160
+    const bool          IsPhysicsOn() const;    //  @908130
+    void                SetPhysicsOn(const bool physicson); //  @908110
+    void                GetPhysWorldGravityVec(Vector4f& outGravityVec) const;  //  @907AD0
+    void                SetPhysWorldGravityVec(const Vector4f& gravityVec); //  @907B00
+    const bool          GetCharacterSep1() const;   //  @42F4F0
+    void                SetCharacterSep1(const bool);   //  @883EC0
+    const float         GetPhysPonyDamping() const; //  @907B20
+    void                SetPhysPonyDamping(const float damping);    //  @907B40
 
     static void         Register(); //  @914A20
     static Character*   Create(AllocatorIndex); //  @9149A0

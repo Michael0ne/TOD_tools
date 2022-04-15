@@ -27,6 +27,11 @@ public:
         field_4 = (int*)1;
     }
 
+    explicit operator bool() const
+    {
+        return m_AssetPtr != nullptr;
+    }
+
     AssetLoader& operator=(const AssetLoader& rhs); //  @89F190
 
     ~AssetLoader();

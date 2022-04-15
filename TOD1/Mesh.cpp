@@ -15,7 +15,6 @@ Mesh::Mesh(const Mesh& rhs)
 {
     MESSAGE_CLASS_CREATED(Mesh);
 
-    // NOTE: check when ready if simple copy is sufficient for 'fld_50'.
     m_Flags = rhs.m_Flags;
     m_FacesList = rhs.m_FacesList;
     m_IndiciesList = rhs.m_IndiciesList;
@@ -55,7 +54,7 @@ void Mesh::GetFaceColor(ColorRGB& clr, const unsigned int faceind) const
 
 const bool Mesh::HasDiffuseFlag() const
 {
-    return m_Flags.m_FlagsBits.HasDiffuse;
+    return m_Flags.HasDiffuse;
 }
 
 void Mesh::GetFacePositionByIndex(Vector4f& outPos, const unsigned int ind) const
@@ -100,9 +99,9 @@ void Mesh::AddFace2(const unsigned int faceind, const float x, const float y, co
         v = { (float)(1.0 / s) * x, (float)(1.0 / s) * y, (float)(1.0 / s) * z, 0 };
 }
 
-Mesh::Face::Face()
+MeshFace::MeshFace()
 {
-    MESSAGE_CLASS_CREATED(Face);
+    MESSAGE_CLASS_CREATED(MeshFace);
 
     field_60 = 0;
     m_Position = BuiltinType::ZeroVector;

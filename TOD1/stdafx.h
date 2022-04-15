@@ -148,6 +148,17 @@ static void hook(DWORD address, void* function, BYTE type) {
 
 extern void debug(char* message, ...);
 
+template <typename T>
+static inline T clamp(T val, T min, T max)
+{
+    if (val < min)
+        return min;
+    else if (val > max)
+        return max;
+    else
+        return val;
+}
+
 // --------------------------------------------------------
 
 // Each class applies it's patches in .cpp file, to be called in dllmain.cpp.

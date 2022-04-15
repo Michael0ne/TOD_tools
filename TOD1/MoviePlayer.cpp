@@ -10,9 +10,26 @@ EntityType* tMoviePlayer;
 String MoviePlayer::MovieName;
 MoviePlayer* MoviePlayer::Instance;
 bool MoviePlayer::MovieOpen = false;
-void* MoviePlayer::BinkHandle = nullptr;
+HANDLE MoviePlayer::BinkHandle = NULL;
 int MoviePlayer::StopPressedCommand = -1;
 int MoviePlayer::PlayPressedCommand = -1;
+
+HANDLE BinkOpen(HANDLE binkHandle, const int binkOpenFlags)
+{
+    debug("BinkOpen not implemented!");
+    return NULL;
+}
+
+int BinkGetError()
+{
+    debug("BinkGetError not implemented!");
+    return NULL;
+}
+
+void BinkClose(const HANDLE binkHandle)
+{
+    debug("BinkClose not implemented!");
+}
 
 String* MoviePlayer::GetResourceName(String* resname)
 {
@@ -23,11 +40,26 @@ String* MoviePlayer::GetResourceName(String* resname)
 const char* MoviePlayer::GetMovie() const
 {
     static String MovieName;
-    
+
     MovieName = m_FrameInfo.m_MovieName;
-    MovieName = g_AssetManager->GetResourcePathSceneRelative(MovieName.m_Str);
+    g_AssetManager->GetResourcePathSceneRelative(MovieName.m_Str);
 
     return MovieName.m_Str;
+}
+
+void MoviePlayer::SetMovie(const char* const moviename)
+{
+    char movieDir[1024] = {}, movieFName[512] = {}, movieExt[16] = {};
+    File::ExtractFilePath(moviename, movieDir, movieFName, movieExt);
+
+    String movieFilePathNoExt(movieDir);
+    movieFilePathNoExt.Append(movieFName);
+
+    char fullMovieDataPath[1024] = {};
+    g_AssetManager->GetPlatformSpecificPath(fullMovieDataPath, movieFilePathNoExt.m_Str, nullptr, AssetManager::PlatformId::PC);
+    strcat(fullMovieDataPath, ".bik");
+
+    g_AssetManager->GetResourcePath(m_FrameInfo.m_MovieName, fullMovieDataPath);
 }
 
 void MoviePlayer::SetRenderSubtitleNode(int* args)
@@ -84,6 +116,66 @@ void MoviePlayer::Stop(int* args)
 void MoviePlayer::PlayAllocated(int* args)
 {
     m_FrameInfo.PlayAllocated();
+}
+
+const float MoviePlayer::GetVolume() const
+{
+    return m_Volume;
+}
+
+void MoviePlayer::SetVolume(const float volume)
+{
+    m_Volume = volume;
+}
+
+const float MoviePlayer::GetScaleX() const
+{
+    return m_ScaleX;
+}
+
+void MoviePlayer::SetScaleX(const float scalex)
+{
+    m_ScaleX = scalex;
+}
+
+const float MoviePlayer::GetScaleY() const
+{
+    return m_ScaleY;
+}
+
+void MoviePlayer::SetScaleY(const float scaley)
+{
+    m_ScaleY = scaley;
+}
+
+const short MoviePlayer::GetDisplacementX() const
+{
+    return m_DisplacementX;
+}
+
+void MoviePlayer::SetDisplacementX(const short dispx)
+{
+    m_DisplacementX = dispx;
+}
+
+const short MoviePlayer::GetDisplacementY() const
+{
+    return m_DisplacementY;
+}
+
+void MoviePlayer::SetDisplacementY(const short dispy)
+{
+    m_DisplacementY = dispy;
+}
+
+const float MoviePlayer::GetOpacity() const
+{
+    return m_Opacity;
+}
+
+void MoviePlayer::SetOpacity(const float opacity)
+{
+    m_Opacity = opacity;
 }
 
 void MoviePlayer::Play(int args)
@@ -232,7 +324,6 @@ MoviePlayer::FrameInfo::FrameInfo()
     m_MovieFile = nullptr;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 MoviePlayer::FrameInfo::~FrameInfo()
 {
     MESSAGE_CLASS_DESTROYED(FrameInfo);
@@ -241,7 +332,8 @@ MoviePlayer::FrameInfo::~FrameInfo()
 
     if (BinkHandle)
     {
-        BinkHandle = nullptr;
+        BinkClose(BinkHandle);
+        BinkHandle = NULL;
     }
 }
 
@@ -264,20 +356,19 @@ void MoviePlayer::FrameInfo::ProcessFrame(FrameBuffer* fb)
         return;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void MoviePlayer::FrameInfo::OpenMovie()
 {
-    //m_MovieFile = new File(m_MovieName.m_Str, 0x21, true);
-    //HANDLE filehnd = m_MovieFile->GetFileHandle();
+    m_MovieFile = new File(m_MovieName.m_Str, 0x21, true);
+    HANDLE filehnd = m_MovieFile->GetFileHandle();
 
-    //if (filehnd)
-    //{
-        //BinkHandle = BinkOpen((const char*)filehnd, BINKNOFILLIOBUF | BINKFILEHANDLE);
-        //if (!BinkHandle)
-            //BinkGetError();
-    //}
+    if (filehnd)
+    {
+        BinkHandle = BinkOpen(filehnd, 0xA00000);
+        if (!BinkHandle)
+            BinkGetError();
+    }
 
-    //m_CurrentFrameTexture = new Texture({ BinkHandle->Width, BinkHandle->Height }, 1, 4);
+    m_CurrentFrameTexture = new Texture({ *(unsigned int*)BinkHandle, *(unsigned int*)((int)BinkHandle + 4) }, 1, 4);
 }
 
 bool MoviePlayer::FrameInfo::_442A70() const

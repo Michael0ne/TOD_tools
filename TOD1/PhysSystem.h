@@ -30,7 +30,7 @@ class PhysSystem
         int                 field_10;
     };
 
-protected:
+public:
     std::vector<Vector4f>   m_List_1;
     std::vector<Vertex>     m_VerticesList;
     std::vector<List3>      m_List_3;

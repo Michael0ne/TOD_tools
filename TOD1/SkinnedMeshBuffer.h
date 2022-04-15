@@ -7,16 +7,13 @@ class Mesh;
 
 class SkinnedMeshBuffer
 {
-    friend class Model;
-    friend class ModelAsset;
-    friend class Cloth;
+public:
 
     struct TextureRef
     {
         int                 m_Index;
     };
 
-protected:
     MeshBuffer             *m_MeshBuffer;
     Mesh                   *m_Mesh;
     std::vector<TextureRef> m_TextureReferences;

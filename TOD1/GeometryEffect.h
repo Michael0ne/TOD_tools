@@ -4,6 +4,13 @@
 #include "BuiltinType.h"
 
 class GeometryEffect;
+class GEKeyFrame;
+
+enum class eBlendMode
+{
+    NORMAL = 0,
+    ADD = 1
+};
 
 struct Effect
 {
@@ -71,8 +78,8 @@ protected:
     int                 field_12C;
     int                 field_130;
     int                 field_134;
-    std::vector<int>    m_List_1;
-    Effect             *field_148;
+    std::vector<GEKeyFrame*>    m_KeyFramesList;
+    Effect             *m_ActiveEffect;
     Effect             *m_Effect;
     float               m_EffectRadius;
     CameraMatrix       *m_ActiveCameraMatrix;
@@ -90,7 +97,7 @@ public:
         m_Flags.Frozen = false;
         m_Flags.TargetBracket = true;
         m_EffectLifeTime = 2;
-        field_148 = nullptr;
+        m_ActiveEffect = nullptr;
         m_Effect = nullptr;
         m_TotalEffects = 0;
         m_FrameBuffer[0] = nullptr;
@@ -108,9 +115,39 @@ public:
     }
     virtual ~GeometryEffect();  //  @8E2AB0
 
+private:
     Effect*             AddEffect();    //  @8DDD40
-    void                SetTimeAndFreeze(float* args);  //  @8DDB50
     void                RemoveEffect(Effect* effect);   //  @8DDC10
+    void                AddKeyFrame(GEKeyFrame* keyframe);  //  @8E2AE0
+    void                KillAllEffects_Impl(const Effect* effect);  //  @8DDC70
+    void                MakeNewActiveEffect();  //  @8E27D0
+
+public:
+    const float         GetEffectFadeThreshold() const; //  @907E30
+    void                SetEffectFadeThreshold(const float th); //  @8DDD00
+    const float         GetEffectRadius() const;    //  @8DDAE0
+    void                SetEffectRadius(const float radius);    //  @8DDD20
+    const bool          GetGesep0() const;   //  @42F4F0
+    void                SetGesep0(const int);    //  @883EC0
+    const float         GetEffectLifeTime() const;  //  @8C9200
+    void                SetEffectLifeTime(const float lt);  //  @698CE0
+    const eBlendMode    GetBlendMode() const;   //  @8DDA70
+    void                SetBlendMode(const eBlendMode blmode); //  @8DDA80
+    const bool          IsLooping() const;  //  @8DDAD0
+    void                SetIsLooping(const bool looping);   //  @8DDAB0
+    const bool          TriggerAtStart() const; //  @8DDB10
+    void                SetTriggerAtStart(const bool trig); //  @8DDAF0
+    const bool          IsTargetBracket() const;    //  @8DDB20
+    void                SetIsTargetBracket(const bool target);  //  @6962F0
+
+    void                TriggerEffect(int* args);   //  @8E2B70
+    void                TriggerAtPos(int* args);    //  @8E2860
+    void                TriggerEntity(int* args);   //  @8E2930
+    void                TriggerEntityPos(int* args);    //  @8E29B0
+    void                KillAllEffects(int* args);  //  @8E2760
+    void                PauseAll(int* args);    //  @8DDB30
+    void                SetTimeAndFreeze(float* args);  //  @8DDB50
+    void                Start(int* args);   //  @8E21C0
 
     static void         Register(); //  @8E2210
 

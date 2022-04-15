@@ -54,10 +54,9 @@ VertexBuffer::~VertexBuffer()
     delete[] m_BufferPtr;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-char* VertexBuffer::LockAndGetBufferPtr(const LockMode mode)
+char* VertexBuffer::LockAndGetBufferPtr(const unsigned int mode)
 {
-    m_LockMode = mode;
+    m_LockMode = (LockMode)mode;
 
     if (mode != MODE_READONLY)
         return m_BufferPtr;
@@ -65,7 +64,6 @@ char* VertexBuffer::LockAndGetBufferPtr(const LockMode mode)
     char* buf = nullptr;
     m_Direct3DVertexBuffer->Lock(0, 0, (void**)&buf, m_Flags & 1 ? D3DLOCK_DISCARD : NULL);
 
-    // TODO: this actually returns 2 vectors (sizeof = 32).
     return buf;
 }
 

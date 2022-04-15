@@ -42,14 +42,14 @@ public:
 //  NOTE: this lighting is used on static geometry only (buildings, roads).
 class StaticLighting : public Node
 {
-    enum LightingMethod
+    enum eLightingMethod
     {
         PHONG = 0,
         PHOTON_MAPPING = 1,
         GEOMETRY_PHOTON_TRACING = 2
     };
 
-    enum BlockId
+    enum eBlockId
     {
         MAIN = 0,
         MAP = 1,
@@ -66,12 +66,11 @@ protected:
     float                   m_GammaCorrection;
     float                   m_CutoffArea;
     float                   m_SingleColorMultiplier;
-    BlockId                 m_TargetBlockId;
-    LightingMethod          m_LightingMethod;
+    eBlockId                m_TargetBlockId;
+    eLightingMethod         m_LightingMethod;
     int                     m_SamplesPerVert;
     int                     m_NumPhotons;
-    MeshColorAsset         *m_LightingFile;
-    int                     field_80;
+    AssetLoader             m_LightingAsset;
     Vector4f                field_84;
 
 public:
@@ -79,8 +78,6 @@ public:
     {
         MESSAGE_CLASS_CREATED(StaticLighting);
 
-        m_LightingFile = nullptr;
-        field_80 = 1;
         m_ChanceOfReflection = 0.4f;
         m_LightingMethod = PHOTON_MAPPING;
         m_MaxSampleRadius = 10.0f;
@@ -96,6 +93,41 @@ public:
 
     virtual                 ~StaticLighting();  //  @8A8D40
     virtual void            Instantiate();  //  @8A6F30
+
+    const bool              GetLsep1() const;   //  @42F4F0
+    void                    SetLsep1(const int);    //  @883EC0
+    const char* const       GetLightingFile() const;    //  @8A9900
+    void                    SetLightingFile(const char* const filename);    //  @8A9A70
+    const eBlockId          GetTargetBlockId() const;   //  @8A6CE0
+    void                    SetTargetBlockId(const eBlockId blockid);   //  @8A6CF0
+    const eLightingMethod   GetLightingMethod() const;  //  @8A6D00
+    void                    SetLightingMethod(const eLightingMethod method);    //  @8A6D10
+    const bool              GetLsep2() const;   //  @42F4F0
+    void                    SetLsep2(const int);    //  @883EC0
+    const int               GetNumPhotons() const;   //  @8A6D20
+    void                    SetNumPhotons(const int numphotons);    //  @8A6D30
+    const float             GetChanceOfReflection() const;  //  @905800
+    void                    SetChanceOfReflection(const float chance);  //  @8A6D80
+    const float             GetGammaCorrection() const; //  @8A6D40
+    void                    SetGammaCorrection(const float gammacorr);  //  @8A6DC0
+    const float             GetSingleColorMultiplier() const;   //  @905840
+    void                    SetSingleColorMultiplier(const float mult); //  @8DDA60
+    const bool              GetLsep3() const;   //  @42F4F0
+    void                    SetLsep3(const int);    //  @883EC0
+    const float             GetMaxSampleRadius() const; //  @89A880
+    void                    SetMaxSampleRadius(const float radius); //  @8A6C90
+    const int               GetSamplesPerVert() const;  //  @8A6CB0
+    void                    SetSamplesPerVert(const int samppervert);   //  @8A6CC0
+    const int               GetMinSamplePhotons() const;    //  @900F90
+    void                    SetMinSamplePhotons(const int sampphotons); //  @9057D0
+    const float             GetMaxLodSampleRadius() const;  //  @89A890
+    void                    SetMaxLodSampleRadius(const float sampradius);  //  @8A6CA0
+    const bool              GetLsep4() const;   //  @42F4F0
+    void                    SetLsep4(const int);    //  @883EC0
+    const float             GetCutoffArea() const;  //  @905830
+    void                    SetCutoffArea(const float cutoffarea);  //  @8A6CD0
+    const bool              GetLsep5() const;   //  @42F4F0
+    void                    SetLsep5(const int);    //  @883EC0
 
     void                    CalculateAll(int* args);    //  @883EC0
     void                    CalculateAnchor(int* args); //  @883EC0

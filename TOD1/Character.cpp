@@ -4,6 +4,9 @@
 #include "NumberType.h"
 #include "IntegerType.h"
 #include "VectorType.h"
+#include "BuiltinType.h"
+#include "SkinnedMeshBuffer.h"
+#include "PhysSystem.h"
 
 EntityType* tCharacter;
 String Character::CurrentAttachedNode;
@@ -24,6 +27,12 @@ Character::~Character()
 #pragma message(TODO_IMPLEMENTATION)
 void Character::Instantiate()
 {
+}
+
+Vector4f* Character::GetBounds(Vector4f& outBounds)
+{
+    outBounds = BuiltinType::ZeroVector;
+    return &outBounds;
 }
 
 void Character::AttachNode(const unsigned int index, Node* node, const String& nodeName1, const String& nodeName2)
@@ -58,27 +67,195 @@ const int Character::GetPhysAttachmentIndex(const char* attachmentName) const
     return -1;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-const char* Character::GetAttachment() const
+const char* const Character::GetAttachment() const
 {
     if (!m_AttachedNodesList.size())
         return nullptr;
 
-    return nullptr;
+    char buf[64] = {};
+    sprintf(buf, "%02d;", m_AttachedNodesList.size());
+    static String AttachedNodes(buf);
+
+    for (unsigned int i = 0; i < m_AttachedNodesList.size(); ++i)
+    {
+        const AttachedNode& curAttachedNodeElement = m_AttachedNodesList[i];
+        if (!curAttachedNodeElement.m_NodeMain)
+            break;
+
+        const int node3Id = curAttachedNodeElement.m_NodeThird ? curAttachedNodeElement.m_NodeThird->m_Id.Id : 0;
+        const int node1Id = curAttachedNodeElement.m_NodeMain->m_Id.Id;
+        const int node2Id = curAttachedNodeElement.m_NodeSecond->m_Id.Id;
+
+        sprintf(buf, "%010d,%010d,%010d;", node1Id, node2Id, node3Id);
+        AttachedNodes.Append(buf);
+    }
+
+    sprintf(buf, "%010d;", 0);
+    AttachedNodes.Append(buf);
+
+    return AttachedNodes.m_Str;
+}
+
+void Character::SetAttachment(const char* attachment)
+{
+    const char* const currentAttachment = GetAttachment();
+    StoreProperty(16, &currentAttachment, tSTRING);
+
+    m_AttachedNodesList.clear();
+
+    if (!attachment)
+        return;
+
+#ifdef INCLUDE_FIXES
+    const int attachmentSize = std::atoi(attachment);
+#else
+    const int attachmentSize = attachment[1] - 48 + 10 * (attachment[0] - 48);  //  NOTE: it is expected that first 2 'characters' are digits, convert it to actual number.
+#endif
+    m_AttachedNodesList.resize(attachmentSize);
+
+    if (!m_AttachedNodesList.size())
+        return;
+
+    attachment += 3;
+    unsigned int index = 0;
+    while (true)
+    {
+#ifdef INCLUDE_FIXES
+        const unsigned int node1Id = std::atoi(attachment);
+#else
+        //  NOTE: original code, STL does same.
+        const unsigned int node1Id =
+            (1000000000 * (attachment[0] - 48)) +
+            (100000000 * (attachment[1] - 48)) +
+            (10000000 * (attachment[2] - 48)) +
+            (1000000 * (attachment[3] - 48)) +
+            (100000 * (attachment[4] - 48)) +
+            (10000 * (attachment[5] - 48)) +
+            (1000 * (attachment[6] - 48)) +
+            (100 * (attachment[7] - 48)) +
+            (10 * (attachment[8] - 48)) +
+            (1 * (attachment[9] - 48));
+#endif
+        if (node1Id)
+        {
+            m_AttachedNodesList[index].m_NodeMain = g_AssetManager->FindEntityById(node1Id);
+            attachment += 10;
+
+#ifdef INCLUDE_FIXES
+            const unsigned int node2Id = std::atoi(attachment);
+#else
+            //  NOTE: original code, STL does same.
+            const unsigned int node2Id =
+                (1000000000 * (attachment[0] - 48)) +
+                (100000000 * (attachment[1] - 48)) +
+                (10000000 * (attachment[2] - 48)) +
+                (1000000 * (attachment[3] - 48)) +
+                (100000 * (attachment[4] - 48)) +
+                (10000 * (attachment[5] - 48)) +
+                (1000 * (attachment[6] - 48)) +
+                (100 * (attachment[7] - 48)) +
+                (10 * (attachment[8] - 48)) +
+                (1 * (attachment[9] - 48));
+#endif
+
+            if (node2Id)
+            {
+                m_AttachedNodesList[index].m_NodeSecond = g_AssetManager->FindEntityById(node2Id);
+                attachment += 10;
+
+#ifdef INCLUDE_FIXES
+                const unsigned int node3Id = std::atoi(attachment);
+#else
+                //  NOTE: original code, STL does same.
+                const unsigned int node3Id =
+                    (1000000000 * (attachment[0] - 48)) +
+                    (100000000 * (attachment[1] - 48)) +
+                    (10000000 * (attachment[2] - 48)) +
+                    (1000000 * (attachment[3] - 48)) +
+                    (100000 * (attachment[4] - 48)) +
+                    (10000 * (attachment[5] - 48)) +
+                    (1000 * (attachment[6] - 48)) +
+                    (100 * (attachment[7] - 48)) +
+                    (10 * (attachment[8] - 48)) +
+                    (1 * (attachment[9] - 48));
+#endif
+
+                if (node3Id)
+                {
+                    m_AttachedNodesList[index].m_NodeThird = g_AssetManager->FindEntityById(node3Id);
+                    attachment += 10;
+                }
+            }
+        }
+
+        index++;
+        if (index >= m_AttachedNodesList.size())
+            break;
+    }
+}
+
+const bool Character::IsPlayerCharacter() const
+{
+    return m_Flags.IsPlayerCharacter;
+}
+
+void Character::SetIsPlayerCharacter(const bool playerchar)
+{
+    m_Flags.IsPlayerCharacter = playerchar;
+    m_Id._3 = 5;
+}
+
+const bool Character::IsPhysicsOn() const
+{
+    return m_Flags_2.PhysicsOn;
+}
+
+void Character::SetPhysicsOn(const bool physicson)
+{
+    m_Flags_2.PhysicsOn = physicson;
+}
+
+void Character::GetPhysWorldGravityVec(Vector4f& outGravityVec) const
+{
+    outGravityVec = m_PhysWorldGravityVector;
+}
+
+void Character::SetPhysWorldGravityVec(const Vector4f& gravityVec)
+{
+    m_PhysWorldGravityVector = gravityVec;
+}
+
+const bool Character::GetCharacterSep1() const
+{
+    return false;
+}
+
+void Character::SetCharacterSep1(const bool)
+{
+}
+
+const float Character::GetPhysPonyDamping() const
+{
+    return m_PhysPony ? m_PhysPony->m_Damping * 100.f : 0.f;
+}
+
+void Character::SetPhysPonyDamping(const float damping)
+{
+    if (m_PhysPony)
+        m_PhysPony->m_Damping = damping * 0.009f;
 }
 
 const char* Character::GetModelRes() const
 {
-    return m_ModelRes ? m_ModelRes->GetName() : nullptr;
+    return m_ModelRes ? m_ModelRes.m_AssetPtr->GetName() : nullptr;
 }
 
 void Character::SetModelRes(const char* const modelname)
 {
-    const char* const modelname_ = m_ModelRes ? m_ModelRes->GetName() : nullptr;
+    const char* const modelname_ = m_ModelRes ? m_ModelRes.m_AssetPtr->GetName() : nullptr;
     StoreProperty(17, modelname_, tSTRING);
 
-    AssetLoader assload(modelname);
-    m_ModelRes = (ModelAsset*)assload.m_AssetPtr;
+    m_ModelRes = AssetLoader(modelname);
 
     TryInstantiate();
 }
@@ -131,10 +308,58 @@ void Character::SetRestPose()
 
     for (unsigned int i = 0; i < m_PhysAttachments.size(); ++i)
     {
-        ModelAsset::Mesh& mesh = m_ModelRes->m_PivotsList[i];
+        ModelAsset::Mesh& mesh = ((ModelAsset*)m_ModelRes.m_AssetPtr)->m_PivotsList[i];
         m_PhysAttachments[i]->SetPos(mesh.m_Position);
         m_PhysAttachments[i]->SetOrient(mesh.m_Orientation);
     }
+}
+
+const bool Character::ShouldDrawPhysData() const
+{
+    return m_Flags_2.DrawPhysData;
+}
+
+void Character::SetShouldDrawPhysData(const bool drphdata)
+{
+    m_Flags_2.DrawPhysData = drphdata;
+}
+
+const int Character::GetActiveTextureSet() const
+{
+    return m_TextureSets & 0xFFFFFF;
+}
+
+void Character::SetActiveTextureSet(const int texset)
+{
+    int texsetActual = texset;
+    const size_t texsetsTotal = GetTextureSetSize();
+    if (texsetActual > texsetsTotal)
+        texsetActual = texsetsTotal - 1;
+
+    const int texsetsCurrent = m_TextureSets & 0xFFFFFF;
+    if (texsetsCurrent != texsetActual)
+        StoreProperty(18, &texsetsCurrent, tINTEGER);
+
+    m_TextureSets = texsetActual;
+    m_Id._3 = 5;
+}
+
+const size_t Character::GetTextureSetSize() const
+{
+    if (!m_ModelRes)
+        return 1;
+
+    auto& asModelPivotList = ((ModelAsset*)m_ModelRes.m_AssetPtr)->m_PivotsList;
+    if (!asModelPivotList.size())
+        return 1;
+
+    size_t size = 0;
+    size_t i = 0;
+    for (; asModelPivotList[i].m_SkinnedMeshesList.size(); ++i)
+        if (++size > asModelPivotList.size())
+            return 1;
+
+    return asModelPivotList[size].m_SkinnedMeshesList[i]->m_TextureSets.size();
 }
 
 void Character::Register()
@@ -149,7 +374,7 @@ void Character::Register()
     tCharacter->RegisterProperty(tNUMBER, "opacity", (EntityGetterFunction)&GetOpacity, NULL, NULL, NULL, (EntitySetterFunction)&SetOpacity, NULL, NULL, NULL, "control=slider|min=0|max=1", NULL, NULL, 12);
     tCharacter->RegisterProperty(tTRUTH, "draw_phys_data", (EntityGetterFunction)&ShouldDrawPhysData, (EntitySetterFunction)&SetShouldDrawPhysData, "control=truth");
     tCharacter->RegisterProperty(tINTEGER, "active_texture_set", (EntityGetterFunction)&GetActiveTextureSet, (EntitySetterFunction)&SetActiveTextureSet, "control=slider|min=0|max=16", 18);
-    tCharacter->RegisterProperty(tINTEGER, "number_of_textures_sets", (EntityGetterFunction)&GetNumberOfTexturesSets, nullptr, "control=string");
+    tCharacter->RegisterProperty(tINTEGER, "number_of_textures_sets", (EntityGetterFunction)&GetTextureSetSize, nullptr, "control=string");
     tCharacter->RegisterProperty(tSTRING, "attachment", (EntityGetterFunction)&GetAttachment, (EntitySetterFunction)&SetAttachment, nullptr, 16);
     tCharacter->RegisterProperty(tTRUTH, "is_player_character", (EntityGetterFunction)&IsPlayerCharacter, (EntitySetterFunction)&SetIsPlayerCharacter, "control=truth");
     tCharacter->RegisterProperty(tTRUTH, "physics_on", (EntityGetterFunction)&IsPhysicsOn, (EntitySetterFunction)&SetPhysicsOn, "control=truth");

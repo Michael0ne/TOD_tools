@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "StaticLighting.h"
 #include "TruthType.h"
 #include "StringType.h"
@@ -16,12 +18,202 @@ void StaticLighting::Instantiate()
 {
     Node::Instantiate();
 
-    if (!m_LightingFile)
+    if (!m_LightingAsset)
         return;
 
     Node* n = _8A6EB0();
     if (n)
         _8A6E10(n, n);
+}
+
+const bool StaticLighting::GetLsep1() const
+{
+    return false;
+}
+
+void StaticLighting::SetLsep1(const int)
+{
+}
+
+const char* const StaticLighting::GetLightingFile() const
+{
+    return m_LightingAsset.m_AssetPtr ? m_LightingAsset.m_AssetPtr->GetName() : nullptr;
+}
+
+void StaticLighting::SetLightingFile(const char* const filename)
+{
+    m_LightingAsset = AssetLoader(filename);
+    TryInstantiate();
+}
+
+const StaticLighting::eBlockId StaticLighting::GetTargetBlockId() const
+{
+    return m_TargetBlockId;
+}
+
+void StaticLighting::SetTargetBlockId(const eBlockId blockid)
+{
+    m_TargetBlockId = blockid;
+}
+
+const StaticLighting::eLightingMethod StaticLighting::GetLightingMethod() const
+{
+    return m_LightingMethod;
+}
+
+void StaticLighting::SetLightingMethod(const eLightingMethod method)
+{
+    m_LightingMethod = method;
+}
+
+const bool StaticLighting::GetLsep2() const
+{
+    return false;
+}
+
+void StaticLighting::SetLsep2(const int)
+{
+}
+
+const int StaticLighting::GetNumPhotons() const
+{
+    return m_NumPhotons;
+}
+
+void StaticLighting::SetNumPhotons(const int numphotons)
+{
+    m_NumPhotons = numphotons;
+}
+
+const float StaticLighting::GetChanceOfReflection() const
+{
+    return m_ChanceOfReflection;
+}
+
+void StaticLighting::SetChanceOfReflection(const float chance)
+{
+    m_ChanceOfReflection = clamp<float>(chance, 0.f, 0.949f);
+}
+
+const float StaticLighting::GetGammaCorrection() const
+{
+    return m_GammaCorrection;
+}
+
+void StaticLighting::SetGammaCorrection(const float gammacorr)
+{
+    m_GammaCorrection = gammacorr;
+}
+
+const float StaticLighting::GetSingleColorMultiplier() const
+{
+    return m_SingleColorMultiplier;
+}
+
+void StaticLighting::SetSingleColorMultiplier(const float mult)
+{
+    m_SingleColorMultiplier = mult;
+}
+
+const bool StaticLighting::GetLsep3() const
+{
+    return false;
+}
+
+void StaticLighting::SetLsep3(const int)
+{
+}
+
+const float StaticLighting::GetMaxSampleRadius() const
+{
+    return m_MaxSampleRadius;
+}
+
+void StaticLighting::SetMaxSampleRadius(const float radius)
+{
+    m_MaxSampleRadius = radius;
+}
+
+const int StaticLighting::GetSamplesPerVert() const
+{
+    return m_SamplesPerVert;
+}
+
+void StaticLighting::SetSamplesPerVert(const int samppervert)
+{
+    m_SamplesPerVert = samppervert;
+}
+
+const int StaticLighting::GetMinSamplePhotons() const
+{
+    return m_MinSamplePhotons;
+}
+
+void StaticLighting::SetMinSamplePhotons(const int sampphotons)
+{
+    m_MinSamplePhotons = sampphotons;
+}
+
+const float StaticLighting::GetMaxLodSampleRadius() const
+{
+    return m_MaxLodSampleRadius;
+}
+
+void StaticLighting::SetMaxLodSampleRadius(const float sampradius)
+{
+    m_MaxLodSampleRadius = sampradius;
+}
+
+const bool StaticLighting::GetLsep4() const
+{
+    return false;
+}
+
+void StaticLighting::SetLsep4(const int)
+{
+}
+
+const float StaticLighting::GetCutoffArea() const
+{
+    return m_CutoffArea;
+}
+
+void StaticLighting::SetCutoffArea(const float cutoffarea)
+{
+    m_CutoffArea = cutoffarea;
+}
+
+const bool StaticLighting::GetLsep5() const
+{
+    return false;
+}
+
+void StaticLighting::SetLsep5(const int)
+{
+}
+
+void StaticLighting::CalculateAll(int* args)
+{
+}
+
+void StaticLighting::CalculateAnchor(int* args)
+{
+}
+
+void StaticLighting::RedoSampling(int* args)
+{
+}
+
+void StaticLighting::RedoSamplingAnchor(int* args)
+{
+}
+
+void StaticLighting::Save(int* args)
+{
+}
+
+void StaticLighting::SaveAs(int* args)
+{
 }
 
 void StaticLighting::Register()

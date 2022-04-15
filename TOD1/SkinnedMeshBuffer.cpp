@@ -1,4 +1,6 @@
 #include "SkinnedMeshBuffer.h"
+#include "Mesh.h"
+#include "MeshBuffer.h"
 
 SkinnedMeshBuffer::SkinnedMeshBuffer()
 {

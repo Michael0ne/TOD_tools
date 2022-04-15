@@ -3,32 +3,34 @@
 #include "MemoryManager.h"
 #include <vector>
 
+struct CompiledAssetInfo;
+
+struct MeshFace
+{
+    Vector4f                m_Position;
+    Vector2f                m_TexCoord[2];  //  0 - U, 1 - V.
+    Vector4f                m_Normal;
+    ColorRGB                m_Color;
+    int                     field_40;
+    int                     field_44;
+    int                     field_48;
+    int                     field_4C;
+    float                   field_50;
+    float                   field_54;
+    float                   field_58;
+    float                   field_5C;
+    int                     field_60;
+
+    MeshFace(); //  @423140
+};
+
 //  NOTE: 'GameMeshBuffer'? Most likely since this is created first every time.
 class Mesh
 {
     friend class MeshBuffer;
 
-    struct Face
-    {
-        Vector4f                m_Position;
-        Vector2f                m_TexCoord[2];  //  0 - U, 1 - V.
-        Vector4f                m_Normal;
-        ColorRGB                m_Color;
-        int                     field_40;
-        int                     field_44;
-        int                     field_48;
-        int                     field_4C;
-        float                   field_50;
-        float                   field_54;
-        float                   field_58;
-        float                   field_5C;
-        int                     field_60;
-
-        Face(); //  @423140
-    };
-
 protected:
-    std::vector<Face>           m_FacesList;
+    std::vector<MeshFace>       m_FacesList;
     std::vector<unsigned short> m_IndiciesList;
     std::vector<int>            field_20;   //  NOTE: element size is 64 bytes.
     std::vector<int>            field_30;
@@ -78,9 +80,12 @@ public:
     void                        GetNormaPositionByIndex(Vector4f& outPos, const unsigned int ind) const;    //  @422440
     void                        GetTexCoordByIndex(Vector2f& outCoords, const unsigned int ind, const TexCoord uv) const; //  @422470
 
+    void                        FixAssetFilePointers(CompiledAssetInfo* assetBuffer);   //  @422790
+
 private:
     void                        AddFace1(const unsigned int faceind, const float x, const float y, const float z);  //  @422D90
     void                        AddFace2(const unsigned int faceind, const float x, const float y, const float z);  //  @422E10
 };
 
 ASSERT_CLASS_SIZE(Mesh, 108);
+ASSERT_CLASS_SIZE(MeshFace, 100);

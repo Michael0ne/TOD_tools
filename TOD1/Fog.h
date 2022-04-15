@@ -1,6 +1,7 @@
 #pragma once
 #include "Node.h"
 #include "FrameBuffer.h"
+#include "BuiltinType.h"
 
 class Fog : public Node
 {

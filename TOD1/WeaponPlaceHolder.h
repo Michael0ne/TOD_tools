@@ -30,7 +30,7 @@ protected:
     float       m_RespawnTime;
 
 public:
-    WeaponPlaceHolder() : PlaceHolder()
+    inline WeaponPlaceHolder() : PlaceHolder()
     {
         MESSAGE_CLASS_CREATED(WeaponPlaceHolder);
 
@@ -49,6 +49,31 @@ public:
         m_VIPTimer = 0.f;
         m_RespawnTime = 0.f;
     }
+
+    const int       GetResourceType() const;    //  @8CD200
+    void            SetResourceType(const int restype); //  @8CDA40
+    const int       GetStatus() const;  //  @842C10
+    void            SetStatus(const int status);    //  @67B8F0
+    const bool      IsLocked() const;   //  @7607D0
+    void            SetIsLocked(const bool locked); //  @68B150
+    const int       GetPopSensitiveType() const;    //  @7607E0
+    void            SetPopSensitiveType(const int ptype);   //  @8CD210
+    const bool      IsVIP() const;  //  @842C20
+    void            SetIsVIP(const bool vip);   //  @8CDA60
+    const float     GetVIPTimer() const;    //  @8CD230
+    void            SetVIPTimer(const float viptimer);  //  @8CDA80
+    const int       GetPriority() const;    //  @67B940
+    void            SetPriority(const int priority);    //  @842C30
+    const int       GetWeaponSubType() const;   //  @68B1F0
+    void            SetWeaponSubType(const int subtype);    //  @8CD240
+    const int       GetMeleeWeaponSubType() const;  //  @842C80
+    void            SetMeleeWeaponSubType(const int msubtype);  //  @5A2200
+    const int       GetBulletDrop() const;  //  @8CDAE0
+    void            SetBulletDrop(const int bdrop); //  @8CDAF0
+    const bool      IsRespawnable() const;  //  @842C90
+    void            SetIsRespawnable(const bool respawnable);   //  @8D1C70
+    const float     GetRespawnTime() const; //  @68B210
+    void            SetRespawnTime(const float resptime);   //  @8D1C90
 
     static void     Register(); //  @8D1D00
 

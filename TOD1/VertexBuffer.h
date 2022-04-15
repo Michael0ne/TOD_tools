@@ -48,7 +48,7 @@ public:
         ptr = nullptr;
     }
 
-    char*                       LockAndGetBufferPtr(const LockMode mode); // @464B60
+    char*                       LockAndGetBufferPtr(const unsigned int mode); // @464B60
     void                        UnlockBuffer(); //  @464BB0
     int                         SetData(const unsigned int verticies, const void* indata, void* outdata); // @464C00
     void                        CreateDirect3DBuffer(); // @464CC0

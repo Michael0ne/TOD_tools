@@ -3,6 +3,8 @@
 
 class GEKeyFrame : public Node
 {
+    friend class GeometryEffect;
+
 protected:
     float m_KeyTranslationX;
     float m_KeyTranslationY;

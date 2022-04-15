@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "FrameBuffer.h"
 #include "Texture.h"
+#include "Scene.h"
 
 class MoviePlayer : public Node
 {
@@ -81,6 +82,7 @@ public:
     virtual String*         GetResourceName(String* resname);   //  @88B8F0
 
     const char*             GetMovie() const;   //  @88B020
+    void                    SetMovie(const char* const moviename);  //  @88B150
     void                    SetRenderSubtitleNode(int* args);   //  @88ABC0
     void                    DeallocateStream(int* args);    //  @88B830
     void                    AllocateStream(int* args);  //  @88B7E0
@@ -88,6 +90,18 @@ public:
     void                    PlayWithStopEvent(int* args);   //  @88B7B0
     void                    Stop(int* args);    //  @88AB90
     void                    PlayAllocated(int* args);   //  @88AB80
+    const float             GetVolume() const;  //  @8D5110
+    void                    SetVolume(const float volume);  //  @88AAC0
+    const float             GetScaleX() const;  //  @916DF0
+    void                    SetScaleX(const float scalex);  //  @88AAE0
+    const float             GetScaleY() const;  //  @4B29A0
+    void                    SetScaleY(const float scaley);  //  @88AB00
+    const short             GetDisplacementX() const;   //  @88AB30
+    void                    SetDisplacementX(const short dispx);    //  @88AB20
+    const short             GetDisplacementY() const;   //  @88AB50
+    void                    SetDisplacementY(const short dispy);  //  @88AB40
+    const float             GetOpacity() const; //  @8D5150
+    void                    SetOpacity(const float opacity);    //  @88AB60
 
 private:
     void                    Play(int args); //  @88B740
@@ -109,11 +123,11 @@ public:
     static bool             MovieOpen;  //  @A35ED4
 
 private:
-    static void            *BinkHandle; //  @A35ED8
+    static HANDLE           BinkHandle; //  @A35ED8
     static int              StopPressedCommand;    //  @A11C30
     static int              PlayPressedCommand; //  @A11C34
-public:
 
+public:
     static MoviePlayer*     Create(AllocatorIndex); //  @88B880
     static void             Register(); //  @88B330
 };
