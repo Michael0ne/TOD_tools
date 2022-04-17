@@ -1037,9 +1037,9 @@ void Scene::Register()
     tScene->RegisterScript("buildfastfindnodevector", (EntityFunctionMember)&BuildFastFindNodeVector, NULL, NULL, NULL, nullptr, nullptr);
     tScene->RegisterScript("deletefastfindnodevector", (EntityFunctionMember)&DeleteFastFindNodeVector, NULL, NULL, NULL, nullptr, nullptr);
 
-    PreBlocksUnloadedCommand = RegisterGlobalCommand("pre_blocks_unloaded", true);
-    BlocksUnloadedCommand = RegisterGlobalCommand("blocks_unloaded", true);
-    InvalidatePlaceholderModelCommand = RegisterGlobalCommand("invalidate_placeholder_model", true);
+    PreBlocksUnloadedCommand = GetCommandId("pre_blocks_unloaded", true);
+    BlocksUnloadedCommand = GetCommandId("blocks_unloaded", true);
+    InvalidatePlaceholderModelCommand = GetCommandId("invalidate_placeholder_model", true);
 
     tScene->PropagateProperties();
 }

@@ -68,6 +68,11 @@ void AnimLayer::Play(AnimLayer* animation, const unsigned int event)
 */
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void AnimLayer::BlendTo(MotionAnimSlot* animSlot, const int event)
+{
+}
+
 const bool AnimLayer::GetIsPlaying() const
 {
     return m_Flags.Playing;
@@ -145,13 +150,34 @@ void AnimLayer::SetTargetCrossBlendFactor(const float blend)
             SetIsPlaying(false);
 }
 
+const float AnimLayer::GetWeight() const
+{
+    return m_Weight;
+}
+
+void AnimLayer::SetWeight(const float weight)
+{
+    if (weight != m_Weight)
+        StoreProperty(14, &m_Weight, tNUMBER);
+
+    if (TransactionBuffer::_A11C90 == 1.f)
+    {
+        m_Weight = weight;
+        field_13C = weight;
+    }
+    else
+    {
+        m_Weight = ((1.f - TransactionBuffer::_A11C90) * field_13C) + (TransactionBuffer::_A11C90 * weight);
+    }
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void AnimLayer::Register()
 {
     tAnimLayer = new EntityType("AnimLayer");
     tAnimLayer->InheritFrom(tNode);
     tAnimLayer->SetCreator((CREATOR)Create);
-    
+
     tAnimLayer->RegisterProperty(tTRUTH, "playing", (EntityGetterFunction)&GetIsPlaying, NULL, NULL, NULL, (EntitySetterFunction)&SetIsPlaying, NULL, NULL, NULL, nullptr, NULL, NULL, 10);
 }
 

@@ -118,6 +118,12 @@ struct ColorRGB {
 
 typedef Vector4<float> Vector4f;
 
+struct Vector4fDouble
+{
+    Vector4f    Vec1;
+    Vector4f    Vec2;
+};
+
 template<typename T>
 struct Quaternion {
     T w;

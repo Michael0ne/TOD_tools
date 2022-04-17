@@ -775,7 +775,6 @@ int BuiltinType::GetSoundRenderer() const
     return 0;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::Register()
 {
     tBuiltin = new BuiltinType();

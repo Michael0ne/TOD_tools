@@ -147,7 +147,7 @@ protected:
     }                   m_Flags_2;
 
 public:
-    inline MotionAnimSlot() : AnimSlot()   //  NOTE: constructor inlined.
+    inline MotionAnimSlot() : AnimSlot()
     {
         MESSAGE_CLASS_CREATED(MotionAnimSlot);
 
@@ -166,6 +166,10 @@ public:
             MemoryManager::ReleaseMemory(ptr, false);
         ptr = nullptr;
     }
+
+    void                    ActionAnimListPushBackElement(int* args);    //  @918540
+    void                    ActionAnimInfoListPushBackElement(int* args);   //  @918580
+
 
     static void             Register(); //  @918700
     static MotionAnimSlot*  Create(AllocatorIndex); //  @9186C0

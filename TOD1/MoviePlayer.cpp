@@ -305,8 +305,8 @@ void MoviePlayer::Register()
 
     tMoviePlayer->PropagateProperties();
 
-    StopPressedCommand = RegisterGlobalCommand("stop_pressed", true);
-    PlayPressedCommand = RegisterGlobalCommand("play_command", true);
+    StopPressedCommand = GetCommandId("stop_pressed", true);
+    PlayPressedCommand = GetCommandId("play_command", true);
 }
 
 MoviePlayer::FrameInfo::FrameInfo()

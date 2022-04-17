@@ -143,8 +143,8 @@ void Bullet::Register()
 
     tBullet->RegisterScript("shoot(vector,vector,entity,truth,truth,number,integer,integer,number,truth,number,entity)", (EntityFunctionMember)&Shoot, NULL, NULL, NULL, nullptr, nullptr);
 
-    Bullet::TakeAHitCommand = RegisterGlobalCommand("take_a_hit(number,entity,entity,entity,vector,vector,integer)", true);
-    Bullet::BulletImpactCommand = RegisterGlobalCommand("bullet_impact(entity,entity,integer,vector,vector,vector,entity,integer)", true);
+    Bullet::TakeAHitCommand = GetCommandId("take_a_hit(number,entity,entity,entity,vector,vector,integer)", true);
+    Bullet::BulletImpactCommand = GetCommandId("bullet_impact(entity,entity,integer,vector,vector,vector,entity,integer)", true);
 
     tBullet->PropagateProperties();
 }

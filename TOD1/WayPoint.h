@@ -1,18 +1,20 @@
 #pragma once
-
 #include "Node.h"
-
-#define WAYPOINT_CLASS_SIZE 80
 
 class WayPoint : public Node
 {
-protected:
-
 public:
- WayPoint() : Node(NODE_MASK_POSITION) // NOTE: no constructor.
- {
-  MESSAGE_CLASS_CREATED(WayPoint);
- }
+    inline WayPoint() : Node(NODE_MASK_POSITION)
+    {
+        MESSAGE_CLASS_CREATED(WayPoint);
+    }
+
+    virtual ~WayPoint();
+
+    static void         Register(); //  @924530
+    static WayPoint*    Create(AllocatorIndex);    //  @9244E0
 };
 
-static_assert(sizeof(WayPoint) == WAYPOINT_CLASS_SIZE, MESSAGE_WRONG_CLASS_SIZE(WayPoint));
+extern EntityType* tWayPoint;   //  @A3E154
+
+ASSERT_CLASS_SIZE(WayPoint, 80);

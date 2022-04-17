@@ -77,7 +77,7 @@ void EntityType::InheritFrom(EntityType* from)
 
 void EntityType::RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7)
 {
-    const unsigned short commandId = RegisterGlobalCommand(scriptname, true);
+    const unsigned short commandId = GetCommandId(scriptname, true);
 
     m_ScriptsList.insert(std::make_pair(commandId, new ScriptInfo(scriptptr, a3, a4, a5)));
 }

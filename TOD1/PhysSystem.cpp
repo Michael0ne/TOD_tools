@@ -7,7 +7,7 @@ PhysSystem::PhysSystem(const unsigned int listsize, Cloth* clothptr, const unsig
 
     m_List_1.resize(listsize);
     m_VerticesList.resize(listsize);
-    m_List_3.resize(listsize);
+    m_RestLength.resize(listsize);
     m_List_4.resize(listsize);
 
     m_Cloth = clothptr;

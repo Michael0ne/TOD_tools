@@ -826,6 +826,42 @@ void AssetManager::InstantiateAssetsAndClearAssetsList()
     m_AssetsList.clear();
 }
 
+Node* AssetManager::FindEntityById(const int id)
+{
+    int blockId = (id >> 20) & 7;
+    if (blockId == 0)
+        blockId = m_ActiveBlockId == -1 ? 0 : m_ActiveBlockId;
+    else
+        blockId -= 1;
+
+    int foundBlockId = -1;
+    int foundEntIndex = -1;
+    if (m_EntityIdsMap)
+    {
+        auto& foundEntityRef = m_EntityIdsMap->find(id);
+        if (foundEntityRef != m_EntityIdsMap->end())
+        {
+            int foundEntIndex = foundEntityRef->first & 0xFF8FFFFF;
+            int foundBlockId = ((foundEntityRef->first >> 20) & 7) - 1;
+            auto& entList = m_NodesList[foundBlockId];
+
+            if (foundEntIndex <= 0 || foundEntIndex >= entList.size())
+                return 0;
+            else
+                return (Node*)entList[foundEntIndex];
+        }
+    }
+
+    foundEntIndex = id & 0xFF8FFFFF;
+    foundBlockId = ((id >> 20) & 7) - 1;
+    auto& entList = m_NodesList[foundBlockId];
+
+    if (foundEntIndex <= 0 || foundEntIndex >= entList.size())
+        return 0;
+    else
+        return (Node*)entList[foundEntIndex];
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void AssetManager::_8794B0(const char* const respath)
 {

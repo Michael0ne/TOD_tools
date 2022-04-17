@@ -3,6 +3,7 @@
 
 class AnimSlot;
 class MotionLayer;
+class MotionAnimSlot;
 
 class AnimLayer : public Node
 {
@@ -48,7 +49,6 @@ protected:
             unsigned _29 : 1;
             unsigned _30 : 1;
         };
-        unsigned int            m_Flags;
     }                           m_Flags;
     float                       m_SpeedMultiplier;
     float                       m_CrossBlendFactor;
@@ -101,6 +101,7 @@ public:
     virtual ~AnimLayer();   //  @905670
 
     void                        Play(AnimLayer* animation, const unsigned int event);   //  @903A80
+    void                        BlendTo(MotionAnimSlot* animSlot, const int event);  //  @903C20
 
     const bool                  GetIsPlaying() const;   //  @900FA0
     void                        SetIsPlaying(const bool playing);   //  @901050
@@ -112,6 +113,8 @@ public:
     void                        GetLoopMode(int& outLoopMode) const;    //  @901770
     void                        SetCrossTarget1(AnimLayer* target); //  @903560
     void                        SetTargetCrossBlendFactor(const float blend);   //  @901A30
+    const float                 GetWeight() const;  //  @916DF0
+    void                        SetWeight(const float weight);    //  @5AB060
 
     static void                 Register(); //  @903E60
 

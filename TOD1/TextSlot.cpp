@@ -24,6 +24,7 @@ void TextSlot::Register()
     tTextSlot->RegisterProperty(tSTRING, "text_string_identifier", (EntityGetterFunction)&GetTextStringIdentifier, NULL, NULL, NULL, nullptr, NULL, NULL, -1, "control=string", NULL, NULL, -1);
     tTextSlot->RegisterProperty(tINTEGER, "number_of_text_indices", (EntityGetterFunction)&GetNumberOfTextIndicies, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
     tTextSlot->RegisterProperty(tSTRING, "current_text_content", (EntityGetterFunction)&GetCurrentTextContent, NULL, NULL, NULL, nullptr, NULL, NULL, -1, nullptr, NULL, NULL, -1);
+ 
     tTextSlot->RegisterScript("Dump", (EntityFunctionMember)&Dump, NULL, NULL, NULL, "control=button|text=dump", nullptr);
 
     tTextSlot->PropagateProperties();

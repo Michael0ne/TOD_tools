@@ -691,8 +691,8 @@ void KapowEngineClass::InitEntitiesDatabase()
     Character::Register();
     Bone::Register();
     AnimSlot::Register();
-    MotionAnimSlot::Register();
-    AnimLayer::Register();
+    MotionAnimSlot::Register(); //  TODO: implement!
+    AnimLayer::Register();  //  TODO: implement!
     CutscenePlayer::Register();
     MotionLayer::Register();
     CollisionBox::Register();
@@ -705,32 +705,32 @@ void KapowEngineClass::InitEntitiesDatabase()
     ControlSetup::Register();
     Control::Register();
     Group::Register();
-    CollisionProbe::Register();
+    CollisionProbe::Register(); //  TODO: implement!
     RigidBody::Register();
     OverdoseVehicle::Register();
-    StretchModel::Register();
+    StretchModel::Register();   //  TODO: implement!
     SkyBox::Register();
     Fog::Register();
     Wind::Register();
     Cloth::Register();
-    GFXEffect::Register();
+    GFXEffect::Register();  //  TODO: implement!
     Shadow::Register();
-    LensFlare::Register();
-    LensFlareManager::Register();
+    LensFlare::Register();  //  TODO: implement!
+    LensFlareManager::Register();   //  TODO: implement!
     DecalManager::Register();
-    SurroundGeometry::Register();
-    DynamicSurroundGeometry::Register();
-    Light::Register();
-    Sprite::Register();
-    TextBox::Register();
+    SurroundGeometry::Register();   //  TODO: implement!
+    DynamicSurroundGeometry::Register();    //  TODO: implement!
+    Light::Register();  //  TODO: implement!
+    Sprite::Register(); //  TODO: implement!
+    TextBox::Register();    //  TODO: implement!
     TextSlot::Register();
     GuideBox::Register();
     Bullet::Register();
-    SoundSlot::Register();
-    SoundEmitter::Register();
+    SoundSlot::Register();  //  TODO: implement!
+    SoundEmitter::Register();   //  TODO: implement!
     StaticLighting::Register();
     MoviePlayer::Register();
-    ParticleSystem::Register();
+    ParticleSystem::Register(); //  TODO: implement!
     GEKeyFrame::Register();
     GeometryEffect::Register();
     ProfilerInput::Register();
@@ -741,7 +741,7 @@ void KapowEngineClass::InitEntitiesDatabase()
     HavocPlaceHolder::Register();
     GoodiePlaceHolder::Register();
     WeaponPlaceHolder::Register();
-    MemoryCards::Register();
+    MemoryCards::Register();    //  TODO: implement!
     LoadScreenNode::Register();
 
     m_PropertiesBuiltinChecksum = GetGlobalPropertyListChecksum();

@@ -245,6 +245,423 @@ void Character::SetPhysPonyDamping(const float damping)
         m_PhysPony->m_Damping = damping * 0.009f;
 }
 
+const float Character::GetPhysPonyWeight() const
+{
+    return m_PhysPony ? m_PhysPony->m_Weight : 0.f;
+}
+
+void Character::SetPhysPonyWeight(const float weight)
+{
+    if (m_PhysPony)
+        m_PhysPony->m_Weight = weight;
+}
+
+const float Character::GetPhysPonyRestlength() const
+{
+    return m_PhysPonyRestlength;
+}
+
+void Character::SetPhysPonyRestlength(const float restlength)
+{
+    m_PhysPonyRestlength = restlength;
+    if (m_PhysPony)
+    {
+        auto& phyPonyList = m_PhysPony->m_RestLength;
+        for (unsigned int i = 0; i < phyPonyList.size(); ++i)
+            phyPonyList[i].m_RestLengthSquared = restlength * restlength;
+    }
+}
+
+const int Character::GetPhysPonyNumIterations() const
+{
+    return m_PhysPony ? m_PhysPony->m_NumIterations : 1;
+}
+
+void Character::SetPhysPonyNumIterations(const int iterations)
+{
+    if (m_PhysPony)
+        m_PhysPony->m_NumIterations = iterations;
+}
+
+const bool Character::PhysPonyZAxisLimitOn() const
+{
+    return m_Flags_3.PhysPonyZAxislimit;
+}
+
+void Character::SetPhysPonyZAxisLimitOn(const bool on)
+{
+    m_Flags_3.PhysPonyZAxislimit = on;
+}
+
+const float Character::GetPhysPonyZAxisEnd() const
+{
+    return m_PhysPonyZAxisEnd;
+}
+
+void Character::SetPhysPonyZAxisEnd(const float zaxisend)
+{
+    m_PhysPonyZAxisEnd = zaxisend;
+}
+
+const bool Character::GetCharacterSep2() const
+{
+    return false;
+}
+
+void Character::SetCharacterSep2(const bool)
+{
+}
+
+const float Character::GetPhysBreastLDamping() const
+{
+    return m_PhysBreastL ? m_PhysBreastL->m_Damping * 100.f : 0.f;
+}
+
+void Character::SetPhysBreastLDamping(const float damping)
+{
+    if (m_PhysBreastL)
+        m_PhysBreastL->m_Damping = damping * 0.009f;
+}
+
+const float Character::GetPhysBreastLWeight() const
+{
+    return m_PhysBreastL ? m_PhysBreastL->m_Weight : 0.f;
+}
+
+void Character::SetPhysBreastLWeight(const float weight)
+{
+    if (m_PhysBreastL)
+        m_PhysBreastL->m_Weight = weight;
+}
+
+const float Character::GetPhysBreastLRestlength() const
+{
+    return m_PhysBreastLRestLength;
+}
+
+void Character::SetPhysBreastLRestlength(const float restlength)
+{
+    m_PhysBreastLRestLength = restlength;
+    if (m_PhysBreastL)
+    {
+        auto& phyBreastLList = m_PhysBreastL->m_RestLength;
+        for (unsigned int i = 0; i < phyBreastLList.size(); ++i)
+            phyBreastLList[i].m_RestLengthSquared = restlength * restlength;
+    }
+}
+
+const short Character::GetPhysBreastLNumIterations() const
+{
+    return m_PhysBreastL ? m_PhysBreastL->m_NumIterations : 1;
+}
+
+void Character::SetPhysBreastLNumIterations(const short iterations)
+{
+    if (m_PhysBreastL)
+        m_PhysBreastL->m_NumIterations = iterations;
+}
+
+const bool Character::GetCharacterSep3() const
+{
+    return false;
+}
+
+void Character::SetCharacterSep3(const bool)
+{
+}
+
+const float Character::GetPhysBreastRDamping() const
+{
+    return m_PhysBreastR ? m_PhysBreastR->m_Damping : 0.f;
+}
+
+void Character::SetPhysBreastRDamping(const float damping)
+{
+    if (m_PhysBreastR)
+        m_PhysBreastR->m_Damping = damping * 0.009f;
+}
+
+const float Character::GetPhysBreastRWeight() const
+{
+    return m_PhysBreastR ? m_PhysBreastR->m_Weight : 0.f;
+}
+
+void Character::SetPhysBreastRWeight(const float weight)
+{
+    if (m_PhysBreastR)
+        m_PhysBreastR->m_Weight = weight;
+}
+
+const float Character::GetPhysBreastRRestlength() const
+{
+    return m_PhysBreastLRestLength;
+}
+
+void Character::SetPhysBreastRRestlength(const float restlength)
+{
+    m_PhysBreastRRestLength = restlength;
+    if (m_PhysBreastR)
+    {
+        auto& phyBreastRRestLength = m_PhysBreastR->m_RestLength;
+        for (unsigned int i = 0; i < phyBreastRRestLength.size(); ++i)
+            phyBreastRRestLength[i].m_RestLengthSquared = restlength * restlength;
+    }
+}
+
+const short Character::GetPhysBreastRNumIterations() const
+{
+    return m_PhysBreastR ? m_PhysBreastR->m_NumIterations : 1;
+}
+
+void Character::SetPhysBreastRNumIterations(const short iterations)
+{
+    if (m_PhysBreastR)
+        m_PhysBreastR->m_NumIterations = iterations;
+}
+
+const bool Character::GetCharacterSep4() const
+{
+    return false;
+}
+
+void Character::SetCharacterSep4(const bool)
+{
+}
+
+const float Character::GetPhysBellyDamping() const
+{
+    return m_PhysBelly ? m_PhysBelly->m_Damping : 0.f;
+}
+
+void Character::SetPhysBellyDamping(const float damping)
+{
+    if (m_PhysBelly)
+        m_PhysBelly->m_Damping = damping;
+}
+
+const float Character::GetPhysBellyWeight() const
+{
+    return m_PhysBelly ? m_PhysBelly->m_Weight : 0.f;
+}
+
+void Character::SetPhysBellyWeight(const float weight)
+{
+    if (m_PhysBelly)
+        m_PhysBelly->m_Weight = weight;
+}
+
+const float Character::GetPhysBellyRestlength() const
+{
+    return m_PhysBellyRestlength;
+}
+
+void Character::SetPhysBellyRestlength(const float restlength)
+{
+    m_PhysBellyRestlength = restlength;
+    if (m_PhysBelly)
+    {
+        auto& phyBellyRestLength = m_PhysBelly->m_RestLength;
+        for (unsigned int i = 0; i < phyBellyRestLength.size(); ++i)
+            phyBellyRestLength[i].m_RestLengthSquared = restlength * restlength;
+    }
+}
+
+const short Character::GetPhysBellyNumIterations() const
+{
+    return m_PhysBelly ? m_PhysBelly->m_NumIterations : 1;
+}
+
+void Character::SetPhysBellyNumIterations(const short iterations)
+{
+    if (m_PhysBelly)
+        m_PhysBelly->m_NumIterations = iterations;
+}
+
+const bool Character::GetCharacterSep5() const
+{
+    return false;
+}
+
+void Character::SetCharacterSep5(const bool)
+{
+}
+
+const float Character::GetPhysTrouserLDamping() const
+{
+    return m_PhysTrouserL ? m_PhysTrouserL->m_Damping * 100.f : 0.f;
+}
+
+void Character::SetPhysTrouserLDamping(const float damping)
+{
+    if (m_PhysTrouserL)
+        m_PhysTrouserL->m_Damping = damping * 0.009f;
+}
+
+const float Character::GetPhysTrouserLWeight() const
+{
+    return m_PhysTrouserL ? m_PhysTrouserL->m_Weight : 0.f;
+}
+
+void Character::SetPhysTrouserLWeight(const float weight)
+{
+    if (m_PhysTrouserL)
+        m_PhysTrouserL->m_Weight = weight;
+}
+
+const float Character::GetPhysTrouserLRestlength() const
+{
+    return m_PhysTrouserLRestLength;
+}
+
+void Character::SetPhysTrouserLRestlength(const float restlength)
+{
+    m_PhysTrouserLRestLength = restlength;
+    if (m_PhysTrouserL)
+    {
+        auto& phyTrouserLRestLength = m_PhysTrouserL->m_RestLength;
+        for (unsigned int i = 0; i < phyTrouserLRestLength.size(); ++i)
+            phyTrouserLRestLength[i].m_RestLengthSquared = restlength * restlength;
+    }
+}
+
+const float Character::GetPhysTrouserLXLimit() const
+{
+    return m_PhysTrouserLXLimit;
+}
+
+void Character::SetPhysTrouserLXLimit(const float xlimit)
+{
+    m_PhysTrouserLXLimit = xlimit;
+}
+
+const short Character::GetPhysTrouserLNumIterations() const
+{
+    return m_PhysTrouserL ? m_PhysTrouserL->m_NumIterations : 1;
+}
+
+void Character::SetPhysTrouserLNumIterations(const short iterations)
+{
+    if (m_PhysTrouserL)
+        m_PhysTrouserL->m_NumIterations = iterations;
+}
+
+const bool Character::GetCharacterSep6() const
+{
+    return false;
+}
+
+void Character::SetCharacterSep6(const bool)
+{
+}
+
+const float Character::GetPhysTrouserRDamping() const
+{
+    return m_PhysTrouserR ? m_PhysTrouserR->m_Damping * 100.f : 0.f;
+}
+
+void Character::SetPhysTrouserRDamping(const float damping)
+{
+    if (m_PhysTrouserR)
+        m_PhysTrouserR->m_Damping = damping * 0.009f;
+}
+
+const float Character::GetPhysTrouserRWeight() const
+{
+    return m_PhysTrouserR ? m_PhysTrouserR->m_Weight : 0.f;
+}
+
+void Character::SetPhysTrouserRWeight(const float weight)
+{
+    if (m_PhysTrouserR)
+        m_PhysTrouserR->m_Weight = weight;
+}
+
+const float Character::GetPhysTrouserRRestlength() const
+{
+    return m_PhysTrouserRRestLength;
+}
+
+void Character::SetPhysTrouserRRestlength(const float restlength)
+{
+    m_PhysTrouserRRestLength = restlength;
+    if (m_PhysTrouserRRestLength)
+    {
+        auto& phyTrouserRRestLength = m_PhysTrouserR->m_RestLength;
+        for (unsigned int i = 0; i < phyTrouserRRestLength.size(); ++i)
+            phyTrouserRRestLength[i].m_RestLengthSquared = restlength;
+    }
+}
+
+const float Character::GetPhysTrouserRXLimit() const
+{
+    return m_PhysTrouserRXLimit;
+}
+
+void Character::SetPhysTrouserRXLimit(const float xlimit)
+{
+    m_PhysTrouserRXLimit = xlimit;
+}
+
+const short Character::GetPhysTrouserRNumIterations() const
+{
+    return m_PhysTrouserR ? m_PhysTrouserR->m_NumIterations : 1;
+}
+
+void Character::SetPhysTrouserRNumIterations(const short iterations)
+{
+    if (m_PhysTrouserR)
+        m_PhysTrouserR->m_NumIterations = iterations;
+}
+
+const bool Character::GetCharacterSep7() const
+{
+    return false;
+}
+
+void Character::SetCharacterSep7(const bool)
+{
+}
+
+const float Character::GetPhysTrouserSideWayTolerance() const
+{
+    return m_PhysTrouserSidewayTolerance;
+}
+
+void Character::SetPhysTrouserSideWayTolerance(const float tolerance)
+{
+    m_PhysTrouserSidewayTolerance = tolerance;
+}
+
+const float Character::GetPhysTrouserWideness() const
+{
+    return m_PhysTrouserWideness;
+}
+
+void Character::SetPhysTrouserWideness(const float wideness)
+{
+    m_PhysTrouserWideness = wideness;
+}
+
+void Character::SetModelResFromModel(int* args)
+{
+    SetModelResFromModel_Impl((Node*)args[0]);
+}
+
+void Character::ForceAnimationUpdate(int* args)
+{
+    ForceAnimationUpdate_Impl(0);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Character::SetModelResFromModel_Impl(Node* model)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Character::ForceAnimationUpdate_Impl(const int)
+{
+}
+
 const char* Character::GetModelRes() const
 {
     return m_ModelRes ? m_ModelRes.m_AssetPtr->GetName() : nullptr;
@@ -385,7 +802,7 @@ void Character::Register()
     tCharacter->RegisterProperty(tNUMBER, "phys_Pony_weight", (EntityGetterFunction)&GetPhysPonyWeight, (EntitySetterFunction)&SetPhysPonyWeight, "control=slider|min=0|max=10");
     tCharacter->RegisterProperty(tNUMBER, "phys_Pony_restlength", (EntityGetterFunction)&GetPhysPonyRestlength, (EntitySetterFunction)&SetPhysPonyRestlength, "control=slider|min=0|max=2");
     tCharacter->RegisterProperty(tINTEGER, "phys_Pony_num_iterations", (EntityGetterFunction)&GetPhysPonyNumIterations, (EntitySetterFunction)&SetPhysPonyNumIterations, "control=slider|min=1|max=50");
-    tCharacter->RegisterProperty(tTRUTH, "phys_Pony_z_axislimit_on", (EntityGetterFunction)&GetPhysPonyZAxislimitOn, (EntitySetterFunction)&SetPhysPonyZAxislimitOn, "control=truth");
+    tCharacter->RegisterProperty(tTRUTH, "phys_Pony_z_axislimit_on", (EntityGetterFunction)&PhysPonyZAxisLimitOn, (EntitySetterFunction)&SetPhysPonyZAxisLimitOn, "control=truth");
     tCharacter->RegisterProperty(tNUMBER, "phys_Pony_z_axis_end", (EntityGetterFunction)&GetPhysPonyZAxisEnd, (EntitySetterFunction)&SetPhysPonyZAxisEnd, "control=slider|min=-1|max=1");
 
     tCharacter->RegisterProperty(tTRUTH, "character_sep2", (EntityGetterFunction)&GetCharacterSep2, (EntitySetterFunction)&SetCharacterSep2, "control=drawline|name=Left Breast Physics");
@@ -430,7 +847,7 @@ void Character::Register()
     tCharacter->RegisterScript("setmodelresfrommodel(entity)", (EntityFunctionMember)&SetModelResFromModel);
     tCharacter->RegisterScript("forceanimationupdate", (EntityFunctionMember)&ForceAnimationUpdate);
 
-    UpdateBoneCtrlCommand = RegisterGlobalCommand("update_bone_ctrl", true);
+    UpdateBoneCtrlCommand = GetCommandId("update_bone_ctrl", true);
 
     tCharacter->PropagateProperties();
 }

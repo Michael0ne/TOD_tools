@@ -5,6 +5,8 @@
 #include "GEKeyFrame.h"
 #include "Scene.h"
 
+EntityType* tGeometryEffect;
+
 GeometryEffect::~GeometryEffect()
 {
     MESSAGE_CLASS_DESTROYED(GeometryEffect);
@@ -22,6 +24,25 @@ Effect* GeometryEffect::AddEffect()
     m_TotalEffects++;
 
     return effect;
+}
+
+void GeometryEffect::RemoveEffect(Effect* effect)
+{
+    if (effect == m_ActiveEffect)
+        m_ActiveEffect = nullptr;
+
+    if (effect == m_Effect)
+        m_Effect = effect->m_ParentEffect;
+
+    if (effect->m_ParentEffect)
+        effect->m_ParentEffect->m_Sibling = effect->m_Sibling;
+
+    if (effect->m_Sibling)
+        effect->m_Sibling->m_ParentEffect = effect->m_ParentEffect;
+
+    --m_TotalEffects;
+
+    delete effect;
 }
 
 void GeometryEffect::AddKeyFrame(GEKeyFrame* keyframe)

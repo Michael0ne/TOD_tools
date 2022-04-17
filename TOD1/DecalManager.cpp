@@ -20,6 +20,7 @@ void DecalManager::Register()
     tDecalManager->RegisterProperty(tSTRING, "texture", (EntityGetterFunction)&GetTexture, (EntitySetterFunction)&SetTexture, "control=resource|type=*.bmp");
     tDecalManager->RegisterProperty(tINTEGER, "BufferSize", (EntityGetterFunction)&GetBufferSize, (EntitySetterFunction)&SetBufferSize, "control=slider|min=1|max=100");
     tDecalManager->RegisterProperty(tINTEGER, "PerFrameFillSize", (EntityGetterFunction)&GetPerFrameFillSize, (EntitySetterFunction)&SetPerFrameFillSize, "control=slider|min=1|max=10");
+
     tDecalManager->RegisterScript("SetDecal(vector,vector,number)", (EntityFunctionMember)&SetDecal);
     tDecalManager->RegisterScript("SetDecal(vector,vector,number,number,number,number)", (EntityFunctionMember)&SetDecal_A);
 

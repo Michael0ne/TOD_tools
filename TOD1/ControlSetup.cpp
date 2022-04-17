@@ -42,15 +42,38 @@ const bool ControlSetup::IsControlDown_Impl(const float controlid) const
         float   m_RealPressure;
     } controlstate;
 
-    GetControlPressForce(controlid, &controlstate.m_Pressure, &controlstate.m_RealPressure, &controlstate.m_Released, &controlstate.m_Pressed);
+    GetControlPressForce_Impl(controlid, &controlstate.m_Pressure, &controlstate.m_RealPressure, &controlstate.m_Released, &controlstate.m_Pressed);
 
     return controlstate.m_Pressure > 0;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-float ControlSetup::GetControlPressForce(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const
+float ControlSetup::GetControlPressForce_Impl(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const
 {
-    return 0.0f;
+    *pressure = 0;
+    *realpressure = 0;
+    *pressed = false;
+    *released = false;
+
+    if (controlid < 0 || controlid < m_ControlsList.size())
+        return;
+
+    if (m_ControlsList.begin() + controlid == m_ControlsList.end())
+        return;
+
+    auto& controlInfo = m_ControlsList[controlid].m_NodesList;
+    for (size_t i = 0; i < controlInfo.size(); ++i)
+    {
+        float controlPressure = 0, controlRealPressure = 0;
+        bool controlPressed = false, controlReleased = false;
+        controlInfo[i]->GetStateInfo(&controlPressure, &controlRealPressure, &controlPressed, &controlReleased);
+        if (controlPressure > *pressure)
+            *pressure = controlPressure;
+        if (controlRealPressure > *realpressure)
+            *realpressure = controlRealPressure;
+
+        *pressed |= controlPressed;
+        *released |= controlReleased;
+    }
 }
 
 void ControlSetup::IsControlPressed(int* args) const
@@ -63,7 +86,7 @@ bool ControlSetup::IsControlPressed_Impl(float control) const
     float pressure, realpressure;
     bool pressed, released;
 
-    GetControlPressForce(control, &pressure, &realpressure, &pressed, &released);
+    GetControlPressForce_Impl(control, &pressure, &realpressure, &pressed, &released);
 
     return pressed;
 }
@@ -78,7 +101,7 @@ bool ControlSetup::IsControlReleased_Impl(float control) const
     float pressure, realpressure;
     bool pressed, released;
 
-    GetControlPressForce(control, &pressure, &realpressure, &pressed, &released);
+    GetControlPressForce_Impl(control, &pressure, &realpressure, &pressed, &released);
 
     return released;
 }
@@ -93,7 +116,7 @@ const float ControlSetup::GetControlPressure_Impl(float control) const
     float pressure, realpressure;
     bool pressed, released;
 
-    GetControlPressForce(control, &pressure, &realpressure, &pressed, &released);
+    GetControlPressForce_Impl(control, &pressure, &realpressure, &pressed, &released);
 
     return pressure;
 }
@@ -108,7 +131,7 @@ const float ControlSetup::GetControlRealPressure_Impl(const float control) const
     float pressure, realpressure;
     bool pressed, released;
 
-    GetControlPressForce(control, &pressure, &realpressure, &pressed, &released);
+    GetControlPressForce_Impl(control, &pressure, &realpressure, &pressed, &released);
 
     return realpressure;
 }
@@ -180,12 +203,12 @@ const float ControlSetup::GetVibration_Impl(const int controller) const
 
 void ControlSetup::AnyControllerButtonPressed(int* args) const
 {
-    *args = AnyControllerButtonPressed(Control::ActiveControllerIndex);
+    *args = AnyControllerButtonPressed_Impl(Control::ActiveControllerIndex);
 }
 
 void ControlSetup::AnyControllerStickMoved(int* args) const
 {
-    *args = AnyControllerStickMoved(Control::ActiveControllerIndex);
+    *args = AnyControllerStickMoved_Impl(Control::ActiveControllerIndex);
 }
 
 void ControlSetup::GetKeyPressedString(char** args) const
@@ -197,7 +220,7 @@ void ControlSetup::SetWaitForControllerText(int* args) const
 {
     if (!args[0] || !((Node*)args[1])->m_ScriptEntity)
     {
-        SetWaitForControllerText(nullptr, args[1]);
+        SetWaitForControllerText_Impl(nullptr, args[1]);
         return;
     }
 
@@ -207,12 +230,70 @@ void ControlSetup::SetWaitForControllerText(int* args) const
         argtextslot = argtextslot->m_Parent;
         if (!argtextslot)
         {
-            SetWaitForControllerText(nullptr, args[1]);
+            SetWaitForControllerText_Impl(nullptr, args[1]);
             return;
         }
     }
 
-    SetWaitForControllerText((TextSlot*)args[0], args[1]);
+    SetWaitForControllerText_Impl((TextSlot*)args[0], args[1]);
+}
+
+void ControlSetup::SetEnableWaitForController(const int* args)
+{
+    WaitForController = args[0] != false;
+}
+
+void ControlSetup::SetCurrentController(const int* args)
+{
+    CurrentController = (ControlSetup*)args[0];
+}
+
+void ControlSetup::Start(const int* args)
+{
+    m_ControlsList.clear();
+    Start_Impl(this);
+}
+
+void ControlSetup::Start_Impl(Node* node)
+{
+    if (node)
+    {
+        Node* controlNode = nullptr;
+        EntityType* script = node->m_ScriptEntity;
+        if (script)
+        {
+            while (tControl != script)
+            {
+                script = script->m_Parent;
+                if (!script)
+                    break;
+            }
+
+            if (!script)
+                controlNode = nullptr;
+            else
+                controlNode = node;
+        }
+        else
+        {
+            controlNode = nullptr;
+        }
+
+        if (controlNode)
+        {
+            int controlId = GetControlId_Impl(controlNode->m_Name);
+            if (controlId < 0)
+            {
+                m_ControlsList.push_back(ControlInfo(controlNode->m_Name));
+                controlId = m_ControlsList.size() - 1;
+            }
+
+            m_ControlsList[controlId].m_NodesList.push_back((Control*)controlNode);
+        }
+    }
+
+    for (Node* child = node->m_FirstChild; child; child = child->m_NextSibling)
+        Start_Impl(child);
 }
 
 const char* const ControlSetup::GetKeyPressedString_Impl()
@@ -228,7 +309,7 @@ const char* const ControlSetup::GetKeyPressedString_Impl()
     return nullptr;
 }
 
-bool ControlSetup::AnyControllerStickMoved(const int controllerindex)
+bool ControlSetup::AnyControllerStickMoved_Impl(const int controllerindex)
 {
     bool movementdetected = false;
     Vector4f axisposition = {};
@@ -246,7 +327,7 @@ bool ControlSetup::AnyControllerStickMoved(const int controllerindex)
     return movementdetected;
 }
 
-bool ControlSetup::AnyControllerButtonPressed(const int controllerindex)
+bool ControlSetup::AnyControllerButtonPressed_Impl(const int controllerindex)
 {
     int i = 0;
     bool buttonpressed = false;
@@ -272,23 +353,57 @@ ControlSetup* ControlSetup::Create(AllocatorIndex)
     return new ControlSetup;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void ControlSetup::SetWaitForControllerText(TextSlot* textslot, const int textindex)
+void ControlSetup::SetWaitForControllerText_Impl(TextSlot* textslot, const int textindex)
 {
-    static short* WaitForControllerText = new short[2048];
+    static unsigned short* WaitForControllerText = new unsigned short[2048];
     if (!WaitForControllerText)
-        TextAsset::CopyCharArrayToGameString(WaitForControllerText, "Please insert controller and press START");
+        TextAsset::CopyCharArrayToGameString((short*)WaitForControllerText, "Please insert controller and press START");
+
+    int textIndexActual = textindex < 0 ? 0 : textindex;
+    auto& texIndiciesList = ((TextAsset*)textslot->m_TextAsset.m_AssetPtr)->m_TextIndicies;
+    if (textslot->m_TextAsset)
+        textIndexActual = textIndexActual >= texIndiciesList.size() ? texIndiciesList.size() - 1 : textIndexActual;
+
+    WaitForControllerText[0] = NULL;
+
+    if (textslot->m_TextAsset)
+    {
+        if (textIndexActual < texIndiciesList.size())
+            ((TextAsset*)textslot->m_TextAsset.m_AssetPtr)->GetGameString(texIndiciesList[textIndexActual], WaitForControllerText, 255, true);
+        else
+            WaitForControllerText[0] = NULL;
+    }
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void ControlSetup::Register()
 {
     tControlSetup = new EntityType("ControlSetup");
     tControlSetup->InheritFrom(tNode);
     tControlSetup->SetCreator((CREATOR)Create);
 
-    tControlSetup->RegisterScript("getcontrolid(string):integer", (EntityFunctionMember)&GetControlId, NULL, NULL, NULL, nullptr, nullptr);
-    tControlSetup->RegisterScript("iscontroldown(integer):truth", (EntityFunctionMember)&IsControlDown, NULL, NULL, NULL, nullptr, nullptr);
-    tControlSetup->RegisterScript("iscontrolpressed(integer):truth", (EntityFunctionMember)&IsControlPressed, NULL, NULL, NULL, nullptr, nullptr);
-    tControlSetup->RegisterScript("iscontrolreleased(integer):truth", (EntityFunctionMember)&IsControlReleased, NULL, NULL, NULL, nullptr, nullptr);
+    tControlSetup->RegisterScript("getcontrolid(string):integer", (EntityFunctionMember)&GetControlId);
+    tControlSetup->RegisterScript("iscontroldown(integer):truth", (EntityFunctionMember)&IsControlDown);
+    tControlSetup->RegisterScript("iscontrolpressed(integer):truth", (EntityFunctionMember)&IsControlPressed);
+    tControlSetup->RegisterScript("iscontrolreleased(integer):truth", (EntityFunctionMember)&IsControlReleased);
+    tControlSetup->RegisterScript("getcontrolpressure(integer):number", (EntityFunctionMember)&GetControlPressForce);
+    tControlSetup->RegisterScript("getcontrolrealpressure(integer):number", (EntityFunctionMember)&GetControlRealPressure);
+    tControlSetup->RegisterScript("iscontrollerpresent:truth", (EntityFunctionMember)&IsControllerPresent);
+    tControlSetup->RegisterScript("getcontrolpos(integer):integer", (EntityFunctionMember)&GetControlPos);
+    tControlSetup->RegisterScript("getcontroldeltapos(integer):integer", (EntityFunctionMember)&GetControlDeltaPos);
+    tControlSetup->RegisterScript("setvibration(integer,number)", (EntityFunctionMember)&SetVibration);
+    tControlSetup->RegisterScript("getvibration(integer):number", (EntityFunctionMember)&GetVibration);
+    tControlSetup->RegisterScript("AnyControllerButtonPressed:truth", (EntityFunctionMember)&AnyControllerButtonPressed);
+    tControlSetup->RegisterScript("AnyControllerStickMoved:truth", (EntityFunctionMember)&AnyControllerStickMoved);
+    tControlSetup->RegisterScript("GetKeyPressedString:string", (EntityFunctionMember)&GetKeyPressedString);
+    tControlSetup->RegisterScript("SetWaitForControllerText(entity,integer)", (EntityFunctionMember)&SetWaitForControllerText);
+    tControlSetup->RegisterScript("SetEnableWaitForController(truth)", (EntityFunctionMember)&SetEnableWaitForController);
+    tControlSetup->RegisterScript("SetCurrentController", (EntityFunctionMember)&SetCurrentController);
+    tControlSetup->RegisterScript("start", (EntityFunctionMember)&Start);
+
+    tControlSetup->PropagateProperties();
+}
+
+ControlSetup::ControlInfo::~ControlInfo()
+{
+    MESSAGE_CLASS_DESTROYED(ControlInfo);
 }

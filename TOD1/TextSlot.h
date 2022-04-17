@@ -5,6 +5,8 @@ class TextAsset;
 
 class TextSlot : public Node
 {
+    friend class ControlSetup;
+
 protected:
     char       *m_CurrentText;
     int         m_CurrentIndex;

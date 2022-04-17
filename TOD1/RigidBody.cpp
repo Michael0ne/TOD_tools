@@ -193,6 +193,7 @@ void RigidBody::Register()
     tRigidBody = new EntityType("RigidBody");
     tRigidBody->InheritFrom(tNode);
     tRigidBody->SetCreator((CREATOR)Create);
+
     tRigidBody->RegisterProperty(tNUMBER, "coll_mass", (EntityGetterFunction)&GetCollMass, (EntitySetterFunction)&SetCollMass, "control=slider|min=0.01|max=100", 13);
     tRigidBody->RegisterProperty(tNUMBER, "Elasticity", (EntityGetterFunction)&GetElasticity, (EntitySetterFunction)&SetElasticity, nullptr, 14);
     tRigidBody->RegisterProperty(tTRUTH, "Grounded", (EntityGetterFunction)&IsGrounded, (EntitySetterFunction)&SetIsGrounded, nullptr);
@@ -209,8 +210,8 @@ void RigidBody::Register()
     tRigidBody->RegisterScript("SetBoxInertiaMatrix(vector)", (EntityFunctionMember)&SetBoxInertialMatrix);
     tRigidBody->RegisterScript("SetEllipsoidInertiaMatrix(vector)", (EntityFunctionMember)&SetEllipsoidInertialMatrix);
 
-    CommandDoCollisionGameLogic = RegisterGlobalCommand("command_do_collision_game_logic", true);
-    CommandGetContactAction = RegisterGlobalCommand("command_get_contact_action(integer):integer", true);
+    CommandDoCollisionGameLogic = GetCommandId("command_do_collision_game_logic", true);
+    CommandGetContactAction = GetCommandId("command_get_contact_action(integer):integer", true);
 
     tRigidBody->PropagateProperties();
 }

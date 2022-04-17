@@ -9,14 +9,14 @@ class Entity
 {
 public:
     EntityType     *m_ScriptEntity;
-    bool            field_8;
-    bool            field_9;
-    bool            field_A;
-    bool            field_B;
+    char            field_8;
+    char            field_9;
+    char            field_A;
+    char            field_B;
 
-    bool            field_C;
+    char            field_C;
 
-    bool            field_D[5];
+    char            field_D[5];
 
     short           m_Order;
     union

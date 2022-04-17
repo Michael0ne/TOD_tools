@@ -170,7 +170,7 @@ short RegisterGlobalProperty(const char* const propertyname, bool existingProper
     }
 }
 
-int RegisterGlobalCommand(const char* const commandname, bool existingCommand)
+int GetCommandId(const char* const commandname, bool existingCommand)
 {
     if (!GlobalCommandsList.size())
         GlobalCommandsList.reserve(3000);
@@ -247,7 +247,7 @@ void ReadDatabaseFile(const char* path)
         dbfile.Read(&commandNameLen, sizeof(commandNameLen));
         dbfile.Read(commandName, commandNameLen);
 
-        RegisterGlobalCommand(commandName, false);
+        GetCommandId(commandName, false);
     }
 
     LogDump::LogA("Done loading script database (%dms)\n", Timer::GetMilliseconds() - timeStart);

@@ -124,7 +124,7 @@ protected:
     int                         field_128;
     Orientation                 m_Orient_3;
     PhysSystem                 *m_PhysBreastR;
-    float                       field_140;
+    float                       m_PhysBreastRRestLength;
     int                         field_144;
     int                         field_148;
     int                         field_14C;
@@ -138,12 +138,12 @@ protected:
     int                         field_178;
     Orientation                 m_Orient_5;
     PhysSystem                 *m_PhysTrouserL;
-    int                         field_190;
-    float                       field_194;
+    int                         m_PhysTrouserLRestLength;
+    float                       m_PhysTrouserLXLimit;
     float                       m_PhysTrouserSidewayTolerance;
-    float                       m_PhysTrouserWilderness;
+    float                       m_PhysTrouserWideness;
     PhysSystem                 *m_PhysTrouserR;
-    float                       field_1A4;
+    float                       m_PhysTrouserRRestLength;
     float                       m_PhysTrouserRXLimit;
     float                       field_1AC;
     int                         field_1B0;
@@ -210,7 +210,85 @@ public:
     void                SetCharacterSep1(const bool);   //  @883EC0
     const float         GetPhysPonyDamping() const; //  @907B20
     void                SetPhysPonyDamping(const float damping);    //  @907B40
+    const float         GetPhysPonyWeight() const;  //  @907CA0
+    void                SetPhysPonyWeight(const float weight);  //  @907CC0
+    const float         GetPhysPonyRestlength() const;  //  @91CF60
+    void                SetPhysPonyRestlength(const float restlength);  //  @915A00
+    const int           GetPhysPonyNumIterations() const;   //  @907F00
+    void                SetPhysPonyNumIterations(const int iterations); //  @907F20
+    const bool          PhysPonyZAxisLimitOn() const;   //  @9080A0
+    void                SetPhysPonyZAxisLimitOn(const bool on); //  @908080
+    const float         GetPhysPonyZAxisEnd() const;    //  @9080B0
+    void                SetPhysPonyZAxisEnd(const float zaxisend);  //  @9080C0
+    const bool          GetCharacterSep2() const;   //  @42F4F0
+    void                SetCharacterSep2(const bool);   //  @883EC0
+    const float         GetPhysBreastLDamping() const;  //  @907B60
+    void                SetPhysBreastLDamping(const float damping); //  @907B80
+    const float         GetPhysBreastLWeight() const;   //  @907CE0
+    void                SetPhysBreastLWeight(const float weight);   //  @907D00
+    const float         GetPhysBreastLRestlength() const;   //  @68B210
+    void                SetPhysBreastLRestlength(const float restlength);   //  @915A50
+    const short         GetPhysBreastLNumIterations() const;    //  @907F40
+    void                SetPhysBreastLNumIterations(const short iterations);  //  @907F60
+    const bool          GetCharacterSep3() const;   //  @42F4F0
+    void                SetCharacterSep3(const bool);   //  @883EC0
+    const float         GetPhysBreastRDamping() const;   //  @907BA0
+    void                SetPhysBreastRDamping(const float damping);   //  @907BC0
+    const float         GetPhysBreastRWeight() const;   //  @907D20
+    void                SetPhysBreastRWeight(const float weight);   //  @907D40
+    const float         GetPhysBreastRRestlength() const;   //  @907E20
+    void                SetPhysBreastRRestlength(const float restlength);   //  @915AA0
+    const short         GetPhysBreastRNumIterations() const;    //  @907F80
+    void                SetPhysBreastRNumIterations(const short iterations);    //  @907FA0
+    const bool          GetCharacterSep4() const;   //  @42F4F0
+    void                SetCharacterSep4(const bool);   //  @883EC0
+    const float         GetPhysBellyDamping() const;    //  @907BE0
+    void                SetPhysBellyDamping(const float damping);   //  @907C00
+    const float         GetPhysBellyWeight() const; //  @907D60
+    void                SetPhysBellyWeight(const float weight); //  @907D80
+    const float         GetPhysBellyRestlength() const; //  @907E30
+    void                SetPhysBellyRestlength(const float restlength); //  @915AF0
+    const short         GetPhysBellyNumIterations() const;  //  @907FC0
+    void                SetPhysBellyNumIterations(const short iterations);  //  @907FE0
+    const bool          GetCharacterSep5() const;   //  @42F4F0
+    void                SetCharacterSep5(const bool);   //  @883EC0
+    const float         GetPhysTrouserLDamping() const; //  @907C20
+    void                SetPhysTrouserLDamping(const float damping);    //  @907C40
+    const float         GetPhysTrouserLWeight() const;  //  @907DA0
+    void                SetPhysTrouserLWeight(const float weight);  //  @907DC0
+    const float         GetPhysTrouserLRestlength() const;  //  @907E40
+    void                SetPhysTrouserLRestlength(const float restlength);  //  @915B40
+    const float         GetPhysTrouserLXLimit() const;  //  @907E70
+    void                SetPhysTrouserLXLimit(const float xlimit);  //  @907E50
+    const short         GetPhysTrouserLNumIterations() const;   //  @908000
+    void                SetPhysTrouserLNumIterations(const short iterations);   //  @908020
+    const bool          GetCharacterSep6() const;   //  @42F4F0
+    void                SetCharacterSep6(const bool);   //  @883EC0
+    const float         GetPhysTrouserRDamping() const; //  @907C60
+    void                SetPhysTrouserRDamping(const float damping);    //  @907C80
+    const float         GetPhysTrouserRWeight() const;  //  @907DE0
+    void                SetPhysTrouserRWeight(const float weight);  //  @907E00
+    const float         GetPhysTrouserRRestlength() const;  //  @8D2180
+    void                SetPhysTrouserRRestlength(const float restlength);  //  @915B90
+    const float         GetPhysTrouserRXLimit() const;  //  @8D2190
+    void                SetPhysTrouserRXLimit(const float xlimit);  //  @907E80
+    const short         GetPhysTrouserRNumIterations() const;   //  @908040
+    void                SetPhysTrouserRNumIterations(const short iterations);   //  @908060
+    const bool          GetCharacterSep7() const;   //  @42F4F0
+    void                SetCharacterSep7(const bool);   //  @883EC0
+    const float         GetPhysTrouserSideWayTolerance() const; //  @907EC0
+    void                SetPhysTrouserSideWayTolerance(const float tolerance);  //  @907EA0
+    const float         GetPhysTrouserWideness() const; //  @907EF0
+    void                SetPhysTrouserWideness(const float wideness);   //  @907ED0
 
+    void                SetModelResFromModel(int* args);    //  @915EA0
+    void                ForceAnimationUpdate(int* args);    //  @915D80
+
+private:
+    void                SetModelResFromModel_Impl(Node* model); //  @914880
+    void                ForceAnimationUpdate_Impl(const int);   //  @90FFF0
+
+public:
     static void         Register(); //  @914A20
     static Character*   Create(AllocatorIndex); //  @9149A0
 

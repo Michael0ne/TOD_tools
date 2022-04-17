@@ -68,12 +68,50 @@ void CollisionProbe::ClearCache()
     m_TouchingNodes.clear();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void CollisionProbe::Register()
 {
     tCollisionProbe = new EntityType("CollisionProbe");
     tCollisionProbe->InheritFrom(tNode);
     tCollisionProbe->SetCreator((CREATOR)Create);
+
+    tCollisionProbe->RegisterProperty(tNUMBER, "radius", (EntityGetterFunction)&GetRadius, (EntitySetterFunction)&SetRadius, nullptr);
+    tCollisionProbe->RegisterProperty(tNUMBER, "angle", (EntityGetterFunction)&GetAngle, (EntitySetterFunction)&SetAngle, nullptr);
+    tCollisionProbe->RegisterProperty(tINTEGER, "dynamicmask", (EntityGetterFunction)&GetDynamicMask, (EntitySetterFunction)&SetDynamicMask, nullptr);
+    tCollisionProbe->RegisterProperty(tINTEGER, "usermask", (EntityGetterFunction)&GetUserMask, (EntitySetterFunction)&SetUserMask, nullptr);
+    DataType* listEntity = DataType::LoadScript("list(entity)");
+    tCollisionProbe->RegisterProperty(listEntity, "nodes", (EntityGetterFunction)&GetNodes, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(listEntity, "touchingnodes", (EntityGetterFunction)&GetTouchingNodes, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tEntity, "ClosestNode", (EntityGetterFunction)&GetClosestNode, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tINTEGER, "ClosestCollisionVolume", (EntityGetterFunction)&GetClosestCollisionVolume, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tEntity, "RealNode", (EntityGetterFunction)&GetRealNode, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tVECTOR, "ClosestNormal", (EntityGetterFunction)&GetClosestNormal, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tVECTOR, "ResolvedPos", (EntityGetterFunction)&GetResolvedPos, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tVECTOR, "ContactPos", (EntityGetterFunction)&GetContactPos, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tNUMBER, "MinDistance", (EntityGetterFunction)&GetMinDistance, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tINTEGER, "SurfaceID", (EntityGetterFunction)&GetSurfaceID, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tINTEGER, "MaterialID", (EntityGetterFunction)&GetMaterialID, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tINTEGER, "CollisionFlags", (EntityGetterFunction)&GetCollisionFlags, nullptr, nullptr);
+    tCollisionProbe->RegisterProperty(tEntity, "HintNode", (EntityGetterFunction)&GetHintNode, (EntitySetterFunction)&SetHintNode, nullptr);
+    tCollisionProbe->RegisterProperty(tINTEGER, "HintCollisionVolume", (EntityGetterFunction)&GetHintCollisionVolume, (EntitySetterFunction)&SetHintCollisionVolume, nullptr);
+    tCollisionProbe->RegisterProperty(tTRUTH, "OptimisticMode", (EntityGetterFunction)&IsOptimisticMode, (EntitySetterFunction)&SetIsOptimisticMode, nullptr);
+
+    tCollisionProbe->RegisterScript("Update", (EntityFunctionMember)&Update);
+    tCollisionProbe->RegisterScript("UpdateForLine", (EntityFunctionMember)&UpdateForLine);
+    tCollisionProbe->RegisterScript("IsLineColliding(integer,vector,vector):truth", (EntityFunctionMember)&IsLineColliding);
+    tCollisionProbe->RegisterScript("GetClosestNode(integer,vector,vector):truth", (EntityFunctionMember)&GetClosestNode);
+    tCollisionProbe->RegisterScript("getfieldonface(integer):integer", (EntityFunctionMember)&GetFieldOnFace);
+    tCollisionProbe->RegisterScript("setlinemode(integer)", (EntityFunctionMember)&SetLineMode, 0, 0, 0, "SetLineModeMSG");
+    tCollisionProbe->RegisterScript("setlinethickness(number)", (EntityFunctionMember)&SetLineThickness, 0, 0, 0, "SetLineThicknessMSG");
+    tCollisionProbe->RegisterScript("setlinewidthheight(number,number)", (EntityFunctionMember)&SetLineWidthHeight, 0, 0, 0, "SetLineWidthHeightMSG");
+    tCollisionProbe->RegisterScript("setcollisionmask(integer)", (EntityFunctionMember)&SetCollisionMask, 0, 0, 0, "SetCollisionMaskMSG");
+    tCollisionProbe->RegisterScript("ignorenode(entity)", (EntityFunctionMember)&IgnoreNode);
+    tCollisionProbe->RegisterScript("removeignorenode", (EntityFunctionMember)&RemoveIgnoreNode);
+    tCollisionProbe->RegisterScript("resetignorelist", (EntityFunctionMember)&ResetIgnoreList);
+    tCollisionProbe->RegisterScript("reset", (EntityFunctionMember)&Reset);
+    tCollisionProbe->RegisterScript("clearcache", (EntityFunctionMember)&ClearCache);
+    tCollisionProbe->RegisterScript("clearcacheline(integer)", (EntityFunctionMember)&ClearCacheLine);
+
+    tCollisionProbe->PropagateProperties();
 }
 
 CollisionProbe* CollisionProbe::Create()

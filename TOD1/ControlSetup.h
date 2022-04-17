@@ -11,6 +11,15 @@ class ControlSetup : public Node
     {
         String              m_Name;
         std::vector<Control*>  m_NodesList;
+
+        inline ControlInfo(const char* const name)
+        {
+            MESSAGE_CLASS_CREATED(ControlInfo);
+
+            m_Name = name;
+        }
+
+        ~ControlInfo(); //  @925FB0
     };
 
 protected:
@@ -27,7 +36,7 @@ private:
 
     void                    IsControlDown(int* args) const; //  @610000
     const bool              IsControlDown_Impl(const float controlid) const;  //  @925880
-    float                   GetControlPressForce(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const;    //  @925210
+    float                   GetControlPressForce_Impl(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const;    //  @925210
     void                    IsControlPressed(int* args) const;  //  @7231F0
     bool                    IsControlPressed_Impl(float control) const; //  @925370
     void                    IsControlReleased(int* args) const; //  @73D9E0
@@ -49,15 +58,19 @@ private:
     void                    AnyControllerStickMoved(int* args) const;   //  @925F90
     void                    GetKeyPressedString(char** args) const; //  @6D8200
     void                    SetWaitForControllerText(int* args) const;  //  @9254B0
+    void                    SetEnableWaitForController(const int* args);    //  @924FE0
+    void                    SetCurrentController(const int* args);  //  @924EC0
+    void                    Start(const int* args); //  @926280
+    void                    Start_Impl(Node* node); //  @925A60
 
     static const char* const    GetKeyPressedString_Impl();  //  @924ED0
-    static bool             AnyControllerStickMoved(const int controllerindex); //  @925040
-    static bool             AnyControllerButtonPressed(const int controllerindex);  //  @925000
+    static bool             AnyControllerStickMoved_Impl(const int controllerindex); //  @925040
+    static bool             AnyControllerButtonPressed_Impl(const int controllerindex);  //  @925000
 
     static ControlSetup*    Create(AllocatorIndex); // @925810
 
 private:
-    static void             SetWaitForControllerText(TextSlot* textslot, const int textindex);  //  @9252F0
+    static void             SetWaitForControllerText_Impl(TextSlot* textslot, const int textindex);  //  @9252F0
 
 public:
     static ControlSetup*    CurrentController; // @A3E16C

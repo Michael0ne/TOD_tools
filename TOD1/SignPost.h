@@ -24,7 +24,7 @@ public:
     std::vector<int>*   GetConnections() const; //  @750FA0
     void                SetConnections(void* args); //  @921360
 
-    static void     Register(); //  @921420
+    static void         Register(); //  @921420
 
     static std::vector<SignPost*> SignPostList; // @A133F0
 };

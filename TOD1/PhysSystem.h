@@ -6,10 +6,10 @@ class PhysSystem
 {
     friend class Cloth;
 
-    struct List3
+    struct RestLengthList
     {
         unsigned int        field_0;
-        unsigned int        field_4;
+        float               m_RestLengthSquared;
     };
 
     struct Vertex
@@ -33,7 +33,7 @@ class PhysSystem
 public:
     std::vector<Vector4f>   m_List_1;
     std::vector<Vertex>     m_VerticesList;
-    std::vector<List3>      m_List_3;
+    std::vector<RestLengthList>      m_RestLength;
     Cloth                  *m_Cloth;
     Vector4f                m_GravityVec;
     int                     field_44;
