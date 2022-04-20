@@ -8,7 +8,9 @@
 
 EntityType* tControlSetup;
 
-bool ControlSetup::ControllersUsedByEditor[8];
+ControlSetup* ControlSetup::CurrentController;
+bool ControlSetup::WaitForController;
+short* ControlSetup::WaitForControllerText;
 
 void ControlSetup::GetControlId(int* args) const
 {
@@ -47,20 +49,20 @@ const bool ControlSetup::IsControlDown_Impl(const float controlid) const
     return controlstate.m_Pressure > 0;
 }
 
-float ControlSetup::GetControlPressForce_Impl(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const
+void ControlSetup::GetControlPressForce_Impl(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const
 {
     *pressure = 0;
     *realpressure = 0;
     *pressed = false;
     *released = false;
 
-    if (controlid < 0 || controlid < m_ControlsList.size())
+    if (controlid < 0.f || (size_t)controlid < m_ControlsList.size())
         return;
 
-    if (m_ControlsList.begin() + controlid == m_ControlsList.end())
+    if (m_ControlsList.begin() + (size_t)controlid == m_ControlsList.end())
         return;
 
-    auto& controlInfo = m_ControlsList[controlid].m_NodesList;
+    auto& controlInfo = m_ControlsList[(size_t)controlid].m_NodesList;
     for (size_t i = 0; i < controlInfo.size(); ++i)
     {
         float controlPressure = 0, controlRealPressure = 0;
@@ -183,7 +185,7 @@ void ControlSetup::SetVibration(int* args) const
 void ControlSetup::SetVibration_Impl(const int controller, const float force) const
 {
     if (Input::Gamepad::IsControllerPresent(Control::ActiveControllerIndex) &&
-        !Control::_A3E170[Control::ActiveControllerIndex])
+        !Control::ControllersUsedByEditor[Control::ActiveControllerIndex])
         Input::Gamepad::GetGameControllerByIndex(Control::ActiveControllerIndex)->SetControllerVibration(controller, force);
 }
 
@@ -195,7 +197,7 @@ void ControlSetup::GetVibration(int* args) const
 const float ControlSetup::GetVibration_Impl(const int controller) const
 {
     if (!Input::Gamepad::IsControllerPresent(Control::ActiveControllerIndex) ||
-        Control::_A3E170[Control::ActiveControllerIndex])
+        Control::ControllersUsedByEditor[Control::ActiveControllerIndex])
         return NULL;
 
     return (float)Input::Gamepad::GetGameControllerByIndex(Control::ActiveControllerIndex)->GetControllerVibration(controller);

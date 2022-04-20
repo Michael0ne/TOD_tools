@@ -1,6 +1,5 @@
 #pragma once
 #include "Node.h"
-#include "InputGameController.h"
 
 class Control : public Node
 {
@@ -30,7 +29,7 @@ class Control : public Node
 
 protected:
     int    m_Key;
-    char   field_54;
+    char   m_IsNormalizedPressure;
     ControlType  m_ControlType;
 
 public:
@@ -39,14 +38,14 @@ public:
         MESSAGE_CLASS_CREATED(Control);
 
         m_Key = -1;
-        field_54 = 0;
+        m_IsNormalizedPressure = 0;
         m_ControlType = KEYBOARD;
     }
 
     static void Register(); // @924A30
 
     static unsigned int     ActiveControllerIndex;  //  @A3E160
-    static unsigned char    _A3E170[INPUT_GAMEPAD_MAX_GAMEPADS]; //  @A3E170
+    static bool             ControllersUsedByEditor[8]; //  @A3E170 //  NOTE: index - controller id. If true, then controller with this index is being used with the editor.
 
 protected:
     const int   MousePositionEngineToString() const; // @924600

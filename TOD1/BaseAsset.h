@@ -6,6 +6,7 @@
 class Asset;
 
 //  TODO: move this somewhere.
+//  TODO: make this a template?
 class AssetLoader
 {
 public:

@@ -36,7 +36,7 @@ private:
 
     void                    IsControlDown(int* args) const; //  @610000
     const bool              IsControlDown_Impl(const float controlid) const;  //  @925880
-    float                   GetControlPressForce_Impl(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const;    //  @925210
+    void                    GetControlPressForce_Impl(const float controlid, float* pressure, float* realpressure, bool* pressed, bool* released) const;    //  @925210
     void                    IsControlPressed(int* args) const;  //  @7231F0
     bool                    IsControlPressed_Impl(float control) const; //  @925370
     void                    IsControlReleased(int* args) const; //  @73D9E0
@@ -74,9 +74,8 @@ private:
 
 public:
     static ControlSetup*    CurrentController; // @A3E16C
-    static bool&            WaitForController; // @A3E168
+    static bool             WaitForController; // @A3E168
     static short*           WaitForControllerText; // @A3E164
-    static bool             ControllersUsedByEditor[8]; //  @A3E170 //  NOTE: index - controller id. If true, then controller with this index is being used with the editor.
 
     static void             Register(); // @925BA0
 };

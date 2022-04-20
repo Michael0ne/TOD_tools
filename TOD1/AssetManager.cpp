@@ -743,11 +743,12 @@ void AssetManager::_878030()
         return;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void AssetManager::_877AE0()
+void AssetManager::MakeSpaceForAssetsList()
 {
     if (!m_LoadBlocks)
         return;
+
+    m_AssetsList.reserve(1);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

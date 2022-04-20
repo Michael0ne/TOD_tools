@@ -46,8 +46,8 @@ namespace Input
 
         static Gamepad* GetGameControllerByIndex(signed int controllerIndex); // @439660
         static BOOL    DIEnumDevicesCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef); // @439680
-        static signed int  _439690(int* unk1, int* unk2); // @439690
-        static signed int  _4396D0(int* unk1, int unk2); // @4396D0
+        static signed int  ReportFoundEffectProperties(int* unk1, int* unk2); // @439690
+        static signed int  ReportFoundObjectName(int* unk1, int unk2); // @4396D0
         static const char* GamepadButtonToString(int buttonNumber); // @439A50
         static void    EnumGameControllers(); // @439C90
         static int    NumberDirectInputDevices(); // @439D00 // NOTE: referenced from unused function.
@@ -62,11 +62,11 @@ namespace Input
         Vector4f* GetAxisPosition(Vector4f* outPos, int axisNumber) const; // @439710
         Orientation* GetAxisRotation(Orientation* outRot, int unk2); // @4397E0
         void     _439840(); // @439840
-        int      _439860(int unk1); // @439860
+        int      TranslateToActualGamepadButton(int button); // @439860
         bool     KeyPressed(const unsigned int button); // @4398A0
-        bool     _439910(int unk1); // @439910
-        char     IsButtonPressed(int unk1); // @439970
-        double     _4399D0(int unk1); // @4399D0
+        bool     IsReleased(int button); // @439910
+        char     IsButtonPressed(int button); // @439970
+        double     GetPressure(int button); // @4399D0
         bool     IsDInputDeviceFound(); // @439A00 // NOTE: unused.
         void     SetControllerVibration(signed int controllerIndex, float force); // @439B10
         double     GetControllerVibration(int unk1); // @439C30

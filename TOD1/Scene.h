@@ -61,7 +61,7 @@ public:
     int             field_C8;
     std::vector<int>            m_List_1;
     std::vector<AuxQuadTree*>   m_QuadTreesList;
-    std::vector<class ParticleSystem*>  m_ParticleSystemsList;
+    std::vector<int>  m_ParticleSystemsList;
     std::vector<CollisionInfo*> m_CollisionListList;
     int             m_NodesWithUpdateOrBlockingScripts;
     char            m_InitMode;
@@ -169,6 +169,7 @@ public:
     void            AnnotateSphere_Impl(const Vector4f& pos, const int a2, const int a3, const int a4) const;   //  @8935E0
     void            AnnotateLine_Impl(const Vector4f& lineStart, const Vector4f& lineEnd, const int a3, const int a4) const;    //  @8935D0
     void            AnnotatePoint_Impl(const Vector4f& point, const int a2, const int a3) const;    //  @8935C0
+    void            SetParticleSystemUsed(const int particleSystemIndex, const bool used);  //  @8947D0
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4

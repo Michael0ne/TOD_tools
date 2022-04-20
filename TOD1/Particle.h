@@ -7,6 +7,7 @@ class NodePosition;
 
 class Particle
 {
+    friend struct ParticleSystemInfo;
 protected:
     int             field_4;
     int             field_8;
@@ -14,20 +15,20 @@ protected:
     Particle       *m_Previous;
     Particle       *m_Next;
     NodePosition   *m_PositionMethods;
-    Vector4f        field_1C;
-    Vector4f        field_2C;
+    Vector4f        m_ScreenPosition;
+    Vector4f        m_CameraPosition;
     int             field_3C;
     float           field_40;
     int             field_44;
     int             field_48;
-    Orientation     field_4C;
-    float           field_5C;
+    Orientation     m_Orientation;
+    float           m_BirthDistFade;
     int             field_60;
     float           field_64;
     int             m_StartTime;
-    float           field_6C;
+    float           m_EmitterDelay;
     int             field_70;
-    int             field_74;
+    int             m_Amount;
 
 public:
     Particle();    //  @424E70

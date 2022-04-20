@@ -7,13 +7,10 @@ namespace Input
 
     class Keyboard
     {
-        friend class BuiltinType;
-        friend class GfxInternal_Dx9;
-        friend class ControlSetup;
-    protected:
+    public:
         unsigned char   m_ButtonStates[256];
         unsigned char   m_ButtonStates_1[256];
-        bool     m_Acquired;
+        bool            m_Acquired;
         IDirectInputDevice8* m_DirectInputDeviceInterface;
         IDirectInput8* m_DirectInputDevice;
         DIDEVICEOBJECTDATA* m_DataBuffer;

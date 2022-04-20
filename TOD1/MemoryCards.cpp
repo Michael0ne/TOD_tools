@@ -1,6 +1,5 @@
 #include "MemoryCards.h"
 #include "MemoryCard.h"
-#include "SavePoint.h"
 #include "LogDump.h"
 #include "Scene.h"
 #include "IntegerType.h"
@@ -27,7 +26,7 @@ MemoryCards::~MemoryCards()
     MESSAGE_CLASS_DESTROYED(MemoryCards);
 }
 
-unsigned int MemoryCards::GetLastModifiedTimeAsNumber(unsigned int memcardind, unsigned int slotind) const
+unsigned int MemoryCards::GetLastModifiedTimeAsNumber_Impl(unsigned int memcardind, unsigned int slotind) const
 {
     String tempStr;
     SavePoint savepoint(MemoryCardInfo[memcardind], MEMCARD_DEFAULT_SAVE_DIR, MakeSaveSlotString(tempStr, slotind).m_Str, SAVEPOINT_SAVE_SIZE);
@@ -48,35 +47,41 @@ String& MemoryCards::MakeSaveSlotString(String& outStr, unsigned int slotind) co
     return (outStr = slotstr, outStr);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void MemoryCards::Register()
 {
     tMemoryCards = new EntityType("MemoryCards");
     tMemoryCards->InheritFrom(tNode);
     tMemoryCards->SetCreator((CREATOR)Create);
 
-    tMemoryCards->RegisterProperty(tSTRING, "gamename", (EntityGetterFunction)&GetGamename, 0, 0, 0, (EntitySetterFunction)&SetGamename, 0, 0, 0, "control=string", 0, 0, -1);
-    tMemoryCards->RegisterProperty(tSTRING, "ps2sleslicense", (EntityGetterFunction)&GetPs2SlesLicense, 0, 0, 0, (EntitySetterFunction)&SetPs2SlesLicense, 0, 0, 0, "control=string", 0, 0, -1);
-    tMemoryCards->RegisterProperty(tSTRING, "ps2sluslicense", (EntityGetterFunction)&GetPs2SlusLicense, 0, 0, 0, (EntitySetterFunction)&SetPs2SlusLicense, 0, 0, 0, "control=string", 0, 0, -1);
-    tMemoryCards->RegisterProperty(tINTEGER, "savefilesize", (EntityGetterFunction)&GetSaveFileSize, 0, 0, 0, (EntitySetterFunction)&SetSaveFileSize, 0, 0, 0, nullptr, 0, 0, 10);
+    tMemoryCards->RegisterProperty(tSTRING, "gamename", (EntityGetterFunction)&GetGamename, (EntitySetterFunction)&SetGamename, "control=string");
+    tMemoryCards->RegisterProperty(tSTRING, "ps2sleslicense", (EntityGetterFunction)&GetPs2SlesLicense, (EntitySetterFunction)&SetPs2SlesLicense, "control=string");
+    tMemoryCards->RegisterProperty(tSTRING, "ps2sluslicense", (EntityGetterFunction)&GetPs2SlusLicense, (EntitySetterFunction)&SetPs2SlusLicense, "control=string");
+    tMemoryCards->RegisterProperty(tINTEGER, "savefilesize", (EntityGetterFunction)&GetSaveFileSize, (EntitySetterFunction)&SetSaveFileSize, nullptr, 10);
 
-    tMemoryCards->RegisterScript("ispresent(integer):truth", (EntityFunctionMember)&IsPresent, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("createsavepoint(integer,integer,entity,integer,entity)", (EntityFunctionMember)&CreateSavePoint, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("restoresavepoint(integer,integer,entity)", (EntityFunctionMember)&RestoreSavePoint, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("loadsavepointsummary(integer,integer,entity)", (EntityFunctionMember)&LoadSavePointSummary, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("deletesavepoint(integer,integer):truth", (EntityFunctionMember)&DeleteSavePoint, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("savepointoperationerror:integer", (EntityFunctionMember)&SavePointOperationError, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("savepointexists(integer,integer):truth", (EntityFunctionMember)&SavePointExists, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("preparecardforsavegames(integer):truth", (EntityFunctionMember)&PrepareCardForSavegames, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("unpreparecardforsavegames(integer):truth", (EntityFunctionMember)&UnPrepareCardForSavegames, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("iscardprepared(integer):truth", (EntityFunctionMember)&IsCardPrepared, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("isformatted(integer):truth", (EntityFunctionMember)&IsFormatted, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("formatcard(integer):truth", (EntityFunctionMember)&FormatCard, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("unformatcard(integer):truth", (EntityFunctionMember)&UnformatCard, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("getfreespace(integer):integer", (EntityFunctionMember)&GetCardFreeSpace, 0, 0, 0, nullptr, nullptr);
-    tMemoryCards->RegisterScript("getsavepointsize(integer,integer):integer", (EntityFunctionMember)&GetSavePointSize, 0, 0, 0, nullptr, nullptr);
-    // TODO: 'GetLastModifiedTime' methods here.
-    tMemoryCards->RegisterScript("hascardchanged(integer):truth", (EntityFunctionMember)&HasCardChanged, 0, 0, 0, nullptr, nullptr);
+    tMemoryCards->RegisterScript("ispresent(integer):truth", (EntityFunctionMember)&IsPresent);
+    tMemoryCards->RegisterScript("createsavepoint(integer,integer,entity,integer,entity)", (EntityFunctionMember)&CreateSavePoint);
+    tMemoryCards->RegisterScript("restoresavepoint(integer,integer,entity)", (EntityFunctionMember)&RestoreSavePoint);
+    tMemoryCards->RegisterScript("loadsavepointsummary(integer,integer,entity)", (EntityFunctionMember)&LoadSavePointSummary);
+    tMemoryCards->RegisterScript("deletesavepoint(integer,integer):truth", (EntityFunctionMember)&DeleteSavePoint);
+    tMemoryCards->RegisterScript("savepointoperationerror:integer", (EntityFunctionMember)&SavePointOperationError);
+    tMemoryCards->RegisterScript("savepointexists(integer,integer):truth", (EntityFunctionMember)&SavePointExists);
+    tMemoryCards->RegisterScript("preparecardforsavegames(integer):truth", (EntityFunctionMember)&PrepareCardForSavegames);
+    tMemoryCards->RegisterScript("unpreparecardforsavegames(integer):truth", (EntityFunctionMember)&UnPrepareCardForSavegames);
+    tMemoryCards->RegisterScript("iscardprepared(integer):truth", (EntityFunctionMember)&IsCardPrepared);
+    tMemoryCards->RegisterScript("isformatted(integer):truth", (EntityFunctionMember)&IsFormatted);
+    tMemoryCards->RegisterScript("formatcard(integer):truth", (EntityFunctionMember)&FormatCard);
+    tMemoryCards->RegisterScript("unformatcard(integer):truth", (EntityFunctionMember)&UnformatCard);
+    tMemoryCards->RegisterScript("getfreespace(integer):integer", (EntityFunctionMember)&GetCardFreeSpace);
+    tMemoryCards->RegisterScript("getsavepointsize(integer,integer):integer", (EntityFunctionMember)&GetSavePointSize);
+    tMemoryCards->RegisterScript("getlastmodifiedtime(integer,integer):string", (EntityFunctionMember)&GetLastModifiedTime);
+    tMemoryCards->RegisterScript("getlastmodifiedtimeasnumber(integer,integer):integer", (EntityFunctionMember)&GetLastModifiedTimeAsNumber);
+    tMemoryCards->RegisterScript("getlastmodifiedtime_seconds(integer,integer):integer", (EntityFunctionMember)&GetLastModifiedTimeSeconds);
+    tMemoryCards->RegisterScript("getlastmodifiedtime_minutes(integer,integer):integer", (EntityFunctionMember)&GetLastModifiedTimeMinutes);
+    tMemoryCards->RegisterScript("getlastmodifiedtime_hours(integer,integer):integer", (EntityFunctionMember)&GetLastModifiedTimeHours);
+    tMemoryCards->RegisterScript("getlastmodifiedtime_dayinmonth(integer,integer):integer", (EntityFunctionMember)&GetLastModifiedTimeDayInMonth);
+    tMemoryCards->RegisterScript("getlastmodifiedtime_month(integer,integer):integer", (EntityFunctionMember)&GetLastModifiedTimeMonth);
+    tMemoryCards->RegisterScript("getlastmodifiedtime_year(integer,integer):integer", (EntityFunctionMember)&GetLastModifiedTimeYear);
+    tMemoryCards->RegisterScript("hascardchanged(integer):truth", (EntityFunctionMember)&HasCardChanged);
 
     tMemoryCards->PropagateProperties();
 }
@@ -297,6 +302,172 @@ void MemoryCards::UnPrepareCardForSavegames(int* args)
 bool MemoryCards::UnPrepareCardForSavegames_Impl(unsigned int memcardind)
 {
     return false;
+}
+
+void MemoryCards::GetLastModifiedTimeAsNumber(int* args)
+{
+    args[0] = GetLastModifiedTimeAsNumber_Impl(args[1], args[2]);
+}
+
+void MemoryCards::GetLastModifiedTime(int* args)
+{
+    args[0] = (int)GetLastModifiedTime_Impl(args[1], args[2]);
+}
+
+const char* const MemoryCards::GetLastModifiedTime_Impl(const int memoryCardIndex, const int saveSlot) const
+{
+    const time_t saveSlotTime = GetTimeForSaveSlot(memoryCardIndex, saveSlot);
+
+    if (!saveSlotTime || saveSlotTime == -1)
+        return nullptr;
+
+    const tm ssTime = *localtime(&saveSlotTime);
+    const char* const countryCode = Script::GetCurrentCountryCode();
+
+    LogDump::LogA("CURRENT CUNTRY CODE : %s\n", countryCode);
+
+    static const char* const monthsLocalised[5][12] =
+    {
+        //  English
+        {
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        },
+        //  Espanol
+        {
+            "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "setiembre", "octubre", "noviembre", "diciembre"
+        },
+        //  Deustch
+        {
+            "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"
+        },
+        //  Italian
+        {
+            "gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"
+        },
+        //  French
+        {
+            "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+        }
+    };
+
+    char* buffer = new char[64];
+    int bufferSize = -1;
+    int countryCodeIndex = -1;
+    if (strcmp(countryCode, "uk") == NULL)
+        countryCodeIndex = 0;
+    else if (strcmp(countryCode, "es") == NULL)
+        countryCodeIndex = 1;
+    else if (strcmp(countryCode, "de") == NULL)
+        countryCodeIndex = 2;
+    else if (strcmp(countryCode, "it") == NULL)
+        countryCodeIndex = 3;
+    else if (strcmp(countryCode, "fr") == NULL)
+        countryCodeIndex = 4;
+
+#ifdef INCLUDE_FIXES
+    assert(countryCodeIndex != -1);
+#endif
+
+    //  NOTE: original code has a condition to check each country code and calls 'format' for each condition.
+    bufferSize = sprintf(buffer, "%s %d %d %d:%02d:%02d", monthsLocalised[countryCodeIndex][ssTime.tm_mon], ssTime.tm_mday, ssTime.tm_year + 1900, ssTime.tm_hour, ssTime.tm_min, ssTime.tm_sec);
+
+#ifdef INCLUDE_FIXES
+    //  NOTE: return nullptr if sprintf failed.
+    if (bufferSize <= 0)
+        delete[] buffer;
+#endif
+
+    return buffer;
+}
+
+void MemoryCards::GetLastModifiedTimeSeconds(int* args)
+{
+    args[0] = GetLastModifiedTimeSeconds_Impl(args[1], args[2]);
+}
+
+const int MemoryCards::GetLastModifiedTimeSeconds_Impl(const int memoryCardIndex, const int saveSlot) const
+{
+    const time_t saveSlotTime = GetTimeForSaveSlot(memoryCardIndex, saveSlot);
+
+    if (!saveSlotTime || saveSlotTime == -1)
+        return 0;
+    else
+        return localtime(&saveSlotTime)->tm_sec;
+}
+
+void MemoryCards::GetLastModifiedTimeMinutes(int* args)
+{
+    args[0] = GetLastModifiedTimeMinutes_Impl(args[1], args[2]);
+}
+
+void MemoryCards::GetLastModifiedTimeHours(int* args)
+{
+    args[0] = GetLastModifiedTimeHours_Impl(args[1], args[2]);
+}
+
+void MemoryCards::GetLastModifiedTimeDayInMonth(int* args)
+{
+    args[0] = GetLastModifiedTimeDayInMonth_Impl(args[1], args[2]);
+}
+
+void MemoryCards::GetLastModifiedTimeMonth(int* args)
+{
+    args[0] = GetLastModifiedTimeMonth_Impl(args[1], args[2]);
+}
+
+void MemoryCards::GetLastModifiedTimeYear(int* args)
+{
+    args[0] = GetLastModifiedTimeYear_Impl(args[1], args[2]);
+}
+
+const int MemoryCards::GetLastModifiedTimeMinutes_Impl(const int memoryCardIndex, const int saveSlot) const
+{
+    const time_t saveSlotTime = GetTimeForSaveSlot(memoryCardIndex, saveSlot);
+
+    if (!saveSlotTime || saveSlotTime == -1)
+        return 0;
+    else
+        return localtime(&saveSlotTime)->tm_min;
+}
+
+const int MemoryCards::GetLastModifiedTimeHours_Impl(const int memoryCardIndex, const int saveSlot) const
+{
+    const time_t saveSlotTime = GetTimeForSaveSlot(memoryCardIndex, saveSlot);
+
+    if (!saveSlotTime || saveSlotTime == -1)
+        return 0;
+    else
+        return localtime(&saveSlotTime)->tm_hour;
+}
+
+const int MemoryCards::GetLastModifiedTimeDayInMonth_Impl(const int memoryCardIndex, const int saveSlot) const
+{
+    const time_t saveSlotTime = GetTimeForSaveSlot(memoryCardIndex, saveSlot);
+
+    if (!saveSlotTime || saveSlotTime == -1)
+        return 0;
+    else
+        return localtime(&saveSlotTime)->tm_mday;
+}
+
+const int MemoryCards::GetLastModifiedTimeMonth_Impl(const int memoryCardIndex, const int saveSlot) const
+{
+    const time_t saveSlotTime = GetTimeForSaveSlot(memoryCardIndex, saveSlot);
+
+    if (!saveSlotTime || saveSlotTime == -1)
+        return 0;
+    else
+        return localtime(&saveSlotTime)->tm_mon;
+}
+
+const int MemoryCards::GetLastModifiedTimeYear_Impl(const int memoryCardIndex, const int saveSlot) const
+{
+    const time_t saveSlotTime = GetTimeForSaveSlot(memoryCardIndex, saveSlot);
+
+    if (!saveSlotTime || saveSlotTime == -1)
+        return 0;
+    else
+        return (localtime(&saveSlotTime)->tm_year + 1900);
 }
 
 const char* const MemoryCards::GetSaveDirectory(const unsigned int slot) const

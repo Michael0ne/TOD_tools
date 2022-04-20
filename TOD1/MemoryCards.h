@@ -1,6 +1,7 @@
 #pragma once
 #include "Globals.h"
 #include "Node.h"
+#include "SavePoint.h"
 
 #define MEMCARD_DEFAULT_SAVE_DIR "savegames"
 
@@ -33,14 +34,18 @@ private:
     void            RestoreSavePoint(unsigned int memcardind, unsigned int slotind, Node* summarynode); // @926CE0
     void            LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, Node* summarynode) const; // @926D40
     void            DeleteSavePoint(int* args); // @929260
-    bool            DeleteSavePoint_Impl(unsigned int memcardind, unsigned int slotind); // @926B60
     void            SavePointOperationError(int* args) const; // @9287A0
-    bool            SavePointExists_Impl(unsigned int memcardind, unsigned int slotind) const; // @926DA0
     void            SavePointExists(int* args) const; // @9291D0
     void            PrepareCardForSavegames(int* args); // @9292A0
-    bool            PrepareCardForSavegames_Impl(unsigned int memcardind); // @9271F0
     void            UnPrepareCardForSavegames(int* args); // @9292C0
-    bool            UnPrepareCardForSavegames_Impl(unsigned int memcardind); // @927060
+    void            GetLastModifiedTimeAsNumber(int* args); //  @929300
+    void            GetLastModifiedTime(int* args); //  @9292E0
+    void            GetLastModifiedTimeSeconds(int* args);  //  @929320
+    void            GetLastModifiedTimeMinutes(int* args);  //  @929340
+    void            GetLastModifiedTimeHours(int* args);    //  @929360
+    void            GetLastModifiedTimeDayInMonth(int* args);   //  @929380
+    void            GetLastModifiedTimeMonth(int* args);    //  @9293A0
+    void            GetLastModifiedTimeYear(int* args); //  @9293C0
 
     unsigned int    GetSavePointSize(unsigned int memcardind, unsigned int slotind) const; // @926F00
     void            HasCardChanged(int* args) const; // @87AA10
@@ -52,11 +57,34 @@ private:
     void            FormatCard(int* args) const;    //  @9289C0
     void            UnformatCard(int* args) const;  //  @9287C0
 
+private:
+    inline time_t   GetTimeForSaveSlot(const int memoryCardIndex, const int saveSlot) const    //  NOTE: utility function.
+    {
+        String saveSlotString;
+        MakeSaveSlotString(saveSlotString, saveSlot);
+        SavePoint savepoint(MemoryCardInfo[memoryCardIndex], MEMCARD_DEFAULT_SAVE_DIR, saveSlotString.m_Str, SAVEPOINT_SAVE_SIZE);
+        const time_t saveSlotTime = savepoint.GetTime();
+
+        return saveSlotTime;
+    }
+
+    const int       GetLastModifiedTimeSeconds_Impl(const int memoryCardIndex, const int saveSlot) const;   //  @927B60
+    const int       GetLastModifiedTimeMinutes_Impl(const int memoryCardIndex, const int saveSlot) const;   //  @927C30
+    const int       GetLastModifiedTimeHours_Impl(const int memoryCardIndex, const int saveSlot) const; //  @927D10
+    const int       GetLastModifiedTimeDayInMonth_Impl(const int memoryCardIndex, const int saveSlot) const; //  @927DF0
+    const int       GetLastModifiedTimeMonth_Impl(const int memoryCardIndex, const int saveSlot) const; //  @927ED0
+    const int       GetLastModifiedTimeYear_Impl(const int memoryCardIndex, const int saveSlot) const; //  @927FB0
+    const char* const   GetLastModifiedTime_Impl(const int memoryCardIndex, const int saveSlot) const;  //  @927340
+    bool            UnPrepareCardForSavegames_Impl(unsigned int memcardind); // @927060
+    bool            PrepareCardForSavegames_Impl(unsigned int memcardind); // @9271F0
+    bool            SavePointExists_Impl(unsigned int memcardind, unsigned int slotind) const; // @926DA0
+    bool            DeleteSavePoint_Impl(unsigned int memcardind, unsigned int slotind); // @926B60
+
 public:
     MemoryCards(); // @9263B0
     virtual ~MemoryCards(); //  @928A10
 
-    unsigned int    GetLastModifiedTimeAsNumber(unsigned int memcardind, unsigned int slotind) const; // @928090
+    unsigned int    GetLastModifiedTimeAsNumber_Impl(unsigned int memcardind, unsigned int slotind) const; // @928090
 
     static void     Register(); // @9281B0
 };

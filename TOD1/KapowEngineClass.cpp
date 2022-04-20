@@ -705,20 +705,20 @@ void KapowEngineClass::InitEntitiesDatabase()
     ControlSetup::Register();
     Control::Register();
     Group::Register();
-    CollisionProbe::Register(); //  TODO: implement!
+    CollisionProbe::Register();
     RigidBody::Register();
     OverdoseVehicle::Register();
-    StretchModel::Register();   //  TODO: implement!
+    StretchModel::Register();
     SkyBox::Register();
     Fog::Register();
     Wind::Register();
     Cloth::Register();
-    GFXEffect::Register();  //  TODO: implement!
+    GFXEffect::Register();
     Shadow::Register();
-    LensFlare::Register();  //  TODO: implement!
-    LensFlareManager::Register();   //  TODO: implement!
+    LensFlare::Register();
+    LensFlareManager::Register();
     DecalManager::Register();
-    SurroundGeometry::Register();   //  TODO: implement!
+    SurroundGeometry::Register();
     DynamicSurroundGeometry::Register();    //  TODO: implement!
     Light::Register();  //  TODO: implement!
     Sprite::Register(); //  TODO: implement!
@@ -741,7 +741,7 @@ void KapowEngineClass::InitEntitiesDatabase()
     HavocPlaceHolder::Register();
     GoodiePlaceHolder::Register();
     WeaponPlaceHolder::Register();
-    MemoryCards::Register();    //  TODO: implement!
+    MemoryCards::Register();
     LoadScreenNode::Register();
 
     m_PropertiesBuiltinChecksum = GetGlobalPropertyListChecksum();

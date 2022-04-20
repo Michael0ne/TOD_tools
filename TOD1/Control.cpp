@@ -13,7 +13,7 @@
 
 EntityType* tControl;
 unsigned int Control::ActiveControllerIndex;
-unsigned char Control::_A3E170[INPUT_GAMEPAD_MAX_GAMEPADS]; //  @A3E170
+bool Control::ControllersUsedByEditor[8];
 
 void Control::Register()
 {
@@ -70,6 +70,116 @@ const int Control::MousePositionRawToString() const
             ? g_InputMouse->m_WindowedMousePosition.y : g_InputMouse->m_FullscreenMousePosition.y;
     default:
         return NULL;
+    }
+}
+
+void Control::GetStateInfo(float* pressure, float* realpressure, bool* pressed, bool* released)
+{
+    //  NOTE: original code has 'is acquired' check before getting state of each "button" and I'm not sure why, because the app is single threaded...
+    switch (m_ControlType)
+    {
+        case KEYBOARD:
+        {
+            if (!g_InputKeyboard->m_Acquired)
+                break;
+
+            if ( (g_InputKeyboard->m_ButtonStates_1[m_Key] & 0x80) != 0 )
+                *pressure = 1.f;
+
+            if ( (g_InputKeyboard->m_ButtonStates[m_Key] & 1) != 0 )
+                *pressed = true;
+
+            if ( ( (g_InputKeyboard->m_ButtonStates[m_Key] >> 1) & 1 ) != 0 )
+                *released = true;
+
+            break;
+        }
+        case MOUSE:
+        {
+            *pressure = 0.f;
+            *pressed = false;
+            *released = false;
+
+            break;
+        }
+        case MOUSE_BUTTON:
+        {
+            if (!g_InputMouse->m_ShouldBeProcessed)
+                break;
+
+            if ( (g_InputMouse->m_MouseButtons[m_Key] & 1) != 0 )
+                *pressure = 1.f;
+
+            if ( (g_InputMouse->m_MouseButtons[m_Key] & 2) != 0 )
+                *pressed = true;
+
+            if ( ( (g_InputMouse->m_MouseButtons[m_Key] >> 2) & 1 ) != 0 )
+                *released = true;
+
+            break;
+        }
+        case GAMEPAD:
+        {
+            if (!Input::Gamepad::IsControllerPresent(ActiveControllerIndex) || ControllersUsedByEditor[ActiveControllerIndex])
+            {
+                *pressure = 0.f;
+                *pressed = false;
+                *released = false;
+
+                break;
+            }
+
+            Input::Gamepad* currentGamepad = Input::Gamepad::GetGameControllerByIndex(ActiveControllerIndex);
+            const float buttonPressure = currentGamepad->GetPressure(m_Key);
+            *pressure = buttonPressure;
+
+            if (buttonPressure == 0.f)
+            {
+                if (currentGamepad->IsButtonPressed(m_Key))
+                    *pressure = 1.f;
+            }
+
+            //  NOTE: difference from the above is unclear.
+            if (currentGamepad->KeyPressed(m_Key))
+                *pressed = true;
+
+            if (currentGamepad->IsReleased(m_Key))
+                *released = true;
+
+            break;
+        }
+        case DPAD:
+        {
+            if (!Input::Gamepad::IsControllerPresent(ActiveControllerIndex) || ControllersUsedByEditor[ActiveControllerIndex])
+            {
+                *pressure = 0.f;
+                *pressed = false;
+                *released = false;
+
+                break;
+            }
+
+            const float pressForce = GetDPadPressForce((DPadKey)m_Key);
+            const float normalizedPressure = (pressForce - 0.3f) * 1.4285715f;
+            *pressure = normalizedPressure;
+            *realpressure = pressForce;
+
+            if (normalizedPressure <= 0.f || m_IsNormalizedPressure)
+                *pressed = false;
+            else
+                *pressed = true;
+            
+            if (normalizedPressure == 0.f && m_IsNormalizedPressure)
+                *released = true;
+            else
+                *released = false;
+
+            m_IsNormalizedPressure = normalizedPressure > 0.f;
+
+            break;
+        }
+        default:
+            break;
     }
 }
 

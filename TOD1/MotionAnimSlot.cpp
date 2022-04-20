@@ -12,6 +12,7 @@ MotionAnimSlot::~MotionAnimSlot()
         delete m_ActionAnimList[m_CurrAnimListIndex].m_WeaponClass;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
 void MotionAnimSlot::Register()
 {
     tMotionAnimSlot = new EntityType("MotionAnimSlot");

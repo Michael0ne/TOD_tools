@@ -215,7 +215,7 @@ public:
     void                        DestroyTextureAsset(TextureAsset& ass); //  @875340
     Asset*                      GetAssetIfExists(const Asset* a) const; //  @875720
     void                        _878030();  //  @878030
-    void                        _877AE0();  //  @877AE0
+    void                        MakeSpaceForAssetsList();  //  @877AE0
     bool                        _878220(Asset * asset);  //  @878220
     Asset*                      FindLoadedAsset(const char* const assetname);   //  @876140
     void                        InstantiateAssetsAndClearAssetsList();  //  @875EB0

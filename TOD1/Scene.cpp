@@ -18,7 +18,7 @@
 #include "SceneSaveLoad.h"
 #include "StreamedSoundBuffers.h"
 #include "ScriptThread.h"
-#include "ControlSetup.h"
+#include "Control.h"
 #include "EditorCamera.h"
 
 EntityType* tScene = nullptr;
@@ -223,7 +223,7 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 
     //g_Blocks->_878030();
     //g_Blocks->_875EB0();
-    //g_Blocks->_877AE0();
+    //g_Blocks->MakeSpaceForAssetsList();
 
     LogDump::LogA("Timings: FixupAssetRefsInLoadedAssetBlocks: %f\n", (__rdtsc() - starttick) / Timer::ClockGetCycles());
 
@@ -650,7 +650,7 @@ void Scene::Reset()
     ClearNodesLists();
     InstantiateAssetsToLists();
     ScriptThread::_48CE30();
-    m_SharedProbe->Reset();
+    m_SharedProbe->Reset_Impl();
     m_Fragment->m_FragmentRes->ApplyFragmentResource(m_Id.Id, true);
     g_AssetManager->_8794B0(0);
     Scriptbaked::AssignCommonNodes();
@@ -668,8 +668,8 @@ void Scene::SyncEditorCamera(const bool kdtreealloc, const int gamepadindex)
     m_QuadTreesAllocated = kdtreealloc;
     if (!kdtreealloc)
     {
-        ControlSetup::ControllersUsedByEditor[0] = false;
-        ControlSetup::ControllersUsedByEditor[1] = false;
+        Control::ControllersUsedByEditor[0] = false;
+        Control::ControllersUsedByEditor[1] = false;
 
         StoreGameCamera();
         return;
@@ -693,13 +693,13 @@ void Scene::SyncEditorCamera(const bool kdtreealloc, const int gamepadindex)
 
     if (gamepadindex >= 0)
     {
-        ControlSetup::ControllersUsedByEditor[gamepadindex] = true;
+        Control::ControllersUsedByEditor[gamepadindex] = true;
         StoreGameCamera();
     }
     else
     {
-        ControlSetup::ControllersUsedByEditor[0] = false;
-        ControlSetup::ControllersUsedByEditor[1] = false;
+        Control::ControllersUsedByEditor[0] = false;
+        Control::ControllersUsedByEditor[1] = false;
 
         StoreGameCamera();
     }
@@ -715,6 +715,14 @@ void Scene::AnnotateLine_Impl(const Vector4f& lineStart, const Vector4f& lineEnd
 
 void Scene::AnnotatePoint_Impl(const Vector4f& point, const int a2, const int a3) const
 {
+}
+
+void Scene::SetParticleSystemUsed(const int particleSystemIndex, const bool used)
+{
+    if (particleSystemIndex == -1)
+        return;
+
+    m_ParticleSystemsList[particleSystemIndex] = used;
 }
 
 void Scene::Start()
@@ -827,7 +835,7 @@ void Scene::Load(const char* sceneName)
     UINT64 fragmentloadstarttime = __rdtsc();
     g_AssetManager->_878030();
     SetFragment(sceneName);
-    g_AssetManager->_877AE0();
+    g_AssetManager->MakeSpaceForAssetsList();
     LogDump::LogA("Timings: SetFragment: %f\n", (__rdtsc() - fragmentloadstarttime) / Timer::ClockGetCycles());
     const int alloctotal = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
     LogDump::LogA("Scene graph took %0.1f KB\n", (alloctotal - alloctotalbefore) * 0.0009765625f);
