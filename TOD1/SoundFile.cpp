@@ -3,8 +3,6 @@
 #include "LogDump.h"
 #include "ScriptDatabase.h"
 
-SoundFile SoundFile::GlobalMonoStream;
-
 SoundFile::SoundFile()
 {
     MESSAGE_CLASS_CREATED(SoundFile);

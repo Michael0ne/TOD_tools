@@ -308,22 +308,19 @@ void BuiltinType::DeallocateGlobalStreamedSound(int* arg)
     SoundSlot::DeallocateGlobalStreamedSound();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::PlayGlobalStreamedSound(int* arg)
 {
-    //*arg = Audio::PlayGlobalStreamedSound();
+    *arg = SoundSlot::PlayGlobalStreamedSound();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::StopGlobalStreamedSound(int* arg)
 {
-    //*arg = Audio::StopGlobalStreamedSound();
+    *arg = SoundSlot::StopGlobalStreamedSound();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::SetVolumePitchGlobalStreamedSound(int* arg)
 {
-    //*arg = Audio::SetVolumePitchGlobalStreamedSound((float)arg[1], (float)arg[2]);
+    *arg = SoundSlot::SetVolumePitchGlobalStreamedSound((float)arg[1], (float)arg[2]);
 }
 
 void BuiltinType::GetDefaultFxVolumeVar(float* arg)

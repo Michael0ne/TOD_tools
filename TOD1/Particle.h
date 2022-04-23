@@ -8,6 +8,7 @@ class NodePosition;
 class Particle
 {
     friend struct ParticleSystemInfo;
+    friend class ParticleSystem;
 protected:
     int             field_4;
     int             field_8;

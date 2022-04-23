@@ -11,13 +11,13 @@ class AssetLoader
 {
 public:
     Asset              *m_AssetPtr = nullptr;
-    int                *field_4;
+    int                *m_Empty;
 
     inline AssetLoader(const char* const name)  //  NOTE: constructor inlined.
     {
         MESSAGE_CLASS_CREATED(AssetLoader);
 
-        field_4 = (int*)1;
+        m_Empty = (int*)1;
         LoadAssetByName(name);
     };
 
@@ -25,12 +25,18 @@ public:
     {
         MESSAGE_CLASS_CREATED(AssetLoader);
 
-        field_4 = (int*)1;
+        m_Empty = (int*)1;
     }
 
     explicit operator bool() const
     {
         return m_AssetPtr != nullptr;
+    }
+
+    template <class C>
+    inline C*  GetAsset() const
+    {
+        return (C*)m_AssetPtr;
     }
 
     AssetLoader& operator=(const AssetLoader& rhs); //  @89F190

@@ -2,6 +2,11 @@
 #include "ScriptDatabase.h"
 #include "BuiltinType.h"
 #include "FrameBuffer.h"
+#include "NumberType.h"
+#include "TruthType.h"
+#include "IntegerType.h"
+#include "StringType.h"
+#include "VectorType.h"
 
 bool ParticleSystem::LodAndFade;
 Vector4f ParticleSystem::CameraOrigin = BuiltinType::ZeroVector;
@@ -34,6 +39,109 @@ ParticleSystem::~ParticleSystem()
     delete m_FrameBuffer;
 }
 
+const float ParticleSystem::GetEmitterFadeThreshold() const
+{
+    return (float)(m_Properties.m_EmitterFadeThreshold * (1.f / 255.f));
+}
+
+void ParticleSystem::SetEmitterFadeThreshold(const float threshold)
+{
+    if (threshold < 0.12f && !m_Flags.LSR)
+    {
+        SetFlags(0x100);
+        m_Properties.m_EmitterFadeThreshold = (char)(0.12f * 255.f + 0.5f);
+        m_Properties.CalculateEmitterLength();
+
+        return;
+    }
+
+    if (threshold >= 0.f)
+    {
+        if (threshold <= 1.f)
+        {
+            m_Properties.m_EmitterFadeThreshold = (char)(0.12f * 255.f + 0.5f);
+            m_Properties.CalculateEmitterLength();
+            return;
+        }
+
+        m_Properties.m_EmitterFadeThreshold = -1;
+        m_Properties.CalculateEmitterLength();
+    }
+    else
+    {
+        m_Properties.m_EmitterFadeThreshold = 0;
+        m_Properties.CalculateEmitterLength();
+    }
+}
+
+const float ParticleSystem::GetEmitterRadius() const
+{
+    return CharToFloatLimited(m_Properties.m_EmitterRadius, 100.f);
+}
+
+void ParticleSystem::SetEmitterRadius(const float radius)
+{
+    if (!m_Flags.ERR && radius == 20.f)
+    {
+        SetFlags(0x400);
+        m_Properties.m_EmitterRadius = FloatToChar(322.56f);
+        m_Properties.CalculateEmitterLength();
+        return;
+    }
+
+    if (radius >= 0.f)
+        m_Properties.m_EmitterRadius = FloatToChar(322.56f * (radius > 100.f ? 100.f : radius));
+    else
+        m_Properties.m_EmitterRadius = 0;
+
+    m_Properties.CalculateEmitterLength();
+}
+
+const bool ParticleSystem::UseRealTime() const
+{
+    return m_Properties.m_Flags.UseRealTime;
+}
+
+void ParticleSystem::SetUseRealTime(const bool enabled)
+{
+    m_Properties.m_Flags.UseRealTime = enabled;
+}
+
+const bool ParticleSystem::GetSep6() const
+{
+    return false;
+}
+
+void ParticleSystem::SetSep6(const bool)
+{
+}
+
+const int ParticleSystem::GetMaxParticles() const
+{
+    return m_Properties.m_MaxParticles - 1;
+}
+
+void ParticleSystem::SetMaxParticles(int maxparticles)
+{
+    maxparticles++;
+
+    ParticleA* particlesArray = (ParticleA*)m_Properties.m_ParticlesArray;
+    m_Properties.m_MaxParticles = maxparticles;
+
+    if (!particlesArray)
+        return;
+
+    while (particlesArray)
+    {
+        particlesArray->SetParticlesListSize(maxparticles);
+        particlesArray = (ParticleA*)particlesArray->m_Next;
+    }
+}
+
+const float ParticleSystem::GetEmitterLifeTime() const
+{
+    return ShortToFloatLimited(m_Properties.m_EmitterLifeTime, 60.f);
+}
 
 #pragma message(TODO_IMPLEMENTATION)
 void ParticleSystem::KillDefault(int* args)
@@ -149,6 +257,29 @@ float ParticleSystem::ShortToFloatLimited(const unsigned short valueFrom, const 
         return (float)(fac1 * (limitValue * 0.0000000074651609f));
 }
 
+char ParticleSystem::FloatToChar(float value)
+{
+    //  TODO: check this!
+    value += 0.5f;
+    int valueInt = (int)value;
+    int valueIntCopy = valueInt;
+
+    unsigned char divisions = 0;
+    while (valueInt >= 512)
+    {
+        valueInt /= 2;
+        divisions++;
+    }
+
+    valueInt = 1 << divisions + 2;
+    valueInt += valueIntCopy;
+    valueInt >>= divisions;
+    valueInt &= 248;
+    valueInt |= divisions >= 256 ? divisions : divisions + 1;
+
+    return valueInt;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 ParticleSystemInfo::ParticleSystemInfo()
 {
@@ -163,7 +294,7 @@ ParticleSystemInfo::ParticleSystemInfo()
     //  m_BirthRateVariation =  //  TODO: encode value from float to char.
     m_Opacity = 128;
     m_FadeInTime = 0;
-    m_BirthDistance[0] = 0;
+    m_BirthDistance = 0;
     m_OpacityVariation = 0;
     m_SizeVariation = 0;
     m_LifeTimeVariation = 0;
@@ -171,7 +302,7 @@ ParticleSystemInfo::ParticleSystemInfo()
     m_SpeedVariation = 0;
     m_DirVariation = 0;
     m_DirScaleX = -1;
-    m_BirthDistFade[0] = 0;
+    m_BirthDistFade = 0;
     m_DirScaleY = -1;
     m_DirScaleZ = -1;
     m_Turbulence = 0;

@@ -150,7 +150,7 @@ void ControlSetup::GetControlPos(int* args) const
 
 const int ControlSetup::GetControlPos_Impl(const int control) const
 {
-    if (control < 0 || control >= m_ControlsList.size())
+    if (control < 0 || (size_t)control >= m_ControlsList.size())
         return NULL;
 
     int pos = NULL;
@@ -167,7 +167,7 @@ void ControlSetup::GetControlDeltaPos(int* args) const
 
 const int ControlSetup::GetControlDeltaPos_Impl(const int control) const
 {
-    if (control < 0 || control >= m_ControlsList.size())
+    if (control < 0 || (size_t)control >= m_ControlsList.size())
         return NULL;
 
     int pos = NULL;
@@ -359,9 +359,9 @@ void ControlSetup::SetWaitForControllerText_Impl(TextSlot* textslot, const int t
 {
     static unsigned short* WaitForControllerText = new unsigned short[2048];
     if (!WaitForControllerText)
-        TextAsset::CopyCharArrayToGameString((short*)WaitForControllerText, "Please insert controller and press START");
+        TextAsset::CopyCharArrayToGameString(WaitForControllerText, "Please insert controller and press START");
 
-    int textIndexActual = textindex < 0 ? 0 : textindex;
+    unsigned int textIndexActual = textindex < 0 ? 0 : textindex;
     auto& texIndiciesList = ((TextAsset*)textslot->m_TextAsset.m_AssetPtr)->m_TextIndicies;
     if (textslot->m_TextAsset)
         textIndexActual = textIndexActual >= texIndiciesList.size() ? texIndiciesList.size() - 1 : textIndexActual;

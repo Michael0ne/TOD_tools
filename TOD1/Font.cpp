@@ -1,5 +1,6 @@
 #include "Font.h"
 #include "LogDump.h"
+#include "TextAsset.h"
 
 Font* g_Font;
 
@@ -62,6 +63,51 @@ void Font::FillGlyphMapInfo()
         for (unsigned int i = 0; i < m_GlyphsList.size(); ++i)
             m_GlyphsMap->insert({m_GlyphsList[i].m_Character, &m_GlyphsList[i]});
     }
+}
+
+const float Font::GetTextWidth(const char* const text) const
+{
+    float overallWidth = 0.f;
+    size_t i = 0;
+    const size_t textLength = strlen(text);
+
+    while (i++ < textLength)
+    {
+        const Glyph* glyph = GetGlyph((short)text[i]);
+        if (glyph)
+            overallWidth += field_54 & 4 ? m_ScaleX * m_GlyphsTotalWidth : m_ScaleX * glyph->m_Width;
+
+        overallWidth += m_HorizontalSpacing;
+    }
+
+    return overallWidth;
+}
+
+const float Font::GetGameTextWidth(const unsigned short* const text) const
+{
+    float overallWidth = 0.f;
+    size_t i = 0;
+    const size_t textLength = TextAsset::GetGameStringLength(text);
+
+    while (i++ < textLength)
+    {
+        const Glyph* glyph = GetGlyph(text[i]);
+        if (glyph)
+            overallWidth += field_54 & 4 ? m_ScaleX * m_GlyphsTotalWidth : m_ScaleX * glyph->m_Width;
+
+        overallWidth += m_HorizontalSpacing;
+    }
+
+    return overallWidth;
+}
+
+const Font::Glyph* Font::GetGlyph(const short letter) const
+{
+    auto it = m_GlyphsMap->find(letter);
+    if (it != m_GlyphsMap->end())
+        return it->second;
+    else
+        return nullptr;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

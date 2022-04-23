@@ -15,7 +15,7 @@ struct ParticleSystemInfo
     char            field_5;
     char            field_6;
     char            field_7;
-    uint8_t         m_Opacity;
+    char            m_Opacity;
     char            m_OpacityVariation;
     char            m_TumbleSpeed;
     char            m_TumbleAmp;
@@ -23,8 +23,14 @@ struct ParticleSystemInfo
     char            field_D;
     char            field_E;
     char            field_F;
-    char            m_BirthRateVariation[4];
-    char            m_BirthDistance[4];
+    char            m_BirthRateVariation;
+    char            field_11;
+    char            field_12;
+    char            field_13;
+    char            m_BirthDistance;
+    char            field_15;
+    char            m_EmitterLifeTime;
+    char            field_17;
     char            m_SpeedVariation;
     char            field_19;
     char            field_1A;
@@ -37,7 +43,10 @@ struct ParticleSystemInfo
     char            field_21;
     char            field_22;
     char            field_23;
-    char            m_BirthDistFade[4];
+    char            m_BirthDistFade;
+    char            field_25;
+    char            field_26;
+    char            field_27;
     char            m_InheritEmitterSpeed;
     char            m_EmitterDelay;
     char            m_EmitterFadeThreshold;
@@ -127,6 +136,30 @@ public:
     ParticleSystem(); // @8EB650
     virtual ~ParticleSystem();  //  @8E9FD0
 
+    void* operator new (size_t size)
+    {
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, 0);
+        ptr = nullptr;
+    }
+
+    const float     GetEmitterFadeThreshold() const;    //  @8E6A40
+    void            SetEmitterFadeThreshold(const float threshold); //  @8E6DB0
+    const float     GetEmitterRadius() const;   //  @8E6A60
+    void            SetEmitterRadius(const float radius);   //  @8E6E50
+    const bool      UseRealTime() const;    //  @8E6B00
+    void            SetUseRealTime(const bool enabled); //  @8E6AE0
+    const bool      GetSep6() const;    //  @42F4F0
+    void            SetSep6(const bool);    //  @883EC0
+    const int       GetMaxParticles() const;    //  @8E6B50
+    void            SetMaxParticles(int maxparticles);    //  @8E6B30
+    const float     GetEmitterLifeTime() const; //  @793A80
+    void            SetEmitterLifeTime(const float emitterlifetime);    //  @826180
+
     void            SpawnParticles(int* args);  //  @8E6C10
     void            KillDefault(int* args); //  @8EB500
     void            KillAll(int* args); //  @8E6B60
@@ -135,6 +168,7 @@ public:
     static ParticleSystem*  Create(AllocatorIndex);  //  @8EB750
     static float    CharToFloatLimited(const unsigned char valueFrom, const float limitValue);  //  @424CB0
     static float    ShortToFloatLimited(const unsigned short valueFrom, const float limitValue);    //  @424D60
+    static char     FloatToChar(float value);   //  @424C60
 
     static bool     LodAndFade; // @A08944
     static Vector4f CameraOrigin;   //  @A35E18

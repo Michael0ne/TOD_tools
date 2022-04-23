@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+class StreamedWAV;
+
 class IStreamBuffer
 {
 public:
@@ -13,23 +15,23 @@ public:
 
 class StreamBuffer : public IStreamBuffer
 {
-protected:
-    unsigned int   m_SamplesPerSec;
-    char     m_Channels;
-    char     field_9;
-    char     field_A;
-    char     field_B;
-    unsigned int   m_TotalChunks;
-    unsigned int   m_SampledDataSize;
-    float     field_14;
-    float     m_BytesPerSec;
-    int      field_1C;
-    float     field_20;
-    void* m_SampledData;
+public:
+    unsigned int        m_SamplesPerSec;
+    char                m_Channels;
+    char                field_9;
+    char                field_A;
+    char                field_B;
+    unsigned int        m_TotalChunks;
+    unsigned int        m_SampledDataSize;
+    float               field_14;
+    float               m_BytesPerSec;
+    int                 field_1C;
+    float               field_20;
+    void               *m_SampledData;
     std::map<int, int>  field_28;
-    int      field_34;
-    class StreamedWAV* m_AuxMonoStream_1;
-    std::vector<int>  m_List;
+    int                 field_34;
+    StreamedWAV*        m_AuxMonoStream_1;
+    std::vector<int>    m_List;
 
 public:
     virtual ~StreamBuffer(); // @441AC0
@@ -146,8 +148,8 @@ public:
     virtual bool   AreAnyInstancesPlaying();
     virtual void   _440850(int);
     virtual void   Stop(int);
-    virtual void   SetPause(int, bool);
-    virtual void   SetPause_A(int, bool);
+    virtual void   SetPause(int slot, bool hardpause);
+    virtual void   UnPause(int slot, bool hardpause);
     virtual bool   IsPaused(int);
     virtual bool   IsMonoStreamCreated();
     virtual int    _443480();
@@ -176,8 +178,6 @@ public:
 
     void     FillSoundData(const bool overwrite); // @443FC0
     void                    ShutdownThread();   //  @444D60
-
-    static StreamedSoundBuffer* GlobalStreamedSound;    //  @A3DD8C
 };
 
 ASSERT_CLASS_SIZE(StreamBuffer, 76);

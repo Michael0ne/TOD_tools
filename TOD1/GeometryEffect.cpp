@@ -180,14 +180,14 @@ void GeometryEffect::SetEffectLifeTime(const float lt)
     m_EffectLifeTime = lt;
 }
 
-const eBlendMode GeometryEffect::GetBlendMode() const
+const eEffectBlendMode GeometryEffect::GetBlendMode() const
 {
-    return (eBlendMode)m_Flags.BlendMode;
+    return (eEffectBlendMode)m_Flags.BlendMode;
 }
 
-void GeometryEffect::SetBlendMode(const eBlendMode blmode)
+void GeometryEffect::SetBlendMode(const eEffectBlendMode blmode)
 {
-    m_Flags.BlendMode = (unsigned int)blmode;
+    m_Flags.BlendMode = blmode;
 }
 
 const bool GeometryEffect::IsLooping() const

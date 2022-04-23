@@ -7,6 +7,7 @@
 //  NOTE: actual class path 'libs/adapter/fontbuffer.h".
 class Font
 {
+public:
     struct Glyph
     {
         unsigned short  m_Character;
@@ -27,7 +28,6 @@ class Font
         const unsigned int   *m_FontColorsTable;
     };
 
-private:
     int                 field_0;
     int                 field_4;
     int                 field_8;
@@ -68,6 +68,9 @@ public:
 
     void                CreateBakedFont(const GlyphInfo& GlyphsInfo);   //  @41E6D0
     void                FillGlyphMapInfo(); //  @41E4B0
+    const float         GetTextWidth(const char* const text) const;   //  @41B0C0
+    const float         GetGameTextWidth(const unsigned short* const text) const;  //  @41B170
+    const Glyph*        GetGlyph(const short letter) const; //  @41AE90
 
     static void         MakeCharactersMap(GlyphInfo& GlyphsInfo);   //  @938E10
 

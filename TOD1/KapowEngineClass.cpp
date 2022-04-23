@@ -217,7 +217,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
         Script::Ps2MaxTextureSize = m_ConfigurationVariables->GetParamValueInt("ps2_max_texture_size");
 
     if (m_ConfigurationVariables->IsVariableSet("overridelights"))
-        Light::OverrideLights(m_ConfigurationVariables->GetParamValueBool("overridelights"));
+        Light::GetGlobalList()->OverrideLights(m_ConfigurationVariables->GetParamValueBool("overridelights"));
 
     Script::Fullscreen = true;
     if (m_ConfigurationVariables->IsVariableSet("fullscreen"))
@@ -719,15 +719,15 @@ void KapowEngineClass::InitEntitiesDatabase()
     LensFlareManager::Register();
     DecalManager::Register();
     SurroundGeometry::Register();
-    DynamicSurroundGeometry::Register();    //  TODO: implement!
-    Light::Register();  //  TODO: implement!
-    Sprite::Register(); //  TODO: implement!
-    TextBox::Register();    //  TODO: implement!
+    DynamicSurroundGeometry::Register();
+    Light::Register();
+    Sprite::Register();
+    TextBox::Register();
     TextSlot::Register();
     GuideBox::Register();
     Bullet::Register();
-    SoundSlot::Register();  //  TODO: implement!
-    SoundEmitter::Register();   //  TODO: implement!
+    SoundSlot::Register();
+    SoundEmitter::Register();
     StaticLighting::Register();
     MoviePlayer::Register();
     ParticleSystem::Register(); //  TODO: implement!

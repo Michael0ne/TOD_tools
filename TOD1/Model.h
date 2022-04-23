@@ -87,11 +87,21 @@ protected:
 
 public:
     Model();    //  @884BA0
-
     virtual ~Model();   //  @884D70
     virtual Vector4f*   GetBounds(Vector4f& outBounds); //  @884450
     virtual void        stub19();   //  @8CB190
     virtual void        SetStaticLightingEnabled(const bool enabled);   //  @884190
+
+    void* operator new (size_t size)
+    {
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, 0);
+        ptr = nullptr;
+    }
 
     static void         Register(); //  @889800
 

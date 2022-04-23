@@ -88,11 +88,12 @@ void TextAsset::GetGameString(const unsigned short indicieslistindex, unsigned s
             outString[i++] = charinfo->m_Contents;
 }
 
-int TextAsset::GetGameStringLength(unsigned short* str)
+int TextAsset::GetGameStringLength(const unsigned short* str)
 {
     int len = 0;
+    unsigned short* strLocal = (unsigned short*)str;
 
-    while (*str)
+    while (*strLocal)
         len++;
 
     return len;
@@ -135,7 +136,7 @@ void TextAsset::EncodeGameString(short* outString, short* inString)
     }
 }
 
-void TextAsset::CopyCharArrayToGameString(short* gamestring, char* instring)
+void TextAsset::CopyCharArrayToGameString(unsigned short* gamestring, char* instring)
 {
     for (unsigned int i = 0; i < strlen(instring) + 1; ++i)
     {

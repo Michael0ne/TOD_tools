@@ -25,15 +25,15 @@ protected:
 private:
     TextAsset();    //  @862380
 
-protected:
+public:
     void                GetIdentifierByIndex(String& outString, const unsigned int ind) const;  //  @8A9E70
     void                GetTextContents(String& outString, const unsigned int ind) const;   //  @6F89E0
     void                GetGameString(const unsigned short indicieslistindex, unsigned short* outString, const unsigned int maxlength, const bool contents) const;    //  @861800
 
-    static int          GetGameStringLength(unsigned short* str);    //  @4146F0
+    static int          GetGameStringLength(const unsigned short* str);    //  @4146F0
     static Dictionary*  GetCharacterInfo(Dictionary*);  //  @861760
     static void         EncodeGameString(short* outString, short* inString);    //  @4147D0
-    static void         CopyCharArrayToGameString(short* gamestring, char* instring);   //  @414880
+    static void         CopyCharArrayToGameString(unsigned short* gamestring, char* instring);   //  @414880
 
     static char*        _A3CE80;    //  @A3CE80
     static int          _A3CE84;    //  @A3CE84

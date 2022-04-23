@@ -17,16 +17,16 @@ AssetLoader::~AssetLoader()
     if (m_AssetPtr)
         g_AssetManager->DecreaseResourceReferenceCount(m_AssetPtr);
 
-    delete field_4;
+    delete m_Empty;
 }
 
 AssetLoader& AssetLoader::operator=(const AssetLoader& rhs)
 {
     MESSAGE_CLASS_CREATED(AssetLoader);
 
-    if (ALIGN_4BYTES(field_4) != 0 && (!field_4 || ((unsigned char)field_4 & 1) != NULL))
-        MemoryManager::ReleaseMemory((int*)ALIGN_4BYTES(field_4), false);
-    field_4 = nullptr;
+    if (ALIGN_4BYTES(m_Empty) != 0 && (!m_Empty || ((unsigned char)m_Empty & 1) != NULL))
+        MemoryManager::ReleaseMemory((int*)ALIGN_4BYTES(m_Empty), false);
+    m_Empty = nullptr;
 
     if (m_AssetPtr)
         g_AssetManager->DecreaseResourceReferenceCount(m_AssetPtr);

@@ -8,23 +8,24 @@ struct Light_Properties
     Vector3f                m_Direction;
     float                   m_Range;
     float                   m_Brightness;
-    int                     m_Flags;
+    int                     m_Flags;    //  TODO: make this struct!
 
 public:
     Light_Properties(); // @422100
     ~Light_Properties(); // @422190
 };
 
+enum class eLightType
+{
+    NONE = 0,
+    AMBIENT = 1,
+    DIRECTIONAL = 2,
+    POINT = 3
+};
+
 class Light : public Node
 {
     friend class GfxInternal_Dx9;
-
-    enum LightType
-    {
-        AMBIENT = 1,
-        DIRECTIONAL = 2,
-        POINT = 3,
-    };
 
     struct LightsList
     {
@@ -38,6 +39,11 @@ class Light : public Node
 
         void                AddLightToList(Light* light); // @8812A0
         void                RemoveLight(Light* light);  //  @8813C0
+        void                _880D90(Node* node);    //  @880D90
+        void                SetRange(const Vector4f& lightPos, const float range) const;  //  @880F50
+        void                AddStaticLight(Light* light);   //  @89A5D0
+        void                RemoveAt(const unsigned int pos);   //  @882330
+        void                OverrideLights(const bool overrideLights);  //  @880DC0
     };
 
 protected:
@@ -48,17 +54,17 @@ protected:
     {
         struct
         {
-            LightType   Type : 3;
+            eLightType  Type : 3;
             unsigned    DynamicEmission : 1;
             unsigned    StaticEmission : 1;
             unsigned    NegativeLight : 1;
             unsigned    _6 : 1;
             unsigned    StaticallyLit : 1;
         };
-        unsigned int    m_Flags;
     }                   m_Flags;
     Vector4f   m_Vec_1;
     Vector4f   m_Vec_2;
+
     int     field_BC;
     int     field_C0;
     int     field_C4;
@@ -75,10 +81,34 @@ public:
     virtual             ~Light(); // @880680
     virtual void        Destroy() override;    //  @880140
 
-    void                SetLightType(LightType); // @880170
-    void                SetLightColorRGB(const ColorRGB&); // @65AB20
-    
-    static void         OverrideLights(bool unk); // @880DC0
+    void* operator new (size_t size)
+    {
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, 0);
+        ptr = nullptr;
+    }
+
+    const bool          HasDynamicEmission() const; //  @87FDA0
+    void                SetHasDynamicEmission(const bool emission); //  @87FF90
+    const bool          HasStaticEmission() const;  //  @87FDB0
+    void                SetHasStaticEmission(const bool emission);  //  @8800B0
+    const eLightType    GetLightType() const;   //  @65AB10
+    void                SetLightType(const eLightType ltype); // @880170
+    void                GetLightColorRGB(ColorRGB& outColor) const; //  @91CC90
+    void                SetLightColorRGB(const ColorRGB& color); // @65AB20
+    void                GetStaticColorRGB(ColorRGB& outColor) const;    //  @87FCF0
+    void                SetStaticColorRGB(const ColorRGB& color);   //  @87FD30
+    const float         GetBrightness() const;  //  @5A1D40
+    void                SetBrightness(const float brightness);  //  @728F10
+    const float         GetRange() const;   //  @501090
+    void                SetRange(const float range);    //  @87FD60
+    const bool          IsNegativeLight() const;    //  @87FDC0
+    void                SetIsNegativeLight(const bool negative);  //  @87FDD0
+
     static void         InitLightsList(); // @881070
     static void         ClearLightsList(); // @881260
     static LightsList*  GetGlobalList(); //  @880D80
@@ -90,6 +120,7 @@ public:
     static Light       *DirectionalLight;  // @A3D82C
     static unsigned int TotalLights; // @A3D81C
     static LightsList  *GlobalList;  // @A3D820
+    static int          StaticLights;   //  @A3D824
 };
 
 extern EntityType* tLight; // @A3D818

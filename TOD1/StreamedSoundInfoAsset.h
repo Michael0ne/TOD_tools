@@ -1,12 +1,14 @@
 #pragma once
 #include "BaseAsset.h"
 
+class SoundFile;
+
 class StreamedSoundInfoAsset : public Asset
 {
-protected:
-    int     field_1C;
-    int    *m_MonoStream;
-    int     field_24;
+public:
+    int         field_1C;
+    SoundFile  *m_StreamBuffer;
+    int         field_24;
 
 private:
     StreamedSoundInfoAsset(); // @85C7E0

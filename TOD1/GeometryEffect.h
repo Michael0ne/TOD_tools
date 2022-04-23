@@ -6,7 +6,7 @@
 class GeometryEffect;
 class GEKeyFrame;
 
-enum class eBlendMode
+enum class eEffectBlendMode
 {
     NORMAL = 0,
     ADD = 1
@@ -63,7 +63,7 @@ protected:
     {
         struct
         {
-            unsigned BlendMode : 4;
+            eEffectBlendMode BlendMode : 4;
             unsigned Looping : 1;
             unsigned TriggerAtStart : 1;
             unsigned Frozen : 1;
@@ -91,7 +91,7 @@ public:
     {
         MESSAGE_CLASS_CREATED(GeometryEffect);
 
-        m_Flags.BlendMode = 0;
+        m_Flags.BlendMode = eEffectBlendMode::NORMAL;
         m_Flags.Looping = false;
         m_Flags.TriggerAtStart = false;
         m_Flags.Frozen = false;
@@ -103,7 +103,6 @@ public:
         m_FrameBuffer[0] = nullptr;
         field_134 = 0;
 
-        m_Flags.BlendMode = 15; //  NOTE: or -1 if signed. The whole code is strange *shrug*.
         m_Flags.Looping = true;
         m_Flags.TriggerAtStart = true;
         m_Flags.Frozen = true;
@@ -114,6 +113,17 @@ public:
         m_ModelFlags.m_FlagBits.PlaceInHud = false;
     }
     virtual ~GeometryEffect();  //  @8E2AB0
+
+    void* operator new (size_t size)
+    {
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, 0);
+        ptr = nullptr;
+    }
 
 private:
     Effect*             AddEffect();    //  @8DDD40
@@ -131,8 +141,8 @@ public:
     void                SetGesep0(const int);    //  @883EC0
     const float         GetEffectLifeTime() const;  //  @8C9200
     void                SetEffectLifeTime(const float lt);  //  @698CE0
-    const eBlendMode    GetBlendMode() const;   //  @8DDA70
-    void                SetBlendMode(const eBlendMode blmode); //  @8DDA80
+    const eEffectBlendMode    GetBlendMode() const;   //  @8DDA70
+    void                SetBlendMode(const eEffectBlendMode blmode); //  @8DDA80
     const bool          IsLooping() const;  //  @8DDAD0
     void                SetIsLooping(const bool looping);   //  @8DDAB0
     const bool          TriggerAtStart() const; //  @8DDB10

@@ -155,6 +155,6 @@ public:
     static StreamedSoundBuffer *StaticStreamedSound; // @A35ED0
 };
 
-extern StreamedSoundBuffers* g_StreamedSoundBuffers;
+extern StreamedSoundBuffers* g_StreamedSoundBuffers;    //  @A35EC0
 
 ASSERT_CLASS_SIZE(StreamedSoundBuffers, 300);

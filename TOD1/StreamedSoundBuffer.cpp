@@ -5,8 +5,6 @@
 #include "BuiltinType.h"
 #include "Timer.h"
 
-StreamedSoundBuffer* StreamedSoundBuffer::GlobalStreamedSound;
-
 StreamedSoundBuffer::~StreamedSoundBuffer()
 {
     MESSAGE_CLASS_DESTROYED(StreamedSoundBuffer);
@@ -108,12 +106,12 @@ void StreamedSoundBuffer::Stop(int)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetPause(int, bool)
+void StreamedSoundBuffer::SetPause(int slot, bool hardpause)
 {
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetPause_A(int, bool)
+void StreamedSoundBuffer::UnPause(int slot, bool hardpause)
 {
 }
 

@@ -31,6 +31,17 @@ private:
         MESSAGE_CLASS_CREATED(ControlSetup);
     };
 
+    void* operator new (size_t size)
+    {
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, 0);
+        ptr = nullptr;
+    }
+
     void                    GetControlId(int* args) const;  //  @7231D0
     const int               GetControlId_Impl(const char* const controlname) const; //  @9250E0
 

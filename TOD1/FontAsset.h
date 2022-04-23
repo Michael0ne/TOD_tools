@@ -4,10 +4,10 @@
 
 class FontAsset : public Asset
 {
-protected:
+public:
     int             field_1C;
     int            *field_20;
-    Font     *m_Font;
+    Font           *m_Font;
 
 private:
     inline FontAsset() : Asset(false) // NOTE: always inlined.

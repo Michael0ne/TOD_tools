@@ -1,11 +1,17 @@
 #include "Light.h"
 #include "GfxInternal_Dx9.h"
 #include "BuiltinType.h"
+#include "IntegerType.h"
+#include "NumberType.h"
+#include "VectorType.h"
+#include "TruthType.h"
+#include "Scene.h"
 
 Light* Light::AmbientLight;
 Light* Light::DirectionalLight;
 unsigned int Light::TotalLights;
 Light::LightsList* Light::GlobalList;
+int Light::StaticLights;
 
 EntityType* tLight;
 
@@ -24,6 +30,49 @@ void Light::Destroy()
     Node::Destroy();
 }
 
+const bool Light::HasDynamicEmission() const
+{
+    return m_Flags.DynamicEmission;
+}
+
+void Light::SetHasDynamicEmission(const bool emission)
+{
+    GetGlobalList()->RemoveLight(this);
+
+    m_Flags.DynamicEmission = emission;
+
+    GetGlobalList()->AddLightToList(this);
+}
+
+const bool Light::HasStaticEmission() const
+{
+    return m_Flags.StaticEmission;
+}
+
+void Light::SetHasStaticEmission(const bool emission)
+{
+    if (emission == m_Flags.StaticEmission || !m_Flags.DynamicEmission)
+        return;
+
+    if (m_Flags.Type == eLightType::AMBIENT || m_Flags.Type == eLightType::DIRECTIONAL)
+    {
+        GetGlobalList()->_880D90(Scene::SceneInstance);
+    }
+    else
+    {
+        Vector4f pos;
+        GetWorldPos(pos);
+        GetGlobalList()->SetRange(pos, m_LightProperties.m_Range);
+    }
+
+    m_Flags.StaticEmission = emission;
+}
+
+const eLightType Light::GetLightType() const
+{
+    return m_Flags.Type;
+}
+
 Light::Light() : Node(NODE_MASK_POSITION)
 {
     MESSAGE_CLASS_CREATED(Light);
@@ -31,7 +80,7 @@ Light::Light() : Node(NODE_MASK_POSITION)
     if ( (m_LightProperties.m_Flags & 31) != 0 )
         m_LightProperties.m_Flags = 32;
 
-    m_Flags.Type = POINT;
+    m_Flags.Type = eLightType::POINT;
     m_Flags.DynamicEmission = true;
     m_Flags._6 = true;
     m_LightColor = BuiltinType::ColorWhite;
@@ -51,19 +100,96 @@ void Light::LightsList::AddLightToList(Light* light)
 {
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Light::SetLightType(LightType)
+void Light::SetLightType(const eLightType ltype)
 {
+    GetGlobalList()->RemoveLight(this);
+    const int thisLightType = (int)m_Flags.Type - 2;
+    int newLightType = -1;
+
+    m_Flags.Type = ltype;
+
+    switch (thisLightType)
+    {
+    case 0:
+        newLightType = 2;
+        break;
+    case 1:
+        newLightType = 0;
+        break;
+    default:
+        newLightType = 3;
+    }
+
+    if ((m_LightProperties.m_Flags << 27 >> 27) != newLightType)
+        m_LightProperties.m_Flags = newLightType & 31 | m_LightProperties.m_Flags & 0xFFFFFFE0 | 32;
+
+    GetGlobalList()->AddLightToList(this);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Light::SetLightColorRGB(const ColorRGB&)
+void Light::GetLightColorRGB(ColorRGB& outColor) const
 {
+    outColor = m_LightColor;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Light::OverrideLights(bool unk)
+void Light::SetLightColorRGB(const ColorRGB& color)
 {
+    m_LightColor = color;
+    m_LightProperties.m_Color = D3DCOLOR_DWORD(color.r, color.g, color.b, color.a);
+    m_LightProperties.m_Flags |= 32;
+}
+
+void Light::GetStaticColorRGB(ColorRGB& outColor) const
+{
+    if (m_Flags.Type != eLightType::NONE)
+        outColor = m_LightColor;
+    else
+        outColor = m_StaticColor;
+}
+
+void Light::SetStaticColorRGB(const ColorRGB& color)
+{
+    m_Flags.StaticallyLit = true;
+    m_StaticColor = color;
+}
+
+const float Light::GetBrightness() const
+{
+    return m_LightProperties.m_Brightness;
+}
+
+void Light::SetBrightness(const float brightness)
+{
+    float actualBrightness = clamp<float>(brightness, 0.f, 2.f);
+
+    if (m_LightProperties.m_Brightness != actualBrightness)
+    {
+        m_LightProperties.m_Flags |= 32;
+        m_LightProperties.m_Brightness = actualBrightness;
+    }
+}
+
+const float Light::GetRange() const
+{
+    return m_LightProperties.m_Range;
+}
+
+void Light::SetRange(const float range)
+{
+    if (m_LightProperties.m_Range != range)
+    {
+        m_LightProperties.m_Flags |= 32;
+        m_LightProperties.m_Range = range;
+    }
+}
+
+const bool Light::IsNegativeLight() const
+{
+    return m_Flags.NegativeLight;
+}
+
+void Light::SetIsNegativeLight(const bool negative)
+{
+    m_Flags.NegativeLight = negative;
 }
 
 void Light::InitLightsList()
@@ -73,10 +199,10 @@ void Light::InitLightsList()
     AmbientLight = (Light*)tLight->CreateNode();
     DirectionalLight = (Light*)tLight->CreateNode();
 
-    AmbientLight->SetLightType(AMBIENT);
+    AmbientLight->SetLightType(eLightType::AMBIENT);
     AmbientLight->SetLightColorRGB({ 0.64999998, 0.64999998, 0.64999998, 1 });
 
-    DirectionalLight->SetLightType(DIRECTIONAL);
+    DirectionalLight->SetLightType(eLightType::DIRECTIONAL);
     DirectionalLight->SetLightColorRGB({ 0.64999998, 0.64999998, 0.64999998, 1 });
     DirectionalLight->SetOrient({ 0.85898501, -0.139645, -0.37349701, -0.321161 });
     DirectionalLight->SetPos({});
@@ -95,12 +221,20 @@ Light::LightsList* Light::GetGlobalList()
     return GlobalList;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Light::Register()
 {
     tLight = new EntityType("Light");
     tLight->InheritFrom(tNode);
     tLight->SetCreator((CREATOR)Create);
+
+    tLight->RegisterProperty(tTRUTH, "dynamic_emission", (EntityGetterFunction)&HasDynamicEmission, (EntitySetterFunction)&SetHasDynamicEmission, "control=truth|name=|");
+    tLight->RegisterProperty(tTRUTH, "static_emission", (EntityGetterFunction)&HasStaticEmission, (EntitySetterFunction)&SetHasStaticEmission, "control=truth|name=|");
+    tLight->RegisterProperty(tINTEGER, "light_type", (EntityGetterFunction)&GetLightType, (EntitySetterFunction)&SetLightType, "control=dropdown|Ambient=1|Directional=2|Point=3");
+    tLight->RegisterProperty(tVECTOR, "light_color_rgb", (EntityGetterFunction)&GetLightColorRGB, (EntitySetterFunction)&SetLightColorRGB, "control=colorrgb");
+    tLight->RegisterProperty(tVECTOR, "static_color_rgb", (EntityGetterFunction)&GetStaticColorRGB, (EntitySetterFunction)&SetStaticColorRGB, "control=colorrgb");
+    tLight->RegisterProperty(tNUMBER, "brightness", (EntityGetterFunction)&GetBrightness, (EntitySetterFunction)&SetBrightness, "control=slider|min=0|max=10");
+    tLight->RegisterProperty(tNUMBER, "range", (EntityGetterFunction)&GetRange, (EntitySetterFunction)&SetRange, "control=slider|min=0|max=1000");
+    tLight->RegisterProperty(tTRUTH, "is_negative_light", (EntityGetterFunction)&IsNegativeLight, (EntitySetterFunction)&SetIsNegativeLight, "control=truth|name=|");
 
     tLight->PropagateProperties();
 }
@@ -143,4 +277,54 @@ void Light::LightsList::RemoveLight(Light* light)
 {
     if (light == AmbientLight || light == DirectionalLight)
         return;
+}
+
+void Light::LightsList::_880D90(Node* node)
+{
+    Node* child = node->m_FirstChild;
+    node->m_Id._3 = 8;
+
+    if (!child)
+        return;
+
+    while (child)
+    {
+        _880D90(child);
+        child = child->m_NextSibling;
+    }
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void Light::LightsList::SetRange(const Vector4f& lightPos, const float range) const
+{
+    if (!Scene::MainQuadTree)
+        return;
+}
+
+void Light::LightsList::AddStaticLight(Light* light)
+{
+    m_StaticLights.push_back(light);
+}
+
+void Light::LightsList::RemoveAt(const unsigned int pos)
+{
+    m_StaticLights.erase(m_StaticLights.begin() + pos);
+}
+
+void Light::LightsList::OverrideLights(const bool overrideLights)
+{
+    m_LightsOverride = overrideLights;
+    m_StaticLightsTotal++;
+
+    if (Scene::SceneInstance)
+    {
+        Node* child = Scene::SceneInstance->m_FirstChild;
+        Scene::SceneInstance->m_Id._3 = 8;
+
+        while (child)
+        {
+            _880D90(child);
+            child = child->m_NextSibling;
+        }
+    }
 }

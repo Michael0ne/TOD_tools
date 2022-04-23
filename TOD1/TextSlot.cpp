@@ -101,6 +101,39 @@ void TextSlot::Dump(const int)
     }
 }
 
+void TextSlot::GetCurrentLoadedText(unsigned short* outText, const unsigned int maxLength) const
+{
+    outText[0] = 0;
+    if (!m_TextAsset)
+        return;
+
+    TextAsset* asText = ((TextAsset*)m_TextAsset.m_AssetPtr);
+    if (m_CurrentIndex < asText->m_TextIndicies.size())
+        asText->GetGameString(asText->m_TextIndicies[m_CurrentIndex], outText, maxLength, true);
+    else
+        outText[0] = 0;
+}
+
+void TextSlot::GetTextByIndex(int index, unsigned short* outText, const unsigned int maxLength) const
+{
+    TextAsset* asText = ((TextAsset*)m_TextAsset.m_AssetPtr);
+
+    if (index < 0)
+        index = 0;
+
+    if (index >= asText->m_TextIndicies.size())
+        index = asText->m_TextIndicies.size() - 1;
+
+    outText[0] = 0;
+    if (!asText)
+        return;
+
+    if (index < asText->m_TextIndicies.size())
+        asText->GetGameString(asText->m_TextIndicies[index], outText, maxLength, true);
+    else
+        outText[0] = 0;
+}
+
 TextSlot* TextSlot::Create(AllocatorIndex allocator)
 {
     return new TextSlot;
