@@ -135,6 +135,8 @@ protected:
 public:
     ParticleSystem(); // @8EB650
     virtual ~ParticleSystem();  //  @8E9FD0
+    virtual void    Instantiate();  //  @8E9E70
+    virtual void    Render();   //  @8E9BB0
 
     void* operator new (size_t size)
     {
@@ -160,6 +162,17 @@ public:
     const float     GetEmitterLifeTime() const; //  @793A80
     void            SetEmitterLifeTime(const float emitterlifetime);    //  @826180
 
+    const bool      GetSep3() const;    //  @42F4F0
+    void            SetSep3(const bool);    //  @883EC0
+    const float     GetParticleGravity() const; //  @8E58D0
+    void            SetParticleGravity(const float gravity);    //  @8E5870
+
+    void            TriggerWithPosition(int* args); //  @8E9750
+    void            TriggerWithEntity(int* args);   //  @8E98B0
+    void            TriggerWithEntityPosition(int* args);   //  @8E9A10
+    void            TriggerDefault(int* args);  //  @8EB5C0
+    void            KillEmitters(int* args);    //  @8EB540
+    void            StopEmitters(int* args);    //  @8EB580
     void            SpawnParticles(int* args);  //  @8E6C10
     void            KillDefault(int* args); //  @8EB500
     void            KillAll(int* args); //  @8E6B60

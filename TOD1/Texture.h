@@ -8,22 +8,13 @@
 #pragma pack(4)
 class Texture
 {
-    enum TextureFormat
-    {
-        DXT1 = 7,
-        DXT2 = 8,
-        DXT3 = 9,
-        DXT4 = 10,
-        DXT5 = 11
-    };
-
 public:
     MutableTextureBuffer     *m_Mutable;
     LPDIRECT3DTEXTURE9  m_Texture;
     char               *m_TextureSurfaceBits;
     ScreenResolution    m_Resolution;
     ScreenResolution    m_SurfaceSize;
-    TextureFormat       m_Format;
+    unsigned int        m_Format;
     char                field_20;
     char                field_21;
     char                m_BitsPerPixel;
@@ -35,7 +26,7 @@ public:
 private:
     void                CreateDirect3DTexture(const ScreenResolution& res, unsigned int formatindex, unsigned int levels); // @463530
 
-    static TextureFormat    GetTextureFormat(D3DFORMAT fmt);   //  @463360
+    static unsigned int GetTextureFormat(D3DFORMAT fmt);   //  @463360
 
     static int          Formats[];  //  @A0A5F0
 

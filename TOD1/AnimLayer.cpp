@@ -4,6 +4,7 @@
 #include "AnimSlot.h"
 #include "IntegerType.h"
 #include "NumberType.h"
+#include "VectorType.h"
 #include "TransactionBuffer.h"
 
 EntityType* tAnimLayer;
@@ -73,7 +74,7 @@ void AnimLayer::BlendTo(MotionAnimSlot* animSlot, const int event)
 {
 }
 
-const bool AnimLayer::GetIsPlaying() const
+const bool AnimLayer::IsPlaying() const
 {
     return m_Flags.Playing;
 }
@@ -171,14 +172,77 @@ void AnimLayer::SetWeight(const float weight)
     }
 }
 
+void AnimLayer::CalcAndSetGamePivot(int* args)
+{
+    CalcAndSetGamePivot_Impl();
+}
+
 #pragma message(TODO_IMPLEMENTATION)
+void AnimLayer::CalcAndSetGamePivot_Impl()
+{
+}
+
 void AnimLayer::Register()
 {
     tAnimLayer = new EntityType("AnimLayer");
     tAnimLayer->InheritFrom(tNode);
     tAnimLayer->SetCreator((CREATOR)Create);
 
-    tAnimLayer->RegisterProperty(tTRUTH, "playing", (EntityGetterFunction)&GetIsPlaying, NULL, NULL, NULL, (EntitySetterFunction)&SetIsPlaying, NULL, NULL, NULL, nullptr, NULL, NULL, 10);
+    tAnimLayer->RegisterProperty(tTRUTH, "playing", (EntityGetterFunction)&IsPlaying, (EntitySetterFunction)&SetIsPlaying, nullptr, 10);
+    //tAnimLayer->RegisterProperty(tTRUTH, "looping", (EntityGetterFunction)&IsLooping, (EntitySetterFunction)&SetIsLooping, nullptr, 11);
+    //tAnimLayer->RegisterProperty(tTRUTH, "freeze", (EntityGetterFunction)&IsFrozen, (EntitySetterFunction)&SetIsFrozen, nullptr, 12);
+    //tAnimLayer->RegisterProperty(tINTEGER, "target_anim", (EntityGetterFunction)&GetTargetAnim, (EntitySetterFunction)&SetTargetAnim, nullptr, 13);
+    //tAnimLayer->RegisterProperty(tNUMBER, "weight", (EntityGetterFunction)&GetWeight, (EntitySetterFunction)&SetWeight, nullptr, 14);
+    //tAnimLayer->RegisterProperty(tEntity, "crosstarget1", (EntityGetterFunction)&GetCrossTarget1, (EntitySetterFunction)&SetCrossTarget1, nullptr, 15);
+    //tAnimLayer->RegisterProperty(tEntity, "crosstarget2", (EntityGetterFunction)&GetCrossTarget2, (EntitySetterFunction)&SetCrossTarget2, nullptr, 16);
+    //tAnimLayer->RegisterProperty(tNUMBER, "playpos1", (EntityGetterFunction)&GetPlayPos1, (EntitySetterFunction)&SetPlayPos1, nullptr, 17);
+    //tAnimLayer->RegisterProperty(tNUMBER, "playpos2", (EntityGetterFunction)&GetPlayPos2, (EntitySetterFunction)&SetPlayPos2, nullptr, 18);
+    //tAnimLayer->RegisterProperty(tNUMBER, "crossblendfactor", (EntityGetterFunction)&GetCrossBlendFactor, (EntitySetterFunction)&SetCrossBlendFactor, nullptr, 19);
+    //tAnimLayer->RegisterProperty(tNUMBER, "crossblendspeed", (EntityGetterFunction)&GetCrossBlendSpeed, (EntitySetterFunction)&SetCrossBlendSpeed, nullptr, 21);
+    //tAnimLayer->RegisterProperty(tNUMBER, "targetcrossblendfactor", (EntityGetterFunction)&GetTargetCrossBlendFactor, (EntitySetterFunction)&SetTargetCrossBlendFactor, nullptr, 20);
+    //tAnimLayer->RegisterProperty(tINTEGER, "event", (EntityGetterFunction)&GetEvent, (EntitySetterFunction)&SetEvent, nullptr, 22);
+    //tAnimLayer->RegisterProperty(tINTEGER, "blendfinishedevent", (EntityGetterFunction)&GetBlendFinishedEvent, (EntitySetterFunction)&SetBlendFinishedEvent, nullptr, 23);
+    //tAnimLayer->RegisterProperty(tTRUTH, "stallfirstframe", (EntityGetterFunction)&StallFirstFrame, (EntitySetterFunction)&SetStallFirstFrame, nullptr);
+    //tAnimLayer->RegisterProperty(tEntity, "targetanim", (EntityGetterFunction)&GetTargetAnim, nullptr, nullptr);
+    //tAnimLayer->RegisterProperty(tEntity, "blendinanim", (EntityGetterFunction)&GetBlendAnim, nullptr, nullptr);
+    //tAnimLayer->RegisterProperty(tEntity, "blendoutanim", (EntityGetterFunction)&GetBlendOutAnim, nullptr, nullptr);
+    //tAnimLayer->RegisterProperty(tEntity, "motionlayer", (EntityGetterFunction)&GetMotionLayer, (EntitySetterFunction)&SetMotionLayer, nullptr, 24);
+    //tAnimLayer->RegisterProperty(tTRUTH, "overridetarget1", (EntityGetterFunction)&OverrideTarget1, (EntitySetterFunction)&SetOverrideTarget1, nullptr, 25);
+    //tAnimLayer->RegisterProperty(tTRUTH, "overridetarget2", (EntityGetterFunction)&OverrideTarget2, (EntitySetterFunction)&SetOverrideTarget2, nullptr, 26);
+    //tAnimLayer->RegisterProperty(tVECTOR, "overridegamepivotpos1", (EntityGetterFunction)&GetOverrideGamePivotPos1, (EntitySetterFunction)&SetOverrideGamePivotPos1, nullptr, 27);
+    //tAnimLayer->RegisterProperty(tVECTOR, "overridegamepivotpos2", (EntityGetterFunction)&GetOverrideGamePivotPos2, (EntitySetterFunction)&SetOverrideGamePivotPos2, nullptr, 28);
+    //tAnimLayer->RegisterProperty(tTRUTH, "getclearoverridetarget1onblendfinished", (EntityGetterFunction)&GetClearOverrideTarget1OnBlendFinished, (EntitySetterFunction)&SetClearOverrideTarget1OnBlendFinished, nullptr, 29);
+    //tAnimLayer->RegisterProperty(tTRUTH, "getclearoverridetarget2onblendfinished", (EntityGetterFunction)&GetClearOverrideTarget2OnBlendFinished, (EntitySetterFunction)&SetClearOverrideTarget2OnBlendFinished, nullptr, 30);
+    //tAnimLayer->RegisterProperty(tNUMBER, "speedmultiplier", (EntityGetterFunction)&GetSpeedMultiplier, (EntitySetterFunction)&SetSpeedMultiplier, nullptr, 31);
+
+    tAnimLayer->RegisterScript("play(entity,integer)", (EntityFunctionMember)&Play);
+    tAnimLayer->RegisterScript("blendto(entity,integer)", (EntityFunctionMember)&BlendTo);
+    //tAnimLayer->RegisterScript("setblendfinishedevent(integer)", (EntityFunctionMember)&SetBlendFinishedEvent);
+    //tAnimLayer->RegisterScript("stop", (EntityFunctionMember)&Stop);
+    //tAnimLayer->RegisterScript("synctoprevious", (EntityFunctionMember)&SyncToPrevious);
+    //tAnimLayer->RegisterScript("setplaypos(number)", (EntityFunctionMember)&SetPlayPos);
+    //tAnimLayer->RegisterScript("getplaypos:number", (EntityFunctionMember)&GetPlayPos);
+    //tAnimLayer->RegisterScript("getvelocity:vector", (EntityFunctionMember)&GetVelocity, 0, 0, 0, "GetVelocityMSG");
+    //tAnimLayer->RegisterScript("getgamepivotstartpos:vector", (EntityFunctionMember)&GetGamePivotStartPos);
+    //tAnimLayer->RegisterScript("getgamepivotendpos:vector", (EntityFunctionMember)&GetGamePivotEndPos);
+    //tAnimLayer->RegisterScript("getgamepivotstartorient:quaternion", (EntityFunctionMember)&GetGamePivotStartOrient);
+    //tAnimLayer->RegisterScript("getgamepivotendorient:quaternion", (EntityFunctionMember)&GetGamePivotEndOrient);
+    //tAnimLayer->RegisterScript("getgamepivotpos:vector", (EntityFunctionMember)&GetGamePivotPos);
+    //tAnimLayer->RegisterScript("getgamepivotorient:quaternion", (EntityFunctionMember)&GetGamePivotOrient);
+    //tAnimLayer->RegisterScript("getloopmode:integer", (EntityFunctionMember)&GetLoopMode);
+    //tAnimLayer->RegisterScript("getoverrideblendout:truth", (EntityFunctionMember)&GetOverrideBlendOut);
+    //tAnimLayer->RegisterScript("getoverrideblendin:truth", (EntityFunctionMember)&GetOverrideBlendIn);
+    //tAnimLayer->RegisterScript("setoverrideblendout(truth)", (EntityFunctionMember)&SetOverrideBlendOut);
+    //tAnimLayer->RegisterScript("setoverrideblendin(truth)", (EntityFunctionMember)&SetOverrideBlendIn);
+    //tAnimLayer->RegisterScript("clearblendoutoverrideonblendfinished(truth)", (EntityFunctionMember)&ClearBlendOutOverrideOnBlendFinished);
+    //tAnimLayer->RegisterScript("clearblendinoverrideonblendfinished(truth)", (EntityFunctionMember)&ClearBlendInOverrideOnBlendFinished);
+    //tAnimLayer->RegisterScript("getoverrideblendoutpos:vector", (EntityFunctionMember)&GetOverrideBlendOutPos);
+    //tAnimLayer->RegisterScript("getoverrideblendinpos:vector", (EntityFunctionMember)&GetOverrideBlendInPos);
+    //tAnimLayer->RegisterScript("setoverrideblendoutpos(vector)", (EntityFunctionMember)&SetOverrideBlendOutPos);
+    //tAnimLayer->RegisterScript("setoverrideblendinpos(vector)", (EntityFunctionMember)&SetOverrideBlendInPos);
+    tAnimLayer->RegisterScript("calcandsetgamepivot", (EntityFunctionMember)&CalcAndSetGamePivot);
+
+    tAnimLayer->PropagateProperties();
 }
 
 AnimLayer* AnimLayer::Create(AllocatorIndex)

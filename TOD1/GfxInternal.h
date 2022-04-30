@@ -6,6 +6,7 @@
 #include "Mesh.h"
 
 //  TODO: move this out here.
+//  TODO: possible name 'RenderLayer'.
 class Buffer276
 {
 public:

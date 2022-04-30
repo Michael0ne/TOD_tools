@@ -9,6 +9,8 @@
 #include "VectorType.h"
 #include "StringType.h"
 
+EntityType* tTextBox;
+
 TextBox::~TextBox()
 {
     MESSAGE_CLASS_DESTROYED(TextBox);
@@ -41,7 +43,7 @@ TextBox::TextBox() : Sprite()
     m_Flags.VerticalAlignment = 0;
     m_HorizontalSpacing = 0.f;
     m_VerticalSpacing = 0.0f;
-    field_94 = 0;
+    m_FrameBuffer = nullptr;
     m_Flags.TextResMode = false;
     m_Text = new String;
     m_Flags.UseGlyphIgnoreColor = true;
@@ -116,6 +118,16 @@ void TextBox::SetFont(const char* fontName)
 
     if (m_QuadTree)
         m_QuadTree->Refresh();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void TextBox::ParseFormatting(char* key, float* linescale, int* colorindex, eHorizontalAlign* alignment)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void TextBox::ParseFormattedText(const unsigned short* text, unsigned short* outText, const size_t maxLength) const
+{
 }
 
 const char* TextBox::GetText() const
@@ -374,7 +386,7 @@ const int TextBox::GetStringWidth() const
         asFont->m_HorizontalSpacing = m_HorizontalSpacing;
         asFont->m_VerticalSpacing = m_VerticalSpacing;
 
-        return asFont->GetTextWidth(m_Text->m_Str);
+        return (int)asFont->GetTextWidth(m_Text->m_Str);
     }
 
     if (!m_TextSlot)
@@ -407,7 +419,7 @@ const int TextBox::GetStringWidth() const
 
     unsigned short parsedTextBuffer[1024];
     ParseFormattedText(textBufferPtr, parsedTextBuffer, sizeof(parsedTextBuffer));
-    return asFont->GetGameTextWidth(parsedTextBuffer);
+    return (int)asFont->GetGameTextWidth(parsedTextBuffer);
 }
 
 void TextBox::SetTextSlotParam(int* args)

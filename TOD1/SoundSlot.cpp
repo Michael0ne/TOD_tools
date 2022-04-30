@@ -21,6 +21,70 @@ StreamedSoundBuffer* SoundSlot::GlobalStreamedSound;
 
 EntityType* tSoundSlot;
 
+SoundSlot::SoundSlot() : Node(NODE_MASK_EMPTY)
+{
+    MESSAGE_CLASS_CREATED(SoundSlot);
+
+    m_Volume = 10000;
+    m_RandomPitchLength = 0;
+    m_MinRange = 1.f;
+    m_MaxRange = 100.f;
+    m_RollOff = 1.f;
+    m_Pitch = 10000;
+    m_RandomVolumeLength = 0;
+    m_StreamBuffer = nullptr;
+    m_StreamingSoundName = nullptr;
+    m_DopplerFactor = -1;
+    m_StreamAllocationCallback = nullptr;
+    m_LfeLevel = 0;
+    m_PausedInstanceIndex = -1;
+
+    m_Flags.CutAtMaxRange = true;
+    m_Flags.StaticMode = true;
+    m_Flags.Priority = 1;
+    m_Flags.Is3D = true;
+    m_Flags.BackChannels = true;
+
+    for (unsigned int i = 0; i < 16; ++i)
+    {
+        VolumeGroupsList.push_back(1.f);
+        VolumeModifiersList.push_back(1.f);
+        GroupVolume.push_back(1.f);
+    }
+}
+
+SoundSlot::~SoundSlot()
+{
+    MESSAGE_CLASS_DESTROYED(SoundSlot);
+
+    StopSound();
+
+    for (unsigned int i = 0; i < m_SoundEmittersList.size(); ++i)
+        m_SoundEmittersList[i] = nullptr;
+
+    delete m_StreamBuffer;
+    delete[] m_StreamingSoundName;
+
+}
+
+void SoundSlot::Update()
+{
+    if (!m_Parameters && !m_Flags.HasStreamedSound)
+        Scene::_A3D890 = true;
+
+    if (m_StreamAllocationCallback && m_StreamBuffer && m_StreamBuffer->m_Flags.PreLoaded)
+    {
+        m_StreamAllocationCallback->TriggerGlobalScript(StreamAllocateFinishedCommand, nullptr);
+        m_StreamAllocationCallback = nullptr;
+    }
+}
+
+String* SoundSlot::GetResourceName(String* outResourceName)
+{
+    *outResourceName = GetStreamingSound();
+    return outResourceName;
+}
+
 const char* const SoundSlot::GetSound() const
 {
     if (m_SoundResource)
@@ -501,6 +565,11 @@ void SoundSlot::LoadSoundResource(const char* const sound)
     }
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void SoundSlot::Play_Impl(const Vector4f& pos)
+{
+}
+
 void SoundSlot::StopSound()
 {
     if ((m_SoundResource || m_StreamBuffer) && g_StreamedSoundBuffers)
@@ -562,7 +631,7 @@ bool SoundSlot::LoadRes(const bool b)
         if (b)
             sndBuffer->_440850(0);
 
-        if (sndBuffer->AreAnyInstancesPlaying())
+        if (sndBuffer->IsFirstChannelPlaying())
         {
             LogDump::LogA("Can't LoadRes() because there are still instances of SoundSlot:'%s' playing.\n", GetSoundName());
             return false;
@@ -610,7 +679,7 @@ bool SoundSlot::UnloadRes(const bool b)
 
         g_StreamedSoundBuffers->UpdateSoundBuffers();
 
-        if (sndBuffer->AreAnyInstancesPlaying())
+        if (sndBuffer->IsFirstChannelPlaying())
         {
             LogDump::LogA("Can't UnloadRes() because there are still instances of SoundSlot:'%s' playing.\n", GetSoundName());
             return false;
@@ -632,7 +701,7 @@ void SoundSlot::AllocateStream_Impl(Node* allocationCallbackNode, const bool ste
                 DeallocateStream_Impl();
 
             m_StreamBuffer = new StreamedSoundBuffer(((StreamedSoundInfoAsset*)m_StreamingSoundResource.m_AssetPtr)->m_StreamBuffer, 0, m_Flags.Is3D, m_Flags.Looped & 0xFFFFFF01, 0, stereoStream);
-            if (!m_StreamBuffer->IsMonoStreamCreated())
+            if (!m_StreamBuffer->IsCreated())
             {
                 if (m_StreamAllocationCallback)
                 {
@@ -800,7 +869,7 @@ bool SoundSlot::AllocateGlobalStreamedSound(const char* const soundname, const b
     GlobalSoundFile.Open(soundname);
     GlobalStreamedSound = new StreamedSoundBuffer(&GlobalSoundFile, 0, monosound, loopedsound, false, true);
 
-    if (GlobalStreamedSound->IsMonoStreamCreated())
+    if (GlobalStreamedSound->IsCreated())
         return true;
 
     delete GlobalStreamedSound;
@@ -814,7 +883,7 @@ void SoundSlot::DeallocateGlobalStreamedSound()
 
 bool SoundSlot::PlayGlobalStreamedSound()
 {
-    if (GlobalStreamedSound && !GlobalStreamedSound->IsMonoStreamCreated())
+    if (GlobalStreamedSound && !GlobalStreamedSound->IsCreated())
             return false;
 
     GlobalStreamedSound->field_B = GlobalStreamedSound->field_A;

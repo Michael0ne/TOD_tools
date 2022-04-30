@@ -691,8 +691,8 @@ void KapowEngineClass::InitEntitiesDatabase()
     Character::Register();
     Bone::Register();
     AnimSlot::Register();
-    MotionAnimSlot::Register(); //  TODO: implement!
-    AnimLayer::Register();  //  TODO: implement!
+    MotionAnimSlot::Register();
+    AnimLayer::Register();
     CutscenePlayer::Register();
     MotionLayer::Register();
     CollisionBox::Register();
@@ -730,7 +730,7 @@ void KapowEngineClass::InitEntitiesDatabase()
     SoundEmitter::Register();
     StaticLighting::Register();
     MoviePlayer::Register();
-    ParticleSystem::Register(); //  TODO: implement!
+    ParticleSystem::Register();
     GEKeyFrame::Register();
     GeometryEffect::Register();
     ProfilerInput::Register();

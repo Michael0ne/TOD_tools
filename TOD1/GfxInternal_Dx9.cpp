@@ -660,14 +660,14 @@ void GfxInternal_Dx9::CreateSurfaces()
 void GfxInternal_Dx9::CreateParticleMeshBuffer()
 {
     Mesh mesh(0, 0, 1);
-    mesh.AddFace(0, { -0.5, 0.5, 0 }, { 0, 0, -1 }, { 0, 0 });
-    mesh.AddFace(1, { -0.5, -0.5, 0 }, { 0, 0, -1 }, { 0, 1 });
-    mesh.AddFace(2, { 0.5, -0.5, 0 }, { 0, 0, -1 }, { 1, 1 });
-    mesh.AddFace(3, { 0.5, 0.5, 0 }, { 0, 0, -1 }, { 1, 0 });
-    mesh.SetFaceVertexIndex(0, 1);
-    mesh.SetFaceVertexIndex(1, 2);
-    mesh.SetFaceVertexIndex(2, 0);
-    mesh.SetFaceVertexIndex(3, 3);
+    mesh.AddVertex(0, { -0.5, 0.5, 0 }, { 0, 0, -1 }, { 0, 0 });
+    mesh.AddVertex(1, { -0.5, -0.5, 0 }, { 0, 0, -1 }, { 0, 1 });
+    mesh.AddVertex(2, { 0.5, -0.5, 0 }, { 0, 0, -1 }, { 1, 1 });
+    mesh.AddVertex(3, { 0.5, 0.5, 0 }, { 0, 0, -1 }, { 1, 0 });
+    mesh.SetVertexIndex(0, 1);
+    mesh.SetVertexIndex(1, 2);
+    mesh.SetVertexIndex(2, 0);
+    mesh.SetVertexIndex(3, 3);
 
     m_ParticleMeshBuffer = new MeshBuffer(&mesh, 1);
 }

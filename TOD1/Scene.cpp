@@ -52,6 +52,7 @@ bool Scene::_A3D858;
 float   Scene::FrameRateHistory[100];
 int Scene::FrameRateHistoryIndex;
 float   Scene::FrameTimeTotal;
+bool Scene::_A3D890;
 
 int Scene::PreBlocksUnloadedCommand;
 int Scene::BlocksUnloadedCommand;

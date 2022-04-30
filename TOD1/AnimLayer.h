@@ -8,6 +8,12 @@ class MotionAnimSlot;
 class AnimLayer : public Node
 {
 protected:
+    struct GamePivotInfo
+    {
+        Vector3f        m_Position;
+        bool            m_Used;
+    };
+
     Vector4f                    m_GamePivotPosition;    //  NOTE: this and below could be 'GamePivotAbsolutePosition/Orientation'.
     Orientation                 m_GamePivotOrient;
     Vector4f                    m_Pos_1;
@@ -90,7 +96,7 @@ protected:
     float                       m_PlayPos_2;
     int                         field_11C;
     int                         field_120;
-    std::vector<int>            m_List_3;
+    std::vector<GamePivotInfo>  m_GamePivotList;
     float                       field_134;
     int                         field_138;
     float                       field_13C;
@@ -103,7 +109,7 @@ public:
     void                        Play(AnimLayer* animation, const unsigned int event);   //  @903A80
     void                        BlendTo(MotionAnimSlot* animSlot, const int event);  //  @903C20
 
-    const bool                  GetIsPlaying() const;   //  @900FA0
+    const bool                  IsPlaying() const;   //  @900FA0
     void                        SetIsPlaying(const bool playing);   //  @901050
     void                        SetIsLooping(const bool loop);  //  @900FD0
     void                        GetGamePivotPos(Vector4f& outPos) const;    //  @901730 //  TODO: the argument could be a vec3f since disassembly is explicit about it.
@@ -116,6 +122,12 @@ public:
     const float                 GetWeight() const;  //  @916DF0
     void                        SetWeight(const float weight);    //  @5AB060
 
+    void                        CalcAndSetGamePivot(int* args); //  @905660
+
+private:
+    void                        CalcAndSetGamePivot_Impl(); //  @902A00
+
+public:
     static void                 Register(); //  @903E60
 
 private:

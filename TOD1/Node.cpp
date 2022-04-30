@@ -1701,7 +1701,7 @@ void Node::Update()
 #pragma message(TODO_IMPLEMENTATION)
 void Node::_88C300()
 {
-    *(char*)0xA3D890 = (char)1;
+    Scene::_A3D890 = true;
 }
 
 void Node::Render()

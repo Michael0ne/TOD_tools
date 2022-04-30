@@ -8,6 +8,17 @@ EntityType* tSurroundGeometry;
 
 int SurroundGeometry::TotalCreated;
 
+#pragma message(TODO_IMPLEMENTATION)
+SurroundGeometry::SurroundGeometry() : Node(NODE_MASK_QUADTREE)
+{
+    MESSAGE_CLASS_CREATED(SurroundGeometry);
+}
+
+SurroundGeometry::~SurroundGeometry()
+{
+    MESSAGE_CLASS_DESTROYED(SurroundGeometry);
+}
+
 const int SurroundGeometry::GetCategory() const
 {
     return m_Category;

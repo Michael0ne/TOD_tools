@@ -7,6 +7,7 @@
 #include "NumberType.h"
 #include "IntegerType.h"
 #include "TruthType.h"
+#include "FrameBuffer.h"
 
 std::vector<Sprite*>* Sprite::SpritesList;
 int Sprite::OnMouseEnterCommand = -1;
@@ -22,7 +23,7 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
 
     m_SpriteSize_X = 64.0f;
     m_SpriteFlags.ColorsAllSame = true;
-    field_94 = 0;
+    m_FrameBuffer = nullptr;
     m_SpriteSize_Y = 64.0f;
     m_SpriteFlags.SpriteIndex = SpritesTotal++;
     m_Opacity = -1;
@@ -50,6 +51,16 @@ Sprite::Sprite() : Node(NODE_MASK_POSITION | NODE_MASK_QUADTREE)
     m_QuadTree->m_UserType = m_QuadTree->m_UserType & 0xFFFFFF | m_QuadTree->m_UserType & 0xFF000000 | 0x80000000;
 
     SpritesList->push_back(this);
+}
+
+Sprite::~Sprite()
+{
+    MESSAGE_CLASS_DESTROYED(Sprite);
+
+    auto spriteListPos = std::find(SpritesList->begin(), SpritesList->end(), this);
+    SpritesList->erase(spriteListPos);
+
+    delete m_FrameBuffer;
 }
 
 const char* const Sprite::GetTexture() const

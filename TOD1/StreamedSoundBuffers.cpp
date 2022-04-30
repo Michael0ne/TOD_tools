@@ -539,7 +539,7 @@ void StreamedSoundBuffers::_43E850()
 void StreamedSoundBuffers::StopAllSounds()
 {
     for (unsigned int i = 0; i < m_StreamDataBufferList.size(); ++i)
-        m_StreamDataBufferList[i]->StopZerothSound();
+        m_StreamDataBufferList[i]->StopFirstChannelSound();
 }
 
 void StreamedSoundBuffers::PreallocateStreamBuffersPool()
@@ -592,7 +592,7 @@ void StreamedSoundBuffers::RemoveSoundBufferFromList(StreamedSoundBuffer* soundb
         if (soundbuffer->m_Channels <= 1)
         {
             if (soundbuffer->m_Channels == 1)
-                if (soundbuffer->m_Flags.m_FlagBits.Started)
+                if (soundbuffer->m_Flags.Started)
                     m_PlayingMonoStreamsNumber--;
                 else
                     m_MonoStreamsNumber--;

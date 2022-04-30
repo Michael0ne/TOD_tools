@@ -6,6 +6,7 @@
 #include <vector>
 
 class StreamedWAV;
+class SoundFile;
 
 class IStreamBuffer
 {
@@ -25,7 +26,7 @@ public:
     unsigned int        m_SampledDataSize;
     float               field_14;
     float               m_BytesPerSec;
-    int                 field_1C;
+    int                 field_1C;   //  NOTE: flags for soundbuffer?
     float               field_20;
     void               *m_SampledData;
     std::map<int, int>  field_28;
@@ -41,6 +42,7 @@ public:
 class StreamedSoundBuffer : public StreamBuffer
 {
     friend class StreamedSoundBuffers;
+    friend class SoundSlot;
 protected:
     int* field_4C;
 
@@ -58,12 +60,12 @@ protected:
             unsigned _7 : 1;
             unsigned LastChunkPlaying : 1;
             unsigned Looped : 1;
-            unsigned _10 : 1;
-            unsigned _11 : 1;
+            unsigned HardPause : 1;
+            unsigned Paused : 1;
             unsigned _12 : 1;
             unsigned _13 : 1;
             unsigned WaitMult : 1;
-            unsigned PauseSound : 1;
+            unsigned _15 : 1;
             unsigned StopEvent : 1;
             unsigned PreEvent : 1;
             unsigned StartSent : 1;
@@ -79,9 +81,8 @@ protected:
             unsigned _28 : 1;
             unsigned _29 : 1;
             unsigned StartEvent : 1;
-        }     m_FlagBits;
-        unsigned int  m_Flags;
-    }      m_Flags;
+        };
+    }           m_Flags;
 
     int      field_54;
     int      field_58;
@@ -114,7 +115,7 @@ protected:
     int      m_FrequencyMultiplied;
     int      field_C4;
     Vector4f    m_Position;
-    float     m_Pan;
+    float     m_MaxDistance;
     float     m_Frequency;
     float     field_E0;
     float     m_Volume;
@@ -136,45 +137,45 @@ public:
         ptr = nullptr;
     }
 
-    virtual ~StreamedSoundBuffer(); // @446640
-    virtual void   stub2();
-    virtual void   stub3();
-    virtual void   SetSampledData(void*);
-    virtual bool   Is3DSound(int);
-    virtual void   _4433A0(bool);
-    virtual bool   IsLooped(int);
-    virtual int    Play(int, char, int);
-    virtual bool   IsPlaying(int);
-    virtual bool   AreAnyInstancesPlaying();
-    virtual void   _440850(int);
-    virtual void   Stop(int);
-    virtual void   SetPause(int slot, bool hardpause);
-    virtual void   UnPause(int slot, bool hardpause);
-    virtual bool   IsPaused(int);
-    virtual bool   IsMonoStreamCreated();
-    virtual int    _443480();
-    virtual void   SetVolume(int, float);
-    virtual float   GetVolume(int);
-    virtual void   SetFrequencyMultiplier(int, float mul);
-    virtual float   GetFrequencyMultiplier(int);
-    virtual int    _4435C0(int, int);
-    virtual float   _443650(int);
-    virtual void   SetSoundPosition(int, const Vector4f*);
-    virtual void   GetPosition(Vector4f& outPos, const int);
-    virtual void   _443990(int, int*);
-    virtual Vector4f* _4439E0(Vector4f*, int);
-    virtual void   SetPan(int, float);
-    virtual float   GetPan(int);
-    virtual void   SetFrequency(int, float);
-    virtual float   GetFrequency(int);
-    virtual void   _443C20(int, float);
-    virtual float   _443C90(int);
-    virtual void   _443CD0(int, float);
-    virtual float   _443D30(int);
-    virtual void   _443D40(int, float, float, float);
-    virtual int    GetChannelsNumber() const;
-    virtual void   DumpInfo();
-    virtual void   StopZerothSound();  //  NOTE: maybe 'StopFirstSound' or 'StopLastSound'.
+    virtual             ~StreamedSoundBuffer(); // @446640
+    virtual void        stub2();
+    virtual void        stub3();
+    virtual void        SetSampledData(void*);
+    virtual bool        Is3DSound(int);  //  @443350
+    virtual void        Get3DMode(unsigned char mode3d);  //  @4433A0
+    virtual bool        IsLooped(int slot);   //  @4433E0
+    virtual int         Play(int slot, bool looped, int);    //  @444B40
+    virtual bool        IsPlaying(int slot) const;  //  @4433F0
+    virtual bool        IsFirstChannelPlaying() const;  //  @443DF0
+    virtual void        _440850(int);
+    virtual void        Stop(int slot);
+    virtual void        SetPause(int slot, bool hardpause); //  @443410
+    virtual void        UnPause(int slot, bool hardpause);  //  @443440
+    virtual bool        IsPaused(int slot) const;
+    virtual bool        IsCreated() const;
+    virtual char*       GetBufferDataPtr();
+    virtual void        SetVolume(int, float);
+    virtual float       GetVolume(int);
+    virtual void        SetFrequencyMultiplier(int, float mul);
+    virtual float       GetFrequencyMultiplier(int);
+    virtual int         SetPan(int slot, const float pan);   //  @4435C0
+    virtual float       GetPan(int slot);    //  @443650
+    virtual void        SetSoundPosition(int, const Vector4f*);
+    virtual void        GetPosition(Vector4f& outPos, const int);
+    virtual void        _443990(int, int*);
+    virtual Vector4f*   _4439E0(Vector4f*, int);
+    virtual void        SetMaxDistance(int, float);
+    virtual float       GetMaxDistance(int);
+    virtual void        SetFrequency(int, float);
+    virtual float       GetFrequency(int);
+    virtual void        _443C20(int, float);
+    virtual float       _443C90(int);
+    virtual void        _443CD0(int, float);
+    virtual float       _443D30(int);
+    virtual void        SetSoundProperties(int slot, float frequency, float pan, float);   //  @443D40
+    virtual int         GetChannelsNumber() const;   //  @442810
+    virtual void        DumpInfo();  //  @444C00
+    virtual void        StopFirstChannelSound(); //  @443E00
 
     void     FillSoundData(const bool overwrite); // @443FC0
     void                    ShutdownThread();   //  @444D60

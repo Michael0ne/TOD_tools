@@ -71,8 +71,8 @@ public:
         V = 1
     };
 
-    void                        SetFaceVertexIndex(const unsigned int faceind, const unsigned short vertind); //  @422F60
-    void                        AddFace(const unsigned int faceind, const Vector3f& face1, const Vector3f& face2, const Vector2f& texuv);   //  @4230B0
+    void                        SetVertexIndex(const unsigned int faceind, const unsigned short vertind); //  @422F60
+    void                        AddVertex(const unsigned int faceind, const Vector3f& face, const Vector3f& normal, const Vector2f& texuv);   //  @4230B0
     void                        GetFaceColor(ColorRGB& clr, const unsigned int faceind) const;  //  @4224A0
     const bool                  HasDiffuseFlag() const;  //  @4222F0
     void                        GetFacePositionByIndex(Vector4f& outPos, const unsigned int ind) const; //  @422410
@@ -83,8 +83,8 @@ public:
     void                        FixAssetFilePointers(CompiledAssetInfo* assetBuffer);   //  @422790
 
 private:
-    void                        AddFace1(const unsigned int faceind, const float x, const float y, const float z);  //  @422D90
-    void                        AddFace2(const unsigned int faceind, const float x, const float y, const float z);  //  @422E10
+    void                        SetFacePosition(const unsigned int faceind, const float x, const float y, const float z);  //  @422D90
+    void                        SetFaceNormal(const unsigned int faceind, const float x, const float y, const float z);  //  @422E10
 };
 
 ASSERT_CLASS_SIZE(Mesh, 108);

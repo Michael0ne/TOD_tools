@@ -58,12 +58,12 @@ protected:
             unsigned            _31 : 1;
         };
     }                           m_Flags;
-    unsigned char               m_DopplerFactor;
-    unsigned char               m_LfeLevel;
+    char                        m_DopplerFactor;
+    char                        m_LfeLevel;
 
 public:
     SoundSlot(); // @89D590
-    virtual                     ~SoundSlot(); // @89F290
+    virtual                     ~SoundSlot(); // @89D7C0
     virtual void                Update();   //  @89CE50
     virtual String*             GetResourceName(String*); // @89F270
 

@@ -16,7 +16,7 @@ StreamedSoundBuffer::~StreamedSoundBuffer()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-StreamedSoundBuffer::StreamedSoundBuffer(class SoundFile* sndfile, int, int, int, char, char)
+StreamedSoundBuffer::StreamedSoundBuffer(SoundFile* sndfile, int, int, int, char, char)
 {
     MESSAGE_CLASS_CREATED(StreamedSoundBuffer);
 }
@@ -27,54 +27,72 @@ StreamedSoundBuffer::StreamedSoundBuffer(bool a2, unsigned int totalchunks, int 
     MESSAGE_CLASS_CREATED(StreamedSoundBuffer);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffer::stub2()
 {
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffer::stub3()
 {
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffer::SetSampledData(void*)
 {
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-bool StreamedSoundBuffer::Is3DSound(int)
+bool StreamedSoundBuffer::Is3DSound(int slot)
 {
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+        return m_DieselPowerStream != nullptr;
+
+    if (m_DirectSound3DBuffer)
+    {
+        DWORD sound3DMode;
+        m_DirectSound3DBuffer->GetMode(&sound3DMode);
+        return sound3DMode != DS3DMODE_DISABLE;
+    }
+
     return false;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::_4433A0(bool)
+void StreamedSoundBuffer::Get3DMode(unsigned char mode3d)
 {
+    if (mode3d && m_DirectSound3DBuffer)
+        m_DirectSound3DBuffer->GetMode((LPDWORD)&mode3d);
+
+    field_1C ^= (field_1C ^ (mode3d << 24)) & 0x1000000;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 bool StreamedSoundBuffer::IsLooped(int)
 {
-    return false;
+    return m_Flags.Looped;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-int StreamedSoundBuffer::Play(int, char, int)
+int StreamedSoundBuffer::Play(int slot, bool looped, int)
 {
+    m_Flags._4 = 0;
+    g_StreamedSoundBuffers->_43D200(m_DirectSoundBuffer, field_20, (field_1C >> 20) & 0xFFFFFF01, (field_1C >> 30) & 0xFFFFFF01, Is3DSound(0));
+    field_54 = field_54 & 0xFFFF00FF | (((field_54 >> 8) + 1) << 8);
+
+    if (!m_Flags.PreLoaded)
+        LogDump::LogA("Play called on (%s), but has not yet finished pre-loading.\n", m_StreamedWAV->m_FileName.m_Str);
+
+    if (!m_Flags.PlayRequest)
+    {
+        m_Flags.Looped = looped;
+        m_Flags.PlayRequest = true;
+    }
+
     return 0;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-bool StreamedSoundBuffer::IsPlaying(int)
+bool StreamedSoundBuffer::IsPlaying(int slot) const
 {
-    return false;
+    return (m_Flags.PlayRequest && m_Flags._7);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-bool StreamedSoundBuffer::AreAnyInstancesPlaying()
+bool StreamedSoundBuffer::IsFirstChannelPlaying() const
 {
-    return false;
+    return IsPlaying(0);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -85,7 +103,8 @@ void StreamedSoundBuffer::_440850(int)
 void StreamedSoundBuffer::Stop(int)
 {
     field_54 = field_54 & 0xFF00FFFF | (((unsigned short)field_54 + 1) << 16) & 0xFF0000;
-    m_Flags.m_FlagBits.StopRequest = m_Flags.m_FlagBits._4 = true;
+    m_Flags.StopRequest = true;
+    m_Flags._4 = true;
 
     if (m_StreamedWAV)
     {
@@ -100,37 +119,36 @@ void StreamedSoundBuffer::Stop(int)
         if (m_EvHandle_2)
             ResetEvent(m_EvHandle_2);
 
-        m_Flags.m_FlagBits.LastChunkPlaying = false;
+        m_Flags.LastChunkPlaying = false;
         field_5C = NULL;
     }
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffer::SetPause(int slot, bool hardpause)
 {
+    m_Flags.HardPause = hardpause;
+    m_Flags.Paused = true;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void StreamedSoundBuffer::UnPause(int slot, bool hardpause)
 {
+    m_Flags.HardPause = hardpause;
+    g_StreamedSoundBuffers->m_GlobalPauseCalled = true;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-bool StreamedSoundBuffer::IsPaused(int)
+bool StreamedSoundBuffer::IsPaused(int slot) const
 {
-    return false;
+    return m_CurrentAudioPosition >= 0;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-bool StreamedSoundBuffer::IsMonoStreamCreated()
+bool StreamedSoundBuffer::IsCreated() const
 {
-    return false;
+    return m_StreamedWAV && m_ThreadId;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-int StreamedSoundBuffer::_443480()
+char* StreamedSoundBuffer::GetBufferDataPtr()
 {
-    return 0;
+    return (char*)m_SoundBufferBlockStartPtr;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -156,13 +174,13 @@ float StreamedSoundBuffer::GetFrequencyMultiplier(int)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int StreamedSoundBuffer::_4435C0(int, int)
+int StreamedSoundBuffer::SetPan(int slot, const float pan)
 {
     return 0;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-float StreamedSoundBuffer::_443650(int)
+float StreamedSoundBuffer::GetPan(int slot)
 {
     return 0.0f;
 }
@@ -215,11 +233,11 @@ Vector4f* StreamedSoundBuffer::_4439E0(Vector4f*, int)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetPan(int, float)
+void StreamedSoundBuffer::SetMaxDistance(int, float)
 {
 }
 
-float StreamedSoundBuffer::GetPan(int)
+float StreamedSoundBuffer::GetMaxDistance(int)
 {
     if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
         if (m_DieselPowerSoundBuffer)
@@ -230,8 +248,8 @@ float StreamedSoundBuffer::GetPan(int)
     if (!m_DirectSound3DBuffer)
         return NULL;
 
-    m_DirectSound3DBuffer->GetMaxDistance(&m_Pan);
-    return m_Pan;
+    m_DirectSound3DBuffer->GetMaxDistance(&m_MaxDistance);
+    return m_MaxDistance;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -268,7 +286,7 @@ float StreamedSoundBuffer::_443D30(int)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::_443D40(int, float, float, float)
+void StreamedSoundBuffer::SetSoundProperties(int, float, float, float)
 {
 }
 
@@ -282,20 +300,15 @@ void StreamedSoundBuffer::DumpInfo()
     Vector4f sndpos;
     GetPosition(sndpos, NULL);
 
-    const bool islooped = m_Flags.m_FlagBits.Looped;
-    const bool isplaying = IsPlaying(NULL);
-    const bool is3d = Is3DSound(NULL);
-    const float vol = GetVolume(NULL);
-
     LogDump::LogA("   %s, vol=%.1f, playing=%s, looped=%s, pos=(%.1f,%.1f,%.1f)\n",
-        is3d ? "3d" : "2d",
-        vol,
-        isplaying,
-        islooped,
+        Is3DSound(0)  ? "3d" : "2d",
+        GetVolume(0),
+        IsPlaying(0),
+        m_Flags.Looped,
         sndpos.x, sndpos.y, sndpos.z);
 }
 
-void StreamedSoundBuffer::StopZerothSound()
+void StreamedSoundBuffer::StopFirstChannelSound()
 {
     Stop(0);
 }
@@ -425,7 +438,7 @@ void StreamedSoundBuffer::ShutdownThread()
 
     field_58 = 0xDEA110CA;
 
-    if (IsMonoStreamCreated())
+    if (IsCreated())
         g_StreamedSoundBuffers->RemoveSoundBufferFromList(this);
 
     if (m_StreamThread)

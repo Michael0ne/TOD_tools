@@ -70,47 +70,49 @@ void Texture::CreateDirect3DTexture(const ScreenResolution& res, unsigned int fo
     switch (surfdesc.Format)
     {
     case D3DFMT_DXT5:
-        m_Format = DXT5;
+        m_Format = 11;
         break;
     case D3DFMT_DXT4:
-        m_Format = DXT4;
+        m_Format = 10;
         break;
     case D3DFMT_DXT3:
-        m_Format = DXT3;
+        m_Format = 9;
         break;
     case D3DFMT_DXT2:
-        m_Format = DXT2;
+        m_Format = 8;
         break;
     case D3DFMT_DXT1:
-        m_Format = DXT1;
+        m_Format = 7;
+        break;
+    default:
+        m_Format = Formats[surfdesc.Format];
         break;
     }
 
     m_Resolution = res;
     field_20 = _A08980[m_Format];
-    *(int*)&m_Format = formatindex;
+    m_Format = formatindex;
 }
 
-Texture::TextureFormat Texture::GetTextureFormat(D3DFORMAT fmt)
+unsigned int Texture::GetTextureFormat(D3DFORMAT fmt)
 {
     switch (fmt)
     {
     case D3DFMT_DXT3:
-        return DXT3;
+        return 9;
     case D3DFMT_DXT1:
-        return DXT1;
+        return 7;
     case D3DFMT_DXT2:
-        return DXT2;
+        return 8;
     case D3DFMT_DXT4:
-        return DXT4;
+        return 10;
     case D3DFMT_DXT5:
-        return DXT5;
+        return 11;
     default:
-        return (TextureFormat)Formats[(int)fmt];
+        return Formats[(int)fmt];
     }
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 Texture::Texture(const ScreenResolution& resolution, unsigned int, unsigned int levels)
 {
     MESSAGE_CLASS_CREATED(Texture);
@@ -118,7 +120,7 @@ Texture::Texture(const ScreenResolution& resolution, unsigned int, unsigned int 
     m_Mutable = nullptr;
     m_Texture = nullptr;
     m_TextureSurfaceBits = nullptr;
-    m_Levels = 0xFDFE;
+    m_Levels = 0xFFFFFDFE;
     CreateDirect3DTexture(resolution, 1, levels);
     GfxInternal_Dx9::RenderedTexturesMap.insert({ GfxInternal_Dx9::RenderedTexturesMap.size(), this });
 }
@@ -130,20 +132,37 @@ Texture::Texture(MutableTextureBuffer* surf)
     m_Mutable = nullptr;
     m_Texture = nullptr;
     m_TextureSurfaceBits = nullptr;
-    m_Levels &= 0xDFE;
-
     surf->GetSurfaceByIndex(0);
+    m_Levels &= 0xFFFFFDFE;
 
-    m_Mutable = surf;
+    m_Mutable = new MutableTextureBuffer(*surf);
     AdjustColors();
 
     TexturesMap->emplace(TexturesMap->size(), this);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 Texture::~Texture()
 {
     MESSAGE_CLASS_DESTROYED(Texture);
+
+    for (unsigned int i = 0; i < 2; ++i)
+        if (g_GfxInternal_Dx9->m_TexturesArray_2[i] == this)
+            g_GfxInternal_Dx9->SetTextureIndex(nullptr, i);
+
+    RELEASE_SAFE(m_Texture);
+
+    auto it = TexturesMap->begin();
+    for (; it != TexturesMap->end(); it++)
+    {
+        if (it->second == this)
+        {
+            TexturesMap->erase(it);
+            break;
+        }
+    }
+
+    delete[] m_TextureSurfaceBits;
+    delete m_Mutable;
 }
 
 unsigned int Texture::GetSizeForLevel(const unsigned char lvl) const
@@ -172,9 +191,9 @@ void Texture::AdjustColors()
     CreateDirect3DTexture(surfsizenorm, 1, m_Mutable->m_Surfaces.size() > 1);
     m_Resolution = m_Mutable->GetImageResolution(surfsize, 0);
 
-    if (m_Levels >> 1 != m_Mutable->m_Surfaces.size())
+    if ((unsigned char)(m_Levels >> 1) != m_Mutable->m_Surfaces.size())
     {
-        LogDump::LogA("ERROR - mTex has %i levels, texture has %i\n", m_Mutable->m_Surfaces.size(), m_Levels >> 1);
+        LogDump::LogA("ERROR - mTex has %i levels, texture has %i\n", m_Mutable->m_Surfaces.size(), (unsigned char)(m_Levels >> 1));
         LogDump::LogA("Mutable:\n");
 
         for (unsigned int i = 0; i < m_Mutable->m_Surfaces.size(); ++i)
@@ -189,7 +208,7 @@ void Texture::AdjustColors()
 
     if ((m_Levels & 510) != 0)
     {
-        for (unsigned int level = 0; level < (unsigned int)(m_Levels >> 1); ++level)
+        for (unsigned int level = 0; level < (unsigned char)(m_Levels >> 1); ++level)
         {
             D3DSURFACE_DESC surfdesc;
             D3DLOCKED_RECT surfrect;

@@ -1,6 +1,8 @@
 #pragma once
 #include "Node.h"
 
+class FrameBuffer;
+
 enum class eAxisAlign
 {
     NONE = 0,
@@ -72,7 +74,7 @@ protected:
     float               m_SpriteSize_Y;
     AssetLoader         m_Texture;
     float               m_Angle;
-    int                 field_94;
+    FrameBuffer        *m_FrameBuffer;
     char                m_Opacity;
     char                m_ConstSizeNear;
     char                m_ConstSizeFar;
@@ -113,7 +115,7 @@ protected:
 
 public:
     Sprite(); // @8F6AA0
-    virtual ~Sprite();
+    virtual ~Sprite();  //  @8F6C30
 
     void* operator new (size_t size)
     {

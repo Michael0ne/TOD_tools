@@ -28,20 +28,20 @@ Mesh::~Mesh()
     MESSAGE_CLASS_DESTROYED(Mesh);
 }
 
-void Mesh::SetFaceVertexIndex(const unsigned int faceind, const unsigned short vertind)
+void Mesh::SetVertexIndex(const unsigned int faceind, const unsigned short vertind)
 {
-    if (m_IndiciesList.size() < faceind)
+    if (faceind >= m_IndiciesList.size())
         m_IndiciesList.resize(faceind + 1);
 
     m_IndiciesList[faceind] = vertind;
 }
 
-void Mesh::AddFace(const unsigned int faceind, const Vector3f& face1, const Vector3f& face2, const Vector2f& texuv)
+void Mesh::AddVertex(const unsigned int faceind, const Vector3f& face, const Vector3f& normal, const Vector2f& texuv)
 {
-    AddFace1(faceind, face1.x, face1.y, face1.z);
-    AddFace2(faceind, face2.x, face2.y, face2.z);
+    SetFacePosition(faceind, face.x, face.y, face.z);
+    SetFaceNormal(faceind, normal.x, normal.y, normal.z);
 
-    if (m_FacesList.size() < faceind)
+    if (faceind >= m_FacesList.size())
         m_FacesList.resize(faceind + 1);
 
     m_FacesList[faceind].m_TexCoord[0] = texuv;
@@ -77,19 +77,19 @@ void Mesh::GetTexCoordByIndex(Vector2f& outCoords, const unsigned int ind, const
     outCoords = m_FacesList[ind].m_TexCoord[uv];
 }
 
-void Mesh::AddFace1(const unsigned int faceind, const float x, const float y, const float z)
+void Mesh::SetFacePosition(const unsigned int faceind, const float x, const float y, const float z)
 {
-    if (m_FacesList.size() < faceind)
+    if (faceind >= m_FacesList.size())
         m_FacesList.resize(faceind + 1);
 
     m_FacesList[faceind].m_Position = { x, y, z, 0 };
 }
 
-void Mesh::AddFace2(const unsigned int faceind, const float x, const float y, const float z)
+void Mesh::SetFaceNormal(const unsigned int faceind, const float x, const float y, const float z)
 {
     const float s = sqrtf(x * x + y * y + z * z);
 
-    if (m_FacesList.size() < faceind)
+    if (faceind >= m_FacesList.size())
         m_FacesList.resize(faceind + 1);
 
     Vector4f& v = m_FacesList[faceind].m_Normal;

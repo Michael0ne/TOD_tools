@@ -176,7 +176,6 @@ class GfxInternal_Dx9
 
 public:
     IDirect3DDevice9               *m_Direct3DDevice;
-protected:
     IDirect3DQuery9                *m_FramesyncQuery;
     char                            m_DeviceResetIssued;
     char                            field_9;
@@ -213,9 +212,7 @@ protected:
     RenderProperties                m_TexProperties[2];
     bool                            m_FlushDirectly;
     IDirect3DTexture9              *m_TexturesArray[16];
-public:
     bool                            m_Windowed;
-protected:
     bool                            m_RenderingScene;
     D3DFORMAT                       m_DisplayModeFormat;
     ScreenResolution                m_ViewportResolution_1; // NOTE: backbuffer resolution?
@@ -286,9 +283,7 @@ protected:
     int                             m_ParticleColor;
     MeshBuffer                     *m_ParticleMeshBuffer;
     int                             m_ParticleSystemEnded;
-public:
     float                           field_9758;
-protected:
     int                             field_975C;
     std::vector<LightStatus>        m_SceneLights;
     std::map<int, int>              field_9770; // NOTE: related to lighting.

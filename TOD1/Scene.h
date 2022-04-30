@@ -227,6 +227,7 @@ public:
     static float    FrameRateHistory[100];  //  @A3DA80 //  NOTE: only calculated, but not used anywhere. Maybe an editor leftover.
     static int      FrameRateHistoryIndex;  //  @A3DCDC
     static float    FrameTimeTotal; //  @A3DCD8 //  NOTE: only calculated, but not used anywhere. Maybe an editor leftover.
+    static bool     _A3D890;
 
 private:
     static const int    RewindCollectInterval = 2000;   //  @A12084 //  NOTE: interval when rewind buffer is updated.

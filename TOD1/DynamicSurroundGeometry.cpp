@@ -6,6 +6,22 @@
 EntityType* tDynamicSurroundGeometry;
 int DynamicSurroundGeometry::TotalCreated;
 
+#pragma message(TODO_IMPLEMENTATION)
+DynamicSurroundGeometry::DynamicSurroundGeometry() : Node(NODE_MASK_QUADTREE)
+{
+    MESSAGE_CLASS_CREATED(DynamicSurroundGeometry);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+DynamicSurroundGeometry::~DynamicSurroundGeometry()
+{
+    MESSAGE_CLASS_DESTROYED(DynamicSurroundGeometry);
+}
+
+void DynamicSurroundGeometry::Render()
+{
+}
+
 const int DynamicSurroundGeometry::GetCategory() const
 {
     return m_Category;

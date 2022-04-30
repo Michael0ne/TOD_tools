@@ -316,14 +316,68 @@ void GfxInternal::GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsi
     mat = m_RenderBufferArray[ind].m_ViewMatrix;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal::_420390()
 {
-    m_Mesh = new Mesh(1, 0, 1);
-    m_Mesh->AddFace(0, { 0, 50, 0 }, { 0, 1, 0 }, { 0.5, 0.5 });
-    m_Mesh->AddFace(1, { 0, -50, 0 }, { 0, -1, 0 }, { 0.5, 0.5 });
+    constexpr float PI_6 = 0.52359879f; //  NOTE: Pi / 6
+    constexpr float ONE_TWELFTH = 1.f / 12.f;
 
-    //  TODO: add more 12 faces.
+    unsigned int faceIndex = 0;
+    unsigned int faceVertInd = 0;
+
+    m_Mesh = new Mesh(1, 0, 1);
+    m_Mesh->AddVertex(faceIndex++, { 0, 50, 0 }, { 0, 1, 0 }, { 0.5, 0.5 });
+    m_Mesh->AddVertex(faceIndex++, { 0, -50, 0 }, { 0, -1, 0 }, { 0.5, 0.5 });
+
+    for (unsigned int i = 0; i < 12; ++i)
+    {
+        m_Mesh->AddVertex(faceIndex++,
+            { sinf((float)i * PI_6) * 2.f, 50.f, cosf((float)i * PI_6) },
+            { 0.f, 1.f, 0.f },
+            { sinf((float)i * PI_6) + 0.5f, cosf((float)i * PI_6) + 0.5f });
+
+        m_Mesh->AddVertex(faceIndex++,
+            { sinf((float)(i + 1) * PI_6), 50.f, cosf((float)(i + 1) * PI_6) },
+            { 0.f, 1.f, 0.f },
+            { sinf((float)(i + 1) * PI_6), cosf((float)(i + 1) * PI_6) });
+
+        m_Mesh->SetVertexIndex(faceVertInd++, 0);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex - 1);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex - 2);
+
+        m_Mesh->AddVertex(faceIndex++,
+            { sinf((float)i * PI_6) * 2.f, -50.f, cosf((float)i * PI_6) },
+            { 0.f, -1.f, 0.f },
+            { sinf((float)i * PI_6) + 0.5f, cosf((float)i * PI_6) + 0.5f });
+
+        m_Mesh->AddVertex(faceIndex++,
+            { sinf((float)(i + 1) * PI_6), -50.f, cosf((float)(i + 1) * PI_6) },
+            { -1.f, 0.f, 0.f },
+            { sinf((float)(i + 1) * PI_6) + 0.5f, cosf((float)(i + 1) * PI_6) + 0.5f });
+
+        m_Mesh->SetVertexIndex(faceVertInd++, 1);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex - 1);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex - 2);
+
+        m_Mesh->AddVertex(faceIndex++,
+            { sinf((float)i * PI_6) * 2.f, 50.f, cosf((float)i * PI_6) * 2.f },
+            { sinf((float)i * PI_6), 0.f, cosf((float)i * PI_6) },
+            { (float)i * ONE_TWELFTH, 0.f });
+        m_Mesh->AddVertex(faceIndex++,
+            { sinf((float)(i + 1) * PI_6) * 2.f, 50.f, cosf((float)(i + 1) * PI_6) },
+            { sinf((float)(i + 1) * PI_6), 0.f, cosf((float)(i + 1) * PI_6) },
+            { (float)(i + 1) * ONE_TWELFTH, 0.f });
+        m_Mesh->AddVertex(faceIndex++,
+            { sinf((float)i * PI_6) * 2.f, -50.f, cosf((float)i * PI_6) * 2.f },
+            { sinf((float)i * PI_6), 0.f, cosf((float)i * PI_6) },
+            { (float)(i + 1) * ONE_TWELFTH, 1.f });
+
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex - 3);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex - 1);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex - 3);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex - 2);
+        m_Mesh->SetVertexIndex(faceVertInd++, faceIndex++);
+    }
 
     m_MeshBuffer = new MeshBuffer(m_Mesh, NULL);
 }
