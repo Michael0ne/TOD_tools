@@ -105,12 +105,12 @@ namespace Utils
 
     static void  GetBuildNumberString(char* str) // @401000
     {
-        sprintf(str, "build %d.%d (%d)", KAPOW_ENGINE_VERSION_MAJOR, KAPOW_ENGINE_VERSION_MINOR, KAPOW_ENGINE_VERSION_BUILD);
+        sprintf_s(str, 28, "build %d.%d (%d)", KAPOW_ENGINE_VERSION_MAJOR, KAPOW_ENGINE_VERSION_MINOR, KAPOW_ENGINE_VERSION_BUILD);
     }
 
     static void  GetEngineAuthor(char* str) // @401020
     {
-        sprintf(str, "by %s", KAPOW_ENGINE_BUILDBY);
+        sprintf_s(str, 28, "by %s", KAPOW_ENGINE_BUILDBY);
     }
 
     static unsigned int GetEngineVersionBuild() // @401040

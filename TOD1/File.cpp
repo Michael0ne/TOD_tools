@@ -388,7 +388,7 @@ int File::Read(void* _buffer, unsigned int _numbytestoread)
 
     if (m_ExecuteAttribute)
     {
-        int bytesread = FileWrapper::ZipFilesArray[m_ZipSlot]->Read(_buffer, ((m_SeekPosition + _numbytestoread) > m_SizeInZip) ? m_SizeInZip - m_SeekPosition : _numbytestoread);
+        int bytesread = FileWrapper::ZipFilesArray[m_ZipSlot]->Read(_buffer, ((m_SeekPosition + _numbytestoread) > (unsigned int)m_SizeInZip) ? m_SizeInZip - m_SeekPosition : _numbytestoread);
 
         m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
         ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
@@ -397,7 +397,7 @@ int File::Read(void* _buffer, unsigned int _numbytestoread)
     }
     else
     {
-        int bytesread = NULL;
+        unsigned int bytesread = NULL;
 
         for (; bytesread < _numbytestoread; bytesread++)
         {
@@ -1888,7 +1888,7 @@ int SaveFileHelper::WriteBufferWithSize(const char* _buf, int _size)
 
 int SaveFileHelper::Seek(int _pos)
 {
-    m_CurrentPos = _pos <= m_BufferSize ? _pos : m_BufferSize;
+    m_CurrentPos = (unsigned int)_pos <= m_BufferSize ? _pos : m_BufferSize;
 
     return NULL;
 }

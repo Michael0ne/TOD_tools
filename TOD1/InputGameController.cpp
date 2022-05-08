@@ -281,7 +281,7 @@ namespace Input
         *(int*)(pvRef[1]->m_GUID.Data4) = *(int*)(devInst->guidInstance.Data4);
         pvRef[1]->m_GUID.Data4[4] = pvRef[1]->m_GUID.Data4[4];
 
-        strcpy(pvRef[1]->m_ModelName.m_Str, devInst->tszProductName);
+        pvRef[1]->m_ModelName = devInst->tszProductName;
         DirectInput8Interface->CreateDevice(devInst->guidInstance, &pvRef[1]->m_DirectInputDevice, NULL);
 
         if (FAILED(pvRef[1]->m_DirectInputDevice->SetDataFormat(&c_dfDIJoystick)))

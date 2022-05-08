@@ -234,7 +234,7 @@ LanguageCode CALLBACK GetSystemLanguageCode()
     bool bUnk;
 
     GetLocaleInfoA(LOCALE_SYSTEM_DEFAULT, LOCALE_ILANGUAGE, LocaleData, 5);
-    sscanf(LocaleData, "%x", &langcode);
+    sscanf_s(LocaleData, "%x", &langcode);
 
     if (langcode > 5132)
     {
@@ -696,9 +696,9 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     File::ExtractFilePath(exefname, exedir, fname, exeext);
 
     char exefullname[32] = {};
-    strcpy(exefullname, fname);
-    strcat(exefullname, ".");
-    strcat(exefullname, exeext);
+    strcpy_s(exefullname, fname);
+    strcat_s(exefullname, ".");
+    strcat_s(exefullname, exeext);
 
     if (EnumProcesses(procIdArr, sizeof(procIdArr), &procIdRetnSize))
     {

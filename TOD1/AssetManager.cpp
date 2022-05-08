@@ -900,7 +900,7 @@ void AssetManager::_8794B0(const char* const respath)
 
                 if (!strstr(currentResourcePath.m_Str, resourcePath.m_Str))
                 {
-                    if (m_ResourcesInstancesList[occupiedAssetIndex]->m_GlobalResourceId + 1 < m_ResourcesInstancesList.size())
+                    if ((size_t)(m_ResourcesInstancesList[occupiedAssetIndex]->m_GlobalResourceId + 1) < m_ResourcesInstancesList.size())
                     {
                         while (!m_ResourcesInstancesList[occupiedAssetIndex++])
                             if (occupiedAssetIndex >= m_ResourcesInstancesList.size())
@@ -916,7 +916,7 @@ void AssetManager::_8794B0(const char* const respath)
             if (LoadOriginalVersion(m_ResourcesInstancesList[occupiedAssetIndex]))
                 assetLoaded = true;
 
-            if (m_ResourcesInstancesList[occupiedAssetIndex]->m_GlobalResourceId + 1 < m_ResourcesInstancesList.size())
+            if ((size_t)(m_ResourcesInstancesList[occupiedAssetIndex]->m_GlobalResourceId + 1) < m_ResourcesInstancesList.size())
             {
                 while (!m_ResourcesInstancesList[occupiedAssetIndex++])
                     if (occupiedAssetIndex >= m_ResourcesInstancesList.size())
@@ -1048,7 +1048,7 @@ AssetManager::~AssetManager()
         unsigned int assetIndex = 0;
         do
         {
-            if (assetRef->m_GlobalResourceId + 1 < m_ResourcesInstancesList.size())
+            if ((size_t)(assetRef->m_GlobalResourceId + 1) < m_ResourcesInstancesList.size())
             {
                 while (!m_ResourcesInstancesList[assetIndex++])
                     if (assetIndex >= m_ResourcesInstancesList.size())

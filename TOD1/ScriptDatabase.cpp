@@ -865,7 +865,7 @@ void LoadScripts()
     // NOTE: register game scripts.
     //  TODO: probably, these should be moved on top of this source file, only call actual Create functions here.
 #include "scripts/common.h"
-//#include "scripts/cache.h"
+#include "scripts/cache.h"
 #include "scripts/common_trigger.h"
 #include "scripts/common_animslot.h"
 #include "scripts/IntroCommon.h"
@@ -875,7 +875,6 @@ void LoadScripts()
 //#include "scripts/vehicle_navigator.h"
 //#include "scripts/vehicle_ai.h"
 //#include "scripts/VehicleRepulsor.h"
-
 #include "scripts/HUD_health_bar.h"
 #include "scripts/master_mission_ctrl.h"
 #include "scripts/master_game_pulse_ctrl.h"

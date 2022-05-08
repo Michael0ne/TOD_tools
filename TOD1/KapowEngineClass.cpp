@@ -246,7 +246,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
         char DirectorymappingStr[22] = {};
         unsigned int index = 0;
 
-        sprintf(DirectorymappingStr, "directorymapping%d", index++);
+        sprintf_s(DirectorymappingStr, "directorymapping%d", index++);
 
         while (profileVariables->IsVariableSet(DirectorymappingStr))
         {
@@ -262,7 +262,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
                 File::AddDirectoryMappingsListEntry(direntry, strchr(dirmapping.m_Str, '>') + 1);
             }
 
-            sprintf(DirectorymappingStr, "directorymapping%d", index++);
+            sprintf_s(DirectorymappingStr, "directorymapping%d", index++);
         }
     }
 
@@ -921,7 +921,8 @@ void ConfigVariables::ParseVariablesFile(File* file, bool configvariables)
     }
 
     unsigned int lineNumber = NULL;
-    char* currline = strtok(buffer, "\n");
+    char* context = nullptr;
+    char* currline = strtok_s(buffer, "\n", &context);
     while (currline)
     {
         // TODO: curly brackets are somehow used, haven't figured out how yet...
@@ -938,7 +939,7 @@ void ConfigVariables::ParseVariablesFile(File* file, bool configvariables)
             if (quotmarkpos)
                 *strrchr(eqpos + 1, '"') = NULL;
 
-            strncpy(keybuf, currline, eqpos - currline);
+            strncpy_s(keybuf, currline, eqpos - currline);
 
             m_KeyValueMap[keybuf] = quotmarkpos ? quotmarkpos + 1 : eqpos + 1;
             m_Keys[lineNumber] = keybuf;
@@ -953,7 +954,7 @@ void ConfigVariables::ParseVariablesFile(File* file, bool configvariables)
                 if (quotmarkpos)
                 {
                     char includename[32] = {};
-                    strncpy(includename, quotmarkpos + 1, strrchr(currline, '"') - quotmarkpos);
+                    strncpy_s(includename, quotmarkpos + 1, strrchr(currline, '"') - quotmarkpos);
 
                     LoadVariablesFile(includename, false);
                     field_64 = false;
@@ -970,7 +971,7 @@ void ConfigVariables::ParseVariablesFile(File* file, bool configvariables)
         }
 
         lineNumber++;
-        currline = strtok(NULL, "\n");
+        currline = strtok_s(NULL, "\n", &context);
     }
 
     LogDump::LogA("%d variables read.\n", lineNumber);
@@ -1050,7 +1051,8 @@ Vector2<int>& ConfigVariables::GetParamValueVector2i(Vector2<int>& outvec, const
     int* vecint = (int*)&outvec;
 
     // TODO: bounds check.
-    while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
+    char* context = nullptr;
+    while (delimpos = strtok_s(delimpos ? NULL : varval, (char*)&delimiter, &context))
         *vecint++ = atoi(delimpos);
 
     return outvec;
@@ -1066,7 +1068,8 @@ Vector2<unsigned int>& ConfigVariables::GetParamValueVector2i(Vector2<unsigned i
     int* vecint = (int*)&outvec;
 
     // TODO: bounds check.
-    while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
+    char* context = nullptr;
+    while (delimpos = strtok_s(delimpos ? NULL : varval, (char*)&delimiter, &context))
         *vecint++ = atoi(delimpos);
 
     return outvec;
@@ -1082,7 +1085,8 @@ Vector2<float>& ConfigVariables::GetParamValueVector2f(Vector2<float>& outvec, c
     float* vecfl = (float*)&outvec;
 
     // TODO: bounds check.
-    while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
+    char* context = nullptr;
+    while (delimpos = strtok_s(delimpos ? NULL : varval, (char*)&delimiter, &context))
         *vecfl++ = (float)atof(delimpos);
 
     return outvec;
@@ -1098,7 +1102,8 @@ Vector3<float>& ConfigVariables::GetParamValueVector3(Vector3<float>& outvec, co
     float* vecfl = (float*)&outvec;
 
     // TODO: bounds check.
-    while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
+    char* context = nullptr;
+    while (delimpos = strtok_s(delimpos ? NULL : varval, (char*)&delimiter, &context))
         *vecfl++ = (float)atof(delimpos);
 
     return outvec;
@@ -1114,7 +1119,8 @@ Vector4f& ConfigVariables::GetParamValueVector4(Vector4f& outvec, const char* co
     float* vecfl = (float*)&outvec;
 
     // TODO: bounds check.
-    while (delimpos = strtok(delimpos ? NULL : varval, (char*)&delimiter))
+    char* context = nullptr;
+    while (delimpos = strtok_s(delimpos ? NULL : varval, (char*)&delimiter, &context))
         *vecfl++ = (float)atof(delimpos);
 
     return outvec;
@@ -1271,7 +1277,7 @@ void CreateDirectoriesRecursive(char* dir)
         }
 
         char tmp[MAX_PATH] = {};
-        strncpy(tmp, dir, slen + 1);
+        strncpy_s(tmp, dir, slen + 1);
 
         if (slen >= 0)
             CreateDirectoriesRecursive(tmp);
@@ -1293,7 +1299,7 @@ void GetInternalGameName(String& outStr)
     if (kapowsystems_pos)
     {
         char buf[64] = {};
-        strcpy(buf, devpath + (kapowsystems_pos - devpath + 13));
+        strcpy_s(buf, devpath + (kapowsystems_pos - devpath + 13));
         *strchr(buf, '/') = NULL;
 
         outStr = buf;
@@ -1320,12 +1326,13 @@ bool ReadAndParseCollMatMaterial(String& materialName, int& outMaterialPropertie
         return false;
 
     outMaterialProperties = NULL;
-    char* tok = strtok(buf.m_Str, ": \t");
+    char* context = nullptr;
+    char* tok = strtok_s(buf.m_Str, ": \t", &context);
 
     if (tok)
     {
         materialName = tok;
-        char* matparams = strtok(NULL, ": \t");
+        char* matparams = strtok_s(NULL, ": \t", &context);
 
         if (matparams)
         {
@@ -1346,7 +1353,7 @@ bool ReadAndParseCollMatMaterial(String& materialName, int& outMaterialPropertie
                 if (strcmp(matparams, "PHYSICS") == NULL)
                     outMaterialProperties = outMaterialProperties | 64;
 
-                matparams = strtok(NULL, ": \t");
+                matparams = strtok_s(NULL, ": \t", &context);
                 if (!matparams)
                     break;
             }

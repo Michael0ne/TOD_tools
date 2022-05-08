@@ -422,7 +422,7 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
          { 0, 0, 0, 1 }
         };
 
-        *(DirectX::XMVECTOR*)&params = DirectX::XMQuaternionRotationMatrix(mat);
+        *(DirectX::XMVECTOR*)params = DirectX::XMQuaternionRotationMatrix(mat);
     }
     break;
     case 12:

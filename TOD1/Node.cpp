@@ -139,6 +139,8 @@ Node* Node::FindNode(const char* nodeName)
 
         return FindNodeSlowRecursive(nodeName);
     }
+
+    return nullptr;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -2016,7 +2018,7 @@ const char* Node::GetFragment() const
         return m_Fragment->m_Name;
 
     if (m_Fragment->m_FragmentRes)
-        return m_Fragment->m_FragmentRes->GetName();
+        return m_Fragment->m_FragmentRes.GetAsset<FragmentAsset>()->GetName();
 
     return nullptr;
 }

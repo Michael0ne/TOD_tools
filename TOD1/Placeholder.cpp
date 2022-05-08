@@ -61,7 +61,7 @@ void PlaceHolder::CreateCollisionNode(const bool create)
 
 const int PlaceHolder::GetCollisionPivot() const
 {
-    if (!m_ModelRes.m_AssetPtr || m_Flags.CollisionPivot < ((ModelAsset*)m_ModelRes.m_AssetPtr)->m_PivotsList.size())
+    if (!m_ModelRes.m_AssetPtr || (size_t)m_Flags.CollisionPivot < ((ModelAsset*)m_ModelRes.m_AssetPtr)->m_PivotsList.size())
         return m_Flags.CollisionPivot;
 
     LogDump::LogA("Placeholder ID %d, '%s':\nCollisionPivot is out of bounds. The modelres has probably changed.\n", m_Id.Id, m_Name);
@@ -116,7 +116,7 @@ void PlaceHolder::RemoveSiblings()
 #pragma message(TODO_IMPLEMENTATION)
 void PlaceHolder::SetCollisionPivotFromModelRes()
 {
-    if (m_Flags.CollisionPivot < 0 || !m_ModelRes.m_AssetPtr || m_Flags.CollisionPivot > ((ModelAsset*)m_ModelRes.m_AssetPtr)->m_PivotsList.size() || !m_PlaceholderCollisionPivot)
+    if (m_Flags.CollisionPivot < 0 || !m_ModelRes.m_AssetPtr || (size_t)m_Flags.CollisionPivot > ((ModelAsset*)m_ModelRes.m_AssetPtr)->m_PivotsList.size() || !m_PlaceholderCollisionPivot)
         return;
 }
 
