@@ -865,8 +865,20 @@ void LoadScripts()
     // NOTE: register game scripts.
     //  TODO: probably, these should be moved on top of this source file, only call actual Create functions here.
 #include "scripts/common.h"
+//#include "scripts/cache.h"
+#include "scripts/common_trigger.h"
+#include "scripts/common_animslot.h"
+#include "scripts/IntroCommon.h"
+#include "scripts/vehicle_sub_part_descriptor.h"
+//#include "scripts/Vehicle_sound_ctrl.h"
+//#include "scripts/vehicle_root.h"
+//#include "scripts/vehicle_navigator.h"
+//#include "scripts/vehicle_ai.h"
+//#include "scripts/VehicleRepulsor.h"
+
 #include "scripts/HUD_health_bar.h"
 #include "scripts/master_mission_ctrl.h"
+#include "scripts/master_game_pulse_ctrl.h"
 #include "scripts/Trigger_Activate_Weapons.h"
 #include "scripts/Hydrant_Root.h"
 #include "scripts/Ladder_Root.h"
@@ -1183,7 +1195,7 @@ void Scriptbaked::GetMethodParams(void(*methodPtr)(ScriptThread*), std::vector<D
     if (!m_ParametersList.size())
         return;
 
-    int paramOffset = 0;
+    unsigned int paramOffset = 0;
     for (unsigned int i = 0; i < m_ParametersList.size(); ++i, paramOffset++)
         if (m_ParametersList[i].m_ProcPtr == methodPtr)
             break;
@@ -1205,7 +1217,7 @@ int Scriptbaked::GetParameterProcedureIndex(void(*procedure)(ScriptThread*)) con
     if (!m_ParametersList.size())
         return -1;
 
-    int index = 0;
+    unsigned int index = 0;
     for (std::vector<Parameter>::const_iterator it = m_ParametersList.cbegin(); it->m_ProcPtr != procedure; it++, ++index);
 
     return index >= m_ParametersList.size() ? -1 : index;

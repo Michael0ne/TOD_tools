@@ -7,7 +7,7 @@ class TextSlot : public Node
 {
 public:
     char       *m_CurrentText;
-    int         m_CurrentIndex;
+    unsigned int    m_CurrentIndex;
     AssetLoader m_TextAsset;
 
 public:

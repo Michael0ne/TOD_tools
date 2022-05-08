@@ -82,16 +82,16 @@ void Folder_::UnloadBlocks()
     if (m_Fragment)
     {
         if (!Scene::SceneInstance->m_PlayMode)
-            CurrentBlockId = (8 * m_BlockId) >> 3;
+            CurrentBlockId = m_BlockId;
 
         if (m_BlockId < 0)
             g_AssetManager->m_BlocksUnloaded = 1;
 
         delete m_Fragment->m_Name;
-        if (m_Fragment->m_FragmentRes->m_ResourcePath)
+        if (m_Fragment->m_FragmentRes.GetAsset<FragmentAsset>()->m_ResourcePath)
         {
             m_Fragment->m_Name = new char[52];
-            strcpy(m_Fragment->m_Name, m_Fragment->m_FragmentRes->m_ResourcePath);
+            strcpy(m_Fragment->m_Name, m_Fragment->m_FragmentRes.GetAsset<FragmentAsset>()->m_ResourcePath);
         }
         else
             m_Fragment->m_Name = nullptr;
@@ -99,7 +99,7 @@ void Folder_::UnloadBlocks()
         m_Fragment->LoadResourceFile(nullptr);
         DestroyAllChildren();
 
-        if ((m_BlockId & 0x80000000) != 0)
+        if (_31)
             g_AssetManager->m_BlocksUnloaded = false;
 
         CurrentBlockId = -1;
@@ -138,19 +138,19 @@ void Folder_::UnloadBlocks()
 
 const int Folder_::GetBlockId() const
 {
-    return (8 * m_BlockId) >> 3;
+    return m_BlockId;
 }
 
 void Folder_::SetBlockId(unsigned int blockid)
 {
-    if ((8 * m_BlockId) >> 3 == blockid)
+    if (m_BlockId == blockid)
         return;
 
-    m_BlockId = m_BlockId ^ (blockid ^ m_BlockId) & 0x1FFFFFFF;
+    m_BlockId = blockid;
     if (blockid)
         m_Flags.HasFragment = false;
 
-    if ((m_BlockId & 0x1FFFFFFF) != 0)
+    if (_29 || m_TaggedForUnload || _31)
         m_AssetBlockInfo = new AssetInfo;
     else
         delete m_AssetBlockInfo;

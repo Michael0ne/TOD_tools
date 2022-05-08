@@ -130,7 +130,7 @@ void Control::GetStateInfo(float* pressure, float* realpressure, bool* pressed, 
             }
 
             Input::Gamepad* currentGamepad = Input::Gamepad::GetGameControllerByIndex(ActiveControllerIndex);
-            const float buttonPressure = currentGamepad->GetPressure(m_Key);
+            const float buttonPressure = (float)currentGamepad->GetPressure(m_Key);
             *pressure = buttonPressure;
 
             if (buttonPressure == 0.f)

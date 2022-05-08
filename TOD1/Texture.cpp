@@ -120,7 +120,7 @@ Texture::Texture(const ScreenResolution& resolution, unsigned int, unsigned int 
     m_Mutable = nullptr;
     m_Texture = nullptr;
     m_TextureSurfaceBits = nullptr;
-    m_Levels = 0xFFFFFDFE;
+    m_Levels = 0xFDFE;
     CreateDirect3DTexture(resolution, 1, levels);
     GfxInternal_Dx9::RenderedTexturesMap.insert({ GfxInternal_Dx9::RenderedTexturesMap.size(), this });
 }

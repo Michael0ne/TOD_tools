@@ -510,12 +510,12 @@ void Character::SetPhysTrouserLWeight(const float weight)
 
 const float Character::GetPhysTrouserLRestlength() const
 {
-    return m_PhysTrouserLRestLength;
+    return (float)m_PhysTrouserLRestLength;
 }
 
 void Character::SetPhysTrouserLRestlength(const float restlength)
 {
-    m_PhysTrouserLRestLength = restlength;
+    m_PhysTrouserLRestLength = (int)restlength;
     if (m_PhysTrouserL)
     {
         auto& phyTrouserLRestLength = m_PhysTrouserL->m_RestLength;
@@ -748,7 +748,7 @@ const int Character::GetActiveTextureSet() const
 
 void Character::SetActiveTextureSet(const int texset)
 {
-    int texsetActual = texset;
+    unsigned int texsetActual = (unsigned int)texset;
     const size_t texsetsTotal = GetTextureSetSize();
     if (texsetActual > texsetsTotal)
         texsetActual = texsetsTotal - 1;

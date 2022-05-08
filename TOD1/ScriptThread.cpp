@@ -103,7 +103,7 @@ void ScriptThread::_48E390()
 
     if (m_ThreadFlags.Sleeping)
     {
-        unsigned int nextWakeTimeMs;
+        int nextWakeTimeMs;
         if (m_ThreadFlags.SleepRealTime)
             nextWakeTimeMs = Scene::RealTimeMs;
         else

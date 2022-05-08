@@ -69,7 +69,6 @@ void NodeMatrix::SetTransformationFromMatrix(const DirectX::XMMATRIX& mat)
     m_PositionVector = *(Vector4f*)&mat.r[3];
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Node::Destroy()
 {
     if (m_FirstChild)
@@ -100,7 +99,7 @@ void Node::Destroy()
         m_GlobalIdInSceneList = -1;
     }
 
-    (*(void(__thiscall*)(Entity*, bool))(*(int*)this))(this, true);
+    this->~Node();
 }
 
 void Node::_484CC0(int)
@@ -187,31 +186,65 @@ void Node::FindNode_Impl(int* args)
     *args = (int)FindNode((const char*)args[1]);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Node::ConvertFromWorldSpace(Vector4f& outPos, const Vector4f& inPos)
 {
-    //  TODO: Get world matrix, transpose and return new translated position.
+    if (!m_Position)
+        return;
+
+    if (m_Id.HasQuadTree)
+        m_Position->ApplyMatrixFromQuadTree();
+
+    DirectX::XMMATRIX mat, matTransposed;
+    m_Position->GetMatrix(mat);
+
+    matTransposed = DirectX::XMMatrixTranspose(mat);
+
+    outPos =
+    {
+        (inPos.x * matTransposed.r[0].m128_f32[0]) + (inPos.y * matTransposed.r[1].m128_f32[0]) + (inPos.z * matTransposed.r[2].m128_f32[0]) + matTransposed.r[3].m128_f32[0],
+        (inPos.y * matTransposed.r[1].m128_f32[1]) + (inPos.x * matTransposed.r[0].m128_f32[1]) + (inPos.z * matTransposed.r[2].m128_f32[1]) + matTransposed.r[3].m128_f32[1],
+        (inPos.y * matTransposed.r[1].m128_f32[2]) + (inPos.x * matTransposed.r[0].m128_f32[2]) + (inPos.z * matTransposed.r[2].m128_f32[2]) + matTransposed.r[3].m128_f32[2],
+        (inPos.a)
+    };
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Node::SetWorldOrient(const Orientation& orientation)
 {
+    DirectX::XMMATRIX mat;
+    m_Parent->GetWorldMatrix(mat);
+
+    DirectX::XMVECTOR rotVector = DirectX::XMQuaternionRotationMatrix(mat);
+    rotVector.m128_f32[0] = 0.f - rotVector.m128_f32[0];
+    rotVector.m128_f32[1] = 0.f - rotVector.m128_f32[1];
+    rotVector.m128_f32[2] = 0.f - rotVector.m128_f32[2];
+
+    const DirectX::XMVECTOR finalRotationVector =
+    {
+        (orientation.z * rotVector.m128_f32[0]) + (rotVector.m128_f32[3] * orientation.w) + (orientation.x * rotVector.m128_f32[2]) - (orientation.y * rotVector.m128_f32[1]),
+        (orientation.z * rotVector.m128_f32[1]) + (rotVector.m128_f32[3] * orientation.x) + (orientation.y * rotVector.m128_f32[2]) - (orientation.w * rotVector.m128_f32[2]),
+        (orientation.z * rotVector.m128_f32[2]) + (rotVector.m128_f32[3] * orientation.y) + (orientation.w * rotVector.m128_f32[1]) - (orientation.x * rotVector.m128_f32[0]),
+        (orientation.z * rotVector.m128_f32[3]) - (rotVector.m128_f32[2] * orientation.y) + (orientation.x * rotVector.m128_f32[1]) - (orientation.w * rotVector.m128_f32[0])
+    };
+
+    SetOrient(finalRotationVector);
 }
 
-void Node::_86B4B0(const int size)
+void Node::_86B4B0(const int propertyId)
 {
     if (m_Flags.HasFragment || m_Flags.Volatile)
         return;
 
-    const unsigned int block = 2 * (size & 15);
-    const unsigned int slot = m_Parameters[size / 16] >> block;
+    const unsigned int block = 2 * (propertyId & 15);
+    int* propertyParamValue = &m_Parameters[propertyId / 16];
+    const unsigned int slot = *propertyParamValue >> block;
+    const int* paramValuePtr = &m_Parameters[m_ScriptEntity->m_Script->m_PropertiesList[propertyId].m_Offset];
 
     if ((slot & 3) != 3)
     {
         if ((slot & 1) == 0 && Scene::_A3CEE8)
-            _86A930(size, &m_Parameters[m_ScriptEntity->m_Script->m_PropertiesList[size].m_Offset], &m_Parameters[size / 16], 1 << block);
+            _86A930(propertyId, paramValuePtr, propertyParamValue, 1 << block);
         if ((slot & 2) == 0)
-            _86AA10(size, &m_Parameters[m_ScriptEntity->m_Script->m_PropertiesList[size].m_Offset], &m_Parameters[size / 16], 2 * (1 << block));
+            _86AA10(propertyId, paramValuePtr, propertyParamValue, 2 * (1 << block));
     }
 }
 
@@ -542,7 +575,7 @@ void Node::SetName(const char* const name)
 
 const float Node::GetLodThreshold() const
 {
-    return m_QuadTree ? (m_QuadTree->field_3C * 0.0049999999f) : 0.f;
+    return m_QuadTree ? (m_QuadTree->m_LodThreshold * 0.005f) : 0.f;
 }
 
 void Node::SetLodThreshold(float threshold)
@@ -550,32 +583,28 @@ void Node::SetLodThreshold(float threshold)
     if (!m_QuadTree)
         return;
 
-    const float thresholdcurrent = m_QuadTree->field_3C * 0.0049999999f;
+    const float thresholdcurrent = (float)m_QuadTree->m_LodThreshold * 0.005f;
     StoreProperty(8, &thresholdcurrent, tNUMBER);
 
-    if (threshold > 1)
-        threshold = 1;
+    threshold = clamp<float>(threshold, 0.f, 1.f);
 
-    if (threshold < 0)
-        threshold = 0;
-
-    m_QuadTree->field_3C = (char)(threshold * 200.0f);
-    _88BA60();
+    m_QuadTree->m_LodThreshold = (char)(threshold * 200.0f);
+    UpdateQuadTreeLodThreshold();
 }
 
-void Node::_88BA60()
+void Node::UpdateQuadTreeLodThreshold()
 {
     AuxQuadTree* qdt = m_QuadTree;
-    if (qdt->field_3C == 24 && ((qdt->field_3D & 127) == 3) && !m_Flags.LSR)
+    if (qdt->m_LodThreshold == 24 && (qdt->m_FadeThreshold == 3) && !m_Flags.LSR)
     {
-        qdt->field_3C = 60;
+        qdt->m_LodThreshold = 60;
         SetFlags(m_Flags.m_Flags & 0xEFF | 0x100);
     }
 }
 
 const float Node::GetFadeThreshold() const
 {
-    return m_QuadTree ? (m_QuadTree->field_3D & 127) * 0.0099999998f : 0.f;
+    return m_QuadTree ? ((float)m_QuadTree->m_FadeThreshold * 0.009f) : 0.f;
 }
 
 void Node::SetFadeThreshold(float threshold)
@@ -583,21 +612,16 @@ void Node::SetFadeThreshold(float threshold)
     if (!m_QuadTree)
         return;
 
-    const float fadethreshold = (m_QuadTree->field_3D & 127) * 0.0099999998f;
+    const float fadethreshold = (float)m_QuadTree->m_FadeThreshold * 0.009f;
     StoreProperty(9, &fadethreshold, tNUMBER);
 
-    if (threshold < 0)
-        threshold = 0;
+    threshold = clamp<float>(threshold, 0.f, 1.f);
 
-    if (threshold > 1)
-        threshold = 1;
-
-    m_QuadTree->field_3D ^= (m_QuadTree->field_3D ^ (unsigned int)(threshold * 100.0f)) & 127;
-    _88BAA0();
+    m_QuadTree->m_FadeThreshold = (char)(threshold * 100.0f);
+    UpdateModelFadeThreshold();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Node::_88BAA0()
+void Node::UpdateModelFadeThreshold()
 {
     if (!m_ScriptEntity)
         return;
@@ -613,27 +637,23 @@ void Node::_88BAA0()
     if (m_Flags.FRR)
         return;
 
-#ifdef INCLUDE_FIXES
-    if (m_QuadTree && ((m_QuadTree->field_3D & 127) * 0.009) < 0.12f)
-#else
-    //  NOTE: this is the original code. Intentional?
-    if (!m_QuadTree || ((m_QuadTree->field_3D & 127) * 0.009) < 0.12f)
-#endif
+    if (!m_QuadTree || ((float)m_QuadTree->m_FadeThreshold * 0.009f) < 0.12f)
     {
-        m_QuadTree->field_3D = m_QuadTree->field_3D & 0x80 | 0xB;
-        SetFlags(m_Flags.m_Flags & 0x7FF | 0x800);
+        m_QuadTree->m_SlowFade = true;
+        m_QuadTree->m_FadeThreshold = 11;
+        SetFlags(m_Flags.m_Flags & 0x7FF | 0x800);  //  NOTE: set 'FRR' flag to true.
     }
 }
 
 const bool Node::ShouldSlowFade() const
 {
-    return m_QuadTree ? (m_QuadTree->field_3D >> 7) : false;
+    return m_QuadTree ? m_QuadTree->m_SlowFade : false;
 }
 
 void Node::SetShouldSlowFade(const bool slowfade)
 {
     if (m_QuadTree)
-        m_QuadTree->field_3D = (slowfade << 7) | m_QuadTree->field_3D & 127;
+        m_QuadTree->m_SlowFade = slowfade;
 }
 
 const float Node::GetTraverseDistance() const
@@ -677,7 +697,7 @@ const float Node::GetLodDistance() const
 
 const float Node::GetLodFade() const
 {
-    return m_QuadTree ? m_QuadTree->m_LodFade * (float)(1 / 255) : (float)NULL;
+    return m_QuadTree ? m_QuadTree->m_LodFade * (1.f / 255.f) : 0.f;
 }
 
 const bool Node::GetIsTaggedForUnload() const
@@ -686,7 +706,7 @@ const bool Node::GetIsTaggedForUnload() const
     if (!parentfolder || parentfolder == this)
         return false;
     else
-        return (parentfolder->m_BlockId >> 30) & 1;
+        return parentfolder->m_TaggedForUnload;
 }
 
 Folder_* Node::FindParentFolder() const
@@ -773,7 +793,7 @@ const char* const Node::GetIgnoreList() const
         return IgnoredCollisionNodes.m_Str;
 
     char buffer[12] = {};
-    for (int i = 0; i < m_Collision->m_CollisionProbesList.size(); ++i)
+    for (unsigned int i = 0; i < m_Collision->m_CollisionProbesList.size(); ++i)
     {
         if (!m_Collision->m_CollisionProbesList[i])
             continue;
@@ -1324,54 +1344,6 @@ void Node::_86B560(const unsigned int propertyId, const void* data)
     }
 }
 
-int Node::ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize)
-{
-    if (!m_ScriptEntity->m_Script)
-        return 4;
-
-    *outsize = 0;
-
-    int proplistsize;
-    if (sp->Read(&proplistsize, sizeof(proplistsize)) != sizeof(proplistsize))
-        return 4;
-
-    *outsize += 4;
-
-    if (m_ScriptEntity->m_Script->GetPropertiesListSize() != proplistsize)
-        return 4;
-
-    if (proplistsize <= 0)
-        return 0;
-
-#ifdef INCLUDE_FIXES
-    char propertydata[8 * 1024] = {};
-#else
-    //  NOTE: 32 Kib seems to be an overkill.
-    char propertydata[32 * 1024] = {};
-#endif
-    for (unsigned int i = 0; i < proplistsize; ++i)
-    {
-        int propertysize;
-        if (sp->Read(&propertysize, sizeof(propertysize)) != sizeof(propertysize))
-            return 4;
-
-        const int propertysizeints = propertysize * 4;
-        *outsize += 4;
-
-        memset(propertydata, NULL, sizeof(propertydata));
-        if (sp->Read(propertydata, propertysizeints) != propertysizeints)
-            break;
-
-        *outsize += propertysizeints;
-
-        char newpropertydata[16] = {};
-        m_ScriptEntity->m_Script->m_PropertiesList[i].m_Info->m_PropertyType->CopyAndAllocate(propertydata, newpropertydata);
-        m_ScriptEntity->m_Script->AddProperty(this, i, (const int* const)newpropertydata);
-    }
-
-    return 4;
-}
-
 void Node::Rotate_Impl(const Orientation& orient)
 {
     Orientation currentOrient = BuiltinType::Orient;
@@ -1787,10 +1759,9 @@ Node::Node(unsigned char allocationBitmask)
 
     m_Flags.HasFragment = m_Fragment != nullptr;
 
-    m_GlobalIdInSceneList = m_GlobalIdInSceneList | 0xFFFFFFFF;
+    m_GlobalIdInSceneList = -1;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 Node::~Node()
 {
     MESSAGE_CLASS_DESTROYED(Node);

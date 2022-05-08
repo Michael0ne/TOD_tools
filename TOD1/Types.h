@@ -1,4 +1,5 @@
 #pragma once
+#include "directxmath/include/DirectXMath.h"
 
 template <typename T>
 struct Vector2 {
@@ -146,6 +147,14 @@ struct Quaternion {
     explicit operator Vector4<T>() const
     {
         return { x, y, z, w };
+    }
+
+    Quaternion(const DirectX::XMVECTOR& rhs)
+    {
+        w = rhs.m128_f32[0];
+        x = rhs.m128_f32[1];
+        y = rhs.m128_f32[2];
+        z = rhs.m128_f32[3];
     }
 };
 

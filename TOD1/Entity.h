@@ -8,6 +8,16 @@ class SavePoint;
 class Entity
 {
 public:
+    struct EntityId
+    {
+        unsigned    HasPosition : 1;    //  0
+        unsigned    HasQuadTree : 1;    //  1
+        unsigned    HasFragment : 1;    //  2
+        unsigned    _3 : 5;             //  3 - 7
+        unsigned    Id : 20;            //  8 - 27
+        unsigned    BlockId : 3;        //  28 - 30
+    };
+
     EntityType     *m_ScriptEntity;
     char            field_8;
     char            field_9;
@@ -19,31 +29,20 @@ public:
     char            field_D[5];
 
     short           m_Order;
-    union
-    {
-        struct
-        {
-            unsigned    HasPosition : 1;
-            unsigned    HasQuadTree : 1;
-            unsigned    HasFragment : 1;
-            unsigned    _3 : 5;
-            unsigned    Id : 20;
-            unsigned    BlockId : 3;
-        };
-    }               m_Id;
+    EntityId        m_Id;
     int            *m_Parameters; // NOTE: an array of properties values.
     Defragmentator *m_Defragmentator;
 
     EntityScriptData   *m_ScriptData;
 
     int             SaveScriptDataToFile_Impl(MemoryCards* memcard, int memcardindex, int savegameslot, const char* a4); // @86B650
-    unsigned char   LoadScriptDataFromFile_Impl(EntityType*, int, int); // @86B8B0
+    unsigned char   LoadScriptDataFromFile_Impl(MemoryCards* memcard, const int memoryCardIndex, const int saveSlotIndex); // @86B8B0
 
 public:
-    virtual        ~Entity(); // @86C010
-    virtual void    Destroy(); // @86C010
-
     Entity(); // @86A1D0
+
+    virtual        ~Entity(); // @86A500
+    virtual void    Destroy(); // @86C010
 
     void* operator new (size_t size)
     {
@@ -67,6 +66,7 @@ public:
 
     void            SaveScriptDataToFile(int* params); // @86BBC0
     void            LoadScriptDataFromFile(int* params); // @86BC20
+    int             ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize); //  @86B1F0
 
     void            SetScript(EntityType* script); // @869E20
 

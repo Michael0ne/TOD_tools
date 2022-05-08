@@ -26,7 +26,7 @@ public:
         int             field_8;
     };
 
-protected:
+public:
     Allocator              *m_Allocator;
     Allocator              *m_DefaultSelectedAllocator;
     unsigned int            m_Size;

@@ -50,6 +50,7 @@ public:
     bool   DeleteSavePointFile(const char* const savedir, const char* const slotindstr); // @928D00
     bool   IsSavePointFileExists(const char* const savedir, const char* const slotindstr) const; // @928DC0
     bool   CreateSaveDirectory(const char* const savedir); // @928AA0
+    const bool  IsSaveFolderAvailable() const;  //  @43B070
 };
 
 extern MemoryCard* MemoryCardInfo[SAVE_SLOT_LAST]; // @A35E84

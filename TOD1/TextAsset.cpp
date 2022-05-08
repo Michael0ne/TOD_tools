@@ -138,16 +138,12 @@ void TextAsset::EncodeGameString(short* outString, short* inString)
 
 void TextAsset::CopyCharArrayToGameString(unsigned short* gamestring, char* instring)
 {
-    for (unsigned int i = 0; i < strlen(instring) + 1; ++i)
+    const size_t stringLength = strlen(instring) + 1;
+    for (unsigned int i = 0; i < stringLength; ++i)
     {
-        char ch[2] = { 0, instring[i] };
-
-        if (ch[1] == 255)
-            *(short*)&ch = -1;
+        if (instring[i] == 255 || ((instring[i] & 128) != 0))
+            gamestring[i] = -1;
         else
-            if (((short)ch & 128) != 0)
-                *(short*)&ch = -1;
-
-        gamestring[i] = (short)ch;
+            gamestring[i] = (unsigned short)instring[i];
     }
 }

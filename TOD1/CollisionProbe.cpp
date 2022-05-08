@@ -257,10 +257,10 @@ void CollisionProbe::SetLineMode(int* args)
 
 void CollisionProbe::SetLineThickness(int* args)
 {
-    m_LineThickness = args[0];
+    m_LineThickness = (float)args[0];
 }
 
-void CollisionProbe::SetLineWidthHeight(float* args)
+void CollisionProbe::SetLineWidthHeight(int* args)
 {
     m_LineWidth = args[0];
     m_LineHeight = args[1];

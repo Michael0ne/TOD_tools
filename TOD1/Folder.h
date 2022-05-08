@@ -29,7 +29,13 @@ class Folder_ : public Node
     friend class Node;
 
 protected:
-    int             m_BlockId;
+    struct
+    {
+        unsigned    m_BlockId : 28;
+        unsigned    _29 : 1;
+        unsigned    m_TaggedForUnload : 1;
+        unsigned    _31 : 1;
+    };
     AssetInfo      *m_AssetBlockInfo;
 
     void            DestroyAllChildren(); // @88C1D0

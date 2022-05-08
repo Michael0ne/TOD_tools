@@ -208,10 +208,10 @@ public:
     const char* const   GetName() const;    //  @48C3E0
     const float         GetLodThreshold() const;    //  @53FA20
     void                SetLodThreshold(float threshold); //  @5406A0
-    void                _88BA60();  //  @88BA60
+    void                UpdateQuadTreeLodThreshold();  //  @88BA60
     const float         GetFadeThreshold() const;   //  @53FA50
     void                SetFadeThreshold(float threshold);  //  @540730
-    void                _88BAA0();  //  @88BAA0
+    void                UpdateModelFadeThreshold();  //  @88BAA0
     const bool          ShouldSlowFade() const; //  @5A1870
     void                SetShouldSlowFade(const bool slowfade); //  @5A1890
     const float         GetTraverseDistance() const;    //  @75E510
@@ -283,7 +283,6 @@ public:
     void                ConvertDirectionToWorldSpace(int* args) const;  //  @88C9C0
     void                CallPropertySetter(const unsigned short propertyId, const void* data);  //  @86A6C0
     void                _86B560(const unsigned int propertyId, const void* data); //  @86B560
-    int                 ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize); //  @86B1F0
     Node*               FindNodeSlowRecursive(const char* const nodeName); //  @88DFF0
 
 private:

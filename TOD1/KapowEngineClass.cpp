@@ -781,7 +781,7 @@ void KapowEngineClass::UninitialiseGame()
 bool KapowEngineClass::OpenScene(const char* scene)
 {
     tScene->CreateNode();
-    g_AssetManager->SetSceneName(scene);
+    g_AssetManager->AddLoadedAssetName(scene);
     Scene::SceneInstance->Load(scene);
     Scene::SceneInstance->UpdateLoadedBlocks_Impl(0, nullptr);
     Scene::SceneInstance->m_StartTimeMs = Timer::GetMilliseconds();

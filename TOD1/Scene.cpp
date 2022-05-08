@@ -31,6 +31,10 @@ unsigned int Scene::QuadTreesAllocated;
 Scene::QuadTreeNode* Scene::QuadTrees;
 short Scene::_A120E8 = -1;
 int Scene::_A3DD40;
+int Scene::_A11B84[9] =
+{
+    0, 1, 0, 0, 0, -1, -1, -1
+};
 
 int Scene::RealTimeMs;
 int Scene::GameTimeMs;
@@ -204,10 +208,10 @@ void Scene::ReleaseQuadTreeAndRenderlist()
     ClearNodesLists();
     g_GfxInternal->SetRenderBufferIsEmpty(true);
     g_AssetManager->DestroySceneNodesFrameBuffers(0);
-    const unsigned int resind = g_AssetManager->GetFreeResourceTypeListItem(0);
+    const unsigned int resind = g_AssetManager->FindFirstLoadedAsset(0);
 
     if (resind)
-        for (Asset* a = g_AssetManager->m_ResourcesInstancesList[resind]; a; a = g_AssetManager->GetAssetIfExists(a))
+        for (Asset* a = g_AssetManager->m_ResourcesInstancesList[resind]; a; a = g_AssetManager->GetNextLoadedAsset(a))
             if (a->GetInstancePtr() == ModelAsset::Instance)
                 ((ModelAsset*)a)->_856E60();
 
@@ -842,10 +846,10 @@ void Scene::Load(const char* sceneName)
     LogDump::LogA("Scene graph took %0.1f KB\n", (alloctotal - alloctotalbefore) * 0.0009765625f);
     LogDump::LogA("Asset block after: %0.1f KB\n", alloctotal * 0.0009765625f);
 
-    const int freeassetind = g_AssetManager->GetFreeResourceTypeListItem(0);
+    const int freeassetind = g_AssetManager->FindFirstLoadedAsset(0);
     if (freeassetind)
     {
-        for (FragmentAsset* frgm = (FragmentAsset*)g_AssetManager->m_ResourcesInstancesList[freeassetind]; frgm; frgm = (FragmentAsset*)g_AssetManager->GetAssetIfExists(frgm))
+        for (FragmentAsset* frgm = (FragmentAsset*)g_AssetManager->m_ResourcesInstancesList[freeassetind]; frgm; frgm = (FragmentAsset*)g_AssetManager->GetNextLoadedAsset(frgm))
         {
             if (frgm->GetInstancePtr() == FragmentAsset::Instance)
             {

@@ -8,7 +8,7 @@
 class MemoryCards : public Node
 {
     friend class Entity;
-protected:
+public:
     Utils::UniqueId m_MemCardsUniqueId[4];
     String          m_Ps2SlesLicense;
     String          m_Ps2SlusLicense;
@@ -17,9 +17,6 @@ protected:
 
     String&         MakeSaveSlotString(String& outStr, unsigned int slotind) const; // @926540
     const char* const GetSaveDirectory(const unsigned int slot) const;  //  @926940
-
-private:
-    static MemoryCards* Create(AllocatorIndex allocInd); // @928F90
 
     const char*     GetGamename() const; // @928790
     void            SetGamename(const char* const gamename); // @926510
@@ -87,6 +84,7 @@ public:
     unsigned int    GetLastModifiedTimeAsNumber_Impl(unsigned int memcardind, unsigned int slotind) const; // @928090
 
     static void     Register(); // @9281B0
+    static MemoryCards* Create(AllocatorIndex allocInd); // @928F90
 };
 
 extern EntityType* tMemoryCards; // @A3E178

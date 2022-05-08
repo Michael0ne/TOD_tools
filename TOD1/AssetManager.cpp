@@ -126,8 +126,8 @@ void AssetManager::GetResourcePath(String& outStr, const char* path) const
         return;
 
     String path_;
-    if (m_SceneNames.size())
-        path_ = m_SceneNames[m_SceneNames.size() - 1];
+    if (m_LoadedAssetsNames.size())
+        path_ = m_LoadedAssetsNames[m_LoadedAssetsNames.size() - 1];
 
     // TODO: what this does exactly?
     outStr = path;
@@ -135,17 +135,17 @@ void AssetManager::GetResourcePath(String& outStr, const char* path) const
 
 void AssetManager::IncreaseResourceReferenceCount(Asset* _res)
 {
-    ++_res->m_Flags.m_ReferenceCount;
+    ++_res->m_Flags.ReferenceCount;
 }
 
 void AssetManager::DecreaseResourceReferenceCount(Asset* _res)
 {
-    --_res->m_Flags.m_ReferenceCount;
+    --_res->m_Flags.ReferenceCount;
 }
 
 const char* AssetManager::GetCurrentSceneName() const
 {
-    return m_SceneNames.size() ? m_SceneNames.end()->m_Str : nullptr;
+    return m_LoadedAssetsNames.size() ? m_LoadedAssetsNames.end()->m_Str : nullptr;
 }
 
 void AssetManager::BuildFastFindNodeVector()
@@ -191,7 +191,7 @@ AllocatorIndex AssetManager::GetAllocatorType() const
 
 int AssetManager::AddAssetReference(Asset* a)
 {
-    field_0 = 1;
+    m_HasDanglingEntities = 1;
 
     if (m_ResourcesInstancesList.size() <= 1)
     {
@@ -260,7 +260,7 @@ void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, 
 
 const char* AssetManager::GetResourcePathSceneRelative(const char* const path)
 {
-    const String& scenename = m_SceneNames.back();
+    const String& scenename = m_LoadedAssetsNames.back();
     if (strncmp(path, scenename.m_Str, scenename.m_Length))
         if (strstr(scenename.m_Str, "/data/") &&
             strstr(path, "/data/"))
@@ -480,7 +480,7 @@ Asset* AssetManager::LoadResourceFile(const char* const respath)
         if (texass->SetResourcePlaceholder())
         {
             texass->m_ResourceTimestamp = NULL;
-            texass->m_Flags.m_ReferenceCount |= 0x20000;
+            texass->m_Flags.HasPlaceHolder = true;
         }
 
         texass->SetResourcePath(respath);
@@ -494,7 +494,7 @@ Asset* AssetManager::LoadResourceFile(const char* const respath)
     {
         Asset* asset = assinst->m_Creator();
         asset->SetResourcePath(respath);
-        _878220(asset);
+        LoadOriginalVersion(asset);
 
         return asset;
     }
@@ -629,7 +629,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
             *(int*)&resourcesInfoBuffer &= ~(AssetInstance::AssetAlignment[0] - 1);
 
             currasset->m_ResourceTimestamp = fileTimestamp;
-            currasset->m_Flags.m_ReferenceCount = -1;
+            currasset->m_Flags.ReferenceCount = -1;
 
             it++;
         }
@@ -704,7 +704,7 @@ String& AssetManager::GetDataPath(String& outstr) const
     return outstr;
 }
 
-Asset* AssetManager::FindFirstFreeResource() const
+Asset* AssetManager::FindFirstLoadedAsset() const
 {
     if (m_ResourcesInstancesList.size() <= 1)
         return nullptr;
@@ -719,10 +719,10 @@ Asset* AssetManager::FindFirstFreeResource() const
 void AssetManager::DestroyTextureAsset(TextureAsset& ass)
 {
     ass.DestroyResource();
-    field_0 = 1;
+    m_HasDanglingEntities = 1;
 }
 
-Asset* AssetManager::GetAssetIfExists(const Asset* a) const
+Asset* AssetManager::GetNextLoadedAsset(const Asset* a) const
 {
     unsigned int i = a->m_GlobalResourceId + 1;
     if (i >= m_ResourcesInstancesList.size())
@@ -752,7 +752,7 @@ void AssetManager::MakeSpaceForAssetsList()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-bool AssetManager::_878220(Asset * asset)
+bool AssetManager::LoadOriginalVersion(Asset * asset)
 {    
     char assetdir[1024] = {};
     char assetfilename[256] = {};
@@ -798,7 +798,7 @@ Asset* AssetManager::FindLoadedAsset(const char* const assetname)
             return nullptr;
     }
 
-    Asset* freeass = FindFirstFreeResource();
+    Asset* freeass = FindFirstLoadedAsset();
     if (!freeass)
         return nullptr;
 
@@ -829,20 +829,26 @@ void AssetManager::InstantiateAssetsAndClearAssetsList()
 
 Node* AssetManager::FindEntityById(const int id)
 {
-    int blockId = (id >> 20) & 7;
+    const Entity::EntityId idValue = *(const Entity::EntityId*)&id;
+
+    int blockId = idValue.BlockId;
     if (blockId == 0)
-        blockId = m_ActiveBlockId == -1 ? 0 : m_ActiveBlockId;
+        if (m_ActiveBlockId == -1)
+            blockId = 0;
+        else
+            blockId = m_ActiveBlockId;
     else
         blockId -= 1;
 
     int foundBlockId = -1;
-    int foundEntIndex = -1;
+    unsigned int foundEntIndex = 0;
     if (m_EntityIdsMap)
     {
         auto& foundEntityRef = m_EntityIdsMap->find(id);
         if (foundEntityRef != m_EntityIdsMap->end())
         {
-            int foundEntIndex = foundEntityRef->first & 0xFF8FFFFF;
+            //  TODO: rewrite.
+            unsigned int foundEntIndex = foundEntityRef->first & 0xFF8FFFFF;
             int foundBlockId = ((foundEntityRef->first >> 20) & 7) - 1;
             auto& entList = m_NodesList[foundBlockId];
 
@@ -866,13 +872,113 @@ Node* AssetManager::FindEntityById(const int id)
 #pragma message(TODO_IMPLEMENTATION)
 void AssetManager::_8794B0(const char* const respath)
 {
+    DestroyDanglingAssets(nullptr, nullptr);
+
+    String resourcePath(respath);
+    resourcePath.ToLowerCase();
+
+    for (unsigned int i = 0; i < 3; ++i)
+    {
+        if (m_ResourcesInstancesList.size() <= 1)
+            return;
+
+        unsigned int occupiedAssetIndex = 1;
+        while (!m_ResourcesInstancesList[occupiedAssetIndex++])
+            if (occupiedAssetIndex >= m_ResourcesInstancesList.size())
+                return;
+
+        if (!occupiedAssetIndex || !m_ResourcesInstancesList[occupiedAssetIndex])
+            return;
+
+        bool assetLoaded = false;
+        do
+        {
+            if (!resourcePath.Empty())
+            {
+                String currentResourcePath(m_ResourcesInstancesList[occupiedAssetIndex]->m_ResourcePath);
+                currentResourcePath.ToLowerCase();
+
+                if (!strstr(currentResourcePath.m_Str, resourcePath.m_Str))
+                {
+                    if (m_ResourcesInstancesList[occupiedAssetIndex]->m_GlobalResourceId + 1 < m_ResourcesInstancesList.size())
+                    {
+                        while (!m_ResourcesInstancesList[occupiedAssetIndex++])
+                            if (occupiedAssetIndex >= m_ResourcesInstancesList.size())
+                                occupiedAssetIndex = 0;
+                    }
+                    else
+                        occupiedAssetIndex = 0;
+
+                    continue;
+                }
+            }
+
+            if (LoadOriginalVersion(m_ResourcesInstancesList[occupiedAssetIndex]))
+                assetLoaded = true;
+
+            if (m_ResourcesInstancesList[occupiedAssetIndex]->m_GlobalResourceId + 1 < m_ResourcesInstancesList.size())
+            {
+                while (!m_ResourcesInstancesList[occupiedAssetIndex++])
+                    if (occupiedAssetIndex >= m_ResourcesInstancesList.size())
+                        occupiedAssetIndex = 0;
+            }
+            else
+                occupiedAssetIndex = 0;
+        } while (m_ResourcesInstancesList[occupiedAssetIndex]);
+
+        if (!assetLoaded)
+            return;
+    }
+}
+
+void AssetManager::DestroyDanglingAssets(const char* const resourceBufferDataBegin, const char* const resourceBufferDataEnd)
+{
+    if (m_ResourcesInstancesList.size() <= 1)
+        return;
+
+    bool danglingAssetFound;
+    do
+    {
+        danglingAssetFound = false;
+        unsigned int occupiedAssetIndex = 1;
+        while (!m_ResourcesInstancesList[occupiedAssetIndex])
+        {
+            occupiedAssetIndex++;
+            if (occupiedAssetIndex >= m_ResourcesInstancesList.size())
+                return;
+        }
+
+        do
+        {
+            Asset* assetRef = m_ResourcesInstancesList[occupiedAssetIndex];
+            if (!assetRef->m_Flags.ReferenceCount &&
+                (!resourceBufferDataBegin || (char*)assetRef >= resourceBufferDataBegin) &&
+                (!resourceBufferDataEnd || (char*)assetRef < resourceBufferDataEnd))
+            {
+                assetRef->DestroyResource();
+                m_HasDanglingEntities = true;
+                Asset::Destroy(assetRef);
+                danglingAssetFound = true;
+            }
+
+            if (++occupiedAssetIndex >= m_ResourcesInstancesList.size())
+                break;
+
+            while (!m_ResourcesInstancesList[occupiedAssetIndex])
+            {
+                occupiedAssetIndex++;
+                if (occupiedAssetIndex >= m_ResourcesInstancesList.size())
+                    break;
+            }
+        } while (occupiedAssetIndex);
+    } while (danglingAssetFound);
 }
 
 void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)
 {
     m_ResourcesInstancesList.insert(m_ResourcesInstancesList.begin(), index, {});
     m_ResourcesInstancesList.push_back(element);
-    field_0 = 1;
+    m_HasDanglingEntities = 1;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -920,7 +1026,7 @@ AssetManager::AssetManager(bool loadBlocks)
     m_NodesInNodeList[3] = 1;
     m_NodesInNodeList[4] = 1;
     m_NodesInNodeList[5] = 1;
-    field_0 = NULL;
+    m_HasDanglingEntities = NULL;
     m_RegionId = REGION_NOT_SET;
     m_ResourcesInstancesList.reserve(1);
     m_FragmentMainNodeId = NULL;
@@ -932,21 +1038,38 @@ AssetManager::AssetManager(bool loadBlocks)
     field_108 = 2;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 AssetManager::~AssetManager()
 {
     MESSAGE_CLASS_DESTROYED(AssetManager);
 
-    Asset* res = FindFirstFreeResource();
-    if (res)
+    Asset* assetRef = FindFirstLoadedAsset();
+    if (assetRef)
     {
-        // TODO: finish this!
+        unsigned int assetIndex = 0;
+        do
+        {
+            if (assetRef->m_GlobalResourceId + 1 < m_ResourcesInstancesList.size())
+            {
+                while (!m_ResourcesInstancesList[assetIndex++])
+                    if (assetIndex >= m_ResourcesInstancesList.size())
+                        assetIndex = 0;
+            }
+
+            if (assetRef->m_ResourceTimestamp > 0)
+            {
+                assetRef->DestroyResource();
+                m_HasDanglingEntities = true;
+            }
+
+            Asset::Destroy(assetRef);
+            assetRef = m_ResourcesInstancesList[assetIndex];
+        } while (assetRef);
     }
 
     g_AssetManager = nullptr;
 
     m_AssetsList.clear();
-    m_SceneNames.clear();
+    m_LoadedAssetsNames.clear();
     m_ResourcesInstancesList.clear();
 
     for (unsigned int i = 0; i < 6; i++)
@@ -955,34 +1078,33 @@ AssetManager::~AssetManager()
     m_FastFindNodeVector.clear();
 }
 
-void AssetManager::SetSceneName(const char* scenename)
+void AssetManager::AddLoadedAssetName(const char* assetName)
 {
     String sceneDir;
-    File::ExtractFileDir(sceneDir, scenename);
+    File::ExtractFileDir(sceneDir, assetName);
 
     if (sceneDir.m_Length > 0 && sceneDir.m_Str[sceneDir.m_Length - 1] != '/')
         sceneDir.Append("/");
 
-    m_SceneNames.push_back(sceneDir);
+    m_LoadedAssetsNames.push_back(sceneDir);
 }
 
-void AssetManager::RemoveLastSceneName()
+const char* const AssetManager::GetLastLoadedAssetName() const
 {
-    if (m_SceneNames.size())
-        m_SceneNames.pop_back();
+    return m_LoadedAssetsNames.size() ? m_LoadedAssetsNames[m_LoadedAssetsNames.size() - 1].m_Str : nullptr;
 }
 
-unsigned int AssetManager::GetFreeResourceTypeListItem(unsigned int index)
+unsigned int AssetManager::FindFirstLoadedAsset(unsigned int startIndex) const
 { 
-    unsigned int freeind = index + 1;
-    if (freeind >= m_ResourcesInstancesList.size())
+    unsigned int nextIndex = startIndex + 1;
+    if (nextIndex >= m_ResourcesInstancesList.size())
         return 0;
 
-    for (const Asset* res = m_ResourcesInstancesList[freeind]; !res; res++)
-        if (++freeind >= m_ResourcesInstancesList.size())
+    for (const Asset* res = m_ResourcesInstancesList[nextIndex]; !res; res++)
+        if (++nextIndex >= m_ResourcesInstancesList.size())
             return 0;
 
-    return freeind;
+    return nextIndex;
 }
 
 unsigned int AssetManager::AddEntity(Entity* ent)

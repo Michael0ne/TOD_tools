@@ -24,8 +24,6 @@ AssetLoader& AssetLoader::operator=(const AssetLoader& rhs)
 {
     MESSAGE_CLASS_CREATED(AssetLoader);
 
-    if (ALIGN_4BYTES(m_Empty) != 0 && (!m_Empty || ((unsigned char)m_Empty & 1) != NULL))
-        MemoryManager::ReleaseMemory((int*)ALIGN_4BYTES(m_Empty), false);
     m_Empty = nullptr;
 
     if (m_AssetPtr)
@@ -72,13 +70,13 @@ Asset::~Asset()
 
 bool Asset::stub3(unsigned char a1, int, int)
 {
-    m_Flags.m_FlagBits._18 = a1;
+    m_Flags._18 = a1;
     return false;
 }
 
 bool Asset::stub4() const
 {
-    return m_Flags.m_FlagBits._18 & 1;
+    return m_Flags._18 & 1;
 }
 
 void Asset::stub5(int)
@@ -103,7 +101,7 @@ char Asset::SetResourcePlaceholder()
 
 int Asset::stub9() const
 {
-    return (m_Flags.m_FlagBits._19 != 0) + 1;
+    return (m_Flags._19 != 0) + 1;
 }
 
 void Asset::GetResourceName(String& outName, int originalVersionPath)
@@ -142,8 +140,10 @@ Asset::Asset(bool dontmakeglobal)
     else
         m_GlobalResourceId = g_AssetManager->AddAssetReference(this);
 
-    m_Flags.m_Flags = 0;
-    m_Flags.m_FlagBits.NotUsed = m_Flags.m_FlagBits._17 = m_Flags.m_FlagBits._18 = m_Flags.m_FlagBits._19 = 1;
+    m_Flags.NotUsed = true;
+    m_Flags.HasPlaceHolder = true;
+    m_Flags._18 = true;
+    m_Flags._19 = 1;
 }
 
 const char* Asset::GetName() const
@@ -166,7 +166,7 @@ void Asset::Destroy(Asset* res)
 {
     res->~Asset();
 
-    if ((res->m_Flags.m_FlagBits.NotUsed & 1) != 0)
+    if (res->m_Flags.NotUsed)
         MemoryManager::ReleaseMemory(res, false);
 }
 
@@ -178,7 +178,7 @@ Asset* Asset::CreateInstance(size_t classsize)
     else
         asset = (Asset*)MemoryManager::AllocatorsList[TextureAssetAllocatorId]->Allocate(classsize, NULL, NULL);
 
-    asset->m_Flags.m_FlagBits.NotUsed = 1;
+    asset->m_Flags.NotUsed = 1;
 
     return asset;
 }
@@ -193,7 +193,7 @@ void Asset::AllocateResourceForBlockLoad(const unsigned int size, int** bufalign
 
 void Asset::SetReferenceCount(unsigned char count)
 {
-    m_Flags.m_ReferenceCount = count;
+    m_Flags.ReferenceCount = count;
 }
 
 void Asset::EncodeCountryCode(const char* const countrycode)
@@ -207,17 +207,17 @@ void Asset::EncodeCountryCode(const char* const countrycode)
             if (strcmp(countrycode, Script::CountryCodes[i]) == NULL)
 #endif
             {
-                m_Flags.m_FlagBits.AssetRegion = i;
+                m_Flags.AssetRegion = i;
                 return;
             }
     }
     else
-        m_Flags.m_FlagBits.AssetRegion = 6;
+        m_Flags.AssetRegion = 6;
 }
 
 const char* const Asset::GetResourceCountryCode() const
 {
-    const unsigned int countrycode = m_Flags.m_FlagBits.AssetRegion & 15;
+    const unsigned int countrycode = m_Flags.AssetRegion;
 
     // NOTE: obvious fix - original code assumes that asset country code cannot be tampered with, since it's validated when loading.
 #ifdef INCLUDE_FIXES

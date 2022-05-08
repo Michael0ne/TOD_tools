@@ -88,7 +88,7 @@ public:
     const int               GetFieldOnFace_Impl(const int face) const;  //  @8B5B40
     void                    SetLineMode(int* args); //  @571A60
     void                    SetLineThickness(int* args);    //   @4A0C80
-    void                    SetLineWidthHeight(float* args);    //  @810A30
+    void                    SetLineWidthHeight(int* args);    //  @810A30
     void                    SetCollisionMask(int* args);    //  @4A0C90
     void                    IgnoreNode(int* args);  //  @8BDB40
     void                    IgnoreNode_Impl(Node* node);    //  @8BDAD0

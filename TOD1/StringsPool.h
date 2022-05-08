@@ -36,7 +36,8 @@ public:
 
     bool operator<(const char* const _r) const
     {
-        return m_Str < _r;
+        //return m_Str < _r;
+        return strcmp(m_Str, _r) < 0;
     }
 
     bool operator==(const String& _r) const

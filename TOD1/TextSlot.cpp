@@ -128,7 +128,7 @@ void TextSlot::GetTextByIndex(int index, unsigned short* outText, const unsigned
     if (!asText)
         return;
 
-    if (index < asText->m_TextIndicies.size())
+    if ((unsigned int)index < asText->m_TextIndicies.size())
         asText->GetGameString(asText->m_TextIndicies[index], outText, maxLength, true);
     else
         outText[0] = 0;

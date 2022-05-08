@@ -133,7 +133,7 @@ public:
     };
 
 public:
-    unsigned char               field_0;
+    bool                        m_HasDanglingEntities;
     int                         m_ActiveBlockId;
     char                        m_FingerprintKey[256]; // NOTE: default value is 'THIS IS THE DEFAULT FINGERPRINT KEY, PLEASE CHANGE IT!". LOLZ.
     int                         field_108;
@@ -144,7 +144,7 @@ public:
     std::vector<FastFindInfo>   m_FastFindNodeVector;
     std::vector<Entity*>        m_NodesList[6];
     std::vector<Asset*>         m_ResourcesInstancesList;
-    std::vector<String>         m_SceneNames;
+    std::vector<String>         m_LoadedAssetsNames;
     unsigned int                m_NodesInNodeList[6];
     int                         m_FragmentMainNodeId;
     bool                        m_BlocksUnloaded;
@@ -184,9 +184,9 @@ public:
         ptr = nullptr;
     }
 
-    void                        SetSceneName(const char* scenename); // @877F40
-    void                        RemoveLastSceneName(); // @875650
-    unsigned int                GetFreeResourceTypeListItem(unsigned int index); // @875540
+    void                        AddLoadedAssetName(const char* assetName); // @877F40
+    const char* const           GetLastLoadedAssetName() const; //  @8756B0
+    unsigned int                FindFirstLoadedAsset(unsigned int startIndex) const; // @875540
     unsigned int                AddEntity(class Entity* ent); // @875FA0 // NOTE: returns index
     void                        SetRegion(RegionCode id); // @875434
     AllocatorIndex              GetAllocatorType() const; // @875360
@@ -211,16 +211,17 @@ public:
     void                        DestroySceneNodesFrameBuffers(const int);  //  @875390
     RegionCode                  GetRegion() const; // @875440
     String&                     GetDataPath(String& outstr) const; // @8764E0
-    Asset*                      FindFirstFreeResource() const; // @879E00
+    Asset*                      FindFirstLoadedAsset() const; // @879E00
     void                        DestroyTextureAsset(TextureAsset& ass); //  @875340
-    Asset*                      GetAssetIfExists(const Asset* a) const; //  @875720
+    Asset*                      GetNextLoadedAsset(const Asset* a) const; //  @875720
     void                        _878030();  //  @878030
     void                        MakeSpaceForAssetsList();  //  @877AE0
-    bool                        _878220(Asset * asset);  //  @878220
+    bool                        LoadOriginalVersion(Asset * asset);  //  @878220
     Asset*                      FindLoadedAsset(const char* const assetname);   //  @876140
     void                        InstantiateAssetsAndClearAssetsList();  //  @875EB0
     Node*                       FindEntityById(const int id);   //  @879740
-    void                        _8794B0(const char* const respath);  //  @8794B0    //  NOTE: only two references are present 
+    void                        _8794B0(const char* const respath);  //  @8794B0    //  NOTE: only two references are present.
+    void                        DestroyDanglingAssets(const char* const resourceBufferDataBegin, const char* const resourceBufferDataEnd);    //  @875910
 
     static void                 CorrectTextureResourcePath(String& outPath, const char* respath, RegionCode region, PlatformId platform); // @876500
     static RegionCode           RegionIdByName(const String& region); // @875450

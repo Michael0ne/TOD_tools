@@ -104,7 +104,7 @@ const int Cloth::GetNumberOfTexturesSets() const
 
     unsigned int sets = 0;
 
-    for (int meshIndex = 0; meshIndex < m_ModelAsset->m_PivotsList.size(); ++meshIndex)
+    for (unsigned int meshIndex = 0; meshIndex < m_ModelAsset->m_PivotsList.size(); ++meshIndex)
     {
         if (++sets >= m_ModelAsset->m_PivotsList.size())
             return 1;
@@ -225,7 +225,7 @@ void Cloth::ApplyImpulse(int* args)
 {
     const Vector4f vec1((float)args[0], (float)args[1], (float)args[2], 0);
     const Vector4f vec2((float)args[3], (float)args[4], (float)args[5], 0);
-    const float force = args[6];
+    const float force = (float)args[6];
 
     ApplyImpulse_Impl(vec1, vec2, force);
 }

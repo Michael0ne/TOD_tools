@@ -223,3 +223,12 @@ bool MemoryCard::CreateSaveDirectory(const char* const savedir)
 
     return true;
 }
+
+const bool MemoryCard::IsSaveFolderAvailable() const
+{
+    if (!m_SaveFolderPath.Empty())
+        return m_Formatted && File::IsDirectoryValid(m_SaveFolderPath.m_Str);
+
+    LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.\n");
+    return false;
+}

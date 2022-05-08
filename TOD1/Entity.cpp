@@ -16,14 +16,13 @@ void Entity::Destroy()
         delete this;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 Entity::~Entity()
 {
     MESSAGE_CLASS_DESTROYED(Entity);
 
     if (m_ScriptData && m_ScriptData->m_ScriptThread)
     {
-        //m_Defragmentator->stub4((field_20 - m_Defragmentator->m_AllocatedSpace) / 12);
+        m_Defragmentator->Deallocate(((char*)m_ScriptData - (char*)m_Defragmentator->m_AllocatedSpace) / 12);
         m_ScriptData = nullptr;
     }
 
@@ -83,10 +82,82 @@ int Entity::SaveScriptDataToFile_Impl(MemoryCards * memcard, int memcardindex, i
     return writtendatasize;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-unsigned char Entity::LoadScriptDataFromFile_Impl(EntityType*, int, int)
+unsigned char Entity::LoadScriptDataFromFile_Impl(MemoryCards* memcard, const int memoryCardIndex, const int saveSlotIndex)
 {
-    return NULL;
+    if (!m_ScriptEntity->m_Script)
+        return 4;
+
+    const char* const saveDirectory = memcard->GetSaveDirectory(saveSlotIndex);
+    String saveSlotString;
+    memcard->MakeSaveSlotString(saveSlotString, saveSlotIndex);
+    SavePoint savepoint(MemoryCardInfo[memoryCardIndex], saveDirectory, saveSlotString.m_Str, SAVEPOINT_SAVE_SIZE);
+
+    if (SavePoint::VerifyFileChecksum(&savepoint))
+    {
+        if (!savepoint.Open(STATUS_SUCCESS))
+            return 1;
+
+        int readSaveDataSize = 0;
+        int saveReadStatus = ReadScriptDataFromSavePoint(&savepoint, &readSaveDataSize);
+        if (saveReadStatus)
+            if (!MemoryCardInfo[memoryCardIndex]->IsSaveFolderAvailable())
+                return 3;
+
+        return saveReadStatus;
+    }
+    else
+    {
+        LogDump::LogA("File checksum is wrong or file cannot be opened ('%s')!", saveSlotString.m_Str);
+        return 2;
+    }
+}
+
+int Entity::ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize)
+{
+    if (!m_ScriptEntity->m_Script)
+        return 4;
+
+    *outsize = 0;
+
+    unsigned int proplistsize;
+    if (sp->Read(&proplistsize, sizeof(proplistsize)) != sizeof(proplistsize))
+        return 4;
+
+    *outsize += 4;
+
+    if (m_ScriptEntity->m_Script->GetPropertiesListSize() != proplistsize)
+        return 4;
+
+    if (proplistsize <= 0)
+        return 0;
+
+#ifdef INCLUDE_FIXES
+    char propertydata[8 * 1024] = {};
+#else
+    //  NOTE: 32 Kib seems to be an overkill.
+    char propertydata[32 * 1024] = {};
+#endif
+    for (unsigned int i = 0; i < proplistsize; ++i)
+    {
+        int propertysize;
+        if (sp->Read(&propertysize, sizeof(propertysize)) != sizeof(propertysize))
+            return 4;
+
+        const int propertysizeints = propertysize * 4;
+        *outsize += 4;
+
+        memset(propertydata, NULL, sizeof(propertydata));
+        if (sp->Read(propertydata, propertysizeints) != propertysizeints)
+            break;
+
+        *outsize += propertysizeints;
+
+        char newpropertydata[16] = {};
+        m_ScriptEntity->m_Script->m_PropertiesList[i].m_Info->m_PropertyType->CopyAndAllocate(propertydata, newpropertydata);
+        m_ScriptEntity->m_Script->AddProperty((Node*)this, i, (const int* const)newpropertydata);
+    }
+
+    return 4;
 }
 
 int Entity::GetId() const
@@ -153,24 +224,21 @@ void Entity::SaveScriptDataToFile(int* params)
 
 void Entity::LoadScriptDataFromFile(int* params)
 {
-    if (!params[1] || ((MemoryCards*)params[1])->m_ScriptEntity == nullptr)
-    {
-        *params = NULL;
+    params[0] = 0;
+    MemoryCards* memoryCardInstance = (MemoryCards*)params[1];
+
+    if (!memoryCardInstance || !memoryCardInstance->m_ScriptEntity)
         return;
-    }
 
-    EntityType* memcard = (EntityType*)(((MemoryCards*)params[1])->m_ScriptEntity);
-
-    while (tMemoryCards != memcard)
+    EntityType* memoryCardScript = memoryCardInstance->m_ScriptEntity;
+    while (tMemoryCards != memoryCardScript)
     {
-        if (!(memcard = memcard->m_Parent))
-        {
-            *params = NULL;
+        memoryCardScript = memoryCardScript->m_Parent;
+        if (!memoryCardScript)
             return;
-        }
     }
 
-    *params = LoadScriptDataFromFile_Impl(memcard, params[2], params[3]);
+    params[0] = LoadScriptDataFromFile_Impl(memoryCardInstance, params[2], params[3]);
 }
 
 void Entity::SetScript(EntityType* script)

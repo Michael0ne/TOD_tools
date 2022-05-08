@@ -142,13 +142,12 @@ public:
     UINT64              m_ResourceTimestamp;
     union
     {
-        unsigned short  m_ReferenceCount;
         struct
         {
             unsigned ReferenceCount : 15;
 
             unsigned NotUsed : 1;
-            unsigned _17 : 1;
+            unsigned HasPlaceHolder : 1;
             unsigned _18 : 1;
             unsigned _19 : 1;
             unsigned AssetRegion : 4;
@@ -161,8 +160,7 @@ public:
             unsigned _29 : 1;
             unsigned _30 : 1;
             unsigned _31 : 1;
-        }               m_FlagBits;
-        unsigned int    m_Flags;
+        };
     }                   m_Flags;
 
 public:

@@ -18,7 +18,7 @@ public:
 		inst->AddMember(GetScriptIdByFullName("SoundEntity:Entity"), nullptr, 0);
 		inst->AddMember(GetScriptIdByFullName("TriggerSoundEmitter:Entity"), nullptr, 0);
 		inst->AddMember(GetScriptIdByFullName("Activated:truth"), "false", 0);
-		inst->AddMember(GetScriptIdByFullName("AllowActivate__truth"), "true", 0);
+		inst->AddMember(GetScriptIdByFullName("AllowActivate:truth"), "true", 0);
 
 		inst->CalculateSize();
 
