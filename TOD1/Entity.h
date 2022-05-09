@@ -19,19 +19,8 @@ public:
     };
 
     EntityType     *m_ScriptEntity;
-    char            m_ScriptDataSaved;
-    char            field_9;
-    char            field_A;
-    char            field_B;
-
-    char            field_C;
-
-    char            m_SaveDataStored;
-    char            field_E;
-    char            field_F;
-    char            field_10;
-    char            field_11;
-
+    char            m_ScriptSlots[5];       //  NOTE: 5 slots with 8 bytes each - 40 possible script arguments. If bit slot is set, then entity script has this argument used.
+    char            m_PropertiesSlots[5];   //  NOTE: same as above, but for properties.
     short           m_Order;
     EntityId        m_Id;
     int            *m_Parameters; // NOTE: an array of properties values.
@@ -75,6 +64,8 @@ public:
     void            SetScript(EntityType* script); // @869E20
 
     const int       SaveScriptData(SavePoint * savefilehelper); // @86B110
+    void            ClearPropertiesSlots(); //  @86A190
+    void            ClearScriptsSlots();    //  @86A150
 
     static void     Register(); // @86BC70
     static Entity*  Create(AllocatorIndex); // @86C130

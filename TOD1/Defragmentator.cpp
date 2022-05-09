@@ -257,3 +257,17 @@ void Defragmentator::DefragmentIfNecessary()
         field_2C = NULL;
     }
 }
+
+int Defragmentator::FindScriptThreadSpaceIndex(ScriptThread* scriptThread) const
+{
+    if (m_AllocatedSpace[field_14].m_ScriptThreadPtr == scriptThread)
+        return field_14;
+
+    if (m_Size <= 0)
+        return 0;
+
+    int spaceIndex;
+    for (spaceIndex = 0; m_AllocatedSpace[spaceIndex].m_ScriptThreadPtr != scriptThread; ++spaceIndex);
+
+    return spaceIndex >= m_Size ? 0 : spaceIndex;
+}

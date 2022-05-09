@@ -49,16 +49,8 @@ Entity::Entity()
     m_Parameters = nullptr;
     m_ScriptData = nullptr;
 
-    m_ScriptDataSaved = 0;
-    field_9 = 0;
-    field_A = 0;
-    field_B = 0;
-    field_C = 0;
-    m_SaveDataStored = 0;
-    field_E = 0;
-    field_F = 0;
-    field_10 = 0;
-    field_11 = 0;
+    memset(&m_ScriptSlots, NULL, sizeof(m_ScriptSlots));
+    memset(&m_PropertiesSlots, NULL, sizeof(m_PropertiesSlots));
 
     m_Id.Id = g_AssetManager->AddEntity(this);
 }
@@ -281,6 +273,16 @@ const int Entity::SaveScriptData(SavePoint * savefilehelper)
     }
 
     return writtendatasize;
+}
+
+void Entity::ClearPropertiesSlots()
+{
+    memset(&m_PropertiesSlots, NULL, sizeof(m_PropertiesSlots));
+}
+
+void Entity::ClearScriptsSlots()
+{
+    memset(&m_ScriptSlots, NULL, sizeof(m_ScriptSlots));
 }
 
 void Entity::Register()

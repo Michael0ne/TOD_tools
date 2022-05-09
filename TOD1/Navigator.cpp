@@ -164,7 +164,7 @@ void* Navigator::GetPath2()
 
 void Navigator::SetPath2(void* path2List)
 {
-    if ((field_A & 4) == 0 || (field_F & 4) == 0)
+    if ( ((m_ScriptSlots[2] & 4) == 0) && ((m_PropertiesSlots[2] & 4) == 0) )
     {
         const void* currentPath2List = GetPath2();
         StoreProperty(18, &currentPath2List, VectorList);
@@ -337,7 +337,7 @@ Navigator* Navigator::Create(AllocatorIndex)
 
 void Navigator::StoreAndClearProperties()
 {
-    if ((field_A & 4) == 0 || (field_F & 4) == 0)
+    if (((m_ScriptSlots[2] & 4) == 0) && ((m_PropertiesSlots[2] & 4) == 0))
     {
         const void* currentPath2 = GetPath2();
         StoreProperty(18, &currentPath2, VectorList);
@@ -390,7 +390,7 @@ void Navigator::AddPointToPathList(const Vector4f& point)
     if (!m_PathList.size())
         SetTargetPoint(point);
 
-    if ((field_A & 4) == 0 || (field_F & 4) == 0)
+    if (((m_ScriptSlots[2] & 4) == 0) && ((m_PropertiesSlots[2] & 4) == 0))
     {
         const void* currentPath2 = GetPath2();
         StoreProperty(18, &currentPath2, VectorList);

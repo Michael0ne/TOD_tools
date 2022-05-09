@@ -171,7 +171,6 @@ public:
     void                DestroyChildren();  //  @8752A0
     void                ClearFromBlockingList();    //  @88E950
     void                ClearFromSceneList();   //  @88E980
-    void                _86A190();  //  @86A190
     void                SetFragment(const char* const fragmentpath);    //  @88F8A0
     void                TryInstantiate(); //   @88C2D0
     void                FindNode_Impl(int* args);  //  @88EB60
@@ -284,6 +283,7 @@ public:
     void                CallPropertySetter(const unsigned short propertyId, const void* data);  //  @86A6C0
     void                _86B560(const unsigned int propertyId, const void* data); //  @86B560
     Node*               FindNodeSlowRecursive(const char* const nodeName); //  @88DFF0
+    void                StorePropertyData(const int propertyIndex, const int* const propertyValue, const DataType* propertyType);   //  @86A020
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

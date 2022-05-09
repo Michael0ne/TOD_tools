@@ -78,7 +78,7 @@ public:
     virtual void  stub7() override; //  @47AE70 //  NOTE: not used, could be a profiler leftover.
 
     void            DefragmentIfNecessary();    //  @47B780
-
+    int             FindScriptThreadSpaceIndex(ScriptThread* scriptThread) const;   //  @47BC10
 };
 
 ASSERT_CLASS_SIZE(Defragmentator, 52);
