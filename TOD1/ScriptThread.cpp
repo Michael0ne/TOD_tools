@@ -115,7 +115,7 @@ void ScriptThread::_48E390()
         if (m_SleepUntil <= nextWakeTimeMs)
         {
             m_CurrentStackElement = &m_CallStack[m_CallStack.size() - 1];
-            m_ScriptNode->_86B610();
+            m_ScriptNode->StoreScriptData();
             m_WaitForFrame = -1;
             m_ThreadFlags.Sleeping = false;
             Threads[CurrentThread++] = this;
@@ -138,7 +138,7 @@ void ScriptThread::_48E390()
         if (m_WaitForFrame == -1 || nextWakeFrame)
         {
             m_CurrentStackElement = &m_CallStack[m_CallStack.size() - 1];
-            m_ScriptNode->_86B610();
+            m_ScriptNode->StoreScriptData();
             m_WaitForFrame = -1;
             m_ThreadFlags.Sleeping = false;
             Threads[CurrentThread++] = this;
@@ -218,6 +218,58 @@ void ScriptThread::PushToCallStack(void(*funcPtr)(ScriptThread*), const short ar
     element.m_Current = NULL;
     element.m_ParameterOffset = m_StackSize - argNumber;
     element.m_OnParameterOffset = -2;
+}
+
+int ScriptThread::WriteScriptInformation(int* outInformation) const
+{
+    int* outInformationBasePtr = outInformation;
+    Scriptbaked* script = m_ScriptNode->m_ScriptEntity->m_Script;
+    outInformation[1] = m_CallStack.size();
+    int* stackInfoPtr = &outInformation[2];
+
+    for (size_t i = 0; i < m_CallStack.size(); ++i)
+    {
+        const CallStackElement& currentCallStackElement = m_CallStack[i];
+        *stackInfoPtr++ = script->GetParameterProcedureIndex(currentCallStackElement.m_FuncPtr);
+        *stackInfoPtr++ = currentCallStackElement.m_Current;
+        *stackInfoPtr++ = currentCallStackElement.m_ParameterOffset;
+        *stackInfoPtr++ = currentCallStackElement.m_LocalOffset;
+    }
+
+    outInformation = stackInfoPtr;
+    *outInformation = m_StackSize;
+
+    std::vector<DataType*> argumentsList(100);
+    unsigned int stackOffset = 0;
+    unsigned int dataOffset = (m_CallStack.size() * 10) + 3;
+    if (m_CallStack.size())
+    {
+        for (size_t i = 0; i < m_CallStack.size(); ++i)
+        {
+            script->GetMethodParams(m_CallStack[i].m_FuncPtr, argumentsList);
+            if (argumentsList.size())
+            {
+                for (size_t j = 0; j < argumentsList.size(); ++j)
+                {
+                    int newTypeSize = argumentsList[j]->CopyNoAllocate((const char*)m_Stack[stackOffset].m_Contents, (char*)++outInformation);
+                    outInformation += newTypeSize;
+                    stackOffset += argumentsList[j]->m_Size;
+                    dataOffset += newTypeSize;
+                }
+            }
+        }
+    }
+
+    *outInformation++ = m_SleepUntil;
+    *outInformation++ = m_WaitForFrame;
+    *outInformation++ = m_ThreadFlags.SleepRealTime;
+    *outInformation++ = m_ThreadFlags.Sleeping;
+    *outInformation++ = m_ThreadFlags.Priority;
+    *outInformation++ = m_ThreadFlags.Suspended;
+    dataOffset += 6;
+    *outInformationBasePtr = dataOffset;
+
+    return dataOffset;
 }
 
 bool ScriptThread::IsThreadExists(const ScriptThread* scriptthread)

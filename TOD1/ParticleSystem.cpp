@@ -7,6 +7,7 @@
 #include "IntegerType.h"
 #include "StringType.h"
 #include "VectorType.h"
+#include "GeometryEffect.h"
 
 bool ParticleSystem::LodAndFade;
 Vector4f ParticleSystem::CameraOrigin = BuiltinType::ZeroVector;
@@ -346,6 +347,58 @@ char ParticleSystem::FloatToChar(float value)
     return valueInt;
 }
 
+void ParticleSystem::KillNewEffects(const float gameTime)
+{
+    Entity* effectEntity = g_AssetManager->FindFirstEntity();
+    while (effectEntity)
+    {
+        if (effectEntity->m_ScriptEntity)
+        {
+            EntityType* entScript = effectEntity->m_ScriptEntity;
+            while (tParticleSystem != entScript)
+            {
+                entScript = entScript->m_Parent;
+                if (!entScript)
+                    break;
+            }
+
+            if (entScript)
+            {
+                Particle* particle = ((ParticleSystem*)effectEntity)->m_Properties.m_ParticlesArray;
+                while (particle)
+                {
+                    Particle* particleCopy = particle;
+                    if (particle->m_StartTime >= gameTime)
+                        ((ParticleSystem*)effectEntity)->m_Properties.RemoveParticle((ParticleA*)particle);
+                    particle = particleCopy->m_Next;
+                }
+            }
+
+            entScript = effectEntity->m_ScriptEntity;
+            while (tGeometryEffect != entScript)
+            {
+                entScript = entScript->m_Parent;
+                if (!entScript)
+                    break;
+            }
+
+            if (entScript)
+            {
+                Effect* effect = ((GeometryEffect*)effectEntity)->m_Effect;
+                while (effect)
+                {
+                    Effect* parentEffect = effect->m_ParentEffect;
+                    if (effect->m_StartTime >= gameTime)
+                        ((GeometryEffect*)effectEntity)->RemoveEffect(effect);
+                    effect = parentEffect;
+                }
+            }
+        }
+
+        effectEntity = g_AssetManager->FindNextEntity(effectEntity);
+    }
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 ParticleSystemInfo::ParticleSystemInfo()
 {
@@ -422,4 +475,21 @@ void ParticleSystemInfo::KillAll()
 
         delete deletableParticle;
     }
+}
+
+void ParticleSystemInfo::RemoveParticle(ParticleA* particleRef)
+{
+    if (particleRef == m_Particles)
+        m_Particles = nullptr;
+
+    if (particleRef == m_ParticlesArray)
+        m_ParticlesArray = particleRef->m_Next;
+
+    if (particleRef->m_Next)
+        particleRef->m_Next->m_Previous = particleRef->m_Previous;
+
+    if (particleRef->m_Previous)
+        particleRef->m_Previous->m_Next = particleRef->m_Next;
+
+    delete particleRef;
 }

@@ -56,6 +56,7 @@ struct Effect
 
 class GeometryEffect : public Model
 {
+    friend class ParticleSystem;
 protected:
     int                 m_TotalEffects;
     float               m_EffectLifeTime;

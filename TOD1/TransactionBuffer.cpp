@@ -26,9 +26,9 @@ TransactionBuffer::~TransactionBuffer()
 void TransactionBuffer::_8AA1F0(int** a1)
 {
     **a1 = 0x80000000;
-    *a1++;
-    field_20 = (Entity*)(&(*a1)[-m_Size] - (int*)m_Buffer);
-    *a1 = (int*)m_Buffer;
+    *a1 = *a1 + 1;
+    field_20 = &(*a1)[-m_Size] - m_Buffer;
+    *a1 = m_Buffer;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

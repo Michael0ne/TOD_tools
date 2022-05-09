@@ -129,7 +129,7 @@ bool SceneSaveLoad::ResetGame(Node** loadedBlocksArray)
     return false;
 }
 
-int* SceneSaveLoad::_873BA0(const unsigned int nodeid)
+int* SceneSaveLoad::GetEntityDataBuffer(const unsigned int nodeid)
 {
     if (!Scene::SceneInstance)
         return nullptr;
@@ -150,7 +150,7 @@ int* SceneSaveLoad::_873BA0(const unsigned int nodeid)
     return nullptr;
 }
 
-void SceneSaveLoad::_873C00(const unsigned int, const int* a2)
+void SceneSaveLoad::SaveEntityToDataBuffer(const unsigned int, const int* a2)
 {
     switch (m_SavedPlayMode)
     {

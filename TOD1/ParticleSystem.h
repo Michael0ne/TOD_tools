@@ -116,6 +116,7 @@ struct ParticleSystemInfo
     void            CalculateEmitterLength();   //  @4250C0
     ParticleA*      CreateNewParticle();    //  @425620
     void            KillAll();  //  @425050
+    void            RemoveParticle(ParticleA* particleRef); //  @425000
 };
 
 class ParticleSystem : public Node
@@ -182,6 +183,7 @@ public:
     static float    CharToFloatLimited(const unsigned char valueFrom, const float limitValue);  //  @424CB0
     static float    ShortToFloatLimited(const unsigned short valueFrom, const float limitValue);    //  @424D60
     static char     FloatToChar(float value);   //  @424C60
+    static void     KillNewEffects(const float gameTime);   //  @8E7280
 
     static bool     LodAndFade; // @A08944
     static Vector4f CameraOrigin;   //  @A35E18

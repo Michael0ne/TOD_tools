@@ -75,8 +75,8 @@ public:
     bool                LoadSavePointData(class SavePoint*, EntityType*, class Node* readFinishedCb); // @874F40
     bool                CompressAndWriteSaveData(class SavePoint*, EntityType*); // @874A00
     bool                ResetGame(class Node** loadedBlocksArray); // @874D00
-    int*                _873BA0(const unsigned int nodeid); // @873BA0
-    void                _873C00(const unsigned int, const int* a2); // @873C00
+    int*                GetEntityDataBuffer(const unsigned int nodeid); // @873BA0
+    void                SaveEntityToDataBuffer(const unsigned int, const int* a2); // @873C00
     void                Adapt(); // @873D30
     bool                LoadSaveInformation(SavePoint* sp, SaveInfo* outSaveInfo, char** outDeflatedBufferPtr, int* outDeflatedBufferSize); //  @8747F0
     

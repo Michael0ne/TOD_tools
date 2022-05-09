@@ -146,8 +146,8 @@ public:
     const char*         GetScript() const;  //  @86A230
     unsigned int        GetFlags() const;   //  @495DB0
 
-    void                _86ACB0(); //  @_86ACB0
-    void                _86B610();  //  @86B610
+    void                SaveScriptThreadData(); //  @86ACB0
+    void                StoreScriptData();  //  @86B610
     void                SetScriptData(Defragmentator* defrag, EntityScriptData* data);  //  @48B700
     void                GetWorldPos(Vector4f& pos) const; //  @484370
     void                StoreProperty(const int index, const void* param, DataType* type);   //  @86A3C0 //  NOTE: probably it's 'SetScriptParam'.

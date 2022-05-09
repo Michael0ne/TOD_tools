@@ -23,7 +23,7 @@ public:
     int             (*m_ReadCompressedBufferData)(char* outBuffer, int size);
     std::list<BufferList>  m_List_1;
     void           *m_ListHead;
-    Entity         *field_20;
+    int             field_20;
 
 public:
     TransactionBuffer(unsigned int bufferSize); // @8AADA0

@@ -122,6 +122,7 @@ public:
     void                        AdjustStackSize(const unsigned int size);   //  @48E6A0
     void                        PushToCallStack( void (*funcPtr)(ScriptThread*), const short argNumber, Node* node, void* dummy);   //  @48E700
     void                        AdjustAndPopStack();    //  @48E630
+    int                         WriteScriptInformation(int* outInformation) const;  //  @48CF00
 
     static void                 _48CE30();  //  @48CE30
     static bool                 IsThreadExists(const ScriptThread* scriptthread);

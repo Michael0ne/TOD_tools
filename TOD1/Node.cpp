@@ -265,7 +265,7 @@ void Node::_86A930(const int size, const int* value, int* const outval, const in
 
 void Node::_86AA10(const int propertyId, const int* value, int* const outval, const int a4)
 {
-    int* buffptr = g_SceneSaveLoad->_873BA0(m_Id.Id);
+    int* buffptr = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
     if (buffptr)
     {
         DataType* propertyType = m_ScriptEntity->m_Script->m_PropertiesList[propertyId].m_Info->m_PropertyType;
@@ -273,7 +273,7 @@ void Node::_86AA10(const int propertyId, const int* value, int* const outval, co
 
         buffptr++[0] = (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000 | ((short)propertyId + (short)entityType->m_LocalPropertiesList.size() + (short)entityType->m_TotalLocalProperties) & 0xFFF;
         const int propertynewsize = propertyType->CopyNoAllocate((const char*)value, (char*)(++buffptr));
-        g_SceneSaveLoad->_873C00(m_Id.Id, &buffptr[4 * propertynewsize]);
+        g_SceneSaveLoad->SaveEntityToDataBuffer(m_Id.Id, &buffptr[4 * propertynewsize]);
     }
 
     *outval |= a4;
@@ -1784,23 +1784,53 @@ unsigned int Node::GetFlags() const
     return *(unsigned int*)&m_Flags & 0xFFF;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Node::_86ACB0()
+void Node::SaveScriptThreadData()
 {
+    if (!Scene::_A3CEE8)
+        return;
+
+    *Scene::_A3CEE8++ = (m_Id.Id << 15) | ((m_Id.BlockId & 0x7000) - 1) & 0xF000;
+    if (m_ScriptData && m_ScriptData->m_ScriptThread)
+    {
+        *Scene::_A3CEE8++ = 1;
+        Scene::_A3CEE8 += m_ScriptData->m_ScriptThread->WriteScriptInformation(Scene::_A3CEE8);
+    }
+    else
+    {
+        *Scene::_A3CEE8++ = 0;
+    }
+
+    TransactionBuffer* sceneRewBuffer = Scene::SceneInstance->m_RewindBuffer2;
+    if (ALIGN_4BYTES(sceneRewBuffer->m_Buffer + 4 * sceneRewBuffer->m_Chunks - Scene::_A3CEE8) < 0x4000)
+        sceneRewBuffer->_8AA1F0(&Scene::_A3CEE8);
+
+    m_ScriptDataSaved = 1;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void Node::_86B610()
+void Node::StoreScriptData()
 {
     if (!m_ScriptEntity || m_Flags._29 || m_Flags.Volatile)
         return;
 
-    if (!field_8)
-        _86ACB0();
+    if (!m_ScriptDataSaved)
+        SaveScriptThreadData();
 
-    if (!field_D[0])
+    if (!m_SaveDataStored)
     {
+        int* entityDataBuffer = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
+        if (entityDataBuffer)
+        {
+            *entityDataBuffer++ = (m_Id.Id << 15) | ((m_Id.BlockId & 0x7000) - 1) & 0xF000;
+            if (m_ScriptData && m_ScriptData->m_ScriptThread)
+            {
+                *entityDataBuffer++ = 1;
+                entityDataBuffer += m_ScriptData->m_ScriptThread->WriteScriptInformation(entityDataBuffer);
+            }
 
+            g_SceneSaveLoad->SaveEntityToDataBuffer(m_Id.Id, entityDataBuffer);
+        }
+
+        m_SaveDataStored = true;
     }
 }
 
@@ -2068,20 +2098,20 @@ void Node::_869EC0(const unsigned int paramind, const void* paramptr, DataType& 
     if (tb->m_Buffer[tb->m_Chunks - (int)Scene::_A3CEE4] < 1024)
         tb->_8AA1F0(&Scene::_A3CEE4);
 
-    *(&field_8 + (paramind / 8)) |= 1 << (paramind & 7);
+    *(&m_ScriptDataSaved + (paramind / 8)) |= 1 << (paramind & 7);
 }
 
 void Node::_869F80(const unsigned int paramind, const void* paramptr, DataType& paramtype)
 {
-    int* v1 = g_SceneSaveLoad->_873BA0(m_Id.Id);
-    if (v1)
+    int* dataBuffer = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
+    if (dataBuffer)
     {
-        *v1 = paramind & 0xFFF | (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000;
-        v1++;
-        g_SceneSaveLoad->_873C00(m_Id.Id, &v1[paramtype.CopyNoAllocate((char*)paramptr, (char*)v1)]);
+        *dataBuffer = paramind & 0xFFF | (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000;
+        dataBuffer++;
+        g_SceneSaveLoad->SaveEntityToDataBuffer(m_Id.Id, &dataBuffer[paramtype.CopyNoAllocate((char*)paramptr, (char*)dataBuffer)]);
     }
 
-    *(&field_8 + (paramind / 8 + 5)) |= 1 << (paramind & 7);
+    *(&m_ScriptDataSaved + (paramind / 8 + 5)) |= 1 << (paramind & 7);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -2146,7 +2176,7 @@ void Node::ClearFromSceneList()
 
 void Node::_86A190()
 {
-    memset(field_D, NULL, sizeof(field_D));
+    memset(&m_SaveDataStored, NULL, sizeof(m_SaveDataStored));
 }
 
 void Node::SetFragment(const char* const fragmentpath)

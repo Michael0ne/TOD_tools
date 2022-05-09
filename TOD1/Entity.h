@@ -14,19 +14,23 @@ public:
         unsigned    HasQuadTree : 1;    //  1
         unsigned    HasFragment : 1;    //  2
         unsigned    _3 : 5;             //  3 - 7
-        unsigned    Id : 20;            //  8 - 27
-        unsigned    BlockId : 3;        //  28 - 30
+        unsigned    Id : 15;            //  8 - 22
+        unsigned    BlockId : 3;        //  23 - 25
     };
 
     EntityType     *m_ScriptEntity;
-    char            field_8;
+    char            m_ScriptDataSaved;
     char            field_9;
     char            field_A;
     char            field_B;
 
     char            field_C;
 
-    char            field_D[5];
+    char            m_SaveDataStored;
+    char            field_E;
+    char            field_F;
+    char            field_10;
+    char            field_11;
 
     short           m_Order;
     EntityId        m_Id;
