@@ -6,7 +6,7 @@ int ScriptThread::CurrentThread;
 ScriptThread* ScriptThread::Threads[100];
 bool ScriptThread::WarnDelayedException;
 int ScriptThread::LatestMethodIndex;
-ScriptThread::MethodStruct *ScriptThread::RecentMethodsArray[4];
+ScriptThread::MethodStruct *ScriptThread::RecentMethodsArray[5];
 ScriptThread::NodeScriptDataInfo ScriptThread::ScriptDataCache[6];
 int ScriptThread::LatestScriptDataCacheIndex;
 int ScriptThread::CurrentLocalOffset;
@@ -86,14 +86,41 @@ void ScriptThread::StoreMethodInformation(void(*a1)(ScriptThread*), int a2, void
     m_MethodInfo->field_4 = a2;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void ScriptThread::Reset()
 {
     if (m_CallStack.size())
     {
         m_ThreadFlags.Suspended = false;
         m_ThreadFlags.MarkedForSuspend = false;
+        _48E8A0();
     }
+
+    if (m_MethodInfo)
+    {
+        if (LatestMethodIndex == 4)
+            delete m_MethodInfo;
+        else
+            RecentMethodsArray[LatestMethodIndex++] = m_MethodInfo;
+    }
+
+    m_MethodInfo = nullptr;
+    m_Stack.clear();
+    m_CallStack.clear();
+
+    m_StackSize = 0;
+    m_ThreadFlags.Sleeping = false;
+    m_ThreadFlags.SleepRealTime = false;
+    m_StateMessageCount = 0;
+    m_ThreadFlags.Suspended = false;
+    m_ThreadFlags.MarkedForSuspend = false;
+    m_ThreadFlags.Priority = true;
+
+    m_CurrentStackElement = nullptr;
+    m_WaitForFrame = -1;
+    m_SleepUntil = 0;
+
+    if (m_ScriptNode)
+        m_ThreadFlags.HasScriptNode = true;
 }
 
 void ScriptThread::_48E390()
@@ -168,9 +195,87 @@ void ScriptThread::SetSleepTime(const float sleepfor, const bool sleepRealTime)
         m_SleepUntil = -1;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void ScriptThread::_48CE30()
+int ScriptThread::_48E770()
 {
+    if (!m_MethodInfo)
+        return 0;
+
+    m_CurrentStackElement = m_CallStack.size() ? &m_CallStack[m_CallStack.size() - 1] : nullptr;
+
+    if (!m_MethodInfo->field_4 && m_MethodInfo->field_0 == m_CurrentStackElement->m_FuncPtr)
+        m_MethodInfo->field_4 = 1;
+
+    if (m_MethodInfo->field_4 == 1)
+    {
+        if (m_MethodInfo->field_8)
+        {
+            PushToCallStack(m_MethodInfo->field_8, 0, m_MethodInfo->field_C, m_MethodInfo->field_10);
+            m_WaitForFrame = -1;
+            m_ThreadFlags.Sleeping = false;
+
+            if (LatestMethodIndex == 4)
+                delete m_MethodInfo;
+            else
+                RecentMethodsArray[LatestMethodIndex++] = m_MethodInfo;
+
+            m_MethodInfo = nullptr;
+            return 1;
+        }
+        else
+        {
+            if (LatestMethodIndex == 4)
+                delete m_MethodInfo;
+            else
+                RecentMethodsArray[LatestMethodIndex++] = m_MethodInfo;
+
+            m_MethodInfo = nullptr;
+            return 0;
+        }
+    }
+    else
+    {
+        if (m_MethodInfo->field_4 == -1 && m_MethodInfo->field_0 == m_CurrentStackElement->m_FuncPtr)
+            m_MethodInfo->field_4 = 1;
+
+        m_ThreadFlags.Sleeping = false;
+        m_WaitForFrame = -1;
+        return -1;
+    }
+}
+
+void ScriptThread::_48E8A0()
+{
+    if (!m_CallStack.size())
+        return;
+
+    StoreMethodInformation(nullptr, -1, nullptr, nullptr, nullptr);
+    _48E770();
+    _48E390();
+
+    if (m_StackSize != m_CallStack[0].m_LocalOffset)
+        MemoryManager::AllocatorsList[DEFAULT]->CallMethodAtOffset20();
+}
+
+void ScriptThread::ResetCache()
+{
+    if (LatestScriptDataCacheIndex)
+    {
+        do
+        {
+            Defragmentator* defrag = ScriptDataCache[LatestScriptDataCacheIndex].m_Defragmentator;
+            LatestScriptDataCacheIndex--;
+
+            unsigned int chunkind = ((unsigned __int64)(0x2AAAAAAB * ((char*)ScriptDataCache[LatestScriptDataCacheIndex].m_ScriptData - (char*)defrag->m_AllocatedSpace)) >> 32) >> 1;
+            defrag->Deallocate(chunkind + (chunkind >> 31));
+
+            ScriptDataCache[LatestScriptDataCacheIndex].m_ScriptData = nullptr;
+        } while (LatestScriptDataCacheIndex);
+    }
+
+    do
+    {
+        delete RecentMethodsArray[LatestMethodIndex--];
+    } while (LatestMethodIndex);
 }
 
 const int ScriptThread::GetSceneTime() const
@@ -208,7 +313,6 @@ void ScriptThread::AdjustStackSize(const unsigned int size)
         memset(m_Stack[stacksize - size].m_Contents, NULL, size * 4);   //  NOTE: not sure about this.
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void ScriptThread::PushToCallStack(void(*funcPtr)(ScriptThread*), const short argNumber, Node* node, void* dummy)
 {
     CallStackElement element;
@@ -218,6 +322,9 @@ void ScriptThread::PushToCallStack(void(*funcPtr)(ScriptThread*), const short ar
     element.m_Current = NULL;
     element.m_ParameterOffset = m_StackSize - argNumber;
     element.m_OnParameterOffset = -2;
+
+    m_CallStack.push_back(element);
+    m_CurrentStackElement = &m_CallStack[m_CallStack.size() - 1];
 }
 
 int ScriptThread::WriteScriptInformation(int* outInformation) const
@@ -270,6 +377,59 @@ int ScriptThread::WriteScriptInformation(int* outInformation) const
     *outInformationBasePtr = dataOffset;
 
     return dataOffset;
+}
+
+int ScriptThread::_48E8F0(const int stackIndex)
+{
+    if (m_CallStack.size())
+    {
+        m_CurrentStackElement = &m_CallStack[m_CallStack.size() - 1];
+        m_CurrentStackElement->m_Current = stackIndex;
+    }
+    else
+    {
+        m_CurrentStackElement = nullptr;
+        //  NOTE: null pointer exception will be raised here.
+#ifndef INCLUDE_FIXES
+        m_CurrentStackElement->m_Current = stackIndex;
+#endif
+    }
+
+    return _48E770();
+}
+
+void ScriptThread::_48EDA0()
+{
+    while (m_MethodInfo)
+    {
+        m_ThreadFlags.Sleeping = false;
+        m_WaitForFrame = -1;
+        _48E390();
+    }
+
+    if (m_ThreadFlags.MarkedForSuspend)
+    {
+        m_ThreadFlags.MarkedForSuspend = false;
+        m_ThreadFlags.Suspended = true;
+    }
+
+    if (m_CallStack.size() > 1)
+        return;
+
+    m_ScriptNode->SetScriptData(nullptr, nullptr);
+
+    if (LatestScriptDataCacheIndex == 6)
+    {
+        m_ScriptNode->m_Defragmentator->Deallocate(((char*)m_ScriptNode->m_ScriptData - (char*)m_ScriptNode->m_Defragmentator->m_AllocatedSpace) / 12);
+    }
+    else
+    {
+        m_ScriptNode->m_ScriptData->m_ScriptThread->Reset();
+        m_ScriptNode->m_ScriptData->m_ScriptThread->m_ScriptNode = nullptr;
+        ScriptDataCache[LatestScriptDataCacheIndex].m_ScriptData = m_ScriptNode->m_ScriptData;
+        ScriptDataCache[LatestScriptDataCacheIndex].m_Defragmentator = m_ScriptNode->m_Defragmentator;
+        LatestScriptDataCacheIndex++;
+    }
 }
 
 bool ScriptThread::IsThreadExists(const ScriptThread* scriptthread)

@@ -10,7 +10,7 @@ protected:
     Vector4f            m_TargetPoint;
     Vector4f            m_NextTargetPoint;
     float               m_f70;
-    float               m_f74;
+    float               m_ProbeLineThickness;
     Node               *m_MoveCtrl;
     union
     {
@@ -25,7 +25,7 @@ protected:
     std::vector<Vector4f>    m_PathList;
     int                *field_98;
     std::vector<Vector4f>    m_Path2List;
-    int                 m_PathPoint;
+    unsigned int        m_PathPoint;
     float               m_PathFraction;
     int                 m_ObstacleCheckInterval;
     int                 m_NextObstacleCheckTime;
@@ -37,7 +37,15 @@ protected:
 public:
     Navigator(); // @91DB30
     virtual ~Navigator();   //  @91DC80
+    virtual void Update();  //  @91EEE0
 
+private:
+    bool                UpdateTarget(const float maxLookAhead);    //  @91D9A0
+    Vector4f&           GetNextTarget(const Vector4f& position); //  @91D610
+    const Vector4f&     CheckObstacle(const Vector4f& position);    //  @91DD40
+    bool                ShouldTurn(const Vector4f& position) const; //  @91D3C0
+
+public:
     Node*               GetMoveCtrl() const;    //  @8A6D20
     void                SetMoveCtrl(int* args); //  @55A4C0
     const bool          IsActive() const;   //  @91CCC0

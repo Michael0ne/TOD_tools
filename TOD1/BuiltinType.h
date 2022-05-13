@@ -217,6 +217,7 @@ public:
     static const ColorRGB  ColorPink;  // @9B7164
     static const ColorRGB  ColorBlue;  // @9B7174
     static const ColorRGB  ColorWhite;  // @9B7184
+    static const float      Epsilon;    //  @9B3B74
 };
 
 extern BuiltinType* tBuiltin; // @A3B578

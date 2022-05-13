@@ -680,6 +680,11 @@ void AssetBlockReader::CompiledTextAsset::DumpData(const AssetBlockReader* reade
 
     char* textName = strrchr(m_AssetName, '/') + 1;
     fopen_s(&textFile, textName, "wb");
+    if (!textFile)
+    {
+        printf("\tFailed to create output file!\n");
+        return;
+    }
 
     for (unsigned int i = 0; i < m_TextIndicies_Size; ++i)
     {

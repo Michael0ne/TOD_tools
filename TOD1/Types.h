@@ -13,6 +13,18 @@ struct Vector2 {
     Vector2()
         : x(0), y(0)
     {}
+
+    inline Vector2<T>& Inverse()
+    {
+        x = (T)0 - x;
+        y = (T)0 - y;
+        return Vector2<T>(x, y);
+    }
+
+    static inline Vector2<T> Inverse(const Vector2<T>& vec)
+    {
+        return vec.Inverse();
+    }
 };
 
 typedef Vector2<unsigned int> ScreenResolution;
@@ -40,6 +52,19 @@ struct Vector3 {
     inline const float Magnitude(const Vector3<T>& rvec) const
     {
         return ( ((x - rvec.x) * (x - rvec.x)) + ((y - rvec.y) * (y - rvec.y)) + ((z - rvec.z) * (z - rvec.z)) );
+    }
+
+    inline Vector3<T>& Inverse()
+    {
+        x = (T)0 - x;
+        y = (T)0 - y;
+        z = (T)0 - z;
+        return Vector3<T>(x, y, z);
+    }
+
+    static inline Vector3<T> Inverse(const Vector3<T>& vec)
+    {
+        return vec.Inverse();
     }
 };
 
@@ -69,7 +94,7 @@ struct Vector4 {
         : x(rhs.x), y(rhs.y), z(rhs.z), a(0)
     {}
 
-    const bool operator==(const Vector4<T>& rhs)
+    const bool operator==(const Vector4<T>& rhs) const
     {
         return
             (x == rhs.x) &&
@@ -78,7 +103,7 @@ struct Vector4 {
             (a == rhs.a);
     }
 
-    const bool operator==(Vector4<T>& rhs)
+    const bool operator==(Vector4<T>& rhs) const
     {
         return
             (x == rhs.x) &&
@@ -95,6 +120,20 @@ struct Vector4 {
     inline const float Magnitude(const Vector4<T>& rvec) const
     {
         return ( ((x - rvec.x) * (x - rvec.x)) + ((y - rvec.y) * (y - rvec.y)) + ((z - rvec.z) * (z - rvec.z)) + ((a - rvec.a) * (a - rvec.a)) );
+    }
+
+    inline Vector4<T>& Inverse()
+    {
+        x = (T)0 - x;
+        y = (T)0 - y;
+        z = (T)0 - z;
+        a = (T)0 - a;
+        return Vector4<T>(x, y, z, a);
+    }
+
+    static inline Vector4<T> Inverse(const Vector4<T>& vec)
+    {
+        return vec.Inverse();
     }
 };
 
@@ -155,6 +194,20 @@ struct Quaternion {
         x = rhs.m128_f32[1];
         y = rhs.m128_f32[2];
         z = rhs.m128_f32[3];
+    }
+
+    inline Quaternion<T>& Inverse()
+    {
+        x = (T)0 - x;
+        y = (T)0 - y;
+        z = (T)0 - z;
+        a = (T)0 - a;
+        return Quaternion<T>(x, y, z, a);
+    }
+
+    static inline Quaternion<T> Inverse(const Quaternion<T>& vec)
+    {
+        return vec.Inverse();
     }
 };
 

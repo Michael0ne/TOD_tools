@@ -12,6 +12,7 @@ public:
     virtual int     CopyTo(void*);   //  @47BFD0
 };
 
+//  NOTE: possible name 'ScriptInterface'.
 class ScriptThread : public IScriptThread
 {
     friend class Entity;
@@ -123,8 +124,15 @@ public:
     void                        PushToCallStack( void (*funcPtr)(ScriptThread*), const short argNumber, Node* node, void* dummy);   //  @48E700
     void                        AdjustAndPopStack();    //  @48E630
     int                         WriteScriptInformation(int* outInformation) const;  //  @48CF00
+    int                         _48E8F0(const int stackIndex);  //  @48E8F0
+    void                        _48EDA0();  //  @48EDA0
 
-    static void                 _48CE30();  //  @48CE30
+private:
+    int                         _48E770();  //  @48E770
+    void                        _48E8A0();  //  @48E8A0
+
+public:
+    static void                 ResetCache();  //  @48CE30
     static bool                 IsThreadExists(const ScriptThread* scriptthread);
     static int                  GetCurrentThreadIndex();    //  @48CC40
 
@@ -132,8 +140,8 @@ public:
     static ScriptThread*        Threads[100];   //  @A3B5C8
     static bool                 WarnDelayedException;   //  @A3B770
     static int                  LatestMethodIndex;    //  @A3B76C
-    static MethodStruct        *RecentMethodsArray[4];  //  @A3B5B8
-    static NodeScriptDataInfo   ScriptDataCache[6];    //  @A3B778
+    static MethodStruct        *RecentMethodsArray[5];  //  @A3B5B4
+    static NodeScriptDataInfo   ScriptDataCache[6];    //  @A3B774
     static int                  LatestScriptDataCacheIndex; //  @A3B768
     static int                  CurrentLocalOffset; //  @A3B760
     static int                  CurrentParameterOffset; //  @A3B764

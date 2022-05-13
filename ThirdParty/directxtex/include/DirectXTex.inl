@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------
 // DirectXTex.inl
-//  
+//
 // DirectX Texture Library
 //
 // Copyright (c) Microsoft Corporation.
@@ -26,16 +26,16 @@ DEFINE_ENUM_FLAG_OPERATORS(CNMAP_FLAGS);
 DEFINE_ENUM_FLAG_OPERATORS(CMSE_FLAGS);
 
 // WIC_FILTER modes match TEX_FILTER modes
-inline constexpr WIC_FLAGS operator|(WIC_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<WIC_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_MODE_MASK)); }
-inline constexpr WIC_FLAGS operator|(TEX_FILTER_FLAGS a, WIC_FLAGS b) { return static_cast<WIC_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_MODE_MASK) | static_cast<unsigned long>(b)); }
+constexpr WIC_FLAGS operator|(WIC_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<WIC_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_MODE_MASK)); }
+constexpr WIC_FLAGS operator|(TEX_FILTER_FLAGS a, WIC_FLAGS b) { return static_cast<WIC_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_MODE_MASK) | static_cast<unsigned long>(b)); }
 
 // TEX_PMALPHA_SRGB match TEX_FILTER_SRGB
-inline constexpr TEX_PMALPHA_FLAGS operator|(TEX_PMALPHA_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<TEX_PMALPHA_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_SRGB_MASK)); }
-inline constexpr TEX_PMALPHA_FLAGS operator|(TEX_FILTER_FLAGS a, TEX_PMALPHA_FLAGS b) { return static_cast<TEX_PMALPHA_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_SRGB_MASK) | static_cast<unsigned long>(b)); }
+constexpr TEX_PMALPHA_FLAGS operator|(TEX_PMALPHA_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<TEX_PMALPHA_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_SRGB_MASK)); }
+constexpr TEX_PMALPHA_FLAGS operator|(TEX_FILTER_FLAGS a, TEX_PMALPHA_FLAGS b) { return static_cast<TEX_PMALPHA_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_SRGB_MASK) | static_cast<unsigned long>(b)); }
 
 // TEX_COMPRESS_SRGB match TEX_FILTER_SRGB
-inline constexpr TEX_COMPRESS_FLAGS operator|(TEX_COMPRESS_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<TEX_COMPRESS_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_SRGB_MASK)); }
-inline constexpr TEX_COMPRESS_FLAGS operator|(TEX_FILTER_FLAGS a, TEX_COMPRESS_FLAGS b) { return static_cast<TEX_COMPRESS_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_SRGB_MASK) | static_cast<unsigned long>(b)); }
+constexpr TEX_COMPRESS_FLAGS operator|(TEX_COMPRESS_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<TEX_COMPRESS_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_SRGB_MASK)); }
+constexpr TEX_COMPRESS_FLAGS operator|(TEX_FILTER_FLAGS a, TEX_COMPRESS_FLAGS b) { return static_cast<TEX_COMPRESS_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_SRGB_MASK) | static_cast<unsigned long>(b)); }
 
 
 //=====================================================================================
@@ -43,7 +43,7 @@ inline constexpr TEX_COMPRESS_FLAGS operator|(TEX_FILTER_FLAGS a, TEX_COMPRESS_F
 //=====================================================================================
 
 _Use_decl_annotations_
-constexpr inline bool __cdecl IsValid(DXGI_FORMAT fmt) noexcept
+constexpr bool __cdecl IsValid(DXGI_FORMAT fmt) noexcept
 {
     return (static_cast<size_t>(fmt) >= 1 && static_cast<size_t>(fmt) <= 190);
 }
@@ -53,31 +53,31 @@ inline bool __cdecl IsCompressed(DXGI_FORMAT fmt) noexcept
 {
     switch (fmt)
     {
-        case DXGI_FORMAT_BC1_TYPELESS:
-        case DXGI_FORMAT_BC1_UNORM:
-        case DXGI_FORMAT_BC1_UNORM_SRGB:
-        case DXGI_FORMAT_BC2_TYPELESS:
-        case DXGI_FORMAT_BC2_UNORM:
-        case DXGI_FORMAT_BC2_UNORM_SRGB:
-        case DXGI_FORMAT_BC3_TYPELESS:
-        case DXGI_FORMAT_BC3_UNORM:
-        case DXGI_FORMAT_BC3_UNORM_SRGB:
-        case DXGI_FORMAT_BC4_TYPELESS:
-        case DXGI_FORMAT_BC4_UNORM:
-        case DXGI_FORMAT_BC4_SNORM:
-        case DXGI_FORMAT_BC5_TYPELESS:
-        case DXGI_FORMAT_BC5_UNORM:
-        case DXGI_FORMAT_BC5_SNORM:
-        case DXGI_FORMAT_BC6H_TYPELESS:
-        case DXGI_FORMAT_BC6H_UF16:
-        case DXGI_FORMAT_BC6H_SF16:
-        case DXGI_FORMAT_BC7_TYPELESS:
-        case DXGI_FORMAT_BC7_UNORM:
-        case DXGI_FORMAT_BC7_UNORM_SRGB:
-            return true;
+    case DXGI_FORMAT_BC1_TYPELESS:
+    case DXGI_FORMAT_BC1_UNORM:
+    case DXGI_FORMAT_BC1_UNORM_SRGB:
+    case DXGI_FORMAT_BC2_TYPELESS:
+    case DXGI_FORMAT_BC2_UNORM:
+    case DXGI_FORMAT_BC2_UNORM_SRGB:
+    case DXGI_FORMAT_BC3_TYPELESS:
+    case DXGI_FORMAT_BC3_UNORM:
+    case DXGI_FORMAT_BC3_UNORM_SRGB:
+    case DXGI_FORMAT_BC4_TYPELESS:
+    case DXGI_FORMAT_BC4_UNORM:
+    case DXGI_FORMAT_BC4_SNORM:
+    case DXGI_FORMAT_BC5_TYPELESS:
+    case DXGI_FORMAT_BC5_UNORM:
+    case DXGI_FORMAT_BC5_SNORM:
+    case DXGI_FORMAT_BC6H_TYPELESS:
+    case DXGI_FORMAT_BC6H_UF16:
+    case DXGI_FORMAT_BC6H_SF16:
+    case DXGI_FORMAT_BC7_TYPELESS:
+    case DXGI_FORMAT_BC7_UNORM:
+    case DXGI_FORMAT_BC7_UNORM_SRGB:
+        return true;
 
-        default:
-            return false;
+    default:
+        return false;
     }
 }
 
@@ -86,14 +86,14 @@ inline bool __cdecl IsPalettized(DXGI_FORMAT fmt) noexcept
 {
     switch (fmt)
     {
-        case DXGI_FORMAT_AI44:
-        case DXGI_FORMAT_IA44:
-        case DXGI_FORMAT_P8:
-        case DXGI_FORMAT_A8P8:
-            return true;
+    case DXGI_FORMAT_AI44:
+    case DXGI_FORMAT_IA44:
+    case DXGI_FORMAT_P8:
+    case DXGI_FORMAT_A8P8:
+        return true;
 
-        default:
-            return false;
+    default:
+        return false;
     }
 }
 
@@ -102,17 +102,38 @@ inline bool __cdecl IsSRGB(DXGI_FORMAT fmt) noexcept
 {
     switch (fmt)
     {
-        case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-        case DXGI_FORMAT_BC1_UNORM_SRGB:
-        case DXGI_FORMAT_BC2_UNORM_SRGB:
-        case DXGI_FORMAT_BC3_UNORM_SRGB:
-        case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
-        case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
-        case DXGI_FORMAT_BC7_UNORM_SRGB:
-            return true;
+    case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+    case DXGI_FORMAT_BC1_UNORM_SRGB:
+    case DXGI_FORMAT_BC2_UNORM_SRGB:
+    case DXGI_FORMAT_BC3_UNORM_SRGB:
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+    case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
+    case DXGI_FORMAT_BC7_UNORM_SRGB:
+        return true;
 
-        default:
-            return false;
+    default:
+        return false;
+    }
+}
+
+_Use_decl_annotations_
+inline bool __cdecl IsBGR(DXGI_FORMAT fmt) noexcept
+{
+    switch (fmt)
+    {
+    case DXGI_FORMAT_B5G6R5_UNORM:
+    case DXGI_FORMAT_B5G5R5A1_UNORM:
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_B8G8R8X8_UNORM:
+    case DXGI_FORMAT_B8G8R8A8_TYPELESS:
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+    case DXGI_FORMAT_B8G8R8X8_TYPELESS:
+    case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
+    case DXGI_FORMAT_B4G4R4A4_UNORM:
+        return true;
+
+    default:
+        return false;
     }
 }
 

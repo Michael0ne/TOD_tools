@@ -4,6 +4,9 @@
 #include "NumberType.h"
 #include "VectorType.h"
 #include "IntegerType.h"
+#include "BuiltinType.h"
+#include "Scene.h"
+#include "CollisionProbe.h"
 
 EntityType* tNavigator;
 DataType* Navigator::VectorList;
@@ -19,7 +22,7 @@ Navigator::Navigator() : Node(NODE_MASK_EMPTY)
     MESSAGE_CLASS_CREATED(Navigator);
 
     m_f70 = 0.60000002f;
-    m_f74 = 0.5f;
+    m_ProbeLineThickness = 0.5f;
     m_PathFraction = 0.0f;
     m_MoveCtrl = 0;
     m_MoveCtrlCommand = GetCommandByName("command_run");
@@ -36,6 +39,180 @@ Navigator::Navigator() : Node(NODE_MASK_EMPTY)
 Navigator::~Navigator()
 {
     MESSAGE_CLASS_DESTROYED(Navigator);
+}
+
+void Navigator::Update()
+{
+    if (!m_Flags.Active)
+        return;
+
+    DirectX::XMMATRIX mat;
+    UpdateTarget(m_MaxLookAhead);
+    m_Parent->GetWorldMatrix(mat);
+
+    const Vector3f distanceVec(mat.r[3].m128_f32[2] - m_TargetPoint.z, 0, mat.r[3].m128_f32[0] - m_TargetPoint.x);
+    if (!m_Flags.Looping)
+    {
+        if (m_MaxLookAhead >= distanceVec.Magnitude() && m_PathPoint + 1 >= m_PathList.size())
+        {
+            const bool activeFlag = m_Flags.Active;
+            StoreProperty(11, &activeFlag, tTRUTH);
+            m_Flags.Active = false;
+
+            if (m_PathFinishedEvent >= 0)
+            {
+                TriggerGlobalScript(m_PathFinishedEvent, nullptr);
+                return;
+            }
+
+            if (m_MoveCtrl)
+                TriggerGlobalScript(StopMovingCommand, nullptr);
+            return;
+        }
+    }
+
+    const Vector4f& obstaclePos = CheckObstacle(m_TargetPoint);
+    if (distanceVec.Magnitude() > 0.5f && !ShouldTurn(obstaclePos))
+    {
+        if (m_MoveCtrl)
+            TriggerGlobalScript(StopMovingCommand, nullptr);
+        return;
+    }
+
+    if (m_MoveCtrl)
+        TriggerGlobalScript(m_MoveCtrlCommand, nullptr);
+}
+
+bool Navigator::UpdateTarget(const float maxLookAhead)
+{
+    UNREFERENCED_PARAMETER(maxLookAhead);
+
+    DirectX::XMMATRIX mat;
+    m_Parent->GetWorldMatrix(mat);
+
+    if (m_TargetPoint.x == mat.r[3].m128_f32[0] &&
+        m_TargetPoint.y == mat.r[3].m128_f32[1] &&
+        m_TargetPoint.z == mat.r[3].m128_f32[2])
+        return false;
+
+    const Vector3f targetDistanceVec(m_TargetPoint.x - mat.r[3].m128_f32[0], 0, m_TargetPoint.z - mat.r[3].m128_f32[3]);
+    if (targetDistanceVec.Magnitude() > 3.5f)
+        return false;
+
+    StoreProperty(15, &m_TargetPoint, tVECTOR);
+    m_TargetPoint = m_NextTargetPoint;
+    StoreProperty(16, &m_NextTargetPoint, tVECTOR);
+    m_NextTargetPoint = GetNextTarget(targetDistanceVec);
+
+    return true;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+Vector4f& Navigator::GetNextTarget(const Vector4f& position)
+{
+    return Vector4f();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+const Vector4f& Navigator::CheckObstacle(const Vector4f& position)
+{
+    DirectX::XMMATRIX mat;
+    m_Parent->m_Parent->GetWorldMatrix(mat);
+
+    const Vector4f positionVec(mat.r[3].m128_f32[0], mat.r[3].m128_f32[1], mat.r[3].m128_f32[2], mat.r[3].m128_f32[3]);
+    const float positionDistanceVecMag = Vector3f(position.x - positionVec.x, position.y - positionVec.y, position.z - positionVec.z).Magnitude();
+    if (positionDistanceVecMag < BuiltinType::Epsilon)
+        return position;
+
+    if (Scene::NextUpdateTime >= m_NextObstacleCheckTime)
+    {
+        CollisionProbe* sharedProbe = Scene::SceneInstance->m_SharedProbe;
+        sharedProbe->Reset_Impl();
+        int arg = 33;
+        sharedProbe->SetCollisionMask(&arg);
+        sharedProbe->SetAngle(-1.f);
+        arg = 0;
+        sharedProbe->SetLineMode(&arg);
+        sharedProbe->SetRadius(positionDistanceVecMag * 0.5f);
+        arg = m_ProbeLineThickness;
+        sharedProbe->SetLineThickness(&arg);
+
+        Node* grandParent = m_Parent->m_Parent;
+        EntityType* grandParentScript = grandParent->m_ScriptEntity;
+        if (grandParent && grandParentScript)
+        {
+            while (tNode != grandParentScript)
+            {
+                grandParentScript = grandParentScript->m_Parent;
+                if (!grandParentScript)
+                {
+                    grandParent = nullptr;
+                    break;
+                }
+            }
+        }
+
+        arg = (int)grandParent;
+        sharedProbe->IgnoreNode(&arg);
+        sharedProbe->SetDynamicMask(1);
+        sharedProbe->Update_Impl(false, BuiltinType::ZeroVector, BuiltinType::ZeroVector);
+
+        if (positionVec == position || !sharedProbe->GetClosestNode_Impl(-1, positionVec, position))
+        {
+            StoreProperty(23, &m_ObstacleFound, tTRUTH);
+            m_ObstacleFound = false;
+        }
+        else
+        {
+            Vector4f obstacleNormal;
+            sharedProbe->GetClosestNormal(obstacleNormal);
+
+            SetObstacleFound(true);
+            SetObstacleNormal(obstacleNormal);
+            StoreProperty(25, &m_ObstacleDist, tNUMBER);
+            m_ObstacleDist = sharedProbe->GetMinDistance();
+        }
+
+        StoreProperty(22, &m_NextObstacleCheckTime, tINTEGER);
+        m_NextObstacleCheckTime = Scene::NextUpdateTime + m_ObstacleCheckInterval;
+    }
+
+    if (m_ObstacleFound)
+    {
+        if (m_ObstacleDist <= (m_ProbeLineThickness + positionDistanceVecMag))
+        {
+            if (m_ObstacleDist >= 0.f)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+        else
+        {
+
+        }
+    }
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+bool Navigator::ShouldTurn(const Vector4f& position) const
+{
+    DirectX::XMMATRIX mat;
+    Vector4f localDir;
+
+    m_Parent->GetWorldMatrix(mat);
+    m_Parent->GetLocalSpaceDirection(localDir, BuiltinType::InVector);
+
+    const float deltaX = position.x - mat.r[2].m128_f32[0];
+    const float deltaZ = position.z - mat.r[2].m128_f32[2];
+
+    if ((deltaX * deltaX) + (deltaZ * deltaZ) < 0.009f)
+        return true;
+
+    return true;
 }
 
 Node* Navigator::GetMoveCtrl() const
@@ -371,7 +548,7 @@ void Navigator::GoToPoint_Impl(const Vector4f& point, const int finishedEvent)
     GetWorldMatrix(mat);
 
     const Vector4f& currentPosition = *(Vector4f*)(&mat.r[3].m128_f32[0]);
-    const Vector4f targetPositionRelative(point.x, point.y + (m_f74 + m_f70), point.z, point.a);
+    const Vector4f targetPositionRelative(point.x, point.y + (m_ProbeLineThickness + m_f70), point.z, point.a);
     AddPointToPathList(currentPosition);
     AddPointToPathList(targetPositionRelative);
 
@@ -381,7 +558,7 @@ void Navigator::GoToPoint_Impl(const Vector4f& point, const int finishedEvent)
 
 void Navigator::AddPointToPath_Impl(const Vector4f& point)
 {
-    const Vector4f pointAdjusted(point.x, point.y + (m_f74 + m_f70), point.z, point.a);
+    const Vector4f pointAdjusted(point.x, point.y + (m_ProbeLineThickness + m_f70), point.z, point.a);
     AddPointToPathList(pointAdjusted);
 }
 
@@ -435,7 +612,7 @@ bool Navigator::PathFind_Impl(const Vector4f& point, const int finishedEvent)
     DirectX::XMMATRIX mat;
     GetWorldMatrix(mat);
     const Vector4f& startPos = *(Vector4f*)(&mat.r[3].m128_f32[0]);
-    const Vector4f endPos(point.x, point.y + (m_f74 + m_f70), point.z, point.a);
+    const Vector4f endPos(point.x, point.y + (m_ProbeLineThickness + m_f70), point.z, point.a);
 
     SignPost* startSignPost = FindNearestSignPost_Impl(startPos, 50.f);
     SignPost* endSignPost = FindNearestSignPost_Impl(endPos, 50.f);

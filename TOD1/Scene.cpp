@@ -654,7 +654,7 @@ void Scene::Reset()
 
     ClearNodesLists();
     InstantiateAssetsToLists();
-    ScriptThread::_48CE30();
+    ScriptThread::ResetCache();
     m_SharedProbe->Reset_Impl();
     m_Fragment->m_FragmentRes.GetAsset<FragmentAsset>()->ApplyFragmentResource(m_Id.Id, true);
     g_AssetManager->_8794B0(0);

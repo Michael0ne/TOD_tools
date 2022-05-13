@@ -39,6 +39,7 @@ const ColorRGB BuiltinType::ColorDarkBlue = { 0.f, 0.f, 1.f, 1.f };
 const ColorRGB BuiltinType::ColorPink = { 1.f, 0.f, 1.f, 1.f };
 const ColorRGB BuiltinType::ColorBlue = { 0.f, 1.f, 1.f, 1.f };
 const ColorRGB BuiltinType::ColorWhite = { 1.f, 1.f, 1.f, 1.f };
+const float BuiltinType::Epsilon = 0.0000099999997f;
 
 BuiltinType::BuiltinType() : EntityType("builtin")
 {

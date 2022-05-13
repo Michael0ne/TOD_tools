@@ -266,7 +266,7 @@ int Defragmentator::FindScriptThreadSpaceIndex(ScriptThread* scriptThread) const
     if (m_Size <= 0)
         return 0;
 
-    int spaceIndex;
+    unsigned int spaceIndex;
     for (spaceIndex = 0; m_AllocatedSpace[spaceIndex].m_ScriptThreadPtr != scriptThread; ++spaceIndex);
 
     return spaceIndex >= m_Size ? 0 : spaceIndex;

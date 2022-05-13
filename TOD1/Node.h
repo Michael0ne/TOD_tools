@@ -301,7 +301,7 @@ private:
     static void         ResolveObjectUsingProbe_Impl(const Node* node, int* a1, CollisionProbe* probe); //  @8C73C0
     static void         ResolveObject_Impl(const Node* node, const int a2);  //  @8C7C30
 
-protected:
+public:
     void                GetLocalSpaceDirection(Vector4f& outDir, const Vector4f& inOffset) const; //  @88BF10
     void                GetWorldSpaceDirection(Vector4f& outDir, const Vector4f& inOffset) const; //  @88C060
     void                _88D230(const int a1);  //  @88D230
