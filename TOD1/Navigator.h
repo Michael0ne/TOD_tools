@@ -44,6 +44,7 @@ private:
     Vector4f&           GetNextTarget(const Vector4f& position); //  @91D610
     const Vector4f&     CheckObstacle(const Vector4f& position);    //  @91DD40
     bool                ShouldTurn(const Vector4f& position) const; //  @91D3C0
+    bool                IsPointOccluded(const Vector4f& pos1, const Vector4f& pos2) const;  //  @91D020
 
 public:
     Node*               GetMoveCtrl() const;    //  @8A6D20

@@ -12,7 +12,7 @@ class Buffer276
 public:
     Vector3f            m_BufferSize;
     FrameBuffer        *m_RenderBuffer;
-    Buffer276          *field_10;
+    FrameBuffer        *field_10;
     char                field_14[4];
     DirectX::XMMATRIX   m_ViewMatrix;
     DirectX::XMMATRIX   m_MatrixUnknown_1;
@@ -41,6 +41,7 @@ public:
     }
 };
 
+//  NOTE: possible name 'gfx2d'. Has layers that can have 3d stuff in it. Can draw textures.
 class GfxInternal
 {
 public:
@@ -52,7 +53,7 @@ public:
     int                             field_20;
     Buffer276                      *m_RenderBufferArray;
     float                           m_TimeDelta;
-    int                             m_TimeMilliseconds;
+    int                             m_TimeStart;
     int                             m_FramesRendered;
     char                            field_34;
     char                            field_35;

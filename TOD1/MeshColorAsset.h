@@ -14,9 +14,12 @@ protected:
 
 private:
     MeshColorAsset(); // @85E7F0
+    virtual ~MeshColorAsset();  //  @85EE90
+
+    static AssetInstance*   Instance; //  @A3CE78
 
 public:
-    virtual AssetInstance* GetInstancePtr() const override;
+    virtual AssetInstance* GetInstancePtr() const override; //  @8612F0
 
     static void            CreateInstance(); // @85E970
     static MeshColorAsset* Create(); // @85E950

@@ -7,6 +7,7 @@
 
 class FrameBuffer
 {
+    friend class GfxInternal;
 protected:
     union
     {

@@ -8,11 +8,46 @@ struct Light_Properties
     Vector3f                m_Direction;
     float                   m_Range;
     float                   m_Brightness;
-    int                     m_Flags;    //  TODO: make this struct!
+    union
+    {
+        struct
+        {
+            unsigned        LightType : 5;
+            unsigned        Enabled : 1;
+            unsigned        _6 : 1;
+            unsigned        _7 : 1;
+            unsigned        _8 : 1;
+            unsigned        _9 : 1;
+            unsigned        _10 : 1;
+            unsigned        _11 : 1;
+            unsigned        _12 : 1;
+            unsigned        _13 : 1;
+            unsigned        _14 : 1;
+            unsigned        _15 : 1;
+            unsigned        _16 : 1;
+            unsigned        _17 : 1;
+            unsigned        _18 : 1;
+            unsigned        _19 : 1;
+            unsigned        _20 : 1;
+            unsigned        _21 : 1;
+            unsigned        _22 : 1;
+            unsigned        _23 : 1;
+            unsigned        _24 : 1;
+            unsigned        _25 : 1;
+            unsigned        _26 : 1;
+            unsigned        _27 : 1;
+            unsigned        _28 : 1;
+            unsigned        _29 : 1;
+            unsigned        _30 : 1;
+        };
+    }                       m_Flags;
 
 public:
     Light_Properties(); // @422100
     ~Light_Properties(); // @422190
+
+    void                SetPosition(const Vector3f& position);  //  @880540
+    void                SetDirection(const Vector3f& direction);    //  @8805C0
 };
 
 enum class eLightType
@@ -65,7 +100,8 @@ protected:
     Vector4f   m_Vec_1;
     Vector4f   m_Vec_2;
 
-    int     field_BC;
+    short   m_QuadTreeNodeIndex;
+    short   field_BE;
     int     field_C0;
     int     field_C4;
     int     field_C8;
@@ -80,6 +116,7 @@ public:
     Light(); // @87FDF0
     virtual             ~Light(); // @880680
     virtual void        Destroy() override;    //  @880140
+    virtual void        Instantiate() override;  //  @8804C0
 
     void* operator new (size_t size)
     {

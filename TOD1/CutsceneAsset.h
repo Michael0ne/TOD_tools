@@ -38,14 +38,14 @@ protected:
 private:
     CutsceneAsset(); // @916080
 
+    static AssetInstance* Instance; //  @A3E12C
+
 public:
     virtual ~CutsceneAsset();   //  @916DB0
     virtual AssetInstance*              GetInstancePtr() const override;    //  @916BF0
 
     static void                         CreateInstance(); // @9164C0
     static CutsceneAsset*               Create(); // @916100
-
-    static AssetInstance*               Instance; //  @A3E12C
 };
 
 ASSERT_CLASS_SIZE(CutsceneAsset, 96);

@@ -47,7 +47,10 @@ protected:
 private:
     AnimationAsset(); // @900080
 
+    static AssetInstance*   Instance; //  @A3E0FC
+
 public:
+    virtual ~AnimationAsset();  //  @900F40
     virtual AssetInstance* GetInstancePtr() const override;
 
     static void            CreateInstance(); // @900980

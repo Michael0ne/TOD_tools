@@ -30,6 +30,8 @@
 #include "FontAsset.h"
 #include "TextAsset.h"
 #include "ModelAsset.h"
+#include "MovieAsset.h"
+#include "CutsceneAsset.h"
 #include "Group.h"
 #include "Control.h"
 #include "Track.h"
@@ -182,35 +184,28 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     g_AssetManager = new AssetManager(Script::LoadBlocks);
 
     DataType::InitScriptTypes();
-
-    g_Scratchpad = new Scratchpad();
-
-    g_SceneSaveLoad = new SceneSaveLoad();
+    Scratchpad::Create();
+    SceneSaveLoad::Create();
 
     TextureAsset::CreateInstance();
     FontAsset::CreateInstance();
     TextAsset::CreateInstance();
     ModelAsset::CreateInstance();
     FragmentAsset::CreateInstance();
-    /*
     MovieAsset::CreateInstance();
     CutsceneAsset::CreateInstance();
     SoundAsset::CreateInstance();
     StreamedSoundInfoAsset::CreateInstance();
     AnimationAsset::CreateInstance();
     MeshColorAsset::CreateInstance();
-    */
 
-    CreateUnknownMatricies();
-
+    CreateProbes();
     InitEntitiesDatabase();
 
     IndexBuffer::CreateIndexBufferMap();
     VertexBuffer::CreateVerticesMap();
     Texture::InitTexturesMap();
-
     RenderList::CreateRenderBuffer();
-
     Light::InitLightsList();
 
     if (m_ConfigurationVariables->IsVariableSet("ps2_max_texture_size"))
@@ -792,7 +787,7 @@ bool KapowEngineClass::OpenScene(const char* scene)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void KapowEngineClass::CreateUnknownMatricies()
+void KapowEngineClass::CreateProbes()
 {
 }
 

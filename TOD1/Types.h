@@ -25,6 +25,11 @@ struct Vector2 {
     {
         return vec.Inverse();
     }
+
+    inline const bool IsNull() const
+    {
+        return x == (T)0 && y == (T)0;
+    }
 };
 
 typedef Vector2<unsigned int> ScreenResolution;
@@ -54,6 +59,12 @@ struct Vector3 {
         return ( ((x - rvec.x) * (x - rvec.x)) + ((y - rvec.y) * (y - rvec.y)) + ((z - rvec.z) * (z - rvec.z)) );
     }
 
+
+    Vector3<T> operator-(const Vector3<T>& rhs) const
+    {
+        return Vector3<T>(rhs.x - x, rhs.y - y, rhs.z - z);
+    }
+
     inline Vector3<T>& Inverse()
     {
         x = (T)0 - x;
@@ -65,6 +76,16 @@ struct Vector3 {
     static inline Vector3<T> Inverse(const Vector3<T>& vec)
     {
         return vec.Inverse();
+    }
+
+    inline const bool operator==(const Vector3<T>& rhs) const
+    {
+        return x == rhs.x && y == rhs.y && z == rhs.z;
+    }
+
+    inline const bool IsNull() const
+    {
+        return x == (T)0 && y == (T)0 && z == (T)0;
     }
 };
 
@@ -112,6 +133,11 @@ struct Vector4 {
             (a == rhs.a);
     }
 
+    Vector4<T> operator-(const Vector4<T>& rhs) const
+    {
+        return Vector4<T>(rhs.x - x, rhs.y - y, rhs.z - z, rhs.a - a);
+    }
+
     const float Magnitude() const
     {
         return sqrtf((x * x) + (y * y) + (z * z) + (a * a));
@@ -134,6 +160,11 @@ struct Vector4 {
     static inline Vector4<T> Inverse(const Vector4<T>& vec)
     {
         return vec.Inverse();
+    }
+
+    inline const bool IsNull() const
+    {
+        return x == (T)0 && y == (T)0 && z == (T)0 && a == (T)0;
     }
 };
 

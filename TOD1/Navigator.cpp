@@ -215,6 +215,34 @@ bool Navigator::ShouldTurn(const Vector4f& position) const
     return true;
 }
 
+bool Navigator::IsPointOccluded(const Vector4f& pos1, const Vector4f& pos2) const
+{
+    const Vector4f distanceVec = pos2 - pos1;
+    const Vector4f probePos(
+        pos1.x + ( distanceVec.x * 0.5f),
+        pos1.y + ( distanceVec.y * 0.5f ),
+        pos1.z + ( distanceVec.z * 0.5f ),
+        pos1.a
+    );
+    CollisionProbe* probe = Scene::SceneInstance->m_SharedProbe;
+    int arg = 0;
+
+    probe->Reset_Impl();
+    probe->SetFlags(0xFFF);
+    probe->SetPos(probePos);
+    probe->SetAngle(-1.f);
+    probe->SetLineMode(&arg);
+    probe->SetRadius(distanceVec.Magnitude() * 0.5f);
+    arg = (int)m_ProbeLineThickness;
+    probe->SetLineThickness(&arg);
+    probe->SetDynamicMask(2);
+    probe->Update_Impl(false, BuiltinType::ZeroVector, BuiltinType::ZeroVector);
+    arg = 33;
+    probe->SetCollisionMask(&arg);
+
+    return probe->IsLineColliding_Impl(-1, pos1, pos2);
+}
+
 Node* Navigator::GetMoveCtrl() const
 {
     return m_MoveCtrl;

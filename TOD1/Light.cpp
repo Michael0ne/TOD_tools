@@ -15,7 +15,6 @@ int Light::StaticLights;
 
 EntityType* tLight;
 
-#pragma message(TODO_IMPLEMENTATION)
 Light::~Light()
 {
     MESSAGE_CLASS_DESTROYED(Light);
@@ -28,6 +27,18 @@ void Light::Destroy()
     GetGlobalList()->RemoveLight(this);
 
     Node::Destroy();
+}
+
+void Light::Instantiate()
+{
+    DirectX::XMMATRIX mat;
+    Vector4f dir;
+
+    Node::Instantiate();
+    GetWorldMatrix(mat);
+
+    GetLocalSpaceDirection(dir, BuiltinType::InVector);
+
 }
 
 const bool Light::HasDynamicEmission() const
@@ -77,8 +88,8 @@ Light::Light() : Node(NODE_MASK_POSITION)
 {
     MESSAGE_CLASS_CREATED(Light);
 
-    if ( (m_LightProperties.m_Flags & 31) != 0 )
-        m_LightProperties.m_Flags = 32;
+    if (m_LightProperties.m_Flags.LightType != 0)
+        m_LightProperties.m_Flags.Enabled = true;
 
     m_Flags.Type = eLightType::POINT;
     m_Flags.DynamicEmission = true;
@@ -120,8 +131,8 @@ void Light::SetLightType(const eLightType ltype)
         newLightType = 3;
     }
 
-    if ((m_LightProperties.m_Flags << 27 >> 27) != newLightType)
-        m_LightProperties.m_Flags = newLightType & 31 | m_LightProperties.m_Flags & 0xFFFFFFE0 | 32;
+    if (m_LightProperties.m_Flags.LightType != newLightType)
+        m_LightProperties.m_Flags.LightType = newLightType;
 
     GetGlobalList()->AddLightToList(this);
 }
@@ -135,7 +146,7 @@ void Light::SetLightColorRGB(const ColorRGB& color)
 {
     m_LightColor = color;
     m_LightProperties.m_Color = D3DCOLOR_DWORD(color.r, color.g, color.b, color.a);
-    m_LightProperties.m_Flags |= 32;
+    m_LightProperties.m_Flags.Enabled = true;
 }
 
 void Light::GetStaticColorRGB(ColorRGB& outColor) const
@@ -163,7 +174,7 @@ void Light::SetBrightness(const float brightness)
 
     if (m_LightProperties.m_Brightness != actualBrightness)
     {
-        m_LightProperties.m_Flags |= 32;
+        m_LightProperties.m_Flags.Enabled = true;
         m_LightProperties.m_Brightness = actualBrightness;
     }
 }
@@ -177,7 +188,7 @@ void Light::SetRange(const float range)
 {
     if (m_LightProperties.m_Range != range)
     {
-        m_LightProperties.m_Flags |= 32;
+        m_LightProperties.m_Flags.Enabled = true;
         m_LightProperties.m_Range = range;
     }
 }
@@ -253,12 +264,31 @@ Light_Properties::Light_Properties()
     m_Color = -1;
     m_Range = 100;
     m_Brightness = 1;
-    m_Flags = m_Flags & 0xFFFFFFE2 | 34;
+    m_Flags.Enabled = true;
+    m_Flags.LightType = 1;
 }
 
 Light_Properties::~Light_Properties()
 {
     g_GfxInternal_Dx9->RemoveLightFromScene(this);
+}
+
+void Light_Properties::SetPosition(const Vector3f& position)
+{
+    if (m_Position == position)
+        return;
+
+    m_Position = position;
+    m_Flags.Enabled = true;
+}
+
+void Light_Properties::SetDirection(const Vector3f& direction)
+{
+    if (m_Direction == direction)
+        return;
+
+    m_Direction = direction;
+    m_Flags.Enabled = true;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

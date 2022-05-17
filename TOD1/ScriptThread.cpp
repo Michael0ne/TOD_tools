@@ -327,6 +327,14 @@ void ScriptThread::PushToCallStack(void(*funcPtr)(ScriptThread*), const short ar
     m_CurrentStackElement = &m_CallStack[m_CallStack.size() - 1];
 }
 
+void ScriptThread::AdjustAndPopStack()
+{
+    if (m_StackSize > m_Stack.size())
+        m_Stack.resize(m_StackSize);
+
+    m_CurrentStackElement = m_CallStack.size() ? &m_CallStack[m_CallStack.size() - 1] : nullptr;
+}
+
 int ScriptThread::WriteScriptInformation(int* outInformation) const
 {
     int* outInformationBasePtr = outInformation;
@@ -430,6 +438,43 @@ void ScriptThread::_48EDA0()
         ScriptDataCache[LatestScriptDataCacheIndex].m_Defragmentator = m_ScriptNode->m_Defragmentator;
         LatestScriptDataCacheIndex++;
     }
+}
+
+const bool ScriptThread::IsReferenced(const bool fixDangling) const
+{
+    if (!m_CallStack.size())
+        return true;
+
+    size_t i = 0;
+    size_t argOffset = 0;
+    bool referenceFound = true;
+    while (true)
+    {
+        size_t paramInd = 0;
+        std::vector<DataType*> params(100);
+        if (m_CallStack[i].m_OnParameterOffset < 0)
+        {
+            m_CallStack[i].m_NodePtr->m_ScriptEntity->m_Script->GetMethodParams(m_CallStack[i].m_FuncPtr, params);
+            if (params.size())
+            {
+                do
+                {
+                    if (!params[paramInd]->IsReferenced(m_Stack[argOffset].m_Contents, fixDangling))
+                    {
+                        LogDump::LogA("param/local %d, in state/method at 0x%x ", paramInd, m_CallStack[i].m_FuncPtr);
+                        referenceFound = false;
+                    }
+
+                    argOffset += params[paramInd]->m_Size;
+                } while (paramInd < params.size());
+            }
+        }
+
+        if (++i >= m_CallStack.size())
+            break;
+    }
+
+    return referenceFound;
 }
 
 bool ScriptThread::IsThreadExists(const ScriptThread* scriptthread)

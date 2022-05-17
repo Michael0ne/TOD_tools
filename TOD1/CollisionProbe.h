@@ -2,17 +2,27 @@
 #include "Node.h"
 #include <vector>
 
+class CollisionSphere;
+class Probe;
+
 class CollisionProbe : public Node
 {
+    struct ProbeInfo
+    {
+        std::vector<Probe*>*m_HintVolumesList;
+        CollisionSphere    *m_HintSphere;
+    };
+
     struct CachedProbe 
     {
-        std::vector<Node*>  List_1;
+        std::vector<ProbeInfo>  m_ProbesList;
         std::vector<int>    m_HullsList;
-        Node               *field_14;
+        Node               *m_Owner;
         int                 field_18;
         CachedProbe        *m_Next;
-        int                *field_20;
+        CollisionSphere    *m_ColSphere;
     };
+
 protected:
     Vector4f                m_ResolvedPos;
     Vector4f                m_ContactPos;
@@ -37,10 +47,10 @@ protected:
     int                     m_CollisionMask;
     int                     m_LineMode;
     float                   m_LineThickness;
-    int                     m_LineWidth;
-    int                     m_LineHeight;
-    char                    field_FC;
-    Vector4f                m_Unknown_1;
+    float                   m_LineWidth;
+    float                   m_LineHeight;
+    bool                    m_Updated;
+    Vector4f                m_LocalDirection;
     int                     field_110;
     int                     field_114;
     Node                   *m_HintNode;

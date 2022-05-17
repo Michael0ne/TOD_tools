@@ -5,6 +5,8 @@
 #include "IntegerType.h"
 #include "VectorType.h"
 #include "TruthType.h"
+#include "Scene.h"
+#include "CollisionSphere.h"
 
 EntityType* tCollisionProbe;
 std::vector<CollisionProbe*> CollisionProbe::ProbesList;
@@ -19,7 +21,7 @@ CollisionProbe::CollisionProbe(int, float) : Node(NODE_MASK_POSITION)
 
     Reset_Impl();
 
-    field_FC = true;
+    m_Updated = true;
 
     ProbesList.push_back(this);
     m_CachedProbes = nullptr;
@@ -167,6 +169,43 @@ void CollisionProbe::Update(int* args)
 #pragma message(TODO_IMPLEMENTATION)
 void CollisionProbe::Update_Impl(const bool updateForLine, const Vector4f& vec1, const Vector4f& vec2)
 {
+    if (!Scene::MainQuadTree)
+    {
+        LogDump::LogA("Quadtree nonexisting??? \n");
+        return;
+    }
+
+    const Vector4f distanceVec = vec1 - vec2;
+    DWORD64 startTime = __rdtsc();
+    static int ProbeUpdates = 0;
+    ProbeUpdates++;
+
+    if (!m_Updated)
+        ClearCache_Impl();
+
+    if (m_Angle >= 0.f)
+    {
+        Vector4f localDirection;
+
+        GetLocalSpaceDirection(localDirection, { 0, 0, 1, 0 });
+        m_LocalDirection = localDirection;
+    }
+
+    m_Nodes.clear();
+
+    for (auto probe = m_CachedProbes; probe; probe = probe->m_Next)
+        probe->m_ColSphere->m_QuadTree->field_30 = (int)probe;
+
+    DirectX::XMMATRIX mat;
+    GetWorldMatrix(mat);
+
+    if (updateForLine)
+    {
+        if (distanceVec.IsNull())
+        {
+
+        }
+    }
 }
 
 void CollisionProbe::UpdateForLine(int* args)

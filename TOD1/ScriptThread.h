@@ -126,6 +126,7 @@ public:
     int                         WriteScriptInformation(int* outInformation) const;  //  @48CF00
     int                         _48E8F0(const int stackIndex);  //  @48E8F0
     void                        _48EDA0();  //  @48EDA0
+    const bool                  IsReferenced(const bool fixDangling) const; //  @48DFF0
 
 private:
     int                         _48E770();  //  @48E770

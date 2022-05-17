@@ -371,3 +371,8 @@ bool SceneSaveLoad::WriteSavePointFileData(class SavePoint* savepoint, SaveInfo*
 
     return false;
 }
+
+void SceneSaveLoad::Create()
+{
+    g_SceneSaveLoad = new SceneSaveLoad;
+}

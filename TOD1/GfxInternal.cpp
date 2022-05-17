@@ -10,7 +10,6 @@ float               GfxInternal::RatioXY = 1.0f; // @A119F4
 float               GfxInternal::_A3A064;
 DirectX::XMMATRIX   GfxInternal::_A3A268;
 
-#pragma message(TODO_IMPLEMENTATION)
 GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int unused1, unsigned int unused2, unsigned int FSAA, unsigned int buffersCount, unsigned int unk1, const Vector3<float>* buffersDimens)
 {
     MESSAGE_CLASS_CREATED(GfxInternal);
@@ -19,7 +18,7 @@ GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int u
 
     m_TimeDelta = 0.f;
     m_FramesRendered = 0;
-    m_TimeMilliseconds = Timer::GetMilliseconds();
+    m_TimeStart = Timer::GetMilliseconds();
     field_34 = 0;
 
 #ifdef OPENGL
@@ -95,12 +94,12 @@ void GfxInternal::Render(Surface* screenshotDumpSurface, const bool shouldRender
                 }
                 else
                 {
-                    Vector3f* buffsize = &m_RenderBufferArray->field_10->m_BufferSize;
+                    FrameBuffer** fb = &m_RenderBufferArray->field_10;
                     int j = 0;
                     bool bdis = false;
-                    while (!buffsize)
+                    while (!fb)
                     {
-                        buffsize++;
+                        fb += 69;
                         if (++j > field_20)
                         {
                             g_GfxInternal_Dx9->SetRenderTarget(nullptr);
@@ -136,8 +135,8 @@ void GfxInternal::Render(Surface* screenshotDumpSurface, const bool shouldRender
     }
 
     _41F950();
-    m_TimeDelta = (float)(Timer::GetMilliseconds() - m_TimeMilliseconds) * 0.001f;
-    m_TimeMilliseconds = Timer::GetMilliseconds();
+    m_TimeDelta = (float)(Timer::GetMilliseconds() - m_TimeStart) * 0.001f;
+    m_TimeStart = Timer::GetMilliseconds();
 
     g_GfxInternal_Dx9->ResetStream();
 }
@@ -148,9 +147,17 @@ void GfxInternal::CallSceneCallback()
     if (!m_SceneCallback)
         return;
 
-    // TODO: ...
+    INT64 clockCycles = Timer::ClockGetCyclesMilliseconds();
+    const double frameTime = (double)clockCycles * 16.6;
+    const INT64 clockStart = __rdtsc();
+    const double frameDiff = frameTime - (clockStart - m_FrameEndTime);
 }
 
+/// <summary>
+/// Set the color to fill the screen with after clear operation.
+/// </summary>
+/// <param name="color">RGBA color</param>
+/// <param name="index">What layer will be affected. Set to -1 for all layers.</param>
 void GfxInternal::SetClearColorForBufferIndex(const ColorRGB& color, int index)
 {
     if (index != -1)
@@ -218,9 +225,26 @@ void GfxInternal::SetBufferRenderBufferPointerByIndex(unsigned int index, FrameB
     m_RenderBufferArray[index].m_RenderBuffer = buf;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal::_41F950()
 {
+    if (m_RenderBufferTotal <= 0)
+        return;
+
+    for (size_t i = 0; i < m_RenderBufferTotal; ++i)
+    {
+        FrameBuffer* fb = m_RenderBufferArray[i].field_10;
+        while (fb)
+        {
+            fb->m_Flags.m_FlagBits._5 = false;
+
+            FrameBuffer* fb_ = fb;
+            fb = fb->field_58;
+
+            fb_ = nullptr;
+        }
+
+        m_RenderBufferArray[i].field_10 = nullptr;
+    }
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -276,7 +300,7 @@ void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
 FrameBuffer* GfxInternal::_41F8F0(FrameBuffer* fb, unsigned int index)
 {
     FrameBuffer* ret = (FrameBuffer*)m_RenderBufferArray[index].field_10;
-    m_RenderBufferArray[index].field_10 = (Buffer276*)fb;
+    m_RenderBufferArray[index].field_10 = fb;
 
     return ret;
 }

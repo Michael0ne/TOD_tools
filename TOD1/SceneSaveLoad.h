@@ -83,6 +83,7 @@ public:
     static bool         WriteDummySavePointData(class SavePoint* savepoint, unsigned int); // @8743F0
     static bool         WriteSavePointFileData(class SavePoint* savepoint, SaveInfo* savedata); // @873DA0
     static int          UncompressSaveDataBuffer(char* outBuffer, const int size);  //  @873B40
+    static void         Create();   //  @8748D0
 
     static z_stream     BufferStream; // @A3D748
     static char         CompressedRewindData[2048]; // @A3CF48
