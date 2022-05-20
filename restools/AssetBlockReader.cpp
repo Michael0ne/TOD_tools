@@ -1,5 +1,6 @@
 #include "AssetBlockReader.h"
 #include <stdlib.h>
+#include <cassert>
 
 const unsigned int AssetBlockReader::CompiledTextureAsset::DDS_HEADER::magick = 0x20534444;
 int AssetBlockReader::CompiledTextAsset::Dictionary::Offset;
@@ -66,6 +67,26 @@ const char* const AssetBlockReader::CompiledTextureAsset::TextureFormatString[] 
     "DXT5"
 };
 
+/// <summary>
+/// Read buffer contents to a variable that is a list.
+/// </summary>
+/// <param name="dest">Where to read buffer data.</param>
+/// <param name="buffer">Where to read from data.</param>
+static void ReadToList(void* dest, unsigned char** buffer)
+{
+    *(uint32_t*)dest = (uint32_t)(*buffer + **(uint32_t**)buffer);
+    *buffer += sizeof(uint32_t);
+
+    *(uint32_t*)((uint32_t)dest + 4) = **(uint32_t**)buffer;
+    *buffer += sizeof(uint32_t);
+
+    *(uint32_t*)((uint32_t)dest + 8) = **(uint32_t**)buffer;
+    *buffer += sizeof(uint32_t);
+
+    *(uint32_t*)((uint32_t)dest + 12) = **(uint32_t**)buffer;
+    *buffer += sizeof(uint32_t);
+}
+
 AssetBlockReader::AssetBlockReader(LPCSTR filename, LPCSTR ext)
 {
     m_ResourceExtension = ext;
@@ -128,7 +149,7 @@ void AssetBlockReader::PrintInfo() const
         printf("\t\t#%i\n", i);
 
         CompiledAsset* asset = nullptr;
-        const AssetType assettype = *(AssetType*)infobuffer;
+        const tAssetType assettype = *(tAssetType*)infobuffer;
 
         switch (assettype)
         {
@@ -183,8 +204,8 @@ void AssetBlockReader::PrintInfo() const
 
         asset->PrintInfo();
 
-        m_AssetsNames[i] = new char[strlen(asset->m_AssetName) + 1];
-        strcpy(m_AssetsNames[i], asset->m_AssetName);
+        m_AssetsNames[i] = new char[strlen(asset->Name) + 1];
+        strcpy(m_AssetsNames[i], asset->Name);
 
         m_AssetsList.push_back(asset);
     }
@@ -214,38 +235,38 @@ void AssetBlockReader::DumpData() const
 
 AssetBlockReader::CompiledAsset::CompiledAsset(unsigned char** infobuffer)
 {
-    m_AssetType = **(AssetType**)infobuffer;
-    *infobuffer += sizeof(AssetType);
+    AssetType = **(tAssetType**)infobuffer;
+    *infobuffer += sizeof(tAssetType);
 
-    m_AssetName = (char*)(*infobuffer + **(unsigned int**)infobuffer);
+    Name = (char*)(*infobuffer + **(unsigned int**)infobuffer);
     *infobuffer += sizeof(unsigned int);
 
-    m_AssetGlobalId = **(unsigned int**)infobuffer;
+    GlobalId = **(unsigned int**)infobuffer;
     *infobuffer += sizeof(unsigned int);
 
     field_C = **(unsigned int**)infobuffer;
     *infobuffer += sizeof(unsigned int);
 
-    m_EngineTimestamp = **(UINT64**)infobuffer;
+    EngineTimestamp = **(UINT64**)infobuffer;
     *infobuffer += sizeof(UINT64);
 
-    m_Flags = **(unsigned int**)infobuffer;
+    Flags = **(unsigned int**)infobuffer;
     *infobuffer += sizeof(unsigned int);
 }
 
 void AssetBlockReader::CompiledAsset::PrintInfo() const
 {
-    printf("\tType:\t%s\n", AssetTypeIndexString[m_AssetType]);
-    printf("\tPath:\t\"%s\"\n", m_AssetName);
-    printf("\tGlobal id:\t%d\n", m_AssetGlobalId);
+    printf("\tType:\t%s\n", AssetTypeIndexString[AssetType]);
+    printf("\tPath:\t\"%s\"\n", Name);
+    printf("\tGlobal id:\t%d\n", GlobalId);
     printf("\tfield_C:\t%x\n", field_C);
-    printf("\tEngine timestamp:\t%llu\n", m_EngineTimestamp);
-    printf("\tFlags:\t%X\n", m_Flags);
+    printf("\tEngine timestamp:\t%llu\n", EngineTimestamp);
+    printf("\tFlags:\t%X\n", Flags);
 }
 
 void AssetBlockReader::CompiledAsset::SkipNameRead(unsigned char** infobuffer)
 {
-    *infobuffer += strlen(m_AssetName) + 1;
+    *infobuffer += strlen(Name) + 1;
 
     if (**infobuffer != 0xAB)
         return;
@@ -339,9 +360,9 @@ void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* re
     ddsheader.reserved2 = NULL;
 
     FILE* f = nullptr;
-    char* assetname = strrchr(m_AssetName, '.');
+    char* assetname = strrchr(Name, '.');
     strcat(assetname, ".dds");
-    char* assetfilename = strrchr(m_AssetName, '/') + 1;
+    char* assetfilename = strrchr(Name, '/') + 1;
     errno_t err = fopen_s(&f, assetfilename, "wb");
     //  TODO: generate missing folders or give choice to user.
     if (!f)
@@ -371,7 +392,6 @@ AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** i
 
     SkipNameRead(infobuffer);
     SkipAlignment(infobuffer);
-    //SkipSpecificData(infobuffer);
 }
 
 void AssetBlockReader::CompiledFragmentAsset::PrintInfo() const
@@ -550,9 +570,9 @@ void AssetBlockReader::CompiledFontAsset::DumpData(const AssetBlockReader* reade
     ddsheader.reserved2 = NULL;
 
     FILE* f = nullptr;
-    char* assetname = strrchr(m_AssetName, '.');
+    char* assetname = strrchr(Name, '.');
     strcat(assetname, ".dds");
-    char* assetfilename = strrchr(m_AssetName, '/') + 1;
+    char* assetfilename = strrchr(Name, '/') + 1;
     errno_t err = fopen_s(&f, assetfilename, "wb");
     //  TODO: generate missing folders or give choice to user.
     if (!f)
@@ -678,7 +698,7 @@ void AssetBlockReader::CompiledTextAsset::DumpData(const AssetBlockReader* reade
     unsigned int slen = NULL;
     FILE* textFile = nullptr;
 
-    char* textName = strrchr(m_AssetName, '/') + 1;
+    char* textName = strrchr(Name, '/') + 1;
     fopen_s(&textFile, textName, "wb");
     if (!textFile)
     {
@@ -767,55 +787,36 @@ void AssetBlockReader::CompiledSoundAsset::DumpData(const AssetBlockReader* read
     printf("\tNOT IMPLEMENTED!\n");
 }
 
+#define RESTORE_FIELD_VALUE(field, fieldType, ptr) field = **(fieldType**)ptr
+
+#define RESTORE_FIELD_VALUE_OFFSET(field, fieldType, ptr) field = (fieldType*)(*ptr + **(fieldType**)ptr)
+
 AssetBlockReader::CompiledModelAsset::CompiledModelAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
 {
-    field_1C = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    field_1C = **(uint32_t**)infobuffer;
+    *infobuffer += sizeof(field_1C);
 
-    m_TextureResources_Elements = (TextureReference*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(TextureReference*);
+    ReadToList(&TextureReferencesList, infobuffer);
+    ReadToList(&MeshList, infobuffer);
 
-    m_TextureResources_Size = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    PhysAttachmentsList = (uint32_t*)(*infobuffer + **(uint32_t**)infobuffer);
+    *infobuffer += sizeof(PhysAttachmentsList);
 
-    for (unsigned int i = 0; i < m_TextureResources_Size; ++i)
-        m_TextureResources_Elements[i].m_TextureName = (char*)((unsigned int)&m_TextureResources_Elements[i] + offsetof(TextureReference, m_TextureName) + (unsigned int)m_TextureResources_Elements[i].m_TextureName);
+    memcpy(&BoundingRadius, *infobuffer, sizeof(BoundingRadius));
+    *infobuffer += sizeof(BoundingRadius);
 
-    field_28[0] = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    field_54 = **(uint32_t**)infobuffer;
+    *infobuffer += sizeof(field_54);
 
-    field_28[1] = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    field_58 = (uint32_t*)(*infobuffer + **(uint32_t**)infobuffer);
+    *infobuffer += sizeof(field_58);
 
-    m_MeshList_Elements = (Mesh*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(Mesh*);
+    field_5C = **(uint8_t**)infobuffer;
+    *infobuffer += sizeof(field_5C);
 
-    m_MeshList_Size = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
-
-    field_38[0] = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
-
-    field_38[1] = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
-
-    field_40 = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(unsigned int);
-
-    m_BoundingRadius = **(vec4**)infobuffer;
-    *infobuffer += sizeof(vec4);
-
-    field_54 = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
-
-    field_58 = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(unsigned int);
-
-    field_5C = **(unsigned char**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    *infobuffer = (unsigned char*)(((uint32_t)(*infobuffer) + 3) & 0xFFFFFFFC);
 
     SkipNameRead(infobuffer);
-    SkipAlignment(infobuffer);
     SkipSpecificData(infobuffer);
 }
 
@@ -826,24 +827,105 @@ void AssetBlockReader::CompiledModelAsset::PrintInfo() const
 
 void AssetBlockReader::CompiledModelAsset::SkipAlignment(unsigned char** infobuffer)
 {
-    while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D)
-        if (*infobuffer == (unsigned char*)m_TextureResources_Elements)
-            break;
-        else
-            *infobuffer += (char)1;
 }
 
 void AssetBlockReader::CompiledModelAsset::SkipSpecificData(unsigned char** infobuffer)
 {
-    unsigned int maxstructaddr = max((unsigned int)m_TextureResources_Elements, (unsigned int)m_MeshList_Elements);
-    maxstructaddr = max((unsigned int)field_40, maxstructaddr);
-    maxstructaddr = max((unsigned int)field_58, maxstructaddr);
+    //  Textures references list goes first.
+    uint32_t texturesNamesTotalLength = 0;
+    for (size_t i = 0; i < TextureReferencesListSize; ++i)
+    {
+        TextureReferencesList[i].TextureAsset = (int32_t*)(*infobuffer + **(uint32_t**)infobuffer);
+        *infobuffer += sizeof(TextureReference::TextureAsset);
+        TextureReferencesList[i].Name = (char*)(*infobuffer + **(uint32_t**)infobuffer);
+        *infobuffer += sizeof(TextureReference::Name);
 
-    *infobuffer = (unsigned char*)maxstructaddr;
-    *infobuffer = *infobuffer + **(unsigned int**)infobuffer;
+        texturesNamesTotalLength += strlen(TextureReferencesList[i].Name) + 1;
+    }
 
-    while (**infobuffer == NULL)
-        *infobuffer += 1;
+    *infobuffer += texturesNamesTotalLength;
+
+    //  First list address sanity check.
+    assert((uint32_t)*infobuffer == (uint32_t)MeshList);
+
+    for (size_t i = 0; i < MeshListSize; ++i)
+    {
+        memcpy(&MeshList[i].Position, *infobuffer, sizeof(Mesh::Position));
+        *infobuffer += sizeof(Mesh::Position);
+
+        memcpy(&MeshList[i].Orientation, *infobuffer, sizeof(Mesh::Orientation));
+        *infobuffer += sizeof(Mesh::Orientation);
+
+        MeshList[i].Name = (char*)(*infobuffer + **(uint32_t**)infobuffer);
+        if (MeshList[i].Name == (char*)*infobuffer)
+            MeshList[i].Name = nullptr;
+        *infobuffer += sizeof(Mesh::Name);
+
+        MeshList[i].field_20 = (char*)(*infobuffer + **(uint32_t**)infobuffer);
+        if (MeshList[i].field_20 == (char*)*infobuffer)
+            MeshList[i].field_20 = nullptr;
+        *infobuffer += sizeof(Mesh::field_20);
+
+        ReadToList(&MeshList[i].SkinnedMeshesList, infobuffer);
+
+        ReadToList(&MeshList[i].SurfaceProperties, infobuffer);
+
+        MeshList[i].field_44 = (int32_t*)(*infobuffer + **(uint32_t**)infobuffer);
+        *infobuffer += sizeof(Mesh::field_44);
+
+        ReadToList(&MeshList[i].FacesToSplit, infobuffer);
+        
+        MeshList[i].ParentIndex = **(int32_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::ParentIndex);
+
+        MeshList[i].field_5C = **(uint32_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::field_5C);
+
+        MeshList[i].field_60 = **(uint32_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::field_60);
+
+        MeshList[i].field_64 = **(float_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::field_64);
+
+        MeshList[i].field_68 = **(float_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::field_68);
+
+        MeshList[i].field_6C = **(float_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::field_6C);
+
+        MeshList[i].field_70 = **(uint32_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::field_70);
+
+        MeshList[i].field_74 = **(uint32_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::field_74);
+
+        MeshList[i].field_78 = **(uint32_t**)infobuffer;
+        *infobuffer += sizeof(Mesh::field_78);
+    }
+
+    //  Second list address sanity check.
+    assert((uint32_t)*infobuffer == ((uint32_t)MeshList + sizeof(Mesh) * MeshListSize));
+
+    //  Mesh list lists.
+    for (size_t i = 0; i < MeshListSize; ++i)
+    {
+        //  Skinned meshes list.
+        for (size_t j = 0; j < MeshList[i].SkinnedMeshesListSize; ++j)
+        {
+            MeshList[i].SkinnedMeshesList[j].MeshBuffer = (MeshBuffer*)(*infobuffer + **(uint32_t**)infobuffer);
+            *infobuffer += sizeof(uint32_t);
+
+            MeshList[i].SkinnedMeshesList[j].Mesh = (BaseMesh*)(*infobuffer + **(uint32_t**)infobuffer);
+            *infobuffer += sizeof(uint32_t);
+
+            ReadToList(&MeshList[i].SkinnedMeshesList[j].TextureSetsReferencesList, infobuffer);
+            ReadToList(&MeshList[i].SkinnedMeshesList[j].TextureSetsList, infobuffer);
+            ReadToList(&MeshList[i].SkinnedMeshesList[j].EnvMapCoefficientsList, infobuffer);
+
+            MeshList[i].SkinnedMeshesList[j].Flags = **(uint32_t**)infobuffer;
+            *infobuffer += sizeof(uint32_t);
+        }
+    }
 }
 
 void AssetBlockReader::CompiledModelAsset::DumpData(const AssetBlockReader* reader)

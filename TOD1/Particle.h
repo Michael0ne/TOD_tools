@@ -7,9 +7,7 @@ class NodePosition;
 
 class Particle
 {
-    friend struct ParticleSystemInfo;
-    friend class ParticleSystem;
-protected:
+public:
     int             field_4;
     int             field_8;
     int             field_C;

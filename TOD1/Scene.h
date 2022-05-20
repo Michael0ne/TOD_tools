@@ -94,7 +94,7 @@ public:
     class FrameBuffer*   m_FrameBuffers[31];
     class FrameBuffer*   m_FrameBuffer_1;
     class FrameBuffer*   m_FrameBuffer_2;
-    unsigned int    m_RenderTimeMs;
+    unsigned int    m_FrameTime;
     UINT64          m_StartTimeMs;
     int             field_268;
 

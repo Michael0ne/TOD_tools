@@ -43,6 +43,7 @@ struct AssetHeaderStruct_t
 };
 
 //  NOTE: It looks like the purpose of this is just to fix raw compiled data that is inside an asset into game-ready data. Fix pointers, instantiate necessary classes etc. Could be templated.
+//  TODO: might be not related to asset exactly, possible name 'MultiPartStream'. This supports multiple 'caret' positions.
 struct CompiledAssetInfo
 {
     struct ListAssetInfo

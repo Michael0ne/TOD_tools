@@ -15,6 +15,12 @@ public:
         unsigned char   m_ShortString;
     };
 
+    struct vec2
+    {
+        float           x;
+        float           y;
+    };
+
     struct vec3
     {
         float           x;
@@ -30,7 +36,7 @@ public:
         float           w;
     };
 
-    enum AssetType
+    enum tAssetType
     {
         TEXTURE = 0,
         FONT,
@@ -54,12 +60,12 @@ public:
     //  TODO: merge derived classes with Kapow's.
     struct CompiledAsset
     {
-        AssetType   m_AssetType;
-        char       *m_AssetName;
-        unsigned int    m_AssetGlobalId;
-        unsigned int    field_C;
-        UINT64      m_EngineTimestamp;
-        unsigned int    m_Flags;
+        tAssetType  AssetType;
+        char       *Name;
+        uint32_t    GlobalId;
+        uint32_t    field_C;
+        UINT64      EngineTimestamp;
+        uint32_t    Flags;
 
         CompiledAsset(unsigned char** infobuffer);
         
@@ -295,60 +301,161 @@ public:
     {
         struct TextureReference
         {
-            unsigned int    field_0;
-            char           *m_TextureName;
+            int32_t        *TextureAsset;
+            char           *Name;
         };
 
-        struct SkinnedMeshBuffer;
+        struct Face
+        {
+            vec4            Position;
+            vec2            TexCoordU;
+            vec2            TexCoordV;
+            vec4            Normal;
+            vec4            Color;
+            uint32_t        field_40;
+            uint32_t        field_44;
+            uint32_t        field_48;
+            uint32_t        field_4C;
+            float_t         field_50;
+            float_t         field_54;
+            float_t         field_58;
+            float_t         field_5C;
+            uint32_t        field_60;
+        };
+
+        struct BaseMesh
+        {
+            Face           *FacesList;
+            size_t          FacesListSize;
+            uint32_t        field_8[2];
+
+            uint16_t       *IndiciesList;
+            size_t          IndiciesListSize;
+            uint32_t        field_18[2];
+
+            uint32_t       *field_20;
+            size_t          field_24;
+            uint32_t        field_28[2];
+
+            uint32_t       *field_30;
+            size_t          field_34;
+            uint32_t        field_38[2];
+
+            uint32_t       *field_40;
+            size_t          field_44;
+            uint32_t        field_48[2];
+
+            uint32_t        Flags;
+            uint32_t        IsTrianglesList;
+            uint32_t        field_58;
+            vec4            field_5C;
+        };
+
+        struct VertexBuffer
+        {
+            size_t          Capacity;
+            size_t          ListSize;
+            uint32_t        FVF;
+            uint32_t        Length;
+            char           *Buffer;
+            uint16_t        Stride;
+            uint32_t        field_16;
+            uint32_t        FVFIndex;
+            uint32_t        Flags;
+            uint32_t        LockMode;
+            void           *D3DVertexBuffer;
+        };
+
+        struct IndexBuffer
+        {
+            uint32_t        ListSize;
+            uint32_t        PrimitiveTypeIndex;
+            uint32_t        PrimitiveType;
+            char           *Buffer;
+            uint32_t        field_14;
+            uint32_t        LockMode;
+            uint32_t        Flags;
+            void           *D3DIndexBuffer;
+        };
+
+        struct MeshBuffer
+        {
+            BaseMesh       *Mesh;
+            uint32_t        field_4;
+            uint32_t        field_8;
+            VertexBuffer   *VertexBufferPtr;
+            IndexBuffer    *IndexBufferPtr;
+            String          field_14;
+            vec4            field_24;
+            vec4            field_34;
+        };
+
+        struct SkinnedMesh
+        {
+            MeshBuffer         *MeshBuffer;
+            BaseMesh           *Mesh;
+
+            TextureReference   *TextureSetsReferencesList;
+            size_t              TextureSetsReferencesListSize;
+            uint32_t            field_10[2];
+
+            uint32_t           *TextureSetsList;
+            size_t              TextureSetsListSize;
+            uint32_t            field_20[2];
+
+            uint32_t           *EnvMapCoefficientsList;
+            size_t              EnvMapCoefficientsListSize;
+            uint32_t            field_30[2];
+
+            uint32_t            Flags;
+        };
 
         struct Mesh
         {
-            vec3            m_Position;
-            float           field_C;
-            float           field_10;
-            float           field_14;
-            float           field_18;
-            char           *m_Name;
+            vec3            Position;
+            vec4            Orientation;
+            char           *Name;
             char           *field_20;
-            SkinnedMeshBuffer  *m_SkinnedMeshBuffer;
-            int             m_TotalMeshes;
-            int             field_2C;
-            int             field_30;
-            char           *field_34;
-            int             field_38;
-            int             field_3C;
-            int             field_40;
-            int             field_44;
-            char           *field_48;
-            int             field_4C;
-            int             field_50;
-            int             field_54;
-            int             m_ParentPivotIndex; //  NOTE: or 'NextPivotIndex'.
-            int             field_5C;
-            int             field_60;
-            float           field_64;
-            float           field_68;
-            float           field_6C;
-            int             field_70;
-            int             field_74;
-            int             field_78;
+
+            SkinnedMesh    *SkinnedMeshesList;
+            size_t          SkinnedMeshesListSize;
+            uint32_t        field_2C[2];
+
+            uint32_t       *SurfaceProperties;
+            size_t          SurfacePropertiesSize;
+            uint32_t        field_3C[2];
+            int32_t        *field_44;   //  NOTE: ptr to list.
+
+            uint32_t       *FacesToSplit;
+            size_t          FacesToSplitSize;
+            uint32_t        field_50[2];
+
+            int32_t         ParentIndex;
+            uint32_t        field_5C;
+            uint32_t        field_60;
+            float_t         field_64;
+            float_t         field_68;
+            float_t         field_6C;
+            uint32_t        field_70;
+            uint32_t        field_74;
+            uint32_t        field_78;
         };
 
-        unsigned int    field_1C;
+        uint32_t            field_1C;
 
-        TextureReference* m_TextureResources_Elements;
-        unsigned int    m_TextureResources_Size;
-        int             field_28[2];
+        TextureReference   *TextureReferencesList;
+        size_t              TextureReferencesListSize;
+        uint32_t            field_28[2];
 
-        Mesh           *m_MeshList_Elements;
-        unsigned int    m_MeshList_Size;
-        int             field_38[2];
+        Mesh               *MeshList;
+        size_t              MeshListSize;
+        uint32_t            field_38[2];
 
-        unsigned int   *field_40;
-        vec4            m_BoundingRadius;
-        unsigned int    field_54;
-        unsigned int   *field_58;
-        unsigned char   field_5C;
+        uint32_t           *PhysAttachmentsList;
+        vec4                BoundingRadius;
+        uint32_t            field_54;
+        uint32_t           *field_58;
+        uint8_t             field_5C;
 
         CompiledModelAsset(unsigned char** infobuffer);
 
@@ -361,7 +468,7 @@ public:
     struct CompiledFragmentAsset : CompiledAsset
     {
         unsigned int    field_1C;
-        unsigned int   *field_20;
+        unsigned int   *field_20;   //  NOTE: some dictionary...
         unsigned int    field_24;
 
         CompiledFragmentAsset(unsigned char** infobuffer);

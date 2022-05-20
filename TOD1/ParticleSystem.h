@@ -117,6 +117,7 @@ struct ParticleSystemInfo
     ParticleA*      CreateNewParticle();    //  @425620
     void            KillAll();  //  @425050
     void            RemoveParticle(ParticleA* particleRef); //  @425000
+    void            SpawnParticle(NodePosition* nodePosVtbl, const Vector4f& screenPosition, const Orientation& particleOrient);    //  @42C750
 };
 
 class ParticleSystem : public Node
@@ -149,6 +150,11 @@ public:
             MemoryManager::ReleaseMemory(ptr, 0);
         ptr = nullptr;
     }
+
+private:
+    void            SpawnWithEmitter();  //  @8E6EF0
+
+public:
 
     const float     GetEmitterFadeThreshold() const;    //  @8E6A40
     void            SetEmitterFadeThreshold(const float threshold); //  @8E6DB0

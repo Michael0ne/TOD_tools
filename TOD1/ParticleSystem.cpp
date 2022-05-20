@@ -8,6 +8,9 @@
 #include "StringType.h"
 #include "VectorType.h"
 #include "GeometryEffect.h"
+#include "Scene.h"
+#include "VirtualHud.h"
+#include "GfxInternal.h"
 
 bool ParticleSystem::LodAndFade;
 Vector4f ParticleSystem::CameraOrigin = BuiltinType::ZeroVector;
@@ -46,6 +49,43 @@ void ParticleSystem::Instantiate()
 
 void ParticleSystem::Render()
 {
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ParticleSystem::SpawnWithEmitter()
+{
+    Camera* camera = Scene::SceneInstance->m_ActiveCamera;
+    if (!camera)
+        return;
+
+    /*
+    *        0    1    2    3
+    *   0 - 1_1, 1_2, 1_3, 1_4
+    *   1 - 2_1, 2_2, 2_3, 2_4
+    *   2 - 3_1, 3_2, 3_3, 3_4
+    *   3 - 4_1, 4_2, 4_3, 4_4
+    */
+    DirectX::XMMATRIX mat;
+
+    if (m_Properties.m_Flags.UsesVirtualHud)
+    {
+        Vector4f screenCoords;
+        DirectX::XMMATRIX nodeMat;
+
+        GetWorldMatrix(nodeMat);
+        VirtualHud::VirtualHudInstance.LimitCoordsToScreen(screenCoords, *(Vector4f*)&nodeMat.r[3].m128_f32);
+
+        *(Vector4f*)&mat.r[3].m128_f32 = screenCoords;
+        *(Vector4f*)&mat.r[2].m128_f32 = *(Vector4f*)&nodeMat.r[3].m128_f32;
+    }
+    else
+    {
+        const ScreenResolution screenResolution = g_GfxInternal->GetViewportResolution();
+    }
+
+    Orientation orient;
+    GetOrient(orient);
+    m_Properties.SpawnParticle(camera->m_NodePosition, *(Vector4f*)&mat.r[3].m128_f32[0], orient);
 }
 
 const float ParticleSystem::GetEmitterFadeThreshold() const
@@ -492,4 +532,22 @@ void ParticleSystemInfo::RemoveParticle(ParticleA* particleRef)
         particleRef->m_Previous->m_Next = particleRef->m_Next;
 
     delete particleRef;
+}
+
+void ParticleSystemInfo::SpawnParticle(NodePosition* nodePosVtbl, const Vector4f& screenPosition, const Orientation& particleOrient)
+{
+    if (m_Particles && m_Particles->m_BirthDistFade == 0.f)
+        m_Particles->m_BirthDistFade = (float)0.0000099999997;
+
+    Vector4f camPos;
+    m_Particles = CreateNewParticle();
+    m_Particles->m_PositionMethods = nodePosVtbl;
+
+    nodePosVtbl->GetPosition(&camPos);
+    m_Particles->m_CameraPosition = camPos;
+    m_Particles->m_ScreenPosition = screenPosition;
+    m_Particles->m_Orientation = particleOrient;
+
+    if (m_Flags.ExplicitBirthOnly && (m_Particles->field_60 & 0x20000) == 0)
+        m_Particles->m_Amount++;
 }

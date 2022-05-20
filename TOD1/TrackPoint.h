@@ -14,6 +14,8 @@ public:
         m_Speed = 1.0f;
     }
 
+    virtual char        ProcessCollision(int, int) override;   //  @9240D0 //  NOTE: unused.
+
     const float         GetSpeed() const;   //  @89A880
     void                SetSpeed(const float speed);    //  @8A6C90
 

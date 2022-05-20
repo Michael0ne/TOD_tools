@@ -411,6 +411,11 @@ void GfxInternal::GetBackBufferResolution(ScreenResolution& outResolution, const
     outResolution = m_RenderBufferArray[bufferindex].m_ViewportDimensions_1;
 }
 
+const ScreenResolution& GfxInternal::GetViewportResolution() const
+{
+    return g_GfxInternal_Dx9->m_ViewportResolution;
+}
+
 AssetManager::RegionCode GfxInternal::GetRegion()
 {
     return AssetManager::REGION_EUROPE;

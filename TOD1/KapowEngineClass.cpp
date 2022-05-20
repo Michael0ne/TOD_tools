@@ -826,9 +826,9 @@ bool KapowEngineClass::UpdateGame()
     }
 
     Scene::TotalFrames++;
-    Scene::SceneInstance->m_RenderTimeMs = (unsigned int)(__rdtsc() - timeBeforeRender);
+    Scene::SceneInstance->m_FrameTime = (unsigned int)(__rdtsc() - timeBeforeRender);
 #if defined VERBOSE_LOG && defined INCLUDE_FIXES
-    LogDump::LogA("Scene render took %d ms\n", Scene::SceneInstance->m_RenderTimeMs);
+    LogDump::LogA("Scene render took %d ms\n", Scene::SceneInstance->m_FrameTime);
 #endif
 
     const Camera* sceneCamera = Scene::SceneInstance->m_ActiveCamera;
