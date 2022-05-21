@@ -86,7 +86,7 @@ extern unsigned int GetGlobalCommandListSize()
 
 int GetPropertyIdByName(const char* const propertyname)
 {
-    char propname[64] = {};
+    char propname[256] = {};
     strncpy_s(propname, sizeof(propname), propertyname, strchr(propertyname, ':') - propertyname);
 
     const std::map<String, unsigned int>::const_iterator& it = GlobalPropertiesMap.find(propname);
@@ -916,9 +916,9 @@ void GlobalProperty::ClearGlobalProperties()
     GlobalPropertyListChecksumObtained = false;
 }
 
-GlobalProperty& GlobalProperty::GetById(unsigned int id)
+GlobalProperty* GlobalProperty::GetById(unsigned int id)
 {
-    return GlobalPropertiesList[id];
+    return &GlobalPropertiesList[id];
 }
 
 GlobalProperty::GlobalProperty(const char* const propertyname, unsigned int ind)
@@ -1065,7 +1065,7 @@ Scriptbaked::Scriptbaked(const char* const scriptName, const char* const parentN
     field_60 = 0;
 }
 
-void Scriptbaked::AddMember(const int fieldId, const char* const defaultValue, const int a3)
+void Scriptbaked::AddMember(const int fieldId, char* defaultValue, const int a3)
 {
 #ifdef INCLUDE_FIXES
     if (fieldId == -1)
@@ -1074,8 +1074,21 @@ void Scriptbaked::AddMember(const int fieldId, const char* const defaultValue, c
         return;
     }
 #endif
+    GlobalProperty* propertyRef = GlobalProperty::GetById(fieldId);
+
+#ifdef INCLUDE_FIXES
+    assert(propertyRef != nullptr);
+#endif
+
     m_PropertiesValues[fieldId] = m_PropertiesList.size();
-    m_PropertiesList.push_back({ &GlobalProperty::GetById(fieldId), m_PropertiesValues.size(), (char*)defaultValue, a3 });
+
+    Scriptbaked::Property prop;
+    prop.m_Info = propertyRef;
+    prop.m_Offset = m_PropertiesValues.size();
+    prop.m_DefaultValue = defaultValue;
+    prop.field_C = a3;
+
+    m_PropertiesList.push_back(prop);
 }
 
 void Scriptbaked::AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(ScriptThread*, void*))
@@ -1267,10 +1280,10 @@ void Scriptbaked::AddPropertyByReference(Node* callerNode, const int propertyInd
     else
     {
         String buf;
-        GlobalProperty::GetById(propertyInd).GetNameAndType(buf);
+        GlobalProperty::GetById(propertyInd)->GetNameAndType(buf);
 #if defined(INCLUDE_FIXES) && defined(VERBOSE_LOGGING)
         //  NOTE: editor/debug leftover?
-        debug("Scriptbaked::489D40: script does not have this propety! id=%d, type=%s", propertyInd, buf.m_Str);
+        debug("AddPropertyByReference: script does not have this propety! id=%d, type=%s", propertyInd, buf.m_Str);
 #endif
     }
 }
@@ -1469,7 +1482,6 @@ void Scriptbaked::AssignCommonNodes()
 
 unsigned int Scriptbaked::GetScriptIdByFullName(const char* const name)
 {
-    // TODO: there's a trouble when looking for an Entity-specific properties. Take that into account?
     const char* ddpos = strchr(name, ':');
     char scriptname[256] = {};
     size_t scriptnamelen = 0;

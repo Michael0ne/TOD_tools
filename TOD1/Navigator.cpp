@@ -134,7 +134,7 @@ const Vector4f& Navigator::CheckObstacle(const Vector4f& position)
         arg = 0;
         sharedProbe->SetLineMode(&arg);
         sharedProbe->SetRadius(positionDistanceVecMag * 0.5f);
-        arg = m_ProbeLineThickness;
+        arg = (int)m_ProbeLineThickness;
         sharedProbe->SetLineThickness(&arg);
 
         Node* grandParent = m_Parent->m_Parent;

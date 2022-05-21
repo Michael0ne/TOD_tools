@@ -382,7 +382,8 @@ DataType* DataType::GetTypeByName(const char* name)
 
 DataType* DataType::LoadScript(const char* script)
 {
-    if (DataType* type_ = GetTypeByName(script))
+    DataType* type_ = GetTypeByName(script);
+    if (type_)
         return type_;
 
     const char* parenthopenpos = strchr(script, '(');
@@ -432,7 +433,7 @@ DataType* DataType::LoadScript(const char* script)
         return rettype;
     }
 
-    char list_element_type[50] = {};
+    char list_element_type[128] = {};
     strncpy(list_element_type, parenthopenpos + 1, parenthclospos - parenthopenpos - 1);
     DataType* listelscript = LoadScript(list_element_type);
 

@@ -19,6 +19,12 @@ TrackPoint* TrackPoint::Create(AllocatorIndex)
     return new TrackPoint;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+char TrackPoint::ProcessCollision(int, int)
+{
+    return 0;
+}
+
 const float TrackPoint::GetSpeed() const
 {
     return m_Speed;

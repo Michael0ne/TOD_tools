@@ -15,7 +15,7 @@ public:
 		inst->AddMember(GetScriptIdByFullName("legs_vertical_orient:quaternion"), "0.707107 -0.707107 0.000000 0.000000", 0);
 		inst->AddMember(GetScriptIdByFullName("subdir:Entity"), "", 0);
 		inst->AddMember(GetScriptIdByFullName("foundancester:truth"), "", 0);
-		inst->AddMember(GetScriptIdByFullName("gamename"), "", 0);
+		inst->AddMember(GetScriptIdByFullName("gamename:string"), "", 0);
 		inst->AddMember(GetScriptIdByFullName("PLAYER_NODE:Entity"), "", 0);
 		inst->AddMember(GetScriptIdByFullName("GENERAL_CUTSCENEPLAYING:truth"), "", 0);
 		inst->AddMember(GetScriptIdByFullName("LAST_DYNAMIC_SOUNDENTITY:Entity"), "", 0);

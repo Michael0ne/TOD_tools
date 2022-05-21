@@ -7,8 +7,9 @@ ListType::ListType(DataType* elementsType) : DataType(TYPE_LIST, "list", TYPE_LI
     m_ListElementsType = elementsType;
     m_ListElementSize = elementsType->m_Size;
 
-    char str[64] = {};
+    char str[128] = {};
     sprintf(str, "list(%s)", elementsType->m_TypeName.m_Str);
+    m_TypeName = str;
 
     m_ComplexType = (elementsType->m_TypeId == TYPE_STRING || elementsType->m_TypeId == TYPE_LIST || elementsType->m_TypeId == TYPE_DICT || elementsType->m_TypeId == TYPE_STRUCT);
 }

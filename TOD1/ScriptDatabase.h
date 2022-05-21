@@ -54,14 +54,14 @@ struct GlobalProperty
     DataType       *m_PropertyType = nullptr;
 
     GlobalProperty() {};
-    GlobalProperty(const char* const propertyname, unsigned int ind);
+    GlobalProperty(const char* const propertyname, unsigned int ind);   //  @873040
     ~GlobalProperty();
 
     void            GetNameAndType(String& outStr) const; // @8731C0
 
     static void     ClearGlobalProperties();    //  @873650
 
-    static GlobalProperty& GetById(unsigned int id); // @872FC0
+    static GlobalProperty* GetById(unsigned int id); // @872FC0
 };
 
 extern std::vector<GlobalProperty>      GlobalPropertiesList; // @A3CF20
@@ -155,7 +155,7 @@ protected:
 public:
     Scriptbaked(const char* const scriptName, const char* const parentName, bool a3, bool a4); // @48A530
 
-    void                        AddMember(const int fieldId, const char* const defaultValue, const int); // @48AF10
+    void                        AddMember(const int fieldId, char* defaultValue, const int); // @48AF10
     void                        AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(ScriptThread*, void*)); // @48A690
     void                        AddLocal(void (*procPtr)(ScriptThread*), DataType* localType);  //  @48A700
     void                        AddProperty(Node* scriptNode, const unsigned int propertyIndex, const int* const propertyValue);    //  @489EA0
