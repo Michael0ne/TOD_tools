@@ -39,7 +39,7 @@ protected:
     char field_64;
 
     void LoadVariablesFile(const char* file, bool configvariables); // @412110
-    void ParseVariablesFile(File* file, bool configvariables); // @411A30
+    void ParseVariablesFile(FileBuffer* file, bool configvariables); // @411A30
 
 public:
     ConfigVariables(int); // @410680
@@ -133,7 +133,7 @@ public:
     void    CreateProbes(); // @93D360
     void    ReloadScripts();    //  @93D0D0
 
-    static bool   CheckAssetChecksum(File& file, const unsigned int propertyChecksum, const unsigned int commandChecksum); // @93CB00
+    static bool   CheckAssetChecksum(FileBuffer& file, const unsigned int propertyChecksum, const unsigned int commandChecksum); // @93CB00
     static bool   UpdateGame(); // @93CEB0
     static void   _93CDA0(const char* const str); // @93CDA0
 
@@ -180,7 +180,7 @@ static bool             ReadAndParseCollMatMaterial(String& materialName, int& o
 extern int    GetCollmatMaterialId(const char* materialname); // @87CEB0
 
 extern std::list<String> FaceCollList; // @A3D7EC
-extern File* CollMatFile; // @A3D7E8
+extern FileBuffer* CollMatFile; // @A3D7E8
 extern std::map<String, unsigned int> CollMatProperties; // @A11704
 extern std::map<String, FaceColl> CollMatMaterialsTypes; // @A3D7FC
 

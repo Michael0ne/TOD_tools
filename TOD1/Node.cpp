@@ -131,7 +131,7 @@ Node* Node::FindNode(const char* nodeName)
             if (modelEntity && modelEntity->m_ModelRes.m_AssetPtr)
             {
                 String fileName;
-                File::ExtractFileName(fileName, modelEntity->m_ModelRes.m_AssetPtr->GetName());
+                FileBuffer::ExtractFileName(fileName, modelEntity->m_ModelRes.m_AssetPtr->GetName());
                 if (String::EqualIgnoreCase(fileName.m_Str, nodeName, fileName.m_Length))
                     return this;
             }
@@ -2228,18 +2228,18 @@ void Node::TryInstantiate()
 
 void Node::_891E70(const String& s, String& outs)
 {
-    if (File::DirectoryMappingsList.size() <= 0)
+    if (FileBuffer::DirectoryMappingsList.size() <= 0)
     {
         outs = s;
         return;
     }
 
-    for (unsigned int i = 0; i < File::DirectoryMappingsList.size(); ++i)
+    for (unsigned int i = 0; i < FileBuffer::DirectoryMappingsList.size(); ++i)
     {
-        if (strncmp(s.m_Str, File::DirectoryMappingsList[i].m_String_1.m_Str, File::DirectoryMappingsList[i].m_String_1.m_Length) == NULL)
+        if (strncmp(s.m_Str, FileBuffer::DirectoryMappingsList[i].m_String_1.m_Str, FileBuffer::DirectoryMappingsList[i].m_String_1.m_Length) == NULL)
         {
-            outs = File::DirectoryMappingsList[i].m_String_2.m_Str;
-            outs.Append(&s.m_Str[File::DirectoryMappingsList[i].m_String_1.m_Length]);
+            outs = FileBuffer::DirectoryMappingsList[i].m_String_2.m_Str;
+            outs.Append(&s.m_Str[FileBuffer::DirectoryMappingsList[i].m_String_1.m_Length]);
         }
     }
 

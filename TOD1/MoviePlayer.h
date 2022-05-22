@@ -23,7 +23,7 @@ class MoviePlayer : public Node
         float               field_38;
         float               field_3C;
         Texture            *m_CurrentFrameTexture;
-        File               *m_MovieFile;
+        FileBuffer               *m_MovieFile;
 
         FrameInfo(); // @442F00
         ~FrameInfo();   //  @443060

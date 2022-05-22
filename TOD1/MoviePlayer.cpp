@@ -50,7 +50,7 @@ const char* MoviePlayer::GetMovie() const
 void MoviePlayer::SetMovie(const char* const moviename)
 {
     char movieDir[1024] = {}, movieFName[512] = {}, movieExt[16] = {};
-    File::ExtractFilePath(moviename, movieDir, movieFName, movieExt);
+    FileBuffer::ExtractFilePath(moviename, movieDir, movieFName, movieExt);
 
     String movieFilePathNoExt(movieDir);
     movieFilePathNoExt.Append(movieFName);
@@ -305,8 +305,8 @@ void MoviePlayer::Register()
 
     tMoviePlayer->PropagateProperties();
 
-    StopPressedCommand = GetCommandId("stop_pressed", true);
-    PlayPressedCommand = GetCommandId("play_command", true);
+    StopPressedCommand = GetMessage("stop_pressed", true);
+    PlayPressedCommand = GetMessage("play_command", true);
 }
 
 MoviePlayer::FrameInfo::FrameInfo()
@@ -358,7 +358,7 @@ void MoviePlayer::FrameInfo::ProcessFrame(FrameBuffer* fb)
 
 void MoviePlayer::FrameInfo::OpenMovie()
 {
-    m_MovieFile = new File(m_MovieName.m_Str, 0x21, true);
+    m_MovieFile = new FileBuffer(m_MovieName.m_Str, 0x21, true);
     HANDLE filehnd = m_MovieFile->GetFileHandle();
 
     if (filehnd)

@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "ScriptDatabase.h"
 
-File* LogDumpFile = nullptr;
+FileBuffer* LogDumpFile = nullptr;
 int LogDump::OldFrameNumber = -1;
 
 void LogDump::OpenLogDump(const char* path)
@@ -10,7 +10,7 @@ void LogDump::OpenLogDump(const char* path)
     if (LogDumpFile)
         delete LogDumpFile;
 
-    LogDumpFile = new File(path, 66, true);
+    LogDumpFile = new FileBuffer(path, 66, true);
 
     if (LogDumpFile->IsFileOpen())
         return;

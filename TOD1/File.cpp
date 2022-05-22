@@ -1,20 +1,20 @@
 #include "File.h"
 #include "LogDump.h"
 #include "ZipArch.h"
-#include "Window.h"
+#include "Platform.h"
 #include "ScriptDatabase.h"
 #include <map>
 
-unsigned int File::FilesOpen = NULL;
-HANDLE File::FilesSemaphoreArray[FILE_MAX_ZIP_FILES];
-std::vector<StringTuple> File::DirectoryMappingsList;
-unsigned int File::AlignmentArray[3] = { 1, 1, 4 };
-FileWrapper* FileWrapper::ZipFilesArray[FILE_MAX_ZIP_FILES] = {};
-bool FileWrapper::GameDiscFound = false;
-String FileWrapper::WorkingDirectory;
-String FileWrapper::GameWorkingDirectory;
+unsigned int FileBuffer::FilesOpen = NULL;
+HANDLE FileBuffer::FilesSemaphoreArray[FILE_MAX_ZIP_FILES];
+std::vector<StringTuple> FileBuffer::DirectoryMappingsList;
+unsigned int FileBuffer::AlignmentArray[3] = { 1, 1, 4 };
+FileBufferImpl* FileBufferImpl::ZipFilesArray[FILE_MAX_ZIP_FILES] = {};
+bool FileBufferImpl::GameDiscFound = false;
+String FileBufferImpl::WorkingDirectory;
+String FileBufferImpl::GameWorkingDirectory;
 
-bool FileWrapper::IsStorageFull()
+bool FileBufferImpl::IsStorageFull()
 {
     ULARGE_INTEGER spaceAvailable = {};
     GetDiskFreeSpaceEx(WorkingDirectory.m_Str, &spaceAvailable, nullptr, nullptr);
@@ -22,7 +22,7 @@ bool FileWrapper::IsStorageFull()
     return spaceAvailable.QuadPart == NULL;
 }
 
-ULARGE_INTEGER FileWrapper::GetStorageFreeSpace()
+ULARGE_INTEGER FileBufferImpl::GetStorageFreeSpace()
 {
     ULARGE_INTEGER spaceAvailable;
 
@@ -30,14 +30,14 @@ ULARGE_INTEGER FileWrapper::GetStorageFreeSpace()
     return spaceAvailable;
 }
 
-void FileWrapper::DeleteFileFromGameDir(const char* const filename)
+void FileBufferImpl::DeleteFileFromGameDir(const char* const filename)
 {
     String filepath = filename;
     GetWorkingDirRelativePath(filepath);
     DeleteFile(filepath.m_Str);
 }
 
-void FileWrapper::FindGameDir()
+void FileBufferImpl::FindGameDir()
 {
     char currdir[1024];
     memset(currdir, NULL, sizeof(currdir));
@@ -88,7 +88,7 @@ void FileWrapper::FindGameDir()
     SetErrorMode(NULL);
 }
 
-bool FileWrapper::IsDirectoryValid(const char* const dir)
+bool FileBufferImpl::IsDirectoryValid(const char* const dir)
 {
     String dirStr = dir;
     GetWorkingDirRelativePath(dirStr);
@@ -112,7 +112,7 @@ bool FileWrapper::IsDirectoryValid(const char* const dir)
     return false;
 }
 
-bool FileWrapper::IsFileReadOnly(const char* const file)
+bool FileBufferImpl::IsFileReadOnly(const char* const file)
 {
     String fileStr = file;
     GetWorkingDirRelativePath(fileStr);
@@ -120,7 +120,7 @@ bool FileWrapper::IsFileReadOnly(const char* const file)
     return GetFileAttributes(fileStr.m_Str) & FILE_ATTRIBUTE_READONLY;
 }
 
-bool FileWrapper::IsFileValid(const char* const file)
+bool FileBufferImpl::IsFileValid(const char* const file)
 {
     String fileStr = file;
     GetWorkingDirRelativePath(fileStr);
@@ -128,7 +128,7 @@ bool FileWrapper::IsFileValid(const char* const file)
     return GetFileAttributes(fileStr.m_Str) != INVALID_FILE_ATTRIBUTES;
 }
 
-void FileWrapper::CreateNewDirectory(const char* const dir)
+void FileBufferImpl::CreateNewDirectory(const char* const dir)
 {
     String dirStr = dir;
     GetWorkingDirRelativePath(dirStr);
@@ -137,7 +137,7 @@ void FileWrapper::CreateNewDirectory(const char* const dir)
         CreateDirectory(dirStr.m_Str, nullptr);
 }
 
-void FileWrapper::RemoveDirectory_(const char* const dir)
+void FileBufferImpl::RemoveDirectory_(const char* const dir)
 {
     String workingDir = dir;
     GetWorkingDirRelativePath(workingDir);
@@ -149,7 +149,7 @@ void FileWrapper::RemoveDirectory_(const char* const dir)
     RemoveDirectory(workingDir.m_Str);
 }
 
-bool FileWrapper::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)
+bool FileBufferImpl::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)
 {
     String workingDir = dir;
     GetWorkingDirRelativePath(workingDir);
@@ -160,7 +160,7 @@ bool FileWrapper::EnumerateFolderFiles(const char* const dir, std::vector<String
         return false;
     }
 
-    if (!FileWrapper::IsDirectoryValid(workingDir.m_Str))
+    if (!FileBufferImpl::IsDirectoryValid(workingDir.m_Str))
     {
         LogDump::LogA("'%s' is not a valid directory\n", workingDir.m_Str);
         return false;
@@ -183,7 +183,7 @@ bool FileWrapper::EnumerateFolderFiles(const char* const dir, std::vector<String
     return true;
 }
 
-void FileWrapper::SetFileAttrib(const char* const file, unsigned int attrib, char unk)
+void FileBufferImpl::SetFileAttrib(const char* const file, unsigned int attrib, char unk)
 {
     String fileStr = file;
     GetWorkingDirRelativePath(fileStr);
@@ -208,7 +208,7 @@ void FileWrapper::SetFileAttrib(const char* const file, unsigned int attrib, cha
     SetFileAttributes(fileStr.m_Str, unk ? (newAttrib | GetFileAttributes(fileStr.m_Str)) : (~newAttrib & GetFileAttributes(fileStr.m_Str)));
 }
 
-bool FileWrapper::CheckGameFileAttributes(const char* const filename, const FileAttribute mode)
+bool FileBufferImpl::CheckGameFileAttributes(const char* const filename, const FileAttribute mode)
 {
     String gamedirrelativefilepath = filename;
     GetWorkingDirRelativePath(gamedirrelativefilepath);
@@ -227,14 +227,14 @@ bool FileWrapper::CheckGameFileAttributes(const char* const filename, const File
     }
 }
 
-void FileWrapper::SetExecuteAttr(unsigned char _attr)
+void FileBufferImpl::SetExecuteAttr(unsigned char _attr)
 {
     EnterCriticalSection(&m_CriticalSection);
     m_ExecuteAttribute = _attr;
     LeaveCriticalSection(&m_CriticalSection);
 }
 
-time_t File::GetFileTimestamp_Impl(const char* path)
+time_t FileBuffer::GetFileTimestamp_Impl(const char* path)
 {
     String workingdir = path;
     WIN32_FIND_DATA findData = {};
@@ -244,10 +244,10 @@ time_t File::GetFileTimestamp_Impl(const char* path)
     tm time_ = {};
 
     findHandle = FindFirstFile(workingdir.m_Str, &findData);
-    if (findHandle == INVALID_HANDLE_VALUE && FileWrapper::GameDiscFound)
+    if (findHandle == INVALID_HANDLE_VALUE && FileBufferImpl::GameDiscFound)
     {
         workingdir = path;
-        FileWrapper::GetGameWorkingDirRelativePath(workingdir);
+        FileBufferImpl::GetGameWorkingDirRelativePath(workingdir);
         findHandle = FindFirstFile(workingdir.m_Str, &findData);
     }
 
@@ -268,7 +268,7 @@ time_t File::GetFileTimestamp_Impl(const char* path)
     return mktime(&time_);
 }
 
-bool File::WriteBuffers()
+bool FileBuffer::WriteBuffers()
 {
     if (m_ReadFromZip)
         return false;
@@ -291,7 +291,7 @@ bool File::WriteBuffers()
     return true;
 }
 
-int File::_vsnprintf(File* _f, const char* _format, ...)
+int FileBuffer::_vsnprintf(FileBuffer* _f, const char* _format, ...)
 {
     va_list va;
     char buf[1024] = {};
@@ -306,7 +306,7 @@ int File::_vsnprintf(File* _f, const char* _format, ...)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int File::_scanf(File* _f, const char* _format, ...)
+int FileBuffer::_scanf(FileBuffer* _f, const char* _format, ...)
 {
     va_list va;
     va_start(va, _format);
@@ -317,7 +317,7 @@ int File::_scanf(File* _f, const char* _format, ...)
         return _f->_scanf_impl((char*)_format, (int*)&va); // FIXME: wtf?
 }
 
-int File::WriteFormattedVarlistDataToBuffer(char* _buf, va_list args)
+int FileBuffer::WriteFormattedVarlistDataToBuffer(char* _buf, va_list args)
 {
     char buf[1024] = {};
 
@@ -330,18 +330,18 @@ int File::WriteFormattedVarlistDataToBuffer(char* _buf, va_list args)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int File::_scanf_impl(char* format, int* outArgs)
+int FileBuffer::_scanf_impl(char* format, int* outArgs)
 {
 #ifndef _EXE
     // NOTE: this checks input string for formatting symbol and does something with it. Why is it here?
-    return (*(int(__thiscall*)(File*, const char*, int*))0x42F0A0)(this, format, outArgs);
+    return (*(int(__thiscall*)(FileBuffer*, const char*, int*))0x42F0A0)(this, format, outArgs);
 #else
-    LogDump::LogA("File::_scanf_impl is not implemented!\n");
+    LogDump::LogA("FileBuffer::_scanf_impl is not implemented!\n");
     return NULL;
 #endif
 }
 
-char File::ReadBlock()
+char FileBuffer::ReadBlock()
 {
     if (!m_ReadFromZip)
         return m_FileHandle->ReadBlock();
@@ -351,17 +351,17 @@ char File::ReadBlock()
 
     WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
 
-    FileWrapper::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
-    FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_OffsetInZip + m_SeekPosition);
-    char charread = FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlock();
-    m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
+    FileBufferImpl::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
+    FileBufferImpl::ZipFilesArray[m_ZipSlot]->Seek(m_OffsetInZip + m_SeekPosition);
+    char charread = FileBufferImpl::ZipFilesArray[m_ZipSlot]->ReadBlock();
+    m_SeekPosition = FileBufferImpl::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
 
     ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
     return charread;
 }
 
-int File::ReadBlockAndGetPosition()
+int FileBuffer::ReadBlockAndGetPosition()
 {
     int bytesread = ReadBlock();
     ReadBlockDecreasePosition();
@@ -369,12 +369,12 @@ int File::ReadBlockAndGetPosition()
     return bytesread;
 }
 
-char File::_WriteBufferBlockAndInsertNewLine(char _newlinesym)
+char FileBuffer::_WriteBufferBlockAndInsertNewLine(char _newlinesym)
 {
     return m_FileHandle->_WriteBufferBlockAndInsertNewLine(_newlinesym);
 }
 
-int File::Read(void* _buffer, unsigned int _numbytestoread)
+int FileBuffer::Read(void* _buffer, unsigned int _numbytestoread)
 {
     if (!m_ReadFromZip)
         return m_FileHandle->Read(_buffer, _numbytestoread);
@@ -383,14 +383,14 @@ int File::Read(void* _buffer, unsigned int _numbytestoread)
         return NULL;
 
     WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
-    FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_OffsetInZip);
-    FileWrapper::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(true);
+    FileBufferImpl::ZipFilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_OffsetInZip);
+    FileBufferImpl::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(true);
 
     if (m_ExecuteAttribute)
     {
-        int bytesread = FileWrapper::ZipFilesArray[m_ZipSlot]->Read(_buffer, ((m_SeekPosition + _numbytestoread) > (unsigned int)m_SizeInZip) ? m_SizeInZip - m_SeekPosition : _numbytestoread);
+        int bytesread = FileBufferImpl::ZipFilesArray[m_ZipSlot]->Read(_buffer, ((m_SeekPosition + _numbytestoread) > (unsigned int)m_SizeInZip) ? m_SizeInZip - m_SeekPosition : _numbytestoread);
 
-        m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
+        m_SeekPosition = FileBufferImpl::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
         ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
         return bytesread;
@@ -401,38 +401,38 @@ int File::Read(void* _buffer, unsigned int _numbytestoread)
 
         for (; bytesread < _numbytestoread; bytesread++)
         {
-            if (FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() >= m_SizeInZip + m_OffsetInZip)
+            if (FileBufferImpl::ZipFilesArray[m_ZipSlot]->GetPosition() >= m_SizeInZip + m_OffsetInZip)
                 break;
-            char lastchar = FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlock();
+            char lastchar = FileBufferImpl::ZipFilesArray[m_ZipSlot]->ReadBlock();
             if (lastchar == '\n' ||
                 lastchar == '\r')
             {
-                char lastchar_2 = FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlock();
+                char lastchar_2 = FileBufferImpl::ZipFilesArray[m_ZipSlot]->ReadBlock();
                 if ((lastchar_2 == '\n' || lastchar_2 == '\r') && lastchar == lastchar_2)
-                    FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
+                    FileBufferImpl::ZipFilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
                 lastchar = '\n';
             }
             ((char*)(_buffer))[bytesread] = lastchar;
         }
 
-        m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
+        m_SeekPosition = FileBufferImpl::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
         ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
         return bytesread;
     }
 }
 
-int File::WriteBuffer(const char* _buf)
+int FileBuffer::WriteBuffer(const char* _buf)
 {
     return m_FileHandle->WriteBuffer(_buf, strlen(_buf));
 }
 
-int File::WriteBufferWithSize(const char* _buf, int _size)
+int FileBuffer::WriteBufferWithSize(const char* _buf, int _size)
 {
     return m_FileHandle->WriteBuffer(_buf, _size);
 }
 
-int File::Seek(int _pos)
+int FileBuffer::Seek(int _pos)
 {
     if (!m_ReadFromZip)
         return m_FileHandle->Seek(_pos);
@@ -440,7 +440,7 @@ int File::Seek(int _pos)
     return m_SeekPosition = _pos;
 }
 
-char File::_WriteBufferAndSetToStart()
+char FileBuffer::_WriteBufferAndSetToStart()
 {
     if (m_ReadFromZip)
     {
@@ -474,7 +474,7 @@ char File::_WriteBufferAndSetToStart()
     return true;
 }
 
-char File::WriteFromBuffer()
+char FileBuffer::WriteFromBuffer()
 {
     if (!m_ReadFromZip)
         return m_FileHandle->WriteFromBufferAndSetToEnd();
@@ -484,29 +484,29 @@ char File::WriteFromBuffer()
     return true;
 }
 
-int File::GetPosition() const
+int FileBuffer::GetPosition() const
 {
     return m_ReadFromZip ? m_SeekPosition : m_FileHandle->GetPosition();
 }
 
-char File::ReadBlockDecreasePosition()
+char FileBuffer::ReadBlockDecreasePosition()
 {
     if (!m_ReadFromZip)
         return m_FileHandle->ReadBlockDecreasePosition();
 
     WaitForSingleObject(FilesSemaphoreArray[m_ZipSlot], INFINITE);
 
-    FileWrapper::ZipFilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_OffsetInZip);
-    FileWrapper::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
-    FileWrapper::ZipFilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
-    m_SeekPosition = FileWrapper::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
+    FileBufferImpl::ZipFilesArray[m_ZipSlot]->Seek(m_SeekPosition + m_OffsetInZip);
+    FileBufferImpl::ZipFilesArray[m_ZipSlot]->SetExecuteAttr(m_ExecuteAttribute);
+    FileBufferImpl::ZipFilesArray[m_ZipSlot]->ReadBlockDecreasePosition();
+    m_SeekPosition = FileBufferImpl::ZipFilesArray[m_ZipSlot]->GetPosition() - m_OffsetInZip;
 
     ReleaseSemaphore(FilesSemaphoreArray[m_ZipSlot], 1, 0);
 
     return true;
 }
 
-char File::ReadIfNotEOF()
+char FileBuffer::ReadIfNotEOF()
 {
     if (ReadBlock() == -1)
         return true;
@@ -516,12 +516,12 @@ char File::ReadIfNotEOF()
     return false;
 }
 
-const char* File::GetFileName() const
+const char* FileBuffer::GetFileName() const
 {
     return m_FileName.m_Str;
 }
 
-File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
+FileBuffer::FileBuffer(const char* _filename, int _desiredaccess, bool _createifnotfound)
 {
     String fname;
 
@@ -551,17 +551,17 @@ File::File(const char* _filename, int _desiredaccess, bool _createifnotfound)
         m_ZipFileHandle = nullptr;
     }
     else
-        m_FileHandle = new FileWrapper(m_FileName.m_Str, _desiredaccess, _createifnotfound);
+        m_FileHandle = new FileBufferImpl(m_FileName.m_Str, _desiredaccess, _createifnotfound);
 
     if ((m_ReadFromZip && m_OffsetInZip) || (m_FileHandle && m_FileHandle->m_File != NULL))
         ++FilesOpen;
 
-    MESSAGE_CLASS_CREATED(File);
+    MESSAGE_CLASS_CREATED(FileBuffer);
 }
 
-File::~File()
+FileBuffer::~FileBuffer()
 {
-    MESSAGE_CLASS_DESTROYED(File);
+    MESSAGE_CLASS_DESTROYED(FileBuffer);
 
     if (m_ReadFromZip)
         if (m_ZipFileHandle)
@@ -574,7 +574,7 @@ File::~File()
         delete m_FileHandle;
 }
 
-unsigned int File::GetSize()
+unsigned int FileBuffer::GetSize()
 {
     if (m_ReadFromZip)
         return m_SizeInZip;
@@ -587,12 +587,12 @@ unsigned int File::GetSize()
     return fsize;
 }
 
-bool File::IsFileOpen() const
+bool FileBuffer::IsFileOpen() const
 {
     return (m_ReadFromZip && m_OffsetInZip >= 0) || m_FileHandle->m_File != nullptr;
 }
 
-char File::ReadString(String& outStr)
+char FileBuffer::ReadString(String& outStr)
 {
     if (ReadIfNotEOF())
         return false;
@@ -631,12 +631,12 @@ char File::ReadString(String& outStr)
     return true;
 }
 
-void File::SetPosAligned(unsigned char alignind)
+void FileBuffer::SetPosAligned(unsigned char alignind)
 {
     Seek(~(AlignmentArray[alignind] - 1) & (AlignmentArray[alignind] + GetPosition() - 1));
 }
 
-int File::ReadIntLittleToBigEndian()
+int FileBuffer::ReadIntLittleToBigEndian()
 {
     unsigned char b3 = ReadBlock();
     unsigned char b1 = ReadBlock();
@@ -645,12 +645,12 @@ int File::ReadIntLittleToBigEndian()
     return b3 + ((b1 + ((b2 + ((unsigned char)ReadBlock() << 8)) << 8)) << 8);
 }
 
-short File::ReadShortLittleToBigEndian()
+short FileBuffer::ReadShortLittleToBigEndian()
 {
     return ReadBlock() + ((unsigned char)ReadBlock() << 8);
 }
 
-HANDLE File::GetFileHandle()
+HANDLE FileBuffer::GetFileHandle()
 {
     if (!m_ReadFromZip)
         if (m_FileHandle)
@@ -658,21 +658,21 @@ HANDLE File::GetFileHandle()
         else
             return NULL;
 
-    if (m_ZipSlot == -1 || m_OffsetInZip == -1 || !FileWrapper::ZipFilesArray[m_ZipSlot])
+    if (m_ZipSlot == -1 || m_OffsetInZip == -1 || !FileBufferImpl::ZipFilesArray[m_ZipSlot])
         return NULL;
 
-    m_ZipFileHandle = new FileWrapper(ZipArch::ZipNames[m_ZipSlot].m_Str, 0x21, true);
+    m_ZipFileHandle = new FileBufferImpl(ZipArch::ZipNames[m_ZipSlot].m_Str, 0x21, true);
     m_ZipFileHandle->Seek(m_OffsetInZip);
 
     return m_ZipFileHandle->m_File;
 }
 
-void File::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
+void FileBuffer::AddDirectoryMappingsListEntry(const char* str1, const char* str2)
 {
     DirectoryMappingsList.push_back({ str1, str2 });
 }
 
-String& File::GetPathFromDirectoryMappings(String& outStr, const char* path)
+String& FileBuffer::GetPathFromDirectoryMappings(String& outStr, const char* path)
 {
     if (DirectoryMappingsList.size() <= NULL)
     {
@@ -696,7 +696,7 @@ String& File::GetPathFromDirectoryMappings(String& outStr, const char* path)
     return outStr;
 }
 
-String* File::ExtractFileDir(String& outStr, const char* path)
+String* FileBuffer::ExtractFileDir(String& outStr, const char* path)
 {
     char buf[1024] = {};
     char buf_[1024] = {};
@@ -706,7 +706,7 @@ String* File::ExtractFileDir(String& outStr, const char* path)
     return &outStr;
 }
 
-String* File::ExtractFileName(String& outStr, const char* path)
+String* FileBuffer::ExtractFileName(String& outStr, const char* path)
 {
     char buf[1024] = {};
     char buf_[1024] = {};
@@ -721,14 +721,14 @@ String* File::ExtractFileName(String& outStr, const char* path)
         return NULL;
 }
 
-void File::FindDirectoryMappedFileAndDelete(const char* const filename)
+void FileBuffer::FindDirectoryMappedFileAndDelete(const char* const filename)
 {
     String tempStr;
     GetPathFromDirectoryMappings(tempStr, filename);
-    FileWrapper::DeleteFileFromGameDir(tempStr.m_Str);
+    FileBufferImpl::DeleteFileFromGameDir(tempStr.m_Str);
 }
 
-bool File::FindFileEverywhere(const char* path)
+bool FileBuffer::FindFileEverywhere(const char* path)
 {
     if (!path || *path == NULL)
         return false;
@@ -741,10 +741,10 @@ bool File::FindFileEverywhere(const char* path)
     if (ZipArch::SlotId > 0 && ZipArch::FindFile(pathStr.m_Str, zipFileInfo, &zipSlot))
         return true;
 
-    return FileWrapper::IsFileExists(pathStr.m_Str);
+    return FileBufferImpl::IsFileExists(pathStr.m_Str);
 }
 
-time_t File::GetFileTimestamp(const char* filename)
+time_t FileBuffer::GetFileTimestamp(const char* filename)
 {
     String pathStr;
     GetPathFromDirectoryMappings(pathStr, filename);
@@ -754,10 +754,10 @@ time_t File::GetFileTimestamp(const char* filename)
     if (ZipArch::SlotId <= 0 || !ZipArch::FindFile(pathStr.m_Str, zipFileInfo, &zipslot))
         return GetFileTimestamp_Impl(pathStr.m_Str);
     else
-        return GetFileTimestamp_Impl(FileWrapper::ZipFilesArray[0]->m_WorkingDir.m_Str);
+        return GetFileTimestamp_Impl(FileBufferImpl::ZipFilesArray[0]->m_WorkingDir.m_Str);
 }
 
-void File::ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension)
+void FileBuffer::ExtractFilePath(const char* inFilePath, char* outDirectory, char* outFileName, char* outFileExtension)
 {
     if (!inFilePath || !*inFilePath)
         return;
@@ -777,7 +777,7 @@ void File::ExtractFilePath(const char* inFilePath, char* outDirectory, char* out
     strncpy(outDirectory, inFilePath, lastslashpos - inFilePath + 1);
 }
 
-void File::ExtractFileExtension(String& outStr, const char* const path)
+void FileBuffer::ExtractFileExtension(String& outStr, const char* const path)
 {
     char fdir[1024] = {};
     char fname[128] = {};
@@ -787,7 +787,7 @@ void File::ExtractFileExtension(String& outStr, const char* const path)
     outStr = fext;
 }
 
-FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _createifnotfound)
+FileBufferImpl::FileBufferImpl(const char* _filename, int _desiredaccess, bool _createifnotfound)
 {
     m_File = NULL;
     m_CreateIfNotFound = _createifnotfound;
@@ -842,10 +842,10 @@ FileWrapper::FileWrapper(const char* _filename, int _desiredaccess, bool _create
     if (_createifnotfound)
         CreateFile_();
 
-    MESSAGE_CLASS_CREATED(FileWrapper);
+    MESSAGE_CLASS_CREATED(FileBufferImpl);
 }
 
-FileWrapper::~FileWrapper()
+FileBufferImpl::~FileBufferImpl()
 {
     if (m_File)
     {
@@ -863,10 +863,10 @@ FileWrapper::~FileWrapper()
     if (m_File && m_CreateIfNotFound)
         CloseHandle(m_File);
 
-    MESSAGE_CLASS_DESTROYED(FileWrapper);
+    MESSAGE_CLASS_DESTROYED(FileBufferImpl);
 }
 
-HANDLE FileWrapper::CreateFile_()
+HANDLE FileBufferImpl::CreateFile_()
 {
     EnterCriticalSection(&m_CriticalSection);
 
@@ -885,7 +885,7 @@ HANDLE FileWrapper::CreateFile_()
             return m_File;
         }
 
-        if (FileWrapper::GameDiscFound)
+        if (FileBufferImpl::GameDiscFound)
         {
             m_WorkingDir = m_GameWorkingDir;
             m_File = CreateFile(m_WorkingDir.m_Str, m_DesiredAccess_2, FILE_SHARE_READ, NULL, m_CreationDisposition, FILE_FLAG_WRITE_THROUGH, NULL);
@@ -910,7 +910,7 @@ HANDLE FileWrapper::CreateFile_()
     return m_File;
 }
 
-int FileWrapper::ReadBlock()
+int FileBufferImpl::ReadBlock()
 {
     EnterCriticalSection(&m_CriticalSection);
 
@@ -954,7 +954,7 @@ int FileWrapper::ReadBlock()
     }
 }
 
-int FileWrapper::GetPosition() const
+int FileBufferImpl::GetPosition() const
 {
     EnterCriticalSection(&m_CriticalSection);
     int filepos = m_FilePosition;
@@ -963,7 +963,7 @@ int FileWrapper::GetPosition() const
     return filepos;
 }
 
-int FileWrapper::Seek(int _pos)
+int FileBufferImpl::Seek(int _pos)
 {
     EnterCriticalSection(&m_CriticalSection);
 
@@ -992,20 +992,20 @@ int FileWrapper::Seek(int _pos)
     return m_FilePosition;
 }
 
-void FileWrapper::GetLastErrorMessage(char* _buf)
+void FileBufferImpl::GetLastErrorMessage(char* _buf)
 {
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, GetLastError(), NULL, _buf, NULL, nullptr);
 }
 
-void FileWrapper::MoveFileWithReplace(const char* const oldname, const char* const newname)
+void FileBufferImpl::MoveFileWithReplace(const char* const oldname, const char* const newname)
 {
     MoveFileEx(oldname, newname, MOVEFILE_REPLACE_EXISTING);
 }
 
-bool FileWrapper::IsFileExists(const char* const file)
+bool FileBufferImpl::IsFileExists(const char* const file)
 {
     String temp = file;
-    FileWrapper::GetWorkingDirRelativePath(temp);
+    FileBufferImpl::GetWorkingDirRelativePath(temp);
 
     if (GetFileAttributes(temp.m_Str) == INVALID_FILE_ATTRIBUTES)
     {
@@ -1013,7 +1013,7 @@ bool FileWrapper::IsFileExists(const char* const file)
             return false;
 
         temp = file;
-        FileWrapper::GetGameWorkingDirRelativePath(temp);
+        FileBufferImpl::GetGameWorkingDirRelativePath(temp);
 
         if (GetFileAttributes(temp.m_Str) == INVALID_FILE_ATTRIBUTES)
             return false;
@@ -1022,7 +1022,7 @@ bool FileWrapper::IsFileExists(const char* const file)
     return true;
 }
 
-void FileWrapper::ReadBlock_Internal()
+void FileBufferImpl::ReadBlock_Internal()
 {
     if (m_Read)
     {
@@ -1033,7 +1033,7 @@ void FileWrapper::ReadBlock_Internal()
     }
 }
 
-void FileWrapper::_436E30()
+void FileBufferImpl::_436E30()
 {
     if (m_Buffer != m_BufferBegin && m_Read)
     {
@@ -1043,7 +1043,7 @@ void FileWrapper::_436E30()
     }
 }
 
-void FileWrapper::_436E70()
+void FileBufferImpl::_436E70()
 {
     if (m_Read)
     {
@@ -1053,7 +1053,7 @@ void FileWrapper::_436E70()
     }
 }
 
-void FileWrapper::SetFileHandle(HANDLE _hnd)
+void FileBufferImpl::SetFileHandle(HANDLE _hnd)
 {
     EnterCriticalSection(&m_CriticalSection);
     if (!m_CreateIfNotFound)
@@ -1061,7 +1061,7 @@ void FileWrapper::SetFileHandle(HANDLE _hnd)
     LeaveCriticalSection(&m_CriticalSection);
 }
 
-void FileWrapper::ReleaseFileHandle()
+void FileBufferImpl::ReleaseFileHandle()
 {
     EnterCriticalSection(&m_CriticalSection);
     if (!m_CreateIfNotFound)
@@ -1069,7 +1069,7 @@ void FileWrapper::ReleaseFileHandle()
     LeaveCriticalSection(&m_CriticalSection);
 }
 
-void FileWrapper::FlushAndClose(HANDLE)
+void FileBufferImpl::FlushAndClose(HANDLE)
 {
     EnterCriticalSection(&m_CriticalSection);
 
@@ -1088,7 +1088,7 @@ void FileWrapper::FlushAndClose(HANDLE)
     LeaveCriticalSection(&m_CriticalSection);
 }
 
-char FileWrapper::_WriteBufferBlockAndInsertNewLine(char _sym)
+char FileBufferImpl::_WriteBufferBlockAndInsertNewLine(char _sym)
 {
     EnterCriticalSection(&m_CriticalSection);
 
@@ -1130,7 +1130,7 @@ char FileWrapper::_WriteBufferBlockAndInsertNewLine(char _sym)
     }
 }
 
-int FileWrapper::WriteBuffer(const char* _buf, int _len)
+int FileBufferImpl::WriteBuffer(const char* _buf, int _len)
 {
     EnterCriticalSection(&m_CriticalSection);
 
@@ -1188,7 +1188,7 @@ int FileWrapper::WriteBuffer(const char* _buf, int _len)
     }
 }
 
-char FileWrapper::ReadBlockDecreasePosition()
+char FileBufferImpl::ReadBlockDecreasePosition()
 {
     EnterCriticalSection(&m_CriticalSection);
 
@@ -1219,7 +1219,7 @@ char FileWrapper::ReadBlockDecreasePosition()
     return true;
 }
 
-char FileWrapper::_437790()
+char FileBufferImpl::_437790()
 {
     if (ReadBlock() == -1)
         return 1;
@@ -1229,7 +1229,7 @@ char FileWrapper::_437790()
     return 0;
 }
 
-void FileWrapper::ReadBlockFromOffset()
+void FileBufferImpl::ReadBlockFromOffset()
 {
     SetFilePointer(m_File, m_Buffer - m_BufferEnd - 20, NULL, FILE_CURRENT);
 
@@ -1244,7 +1244,7 @@ void FileWrapper::ReadBlockFromOffset()
     m_BufferBegin = m_Buffer + 19;
 }
 
-int FileWrapper::Read(LPVOID _buf, int _numbytestoread)
+int FileBufferImpl::Read(LPVOID _buf, int _numbytestoread)
 {
     EnterCriticalSection(&m_CriticalSection);
     if (_numbytestoread <= FILE_BUFFER_SIZE)
@@ -1350,7 +1350,7 @@ int FileWrapper::Read(LPVOID _buf, int _numbytestoread)
     return bytesread;
 }
 
-char FileWrapper::WriteFromBufferAndSetToEnd()
+char FileBufferImpl::WriteFromBufferAndSetToEnd()
 {
     EnterCriticalSection(&m_CriticalSection);
 
@@ -1380,7 +1380,7 @@ char FileWrapper::WriteFromBufferAndSetToEnd()
     return true;
 }
 
-void File::ReadZipDirectories(const char* fileSystem)
+void FileBuffer::ReadZipDirectories(const char* fileSystem)
 {
     if (!fileSystem || !*fileSystem)
         return;
@@ -1429,27 +1429,27 @@ void File::ReadZipDirectories(const char* fileSystem)
     }
 }
 
-ULARGE_INTEGER File::GetStorageFreeSpace()
+ULARGE_INTEGER FileBuffer::GetStorageFreeSpace()
 {
-    return FileWrapper::GetStorageFreeSpace();
+    return FileBufferImpl::GetStorageFreeSpace();
 }
 
-bool File::IsDirectoryValid(const char* const path)
+bool FileBuffer::IsDirectoryValid(const char* const path)
 {
     String pathStr;
     GetPathFromDirectoryMappings(pathStr, path);
 
-    return FileWrapper::IsDirectoryValid(pathStr.m_Str);
+    return FileBufferImpl::IsDirectoryValid(pathStr.m_Str);
 }
 
-bool File::IsFileValid(const char* const file)
+bool FileBuffer::IsFileValid(const char* const file)
 {
     String fileStr;
     GetPathFromDirectoryMappings(fileStr, file);
-    return FileWrapper::IsFileValid(fileStr.m_Str);
+    return FileBufferImpl::IsFileValid(fileStr.m_Str);
 }
 
-bool File::IsFileReadOnly(const char* const file)
+bool FileBuffer::IsFileReadOnly(const char* const file)
 {
     String fileStr;
     GetPathFromDirectoryMappings(fileStr, file);
@@ -1462,29 +1462,29 @@ bool File::IsFileReadOnly(const char* const file)
     if (ZipArch::SlotId && ZipArch::FindFile(fileStr.m_Str, zipFileInfo, &zipslot))
         return true;
 
-    return FileWrapper::IsFileReadOnly(fileStr.m_Str);
+    return FileBufferImpl::IsFileReadOnly(fileStr.m_Str);
 }
 
-void File::CreateNewDirectory(const char* const dir)
+void FileBuffer::CreateNewDirectory(const char* const dir)
 {
     String dirStr;
     GetPathFromDirectoryMappings(dirStr, dir);
-    FileWrapper::CreateNewDirectory(dirStr.m_Str);
+    FileBufferImpl::CreateNewDirectory(dirStr.m_Str);
 }
 
-void File::RemoveDirectory_(const char* const dir)
+void FileBuffer::RemoveDirectory_(const char* const dir)
 {
     String dirStr;
     GetPathFromDirectoryMappings(dirStr, dir);
-    FileWrapper::RemoveDirectory_(dirStr.m_Str);
+    FileBufferImpl::RemoveDirectory_(dirStr.m_Str);
 }
 
-void File::SetFileAttrib(const char* const file, unsigned int attrib, char unk)
+void FileBuffer::SetFileAttrib(const char* const file, unsigned int attrib, char unk)
 {
-    FileWrapper::SetFileAttrib(file, attrib, unk);
+    FileBufferImpl::SetFileAttrib(file, attrib, unk);
 }
 
-bool File::SearchScriptFile(const char* const searchpath, const char* const scriptfilename, String& zipname)
+bool FileBuffer::SearchScriptFile(const char* const searchpath, const char* const scriptfilename, String& zipname)
 {
     if (ZipArch::SlotId > 0)
     {
@@ -1502,37 +1502,37 @@ bool File::SearchScriptFile(const char* const searchpath, const char* const scri
     String mappedpath;
     GetPathFromDirectoryMappings(mappedpath, searchpath);
 
-    return FileWrapper::FindFileRecursive(mappedpath.m_Str, scriptfilename, zipname);
+    return FileBufferImpl::FindFileRecursive(mappedpath.m_Str, scriptfilename, zipname);
 }
 
-bool File::CheckGameFileAttributes(const char* const filename, const FileWrapper::FileAttribute mode)
+bool FileBuffer::CheckGameFileAttributes(const char* const filename, const FileBufferImpl::FileAttribute mode)
 {
-    return FileWrapper::CheckGameFileAttributes(filename, mode);
+    return FileBufferImpl::CheckGameFileAttributes(filename, mode);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void File::DeleteAllFilesInFolder(const char* const foldername)
+void FileBuffer::DeleteAllFilesInFolder(const char* const foldername)
 {
     if (FindFileEverywhere(foldername))
     {
         String foldermappedpath;
         GetPathFromDirectoryMappings(foldermappedpath, foldername);
-        FileWrapper::DeleteFileFromGameDir(foldermappedpath.m_Str);
+        FileBufferImpl::DeleteFileFromGameDir(foldermappedpath.m_Str);
 
         return;
     }
 }
 
-bool File::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)
+bool FileBuffer::EnumerateFolderFiles(const char* const dir, std::vector<String>& outFilesList)
 {
     String dirStr;
     GetPathFromDirectoryMappings(dirStr, dir);
-    return FileWrapper::EnumerateFolderFiles(dirStr.m_Str, outFilesList);
+    return FileBufferImpl::EnumerateFolderFiles(dirStr.m_Str, outFilesList);
 }
 
-void File::OpenZip(const char* const zipName)
+void FileBuffer::OpenZip(const char* const zipName)
 {
-    if (!FileWrapper::IsFileExists(zipName))
+    if (!FileBufferImpl::IsFileExists(zipName))
         return;
 
     int slotId = ZipArch::SlotId++;
@@ -1541,18 +1541,18 @@ void File::OpenZip(const char* const zipName)
     // ZipArch::SlotInfo[slotId].field_4 = 15; // TODO: reserve space?
     ZipArch::ZipNames[slotId] = zipName;
 
-    FileWrapper::ZipFilesArray[slotId] = new FileWrapper(zipName, 33, true);
-    FileWrapper::ZipFilesArray[slotId]->WriteFromBufferAndSetToEnd();
+    FileBufferImpl::ZipFilesArray[slotId] = new FileBufferImpl(zipName, 33, true);
+    FileBufferImpl::ZipFilesArray[slotId]->WriteFromBufferAndSetToEnd();
 
-    if (FileWrapper::ZipFilesArray[slotId]->GetPosition())
+    if (FileBufferImpl::ZipFilesArray[slotId]->GetPosition())
     {
         FilesSemaphoreArray[slotId] = CreateSemaphore(NULL, 1, 1, nullptr);
-        FileWrapper::ZipFilesArray[slotId]->Seek(FileWrapper::ZipFilesArray[slotId]->GetPosition() - 22);
+        FileBufferImpl::ZipFilesArray[slotId]->Seek(FileBufferImpl::ZipFilesArray[slotId]->GetPosition() - 22);
 
         unsigned char EndOfCentralDirectoryRecord[20] = {}; // TODO: maybe this can become actual struct from ZIP library.
         bool   ValidZipFile = false;
 
-        FileWrapper::ZipFilesArray[slotId]->Read(EndOfCentralDirectoryRecord, sizeof(EndOfCentralDirectoryRecord));
+        FileBufferImpl::ZipFilesArray[slotId]->Read(EndOfCentralDirectoryRecord, sizeof(EndOfCentralDirectoryRecord));
         if (EndOfCentralDirectoryRecord[0] +
             ((EndOfCentralDirectoryRecord[1] + ((EndOfCentralDirectoryRecord[2] + (EndOfCentralDirectoryRecord[3] << 8)) << 8)) << 8) == FILE_ZIP_MAGIC_HEADER)
             ValidZipFile = true;
@@ -1561,11 +1561,11 @@ void File::OpenZip(const char* const zipName)
         unsigned int CentralDirectorySize = EndOfCentralDirectoryRecord[12] + ((EndOfCentralDirectoryRecord[13] + ((EndOfCentralDirectoryRecord[14] + (EndOfCentralDirectoryRecord[15] << 8)) << 8)) << 8);
         unsigned int CentralDirectoryStartOffset = EndOfCentralDirectoryRecord[16] + ((EndOfCentralDirectoryRecord[17] + ((EndOfCentralDirectoryRecord[18] + (EndOfCentralDirectoryRecord[19] << 8)) << 8)) << 8);
 
-        FileWrapper::ZipFilesArray[slotId]->Seek(CentralDirectoryStartOffset);
+        FileBufferImpl::ZipFilesArray[slotId]->Seek(CentralDirectoryStartOffset);
 
         unsigned char* FileHeaderArray = new unsigned char[CentralDirectorySize];
         unsigned char* FileHeaderArrayStartPtr = FileHeaderArray;
-        FileWrapper::ZipFilesArray[slotId]->Read(FileHeaderArray, CentralDirectorySize);
+        FileBufferImpl::ZipFilesArray[slotId]->Read(FileHeaderArray, CentralDirectorySize);
 
         std::map<unsigned int, ZipArch::FileInfo> FilesMap;
 
@@ -1624,7 +1624,7 @@ void File::OpenZip(const char* const zipName)
     }
 }
 
-void FileWrapper::SetWorkingDir(const char* const str)
+void FileBufferImpl::SetWorkingDir(const char* const str)
 {
     WorkingDirectory = str;
     WorkingDirectory.ConvertBackslashes();
@@ -1633,7 +1633,7 @@ void FileWrapper::SetWorkingDir(const char* const str)
         WorkingDirectory.Append("/");
 }
 
-void FileWrapper::SetGameWorkingDir(const char* const str)
+void FileBufferImpl::SetGameWorkingDir(const char* const str)
 {
     GameWorkingDirectory = str;
     GameWorkingDirectory.ConvertBackslashes();
@@ -1642,7 +1642,7 @@ void FileWrapper::SetGameWorkingDir(const char* const str)
         GameWorkingDirectory.Append("/");
 }
 
-void FileWrapper::GetWorkingDirRelativePath(String& path)
+void FileBufferImpl::GetWorkingDirRelativePath(String& path)
 {
     if (!path.m_Length)
     {
@@ -1661,7 +1661,7 @@ void FileWrapper::GetWorkingDirRelativePath(String& path)
     path = buffer;
 }
 
-void FileWrapper::GetGameWorkingDirRelativePath(String& path)
+void FileBufferImpl::GetGameWorkingDirRelativePath(String& path)
 {
     if (!path.m_Length)
     {
@@ -1680,7 +1680,7 @@ void FileWrapper::GetGameWorkingDirRelativePath(String& path)
     path = buffer;
 }
 
-bool FileWrapper::FindFileRecursive(const char* const dir, const char* const fname, String& outfullpath)
+bool FileBufferImpl::FindFileRecursive(const char* const dir, const char* const fname, String& outfullpath)
 {
     String fpath = dir;
     GetWorkingDirRelativePath(fpath);

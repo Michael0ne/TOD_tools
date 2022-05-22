@@ -525,12 +525,12 @@ void Navigator::Register()
     tNavigator->RegisterScript("pathfind(vector,integer):truth", (EntityFunctionMember)&PathFind);
     tNavigator->RegisterScript("findnearestsignpost(vector,number):entity", (EntityFunctionMember)&FindNearestSignPost);
 
-    TurnCommand = GetCommandId("command_turn(number)", true);
-    StopTurningCommand = GetCommandId("command_stop_turning", true);
-    GetCommandId("command_run", true);
-    StopCommand = GetCommandId("command_stop", true);
-    StopMovingCommand = GetCommandId("command_stop_moving", true);
-    StopTurningCommand = GetCommandId("command_stop_turning", true);
+    TurnCommand = GetMessage("command_turn(number)", true);
+    StopTurningCommand = GetMessage("command_stop_turning", true);
+    GetMessage("command_run", true);
+    StopCommand = GetMessage("command_stop", true);
+    StopMovingCommand = GetMessage("command_stop_moving", true);
+    StopTurningCommand = GetMessage("command_stop_turning", true);
 
     tNavigator->PropagateProperties();
 }

@@ -47,6 +47,7 @@ struct EntityScriptData
     int        *field_20;
 };
 
+//  NOTE: actual header path "kernel/database/propertytype.h".
 struct GlobalProperty
 {
     int             m_PropertyId = 0;
@@ -187,7 +188,7 @@ public:
     static std::vector<Node*>   SceneScriptEntitiesList;    //  @A3B5A4
 };
 
-extern DataType* GlobalScriptsArray[410]; // @A3B7A4 // TODO: this could be just a global 'scripts space' where mixed objects are contained.
+extern void* GlobalScriptsArray[410]; // @A3B7A4 // TODO: this could be just a global 'scripts space' where mixed objects are contained.
 extern Node* CacheScriptNode;    //  @A3B58C
 extern Node* CommonScriptNode;   //  @A3B590
 extern Node* CommonAnimSlotScriptNode;   //  @A3B594
@@ -208,8 +209,8 @@ extern unsigned int GetGlobalCommandListSize(); //  @871A20
 extern int GetPropertyIdByName(const char* const propertyname); // @8732C0
 extern int GetCommandByName_Impl(const char* const commandname); // @872360
 extern int GetCommandByName(const char* const commandname); // @872410
-extern short RegisterGlobalProperty(const char* const propertyname, bool existingProperty); // @8736B0
-extern int GetCommandId(const char* const commandname, bool existingCommand); // @872590
+extern short GetProperty(const char* const propertyname, bool existingProperty); // @8736B0
+extern int GetMessage(const char* const commandname, bool existingCommand); // @872590
 
 extern void ReadDatabaseFile(const char* path); // @48C400
 extern void LoadScripts(); // @7A1F60

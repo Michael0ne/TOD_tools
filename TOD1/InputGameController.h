@@ -1,5 +1,5 @@
 #pragma once
-#include "Window.h"
+#include "Platform.h"
 
 namespace Input
 {
@@ -54,7 +54,7 @@ namespace Input
         static void    Process(); // @43A190
         static BOOL CALLBACK EnumControllersCallback(LPCDIDEVICEINSTANCE devInst, Gamepad** pvRef); // @43A1D0
         static String* AllocateGamepadNameStringBuffer(String* outString, char* inGamepadName, signed int length); // @43A670
-        static Window* GetWindow(); // @43A730 // NOTE: unused.
+        static Platform* GetWindow(); // @43A730 // NOTE: unused.
         static bool     IsControllerPresent(signed int controllerIndex); // @439A10
 
         void     _Acquire(); // @4396F0

@@ -100,7 +100,7 @@ ModelAsset::ModelAsset() : Asset(false)
 int ModelAsset::LoadTexture(const char* const texname)
 {
     String fname;
-    File::ExtractFileName(fname, texname);
+    FileBuffer::ExtractFileName(fname, texname);
 
     if (strstr(fname.m_Str, "nvisible") || strstr(fname.m_Str, "NVISIBLE"))
         return -1;

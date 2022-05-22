@@ -56,9 +56,9 @@ namespace Input
         if (!ControllersCreated)
         {
 #ifndef _EXE
-            DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
+            DirectInput8Create_Hooked(Platform::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
 #else
-            DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
+            DirectInput8Create(Platform::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
 #endif
             EnumGameControllers();
         }
@@ -247,7 +247,7 @@ namespace Input
 
         if (!DirectInput8Interface)
         {
-            DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
+            DirectInput8Create(Platform::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&DirectInput8Interface, NULL);
             bInterfaceCreated = true;
         }
 
@@ -286,7 +286,7 @@ namespace Input
 
         if (FAILED(pvRef[1]->m_DirectInputDevice->SetDataFormat(&c_dfDIJoystick)))
         {
-            MessageBox(g_Window->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
+            MessageBox(g_Platform->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
 
             if (!pvRef[1]->m_DirectInputDevice)
                 return DIENUM_STOP;
@@ -295,9 +295,9 @@ namespace Input
             return DIENUM_STOP;
         }
 
-        if (Script::ForceFeedback && FAILED(pvRef[1]->m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
+        if (Script::ForceFeedback && FAILED(pvRef[1]->m_DirectInputDevice->SetCooperativeLevel(g_Platform->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
         {
-            MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
+            MessageBox(g_Platform->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
 
             if (!pvRef[1]->m_DirectInputDevice)
                 return DIENUM_STOP;
@@ -318,9 +318,9 @@ namespace Input
         return outString;
     }
 
-    Window* Gamepad::GetWindow()
+    Platform* Gamepad::GetWindow()
     {
-        return g_Window;
+        return g_Platform;
     }
 
     void Gamepad::_Acquire()
@@ -631,13 +631,13 @@ namespace Input
 
         if (FAILED(m_DirectInputDevice->SetDataFormat(&c_dfDIJoystick)))
         {
-            MessageBox(g_Window->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
+            MessageBox(g_Platform->m_WindowHandle, "Unable to set game controller data format", "Error", MB_OK);
             RELEASE_SAFE(m_DirectInputDevice);
         }
 
-        if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
+        if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Platform->m_WindowHandle, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
         {
-            MessageBox(g_Window->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
+            MessageBox(g_Platform->m_WindowHandle, "Unable to set game controller cooperative level", "Error", MB_OK);
             RELEASE_SAFE(m_DirectInputDevice);
         }
     }

@@ -10,7 +10,7 @@ SoundAsset::SoundFileInfo::SoundFileInfo(const char* const filepath)
     MESSAGE_CLASS_CREATED(SoundFileInfo);
 
     char buf[4] = {};
-    File sndfile(filepath, 0x21, true);
+    FileBuffer sndfile(filepath, 0x21, true);
 
     field_8 = 12;
     sndfile.Read(buf, sizeof(buf));

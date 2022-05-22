@@ -725,7 +725,7 @@ void CharacterPlaceHolder::Register()
     tCharacterPlaceHolder->RegisterProperty(tINTEGER, "passenger_seat", (EntityGetterFunction)&GetPassengerSeat, (EntitySetterFunction)&SetPassengerSeat, nullptr, 29);
     tCharacterPlaceHolder->RegisterProperty(tTRUTH, "was_passenger", (EntityGetterFunction)&WasPassenger, (EntitySetterFunction)&SetWasPassenger, nullptr, 30);
 
-    GetPlaceholderModelCommand = GetCommandId("get_placeholder_model:entity", true);
+    GetPlaceholderModelCommand = GetMessage("get_placeholder_model:entity", true);
 
     tCharacterPlaceHolder->PropagateProperties();
 }

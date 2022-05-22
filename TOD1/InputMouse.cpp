@@ -1,5 +1,5 @@
 #include "InputMouse.h"
-#include "Window.h"
+#include "Platform.h"
 #include "GfxInternal_Dx9.h"
 #include "LogDump.h"
 
@@ -32,9 +32,9 @@ namespace Input {
         g_InputMouse = this;
 
 #ifndef _EXE
-        if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_DirectInputInterface, NULL)))
+        if (FAILED(DirectInput8Create_Hooked(Platform::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_DirectInputInterface, NULL)))
 #else
-        if (FAILED(DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_DirectInputInterface, NULL)))
+        if (FAILED(DirectInput8Create(Platform::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_DirectInputInterface, NULL)))
 #endif
             IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
@@ -44,7 +44,7 @@ namespace Input {
         if (FAILED(m_DirectInputDevice->SetDataFormat(&c_dfDIMouse)))
             IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
-        if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
+        if (FAILED(m_DirectInputDevice->SetCooperativeLevel(g_Platform->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
             IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_MOUSE, false);
 
         m_Buffer = new DIDEVICEOBJECTDATA[INPUT_MOUSE_BUFFERS_COUNT];
@@ -67,7 +67,7 @@ namespace Input {
 
         tagPOINT clientPos;
         GetCursorPos(&clientPos);
-        ScreenToClient(g_Window->m_WindowHandle, &clientPos);
+        ScreenToClient(g_Platform->m_WindowHandle, &clientPos);
 
         m_WindowedMousePosition = clientPos;
     }
@@ -104,7 +104,7 @@ namespace Input {
     void Mouse::SetWindowCapture(HWND window)
     {
         if (++m_WindowsCaptured == 1)
-            SetCapture(window ? window : g_Window->m_WindowHandle);
+            SetCapture(window ? window : g_Platform->m_WindowHandle);
     }
 
     void Mouse::ReleaseWindowCapture()
@@ -156,11 +156,11 @@ namespace Input {
 
     void Mouse::Process()
     {
-        m_ShouldBeProcessed = g_Window->m_Visible;
+        m_ShouldBeProcessed = g_Platform->m_Visible;
 
         tagPOINT clientPos;
         GetCursorPos(&clientPos);
-        ScreenToClient(g_Window->m_WindowHandle, &clientPos);
+        ScreenToClient(g_Platform->m_WindowHandle, &clientPos);
         m_FullscreenMousePosition = clientPos;
 
         if (m_Acquired)

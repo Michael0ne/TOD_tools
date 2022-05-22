@@ -193,9 +193,9 @@ void CutscenePlayer::Register()
     tCutscenePlayer->RegisterScript("setobject_inherit(entity,truth)", (EntityFunctionMember)&SetObjectInherit);
     tCutscenePlayer->RegisterScript("getobject_inherit(entity):truth", (EntityFunctionMember)&GetObjectInherit);
     
-    InterpolationOnCommand = GetCommandId("interpol_on", true);
-    InterpolationOffCommand = GetCommandId("interpol_off", true);
-    InterpolationOffFrameCommand = GetCommandId("interpol_off_frame", true);
+    InterpolationOnCommand = GetMessage("interpol_on", true);
+    InterpolationOffCommand = GetMessage("interpol_off", true);
+    InterpolationOffFrameCommand = GetMessage("interpol_off_frame", true);
 
     tCutscenePlayer->PropagateProperties();
 }

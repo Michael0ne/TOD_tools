@@ -22,7 +22,7 @@ protected:
     MemoryCard     *m_SaveMemoryCard;
     String          m_SaveDir;
     String          m_SlotIdStr;
-    File           *m_SaveFile;
+    FileBuffer           *m_SaveFile;
     SavePointStatus m_Status;
     String          m_SlotDir;
 

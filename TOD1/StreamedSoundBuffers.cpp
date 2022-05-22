@@ -1,6 +1,6 @@
 #include "StreamedSoundBuffers.h"
 #include "DieselPowerSound.h"
-#include "Window.h"
+#include "Platform.h"
 #include "Timer.h"
 #include "LogDump.h"
 #include "Scene.h"
@@ -63,7 +63,7 @@ void StreamedSoundBuffers::RememberSoundRenderer(SoundSystemType soundRendererId
 {
     SoundRendererId = soundRendererId;
 
-    if (RegCreateKeyEx(HKEY_CURRENT_USER, Window::RegistryKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, (PHKEY)&soundRendererId, NULL) == ERROR_SUCCESS)
+    if (RegCreateKeyEx(HKEY_CURRENT_USER, Platform::RegistryKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, (PHKEY)&soundRendererId, NULL) == ERROR_SUCCESS)
     {
         RegSetValueEx((HKEY)soundRendererId, "SoundRenderer", NULL, REG_DWORD, (const BYTE*)&SoundRendererId, sizeof(SoundRendererId));
         RegCloseKey((HKEY)soundRendererId);
@@ -78,7 +78,7 @@ SoundSystemType StreamedSoundBuffers::GetSoundRenderer()
     SoundRendererId = SOUND_SYSTEM_AUTOSELECT;
 
     HKEY phkResult;
-    if (RegOpenKeyEx(HKEY_CURRENT_USER, Window::RegistryKey, NULL, KEY_QUERY_VALUE, &phkResult) == ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_CURRENT_USER, Platform::RegistryKey, NULL, KEY_QUERY_VALUE, &phkResult) == ERROR_SUCCESS)
     {
         DWORD lpType;
         BYTE Data[4];
@@ -273,7 +273,7 @@ void StreamedSoundBuffers::InitDieselPower()
 
     SetDefaultVolumeLevels();
 
-    //m_DieselPower = DieselPower::CallFactory(1, 2, 1, 3.0f, g_Window->m_WindowHandle, 1, 0, 0);
+    //m_DieselPower = DieselPower::CallFactory(1, 2, 1, 3.0f, g_Platform->m_WindowHandle, 1, 0, 0);
 
     if (!m_DieselPower)
         return;
@@ -413,10 +413,10 @@ void StreamedSoundBuffers::InitDirectSound(char channels, int sampleRate)
     LogDump::LogA("%d HW mixing buffers (%d free)\n", dsCaps.dwMaxHwMixingStaticBuffers, dsCaps.dwFreeHwMixingStaticBuffers);
 
     int soundPriorityLevel = 1;
-    if (FAILED(m_DirectSound->SetCooperativeLevel(g_Window->m_WindowHandle, SoundPriorityLevels[2])))
+    if (FAILED(m_DirectSound->SetCooperativeLevel(g_Platform->m_WindowHandle, SoundPriorityLevels[2])))
     {
         for (; soundPriorityLevel < 5; soundPriorityLevel++)
-            if (SUCCEEDED(m_DirectSound->SetCooperativeLevel(g_Window->m_WindowHandle, SoundPriorityLevels[soundPriorityLevel])))
+            if (SUCCEEDED(m_DirectSound->SetCooperativeLevel(g_Platform->m_WindowHandle, SoundPriorityLevels[soundPriorityLevel])))
                 break;
 
         if (soundPriorityLevel == 5)

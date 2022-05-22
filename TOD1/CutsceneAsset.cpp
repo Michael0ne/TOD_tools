@@ -1,5 +1,5 @@
 #include "CutsceneAsset.h"
-#include "Window.h"
+#include "Platform.h"
 
 AssetInstance* CutsceneAsset::Instance;
 

@@ -28,7 +28,7 @@ void Folder_::DestroyAllChildren()
 
 void Folder_::ReadAssetBlockFile(AssetInfo& assinfo, const char* const assfname) const
 {
-    File assfile(assfname, 161, true);
+    FileBuffer assfile(assfname, 161, true);
     assinfo.m_AssetInfo_Shared.m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assfile, (int*)assinfo.m_AssetInfo_Shared.m_ResourceAllocatedAlignedBufferPtr, &assinfo.m_AssetInfo_Shared.m_ResourceDataBufferSize, (m_BlockId * 8) >> 3);
 
     if (assinfo.m_AssetInfo_Shared.m_ResourceDataBufferPtr)
@@ -43,7 +43,7 @@ void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Asse
     char fileDir[1024] = {};
     char fileName[128] = {};
 
-    File::ExtractFilePath(resourceName.m_Str, fileDir, fileName, fileExt);
+    FileBuffer::ExtractFilePath(resourceName.m_Str, fileDir, fileName, fileExt);
 
     if (languageCode)
     {

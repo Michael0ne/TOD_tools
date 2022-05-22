@@ -61,7 +61,7 @@ protected:
     }    m_Flags;
     int    field_34;
     String   m_FileName;
-    File* m_WavFile;
+    FileBuffer* m_WavFile;
     OggVorbis_File* m_OggInfo;
     HANDLE   m_FileHandle;
     char   m_ChunkId[4];

@@ -20,7 +20,7 @@ SoundBufferInfo* StreamedWAV::CheckIfSoundBufferIsUsed(char* ptr)
 
 size_t StreamedWAV::OggReadCallback(void* buff, size_t size, size_t nmemb, void* datasource)
 {
-    return ((File*)datasource)->Read(buff, size * nmemb);
+    return ((FileBuffer*)datasource)->Read(buff, size * nmemb);
 }
 
 int StreamedWAV::OggSeekCallback(void* datasource, INT64 pos, int seektype)
@@ -28,13 +28,13 @@ int StreamedWAV::OggSeekCallback(void* datasource, INT64 pos, int seektype)
     switch (seektype)
     {
     case 0:
-        ((File*)datasource)->Seek((int)pos);
+        ((FileBuffer*)datasource)->Seek((int)pos);
         return 0;
     case 1:
-        ((File*)datasource)->Seek(((File*)datasource)->GetPosition() + (int)pos);
+        ((FileBuffer*)datasource)->Seek(((FileBuffer*)datasource)->GetPosition() + (int)pos);
         return 0;
     case 2:
-        ((File*)datasource)->Seek(((File*)datasource)->GetSize() - (int)pos);
+        ((FileBuffer*)datasource)->Seek(((FileBuffer*)datasource)->GetSize() - (int)pos);
         return 0;
     default:
         LogDump::LogA("OggSeekCallBack - unknown seek-type (%i)\n", seektype);
@@ -50,7 +50,7 @@ int StreamedWAV::OggCloseCallback(void* datasource)
 
 long StreamedWAV::OggTellCallback(void* datasource)
 {
-    return ((File*)datasource)->GetPosition();
+    return ((FileBuffer*)datasource)->GetPosition();
 }
 
 StreamedWAV::StreamedWAV(unsigned int sampleRate)
@@ -199,7 +199,7 @@ bool StreamedWAV::OpenSoundFile(bool a1)
 
 bool StreamedWAV::TryLocateCurrentStreamFile() const
 {
-    return (m_WavFile || m_OggInfo) && File::FindFileEverywhere(m_FileName.m_Str);
+    return (m_WavFile || m_OggInfo) && FileBuffer::FindFileEverywhere(m_FileName.m_Str);
 }
 
 void StreamedWAV::RemoveSoundBuffer()
@@ -234,7 +234,7 @@ bool StreamedWAV::OpenOGG(bool createnew)
 
     if (!m_OggInfo)
     {
-        File* f = new File(m_FileName.m_Str, 0x21, true);
+        FileBuffer* f = new FileBuffer(m_FileName.m_Str, 0x21, true);
 
         if (!f->IsFileOpen())
         {
@@ -270,7 +270,7 @@ bool StreamedWAV::OpenOGG(bool createnew)
 bool StreamedWAV::OpenWAV(bool createnew)
 {
     if (!m_WavFile)
-        m_WavFile = new File(m_FileName.m_Str, 0x61, false);
+        m_WavFile = new FileBuffer(m_FileName.m_Str, 0x61, false);
 
     if (!createnew)
         return true;

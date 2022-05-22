@@ -221,7 +221,7 @@ void Scene::ReleaseQuadTreeAndRenderlist()
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo)
 {
-    File assetfile(assetname, 161, true);
+    FileBuffer assetfile(assetname, 161, true);
 
     assetinfo->m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assetfile, (int*)&assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, Asset::BlockTypeNumber::NONE);
     DWORD64 starttick = __rdtsc();
@@ -298,7 +298,7 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
         }
 
         if (!MemoryCardInfo[m_MemoryCardIndex]->m_Formatted ||
-            !File::IsDirectoryValid(MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_Str))
+            !FileBuffer::IsDirectoryValid(MemoryCardInfo[m_MemoryCardIndex]->m_SaveFolderPath.m_Str))
         {
             m_SavePointOperationError = STATUS_SAVEDIR_NOT_READY;
             m_SaveLoadState = STATE_DONE;
@@ -350,15 +350,15 @@ void Scene::LoadSceneSession(void) const
         return;
 
     String fragmentpath, fragmentname, sessionpath;
-    File::ExtractFileDir(fragmentpath, GetFragment());
-    File::ExtractFileName(fragmentname, GetFragment());
+    FileBuffer::ExtractFileDir(fragmentpath, GetFragment());
+    FileBuffer::ExtractFileName(fragmentname, GetFragment());
     fragmentpath.Replace('/', '_');
     fragmentpath.Append(fragmentname.m_Str);
     fragmentpath.Append(".editorsession");
     sessionpath = "/data/sessions/";
     sessionpath.Append(fragmentpath.m_Str);
 
-    if (!File::FindFileEverywhere(sessionpath.m_Str))
+    if (!FileBuffer::FindFileEverywhere(sessionpath.m_Str))
         return;
 
     /*
@@ -370,7 +370,7 @@ void Scene::LoadSceneSession(void) const
     *   3:  repeat line above as many times as needed
     */
 
-    File f(sessionpath.m_Str, 1, true);
+    FileBuffer f(sessionpath.m_Str, 1, true);
     unsigned int fileversion = 0;
     f._scanf(&f, "%d\n", &fileversion);
 
@@ -785,29 +785,29 @@ void Scene::Load(const char* sceneName)
 
         char pathdummy[1024] = {};
         char scene_fname[128] = {};
-        File::ExtractFilePath(sceneName, pathdummy, scene_fname, pathdummy);
+        FileBuffer::ExtractFilePath(sceneName, pathdummy, scene_fname, pathdummy);
         strcat(scene_path, scene_fname);
 
         String block_path_shared, block_path_localised;
         Folder_::GetResourcePathRelative(block_path_shared, scene_path, Asset::BlockTypeNumber::NONE, 0);
         Folder_::GetResourcePathRelative(block_path_localised, scene_path, Asset::BlockTypeNumber::NONE, Script::GetCurrentCountryCode());
 #ifdef INCLUDE_FIXES
-        if (!File::FindFileEverywhere(block_path_shared.m_Str))
+        if (!FileBuffer::FindFileEverywhere(block_path_shared.m_Str))
         {
             LogDump::LogA("Asset shared block not found: \"%s\"!\n", block_path_shared.m_Str);
             return;
         }
 #else
-        File::FindFileEverywhere(block_path_shared.m_Str);
+        FileBuffer::FindFileEverywhere(block_path_shared.m_Str);
 #endif
 #ifdef INCLUDE_FIXES
-        if (!File::FindFileEverywhere(block_path_localised.m_Str))
+        if (!FileBuffer::FindFileEverywhere(block_path_localised.m_Str))
         {
             LogDump::LogA("Asset localization block not found: \"%s\"!\n", block_path_shared.m_Str);
             return;
         }
 #else
-        File::FindFileEverywhere(block_path_localised.m_Str);
+        FileBuffer::FindFileEverywhere(block_path_localised.m_Str);
 #endif
 
         int mainAssetAllocMem = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
@@ -1050,9 +1050,9 @@ void Scene::Register()
     tScene->RegisterScript("buildfastfindnodevector", (EntityFunctionMember)&BuildFastFindNodeVector, NULL, NULL, NULL, nullptr, nullptr);
     tScene->RegisterScript("deletefastfindnodevector", (EntityFunctionMember)&DeleteFastFindNodeVector, NULL, NULL, NULL, nullptr, nullptr);
 
-    PreBlocksUnloadedCommand = GetCommandId("pre_blocks_unloaded", true);
-    BlocksUnloadedCommand = GetCommandId("blocks_unloaded", true);
-    InvalidatePlaceholderModelCommand = GetCommandId("invalidate_placeholder_model", true);
+    PreBlocksUnloadedCommand = GetMessage("pre_blocks_unloaded", true);
+    BlocksUnloadedCommand = GetMessage("blocks_unloaded", true);
+    InvalidatePlaceholderModelCommand = GetMessage("invalidate_placeholder_model", true);
 
     tScene->PropagateProperties();
 }

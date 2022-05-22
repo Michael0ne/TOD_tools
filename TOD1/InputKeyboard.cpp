@@ -1,5 +1,5 @@
 #include "InputKeyboard.h"
-#include "Window.h"
+#include "Platform.h"
 #include "LogDump.h"
 
 Input::Keyboard* g_InputKeyboard;
@@ -122,16 +122,16 @@ namespace Input
             m_ButtonStates_1[ind] = NULL;
 
 #ifndef _EXE
-        if (FAILED(DirectInput8Create_Hooked(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_DirectInputDevice, NULL)))
+        if (FAILED(DirectInput8Create_Hooked(Platform::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_DirectInputDevice, NULL)))
 #else
-        if (FAILED(DirectInput8Create(Window::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_DirectInputDevice, NULL)))
+        if (FAILED(DirectInput8Create(Platform::WindowInstanceHandle, DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID*)&m_DirectInputDevice, NULL)))
 #endif
             IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
         if (FAILED(m_DirectInputDevice->CreateDevice(GUID_SysKeyboard, &m_DirectInputDeviceInterface, NULL)))
             IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
         if (FAILED(m_DirectInputDeviceInterface->SetDataFormat(&c_dfDIKeyboard)))
             IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
-        if (FAILED(m_DirectInputDeviceInterface->SetCooperativeLevel(g_Window->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
+        if (FAILED(m_DirectInputDeviceInterface->SetCooperativeLevel(g_Platform->m_WindowHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)))
             IncompatibleMachineParameterError(ERRMSG_INCOMPATIBLE_KEYBOARD, false);
 
         m_DataBuffer = new DIDEVICEOBJECTDATA[INPUT_KEYBOARD_BUFFERS_COUNT];

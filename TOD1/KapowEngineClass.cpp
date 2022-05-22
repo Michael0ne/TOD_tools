@@ -100,7 +100,7 @@ KapowEngineClass* g_KapowEngine = nullptr;
 String KapowEngineClass::_A1B9F8 = {};
 
 std::list<String> FaceCollList;
-File* CollMatFile;
+FileBuffer* CollMatFile;
 std::map<String, unsigned int> CollMatProperties;
 std::map<String, FaceColl> CollMatMaterialsTypes;
 
@@ -155,7 +155,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 
     m_GameName = KAPOW_GAMENAME;
 
-    if (File::FindFileEverywhere(m_ConfigFilePath.m_Str))
+    if (FileBuffer::FindFileEverywhere(m_ConfigFilePath.m_Str))
     {
         LogDump::LogA("Initialising engine with '%s'\n", m_ConfigFilePath.m_Str);
 
@@ -165,7 +165,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
         m_ConfigurationVariables = new ConfigVariables(0);
 
     ConfigVariables* profileVariables = nullptr;
-    if (File::FindFileEverywhere(CONFIG_PROFILEFILE))
+    if (FileBuffer::FindFileEverywhere(CONFIG_PROFILEFILE))
         profileVariables = new ConfigVariables(CONFIG_PROFILEFILE, 0);
 
     if (m_ConfigurationVariables->IsVariableSet("filecheck"))
@@ -254,7 +254,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
                 char direntry[128] = {};
                 strncpy_s(direntry, sizeof(direntry), dirmapping.m_Str, strchr(dirmapping.m_Str, '>') - dirmapping.m_Str);
 
-                File::AddDirectoryMappingsListEntry(direntry, strchr(dirmapping.m_Str, '>') + 1);
+                FileBuffer::AddDirectoryMappingsListEntry(direntry, strchr(dirmapping.m_Str, '>') + 1);
             }
 
             sprintf_s(DirectorymappingStr, "directorymapping%d", index++);
@@ -296,15 +296,15 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 
     Script::LanguageStringsOffset = 0;
 
-    if (File::IsFileValid("/es_sounds.zip") || File::IsFileValid("/es_sounds.naz"))
+    if (FileBuffer::IsFileValid("/es_sounds.zip") || FileBuffer::IsFileValid("/es_sounds.naz"))
         Script::LanguageStringsOffset = 4;
-    if (File::IsFileValid("/fr_sounds.zip") || File::IsFileValid("/fr_sounds.naz"))
+    if (FileBuffer::IsFileValid("/fr_sounds.zip") || FileBuffer::IsFileValid("/fr_sounds.naz"))
         Script::LanguageStringsOffset = 1;
-    if (File::IsFileValid("/de_sounds.zip") || File::IsFileValid("/de_sounds.naz"))
+    if (FileBuffer::IsFileValid("/de_sounds.zip") || FileBuffer::IsFileValid("/de_sounds.naz"))
         Script::LanguageStringsOffset = 3;
-    if (File::IsFileValid("/it_sounds.zip") || File::IsFileValid("/it_sounds.naz"))
+    if (FileBuffer::IsFileValid("/it_sounds.zip") || FileBuffer::IsFileValid("/it_sounds.naz"))
         Script::LanguageStringsOffset = 2;
-    if (File::IsFileValid("/uk_sounds.zip") || File::IsFileValid("/uk_sounds.naz"))
+    if (FileBuffer::IsFileValid("/uk_sounds.zip") || FileBuffer::IsFileValid("/uk_sounds.naz"))
         Script::LanguageStringsOffset = 0;
 
     if (m_ConfigurationVariables->IsVariableSet("language_mode"))
@@ -316,7 +316,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 
     Script::LanguageMode = Script::CountryCodes[Script::LanguageStringsOffset];
 
-    g_Window = new Window(m_GameName.m_Str, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_Str, Script::IconResourceId ? Script::IconResourceId : iconResId);
+    g_Platform = new Platform(m_GameName.m_Str, 1, CONFIG_MENU_RESOURCEID, Script::Filesystem.m_Str, Script::IconResourceId ? Script::IconResourceId : iconResId);
 
     g_InputMouse = new Input::Mouse();
     g_InputKeyboard = new Input::Keyboard();
@@ -519,7 +519,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     new Font(Font::GlyphsInfo);
 
     // Load NAZ archives into memory.
-    File::ReadZipDirectories(Script::Filesystem.m_Str);
+    FileBuffer::ReadZipDirectories(Script::Filesystem.m_Str);
 
     EnumMaterialsInCollmat();
     // Parse facecolmat file
@@ -657,9 +657,9 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
     }
 
 #ifdef INCLUDE_FIXES
-    g_Window->SetCursorReleased(true);
+    g_Platform->SetCursorReleased(true);
 #else
-    g_Window->SetCursorReleased(false);
+    g_Platform->SetCursorReleased(false);
 #endif
 
     if (profileVariables)
@@ -673,7 +673,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 void KapowEngineClass::InitEntitiesDatabase()
 {
     Entity::Register();
-    RegisterGlobalProperty("block_id:integer", true);
+    GetProperty("block_id:integer", true);
     Node::Register();
     NodeSpatial::Register();
     NodeLogical::Register();
@@ -754,7 +754,7 @@ void KapowEngineClass::UninitialiseGame()
     DataType::ClearScriptLists();
     Light::ClearLightsList();
 
-    g_Window->SetCursorReleased(true);
+    g_Platform->SetCursorReleased(true);
 
     delete m_ConfigurationVariables;
     delete g_AssetManager;
@@ -763,7 +763,7 @@ void KapowEngineClass::UninitialiseGame()
     delete Input::Gamepad::GetGameControllerByIndex(0);
     delete g_GfxInternal;
     delete g_StreamedSoundBuffers;
-    delete g_Window;
+    delete g_Platform;
 
     CoUninitialize();
 
@@ -791,7 +791,7 @@ void KapowEngineClass::CreateProbes()
 {
 }
 
-bool KapowEngineClass::CheckAssetChecksum(File& file, const unsigned int propertyChecksum, const unsigned int commandChecksum)
+bool KapowEngineClass::CheckAssetChecksum(FileBuffer& file, const unsigned int propertyChecksum, const unsigned int commandChecksum)
 {
     unsigned int chksum;
     if (file.Read(&chksum, sizeof(chksum)) != sizeof(chksum) || chksum != propertyChecksum)
@@ -893,12 +893,12 @@ void ConfigVariables::LoadVariablesFile(const char* file, bool configvariables)
 {
     LogDump::LogA("Loading variable file '%s'...\n", file);
 
-    File file_(file, 1, true);
+    FileBuffer file_(file, 1, true);
     ParseVariablesFile(&file_, configvariables);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void ConfigVariables::ParseVariablesFile(File* file, bool configvariables)
+void ConfigVariables::ParseVariablesFile(FileBuffer* file, bool configvariables)
 {
     file->WriteFromBuffer();
     const unsigned int filesize = file->GetPosition();
@@ -1146,7 +1146,7 @@ void InitialiseGame(LPSTR cmdline)
     g_KapowEngine = new KapowEngineClass();
 
     g_KapowEngine->Init(cmdline, NULL, nullptr, NULL);
-    g_Window->Process(KapowEngineClass::UpdateGame);
+    g_Platform->Process(KapowEngineClass::UpdateGame);
 
     delete g_KapowEngine;
 }
@@ -1158,11 +1158,11 @@ void EnumMaterialsInCollmat()
     char collmatFilename[] = "/CollMat.txt";
 
 #ifdef INCLUDE_FIXES
-    if (!File::FindFileEverywhere(collmatFilename))
+    if (!FileBuffer::FindFileEverywhere(collmatFilename))
         return;
 #else
     // NOTE: original code doesn't check the result.
-    File::FindFileEverywhere(collmatFilename);
+    FileBuffer::FindFileEverywhere(collmatFilename);
 #endif
 
     if (OpenCollMatFile(collmatFilename, materialname, materialproperties))
@@ -1218,10 +1218,10 @@ void EnumFaceColMaterials()
 {
     char filename[] = "/FaceColl.mat";
     if (FaceCollList.size() > 0 ||
-        !File::FindFileEverywhere(filename))
+        !FileBuffer::FindFileEverywhere(filename))
         return;
 
-    File faceColFile(filename, 1, true);
+    FileBuffer faceColFile(filename, 1, true);
     if (!faceColFile.IsFileOpen())
         return;
 
@@ -1239,7 +1239,7 @@ void CreateDirectoriesRecursive(char* dir)
     if (!slen)
         return;
 
-    if (File::IsDirectoryValid(dir))
+    if (FileBuffer::IsDirectoryValid(dir))
         return;
 
     char* lastslash = strrchr(dir, '/');
@@ -1266,7 +1266,7 @@ void CreateDirectoriesRecursive(char* dir)
 
             if (--slen < 0)
             {
-                File::CreateNewDirectory(dir);
+                FileBuffer::CreateNewDirectory(dir);
                 return;
             }
         }
@@ -1278,7 +1278,7 @@ void CreateDirectoriesRecursive(char* dir)
             CreateDirectoriesRecursive(tmp);
     }
 
-    File::CreateNewDirectory(dir);
+    FileBuffer::CreateNewDirectory(dir);
 }
 
 void GetInternalGameName(String& outStr)
@@ -1303,7 +1303,7 @@ void GetInternalGameName(String& outStr)
 
 bool OpenCollMatFile(const char* const fileName, String& materialName, int& materialProperties)
 {
-    CollMatFile = new File(fileName, 1, true);
+    CollMatFile = new FileBuffer(fileName, 1, true);
 
     if (CollMatFile->IsFileOpen())
         return ReadAndParseCollMatMaterial(materialName, materialProperties);

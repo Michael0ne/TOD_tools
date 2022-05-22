@@ -347,8 +347,8 @@ void SoundSlot::SetStreamingSound(const char* const sound)
     if (sound && sound[0])
     {
         String fileName, fileDir, fullFilePath;
-        File::ExtractFileName(fileName, sound);
-        File::ExtractFileDir(fileDir, sound);
+        FileBuffer::ExtractFileName(fileName, sound);
+        FileBuffer::ExtractFileDir(fileDir, sound);
 
         fullFilePath = fileDir;
         fullFilePath.Append(fileName.m_Str);
@@ -792,9 +792,9 @@ void SoundSlot::Register()
     tSoundSlot->RegisterScript("global_dealloc_allstreams(list(entity))", (EntityFunctionMember)&GlobalDeallocateAllStreams);
     tSoundSlot->RegisterScript("dump_streamed_sounds_to_console", (EntityFunctionMember)&DumpStreamedSoundsToConsole, 0, 0, 0, "control=button|text=console_dump_stream_sounds");
 
-    GetCommandId("subtitle_update", true);
-    StreamAllocateFailedCommand = GetCommandId("stream_allocate_failed", true);
-    StreamAllocateFinishedCommand = GetCommandId("stream_allocate_finished", true);
+    GetMessage("subtitle_update", true);
+    StreamAllocateFailedCommand = GetMessage("stream_allocate_failed", true);
+    StreamAllocateFinishedCommand = GetMessage("stream_allocate_finished", true);
 
     tSoundSlot->PropagateProperties();
 }

@@ -162,7 +162,7 @@ void MemoryCards::HasCardChanged(int* args) const
 unsigned int MemoryCards::GetCardFreeSpace_Impl(unsigned int memcardind) const
 {
     if (MemoryCardInfo[memcardind]->IsFormatted())
-        return File::GetStorageFreeSpace().LowPart;
+        return FileBuffer::GetStorageFreeSpace().LowPart;
 
     LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
 
@@ -187,7 +187,7 @@ void MemoryCards::IsCardPrepared(int* args) const
 void MemoryCards::IsPresent(int* args) const
 {
     if (MemoryCardInfo[args[1]]->m_SaveFolderPath.m_Length)
-        *args = MemoryCardInfo[args[1]]->m_Formatted && File::IsDirectoryValid(MemoryCardInfo[args[1]]->m_SaveFolderPath.m_Str);
+        *args = MemoryCardInfo[args[1]]->m_Formatted && FileBuffer::IsDirectoryValid(MemoryCardInfo[args[1]]->m_SaveFolderPath.m_Str);
     else
     {
         LogDump::LogA("Warning: Emulation dir not set. All operations will be ignored.\n");
@@ -250,7 +250,7 @@ bool MemoryCards::SavePointExists_Impl(unsigned int memcardind, unsigned int slo
         return false;
     }
 
-    if (!MemoryCardInfo[memcardind]->IsFormatted() || !File::IsDirectoryValid(MemoryCardInfo[memcardind]->m_SaveFolderPath.m_Str))
+    if (!MemoryCardInfo[memcardind]->IsFormatted() || !FileBuffer::IsDirectoryValid(MemoryCardInfo[memcardind]->m_SaveFolderPath.m_Str))
         return false;
 
     String saveSlotStr;

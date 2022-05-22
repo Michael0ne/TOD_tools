@@ -24,7 +24,7 @@ enum ErrorMessageId
     ERRMSG_INSUFFICIENT_RAM = 6
 };
 
-class Window
+class Platform
 {
     typedef int (CALLBACK *MenuItemClickCallback)(WPARAM);
     typedef bool (*GameLoopCallback)(void);
@@ -71,8 +71,8 @@ public:
     void        SetDesktopDirectory(LPCSTR pDesktopPath); // @43C8B0
 
 public:
-    Window(const char* wndClassName, int flags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId); // @43C630
-    ~Window(); // @43C230
+    Platform(const char* wndClassName, int flags, UINT16 nMenuResourceId, char* szFileSystem, UINT16 nIconResourceId); // @43C630
+    ~Platform(); // @43C230
 
     void* operator new(size_t size)
     {
@@ -92,7 +92,7 @@ public:
     static FILTERKEYS   FilterKeysFeature; // @A0918C
 };
 
-extern Window* g_Window;
+extern Platform* g_Platform;
 
 void            SetGlobalInstanceHandle(HINSTANCE); // @A35EB0
 void            SetGlobalCmdLinePtr(LPSTR); // @43BF60
@@ -116,4 +116,4 @@ int CALLBACK  MenuClickCallback(WPARAM wParam);
 extern void CALLBACK ProcessDebugMenuOption(HWND, HINSTANCE, WPARAM);
 #endif
 
-ASSERT_CLASS_SIZE(Window, 68);
+ASSERT_CLASS_SIZE(Platform, 68);

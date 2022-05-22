@@ -8,7 +8,7 @@
 #include "InputMouse.h"
 #include "GfxInternal.h"
 #include "ScriptDatabase.h"
-#include "Window.h"
+#include "Platform.h"
 #include "LoadScreenInfo.h"
 #include "AssetManager.h"
 #include "VirtualHud.h"
@@ -57,7 +57,7 @@ void BuiltinType::RegisterMemberFunction(DataType* returntype, const char* membe
 {
     char funcproto[128] = {};
     sprintf(funcproto, "%s:%s", membername, returntype->m_TypeName.m_Str);
-    const int registeredtype = RegisterGlobalProperty(funcproto, true);
+    const int registeredtype = GetProperty(funcproto, true);
 
     BuiltinMember member(returntype, getter, setter, memberproto, a6);
     m_MembersMap.insert({registeredtype, member});
@@ -572,7 +572,7 @@ void BuiltinType::DumptableCreateFromFile(int* arg)
 {
     /*
     String buff;
-    File dtfile((const char*)*arg, 1, true);
+    FileBuffer dtfile((const char*)*arg, 1, true);
 
     while (!dtfile.ReadIfNotEOF())
     {
@@ -628,7 +628,7 @@ void BuiltinType::DumptableWriteToFile(int* arg)
     String dumpstr;
     DumpTable[*arg]->DumpContents(dumpstr, -1, -1, -1, 0);
 
-    File dumpfile((const char*)arg[1], 2, true);
+    FileBuffer dumpfile((const char*)arg[1], 2, true);
     dumpfile.WriteBuffer(dumpstr.m_Str);
 }
 
@@ -664,22 +664,22 @@ void BuiltinType::GetMessageId(int* arg)
 
 void BuiltinType::QuitGame(int* arg)
 {
-    g_Window->QuitGame();
+    g_Platform->QuitGame();
 }
 
 void BuiltinType::GetCoverdemoPlayMode(int* arg)
 {
-    *arg = g_Window->GetCoverdemoPlayMode();
+    *arg = g_Platform->GetCoverdemoPlayMode();
 }
 
 void BuiltinType::GetCoverdemoInactiveTimeoutSec(int* arg)
 {
-    *arg = g_Window->GetCoverdemoInactiveTimeoutSec();
+    *arg = g_Platform->GetCoverdemoInactiveTimeoutSec();
 }
 
 void BuiltinType::GetCoverdemoGameplayTimeoutSec(int* arg)
 {
-    *arg = g_Window->GetCoverdemoGameplayTimeoutSec();
+    *arg = g_Platform->GetCoverdemoGameplayTimeoutSec();
 }
 
 void BuiltinType::CoverdemoExit(int*)

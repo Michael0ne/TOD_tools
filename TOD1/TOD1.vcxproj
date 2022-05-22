@@ -448,7 +448,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="WayPoint.h" />
     <ClInclude Include="WeaponPlaceHolder.h" />
     <ClInclude Include="Wind.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Platform.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="StreamedSoundBuffers.h" />
@@ -599,7 +599,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClCompile Include="WayPoint.cpp" />
     <ClCompile Include="WeaponPlaceHolder.cpp" />
     <ClCompile Include="Wind.cpp" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Platform.cpp" />
     <ClCompile Include="main.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug DLL|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug EXE|Win32'">false</CompileAsManaged>

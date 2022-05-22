@@ -6,10 +6,10 @@
 #define FILE_BUFFER_SIZE (1024 * 128)
 #define FILE_ZIP_MAGIC_HEADER 0x16ED5B50
 
-class FileWrapper
+class FileBufferImpl
 {
 public:
-    friend class File;
+    friend class FileBuffer;
 
     enum FileAttribute
     {
@@ -35,8 +35,8 @@ protected:
     char* m_BufferEnd;
 
 protected:
-    FileWrapper(const char* _filename, int _desiredaccess, bool _createifnotfound); // @438180
-    ~FileWrapper(); // @436F40
+    FileBufferImpl(const char* _filename, int _desiredaccess, bool _createifnotfound); // @438180
+    ~FileBufferImpl(); // @436F40
 
 public:
     void* operator new(size_t size)
@@ -93,7 +93,7 @@ protected:
     static void  SetFileAttrib(const char* const file, unsigned int attrib, char unk); // @438310
     static bool  CheckGameFileAttributes(const char* const filename, const FileAttribute mode); // @4383B0
 
-    static FileWrapper* ZipFilesArray[FILE_MAX_ZIP_FILES]; // @A35DB8 // NOTE: named so because only zip files accessed through it.
+    static FileBufferImpl* ZipFilesArray[FILE_MAX_ZIP_FILES]; // @A35DB8 // NOTE: named so because only zip files accessed through it.
     static bool  GameDiscFound; // @A35E68
 
 public:
@@ -111,7 +111,7 @@ public:
     static String GameWorkingDirectory; // @A08FB0
 };
 
-ASSERT_CLASS_SIZE(FileWrapper, 92);
+ASSERT_CLASS_SIZE(FileBufferImpl, 92);
 
 class IFile
 {
@@ -140,13 +140,13 @@ public:
 };
 
 //  NOTE: actual class path is "libs/adapter/filebuffer.h".
-class File : public IFile
+class FileBuffer : public IFile
 {
-    friend class FileWrapper;
+    friend class FileBufferImpl;
 protected:
     String   m_FileName;
 public:
-    FileWrapper* m_FileHandle;
+    FileBufferImpl* m_FileHandle;
 protected:
     unsigned char m_FileReadAttribute;
     unsigned char m_ReadFromZip;
@@ -155,16 +155,16 @@ protected:
     int    m_SizeInZip;
     int    m_ZipSlot;
     bool   m_ExecuteAttribute;
-    FileWrapper* m_ZipFileHandle;
+    FileBufferImpl* m_ZipFileHandle;
 
 private:
     static time_t GetFileTimestamp_Impl(const char* path); // @437C90
 
 public:
-    virtual ~File(); // @417E20
+    virtual ~FileBuffer(); // @417E20
     virtual bool WriteBuffers(); // @417D20
-    virtual int  _vsnprintf(File*, const char* _format, ...); // @42EFC0
-    virtual int  _scanf(File*, const char* _format, ...); // @417960
+    virtual int  _vsnprintf(FileBuffer*, const char* _format, ...); // @42EFC0
+    virtual int  _scanf(FileBuffer*, const char* _format, ...); // @417960
     virtual int  WriteFormattedVarlistDataToBuffer(char* _buf, va_list args); // @42F040
     virtual int  _scanf_impl(char* format, int* outArgs); // @42F0A0
     virtual char ReadBlock(); // @417980
@@ -181,7 +181,7 @@ public:
     virtual char ReadIfNotEOF(); // @417850
     virtual const char* GetFileName() const; // @419C40
 
-    File(const char* _filename, int _desiredaccess, bool _createifnotfound); // @418E30
+    FileBuffer(const char* _filename, int _desiredaccess, bool _createifnotfound); // @418E30
 
     void* operator new(size_t size)
     {
@@ -232,7 +232,7 @@ public:
     static void     RemoveDirectory_(const char* const dir); // @418740
     static void     SetFileAttrib(const char* const file, unsigned int attrib, char unk); // @417D50
     static bool     SearchScriptFile(const char* const searchpath, const char* const scriptfilename, String& zipname); // @418210
-    static bool     CheckGameFileAttributes(const char* const filename, const FileWrapper::FileAttribute mode); // @417D60
+    static bool     CheckGameFileAttributes(const char* const filename, const FileBufferImpl::FileAttribute mode); // @417D60
     static void     DeleteAllFilesInFolder(const char* const foldername);   //  @418B50
 
     static unsigned int FilesOpen; // @A35DD8
@@ -241,7 +241,7 @@ public:
     static unsigned int AlignmentArray[3]; // @9B37E4
 };
 
-ASSERT_CLASS_SIZE(File, 52);
+ASSERT_CLASS_SIZE(FileBuffer, 52);
 
 class SaveFileHelper : public IFile
 {

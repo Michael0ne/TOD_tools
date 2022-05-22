@@ -77,7 +77,7 @@ void EntityType::InheritFrom(EntityType* from)
 
 void EntityType::RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3, const int a4, const int a5, const char* const editorcontrolstr, const char* const a7)
 {
-    const unsigned short commandId = GetCommandId(scriptname, true);
+    const unsigned short commandId = GetMessage(scriptname, true);
 
     m_ScriptsList.insert(std::make_pair(commandId, new ScriptInfo(scriptptr, a3, a4, a5)));
 }
@@ -86,7 +86,7 @@ void EntityType::RegisterProperty(DataType* returntype, const char* const proper
 {
     char propstr[512] = {};
     sprintf(propstr, "%s:%s", propertyname, returntype->m_TypeName.m_Str);
-    const unsigned short globalIndex = (unsigned short)RegisterGlobalProperty(propstr, true);
+    const unsigned short globalIndex = (unsigned short)GetProperty(propstr, true);
 
     PropertyInfo propinfo(getterptr, a4, a5, a6, setterptr, returntype, a8, a9, a10);
     if (propertyind < 0)

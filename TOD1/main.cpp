@@ -146,5 +146,5 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 }
 #else
 #include "stdafx.h"
-#include "Window.h"
+#include "Platform.h"
 #endif

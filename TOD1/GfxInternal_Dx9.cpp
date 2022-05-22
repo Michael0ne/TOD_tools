@@ -1,7 +1,7 @@
 #ifdef DIRECTX
 #include "Globals.h"
 #include "GfxInternal_Dx9.h"
-#include "Window.h"
+#include "Platform.h"
 #include "GfxInternal.h"
 #include "File.h"
 #include "LogDump.h"
@@ -1040,7 +1040,7 @@ void GfxInternal_Dx9::SetupFullScreenRenderer(unsigned int width, unsigned int h
         m_DisplayModeResolution.x = mode->m_Width;
         m_DisplayModeResolution.y = mode->m_Height;
 
-        g_Window->SetWindowResolutionRaw(m_DisplayModeResolution);
+        g_Platform->SetWindowResolutionRaw(m_DisplayModeResolution);
         ZeroMemory(&m_PresentParameters, sizeof(D3DPRESENT_PARAMETERS));
 
         m_PresentParameters.Windowed = false;
@@ -1058,7 +1058,7 @@ void GfxInternal_Dx9::SetupWindowedRenderer(const ScreenResolution mode)
     D3DDISPLAYMODE _mode;
 
     m_Windowed = false;
-    g_Window->SetWindowResolutionDontMove(mode);
+    g_Platform->SetWindowResolutionDontMove(mode);
 
     HRESULT result = m_Direct3DInterface->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &_mode);
     if (SUCCEEDED(result))
@@ -1076,7 +1076,7 @@ void GfxInternal_Dx9::SetupWindowedRenderer(const ScreenResolution mode)
     {
         char* errorstr = nullptr;
         Utils::GetDXErrorString(result, errorstr);
-        MessageBoxA(g_Window->m_WindowHandle, errorstr, "Couldn't get current display mode", NULL);
+        MessageBoxA(g_Platform->m_WindowHandle, errorstr, "Couldn't get current display mode", NULL);
     }
 }
 
@@ -1092,7 +1092,7 @@ bool GfxInternal_Dx9::SetScreenResolution(unsigned int width, unsigned int heigh
 
             m_DisplayModeResolution = { width, height };
             m_DisplayModeFormat = (D3DFORMAT)dispmode->m_Format;
-            g_Window->SetWindowResolutionRaw(m_DisplayModeResolution);
+            g_Platform->SetWindowResolutionRaw(m_DisplayModeResolution);
             m_PresentParameters.FullScreen_RefreshRateInHz = dispmode->m_RefreshRate;
             m_PresentParameters.BackBufferFormat = (D3DFORMAT)dispmode->m_Format;
         }
@@ -1122,14 +1122,14 @@ bool GfxInternal_Dx9::SetupScreenRes()
 
     if (windowed)
     {
-        SetMenu(g_Window->m_WindowHandle, WindowMenu);
-        g_Window->SetWindowResolutionDontMove(m_DisplayModeResolution);
+        SetMenu(g_Platform->m_WindowHandle, WindowMenu);
+        g_Platform->SetWindowResolutionDontMove(m_DisplayModeResolution);
     }
     else
     {
-        WindowMenu = GetMenu(g_Window->m_WindowHandle);
-        SetMenu(g_Window->m_WindowHandle, NULL);
-        g_Window->SetWindowResolutionRaw(m_DisplayModeResolution);
+        WindowMenu = GetMenu(g_Platform->m_WindowHandle);
+        SetMenu(g_Platform->m_WindowHandle, NULL);
+        g_Platform->SetWindowResolutionRaw(m_DisplayModeResolution);
     }
 
     if (m_PresentParameters.Windowed)
@@ -1140,7 +1140,7 @@ bool GfxInternal_Dx9::SetupScreenRes()
         if (FAILED(dispmoderes))
         {
             Utils::GetDXErrorString(dispmoderes, errorstr);
-            MessageBox(g_Window->m_WindowHandle, errorstr, "Couldn't get current display mode", MB_OK);
+            MessageBox(g_Platform->m_WindowHandle, errorstr, "Couldn't get current display mode", MB_OK);
             return false;
         }
 
@@ -1188,7 +1188,7 @@ bool GfxInternal_Dx9::GetRegistryResolution(Vector2<unsigned int>& mode)
     DWORD cbdata;
     unsigned int x, y;
 
-    if (RegOpenKeyExA(HKEY_CURRENT_USER, Window::RegistryKey, 0, 1, &phkResult))
+    if (RegOpenKeyExA(HKEY_CURRENT_USER, Platform::RegistryKey, 0, 1, &phkResult))
         return false;
 
     if (RegQueryValueExA(phkResult, "XRes", 0, &type, (LPBYTE)&x, &cbdata) < 0 ||
@@ -1210,7 +1210,7 @@ bool GfxInternal_Dx9::ProcessGameInput()
     if (!ProcessingInput)
         return ProcessingInput;
 
-    g_Window->ProcessMessages();
+    g_Platform->ProcessMessages();
 
     if (g_InputKeyboard)
     {
@@ -1371,7 +1371,7 @@ void GfxInternal_Dx9::RememberResolution()
     HKEY phkResult;
     LPDWORD disposition = 0;
 
-    if (!RegCreateKeyExA(HKEY_CURRENT_USER, Window::RegistryKey, 0, 0, 0, 0xF003F, 0, &phkResult, disposition)) {
+    if (!RegCreateKeyExA(HKEY_CURRENT_USER, Platform::RegistryKey, 0, 0, 0, 0xF003F, 0, &phkResult, disposition)) {
         RegSetValueExA(phkResult, "XRes", 0, 4, (const BYTE*)&m_DisplayModeResolution.x, 4);
         RegSetValueExA(phkResult, "YRes", 0, 4, (const BYTE*)&m_DisplayModeResolution.y, 4);
         RegCloseKey(phkResult);
@@ -1672,7 +1672,7 @@ void GfxInternal_Dx9::CreateRenderDevice()
     m_Direct3DInterface->CreateDevice(
         D3DADAPTER_DEFAULT,
         D3DDEVTYPE_HAL,
-        g_Window->m_WindowHandle,
+        g_Platform->m_WindowHandle,
         m_DeviceCaps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT ? D3DCREATE_HARDWARE_VERTEXPROCESSING : D3DCREATE_SOFTWARE_VERTEXPROCESSING,
         &m_PresentParameters,
         &m_Direct3DDevice);
@@ -2085,7 +2085,7 @@ void GfxInternal_Dx9::LoadDDSTexture(unsigned int index, const char* texturePath
 
     char textureExtension[16];
     char dummybuff[256];
-    File::ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
+    FileBuffer::ExtractFilePath(texturePath, dummybuff, dummybuff, textureExtension);
 
     if (String::EqualIgnoreCase(textureExtension, "dds", strlen("dds")) && FAILED(DirectX::CreateDDSTextureFromFile(m_Direct3DDevice, (const wchar_t*)texturePath, m_TexturesArray)) )
         *m_TexturesArray = nullptr;

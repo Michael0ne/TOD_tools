@@ -240,7 +240,7 @@ void AssetManager::GetPlatformSpecificPath(String& outStr, const char* respath, 
     char res_dir[1024] = {};
     char res_name[128] = {};
     char res_ext[16] = {};
-    File::ExtractFilePath(respath_str.m_Str, res_dir, res_name, res_ext);
+    FileBuffer::ExtractFilePath(respath_str.m_Str, res_dir, res_name, res_ext);
 
     strcat(buff, res_dir + 5);
     strcat(buff, res_name);
@@ -503,7 +503,7 @@ Asset* AssetManager::LoadResourceFile(const char* const respath)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid)
+void* AssetManager::LoadResourceBlock(FileBuffer* file, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid)
 {
     LogDump::LogA("Loading resource block with ID=%i...\n", resblockid);
     unsigned int timeStart = Timer::GetMilliseconds();
@@ -595,7 +595,7 @@ void* AssetManager::LoadResourceBlock(File* file, int* resbufferptr, unsigned in
     if (totalResources > 0)
         ResList.resize(totalResources);
 
-    time_t fileTimestamp = File::GetFileTimestamp(file->GetFileName());
+    time_t fileTimestamp = FileBuffer::GetFileTimestamp(file->GetFileName());
     int* resDataSizeTable = new int[totalResources];    //  NOTE: original code has this value multiplied by 4, don't know why really.
 
     file->SetPosAligned(0);
@@ -758,7 +758,7 @@ bool AssetManager::LoadOriginalVersion(Asset * asset)
     char assetfilename[256] = {};
     char assetext[16] = {};
 
-    File::ExtractFilePath(asset->m_ResourcePath, assetdir, assetfilename, assetext);
+    FileBuffer::ExtractFilePath(asset->m_ResourcePath, assetdir, assetfilename, assetext);
 
     if (assetext && strcmp(assetext, "stream") == NULL)
         strcpy(strstr(asset->m_ResourcePath, "stream"), "wav");
@@ -774,7 +774,7 @@ bool AssetManager::LoadOriginalVersion(Asset * asset)
         if (!resdir.Empty())
             return false;
 
-        if (File::FindFileEverywhere(asset->m_ResourcePath))
+        if (FileBuffer::FindFileEverywhere(asset->m_ResourcePath))
             if (asset->GetResourceCountryCode() != Script::GetCurrentCountryCode())
                 return false;
     }
@@ -1081,7 +1081,7 @@ AssetManager::~AssetManager()
 void AssetManager::AddLoadedAssetName(const char* assetName)
 {
     String sceneDir;
-    File::ExtractFileDir(sceneDir, assetName);
+    FileBuffer::ExtractFileDir(sceneDir, assetName);
 
     if (sceneDir.m_Length > 0 && sceneDir.m_Str[sceneDir.m_Length - 1] != '/')
         sceneDir.Append("/");

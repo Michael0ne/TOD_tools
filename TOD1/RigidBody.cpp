@@ -210,8 +210,8 @@ void RigidBody::Register()
     tRigidBody->RegisterScript("SetBoxInertiaMatrix(vector)", (EntityFunctionMember)&SetBoxInertialMatrix);
     tRigidBody->RegisterScript("SetEllipsoidInertiaMatrix(vector)", (EntityFunctionMember)&SetEllipsoidInertialMatrix);
 
-    CommandDoCollisionGameLogic = GetCommandId("command_do_collision_game_logic", true);
-    CommandGetContactAction = GetCommandId("command_get_contact_action(integer):integer", true);
+    CommandDoCollisionGameLogic = GetMessage("command_do_collision_game_logic", true);
+    CommandGetContactAction = GetMessage("command_get_contact_action(integer):integer", true);
 
     tRigidBody->PropagateProperties();
 }

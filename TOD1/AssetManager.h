@@ -206,7 +206,7 @@ public:
     void                        DeleteFastFindNodeVector(); //  @876340
     void                        FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi); // @877B00 // NOTE: this goes through 'baseNode' children and fills vector.
     Asset*                      LoadResourceFile(const char* const respath); // @878AB0
-    void*                       LoadResourceBlock(class File*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid); // @8759E0
+    void*                       LoadResourceBlock(class FileBuffer*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid); // @8759E0
     Entity*                     FindFirstEntity(); // @8755E0
     Entity*                     FindNextEntity(Entity*); // @875610
     void                        DestroySceneNodesFrameBuffers(const int);  //  @875390

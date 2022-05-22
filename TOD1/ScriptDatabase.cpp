@@ -10,6 +10,7 @@
 #include "Scene.h"
 #include "ScriptThread.h"
 
+//  NOTE: actual source path "/data_baked/tnt/production/_c++_/scriptresource.cpp".
 std::vector<GlobalProperty>  GlobalPropertiesList;
 std::map<String, unsigned int> GlobalPropertiesMap;
 std::vector<GlobalCommand>  GlobalCommandsList;
@@ -21,7 +22,7 @@ unsigned int GlobalPropertyListChecksum;
 bool   GlobalPropertyListChecksumObtained;
 unsigned int GlobalCommandListChecksum;
 bool   GlobalCommandListChecksumObtained;
-DataType* GlobalScriptsArray[410];
+void* GlobalScriptsArray[410];
 Node* CacheScriptNode;
 Node* CommonScriptNode;
 Node* CommonAnimSlotScriptNode;
@@ -122,7 +123,7 @@ int GetCommandByName(const char* const commandname)
         return GetCommandByName_Impl(commandname);
 }
 
-short RegisterGlobalProperty(const char* const propertyname, bool existingProperty)
+short GetProperty(const char* const propertyname, bool existing)
 {
     if (!GlobalPropertiesList.size())
         GlobalPropertiesList.reserve(6100);
@@ -136,7 +137,7 @@ short RegisterGlobalProperty(const char* const propertyname, bool existingProper
 
     int propid = GetPropertyIdByName(propertyname);
     const char* proptype = ddotpos + 1;
-    if (existingProperty && propid >= 0)
+    if (existing && propid >= 0)
     {
         if (strncmp(GlobalPropertiesList[propid].m_PropertyType->m_TypeName.m_Str, proptype, strlen(proptype)) == NULL)
         {
@@ -170,14 +171,14 @@ short RegisterGlobalProperty(const char* const propertyname, bool existingProper
     }
 }
 
-int GetCommandId(const char* const commandname, bool existingCommand)
+int GetMessage(const char* const commandname, bool existing)
 {
     if (!GlobalCommandsList.size())
         GlobalCommandsList.reserve(3000);
 
     int cmdid = GetCommandByName(commandname);
     const char* const ddotpos = strchr(commandname, ':');
-    if (existingCommand && cmdid >= 0)
+    if (existing && cmdid >= 0)
     {
         if (ddotpos)
             DataType::GetTypeByName(ddotpos + 1);
@@ -213,14 +214,14 @@ int GetCommandId(const char* const commandname, bool existingCommand)
 void ReadDatabaseFile(const char* path)
 {
     LogDump::LogA("Loading script database\n");
-    File dbfile(path, 0x21, true);
+    FileBuffer dbfile(path, 0x21, true);
 
     if (!dbfile.IsFileOpen())
         return;
 
     DWORD timeStart = Timer::GetMilliseconds();
     unsigned int totalProperties = NULL;
-    unsigned int totalCommands = NULL;
+    unsigned int totalMessages = NULL;
 
     dbfile.Read(&totalProperties, sizeof(totalProperties));
     GlobalPropertiesList.reserve(totalProperties);
@@ -233,26 +234,26 @@ void ReadDatabaseFile(const char* path)
         dbfile.Read(&propertyNameLen, sizeof(propertyNameLen));
         dbfile.Read(propertyName, propertyNameLen);
 
-        RegisterGlobalProperty(propertyName, false);
+        GetProperty(propertyName, false);
     }
 
-    dbfile.Read(&totalCommands, sizeof(totalCommands));
-    GlobalCommandsList.reserve(totalCommands);
+    dbfile.Read(&totalMessages, sizeof(totalMessages));
+    GlobalCommandsList.reserve(totalMessages);
 
-    for (unsigned int i = 0; i < totalCommands; i++)
+    for (unsigned int i = 0; i < totalMessages; i++)
     {
-        char commandName[128] = {};
-        unsigned int commandNameLen = NULL;
+        char messageName[128] = {};
+        unsigned int messageNameLen = NULL;
 
-        dbfile.Read(&commandNameLen, sizeof(commandNameLen));
-        dbfile.Read(commandName, commandNameLen);
+        dbfile.Read(&messageNameLen, sizeof(messageNameLen));
+        dbfile.Read(messageName, messageNameLen);
 
-        GetCommandId(commandName, false);
+        GetMessage(messageName, false);
     }
 
     LogDump::LogA("Done loading script database (%dms)\n", Timer::GetMilliseconds() - timeStart);
 #ifdef INCLUDE_FIXES
-    LogDump::LogA("Read %d properties and %d commands\n", totalProperties, totalCommands);
+    LogDump::LogA("Read %d properties and %d commands\n", totalProperties, totalMessages);
 #endif
 }
 
@@ -264,7 +265,7 @@ bool FindScript(const char* const scriptname, String& zipname)
     char scriptnamefull[256] = {};
     sprintf(scriptnamefull, "%s.script", scriptname);
 
-    if (File::SearchScriptFile(Script::ScriptsPath.m_Str, scriptnamefull, zipname))
+    if (FileBuffer::SearchScriptFile(Script::ScriptsPath.m_Str, scriptnamefull, zipname))
         return true;
 
     LogDump::LogA("Script '%s.script' not found (search path is '%s')\n", scriptname, Script::ScriptsPath.m_Str);
@@ -889,7 +890,323 @@ void LoadScripts()
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)
         GetGlobalCommandListChecksum();
 
-    // TODO: assign loaded scripts to global variables here.
+    GlobalScriptsArray[350] = Scriptbaked::GetGlobalScriptById(0);
+    GlobalScriptsArray[240] = Scriptbaked::GetGlobalScriptById(1);
+    GlobalScriptsArray[310] = Scriptbaked::GetGlobalScriptById(213);
+    GlobalScriptsArray[226] = Scriptbaked::GetGlobalScriptById(2);
+    GlobalScriptsArray[409] = (void*)Scriptbaked::GetScriptIdByName("common");
+    GlobalScriptsArray[274] = (void*)Scriptbaked::GetScriptIdByName("cache");
+    GlobalScriptsArray[357] = Scriptbaked::GetGlobalScriptById(152);
+    GlobalScriptsArray[303] = Scriptbaked::GetGlobalScriptById(361);
+    GlobalScriptsArray[235] = Scriptbaked::GetGlobalScriptById(3);
+    GlobalScriptsArray[313] = Scriptbaked::GetGlobalScriptById(4);
+    GlobalScriptsArray[285] = Scriptbaked::GetGlobalScriptById(6);
+    GlobalScriptsArray[278] = Scriptbaked::GetGlobalScriptById(371);
+    GlobalScriptsArray[21] = Scriptbaked::GetGlobalScriptById(387);
+    GlobalScriptsArray[59] = Scriptbaked::GetGlobalScriptById(373);
+    GlobalScriptsArray[239] = Scriptbaked::GetGlobalScriptById(7);
+    GlobalScriptsArray[311] = Scriptbaked::GetGlobalScriptById(390);
+    GlobalScriptsArray[286] = Scriptbaked::GetGlobalScriptById(13);
+    GlobalScriptsArray[190] = Scriptbaked::GetGlobalScriptById(9);
+    GlobalScriptsArray[74] = Scriptbaked::GetGlobalScriptById(78);
+    GlobalScriptsArray[215] = Scriptbaked::GetGlobalScriptById(8);
+    GlobalScriptsArray[237] = Scriptbaked::GetGlobalScriptById(14);
+    GlobalScriptsArray[382] = Scriptbaked::GetGlobalScriptById(79);
+    GlobalScriptsArray[234] = Scriptbaked::GetGlobalScriptById(89);
+    GlobalScriptsArray[238] = Scriptbaked::GetGlobalScriptById(380);
+    GlobalScriptsArray[30] = Scriptbaked::GetGlobalScriptById(273);
+    GlobalScriptsArray[170] = Scriptbaked::GetGlobalScriptById(392);
+    GlobalScriptsArray[194] = Scriptbaked::GetGlobalScriptById(116);
+    GlobalScriptsArray[376] = Scriptbaked::GetGlobalScriptById(137);
+    GlobalScriptsArray[399] = Scriptbaked::GetGlobalScriptById(374);
+    GlobalScriptsArray[291] = Scriptbaked::GetGlobalScriptById(10);
+    GlobalScriptsArray[404] = Scriptbaked::GetGlobalScriptById(11);
+    GlobalScriptsArray[287] = Scriptbaked::GetGlobalScriptById(12);
+    GlobalScriptsArray[383] = Scriptbaked::GetGlobalScriptById(164);
+    GlobalScriptsArray[300] = Scriptbaked::GetGlobalScriptById(395);
+    GlobalScriptsArray[86] = Scriptbaked::GetGlobalScriptById(16);
+    GlobalScriptsArray[322] = Scriptbaked::GetGlobalScriptById(17);
+    GlobalScriptsArray[122] = Scriptbaked::GetGlobalScriptById(19);
+    GlobalScriptsArray[335] = Scriptbaked::GetGlobalScriptById(20);
+    GlobalScriptsArray[364] = Scriptbaked::GetGlobalScriptById(21);
+    GlobalScriptsArray[318] = Scriptbaked::GetGlobalScriptById(22);
+    GlobalScriptsArray[13] = Scriptbaked::GetGlobalScriptById(23);
+    GlobalScriptsArray[305] = Scriptbaked::GetGlobalScriptById(25);
+    GlobalScriptsArray[61] = Scriptbaked::GetGlobalScriptById(26);
+    GlobalScriptsArray[57] = Scriptbaked::GetGlobalScriptById(27);
+    GlobalScriptsArray[155] = Scriptbaked::GetGlobalScriptById(28);
+    GlobalScriptsArray[320] = Scriptbaked::GetGlobalScriptById(29);
+    GlobalScriptsArray[339] = Scriptbaked::GetGlobalScriptById(30);
+    GlobalScriptsArray[139] = Scriptbaked::GetGlobalScriptById(31);
+    GlobalScriptsArray[284] = Scriptbaked::GetGlobalScriptById(32);
+    GlobalScriptsArray[327] = Scriptbaked::GetGlobalScriptById(33);
+    GlobalScriptsArray[340] = (void*)Scriptbaked::GetScriptIdByName("common_trigger");
+    GlobalScriptsArray[378] = Scriptbaked::GetGlobalScriptById(34);
+    GlobalScriptsArray[250] = Scriptbaked::GetGlobalScriptById(35);
+    GlobalScriptsArray[110] = Scriptbaked::GetGlobalScriptById(36);
+    GlobalScriptsArray[244] = Scriptbaked::GetGlobalScriptById(37);
+    GlobalScriptsArray[167] = Scriptbaked::GetGlobalScriptById(38);
+    GlobalScriptsArray[183] = Scriptbaked::GetGlobalScriptById(39);
+    GlobalScriptsArray[220] = Scriptbaked::GetGlobalScriptById(40);
+    GlobalScriptsArray[144] = Scriptbaked::GetGlobalScriptById(41);
+    GlobalScriptsArray[0] = Scriptbaked::GetGlobalScriptById(42);
+    GlobalScriptsArray[228] = Scriptbaked::GetGlobalScriptById(43);
+    GlobalScriptsArray[256] = Scriptbaked::GetGlobalScriptById(91);
+    GlobalScriptsArray[353] = Scriptbaked::GetGlobalScriptById(299);
+    GlobalScriptsArray[408] = Scriptbaked::GetGlobalScriptById(362);
+    GlobalScriptsArray[319] = Scriptbaked::GetGlobalScriptById(223);
+    GlobalScriptsArray[166] = Scriptbaked::GetGlobalScriptById(44);
+    GlobalScriptsArray[323] = Scriptbaked::GetGlobalScriptById(45);
+    GlobalScriptsArray[308] = Scriptbaked::GetGlobalScriptById(46);
+    GlobalScriptsArray[161] = Scriptbaked::GetGlobalScriptById(47);
+    GlobalScriptsArray[209] = Scriptbaked::GetGlobalScriptById(48);
+    GlobalScriptsArray[63] = Scriptbaked::GetGlobalScriptById(49);
+    GlobalScriptsArray[99] = Scriptbaked::GetGlobalScriptById(50);
+    GlobalScriptsArray[387] = Scriptbaked::GetGlobalScriptById(51);
+    GlobalScriptsArray[268] = Scriptbaked::GetGlobalScriptById(52);
+    GlobalScriptsArray[393] = Scriptbaked::GetGlobalScriptById(53);
+    GlobalScriptsArray[349] = Scriptbaked::GetGlobalScriptById(54);
+    GlobalScriptsArray[392] = Scriptbaked::GetGlobalScriptById(55);
+    GlobalScriptsArray[29] = Scriptbaked::GetGlobalScriptById(145);
+    GlobalScriptsArray[276] = Scriptbaked::GetGlobalScriptById(56);
+    GlobalScriptsArray[184] = Scriptbaked::GetGlobalScriptById(57);
+    GlobalScriptsArray[232] = Scriptbaked::GetGlobalScriptById(58);
+    GlobalScriptsArray[31] = Scriptbaked::GetGlobalScriptById(59);
+    GlobalScriptsArray[267] = Scriptbaked::GetGlobalScriptById(60);
+    GlobalScriptsArray[289] = Scriptbaked::GetGlobalScriptById(61);
+    GlobalScriptsArray[173] = Scriptbaked::GetGlobalScriptById(62);
+    GlobalScriptsArray[270] = Scriptbaked::GetGlobalScriptById(372);
+    GlobalScriptsArray[384] = Scriptbaked::GetGlobalScriptById(63);
+    GlobalScriptsArray[175] = Scriptbaked::GetGlobalScriptById(133);
+    GlobalScriptsArray[115] = Scriptbaked::GetGlobalScriptById(64);
+    GlobalScriptsArray[338] = Scriptbaked::GetGlobalScriptById(65);
+    GlobalScriptsArray[391] = Scriptbaked::GetGlobalScriptById(136);
+    GlobalScriptsArray[157] = Scriptbaked::GetGlobalScriptById(66);
+    GlobalScriptsArray[151] = Scriptbaked::GetGlobalScriptById(92);
+    GlobalScriptsArray[395] = Scriptbaked::GetGlobalScriptById(67);
+    GlobalScriptsArray[211] = Scriptbaked::GetGlobalScriptById(68);
+    GlobalScriptsArray[219] = Scriptbaked::GetGlobalScriptById(69);
+    GlobalScriptsArray[362] = Scriptbaked::GetGlobalScriptById(70);
+    GlobalScriptsArray[100] = Scriptbaked::GetGlobalScriptById(71);
+    GlobalScriptsArray[347] = Scriptbaked::GetGlobalScriptById(72);
+    GlobalScriptsArray[272] = Scriptbaked::GetGlobalScriptById(73);
+    GlobalScriptsArray[297] = Scriptbaked::GetGlobalScriptById(74);
+    GlobalScriptsArray[236] = Scriptbaked::GetGlobalScriptById(75);
+    GlobalScriptsArray[197] = Scriptbaked::GetGlobalScriptById(76);
+    GlobalScriptsArray[64] = Scriptbaked::GetGlobalScriptById(77);
+    GlobalScriptsArray[55] = Scriptbaked::GetGlobalScriptById(391);
+    GlobalScriptsArray[168] = Scriptbaked::GetGlobalScriptById(105);
+    GlobalScriptsArray[283] = Scriptbaked::GetGlobalScriptById(80);
+    GlobalScriptsArray[301] = Scriptbaked::GetGlobalScriptById(81);
+    GlobalScriptsArray[143] = Scriptbaked::GetGlobalScriptById(82);
+    GlobalScriptsArray[154] = Scriptbaked::GetGlobalScriptById(83);
+    GlobalScriptsArray[133] = Scriptbaked::GetGlobalScriptById(84);
+    GlobalScriptsArray[48] = Scriptbaked::GetGlobalScriptById(85);
+    GlobalScriptsArray[172] = Scriptbaked::GetGlobalScriptById(86);
+    GlobalScriptsArray[181] = Scriptbaked::GetGlobalScriptById(87);
+    GlobalScriptsArray[405] = Scriptbaked::GetGlobalScriptById(90);
+    GlobalScriptsArray[90] = Scriptbaked::GetGlobalScriptById(93);
+    GlobalScriptsArray[229] = Scriptbaked::GetGlobalScriptById(94);
+    GlobalScriptsArray[337] = Scriptbaked::GetGlobalScriptById(386);
+    GlobalScriptsArray[45] = Scriptbaked::GetGlobalScriptById(95);
+    GlobalScriptsArray[97] = Scriptbaked::GetGlobalScriptById(97);
+    GlobalScriptsArray[117] = Scriptbaked::GetGlobalScriptById(98);
+    GlobalScriptsArray[198] = Scriptbaked::GetGlobalScriptById(99);
+    GlobalScriptsArray[360] = Scriptbaked::GetGlobalScriptById(100);
+    GlobalScriptsArray[114] = Scriptbaked::GetGlobalScriptById(101);
+    GlobalScriptsArray[163] = Scriptbaked::GetGlobalScriptById(102);
+    GlobalScriptsArray[271] = Scriptbaked::GetGlobalScriptById(103);
+    GlobalScriptsArray[354] = Scriptbaked::GetGlobalScriptById(104);
+    GlobalScriptsArray[302] = Scriptbaked::GetGlobalScriptById(106);
+    GlobalScriptsArray[73] = Scriptbaked::GetGlobalScriptById(107);
+    GlobalScriptsArray[295] = Scriptbaked::GetGlobalScriptById(108);
+    GlobalScriptsArray[375] = Scriptbaked::GetGlobalScriptById(109);
+    GlobalScriptsArray[71] = Scriptbaked::GetGlobalScriptById(256);
+    GlobalScriptsArray[196] = Scriptbaked::GetGlobalScriptById(110);
+    GlobalScriptsArray[126] = Scriptbaked::GetGlobalScriptById(383);
+    GlobalScriptsArray[389] = Scriptbaked::GetGlobalScriptById(139);
+    GlobalScriptsArray[142] = Scriptbaked::GetGlobalScriptById(389);
+    GlobalScriptsArray[396] = Scriptbaked::GetGlobalScriptById(111);
+    GlobalScriptsArray[53] = Scriptbaked::GetGlobalScriptById(112);
+    GlobalScriptsArray[275] = Scriptbaked::GetGlobalScriptById(396);
+    GlobalScriptsArray[386] = Scriptbaked::GetGlobalScriptById(113);
+    GlobalScriptsArray[205] = Scriptbaked::GetGlobalScriptById(114);
+    GlobalScriptsArray[124] = Scriptbaked::GetGlobalScriptById(115);
+    GlobalScriptsArray[123] = Scriptbaked::GetGlobalScriptById(117);
+    GlobalScriptsArray[245] = Scriptbaked::GetGlobalScriptById(150);
+    GlobalScriptsArray[84] = Scriptbaked::GetGlobalScriptById(120);
+    GlobalScriptsArray[200] = Scriptbaked::GetGlobalScriptById(121);
+    GlobalScriptsArray[266] = Scriptbaked::GetGlobalScriptById(122);
+    GlobalScriptsArray[252] = Scriptbaked::GetGlobalScriptById(124);
+    GlobalScriptsArray[171] = Scriptbaked::GetGlobalScriptById(125);
+    GlobalScriptsArray[132] = Scriptbaked::GetGlobalScriptById(385);
+    GlobalScriptsArray[185] = Scriptbaked::GetGlobalScriptById(126);
+    GlobalScriptsArray[397] = Scriptbaked::GetGlobalScriptById(127);
+    GlobalScriptsArray[217] = Scriptbaked::GetGlobalScriptById(129);
+    GlobalScriptsArray[254] = Scriptbaked::GetGlobalScriptById(130);
+    GlobalScriptsArray[164] = Scriptbaked::GetGlobalScriptById(131);
+    GlobalScriptsArray[371] = Scriptbaked::GetGlobalScriptById(132);
+    GlobalScriptsArray[309] = Scriptbaked::GetGlobalScriptById(134);
+    GlobalScriptsArray[202] = Scriptbaked::GetGlobalScriptById(135);
+    GlobalScriptsArray[34] = Scriptbaked::GetGlobalScriptById(219);
+    GlobalScriptsArray[17] = Scriptbaked::GetGlobalScriptById(138);
+    GlobalScriptsArray[233] = Scriptbaked::GetGlobalScriptById(397);
+    GlobalScriptsArray[269] = Scriptbaked::GetGlobalScriptById(140);
+    GlobalScriptsArray[153] = Scriptbaked::GetGlobalScriptById(141);
+    GlobalScriptsArray[128] = Scriptbaked::GetGlobalScriptById(142);
+    GlobalScriptsArray[342] = Scriptbaked::GetGlobalScriptById(143);
+    GlobalScriptsArray[402] = Scriptbaked::GetGlobalScriptById(144);
+    GlobalScriptsArray[137] = Scriptbaked::GetGlobalScriptById(147);
+    GlobalScriptsArray[112] = Scriptbaked::GetGlobalScriptById(148);
+    GlobalScriptsArray[76] = Scriptbaked::GetGlobalScriptById(149);
+    GlobalScriptsArray[341] = Scriptbaked::GetGlobalScriptById(151);
+    GlobalScriptsArray[377] = Scriptbaked::GetGlobalScriptById(154);
+    GlobalScriptsArray[355] = (void*)Scriptbaked::GetScriptIdByName("introcommon");
+    GlobalScriptsArray[330] = Scriptbaked::GetGlobalScriptById(155);
+    GlobalScriptsArray[374] = Scriptbaked::GetGlobalScriptById(156);
+    GlobalScriptsArray[79] = Scriptbaked::GetGlobalScriptById(157);
+    GlobalScriptsArray[150] = Scriptbaked::GetGlobalScriptById(158);
+    GlobalScriptsArray[293] = Scriptbaked::GetGlobalScriptById(159);
+    GlobalScriptsArray[37] = Scriptbaked::GetGlobalScriptById(160);
+    GlobalScriptsArray[352] = Scriptbaked::GetGlobalScriptById(161);
+    GlobalScriptsArray[9] = Scriptbaked::GetGlobalScriptById(162);
+    GlobalScriptsArray[80] = Scriptbaked::GetGlobalScriptById(163);
+    GlobalScriptsArray[11] = Scriptbaked::GetGlobalScriptById(165);
+    GlobalScriptsArray[40] = Scriptbaked::GetGlobalScriptById(166);
+    GlobalScriptsArray[22] = Scriptbaked::GetGlobalScriptById(167);
+    GlobalScriptsArray[149] = Scriptbaked::GetGlobalScriptById(168);
+    GlobalScriptsArray[379] = Scriptbaked::GetGlobalScriptById(169);
+    GlobalScriptsArray[264] = Scriptbaked::GetGlobalScriptById(170);
+    GlobalScriptsArray[262] = Scriptbaked::GetGlobalScriptById(171);
+    GlobalScriptsArray[10] = Scriptbaked::GetGlobalScriptById(172);
+    GlobalScriptsArray[141] = Scriptbaked::GetGlobalScriptById(173);
+    GlobalScriptsArray[257] = Scriptbaked::GetGlobalScriptById(174);
+    GlobalScriptsArray[333] = Scriptbaked::GetGlobalScriptById(175);
+    GlobalScriptsArray[331] = Scriptbaked::GetGlobalScriptById(176);
+    GlobalScriptsArray[227] = Scriptbaked::GetGlobalScriptById(177);
+    GlobalScriptsArray[263] = Scriptbaked::GetGlobalScriptById(178);
+    GlobalScriptsArray[191] = Scriptbaked::GetGlobalScriptById(179);
+    GlobalScriptsArray[315] = Scriptbaked::GetGlobalScriptById(180);
+    GlobalScriptsArray[121] = Scriptbaked::GetGlobalScriptById(181);
+    GlobalScriptsArray[298] = Scriptbaked::GetGlobalScriptById(182);
+    GlobalScriptsArray[60] = Scriptbaked::GetGlobalScriptById(183);
+    GlobalScriptsArray[116] = Scriptbaked::GetGlobalScriptById(184);
+    GlobalScriptsArray[62] = Scriptbaked::GetGlobalScriptById(185);
+    GlobalScriptsArray[317] = Scriptbaked::GetGlobalScriptById(186);
+    GlobalScriptsArray[103] = Scriptbaked::GetGlobalScriptById(187);
+    GlobalScriptsArray[160] = Scriptbaked::GetGlobalScriptById(188);
+    GlobalScriptsArray[174] = Scriptbaked::GetGlobalScriptById(189);
+    GlobalScriptsArray[312] = Scriptbaked::GetGlobalScriptById(190);
+    GlobalScriptsArray[348] = Scriptbaked::GetGlobalScriptById(191);
+    GlobalScriptsArray[44] = Scriptbaked::GetGlobalScriptById(192);
+    GlobalScriptsArray[3] = Scriptbaked::GetGlobalScriptById(193);
+    GlobalScriptsArray[24] = Scriptbaked::GetGlobalScriptById(194);
+    GlobalScriptsArray[41] = Scriptbaked::GetGlobalScriptById(195);
+    GlobalScriptsArray[258] = Scriptbaked::GetGlobalScriptById(196);
+    GlobalScriptsArray[102] = Scriptbaked::GetGlobalScriptById(199);
+    GlobalScriptsArray[70] = Scriptbaked::GetGlobalScriptById(200);
+    GlobalScriptsArray[280] = Scriptbaked::GetGlobalScriptById(201);
+    GlobalScriptsArray[101] = Scriptbaked::GetGlobalScriptById(202);
+    GlobalScriptsArray[304] = Scriptbaked::GetGlobalScriptById(203);
+    GlobalScriptsArray[87] = Scriptbaked::GetGlobalScriptById(204);
+    GlobalScriptsArray[35] = Scriptbaked::GetGlobalScriptById(206);
+    GlobalScriptsArray[156] = Scriptbaked::GetGlobalScriptById(208);
+    GlobalScriptsArray[33] = Scriptbaked::GetGlobalScriptById(209);
+    GlobalScriptsArray[26] = Scriptbaked::GetGlobalScriptById(211);
+    GlobalScriptsArray[109] = Scriptbaked::GetGlobalScriptById(212);
+    GlobalScriptsArray[316] = Scriptbaked::GetGlobalScriptById(215);
+    GlobalScriptsArray[77] = Scriptbaked::GetGlobalScriptById(216);
+    GlobalScriptsArray[178] = Scriptbaked::GetGlobalScriptById(217);
+    GlobalScriptsArray[208] = Scriptbaked::GetGlobalScriptById(218);
+    GlobalScriptsArray[14] = Scriptbaked::GetGlobalScriptById(220);
+    GlobalScriptsArray[241] = Scriptbaked::GetGlobalScriptById(221);
+    GlobalScriptsArray[145] = Scriptbaked::GetGlobalScriptById(222);
+    GlobalScriptsArray[113] = Scriptbaked::GetGlobalScriptById(322);
+    GlobalScriptsArray[189] = Scriptbaked::GetGlobalScriptById(224);
+    GlobalScriptsArray[4] = Scriptbaked::GetGlobalScriptById(225);
+    GlobalScriptsArray[195] = Scriptbaked::GetGlobalScriptById(226);
+    GlobalScriptsArray[390] = Scriptbaked::GetGlobalScriptById(227);
+    GlobalScriptsArray[32] = Scriptbaked::GetGlobalScriptById(228);
+    GlobalScriptsArray[367] = Scriptbaked::GetGlobalScriptById(229);
+    GlobalScriptsArray[224] = Scriptbaked::GetGlobalScriptById(231);
+    GlobalScriptsArray[388] = Scriptbaked::GetGlobalScriptById(232);
+    GlobalScriptsArray[206] = Scriptbaked::GetGlobalScriptById(234);
+    GlobalScriptsArray[127] = Scriptbaked::GetGlobalScriptById(235);
+    GlobalScriptsArray[88] = Scriptbaked::GetGlobalScriptById(236);
+    GlobalScriptsArray[246] = Scriptbaked::GetGlobalScriptById(237);
+    GlobalScriptsArray[16] = Scriptbaked::GetGlobalScriptById(241);
+    GlobalScriptsArray[176] = Scriptbaked::GetGlobalScriptById(243);
+    GlobalScriptsArray[186] = Scriptbaked::GetGlobalScriptById(244);
+    GlobalScriptsArray[261] = Scriptbaked::GetGlobalScriptById(245);
+    GlobalScriptsArray[2] = Scriptbaked::GetGlobalScriptById(246);
+    GlobalScriptsArray[366] = Scriptbaked::GetGlobalScriptById(247);
+    GlobalScriptsArray[130] = Scriptbaked::GetGlobalScriptById(248);
+    GlobalScriptsArray[106] = Scriptbaked::GetGlobalScriptById(249);
+    GlobalScriptsArray[78] = Scriptbaked::GetGlobalScriptById(252);
+    GlobalScriptsArray[96] = Scriptbaked::GetGlobalScriptById(254);
+    GlobalScriptsArray[89] = Scriptbaked::GetGlobalScriptById(255);
+    GlobalScriptsArray[120] = Scriptbaked::GetGlobalScriptById(257);
+    GlobalScriptsArray[212] = Scriptbaked::GetGlobalScriptById(259);
+    GlobalScriptsArray[344] = Scriptbaked::GetGlobalScriptById(261);
+    GlobalScriptsArray[329] = Scriptbaked::GetGlobalScriptById(262);
+    GlobalScriptsArray[213] = Scriptbaked::GetGlobalScriptById(265);
+    GlobalScriptsArray[328] = Scriptbaked::GetGlobalScriptById(268);
+    GlobalScriptsArray[82] = Scriptbaked::GetGlobalScriptById(269);
+    GlobalScriptsArray[249] = Scriptbaked::GetGlobalScriptById(272);
+    GlobalScriptsArray[27] = Scriptbaked::GetGlobalScriptById(274);
+    GlobalScriptsArray[192] = Scriptbaked::GetGlobalScriptById(275);
+    GlobalScriptsArray[321] = Scriptbaked::GetGlobalScriptById(276);
+    GlobalScriptsArray[12] = Scriptbaked::GetGlobalScriptById(277);
+    GlobalScriptsArray[325] = Scriptbaked::GetGlobalScriptById(282);
+    GlobalScriptsArray[225] = Scriptbaked::GetGlobalScriptById(296);
+    GlobalScriptsArray[140] = Scriptbaked::GetGlobalScriptById(297);
+    GlobalScriptsArray[332] = Scriptbaked::GetGlobalScriptById(298);
+    GlobalScriptsArray[299] = Scriptbaked::GetGlobalScriptById(302);
+    GlobalScriptsArray[359] = Scriptbaked::GetGlobalScriptById(303);
+    GlobalScriptsArray[222] = Scriptbaked::GetGlobalScriptById(304);
+    GlobalScriptsArray[38] = Scriptbaked::GetGlobalScriptById(308);
+    GlobalScriptsArray[39] = Scriptbaked::GetGlobalScriptById(310);
+    GlobalScriptsArray[135] = Scriptbaked::GetGlobalScriptById(312);
+    GlobalScriptsArray[230] = Scriptbaked::GetGlobalScriptById(313);
+    GlobalScriptsArray[46] = Scriptbaked::GetGlobalScriptById(314);
+    GlobalScriptsArray[259] = Scriptbaked::GetGlobalScriptById(319);
+    GlobalScriptsArray[162] = Scriptbaked::GetGlobalScriptById(323);
+    GlobalScriptsArray[7] = Scriptbaked::GetGlobalScriptById(327);
+    GlobalScriptsArray[307] = Scriptbaked::GetGlobalScriptById(333);
+    GlobalScriptsArray[324] = Scriptbaked::GetGlobalScriptById(336);
+    GlobalScriptsArray[385] = Scriptbaked::GetGlobalScriptById(339);
+    GlobalScriptsArray[98] = Scriptbaked::GetGlobalScriptById(346);
+    GlobalScriptsArray[19] = (void*)Scriptbaked::GetScriptIdByName("common_animslot");
+    GlobalScriptsArray[85] = Scriptbaked::GetGlobalScriptById(347);
+    GlobalScriptsArray[373] = Scriptbaked::GetGlobalScriptById(348);
+    GlobalScriptsArray[54] = Scriptbaked::GetGlobalScriptById(351);
+    GlobalScriptsArray[51] = Scriptbaked::GetGlobalScriptById(352);
+    GlobalScriptsArray[67] = Scriptbaked::GetGlobalScriptById(353);
+    GlobalScriptsArray[281] = Scriptbaked::GetGlobalScriptById(354);
+    GlobalScriptsArray[223] = Scriptbaked::GetGlobalScriptById(355);
+    GlobalScriptsArray[288] = Scriptbaked::GetGlobalScriptById(356);
+    GlobalScriptsArray[23] = Scriptbaked::GetGlobalScriptById(357);
+    GlobalScriptsArray[42] = Scriptbaked::GetGlobalScriptById(358);
+    GlobalScriptsArray[398] = Scriptbaked::GetGlobalScriptById(360);
+    GlobalScriptsArray[210] = Scriptbaked::GetGlobalScriptById(363);
+    GlobalScriptsArray[358] = Scriptbaked::GetGlobalScriptById(364);
+    GlobalScriptsArray[260] = Scriptbaked::GetGlobalScriptById(365);
+    GlobalScriptsArray[361] = Scriptbaked::GetGlobalScriptById(366);
+    GlobalScriptsArray[6] = Scriptbaked::GetGlobalScriptById(370);
+    GlobalScriptsArray[214] = Scriptbaked::GetGlobalScriptById(367);
+    GlobalScriptsArray[201] = Scriptbaked::GetGlobalScriptById(368);
+    GlobalScriptsArray[204] = Scriptbaked::GetGlobalScriptById(369);
+    GlobalScriptsArray[66] = Scriptbaked::GetGlobalScriptById(375);
+    GlobalScriptsArray[282] = Scriptbaked::GetGlobalScriptById(388);
+    GlobalScriptsArray[351] = Scriptbaked::GetGlobalScriptById(376);
+    GlobalScriptsArray[346] = Scriptbaked::GetGlobalScriptById(377);
+    GlobalScriptsArray[199] = Scriptbaked::GetGlobalScriptById(378);
+    GlobalScriptsArray[394] = Scriptbaked::GetGlobalScriptById(393);
+    GlobalScriptsArray[129] = Scriptbaked::GetGlobalScriptById(381);
+    GlobalScriptsArray[75] = Scriptbaked::GetGlobalScriptById(382);
+    GlobalScriptsArray[111] = Scriptbaked::GetGlobalScriptById(384);
+    GlobalScriptsArray[193] = Scriptbaked::GetGlobalScriptById(394);
+    GlobalScriptsArray[125] = Scriptbaked::GetGlobalScriptById(398);
 }
 
 void GlobalProperty::GetNameAndType(String& outStr) const
@@ -1357,7 +1674,21 @@ Scriptbaked* Scriptbaked::GetGlobalScriptByName(const char* name)
 
 Scriptbaked* Scriptbaked::GetGlobalScriptById(const unsigned int id)
 {
+#ifdef INCLUDE_FIXES
+    if (id >= ScriptsList.size())
+    {
+        LogDump::LogA("GetGlobalScriptById: id=%d out of range!\n", id);
+        return nullptr;
+    }
+
+    Scriptbaked* script = ScriptsList[id];
+    if (!script)
+        LogDump::LogA("GetGlobalScriptById: script for id=%d not found!\n", id);
+
+    return script;
+#else
     return ScriptsList[id];
+#endif
 }
 
 int Scriptbaked::GetScriptIdByName(const char* const name)

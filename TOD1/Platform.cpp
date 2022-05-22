@@ -1,4 +1,4 @@
-#include "Window.h"
+#include "Platform.h"
 #include "KapowEngineClass.h"
 #include "StreamedSoundBuffers.h"
 #include "ScriptDatabase.h"
@@ -9,24 +9,24 @@
 #include "Timer.h"
 #include "LogDump.h"
 
-Window* g_Window = nullptr;
+Platform* g_Platform = nullptr;
 
-unsigned int Window::MessageBoxType[] = {
+unsigned int Platform::MessageBoxType[] = {
  0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0
 };
-const char Window::RegistryKey[] = "Software\\Eidos\\Total Overdose";
-HINSTANCE Window::WindowInstanceHandle = nullptr;
-LPSTR Window::CmdLine = nullptr;
-STICKYKEYS Window::StickyKeysFeature = { 8, 0 };
-TOGGLEKEYS Window::ToggleKeysFeature = { 8, 0 };
-FILTERKEYS Window::FilterKeysFeature = { 24, 0, 0, 0, 0, 0 };
+const char Platform::RegistryKey[] = "Software\\Eidos\\Total Overdose";
+HINSTANCE Platform::WindowInstanceHandle = nullptr;
+LPSTR Platform::CmdLine = nullptr;
+STICKYKEYS Platform::StickyKeysFeature = { 8, 0 };
+TOGGLEKEYS Platform::ToggleKeysFeature = { 8, 0 };
+FILTERKEYS Platform::FilterKeysFeature = { 24, 0, 0, 0, 0, 0 };
 
-void Window::QuitGame()
+void Platform::QuitGame()
 {
     m_QuitRequested = true;
 }
 
-bool Window::ProcessMessages()
+bool Platform::ProcessMessages()
 {
     tagMSG Msg;
 
@@ -45,17 +45,17 @@ bool Window::ProcessMessages()
     return false;
 }
 
-void Window::SetMenuClickCallback(MenuItemClickCallback callback)
+void Platform::SetMenuClickCallback(MenuItemClickCallback callback)
 {
     m_MenuItemClickCallback = callback;
 }
 
-void Window::SetWindowResolutionRaw(const Vector2<unsigned int>& resolution)
+void Platform::SetWindowResolutionRaw(const Vector2<unsigned int>& resolution)
 {
     SetWindowPos(m_WindowHandle, 0, 0, 0, resolution.x, resolution.y, SWP_NOMOVE);
 }
 
-void Window::SetWindowResolutionDontMove(const Vector2<unsigned int>& resolution)
+void Platform::SetWindowResolutionDontMove(const Vector2<unsigned int>& resolution)
 {
     tagRECT  Rect = { 0, 0, (LONG)resolution.x, (LONG)resolution.y };
     DWORD  dwMenuName = GetClassLongA(m_WindowHandle, GCL_MENUNAME);
@@ -65,7 +65,7 @@ void Window::SetWindowResolutionDontMove(const Vector2<unsigned int>& resolution
     SetWindowPos(m_WindowHandle, 0, 0, 0, Rect.right - Rect.left, Rect.bottom - Rect.top, SWP_NOMOVE);
 }
 
-void Window::GetWindowTopPosition(Vector2<LONG>& outRect)
+void Platform::GetWindowTopPosition(Vector2<LONG>& outRect)
 {
     tagRECT  WindowRect;
 
@@ -87,7 +87,7 @@ void Window::GetWindowTopPosition(Vector2<LONG>& outRect)
     outRect.y = m_WindowTop;
 }
 
-void Window::GetTopCorner(Vector2<LONG>& outRect) const
+void Platform::GetTopCorner(Vector2<LONG>& outRect) const
 {
     tagRECT  Rect;
 
@@ -97,7 +97,7 @@ void Window::GetTopCorner(Vector2<LONG>& outRect) const
     outRect.y = Rect.top;
 }
 
-void Window::GetWindowCenterRelative(Vector2<LONG>& outRect) const
+void Platform::GetWindowCenterRelative(Vector2<LONG>& outRect) const
 {
     tagRECT  Rect;
 
@@ -107,7 +107,7 @@ void Window::GetWindowCenterRelative(Vector2<LONG>& outRect) const
     outRect.y = Rect.bottom - Rect.top;
 }
 
-void Window::GetClientCenterRelative(Vector2<LONG>& outRect) const
+void Platform::GetClientCenterRelative(Vector2<LONG>& outRect) const
 {
     tagRECT  Rect;
 
@@ -117,12 +117,12 @@ void Window::GetClientCenterRelative(Vector2<LONG>& outRect) const
     outRect.y = Rect.bottom - Rect.top;
 }
 
-void Window::SetWindowPositionNative(const Vector2<int>& pos)
+void Platform::SetWindowPositionNative(const Vector2<int>& pos)
 {
     SetWindowPos(m_WindowHandle, 0, pos.x, pos.y, 0, 0, SWP_NOSIZE);
 }
 
-void Window::SetWindowPosNoCopyBits(const tagPOINT& newPos)
+void Platform::SetWindowPosNoCopyBits(const tagPOINT& newPos)
 {
     tagRECT  WindowRect;
     tagRECT  NewRect;
@@ -141,7 +141,7 @@ void Window::SetWindowPosNoCopyBits(const tagPOINT& newPos)
     SetWindowPos(m_WindowHandle, 0, NewRect.left, NewRect.top, 0, 0, SWP_NOCOPYBITS);
 }
 
-void Window::UpdateVisibility()
+void Platform::UpdateVisibility()
 {
     bool WindowVisible = true;
 
@@ -166,7 +166,7 @@ void Window::UpdateVisibility()
     }
 }
 
-void Window::SetCursorReleased(bool released)
+void Platform::SetCursorReleased(bool released)
 {
     m_CursorReleased = released;
 
@@ -194,7 +194,7 @@ void Window::SetCursorReleased(bool released)
     ClipCursor(&ClipRect);
 }
 
-int Window::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
+int Platform::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
 {
     switch (MessageBox(m_WindowHandle, lpText, lpCaption, MessageBoxType[type])) {
     case IDCANCEL:
@@ -212,17 +212,17 @@ int Window::GetMessageBoxResultButton(LPCSTR lpText, LPCSTR lpCaption, int type)
     }
 }
 
-int Window::GetCoverdemoPlayMode()
+int Platform::GetCoverdemoPlayMode()
 {
     return 0;
 }
 
-int Window::GetCoverdemoInactiveTimeoutSec() const
+int Platform::GetCoverdemoInactiveTimeoutSec() const
 {
     return -1;
 }
 
-int Window::GetCoverdemoGameplayTimeoutSec() const
+int Platform::GetCoverdemoGameplayTimeoutSec() const
 {
     return -1;
 }
@@ -377,49 +377,49 @@ void IncompatibleMachineParameterError(ErrorMessageId messageID, char bWarningIc
 
     char caption[16] = {};
     char text[512] = {};
-    LoadString(Window::WindowInstanceHandle, Script::LanguageStringsOffset + 220, caption, sizeof(caption) / sizeof(char));
-    LoadString(Window::WindowInstanceHandle, Script::LanguageStringsOffset + nMessageId, text, sizeof(text) / sizeof(char));
+    LoadString(Platform::WindowInstanceHandle, Script::LanguageStringsOffset + 220, caption, sizeof(caption) / sizeof(char));
+    LoadString(Platform::WindowInstanceHandle, Script::LanguageStringsOffset + nMessageId, text, sizeof(text) / sizeof(char));
 
     if (!bWarningIcon)
     {
-        MessageBox(g_Window->m_WindowHandle, text, caption, MB_ICONERROR);
+        MessageBox(g_Platform->m_WindowHandle, text, caption, MB_ICONERROR);
         exit(1);
     }
     else
-        MessageBox(g_Window->m_WindowHandle, text, caption, MB_ICONWARNING);
+        MessageBox(g_Platform->m_WindowHandle, text, caption, MB_ICONWARNING);
 }
 
 void SetAccessibilityFeatures(bool bCollect)
 {
     if (bCollect)
     {
-        SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
-        SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
-        SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
+        SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Platform::StickyKeysFeature, 0);
+        SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Platform::ToggleKeysFeature, 0);
+        SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Platform::FilterKeysFeature, 0);
 
         return;
     }
 
-    if (!(Window::StickyKeysFeature.dwFlags & SKF_STICKYKEYSON))
+    if (!(Platform::StickyKeysFeature.dwFlags & SKF_STICKYKEYSON))
     {
-        Window::StickyKeysFeature.dwFlags &= 0xFFFFFFF3; // SKF_STICKYKEYSON | SKF_AVAILABLE
-        SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
+        Platform::StickyKeysFeature.dwFlags &= 0xFFFFFFF3; // SKF_STICKYKEYSON | SKF_AVAILABLE
+        SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Platform::StickyKeysFeature, 0);
     }
 
-    if (!(Window::ToggleKeysFeature.dwFlags & TKF_TOGGLEKEYSON))
+    if (!(Platform::ToggleKeysFeature.dwFlags & TKF_TOGGLEKEYSON))
     {
-        Window::ToggleKeysFeature.dwFlags &= 0xFFFFFFF3; // TKF_TOGGLEKEYSON | TKF_AVAILABLE
-        SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
+        Platform::ToggleKeysFeature.dwFlags &= 0xFFFFFFF3; // TKF_TOGGLEKEYSON | TKF_AVAILABLE
+        SystemParametersInfo(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Platform::ToggleKeysFeature, 0);
     }
 
-    if (!(Window::FilterKeysFeature.dwFlags & FKF_FILTERKEYSON))
+    if (!(Platform::FilterKeysFeature.dwFlags & FKF_FILTERKEYSON))
     {
-        Window::FilterKeysFeature.dwFlags &= 0xFFFFFFF3; // FKF_FILTERYSON | FKF_AVAILABLE
-        SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
+        Platform::FilterKeysFeature.dwFlags &= 0xFFFFFFF3; // FKF_FILTERYSON | FKF_AVAILABLE
+        SystemParametersInfo(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Platform::FilterKeysFeature, 0);
     }
 }
 
-void Window::CreateWindowInstance(UINT16 nIconResourceId)
+void Platform::CreateWindowInstance(UINT16 nIconResourceId)
 {
     DWORD windowStyle = (m_Flags & 1) != 0 ? WS_CAPTION | WS_MAXIMIZE : WS_CAPTION | WS_MINIMIZE;
     if (nIconResourceId)
@@ -442,12 +442,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 #endif
                 )
             {
-                g_Window->GetWindowTopPosition(wndRect);
-                g_Window->m_CursorReleased = true;
+                g_Platform->GetWindowTopPosition(wndRect);
+                g_Platform->m_CursorReleased = true;
                 ShowCursor(1);
                 ClipCursor(0);
                 PostQuitMessage(0);
-                g_Window->m_WindowHandle = NULL;
+                g_Platform->m_WindowHandle = NULL;
 
                 return 0;
             }
@@ -462,12 +462,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
             }
             return 1;
         }
-        if (!g_Window->m_CursorReleased)
+        if (!g_Platform->m_CursorReleased)
         {
             SetCursor(0);
             return 0;
         }
-        SetCursor(g_Window->m_Cursor);
+        SetCursor(g_Platform->m_Cursor);
 
         return DefWindowProc(hWnd, Msg, wParam, lParam);
     }
@@ -476,8 +476,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         if (Msg == WM_COMMAND)
         {
-            if (g_Window->m_MenuItemClickCallback)
-                g_Window->m_MenuItemClickCallback(wParam);
+            if (g_Platform->m_MenuItemClickCallback)
+                g_Platform->m_MenuItemClickCallback(wParam);
 
             return DefWindowProc(hWnd, Msg, wParam, lParam);
         }
@@ -496,7 +496,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     return 1;
 }
 
-void Window::Process(GameLoopCallback callback)
+void Platform::Process(GameLoopCallback callback)
 {
     ShowWindow(m_WindowHandle, SW_SHOW);
 
@@ -534,7 +534,7 @@ void Window::Process(GameLoopCallback callback)
     }
 }
 
-ATOM Window::RegisterWindowClass(UINT16 menuResId, UINT16 iconResId)
+ATOM Platform::RegisterWindowClass(UINT16 menuResId, UINT16 iconResId)
 {
     WNDCLASSA WndClass;
 
@@ -559,20 +559,20 @@ int CALLBACK MenuClickCallback(WPARAM wParam)
 {
     if (wParam == 40006) {
         // ID_EXIT
-        g_Window->m_QuitRequested = true;
+        g_Platform->m_QuitRequested = true;
 
         return NULL;
     }
 
-    ProcessDebugMenuOption(g_Window->m_WindowHandle, Window::WindowInstanceHandle, wParam);
+    ProcessDebugMenuOption(g_Platform->m_WindowHandle, Platform::WindowInstanceHandle, wParam);
 
     return 1;
 }
 #endif
 
-Window::Window(const char* wndClassName, int flags, UINT16 menuResId, char* fileSystem, UINT16 iconResId)
+Platform::Platform(const char* wndClassName, int flags, UINT16 menuResId, char* fileSystem, UINT16 iconResId)
 {
-    MESSAGE_CLASS_CREATED(Window);
+    MESSAGE_CLASS_CREATED(Platform);
 
     HKEY    phkResult;
     char    szDesktopPath[MAX_PATH];
@@ -603,9 +603,9 @@ Window::Window(const char* wndClassName, int flags, UINT16 menuResId, char* file
 
     m_Cursor = LoadCursor(NULL, IDC_ARROW);
 
-    SystemParametersInfo(SPI_GETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
-    SystemParametersInfo(SPI_GETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
-    SystemParametersInfo(SPI_GETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
+    SystemParametersInfo(SPI_GETSTICKYKEYS, sizeof(STICKYKEYS), &Platform::StickyKeysFeature, 0);
+    SystemParametersInfo(SPI_GETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Platform::ToggleKeysFeature, 0);
+    SystemParametersInfo(SPI_GETFILTERKEYS, sizeof(FILTERKEYS), &Platform::FilterKeysFeature, 0);
 
     SetAccessibilityFeatures(false);
 
@@ -616,38 +616,38 @@ Window::Window(const char* wndClassName, int flags, UINT16 menuResId, char* file
         IncompatibleMachineParameterError(ERRMSG_INSUFFICIENT_RAM, true);
 }
 
-Window::~Window()
+Platform::~Platform()
 {
-    MESSAGE_CLASS_DESTROYED(Window);
+    MESSAGE_CLASS_DESTROYED(Platform);
 
     if (m_WindowHandle)
         DestroyWindow(m_WindowHandle);
 
-    SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Window::StickyKeysFeature, 0);
-    SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Window::ToggleKeysFeature, 0);
-    SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Window::FilterKeysFeature, 0);
+    SystemParametersInfoA(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &Platform::StickyKeysFeature, 0);
+    SystemParametersInfoA(SPI_SETTOGGLEKEYS, sizeof(TOGGLEKEYS), &Platform::ToggleKeysFeature, 0);
+    SystemParametersInfoA(SPI_SETFILTERKEYS, sizeof(FILTERKEYS), &Platform::FilterKeysFeature, 0);
 }
 
-BOOL Window::SetWindowTitle(LPCSTR lpString)
+BOOL Platform::SetWindowTitle(LPCSTR lpString)
 {
     m_WindowTitle = lpString;
 
     return SetWindowText(m_WindowHandle, lpString);
 }
 
-void Window::SetDesktopDirectory(LPCSTR pDesktopPath)
+void Platform::SetDesktopDirectory(LPCSTR pDesktopPath)
 {
     m_UserDesktopPath = pDesktopPath;
 }
 
 void SetGlobalInstanceHandle(HINSTANCE inst)
 {
-    Window::WindowInstanceHandle = inst;
+    Platform::WindowInstanceHandle = inst;
 }
 
 void SetGlobalCmdLinePtr(LPSTR cmdl)
 {
-    Window::CmdLine = cmdl;
+    Platform::CmdLine = cmdl;
 }
 
 #ifdef _EXE
@@ -681,8 +681,8 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     Sleep(10);
     Timer::Calculate();
 
-    Window::WindowInstanceHandle = hInstance;
-    Window::CmdLine = lpCmdLine;
+    Platform::WindowInstanceHandle = hInstance;
+    Platform::CmdLine = lpCmdLine;
 
     char exefname[1024] = {};
     char exedir[1024] = {};
@@ -693,7 +693,7 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     GetModuleFileName(GetModuleHandle(nullptr), exefname, sizeof(exefname));
     String::ConvertBackslashes(exefname);
-    File::ExtractFilePath(exefname, exedir, fname, exeext);
+    FileBuffer::ExtractFilePath(exefname, exedir, fname, exeext);
 
     char exefullname[32] = {};
     strcpy_s(exefullname, fname);
@@ -718,7 +718,7 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 #endif
         }
 
-        FileWrapper::FindGameDir();
+        FileBufferImpl::FindGameDir();
         InitialiseGame(lpCmdLine);
     }
 
@@ -781,7 +781,7 @@ inline void PATCH_WINDOW()
 {
     void* dwFunc;
 
-    _asm mov  eax, offset Window::ProcessMessages
+    _asm mov  eax, offset Platform::ProcessMessages
     _asm mov  dwFunc, eax
     // Override ShouldProcessMessages function.
     hook(0x46F7FB, dwFunc, PATCH_NOTHING);
@@ -796,7 +796,7 @@ inline void PATCH_WINDOW()
     hook(0x475D4B, dwFunc, PATCH_NOTHING);
     hook(0x475F4B, dwFunc, PATCH_NOTHING);
 
-    _asm mov  eax, offset Window::QuitGame
+    _asm mov  eax, offset Platform::QuitGame
     _asm mov  dwFunc, eax
     // Override QuitGame function.
     hook(0x485666, dwFunc, PATCH_NOTHING);

@@ -99,7 +99,7 @@ void SoundFile::Open(const char* const filename)
     char dir[1024] = {};
     char fn[128] = {};
     char finalname[1152] = {};
-    File::ExtractFilePath(m_FileName.m_Str, dir, fn, nullptr);
+    FileBuffer::ExtractFilePath(m_FileName.m_Str, dir, fn, nullptr);
 
     strcpy(finalname, dir);
     strcat(finalname, fn);

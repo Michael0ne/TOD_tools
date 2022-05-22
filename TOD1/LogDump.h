@@ -17,4 +17,4 @@ public:
     static int  OldFrameNumber; // @A0833C
 };
 
-extern File* LogDumpFile; // @A35B84
+extern FileBuffer* LogDumpFile; // @A35B84
