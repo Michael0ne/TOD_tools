@@ -22,7 +22,7 @@ String& ColorType::PrintFormattedValue(String& outstr, void* val, int precision)
     return outstr;
 }
 
-void ColorType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void ColorType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
     ((IntegerType*)this)->CallGetterFunction(callerNode, getterPtr, a3, virtualMethodIndex, a5, outResult);
 }

@@ -1446,6 +1446,20 @@ void Scriptbaked::CalculateSize()
     }
 }
 
+bool Scriptbaked::GetMappedPropertyValue(const int* const nodeParameters, const int propertyId, int* outPropertyValue) const
+{
+    auto it = m_PropertiesValues.find(propertyId);
+    if (it == m_PropertiesValues.end())
+        return false;
+
+    const Property& scriptPropertyRef = m_PropertiesList[it->first];
+    size_t j = 0;
+    for (size_t i = scriptPropertyRef.m_Info->m_PropertyType->m_Size; i; --i)
+        outPropertyValue[j++] = nodeParameters[scriptPropertyRef.m_Offset + j++];
+
+    return true;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 bool Scriptbaked::_48A7E0(Node* node, int scriptId, void* args)
 {

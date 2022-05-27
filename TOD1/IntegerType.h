@@ -10,7 +10,7 @@ public:
     virtual void* ReturnNew(void*) const override; // @87AA10
     virtual String& PrintFormattedValue(String&, void*, int) const override; // @8643B0
     virtual int  MakeFromString(const char* const input, char* const outdata) const override; // @863F30
-    virtual void CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const override; // @489450
+    virtual void CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const override; // @489450
     virtual bool NotEqualTo(const void* const arg1, const void* const arg2) const override; // @863F50
     virtual void ParseOperationString(const char* const operation, int* outopid, DataType** outoprestype, char*) const override; // @863F70
     virtual void PerformOperation(int operationId, void* params) const override; // @864200

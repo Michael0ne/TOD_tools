@@ -8,7 +8,7 @@ public:
     virtual ~ColorType();
 
     virtual String& PrintFormattedValue(String&, void*, int) const override; // @867A50
-    virtual void CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const override;
+    virtual void CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const override;
     virtual void CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const override;
 
     void* operator new (size_t size)

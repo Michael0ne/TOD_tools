@@ -284,6 +284,7 @@ public:
     void                _86B560(const unsigned int propertyId, const void* data); //  @86B560
     Node*               FindNodeSlowRecursive(const char* const nodeName); //  @88DFF0
     void                StorePropertyData(const int propertyIndex, const int* const propertyValue, const DataType* propertyType);   //  @86A020
+    void                GetScriptEntityPropertyValue(const int propertyId, int* outPropertyValue) const;  //  @86A6A0
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

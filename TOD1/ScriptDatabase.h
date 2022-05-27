@@ -162,6 +162,7 @@ public:
     void                        AddProperty(Node* scriptNode, const unsigned int propertyIndex, const int* const propertyValue);    //  @489EA0
     void                        CalculateSize(); // @48AA60
 
+    bool                        GetMappedPropertyValue(const int* const nodeParameters, const int propertyId, int* outPropertyValue) const;   //  @48B6A0
     bool                        _48A7E0(Node* node, int scriptId, void* args); // @48A7E0
     void                        ClearEntityProperties(Entity* ent); //  @489C90
     EntityType*                 GetAttachedScript() const;  //  @489AE0

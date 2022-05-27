@@ -183,6 +183,11 @@ Node* Node::FindNodeSlowRecursive(const char* const nodeName)
     }
 }
 
+void Node::GetScriptEntityPropertyValue(const int propertyId, int* outPropertyValue) const
+{
+    m_ScriptEntity->GetPropertyValue(this, m_Parameters, propertyId, outPropertyValue);
+}
+
 void Node::FindNode_Impl(int* args)
 {
     *args = (int)FindNode((const char*)args[1]);

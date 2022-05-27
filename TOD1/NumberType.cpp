@@ -47,7 +47,7 @@ int NumberType::MakeFromString(const char* const input, char* const outdata) con
     return ParseFloatNumberString(input, (float*)outdata);
 }
 
-void NumberType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void NumberType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
     int result;
 

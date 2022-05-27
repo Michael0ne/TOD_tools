@@ -47,7 +47,7 @@ int IntegerType::MakeFromString(const char* const input, char* const outdata) co
     return ParseNumberString(input, (int*)outdata);
 }
 
-void IntegerType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void IntegerType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
     int result;
 

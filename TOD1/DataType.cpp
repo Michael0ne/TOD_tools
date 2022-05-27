@@ -141,7 +141,7 @@ int DataType::MakeFromString_A(const char* const inputstr, char* outtype, int* c
     return result;
 }
 
-void DataType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void DataType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
     return;
 }

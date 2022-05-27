@@ -75,7 +75,7 @@ int VectorType::MakeFromString(const char* const input, char* const outdata) con
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void VectorType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void VectorType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
 }
 

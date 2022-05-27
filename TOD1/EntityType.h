@@ -96,6 +96,7 @@ public:
         RegisterProperty(returntype, propertyname, getterptr, NULL, NULL, NULL, setterptr, NULL, NULL, NULL, editorcontrolstring, NULL, NULL, propertyind);
     }
 
+    void                GetPropertyValue(const Node* callerNode, int* nodeParameters, const int propertyId, int* outPropertyValue) const; //  @86C020
     void                PropagateProperties(); // @86E9B0
     bool                HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
     DataType*           PropertyByIndex(const int index) const; //  @86CCB0

@@ -83,7 +83,7 @@ int QuaternionType::MakeFromString(const char* const input, char* const outdata)
     return digitsread + digitsread_2 + digitsread_3 + digitsread_4;
 }
 
-void QuaternionType::CallGetterFunction(Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void QuaternionType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
 {
     float* result;
 

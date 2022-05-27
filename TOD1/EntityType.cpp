@@ -108,6 +108,60 @@ void EntityType::RegisterProperty(DataType* returntype, const char* const proper
     }
 }
 
+void EntityType::GetPropertyValue(const Node* callerNode, int* nodeParameters, const int propertyId, int* outPropertyValue) const
+{
+    *outPropertyValue = 0;
+
+    if (!m_Script || !m_Script->GetMappedPropertyValue(nodeParameters, propertyId, outPropertyValue))
+    {
+        std::map<unsigned short, unsigned short>::const_iterator it;
+        if (m_IsBaseEntity)
+            it = m_Parent->m_PropertiesMappings.find(propertyId);
+        else
+            it = m_PropertiesMappings.find(propertyId);
+
+        EntityType* ent = (EntityType*)this;
+        unsigned short mappedPropertyId = it->first;
+
+        if (mappedPropertyId)
+        {
+            int propertiesSize;
+            std::vector<PropertyInfo>* propertiesList;
+
+            if (mappedPropertyId >= 0)
+            {
+                if (mappedPropertyId < m_TotalLocalProperties)
+                {
+                    do
+                    {
+                        ent = ent->m_Parent;
+                    } while (mappedPropertyId < ent->m_TotalLocalProperties);
+                }
+
+                propertiesSize = ent->m_TotalLocalProperties;
+                propertiesList = &ent->m_LocalPropertiesList;
+            }
+            else
+            {
+                mappedPropertyId = -mappedPropertyId;
+                if (mappedPropertyId < m_TotalGlobalProperties)
+                {
+                    do
+                    {
+                        ent = ent->m_Parent;
+                    } while (mappedPropertyId < ent->m_TotalGlobalProperties);
+                }
+
+                propertiesSize = ent->m_TotalGlobalProperties;
+                propertiesList = &ent->m_GlobalPropertiesList;
+            }
+
+            PropertyInfo& propertyElement = (*propertiesList)[mappedPropertyId - propertiesSize];
+            propertyElement.m_ReturnType->CallGetterFunction(callerNode, propertyElement.m_GetterPtr, propertyElement.field_C, propertyElement.field_10, propertyElement.field_14, outPropertyValue);
+        }
+    }
+}
+
 void EntityType::PropagateProperties()
 {
     if (!m_Parent ||
