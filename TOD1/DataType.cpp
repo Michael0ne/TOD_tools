@@ -244,6 +244,11 @@ unsigned int DataType::GetTypeSize_Impl(const DataType* type)
     }
 }
 
+DataType* DataType::GetByIndex(const size_t index)
+{
+    return TypesList[index];
+}
+
 int DataType::ParseFloatNumberString(const char* const numberstr, float* const outval)
 {
     bool negativenum = false;

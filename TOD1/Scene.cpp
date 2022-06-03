@@ -814,7 +814,7 @@ void Scene::Load(const char* sceneName)
         LogDump::LogA("asset block before: %0.1f Kb\n", mainAssetAllocMem * 0.0009765625f);
 
         //if (strcmp(MemoryManager::AllocatorsList[Asset::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
-         //((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->_47A120();
+         //((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->MakeNew();
 
         LoadingAssetBlock = true;
         //Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = false;
@@ -835,7 +835,7 @@ void Scene::Load(const char* sceneName)
     _A3D858 = 1;
 
     //if (strcmp(MemoryManager::AllocatorsList[Asset::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
-      //((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->_47A120();
+      //((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->MakeNew();
 
     UINT64 fragmentloadstarttime = __rdtsc();
     g_AssetManager->_878030();

@@ -2,184 +2,143 @@
 
 SystemSubAllocator::SystemSubAllocator()
 {
-	MESSAGE_CLASS_CREATED(SystemSubAllocator);
+    MESSAGE_CLASS_CREATED(SystemSubAllocator);
 
-	m_AllocationsTotal = NULL;
+    AllocationsTotal = NULL;
 }
 
-void* SystemSubAllocator::Allocate_A(size_t size, int filler, int unk)
+void* SystemSubAllocator::Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
-#ifdef VERBOSELOG
-	LogDump::LogA("Allocate %d bytes!\n", size);
-#endif
+    ++AllocationsTotal;
 
-	++m_AllocationsTotal;
+    if (ProfilerEnabled)
+        stub9();
 
-	if (m_ProfilerEnabled)
-		stub9();
-
-#ifdef INCLUDE_FIXES
-	void* space = malloc(size);
-	if (!space)
-		return nullptr;
-	memset(space, filler, size);
-	return space;
-#endif
-
-	return malloc(size);
+    return malloc(size);
 }
 
-void* SystemSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int)
+void* SystemSubAllocator::AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber)
 {
-#ifdef VERBOSELOG
-	LogDump::LogA("Allocate %d bytes aligned %d!\n", size, alignment);
+    ++AllocationsTotal;
+
+    if (ProfilerEnabled)
+        stub9();
+
+    if (alignment > 1)
+#ifdef _DEBUG
+        return _aligned_malloc(size, alignment);
+#else
+        return _aligned_offset_malloc_dbg(size, alignment, fileName);
 #endif
-
-	++m_AllocationsTotal;
-
-	if (m_ProfilerEnabled)
-		stub9();
-
-#ifdef INCLUDE_FIXES
-	void* space = alignment > 1 ? _aligned_offset_malloc(size, alignment, NULL) : malloc(size);
-	if (!space)
-		return nullptr;
-	memset(space, filler, size);
-	return space;
-#endif
-
-	if (alignment > 1)
-		return _aligned_offset_malloc(size, alignment, NULL);
-	else
-		return malloc(size);
+    else
+        return malloc(size);
 }
 
 void SystemSubAllocator::Free(void* ptr)
 {
-#ifdef VERBOSELOG
-	LogDump::LogA("Freeing %x!\n", ptr);
-#endif
+    if (!ptr)
+        return;
 
-	if (!ptr)
-		return;
-
-	--m_AllocationsTotal;
-	free(ptr);
+    --AllocationsTotal;
+    free(ptr);
 }
 
 void SystemSubAllocator::FreeAligned(void* ptr)
 {
-#ifdef VERBOSELOG
-	LogDump::LogA("Freeing aligned %x!\n", ptr);
-#endif
+    if (!ptr)
+        return;
 
-	if (!ptr)
-		return;
-
-	--m_AllocationsTotal;
-	_aligned_free(ptr);
+    --AllocationsTotal;
+    _aligned_free(ptr);
 }
 
-void* SystemSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
+void* SystemSubAllocator::Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber)
 {
-#ifdef VERBOSELOG
-	LogDump::LogA("Reallocation %x with new size %d\n", oldptr, newsize);
-#endif
+    if (oldptr)
+    {
+        if (ProfilerEnabled)
+            stub9();
 
-	if (oldptr)
-	{
-		if (m_ProfilerEnabled)
-			stub9();
+        if (newsize)
+            return realloc(oldptr, newsize);
 
-		if (newsize)
-			// TODO: only fill new space if filler argument isn't null?
-			return realloc(oldptr, newsize);
+        free(oldptr);
+        --AllocationsTotal;
 
-		free(oldptr);
-		--m_AllocationsTotal;
+        return nullptr;
+    }
+    else
+    {
+        ++AllocationsTotal;
 
-		return nullptr;
-	}
-	else
-	{
-		++m_AllocationsTotal;
+        if (ProfilerEnabled)
+            stub9();
 
-		if (m_ProfilerEnabled)
-			stub9();
-
-#ifdef INCLUDE_FIXES
-		void* space = malloc(newsize);
-		if (!space)
-			return nullptr;
-		memset(space, filler, newsize);
-		return space;
-#endif
-
-		return malloc(newsize);
-	}
+        return malloc(newsize);
+    }
 }
 
 int SystemSubAllocator::stub8(int* unk)
 {
-	return NULL;
+    return NULL;
 }
 
 void SystemSubAllocator::stub9()
 {
-	return;
+    return;
 }
 
 void SystemSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size)
 {
-	return;
+    return;
 }
 
 const int SystemSubAllocator::GetAllocatedSpaceSize() const
 {
-	MEMORYSTATUS memoryStatus;
-	GlobalMemoryStatus(&memoryStatus);
+    MEMORYSTATUSEX memoryStatus;
+    GlobalMemoryStatusEx(&memoryStatus);
 
-	return memoryStatus.dwTotalPhys;
+    return (int)memoryStatus.ullAvailPhys;
 }
 
 const int SystemSubAllocator::GetTotalAllocations() const
 {
-	MEMORYSTATUS memoryStatus;
-	GlobalMemoryStatus(&memoryStatus);
+    MEMORYSTATUSEX memoryStatus;
+    GlobalMemoryStatusEx(&memoryStatus);
 
-	return memoryStatus.dwMemoryLoad * (memoryStatus.dwTotalPhys / 100);
+    return memoryStatus.dwMemoryLoad * (memoryStatus.ullAvailPhys / 100UL);
 }
 
 const char* const SystemSubAllocator::GetAllocatorName() const
 {
-	return "SystemSubAllocator";
+    return "SystemSubAllocator";
 }
 
 const int SystemSubAllocator::stub19() const
 {
-	return m_AllocationsTotal;
+    return AllocationsTotal;
 }
 
 const int SystemSubAllocator::stub20() const
 {
-	return -1;
+    return -1;
 }
 
 const int SystemSubAllocator::stub21() const
 {
-	return -1;
+    return -1;
 }
 
 const int SystemSubAllocator::GetAvailableMemory() const
 {
-	MEMORYSTATUS memoryStatus;
-	GlobalMemoryStatus(&memoryStatus);
+    MEMORYSTATUSEX memoryStatus;
+    GlobalMemoryStatusEx(&memoryStatus);
 
-	return memoryStatus.dwAvailPhys;
+    return (int)memoryStatus.ullAvailPhys;
 }
 
 int SystemSubAllocator::stub35()
 {
-	// TODO: original code doesn't put anything to EAX. Is return type correct?
-	return NULL;
+    // TODO: original code doesn't put anything to EAX. Is return type correct?
+    return NULL;
 }

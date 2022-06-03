@@ -4,29 +4,29 @@ SingletonSubAllocator::SingletonSubAllocator()
 {
     MESSAGE_CLASS_CREATED(SingletonSubAllocator);
 
-    m_Instantiated = false;
-    m_InstancePtr = nullptr;
+    Created = false;
+    DataPtr = nullptr;
 }
 
-void* SingletonSubAllocator::Allocate_A(size_t size, int filler, int unk)
+void* SingletonSubAllocator::Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
-    if (size > m_AllocatedSpaceSize)
+    if (size > AllocatedSpaceSize)
         return nullptr;
 
-    m_InstancePtr = m_AllocatedSpacePtr;
-    m_Instantiated = true;
+    DataPtr = AllocatedSpacePtr;
+    Created = true;
 
-    return m_InstancePtr;
+    return DataPtr;
 }
 
-void* SingletonSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
+void* SingletonSubAllocator::AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber)
 {
-    void* alignedspaceptr = (void*)(~(alignment - 1) & (int)((char*)m_AllocatedSpacePtr + alignment - 1));
+    void* alignedspaceptr = (void*)(~(alignment - 1) & (int)((char*)AllocatedSpacePtr + alignment - 1));
 
-    m_InstancePtr = alignedspaceptr;
-    m_Instantiated = true;
+    DataPtr = alignedspaceptr;
+    Created = true;
 
-    if (size > (size_t)((char*)m_AllocatedSpacePtr + m_AllocatedSpaceSize - (char*)alignedspaceptr))
+    if (size > (size_t)((char*)AllocatedSpacePtr + AllocatedSpaceSize - (char*)alignedspaceptr))
         return nullptr;
     else
         return alignedspaceptr;
@@ -34,32 +34,32 @@ void* SingletonSubAllocator::AllocateAligned(size_t size, size_t alignment, int 
 
 void SingletonSubAllocator::Free(void* ptr)
 {
-    m_Instantiated = false;
-    m_InstancePtr = nullptr;
+    Created = false;
+    DataPtr = nullptr;
 }
 
 void SingletonSubAllocator::FreeAligned(void* ptr)
 {
-    m_Instantiated = false;
-    m_InstancePtr = nullptr;
+    Created = false;
+    DataPtr = nullptr;
 }
 
-void* SingletonSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
+void* SingletonSubAllocator::Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber)
 {
-    if (newsize <= (size_t)(m_AllocatedSpaceSize + (char*)m_AllocatedSpacePtr - (char*)m_InstancePtr))
+    if (newsize <= (size_t)(AllocatedSpaceSize + (char*)AllocatedSpacePtr - (char*)DataPtr))
         return oldptr;
 
-    if (newsize > m_AllocatedSpaceSize)
+    if (newsize > AllocatedSpaceSize)
         return nullptr;
 
-    m_InstancePtr = m_AllocatedSpacePtr;
+    DataPtr = AllocatedSpacePtr;
 
-    return m_InstancePtr;
+    return DataPtr;
 }
 
 int SingletonSubAllocator::stub8(int* unk)
 {
-    return m_AllocatedSpaceSize;
+    return AllocatedSpaceSize;
 }
 
 void SingletonSubAllocator::stub9()
@@ -69,7 +69,7 @@ void SingletonSubAllocator::stub9()
 
 const int SingletonSubAllocator::GetTotalAllocations() const
 {
-    return m_Instantiated ? m_AllocatedSpaceSize : NULL;
+    return Created ? AllocatedSpaceSize : NULL;
 }
 
 const char* const SingletonSubAllocator::GetAllocatorName() const
@@ -79,20 +79,20 @@ const char* const SingletonSubAllocator::GetAllocatorName() const
 
 const int SingletonSubAllocator::stub19() const
 {
-    return m_Instantiated;
+    return Created;
 }
 
 const int SingletonSubAllocator::stub20() const
 {
-    return !m_Instantiated;
+    return !Created;
 }
 
 const int SingletonSubAllocator::stub21() const
 {
-    return m_Instantiated ? NULL : m_AllocatedSpaceSize;
+    return Created ? NULL : AllocatedSpaceSize;
 }
 
 const int SingletonSubAllocator::GetAvailableMemory() const
 {
-    return m_Instantiated ? NULL : m_AllocatedSpaceSize;
+    return Created ? NULL : AllocatedSpaceSize;
 }

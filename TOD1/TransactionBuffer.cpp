@@ -8,7 +8,7 @@ TransactionBuffer::TransactionBuffer(unsigned int bufferSize)
     MESSAGE_CLASS_CREATED(TransactionBuffer);
 
     m_Chunks = bufferSize / 4;
-    m_Buffer = (int*)MemoryManager::AllocatorsList[MemoryManager::GetAllocatorByMemoryPointer(this)->m_AllocatorIndex]->Allocate(bufferSize, NULL, NULL);
+    m_Buffer = (int*)MemoryManager::AllocatorsList[MemoryManager::GetAllocatorByMemoryPointer(this)->AllocatorIndex]->Allocate(bufferSize, NULL, NULL);
     m_ReadCompressedBufferData = nullptr;
     m_Size = 0;
     field_20 = 0;
@@ -20,7 +20,7 @@ TransactionBuffer::~TransactionBuffer()
 {
     MESSAGE_CLASS_DESTROYED(TransactionBuffer);
 
-    MemoryManager::AllocatorsList[MemoryManager::GetAllocatorByMemoryPointer(this)->m_AllocatorIndex]->Free(m_Buffer);
+    MemoryManager::AllocatorsList[MemoryManager::GetAllocatorByMemoryPointer(this)->AllocatorIndex]->Free(m_Buffer);
 }
 
 void TransactionBuffer::_8AA1F0(int** a1)

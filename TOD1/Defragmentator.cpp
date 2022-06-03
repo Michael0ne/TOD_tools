@@ -55,7 +55,7 @@ DefragmentatorBase::DefragmentatorBase(BestFitAllocator* allocator, char a2, int
     m_Allocator = allocator;
     m_AllocatedSpace = new Defragmentator_Space[size];
     field_20 = a2;
-    allocator->m_Defragmentator = this;
+    allocator->Defragmentator = this;
     m_DefaultSelectedAllocator = allocator;
 }
 
@@ -96,7 +96,7 @@ int DefragmentatorBase::Allocate(int size, int a2, int a3, int a4, int alignment
     if (MemoryManager::Released)
         return NULL;
 
-    void* space = alignment ? MemoryManager::AllocatorsList[m_Allocator->m_AllocatorIndex]->AllocateAligned(size, alignment, NULL, NULL) : MemoryManager::AllocatorsList[m_Allocator->m_AllocatorIndex]->Allocate_A(size, NULL, NULL);
+    void* space = alignment ? MemoryManager::AllocatorsList[m_Allocator->AllocatorIndex]->AllocateAligned(size, alignment, NULL, NULL) : MemoryManager::AllocatorsList[m_Allocator->AllocatorIndex]->Allocate_A(size, NULL, NULL);
     if (!space)
         return NULL;
 
@@ -122,7 +122,7 @@ int DefragmentatorBase::Reallocate(int chunkind, int a2, const char* const a3, i
         if (MemoryManager::Released)
             space = nullptr;
         else
-            space = MemoryManager::AllocatorsList[m_Allocator->m_AllocatorIndex]->Allocate_A(size, NULL, NULL);
+            space = MemoryManager::AllocatorsList[m_Allocator->AllocatorIndex]->Allocate_A(size, NULL, NULL);
 
     if (space)
     {

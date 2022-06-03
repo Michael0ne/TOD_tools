@@ -37,13 +37,13 @@ private:
 public:
     BestFitAllocator(); // @478740
 
-    virtual void*   Allocate_A(size_t size, int filler, int unk) override; // @478800
-    virtual void*   AllocateAligned(size_t size, size_t alignment, int filler, int unk) override; // @478820
+    virtual void*   Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber) override; // @478800
+    virtual void*   AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber) override; // @478820
 
     virtual void    Free(void* ptr) override; // @479210
     virtual void    FreeAligned(void* ptr) override; // @4788E0
 
-    virtual void*   Realloc(void* oldptr, size_t newsize, int filler, int unk) override; // @4795C0
+    virtual void*   Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber) override; // @4795C0
     virtual int     stub8(int* unk) override; // @478AA0
     virtual void    stub9();
     virtual void    CallMethodAtOffset20() override; // @478A90
@@ -55,8 +55,8 @@ public:
     virtual const int   stub21() const override; // @478AE0
     virtual const int   GetAvailableMemory() const override; // @478B90
     virtual void    Dump() const override; // @478BE0
-    virtual int     stub24(int, int, int, int) override; // @478C90
-    virtual int     stub25(int, int, int, int, int) override; // @479350
+    virtual int     stub24(int, int, const char* const fileName, const unsigned int fileLineNumber) override; // @478C90
+    virtual int     stub25(int, int, const char* const fileName, const unsigned int fileLineNumber, int alignment) override; // @479350
     virtual int* stub26() const override; // @478CF0
     virtual const int   stub27() const override; // @478D00
     virtual int     stub28(int*) const override; // @478D10

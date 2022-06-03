@@ -4,56 +4,63 @@
 FrameBasedSubAllocator::FrameBasedSubAllocator()
 {
     MESSAGE_CLASS_CREATED(FrameBasedSubAllocator);
-
-    m_AllocSpaceInfo = nullptr;
 }
 
-void* FrameBasedSubAllocator::Allocate_A(size_t size, int filler, int unk)
+void* FrameBasedSubAllocator::Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
-    return AllocateAligned(size, 8, filler, unk);
+    return AllocateAligned(size, 8, fileName, fileLineNumber);
 }
 
-void* FrameBasedSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
+void* FrameBasedSubAllocator::AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber)
 {
-    if (m_AllocSpaceInfo->m_RegionPtr == m_RegionBegin)
-        m_AllocSpaceInfo->m_RegionPtr += _47A4A0(alignment) - (int)m_RegionBegin;
+    if (ObjectSpace->DataPtr == RegionBegin)
+        ObjectSpace->DataPtr += GetNextAlignedAddress(alignment) - (uint32_t)RegionBegin;
 
-    void* space = SequentialSubAllocator::AllocateAligned(size, alignment, filler, unk);
+    void* result = SequentialSubAllocator::AllocateAligned(size, alignment, fileName, fileLineNumber);
+    if (result)
+        ObjectSpace->field_0++;
 
-    if (space)
-        ++m_AllocSpaceInfo->field_0;
-
-    return space;
+    return result;
 }
 
 void FrameBasedSubAllocator::Free(void* ptr)
 {
-    if (ptr >= m_AllocSpaceInfo->m_RegionPtr)
+    if ((uint8_t*)ptr >= ObjectSpace->DataPtr)
     {
-        --m_AllocSpaceInfo->field_0;
+        ObjectSpace->field_0--;
         SequentialSubAllocator::Free(ptr);
 
         return;
     }
 
-    AllocatorRegionInfo* allocregion = m_AllocSpaceInfo;
+    if (!ObjectSpace)
+    {
+        ObjectSpace->field_0--;
+        SequentialSubAllocator::Free(ptr);
+
+        return;
+    }
+
+    SpaceInfo* objectSpace = ObjectSpace;
     while (true)
     {
-        if (ptr < allocregion->m_RegionPtr && allocregion->m_PreviousRegionPtr && ptr >= allocregion->m_PreviousRegionPtr->m_RegionPtr)
-            break;
+        if ((uint8_t*)ptr < objectSpace->DataPtr &&
+            objectSpace->PreviousElement &&
+            (uint8_t*)ptr >= objectSpace->PreviousElement->DataPtr)
+                break;
 
-        allocregion = allocregion->m_PreviousRegionPtr;
-        if (!allocregion)
+        objectSpace = objectSpace->PreviousElement;
+        if (!objectSpace)
         {
-            allocregion = nullptr; // TODO: wtf?
-            --allocregion->field_0;
-
+            objectSpace = nullptr;
+            objectSpace->field_0--;
             SequentialSubAllocator::Free(ptr);
+
             return;
         }
     }
 
-    --allocregion->m_PreviousRegionPtr->field_0;
+    objectSpace->PreviousElement->field_0--;
     SequentialSubAllocator::Free(ptr);
 }
 
@@ -62,9 +69,9 @@ void FrameBasedSubAllocator::FreeAligned(void* ptr)
     Free(ptr);
 }
 
-void* FrameBasedSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
+void* FrameBasedSubAllocator::Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber)
 {
-    return SequentialSubAllocator::Realloc(oldptr, newsize, filler, unk);
+    return SequentialSubAllocator::Realloc(oldptr, newsize, fileName, fileLineNumber);
 }
 
 int FrameBasedSubAllocator::stub8(int* unk)
@@ -80,9 +87,10 @@ void FrameBasedSubAllocator::stub9()
 void FrameBasedSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size)
 {
     SequentialSubAllocator::SetNameAndAllocatedSpaceParams(bufferptr, name, size);
-    m_AllocSpaceInfo->field_0 = NULL;
-    m_AllocSpaceInfo->m_PreviousRegionPtr = nullptr;
-    m_AllocSpaceInfo->m_RegionPtr = m_RegionBegin;
+
+    ObjectSpace->field_0 = NULL;
+    ObjectSpace->PreviousElement = nullptr;
+    ObjectSpace->DataPtr = RegionBegin;
 }
 
 const char* const FrameBasedSubAllocator::GetAllocatorName() const
@@ -92,7 +100,7 @@ const char* const FrameBasedSubAllocator::GetAllocatorName() const
 
 const int FrameBasedSubAllocator::stub21() const
 {
-    return m_ValidRegionEnd - m_RegionBegin;
+    return ValidRegionEnd - RegionBegin;
 }
 
 const int FrameBasedSubAllocator::GetAvailableMemory() const
@@ -102,55 +110,55 @@ const int FrameBasedSubAllocator::GetAvailableMemory() const
 
 int FrameBasedSubAllocator::stub35()
 {
-    if (m_AllocSpaceInfo)
+    SpaceInfo* objectSpace = ObjectSpace;
+    if (objectSpace)
     {
-        AllocatorRegionInfo* allocspaceinfo = m_AllocSpaceInfo;
         while (true)
         {
-            AllocatorRegionInfo* prevregion = allocspaceinfo->m_PreviousRegionPtr;
-            if (!prevregion)
+            if (!objectSpace->PreviousElement)
                 break;
-            Free(allocspaceinfo);
-            allocspaceinfo = prevregion;
+
+            Free(objectSpace);
+            objectSpace = objectSpace->PreviousElement;
         }
     }
 
     SequentialSubAllocator::stub35();
-    m_AllocSpaceInfo->field_0 = NULL;
-    m_AllocSpaceInfo->m_PreviousRegionPtr = nullptr;
-    m_AllocSpaceInfo->m_RegionPtr = m_RegionBegin;
 
-    return NULL;
+    ObjectSpace->field_0 = NULL;
+    ObjectSpace->PreviousElement = nullptr;
+    ObjectSpace->DataPtr = RegionBegin;
+
+    return (int)RegionBegin;
 }
 
 void FrameBasedSubAllocator::stub36()
 {
-    *(char**)&m_AllocSpaceInfo = m_RegionBegin;
-    m_RegionBegin += 48;
-    m_RegionBegin_1 = m_RegionBegin;
+    ObjectSpace = (SpaceInfo*)RegionBegin;
+
+    RegionBegin += 48;
+    RegionBegin_1 = RegionBegin;
 }
 
-void FrameBasedSubAllocator::_47A120()
+void FrameBasedSubAllocator::MakeNew()
 {
-    AllocatorRegionInfo* allocatedspace = (AllocatorRegionInfo*)Allocate_A(sizeof(AllocatorRegionInfo), NULL, NULL);
+    SpaceInfo* newElement = (SpaceInfo*)Allocate_A(sizeof(SpaceInfo), __FILE__, __LINE__);
+    newElement->field_0 = NULL;
+    newElement->DataPtr = RegionBegin;
+    newElement->PreviousElement = ObjectSpace;
 
-    allocatedspace->field_0 = NULL;
-    allocatedspace->m_RegionPtr = m_RegionBegin;
-    allocatedspace->m_PreviousRegionPtr = m_AllocSpaceInfo;
-
-    m_AllocSpaceInfo = allocatedspace;
+    ObjectSpace = newElement;
 }
 
-void FrameBasedSubAllocator::_47A0E0()
+void FrameBasedSubAllocator::RemoveLast()
 {
-    if (m_AllocSpaceInfo->field_0)
+    if (ObjectSpace->field_0)
         LogDump::LogA("Log output only enabled in debug builds.\n");
 
-    auto allocspaceinfo = m_AllocSpaceInfo;
-    m_AllocSpaceInfo = m_AllocSpaceInfo->m_PreviousRegionPtr;
+    SpaceInfo* currentObject = ObjectSpace;
+    ObjectSpace = ObjectSpace->PreviousElement;
+    Free(currentObject);
 
-    Free(allocspaceinfo);
-
-    if (m_RegionBegin != m_RegionBegin_1)
-        m_RegionBegin = allocspaceinfo->m_RegionPtr;
+    if (RegionBegin != RegionBegin_1)
+        RegionBegin = currentObject->DataPtr;
 }

@@ -5,26 +5,26 @@ class StackBasedSubAllocator : public Allocator
 {
     struct StackElement
     {
-        StackElement* m_PreviousElement;
-        StackElement* m_NextElement;
-        void* m_ActualSpacePtr;
+        StackElement   *Previous;
+        StackElement   *Next;
+        uint8_t        *DataPtr;
     };
 
 protected:
-    StackElement* m_StackSpace;
-    StackElement* m_StackSpace_1;
-    void* m_StackEndPtr;
-    int       m_ElementsInStack;
-    int       field_34;
+    StackElement   *Stack;
+    StackElement   *StackCopy;
+    uint8_t        *StackDataEndPtr;
+    uint32_t        ElementsInStack;
+    uint32_t        field_34;
 
 public:
     StackBasedSubAllocator(); // @47A820
 
-    virtual void* Allocate_A(size_t size, int filler, int unk) override; // @47A9D0
-    virtual void* AllocateAligned(size_t size, size_t alignment, int filler, int unk) override; // @47A930
+    virtual void*   Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber) override; // @47A9D0
+    virtual void*   AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber) override; // @47A930
     virtual void    Free(void* ptr) override; // @47A9F0
     virtual void    FreeAligned(void* ptr) override; // @47AA10
-    virtual void* Realloc(void* oldptr, size_t newsize, int filler, int unk) override; // @47AA20
+    virtual void*   Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber) override; // @47AA20
     virtual int     stub8(int* unk) override; // @47AAA0
     virtual void    stub9() override; // @47AAC0
     virtual void    SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size) override; // @47A890

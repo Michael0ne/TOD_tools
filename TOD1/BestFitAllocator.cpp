@@ -42,13 +42,13 @@ BestFitAllocator::BestFitAllocator()
     MinimumSize = 16;
 }
 
-void* BestFitAllocator::Allocate_A(size_t size, int filler, int unk)
+void* BestFitAllocator::Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
-    return AllocateAligned(size, 8, filler, unk);
+    return AllocateAligned(size, 8, fileName, fileLineNumber);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void* BestFitAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
+void* BestFitAllocator::AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber)
 {
     stub9();
 
@@ -84,7 +84,7 @@ void* BestFitAllocator::AllocateAligned(size_t size, size_t alignment, int fille
 
     while (true)
     {
-        al2 = (int*)stub25((int)al, (size + 3) & 0xFFFFFFFC, filler, unk, alignment);
+        al2 = (int*)stub25((int)al, (size + 3) & 0xFFFFFFFC, fileName, fileLineNumber, alignment);
         if (al2)
             break;
 
@@ -116,7 +116,7 @@ void BestFitAllocator::FreeAligned(void* ptr)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void* BestFitAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
+void* BestFitAllocator::Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber)
 {
     return nullptr;
 }
@@ -127,7 +127,7 @@ int BestFitAllocator::stub8(int* unk)
         return (int)unk;
 
     if ((int*)(unk - 2) <= unk - 2)
-        return ((int*)((char*)m_AllocatedSpacePtr + m_AllocatedSpaceSize) - unk);
+        return ((int*)((char*)AllocatedSpacePtr + AllocatedSpaceSize) - unk);
     else
         return ((int*)(unk - 2) - unk);
 }
@@ -146,7 +146,7 @@ void BestFitAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const cha
 {
     Allocator::SetNameAndAllocatedSpaceParams(bufferptr, name, size);
 
-    int* uninitspaceptr = (int*)((char*)((int)((char*)m_AllocatedSpacePtr + 15) & 0xFFFFFFF8) - 8); // NOTE: this is obnoxious.
+    int* uninitspaceptr = (int*)((char*)((int)((char*)AllocatedSpacePtr + 15) & 0xFFFFFFF8) - 8); // NOTE: this is obnoxious.
     *uninitspaceptr = (int)uninitspaceptr;
     uninitspaceptr[1] = ((int)uninitspaceptr >> 2) & 0x3FFFFFFF | 0x80000000;
     uninitspaceptr[2] = NULL;
@@ -154,7 +154,7 @@ void BestFitAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const cha
     uninitspaceptr[4] = NULL;
     uninitspaceptr[5] = NULL;
 
-    int v = _479780((int*)((char*)m_AllocatedSpacePtr + m_AllocatedSpaceSize - (char*)uninitspaceptr - 8));
+    int v = _479780((int*)((char*)AllocatedSpacePtr + AllocatedSpaceSize - (char*)uninitspaceptr - 8));
     field_24[v].field_0 = uninitspaceptr;
     field_24[v].field_8 = 1;
 
@@ -204,20 +204,20 @@ void BestFitAllocator::Dump() const
     int* cont = m_Contents;
     for (int i = 0; i < (field_11C + field_120); ++i)
     {
-        LogDump::LogA("%d\t: %x\t : %s\t : %d\n", i, m_Contents, cont[1] & 0x40000000 ? "used" : "free", (int*)*cont <= cont ? ((char*)m_AllocatedSpacePtr + m_AllocatedSpaceSize - (char*)cont - 8) : ((char*)*cont - (char*)cont - 8));
+        LogDump::LogA("%d\t: %x\t : %s\t : %d\n", i, m_Contents, cont[1] & 0x40000000 ? "used" : "free", (int*)*cont <= cont ? ((char*)AllocatedSpacePtr + AllocatedSpaceSize - (char*)cont - 8) : ((char*)*cont - (char*)cont - 8));
         cont = (int*)*cont;
     }
 
     LogDump::LogA("-----------------------------\n");
 }
 
-int BestFitAllocator::stub24(int a1, int a2, int a3, int a4)
+int BestFitAllocator::stub24(int a1, int a2, const char* const fileName, const unsigned int fileLineNumber)
 {
-    return stub25(a1, a2, a3, a4, 8);
+    return stub25(a1, a2, fileName, fileLineNumber, 8);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int BestFitAllocator::stub25(int, int, int, int, int)
+int BestFitAllocator::stub25(int, int, const char* const fileName, const unsigned int fileLineNumber, int alignment)
 {
     return NULL;
 }

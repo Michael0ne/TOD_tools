@@ -122,7 +122,7 @@ void Folder_::UnloadBlocks()
                 if (!loadednode)
                 {
                     if (!strcmp(framealloc->GetAllocatorName(), "FrameBasedSubAllocator"))
-                        framealloc->_47A0E0();
+                        framealloc->RemoveLast();
 
                     return;
                 }
@@ -133,7 +133,7 @@ void Folder_::UnloadBlocks()
     }
 
     if (!strcmp(framealloc->GetAllocatorName(), "FrameBasedSubAllocator"))
-        framealloc->_47A0E0();
+        framealloc->RemoveLast();
 }
 
 const int Folder_::GetBlockId() const

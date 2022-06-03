@@ -1,136 +1,142 @@
 #include "SequentialSubAllocator.h"
 
-int SequentialSubAllocator::_47A4A0(int a1)
+uint32_t SequentialSubAllocator::GetNextAlignedAddress(const uint32_t alignment)
 {
-	return (~(a1 - 1) & (field_3C + (int)m_RegionBegin + a1 - 1)) - field_3C;
+    return (~(alignment - 1) & (uint32_t)&RegionBegin[ObjectSize - 1 + alignment]) - ObjectSize;
 }
 
 SequentialSubAllocator::SequentialSubAllocator()
 {
-	MESSAGE_CLASS_CREATED(SequentialSubAllocator);
+    MESSAGE_CLASS_CREATED(SequentialSubAllocator);
 
-	m_RegionBegin = nullptr;
-	m_RegionBegin_1 = nullptr;
-	field_24 = NULL;
-	m_AllocationsTotal = NULL;
-	m_ValidRegionEnd = nullptr;
-	field_38 = NULL;
-	field_3C = NULL;
+    RegionBegin = nullptr;
+    RegionBegin_1 = nullptr;
+    field_24 = NULL;
+    AllocationsTotal = NULL;
+    ValidRegionEnd = nullptr;
+    field_38 = NULL;
+    ObjectSize = NULL;
 }
 
-void* SequentialSubAllocator::Allocate(size_t size, int filler, int unk)
+void* SequentialSubAllocator::Allocate(size_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
-	return AllocateAligned(size, 4, filler, unk);
+    return AllocateAligned(size, 4, fileName, fileLineNumber);
 }
 
-void* SequentialSubAllocator::Allocate_A(size_t size, int filler, int unk)
+void* SequentialSubAllocator::Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
-	return AllocateAligned(size, 8, filler, unk);
+    return AllocateAligned(size, 8, fileName, fileLineNumber);
 }
 
-void* SequentialSubAllocator::AllocateAligned(size_t size, size_t alignment, int filler, int unk)
+void* SequentialSubAllocator::AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber)
 {
-	int res = (~(alignment - 1) & ((int)m_RegionBegin + field_3C + alignment - 1));
+    const uint32_t freeAlignedAddress = GetNextAlignedAddress(alignment);
+    const size_t alignedObjectSize = ALIGN_4BYTESUP(size);
 
-	if ((((size + 3) & 0xFFFFFFFC) + res + field_3C) > (unsigned int)m_ValidRegionEnd)
-		return nullptr;
+    //  NOTE: no more free space, return nothing.
+    if (freeAlignedAddress + size + ObjectSize > (uint32_t)ValidRegionEnd)
+        return nullptr;
 
-	if (m_RegionBegin == m_RegionBegin_1)
-		m_RegionBegin_1 = (char*)(res - field_3C);
-	field_38 = res - field_3C;
-	m_RegionBegin = (char*)(res + ((size + 3) & 0xFFFFFFFC));
-	++m_AllocationsTotal;
+    if (RegionBegin == RegionBegin_1)
+        RegionBegin_1 = (uint8_t*)freeAlignedAddress;
 
-	return (void*)res;
+    field_38 = freeAlignedAddress;
+    RegionBegin = (uint8_t*)freeAlignedAddress;
+
+    ++AllocationsTotal;
+
+    return (uint8_t*)(freeAlignedAddress + ObjectSize);
 }
 
 void SequentialSubAllocator::Free(void* ptr)
 {
-	m_AllocationsTotal--;
+    AllocationsTotal--;
 
-	if ((int)ptr == field_38)
-		field_38 = NULL;
+    if ((uint32_t)ptr == field_38)
+        field_38 = NULL;
 
-	if (!m_AllocationsTotal)
-		stub35();
+    //  NOTE: if no more allocations, reset everything.
+    if (!AllocationsTotal)
+        stub35();
 }
 
 void SequentialSubAllocator::FreeAligned(void* ptr)
 {
-	Free(ptr);
+    Free(ptr);
 }
 
-void* SequentialSubAllocator::Realloc(void* oldptr, size_t newsize, int filler, int unk)
+void* SequentialSubAllocator::Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber)
 {
-	if (!oldptr)
-		Allocate_A(newsize, filler, unk);
+    if (!oldptr)
+        return Allocate_A(newsize, fileName, fileLineNumber);
 
-	if (newsize > 0 && ((char*)oldptr + newsize) <= m_ValidRegionEnd)
-	{
-		m_RegionBegin = (char*)oldptr + newsize;
-		return oldptr;
-	}
-	else
-	{
-		Free(oldptr);
-		return nullptr;
-	}
+    if (newsize > NULL &&
+        (uint32_t)oldptr + newsize <= (uint32_t)ValidRegionEnd)
+    {
+        RegionBegin = (uint8_t*)oldptr + newsize;
+        return oldptr;
+    }
+    else
+    {
+        Free(oldptr);
+        return nullptr;
+    }
 }
 
 int SequentialSubAllocator::stub8(int* unk)
 {
-	return NULL;
+    return NULL;
 }
 
 void SequentialSubAllocator::stub9()
 {
-	return;
+    return;
 }
 
 void SequentialSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size)
 {
-	Allocator::SetNameAndAllocatedSpaceParams(bufferptr, name, size);
-	m_ValidRegionEnd = (char*)bufferptr + size;
-	m_RegionBegin_1 = (char*)bufferptr;
-	m_RegionBegin = (char*)bufferptr;
+    Allocator::SetNameAndAllocatedSpaceParams(bufferptr, name, size);
+    ValidRegionEnd = (uint8_t*)((uint32_t)bufferptr + size);
+    RegionBegin_1 = (uint8_t*)bufferptr;
+    RegionBegin = (uint8_t*)bufferptr;
 
-	stub36();
+    stub36();
 }
 
 const int SequentialSubAllocator::GetTotalAllocations() const
 {
-	return m_RegionBegin - m_RegionBegin_1;
+    return RegionBegin - RegionBegin_1;
 }
 
 const int SequentialSubAllocator::GetAllocatedElementsTotal() const
 {
-	return m_AllocationsTotal;
+    return AllocationsTotal;
 }
 
 const char* const SequentialSubAllocator::GetAllocatorName() const
 {
-	return "SequentialSubAllocator";
+    return "SequentialSubAllocator";
 }
 
 const int SequentialSubAllocator::stub19() const
 {
-	return m_AllocationsTotal;
+    return AllocationsTotal;
 }
 
 int SequentialSubAllocator::stub35()
 {
-	m_RegionBegin_1 = (char*)m_AllocatedSpacePtr;
-	m_RegionBegin = (char*)m_AllocatedSpacePtr;
-	field_38 = NULL;
-	stub36();
-	field_24 = NULL;
-	m_AllocationsTotal = NULL;
+    RegionBegin_1 = (uint8_t*)AllocatedSpacePtr;
+    RegionBegin = (uint8_t*)AllocatedSpacePtr;
+    field_38 = NULL;
+    stub36();
+    field_24 = NULL;
+    AllocationsTotal = NULL;
 
-	// FIXME: original code doesn't return anything, but this virtual function SHOULD return something.
-	return NULL;
+    // FIXME: original code doesn't return anything, but this virtual function SHOULD return something.
+    return NULL;
 }
 
 void SequentialSubAllocator::stub36()
 {
-	return;
+    return;
 }

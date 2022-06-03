@@ -65,7 +65,7 @@ Asset::~Asset()
         g_AssetManager->m_ResourcesInstancesList[m_GlobalResourceId] = nullptr;
 
     --TotalResourcesCreated;
-    delete m_ResourcePath;
+    delete[] m_ResourcePath;
 }
 
 bool Asset::stub3(unsigned char a1, int, int)
@@ -131,9 +131,9 @@ Asset::Asset(bool dontmakeglobal)
         OpenResourcesList.reserve(10);
 
     TotalResourcesCreated++;
+    m_ResourcePath = nullptr;
 
     m_ResourceTimestamp = NULL;
-    delete m_ResourcePath;
 
     if (dontmakeglobal)
         m_GlobalResourceId = NULL;

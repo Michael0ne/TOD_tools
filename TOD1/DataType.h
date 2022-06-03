@@ -77,6 +77,7 @@ public:
 private:
     static void     RemoveTypeFromList(const char* const name); // @862B50
     static unsigned int GetTypeSize_Impl(const DataType* type); // @862AC0
+    static DataType* GetByIndex(const size_t index);   //  @862B40
 
 protected:
     static int  ParseFloatNumberString(const char* const, float* const); // @8628C0

@@ -51,11 +51,11 @@ void MemoryManager::CreateAllocators()
 
 void MemoryManager::InitAllocator(Allocator& alloc, AllocatorIndex allocind, const char* const allocname, unsigned int allocsize)
 {
-    alloc.m_SystemAllocators = alloc.GetSystemAllocatorsTable();
+    alloc.LowLevelAllocators = alloc.GetSystemAllocatorsTable();
 
     AllocatorsList[allocind] = &alloc;
-    alloc.m_AllocatorIndex = allocind;
-    BuffersPtr[allocind] = alloc.m_SystemAllocators._malloc((allocsize + 64) & 0xFFFFFFC0);
+    alloc.AllocatorIndex = allocind;
+    BuffersPtr[allocind] = alloc.LowLevelAllocators._malloc((allocsize + 64) & 0xFFFFFFC0);
     alloc.SetNameAndAllocatedSpaceParams(BuffersPtr[allocind], allocname, allocsize);
 }
 
@@ -106,9 +106,9 @@ MemoryManager::MemoryManager()
 
     static SystemSubAllocator ALLOCATOR_DEFAULT;
 
-    ALLOCATOR_DEFAULT.m_AllocatorName = "ALLOCATOR_DEFAULT";
+    ALLOCATOR_DEFAULT.AllocatorName = "ALLOCATOR_DEFAULT";
     ALLOCATOR_DEFAULT.field_20 = NULL;
-    ALLOCATOR_DEFAULT.m_AllocatorIndex = DEFAULT;
+    ALLOCATOR_DEFAULT.AllocatorIndex = DEFAULT;
 
     AllocatorsList[DEFAULT] = &ALLOCATOR_DEFAULT;
     AllocatorsList[MAIN_ASSETS] = nullptr;
@@ -149,7 +149,7 @@ MemoryManager::~MemoryManager()
 
     for (unsigned int ind = 0; ind < 9; ++ind)
         if (AllocatorsList[ind + 1])
-            AllocatorsList[ind + 1]->m_SystemAllocators._free(BuffersPtr[ind + 1]);
+            AllocatorsList[ind + 1]->LowLevelAllocators._free(BuffersPtr[ind + 1]);
 
     Released = true;
 }
@@ -165,7 +165,7 @@ char MemoryManager::CheckIfCanExpandMemoryBySize(void* ptr, int a2)
 DefragmentatorBase* MemoryManager::GetDefragmentator(AllocatorIndex allocind)
 {
     //  NOTE: this is always called with the 'DEFRAGMENTATOR' allocator index.
-    return AllocatorsList[allocind]->m_Defragmentator;
+    return AllocatorsList[allocind]->Defragmentator;
 }
 
 void MemoryManager::ReleaseMemory(void* ptr, bool aligned)

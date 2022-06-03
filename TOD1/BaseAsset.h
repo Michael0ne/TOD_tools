@@ -83,6 +83,12 @@ public:
             MemoryManager::ReleaseMemory(ptr, false);
         ptr = nullptr;
     }
+    void operator delete[](void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, false);
+        ptr = nullptr;
+    }
 
     void                SetAlignment(unsigned int size, unsigned int slot); //  @852160
     void                SetResourcePathAndGetResourcesDir(String& outResourcesDir, const char* const resourcepath, const unsigned char platform) const;    //  @852180
@@ -187,6 +193,12 @@ public:
     {
         if (ptr)
             MemoryManager::ReleaseMemory(ptr, AssetInstance::AssetAlignment[0] != false);
+        ptr = nullptr;
+    }
+    void operator delete[](void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, false);
         ptr = nullptr;
     }
 

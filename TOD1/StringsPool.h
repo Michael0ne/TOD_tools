@@ -5,7 +5,8 @@
 #define STRING_BITMASK_SHORT 0x80000004
 #define STRING_BITMASK_ONLY_SIZE 0x7FFFFFFF
 
-// NOTE: original file name "/Libs/Toolbox/Str.h".
+//  NOTE: original file name "/Libs/Toolbox/Str.h".
+//  NOTE: remove or make this an actual pool.
 class String
 {
 public:

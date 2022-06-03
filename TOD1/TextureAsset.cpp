@@ -3,7 +3,7 @@
 
 AssetInstance* TextureAsset::Instance;
 
-inline TextureAsset::TextureAsset() : Asset(false)
+TextureAsset::TextureAsset() : Asset(false)
 {
     MESSAGE_CLASS_CREATED(TextureAsset);
 

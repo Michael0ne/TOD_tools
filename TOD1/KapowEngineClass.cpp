@@ -812,7 +812,7 @@ bool KapowEngineClass::UpdateGame()
     Scene::SceneInstance->m_FrameBuffer_1->Reset();
     Scene::SceneInstance->m_FrameBuffer_2->Reset();
 
-    ((Defragmentator*)MemoryManager::AllocatorsList[DEFRAGMENTING]->m_Defragmentator)->DefragmentIfNecessary();
+    ((Defragmentator*)MemoryManager::AllocatorsList[DEFRAGMENTING]->Defragmentator)->DefragmentIfNecessary();
 
     DWORD64 timeBeforeRender = __rdtsc();
     Scene::SceneInstance->Update();
