@@ -1372,7 +1372,8 @@ GlobalCommand::~GlobalCommand()
 Scriptbaked::Scriptbaked(const char* const scriptName, const char* const parentName, bool a3, bool a4)
 {
     m_ScriptSize = 0;
-    field_5C = field_5C & 0xFFFFFFFC | (a3 != 0) | (2 * (a4 != 0));
+    m_Flags.IsCompiled = a3;
+    m_Flags._1 = a4 != 0;
 
     ScriptsList.push_back(this);
 
@@ -1711,7 +1712,7 @@ int Scriptbaked::GetScriptIdByName(const char* const name)
         return -1;
 
     for (unsigned int i = 0; i < ScriptsList.size(); ++i)
-        if ((ScriptsList[i]->field_5C & 1) != 0 && strcmp(ScriptsList[i]->m_Name.m_Str, name) == 0)
+        if (ScriptsList[i]->m_Flags.IsCompiled && strcmp(ScriptsList[i]->m_Name.m_Str, name) == 0)
             return i;
 
     return -1;
@@ -1725,7 +1726,7 @@ void Scriptbaked::InstantiateGlobalScripts()
     for (unsigned int i = 0; i < ScriptsList.size(); ++i)
     {
         auto script = ScriptsList[i];
-        if (!(script->field_5C & 1))
+        if (!script->m_Flags.IsCompiled)
             continue;
 
         Node* child = Scene::SceneInstance->m_FirstChild;
@@ -1806,7 +1807,7 @@ void Scriptbaked::AssignCommonNodes()
     for (unsigned int i = 0; i < ScriptsList.size(); ++i)
     {
         auto sc = ScriptsList[i];
-        if (!(sc->field_5C & 1))
+        if (!sc->m_Flags.IsCompiled)
             continue;
 
         Node* scriptnode = (Node*)Scene::SceneInstance->FindNode(sc->GetAttachedScript()->m_TypeName.m_Str);

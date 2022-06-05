@@ -596,10 +596,10 @@ void* AssetManager::LoadResourceBlock(FileBuffer* file, int* resbufferptr, unsig
         ResList.resize(totalResources);
 
     time_t fileTimestamp = FileBuffer::GetFileTimestamp(file->GetFileName());
-    int* resDataSizeTable = new int[totalResources];    //  NOTE: original code has this value multiplied by 4, don't know why really.
+    int* resDataSizeTable = new int[totalResources];
 
     file->SetPosAligned(0);
-    file->Read(resDataSizeTable, totalResources);
+    file->Read(resDataSizeTable, totalResources * sizeof(int32_t));
 
     if (totalResources > 0)
     {
@@ -609,24 +609,23 @@ void* AssetManager::LoadResourceBlock(FileBuffer* file, int* resbufferptr, unsig
             Timer::GetMilliseconds();
             g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
-            const unsigned int assetSize = resDataSizeTable[j];
+            const uint32_t assetSize = resDataSizeTable[j];
             if (assetSize > 0)
             {
                 file->SetPosAligned(0);
                 file->Read(resourceDataBuffer, assetSize);
             }
 
-            CompiledAssetInfo compasset(CompiledAssetInfo::AssetType::COMPILED, resourcesInfoBuffer, resourceDataBuffer, 0, 2, -1);
-            CompiledAssetInfo::InstantiateAsset(&compasset, resourcesInfoBuffer);
+            CompiledAssetInfo compasset(CompiledAssetInfo::AssetType::THREE, resourcesInfoBuffer, resourceDataBuffer, 0, 2, -1);
+            Asset::Instantiate(&compasset, (Asset*)resourcesInfoBuffer);
 
             Asset* currasset = (Asset*)resourcesInfoBuffer;
             *it = currasset;
 
             CompiledAssetInfo readyasset(CompiledAssetInfo::AssetType::ZERO, nullptr, nullptr, 0, 2, -1);
-            currasset->ApplyAssetData((int*)&readyasset);
+            currasset->ApplyAssetData(&readyasset);
 
-            resourcesInfoBuffer += readyasset.GetAssetSize() + AssetInstance::AssetAlignment[0] - 1;
-            *(int*)&resourcesInfoBuffer &= ~(AssetInstance::AssetAlignment[0] - 1);
+            resourcesInfoBuffer += readyasset.GetAssetSize() + AssetInstance::AssetAlignment[0] - 1 & (~(AssetInstance::AssetAlignment[0] - 1));
 
             currasset->m_ResourceTimestamp = fileTimestamp;
             currasset->m_Flags.ReferenceCount = -1;
@@ -821,7 +820,7 @@ void AssetManager::InstantiateAssetsAndClearAssetsList()
     for (unsigned int i = 0; i < m_AssetsList.size(); ++i)
     {
         CompiledAssetInfo cmpassinf(CompiledAssetInfo::AssetType::FOUR, (char*)m_AssetsList[i], nullptr, NULL, NULL, -1);
-        CompiledAssetInfo::InstantiateAsset(&cmpassinf, (char*)m_AssetsList[i]);
+        Asset::Instantiate(&cmpassinf, m_AssetsList[i]);
     }
 
     m_AssetsList.clear();
@@ -1154,7 +1153,50 @@ CompiledAssetInfo::CompiledAssetInfo(const AssetType assettype, const char* asse
     field_35 = (a5 & 2) != 0;
 }
 
-void CompiledAssetInfo::ParseAssetData(char** assetdataptr, int* dataptr, int flags, int a4)
+void CompiledAssetInfo::ParseInfo(const uint8_t** assetPtr, CompiledAssetInfo** assetBufferPtr, const size_t assetClassSize, const int32_t a4, const int32_t a5)
+{
+    if (field_30 == -1 || a5 != -1 && field_30 == a5)
+    {
+        if (*assetPtr)
+        {
+            switch (m_AssetType)
+            {
+            case ZERO:
+                _40CB90(assetClassSize, a4, -1);
+                *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
+                break;
+            case ONE:
+                memcpy(GetDataPtr(a4), *assetPtr, assetClassSize);
+                *assetBufferPtr = (CompiledAssetInfo*)GetDataPtr(a4);
+                _40CBD0(assetClassSize, a4, -1);
+                break;
+            case TWO:
+                *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
+                AddAssetToList(assetPtr, a4);
+                break;
+            case THREE:
+                _40CB20(assetPtr, a4);
+                *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
+                break;
+            case FOUR:
+                *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
+                break;
+            default:
+                return;
+            }
+        }
+        else
+        {
+            *assetBufferPtr = nullptr;
+        }
+    }
+    else
+    {
+        *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
+    }
+}
+
+void CompiledAssetInfo::ParseAssetData(const uint8_t** assetdataptr, int* dataptr, int flags, int a4)
 {
     if (field_30 != -1 || a4 != -1 && field_30 != a4)
         return;
@@ -1198,9 +1240,9 @@ void CompiledAssetInfo::ParseAssetData(char** assetdataptr, int* dataptr, int fl
         if (ALIGN_4BYTES(*assetdataptr))
             AddAssetToList(assetdataptr, flags);
         break;
-    case COMPILED:
-        GetAssetName(assetdataptr, flags);
-        *assetdataptr = (char*)ALIGN_4BYTES(*assetdataptr);
+    case THREE:
+        _40CB20(assetdataptr, flags);
+        *assetdataptr = (uint8_t*)ALIGN_4BYTES(*assetdataptr);
         break;
     default:
         break;
@@ -1236,30 +1278,33 @@ void CompiledAssetInfo::AlignDataOrSize(unsigned int alignment, unsigned char fl
     }
 }
 
-void CompiledAssetInfo::GetAssetName(char** dataptr, char flags) const
+void CompiledAssetInfo::_40CB20(const uint8_t** dataptr, char flags) const
 {
-    if (flags & 1 || !dataptr)
+    if (flags & 1 || !*dataptr)
         return;
 
-    if ((int)*dataptr == 0x80000000)
+    if (*dataptr == (uint8_t*)0x80000000)
         *dataptr = nullptr;
 
-    *dataptr = *dataptr + **dataptr;
+    const uint8_t* readDataPtr = &(*dataptr)[(uint32_t)dataptr];
+    *dataptr = readDataPtr;
 
-    if (flags & 2)
+    if ((flags & 2) != 0)
+    {
         if ((flags & 4) == 0)
-            *dataptr = dataptr[field_2C - field_28];
-        else
-            if (flags & 4)
-                *dataptr = dataptr[field_28 - field_2C];
+            *dataptr = &readDataPtr[field_2C - field_28];
+    }
+    else
+        if ((flags & 4) != 0)
+            *dataptr = &readDataPtr[field_28 - field_2C];
 }
 
-void CompiledAssetInfo::AddAssetToList(char** dataptr, const int flags)
+void CompiledAssetInfo::AddAssetToList(const uint8_t** dataptr, const int32_t flags)
 {
     if (flags & 1)
         return;
 
-    field_10.push_back({ dataptr, flags });
+    field_10.push_back({ const_cast<uint8_t**>(dataptr), flags });
 }
 
 char* CompiledAssetInfo::GetDataPtr(const int flags)
@@ -1267,17 +1312,24 @@ char* CompiledAssetInfo::GetDataPtr(const int flags)
     return flags & 2 ? field_24 : field_20;
 }
 
-void CompiledAssetInfo::InstantiateAsset(CompiledAssetInfo* compassinfo, char* assetinstanceinfo)
+void CompiledAssetInfo::_40CB90(const uint32_t a1, const int8_t a2, const int32_t a3)
 {
-    if (compassinfo->m_AssetType == COMPILED)
-        *(int*)assetinstanceinfo = (int)AssetInstance::Assets[*(int*)assetinstanceinfo]->m_ResourceTypeMethods;
+    if (field_30 == -1 || a3 != -1 && field_30 == a3)
+    {
+        if ((a2 & 2) != 0)
+            field_8 += ALIGN_4BYTESUP(a1);
+        else
+            m_AssetSize += ALIGN_4BYTESUP(a1);
+    }
+}
 
-    char* assetpathoffset = assetinstanceinfo + 4;
-    compassinfo->ParseAssetData(&assetpathoffset, 0, 0, -1);
-    *(int*)(assetinstanceinfo + 4) = (int)assetpathoffset;
-
-    if (compassinfo->m_AssetType == COMPILED)
-        *(int*)(assetinstanceinfo + 8) = g_AssetManager->AddAssetReference((Asset*)assetinstanceinfo);
-
-    ((Asset*)assetinstanceinfo)->ApplyAssetData((int*)compassinfo);
+void CompiledAssetInfo::_40CBD0(const uint32_t a1, const int8_t a2, const int32_t a3)
+{
+    if (field_30 == -1 || a3 != -1 && field_30 == a3)
+    {
+        if ((a2 & 2) != 0)
+            field_24 += ALIGN_4BYTESUP(a1);
+        else
+            field_20 += ALIGN_4BYTESUP(a1);
+    }
 }

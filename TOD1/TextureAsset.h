@@ -51,7 +51,7 @@ public:
     virtual AssetInstance*      GetInstancePtr() const override; // @853AE0
     virtual void                stub5(int); // @853720
     virtual void                GetResourcesDir(String& outDir, PlatformId platformId) const override;  //  @853240
-    virtual void                ApplyAssetData(int*);   //  @853930
+    virtual void                ApplyAssetData(CompiledAssetInfo*);   //  @853930
     virtual char                SetResourcePlaceholder();   //  @8537B0
 
     ScreenResolution&           GetTextureResolution(ScreenResolution& outRes); // @853650

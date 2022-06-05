@@ -150,7 +150,15 @@ protected:
     int                     m_PropertiesBlocksTotal;
     EntityType             *m_BaseEntity;
     String                  m_Name;
-    char                    field_5C;
+    union
+    {
+        struct
+        {
+            unsigned        IsCompiled : 1;
+            unsigned        _1 : 1;
+        };
+        uint8_t             DwFlags;
+    }                       m_Flags;
     void                    (*field_60)(int*);
 
 public:

@@ -327,7 +327,7 @@ void Scene::ClearNodesLists()
     m_NodesWithUpdateOrBlockingScripts = NULL;
 
     for (unsigned int i = 0; i < NodesList.size(); ++i)
-        NodesList[i].m_QuadTree->m_Owner->ClearFromSceneList();
+        NodesList[i].QDTree->m_Owner->ClearFromSceneList();
 
     NodesList.clear();
 }

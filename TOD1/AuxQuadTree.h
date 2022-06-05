@@ -29,14 +29,28 @@ public:
     };
     short           m_TraverseDistance;
     Vector4f        m_Bounds;
-    char            field_4D;
+    union
+    {
+        struct
+        {
+            char    _0 : 1;
+            char    _1 : 1;
+            char    _2 : 1;
+            char    _3 : 1;
+            char    _4 : 1;
+            char    _5 : 1;
+            char    Enabled : 1;
+            char    _7 : 1;
+        };
+        uint8_t     field_4D;
+    };
     char            m_Lod;
     char            m_LodFade;
     char            m_ContactFilter;
     int             m_LodDistance;
 
 public:
-    AuxQuadTree(class Node* owner); // @89F430
+    AuxQuadTree(Node* owner); // @89F430
     ~AuxQuadTree(); // @8A2470
 
     void        CalculateLodForAllChildren(); // @8A3820
@@ -45,7 +59,7 @@ public:
     void        Refresh(); // @8A2EE0;
     void        SetLodLevel(const Vector4f& pos);   //  @8A0B80
     void        CopyOwnerBounds(); //  @89F4D0
-    void        _8A36A0(const bool use);    //  @8A36A0
+    void        SetIsUsed(const bool use);    //  @8A36A0
     void        _8A3320();  //  @8A3320
     const int   GetContactMaterialID(const int a1) const; //  @8A2BE0
     const int   GetContactSurfacePropFields(const int a1) const;    //  @8A2AF0

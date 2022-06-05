@@ -89,7 +89,7 @@ void Asset::GetResourcesDir(String& outDir, PlatformId platformId) const
     outDir = "";
 }
 
-void Asset::ApplyAssetData(int*)
+void Asset::ApplyAssetData(CompiledAssetInfo* assetInfoPtr)
 {
     return;
 }
@@ -189,6 +189,19 @@ void Asset::AllocateResourceForBlockLoad(const unsigned int size, int** bufalign
 
     buf = bufblock;
     *bufaligned = (int*)( ~(AssetInstance::AssetAlignment[0] - 1) & ((int)bufblock + AssetInstance::AssetAlignment[0] - 1) );
+}
+
+void Asset::Instantiate(CompiledAssetInfo* assetBuffer, Asset* assetPtr)
+{
+    if (assetBuffer->m_AssetType == CompiledAssetInfo::AssetType::THREE)
+        *(uint32_t*)assetPtr = (uint32_t)AssetInstance::Assets[*(uint32_t*)assetPtr]->m_ResourceTypeMethods;
+
+    assetBuffer->ParseAssetData((const uint8_t**)((uint32_t*)assetPtr + 4), 0, 0, -1);
+
+    if (assetBuffer->m_AssetType == CompiledAssetInfo::AssetType::THREE)
+        assetPtr->m_GlobalResourceId = g_AssetManager->AddAssetReference(assetPtr);
+
+    assetPtr->ApplyAssetData(assetBuffer);
 }
 
 void Asset::SetReferenceCount(unsigned char count)
@@ -302,6 +315,20 @@ void Asset::SetResourcePath(const char* const respath)
     size_t respathlen = strlen(respath);
     m_ResourcePath = new char[respathlen + 1];
     strncpy((char*)m_ResourcePath, respath, respathlen);
+}
+
+void Asset::_851430(CompiledAssetInfo* assetInfoPtr, CompiledAssetInfo** assetInfoDataPtr)
+{
+    assetInfoPtr->ParseAssetData((const uint8_t**)&m_ResourcePath, &((*assetInfoDataPtr)->m_AssetSize), 0, -1);
+
+    if (assetInfoPtr->m_AssetType == CompiledAssetInfo::AssetType::TWO)
+    {
+        m_Flags.ReferenceCount = NULL;
+        m_Flags.NotUsed = true;
+        m_GlobalResourceId = NULL;
+        m_ResourceTimestamp = NULL;
+        *(uint32_t*)this = GetInstancePtr()->m_ResourceIndex;
+    }
 }
 
 void AssetLoader::LoadAssetByName(const char* const name)

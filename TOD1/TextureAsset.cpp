@@ -48,7 +48,7 @@ void TextureAsset::GetResourcesDir(String& outDir, PlatformId platformId) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void TextureAsset::ApplyAssetData(int* assetdata)
+void TextureAsset::ApplyAssetData(CompiledAssetInfo* assetdata)
 {
 }
 

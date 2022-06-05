@@ -23,7 +23,7 @@ private:
 public:
     virtual         ~FontAsset();   //  @85B730
     virtual AssetInstance* GetInstancePtr() const override;
-    virtual void    ApplyAssetData(int*) override;  //  @85B560
+    virtual void    ApplyAssetData(CompiledAssetInfo* assetInfoPtr) override;  //  @85B560
 
     static void     CreateInstance(); // @85B460
     static FontAsset* Create(); // @85B350

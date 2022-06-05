@@ -325,15 +325,17 @@ public:
         }               m_Flags;
     };
 
-    struct NodePosInfo
+    struct PackedBoundsInfo
     {
-        int             field_0;
-        int             field_4;
-        AuxQuadTree    *m_QuadTree;
+        uint16_t    BoundX;
+        uint16_t    BoundY;
+        uint16_t    BoundZ;
+        uint8_t     BoundA; //  NOTE: lowest bit is used to indicate associated quad tree is scene's or not.
+        AuxQuadTree*QDTree;
     };
 
     static std::vector<NodeInfo>    NodesWithUpdateOrBlockingScripts;   //  @A11CC0
-    static std::vector<NodePosInfo> NodesList;  //  @A3D8B0
+    static std::vector<PackedBoundsInfo> NodesList;  //  @A3D8B0
 
     static String       IgnoredCollisionNodes;  //  @A11CD0
 };

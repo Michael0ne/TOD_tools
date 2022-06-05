@@ -22,7 +22,7 @@
 
 EntityType* tNode;
 std::vector<Node::NodeInfo> Node::NodesWithUpdateOrBlockingScripts;
-std::vector<Node::NodePosInfo> Node::NodesList;
+std::vector<Node::PackedBoundsInfo> Node::NodesList;
 String Node::IgnoredCollisionNodes;
 
 NodeMatrix::NodeMatrix(Node* owner)
@@ -95,7 +95,7 @@ void Node::Destroy()
 
     if (m_GlobalIdInSceneList >= 0)
     {
-        NodesList[m_GlobalIdInSceneList].m_QuadTree = 0;
+        NodesList[m_GlobalIdInSceneList].QDTree = nullptr;
         m_GlobalIdInSceneList = -1;
     }
 
@@ -560,7 +560,7 @@ void Node::SetShouldUseAuxQuadTree(const bool use)
 
     const bool flag = (m_QuadTree->field_4D >> 6) & 1;
     StoreProperty(5, &flag, tTRUTH);
-    m_QuadTree->_8A36A0(use);
+    m_QuadTree->SetIsUsed(use);
 }
 
 const char* const Node::GetName() const
@@ -2172,7 +2172,7 @@ void Node::ClearFromSceneList()
 {
     if (m_GlobalIdInSceneList >= 0)
     {
-        NodesList[m_GlobalIdInSceneList].m_QuadTree = 0;
+        NodesList[m_GlobalIdInSceneList].QDTree = 0;
         m_GlobalIdInSceneList = -1;
     }
 }

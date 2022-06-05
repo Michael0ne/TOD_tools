@@ -48,8 +48,8 @@ struct CompiledAssetInfo
 {
     struct ListAssetInfo
     {
-        char**          m_AssetDataPtr;
-        int             m_Flags;
+        uint8_t**       m_AssetDataPtr;
+        int32_t         m_Flags;
     };
 
     enum AssetType
@@ -57,7 +57,7 @@ struct CompiledAssetInfo
         ZERO = 0,
         ONE,
         TWO,
-        COMPILED,
+        THREE,
         FOUR
     }                   m_AssetType;    //  NOTE: more likely it's a 'block' number. Like 'header', 'data', ...
     int                 m_AssetSize;
@@ -78,14 +78,15 @@ struct CompiledAssetInfo
         MESSAGE_CLASS_DESTROYED(CompiledAssetInfo);
     }
 
-    void                ParseAssetData(char** assetdataptr, int* dataptr, int flags, int a4); //  @40D0C0
+    void                ParseInfo(const uint8_t** assetPtr, CompiledAssetInfo** assetBufferPtr, const size_t assetClassSize, const int32_t a4, const int32_t a5);    //  @85AE90
+    void                ParseAssetData(const uint8_t** assetdataptr, int* dataptr, int flags, int a4); //  @40D0C0
     int                 GetAssetSize() const;   //  @40CB00
     void                AlignDataOrSize(unsigned int alignment, unsigned char flags, int a3);  //  @40CC10
-    void                GetAssetName(char** dataptr, char flags) const;   //  @40CB20
-    void                AddAssetToList(char** dataptr, const int flags);  //  @40CDA0
+    void                AddAssetToList(const uint8_t** dataptr, const int32_t flags);  //  @40CDA0
     char*               GetDataPtr(const int flags);    //  @4062E0
-
-    static void         InstantiateAsset(CompiledAssetInfo* compassinfo, char* assetinstanceinfo);    //  @851510
+    void                _40CB90(const uint32_t dataptr, const int8_t a2, const int32_t a3);  //  @40CB90
+    void                _40CBD0(const uint32_t dataptr, const int8_t a2, const int32_t a3);  //  @40CBD0
+    void                _40CB20(const uint8_t** dataptr, char flags) const;   //  @40CB20
 };
 
 ASSERT_CLASS_SIZE(CompiledAssetInfo, 56);

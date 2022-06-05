@@ -4,6 +4,7 @@
 #include <vector>
 
 class Asset;
+struct CompiledAssetInfo;
 
 //  TODO: move this somewhere.
 //  TODO: make this a template?
@@ -176,7 +177,7 @@ public:
     virtual bool        stub4() const; //  @851E80
     virtual void        stub5(int);
     virtual void        GetResourcesDir(String& outDir, PlatformId platformId) const;    //  @851EC0
-    virtual void        ApplyAssetData(int*);
+    virtual void        ApplyAssetData(CompiledAssetInfo* assetInfoPtr);
     virtual char        SetResourcePlaceholder();  //  @42F4F0
     virtual int         stub9() const;   //  @851EA0
     virtual void        GetResourceName(String& outName, int originalVersionPath);  //  @851DB0
@@ -208,11 +209,13 @@ public:
     void                EncodeCountryCode(const char* const countrycode); // @851480
     const char* const   GetResourceCountryCode() const; // @851CC0
     void                SetResourcePath(const char* const respath); //  @851DF0
+    void                _851430(CompiledAssetInfo* assetInfoPtr, CompiledAssetInfo** assetInfoDataPtr); //  @851430
 
     static AllocatorIndex AllocatorIndexByBlockType(unsigned int blocktype);   //  @851FE0
     static void         Destroy(Asset* res); // @851FC0
     static Asset*       CreateInstance(size_t classsize);  //  @852100
     static void         AllocateResourceForBlockLoad(const unsigned int size, int** bufaligned, int* buf, const unsigned int blockid);  //  @852070
+    static void         Instantiate(CompiledAssetInfo* assetBuffer, Asset* assetPtr);   //  @851510
 
     static const char* const BlockTypeExtension[];  //  @A11B64
     static std::vector<String> OpenResourcesList; // @A10F00

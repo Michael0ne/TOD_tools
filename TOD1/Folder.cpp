@@ -156,6 +156,24 @@ void Folder_::SetBlockId(unsigned int blockid)
         delete m_AssetBlockInfo;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void Folder_::LoadAssetBlock()
+{
+    const Scene* sceneNode = Scene::SceneInstance;
+    char fragmentPath[512] = {};
+    String folderFragmentName;
+    const char* const languageCode = Script::GetCurrentCountryCode();
+
+    g_AssetManager->GetPlatformSpecificPath(fragmentPath, sceneNode->GetFragment(), nullptr, AssetManager::PlatformId::PC);
+    strcat(fragmentPath, "/");
+
+    FileBuffer::ExtractFileName(folderFragmentName, m_Fragment->m_Name);
+    strcat(fragmentPath, folderFragmentName.m_Str);
+
+    String folderFragmentPath;
+    //  TODO: at offset 0x50 the 3 lowest bits are block type index, but different code parts reference it in a different way.
+}
+
 void Folder_::Register()
 {
     tFolder = new EntityType("Folder");

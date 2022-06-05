@@ -3,10 +3,29 @@
 #include "Camera.h"
 #include "Node.h"
 
-#pragma message(TODO_IMPLEMENTATION)
-AuxQuadTree::AuxQuadTree(class Node* owner)
+AuxQuadTree::AuxQuadTree(Node* owner)
 {
     MESSAGE_CLASS_CREATED(AuxQuadTree);
+
+    m_Bounds = { 0, 0, 0, 1 };
+    m_LodFade = -1;
+    m_ContactFilter = -1;
+    m_Owner = owner;
+    field_4 = nullptr;
+    m_FirstSibling = nullptr;
+    m_NextSibling = nullptr;
+    field_38 = nullptr;
+    m_LodThreshold = 60;
+    m_FadeThreshold = 11;
+    m_TraverseDistance = 50;
+    m_LodDistance = 0;
+    m_Lod = false;
+    m_ContactNode = nullptr;
+    m_UserType = 0x10'000'000;
+    _7 = true;
+    _3 = true;
+    field_30 = 0;
+    field_18 = 0;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -89,8 +108,12 @@ void AuxQuadTree::CopyOwnerBounds()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void AuxQuadTree::_8A36A0(const bool use)
+void AuxQuadTree::SetIsUsed(const bool use)
 {
+    if (use == Enabled)
+        return;
+
+    Enabled = use;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
