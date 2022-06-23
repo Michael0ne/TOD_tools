@@ -54,7 +54,7 @@ namespace Utils
                 do
                 {
                     const bool sumNegative = crc < 0;
-                    crc = ((*buffer >> blockIndex) & 1) | (2 * crc);
+                    crc = ((*buffer >> blockIndex) & 1) | (crc << 1);
 
                     if (sumNegative)
                         crc ^= 0x4C11DB7u;

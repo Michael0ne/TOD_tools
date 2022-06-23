@@ -284,6 +284,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="AnimLayer.h" />
     <ClInclude Include="AnimSlot.h" />
     <ClInclude Include="BaseAsset.h" />
+    <ClInclude Include="BinkWrapper.h" />
     <ClInclude Include="DataType.h" />
     <ClInclude Include="BestFitAllocator.h" />
     <ClInclude Include="CutsceneAsset.h" />
@@ -306,6 +307,8 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="scripts\Rotater.h" />
     <ClInclude Include="scripts\Trigger_Activate_Weapons.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="scripts\Tutorial_pc_index.h" />
+    <ClInclude Include="scripts\tutorial_root.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="GfxInternal_OGL.h" />
     <ClInclude Include="MeshBuffer.h" />

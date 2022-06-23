@@ -3,16 +3,19 @@
 
 class FragmentAsset : public Asset
 {
+    typedef AllocatorIndex (*AllocatorIndexForSize)(size_t size, FragmentAsset* assetPtr);
+
     struct FragmentInfo
     {
         int     field_0;
-        int     field_4;
-        int    *field_8;
+        int    *field_4;
+        int     field_8;
         int     field_C;
-        int     field_10;
-        int     field_14;
 
-        FragmentInfo(const FragmentInfo& rhs, void (*FindSuitableAllocatorProc)(size_t desiredsize, FragmentAsset*), FragmentAsset* owner); //  @406750
+        AllocatorIndexForSize   field_10;
+        FragmentAsset          *field_14;
+
+        FragmentInfo(FragmentInfo** rhs, AllocatorIndex (*FindSuitableAllocatorProc)(size_t desiredsize, FragmentAsset*), FragmentAsset* owner); //  @406750
         inline FragmentInfo()
         {
             MESSAGE_CLASS_CREATED(FragmentInfo);
@@ -40,9 +43,20 @@ private:
     FragmentAsset(char a1); // @85DD80
     virtual ~FragmentAsset();   //  @85E3C0 //  NOTE: another d-tor @85DD60, virtual destructor uses inlined version.
 
-    static int32_t          GetAllocatorForAsset(size_t size, FragmentAsset* asset);    //  @85D6D0
+    static AllocatorIndex   GetAllocatorForAsset(size_t size, FragmentAsset* asset);    //  @85D6D0
 
 public:
+    void* operator new(size_t size)
+    {
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(size, nullptr, NULL);
+    }
+    void operator delete(void* ptr)
+    {
+        if (ptr)
+            MemoryManager::ReleaseMemory(ptr, false);
+        ptr = nullptr;
+    }
+
     virtual AssetInstance*  GetInstancePtr() const override;
     virtual void            ApplyAssetData(CompiledAssetInfo* assetInfoPtr) override;  //  @85DEC0
 

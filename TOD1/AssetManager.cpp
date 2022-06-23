@@ -1299,6 +1299,11 @@ void CompiledAssetInfo::_40CB20(const uint8_t** dataptr, char flags) const
             *dataptr = &readDataPtr[field_28 - field_2C];
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void CompiledAssetInfo::_85E160(uint8_t** dataptr, uint8_t** a2, uint32_t flags, uint32_t a4)
+{
+}
+
 void CompiledAssetInfo::AddAssetToList(const uint8_t** dataptr, const int32_t flags)
 {
     if (flags & 1)

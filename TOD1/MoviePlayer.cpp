@@ -5,31 +5,16 @@
 #include "StringType.h"
 #include "IntegerType.h"
 #include "NumberType.h"
+#include "GfxInternal.h"
+#include "BuiltinType.h"
 
 EntityType* tMoviePlayer;
 String MoviePlayer::MovieName;
 MoviePlayer* MoviePlayer::Instance;
 bool MoviePlayer::MovieOpen = false;
-HANDLE MoviePlayer::BinkHandle = NULL;
+BINKPTR MoviePlayer::BinkHandle = nullptr;
 int MoviePlayer::StopPressedCommand = -1;
 int MoviePlayer::PlayPressedCommand = -1;
-
-HANDLE BinkOpen(HANDLE binkHandle, const int binkOpenFlags)
-{
-    debug("BinkOpen not implemented!");
-    return NULL;
-}
-
-int BinkGetError()
-{
-    debug("BinkGetError not implemented!");
-    return NULL;
-}
-
-void BinkClose(const HANDLE binkHandle)
-{
-    debug("BinkClose not implemented!");
-}
 
 String* MoviePlayer::GetResourceName(String* resname)
 {
@@ -320,7 +305,7 @@ MoviePlayer::FrameInfo::FrameInfo()
     m_DisplacementY = 0;
     m_Opacity = 1;
     m_PlayingMovie = false;
-    m_CurrentFrameTexture = nullptr;
+    m_FrameTexture = nullptr;
     m_MovieFile = nullptr;
 }
 
@@ -332,7 +317,7 @@ MoviePlayer::FrameInfo::~FrameInfo()
 
     if (BinkHandle)
     {
-        BinkClose(BinkHandle);
+        BinkWrapper::BinkClose(BinkHandle);
         BinkHandle = NULL;
     }
 }
@@ -345,7 +330,7 @@ void MoviePlayer::FrameInfo::Stop()
         m_PlayingMovie = false;
     }
 
-    delete m_CurrentFrameTexture;
+    delete m_FrameTexture;
     delete m_MovieFile;
 }
 
@@ -354,6 +339,38 @@ void MoviePlayer::FrameInfo::ProcessFrame(FrameBuffer* fb)
 {
     if (m_MovieStopped || !m_PlayingMovie)
         return;
+
+    BinkWrapper::BinkDoFrame(BinkHandle);
+    LPDIRECT3DTEXTURE9 frameTexture = m_FrameTexture->GetDirect3DTexture();
+    D3DLOCKED_RECT lockedRect;
+
+    if (FAILED(frameTexture->LockRect(NULL, &lockedRect, nullptr, NULL)))
+        return;
+
+    BinkWrapper::BinkCopyToBuffer(BinkHandle, lockedRect.pBits, lockedRect.Pitch, BinkHandle->Height, 0, 0, 0x3);    //  NOTE: BINKSURFACE32BGRX, highest bit set to 1, so 8 is at front.
+
+    LPDIRECT3DTEXTURE9 frameTextureLocked = m_FrameTexture->GetDirect3DTexture();
+    frameTextureLocked->UnlockRect(0);
+
+    if (BinkHandle->FrameNum == BinkHandle->Frames)
+    {
+        m_PlayingMovie = false;
+    }
+    else
+    {
+        BinkWrapper::BinkNextFrame(BinkHandle);
+        m_PlayingMovie = true;
+    }
+
+    while (BinkWrapper::BinkWait(BinkHandle));
+
+    const ScreenResolution& screenRes = g_GfxInternal->GetViewportResolution();
+    m_AspectRatioX = (float)screenRes.x / (float)BinkHandle->Width;
+    m_AspectRatioY = (float)screenRes.y / (float)BinkHandle->Height;
+    field_38 = m_AspectRatioX * m_ScaleX;
+    field_3C = m_AspectRatioY * m_ScaleY;
+
+    //fb->SubmitRenderQuad2D_Command(topleft, bottomleft, topright, bottomright, BuiltinType::ColorBlack);
 }
 
 void MoviePlayer::FrameInfo::OpenMovie()
@@ -363,12 +380,12 @@ void MoviePlayer::FrameInfo::OpenMovie()
 
     if (filehnd)
     {
-        BinkHandle = BinkOpen(filehnd, 0xA00000);
+        BinkHandle = BinkWrapper::BinkOpen(filehnd, 0xA00000);
         if (!BinkHandle)
-            BinkGetError();
+            BinkWrapper::BinkGetError();
     }
 
-    m_CurrentFrameTexture = new Texture({ *(unsigned int*)BinkHandle, *(unsigned int*)((int)BinkHandle + 4) }, 1, 4);
+    m_FrameTexture = new Texture({ *(unsigned int*)BinkHandle, *(unsigned int*)((int)BinkHandle + 4) }, 1, 4);
 }
 
 bool MoviePlayer::FrameInfo::_442A70() const

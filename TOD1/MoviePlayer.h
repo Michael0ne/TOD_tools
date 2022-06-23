@@ -3,6 +3,7 @@
 #include "FrameBuffer.h"
 #include "Texture.h"
 #include "Scene.h"
+#include "BinkWrapper.h"
 
 class MoviePlayer : public Node
 {
@@ -20,10 +21,10 @@ class MoviePlayer : public Node
         float               m_AspectRatioY;
         float               field_30;
         float               field_34;
-        float               field_38;
-        float               field_3C;
-        Texture            *m_CurrentFrameTexture;
-        FileBuffer               *m_MovieFile;
+        float               field_38;   //  scaleX multiplier
+        float               field_3C;   //  scaleY multiplier
+        Texture            *m_FrameTexture;
+        FileBuffer         *m_MovieFile;
 
         FrameInfo(); // @442F00
         ~FrameInfo();   //  @443060
@@ -123,7 +124,7 @@ public:
     static bool             MovieOpen;  //  @A35ED4
 
 private:
-    static HANDLE           BinkHandle; //  @A35ED8
+    static BINKPTR          BinkHandle; //  @A35ED8
     static int              StopPressedCommand;    //  @A11C30
     static int              PlayPressedCommand; //  @A11C34
 

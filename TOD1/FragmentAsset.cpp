@@ -3,6 +3,24 @@
 
 AssetInstance* FragmentAsset::Instance;
 
+FragmentAsset::FragmentInfo::FragmentInfo(FragmentInfo** rhs, AllocatorIndex(*FindSuitableAllocatorProc)(size_t desiredsize, FragmentAsset*), FragmentAsset* owner)
+{
+    MESSAGE_CLASS_CREATED(FragmentInfo);
+
+    field_10 = FindSuitableAllocatorProc;
+    field_0 = NULL;
+    field_4 = nullptr;
+    field_8 = NULL;
+    field_14 = owner;
+    field_C = (*rhs)->field_C;
+
+    //if (field_4)
+        //field_4 = (field_8 & 0x7FFFFFFF);   //  NOTE: useless, but compiled didn't optimize it away?
+
+    field_4 = nullptr;
+    field_8 = 0x80000000;
+}
+
 FragmentAsset::FragmentInfo::~FragmentInfo()
 {
     MESSAGE_CLASS_DESTROYED(FragmentInfo);
@@ -20,15 +38,15 @@ FragmentAsset::~FragmentAsset()
 {
     MESSAGE_CLASS_DESTROYED(FragmentAsset);
 
-    delete[] field_20;
+    MemoryManager::ReleaseMemory(field_20, false);
 }
 
-int32_t FragmentAsset::GetAllocatorForAsset(size_t size, FragmentAsset* asset)
+AllocatorIndex FragmentAsset::GetAllocatorForAsset(size_t size, FragmentAsset* asset)
 {
-    const size_t biggerSize = size + 1024;
+    const int32_t biggerSize = size + 1024;
 
-    if (biggerSize <= MemoryManager::AllocatorsList[MISSION]->stub21())
-        return MISSION;
+    if (biggerSize <= MemoryManager::AllocatorsList[CUTSCENE_OR_REWIND]->stub21())
+        return CUTSCENE_OR_REWIND;
 
     if (Scene::LoadingAssetBlock && biggerSize <= MemoryManager::AllocatorsList[DEFRAGMENTING]->stub21())
         return DEFRAGMENTING;
@@ -57,6 +75,23 @@ void FragmentAsset::ApplyAssetData(CompiledAssetInfo* assetInfoPtr)
         assetInfoPtr->m_AssetType == CompiledAssetInfo::AssetType::ONE ||
         assetInfoPtr->m_AssetType == CompiledAssetInfo::AssetType::TWO)
         _851430(assetInfoPtr, &assetInfoPtr);
+
+    assetInfoPtr->_85E160((uint8_t**)&field_20, (uint8_t**)&assetInfoPtr, 2, -1);
+
+    if (assetInfoPtr->m_AssetType != CompiledAssetInfo::AssetType::THREE)
+        return;
+
+    AllocatorIndexForSize GetAllocatorIndex = nullptr;
+    AllocatorIndex suitableAllocatorIndex;
+
+    if ((field_24 & 1) != 0)
+        GetAllocatorIndex = GetAllocatorForAsset;
+
+    if (GetAllocatorIndex)
+        suitableAllocatorIndex = GetAllocatorIndex(sizeof(FragmentInfo), this);
+
+    field_20 = (FragmentInfo*)MemoryManager::AllocatorsList[suitableAllocatorIndex]->Allocate_A(sizeof(FragmentInfo), nullptr, NULL);
+    *field_20 = FragmentInfo(&field_20, GetAllocatorIndex, this);
 }
 
 void FragmentAsset::CreateInstance()

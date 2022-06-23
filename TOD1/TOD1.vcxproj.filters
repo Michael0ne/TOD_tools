@@ -620,6 +620,15 @@
     <ClInclude Include="scripts\common_animslot.h">
       <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\tutorial_root.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\Tutorial_pc_index.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="BinkWrapper.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
