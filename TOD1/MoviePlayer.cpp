@@ -347,7 +347,7 @@ void MoviePlayer::FrameInfo::ProcessFrame(FrameBuffer* fb)
     if (FAILED(frameTexture->LockRect(NULL, &lockedRect, nullptr, NULL)))
         return;
 
-    BinkWrapper::BinkCopyToBuffer(BinkHandle, lockedRect.pBits, lockedRect.Pitch, BinkHandle->Height, 0, 0, 0x3);    //  NOTE: BINKSURFACE32BGRX, highest bit set to 1, so 8 is at front.
+    BinkWrapper::BinkCopyToBuffer(BinkHandle, lockedRect.pBits, lockedRect.Pitch, BinkHandle->Height, 0, 0, 0x80000003);    //  NOTE: BINKSURFACE32BGRX.
 
     LPDIRECT3DTEXTURE9 frameTextureLocked = m_FrameTexture->GetDirect3DTexture();
     frameTextureLocked->UnlockRect(0);
@@ -364,13 +364,18 @@ void MoviePlayer::FrameInfo::ProcessFrame(FrameBuffer* fb)
 
     while (BinkWrapper::BinkWait(BinkHandle));
 
-    const ScreenResolution& screenRes = g_GfxInternal->GetViewportResolution();
+    const ScreenResolution& screenRes = g_GfxInternal->GetViewportResolution(); //  NOTE: original code calls this 5 times in multiple lines. Redundant and replaced with single call here.
     m_AspectRatioX = (float)screenRes.x / (float)BinkHandle->Width;
     m_AspectRatioY = (float)screenRes.y / (float)BinkHandle->Height;
     field_38 = m_AspectRatioX * m_ScaleX;
     field_3C = m_AspectRatioY * m_ScaleY;
 
-    //fb->SubmitRenderQuad2D_Command(topleft, bottomleft, topright, bottomright, BuiltinType::ColorBlack);
+    //const Vector2f topLeft(0.f, 0.f);
+    //const Vector2f bottomLeft(0.f, screenRes.y);
+    //const Vector2f topRight(screenRes.y, screenRes.x);
+    //const Vector2f bottomRight((float)BinkHandle->Width, );
+
+    //fb->SubmitRenderQuad2D_Command(topLeft, bottomLeft, topRight, bottomRight, BuiltinType::ColorBlack);
 }
 
 void MoviePlayer::FrameInfo::OpenMovie()

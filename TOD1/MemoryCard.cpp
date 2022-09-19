@@ -36,7 +36,7 @@ bool MemoryCard::IsFormatted() const
                 strcpy(temp, m_SaveFolderPath.m_Str);
                 strcat(temp, "/Formatted.txt");
 
-                if (FileBuffer::FindFileEverywhere(temp))
+                if (FileBuffer::FindFileEverywhere(temp, 0))
 #else
                 String temp = m_SaveFolderPath;
                 temp.Append("/Formatted.txt");
@@ -144,7 +144,7 @@ bool MemoryCard::IsSaveFilePresent(const char* const directory, const char* cons
         String tempStr;
         GetFullSaveFolderPath(tempStr, directory, slot);
 
-        return FileBuffer::FindFileEverywhere(tempStr.m_Str);
+        return FileBuffer::FindFileEverywhere(tempStr.m_Str, 0);
     }
 
     LogDump::LogA("Warning: Memory Card not found or not formatted.\n");
@@ -184,7 +184,7 @@ bool MemoryCard::DeleteSavePointFile(const char* const savedir, const char* cons
     }
 
     String tempStr;
-    if (FileBuffer::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_Str))
+    if (FileBuffer::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_Str, 0))
         FileBuffer::FindDirectoryMappedFileAndDelete(tempStr.m_Str);
 #ifdef INCLUDE_FIXES
     else
@@ -203,7 +203,7 @@ bool MemoryCard::IsSavePointFileExists(const char* const savedir, const char* co
     }
 
     String tempStr;
-    return FileBuffer::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_Str);
+    return FileBuffer::FindFileEverywhere(GetFullSaveFolderPath(tempStr, savedir, slotindstr).m_Str, 0);
 }
 
 bool MemoryCard::CreateSaveDirectory(const char* const savedir)

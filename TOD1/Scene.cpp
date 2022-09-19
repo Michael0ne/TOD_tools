@@ -358,7 +358,7 @@ void Scene::LoadSceneSession(void) const
     sessionpath = "/data/sessions/";
     sessionpath.Append(fragmentpath.m_Str);
 
-    if (!FileBuffer::FindFileEverywhere(sessionpath.m_Str))
+    if (!FileBuffer::FindFileEverywhere(sessionpath.m_Str, 0))
         return;
 
     /*
@@ -792,7 +792,7 @@ void Scene::Load(const char* sceneName)
         Folder_::GetResourcePathRelative(block_path_shared, scene_path, Asset::BlockTypeNumber::NONE, 0);
         Folder_::GetResourcePathRelative(block_path_localised, scene_path, Asset::BlockTypeNumber::NONE, Script::GetCurrentCountryCode());
 #ifdef INCLUDE_FIXES
-        if (!FileBuffer::FindFileEverywhere(block_path_shared.m_Str))
+        if (!FileBuffer::FindFileEverywhere(block_path_shared.m_Str, 0))
         {
             LogDump::LogA("Asset shared block not found: \"%s\"!\n", block_path_shared.m_Str);
             return;
@@ -801,7 +801,7 @@ void Scene::Load(const char* sceneName)
         FileBuffer::FindFileEverywhere(block_path_shared.m_Str);
 #endif
 #ifdef INCLUDE_FIXES
-        if (!FileBuffer::FindFileEverywhere(block_path_localised.m_Str))
+        if (!FileBuffer::FindFileEverywhere(block_path_localised.m_Str, 0))
         {
             LogDump::LogA("Asset localization block not found: \"%s\"!\n", block_path_shared.m_Str);
             return;

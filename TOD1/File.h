@@ -83,7 +83,7 @@ protected:
     void   GetLastErrorMessage(char*); // @437820
 
     static void  MoveFileWithReplace(const char* const oldname, const char* const newname); // @437E10
-    static bool  IsFileExists(const char* const file); // @437E90
+    static bool  IsFileExists(const char* const file, const int); // @437E90
     static bool  IsFileValid(const char* const file); // @437F70
     static bool  IsDirectoryValid(const char* const dir); // @437FD0
     static bool  IsFileReadOnly(const char* const file); // @4380C0
@@ -219,7 +219,7 @@ public:
     static String*  ExtractFileDir(String& outStr, const char* path); // @409360
     static String*  ExtractFileName(String& outStr, const char* path); // @4093B0
     static void     FindDirectoryMappedFileAndDelete(const char* const filename); // @418810
-    static bool     FindFileEverywhere(const char* path); // @4182A0
+    static bool     FindFileEverywhere(const char* path, const int); // @4182A0
     static time_t   GetFileTimestamp(const char* filename); // @418460
     static void     OpenZip(const char* const zipName); // @419100
     static void     ReadZipDirectories(const char* fileSystem); // @419550

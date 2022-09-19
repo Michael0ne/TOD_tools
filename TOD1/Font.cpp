@@ -110,6 +110,11 @@ const Font::Glyph* Font::GetGlyph(const short letter) const
         return nullptr;
 }
 
+void Font::GetTextDimensions(Vector4f& outDimensions, const char* const text, const float spriteSizeX) const
+{
+
+}
+
 #pragma message(TODO_IMPLEMENTATION)
 void Font::MakeCharactersMap(GlyphInfo& GlyphsInfo)
 {

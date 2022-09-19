@@ -1447,6 +1447,33 @@ void Scriptbaked::CalculateSize()
     }
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+bool Scriptbaked::_48A1B0(Node* node, const int32_t scriptId, uint8_t* args)
+{
+    Method* methodInfo = &m_MethodsList[scriptId];
+    const short methodPropBlockId = methodInfo->m_PropertyBlockId;
+    if (!methodPropBlockId)
+        return false;
+
+    int16_t i = 0;
+    while (methodInfo->m_ThreadHandler != field_60)
+    {
+        methodInfo++;
+        if (i++ >= methodPropBlockId)
+            return false;
+    }
+
+    if (!methodInfo->m_MethodPtr)
+        return false;
+
+    node->StoreScriptData();
+
+    if (ScriptThread::LatestScriptDataCacheIndex)
+    {
+        //ScriptThread::ScriptDataCache[ScriptThread::LatestScriptDataCacheIndex].m_ScriptData
+    }
+}
+
 bool Scriptbaked::GetMappedPropertyValue(const int* const nodeParameters, const int propertyId, int* outPropertyValue) const
 {
     auto it = m_PropertiesValues.find(propertyId);
@@ -1473,10 +1500,53 @@ bool Scriptbaked::_48A7E0(Node* node, int scriptId, void* args)
     if (!node->m_ScriptData->m_ScriptThread)
         return false;
 
-    if (node->m_ScriptData->m_ScriptThread->m_ThreadFlags.Suspended)
+    ScriptThread* scriptThread = node->m_ScriptData->m_ScriptThread;
+    if (scriptThread->m_ThreadFlags.Suspended)
         return false;
 
-    return false;
+    if (scriptId < 0)
+    {
+        scriptId = -2 - scriptId;
+    }
+    else
+    {
+        if (!m_MethodsList.size())
+            return false;
+
+        size_t i = 0;
+        while (true)
+        {
+            if (m_MethodsList[i].m_Id == scriptId)
+                break;
+
+            if (m_MethodsList[i].m_Id > scriptId)
+                return false;
+
+            i += m_MethodsList[i].m_PropertyBlockId;
+            if (i >= m_MethodsList.size())
+                break;
+        }
+
+        scriptId = i;
+
+        if (i == m_MethodsList.size())
+            return false;
+    }
+
+    if (!scriptThread)
+        return _48A1B0(node, scriptId, (uint8_t*)args);
+
+    if (!scriptThread->m_CallStack.size())
+        return false;
+
+    Scriptbaked::Method& methodInfo = m_MethodsList[scriptId];
+    for (size_t i = 0; i < scriptThread->m_CallStack.size(); ++i)
+    {
+        if (methodInfo.m_PropertyBlockId)
+        {
+
+        }
+    }
 }
 
 void Scriptbaked::ClearEntityProperties(Entity* ent)

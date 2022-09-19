@@ -728,7 +728,7 @@ void FileBuffer::FindDirectoryMappedFileAndDelete(const char* const filename)
     FileBufferImpl::DeleteFileFromGameDir(tempStr.m_Str);
 }
 
-bool FileBuffer::FindFileEverywhere(const char* path)
+bool FileBuffer::FindFileEverywhere(const char* path, const int dummy)
 {
     if (!path || *path == NULL)
         return false;
@@ -741,7 +741,7 @@ bool FileBuffer::FindFileEverywhere(const char* path)
     if (ZipArch::SlotId > 0 && ZipArch::FindFile(pathStr.m_Str, zipFileInfo, &zipSlot))
         return true;
 
-    return FileBufferImpl::IsFileExists(pathStr.m_Str);
+    return FileBufferImpl::IsFileExists(pathStr.m_Str, dummy);
 }
 
 time_t FileBuffer::GetFileTimestamp(const char* filename)
@@ -811,7 +811,7 @@ FileBufferImpl::FileBufferImpl(const char* _filename, int _desiredaccess, bool _
     GetGameWorkingDirRelativePath(m_GameWorkingDir);
 
     if (_desiredaccess & FILE_READ_EA)
-        IsFileExists(m_GameWorkingDir.m_Str);
+        IsFileExists(m_GameWorkingDir.m_Str, 0);
 
     m_DesiredAccess_2 = NULL;
 
@@ -1002,7 +1002,7 @@ void FileBufferImpl::MoveFileWithReplace(const char* const oldname, const char* 
     MoveFileEx(oldname, newname, MOVEFILE_REPLACE_EXISTING);
 }
 
-bool FileBufferImpl::IsFileExists(const char* const file)
+bool FileBufferImpl::IsFileExists(const char* const file, const int)
 {
     String temp = file;
     FileBufferImpl::GetWorkingDirRelativePath(temp);
@@ -1454,7 +1454,7 @@ bool FileBuffer::IsFileReadOnly(const char* const file)
     String fileStr;
     GetPathFromDirectoryMappings(fileStr, file);
 
-    if (!FindFileEverywhere(fileStr.m_Str))
+    if (!FindFileEverywhere(fileStr.m_Str, 0))
         return false;
 
     int zipslot = NULL;
@@ -1513,7 +1513,7 @@ bool FileBuffer::CheckGameFileAttributes(const char* const filename, const FileB
 #pragma message(TODO_IMPLEMENTATION)
 void FileBuffer::DeleteAllFilesInFolder(const char* const foldername)
 {
-    if (FindFileEverywhere(foldername))
+    if (FindFileEverywhere(foldername, 0))
     {
         String foldermappedpath;
         GetPathFromDirectoryMappings(foldermappedpath, foldername);
@@ -1532,7 +1532,7 @@ bool FileBuffer::EnumerateFolderFiles(const char* const dir, std::vector<String>
 
 void FileBuffer::OpenZip(const char* const zipName)
 {
-    if (!FileBufferImpl::IsFileExists(zipName))
+    if (!FileBufferImpl::IsFileExists(zipName, 0))
         return;
 
     int slotId = ZipArch::SlotId++;

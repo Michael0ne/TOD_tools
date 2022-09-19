@@ -773,7 +773,7 @@ bool AssetManager::LoadOriginalVersion(Asset * asset)
         if (!resdir.Empty())
             return false;
 
-        if (FileBuffer::FindFileEverywhere(asset->m_ResourcePath))
+        if (FileBuffer::FindFileEverywhere(asset->m_ResourcePath, 0))
             if (asset->GetResourceCountryCode() != Script::GetCurrentCountryCode())
                 return false;
     }

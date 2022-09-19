@@ -110,7 +110,7 @@ void AuxQuadTree::CopyOwnerBounds()
 #pragma message(TODO_IMPLEMENTATION)
 void AuxQuadTree::SetIsUsed(const bool use)
 {
-    if (use == Enabled)
+    if (use == (bool)Enabled)
         return;
 
     Enabled = use;

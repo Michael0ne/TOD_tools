@@ -159,16 +159,21 @@ protected:
         };
         uint8_t             DwFlags;
     }                       m_Flags;
-    void                    (*field_60)(int*);
+    void                    (*field_60)(ScriptThread*);
 
 public:
     Scriptbaked(const char* const scriptName, const char* const parentName, bool a3, bool a4); // @48A530
 
     void                        AddMember(const int fieldId, char* defaultValue, const int); // @48AF10
     void                        AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(ScriptThread*, void*)); // @48A690
-    void                        AddLocal(void (*procPtr)(ScriptThread*), DataType* localType);  //  @48A700
+    void                        AddLocal(void (*procPtr)(ScriptThread*), DataType* localType);  //  @48A700 //  NOTE: upon entering the 'procPtr' the stack must be adjusted accordingly to the number of 'localtype' variables 'added'.
     void                        AddProperty(Node* scriptNode, const unsigned int propertyIndex, const int* const propertyValue);    //  @489EA0
     void                        CalculateSize(); // @48AA60
+
+private:
+    bool                        _48A1B0(Node* node, const int32_t scriptId, uint8_t* args); //  @48A1B0
+
+public:
 
     bool                        GetMappedPropertyValue(const int* const nodeParameters, const int propertyId, int* outPropertyValue) const;   //  @48B6A0
     bool                        _48A7E0(Node* node, int scriptId, void* args); // @48A7E0

@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "FrameBasedSubAllocator.h"
 #include "Node.h"
+#include "File.h"
 
 EntityType* tFolder;
 
@@ -26,12 +27,12 @@ void Folder_::DestroyAllChildren()
     m_FirstChild = nullptr;
 }
 
-void Folder_::ReadAssetBlockFile(AssetInfo& assinfo, const char* const assfname) const
+void Folder_::ReadAssetBlockFile(AssetInfo::ActualAssetInfo* assinfo, const char* const assfname) const
 {
     FileBuffer assfile(assfname, 161, true);
-    assinfo.m_AssetInfo_Shared.m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assfile, (int*)assinfo.m_AssetInfo_Shared.m_ResourceAllocatedAlignedBufferPtr, &assinfo.m_AssetInfo_Shared.m_ResourceDataBufferSize, (m_BlockId * 8) >> 3);
+    assinfo->m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assfile, (int*)assinfo->m_ResourceAllocatedAlignedBufferPtr, &assinfo->m_ResourceDataBufferSize, (m_BlockId * 8) >> 3);
 
-    if (assinfo.m_AssetInfo_Shared.m_ResourceDataBufferPtr)
+    if (assinfo->m_ResourceDataBufferPtr)
         LogDump::LogA("Read asset block file: %s\n", assfname);
     else
         LogDump::LogA("Could not read the asset block file; probably due to checksums: %s\n", assfname);
@@ -156,22 +157,40 @@ void Folder_::SetBlockId(unsigned int blockid)
         delete m_AssetBlockInfo;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Folder_::LoadAssetBlock()
 {
-    const Scene* sceneNode = Scene::SceneInstance;
-    char fragmentPath[512] = {};
+    char fragmentPlatformPath[512] = {};
     String folderFragmentName;
-    const char* const languageCode = Script::GetCurrentCountryCode();
+    String assetSharedPath, assetLocalisedPath;
+    const char* const sceneFragmentName = Scene::SceneInstance->GetFragment();
+    const Asset::BlockTypeNumber blockType = (Asset::BlockTypeNumber)(m_BlockId);
 
-    g_AssetManager->GetPlatformSpecificPath(fragmentPath, sceneNode->GetFragment(), nullptr, AssetManager::PlatformId::PC);
-    strcat(fragmentPath, "/");
+    g_AssetManager->GetPlatformSpecificPath(fragmentPlatformPath, sceneFragmentName, nullptr, AssetManager::PlatformId::PC);
+    strcat(fragmentPlatformPath, "/");
 
     FileBuffer::ExtractFileName(folderFragmentName, m_Fragment->m_Name);
-    strcat(fragmentPath, folderFragmentName.m_Str);
+    strcat(fragmentPlatformPath, folderFragmentName.m_Str);
 
-    String folderFragmentPath;
-    //  TODO: at offset 0x50 the 3 lowest bits are block type index, but different code parts reference it in a different way.
+    GetResourcePathRelative(assetSharedPath, fragmentPlatformPath, blockType, nullptr);
+    GetResourcePathRelative(assetLocalisedPath, fragmentPlatformPath, blockType, Script::GetCurrentCountryCode());
+
+    if (!g_AssetManager->m_LoadBlocks || Scene::SceneInstance->m_PlayMode == Scene::PlayMode::MODE_STOP)
+        return;
+
+    FileBuffer::FindFileEverywhere(assetSharedPath.m_Str, 0);
+
+    FrameBasedSubAllocator* allocator = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType(blockType)];
+    if (strcmp(allocator->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+        allocator->MakeNew();
+
+    ReadAssetBlockFile(&m_AssetBlockInfo->m_AssetInfo_Shared, assetSharedPath.m_Str);
+
+    FileBuffer::FindFileEverywhere(assetLocalisedPath.m_Str, 0);
+
+    ReadAssetBlockFile(&m_AssetBlockInfo->m_AssetInfo_Localised, assetLocalisedPath.m_Str);
+
+    _31 = 1;
+    AssetManager::_A3D7C0 = false;
 }
 
 void Folder_::Register()

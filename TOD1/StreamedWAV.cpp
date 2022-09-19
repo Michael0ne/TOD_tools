@@ -199,7 +199,7 @@ bool StreamedWAV::OpenSoundFile(bool a1)
 
 bool StreamedWAV::TryLocateCurrentStreamFile() const
 {
-    return (m_WavFile || m_OggInfo) && FileBuffer::FindFileEverywhere(m_FileName.m_Str);
+    return (m_WavFile || m_OggInfo) && FileBuffer::FindFileEverywhere(m_FileName.m_Str, 0);
 }
 
 void StreamedWAV::RemoveSoundBuffer()

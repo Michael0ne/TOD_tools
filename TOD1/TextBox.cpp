@@ -8,6 +8,7 @@
 #include "NumberType.h"
 #include "VectorType.h"
 #include "StringType.h"
+#include "BuiltinType.h"
 
 EntityType* tTextBox;
 
@@ -88,7 +89,22 @@ void TextBox::SetTextScale(const float* args)
 Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
 {
     if (!m_FontAsset)
-        return (outSize = Vector4f(), &outSize);
+    {
+        outSize = BuiltinType::ZeroVector;
+        return &outSize;
+    }
+
+    if (m_Text)
+    {
+        Font* font = m_FontAsset.GetAsset<FontAsset>()->m_Font;
+
+        font->m_ScaleX = m_ScaleX;
+        font->m_ScaleY = m_ScaleY;
+        font->m_HorizontalSpacing = m_HorizontalSpacing;
+        font->m_VerticalSpacing = m_VerticalSpacing;
+
+        String textBoxText(*m_Text);
+    }
 
     return nullptr;
 }

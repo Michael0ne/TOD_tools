@@ -155,7 +155,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
 
     m_GameName = KAPOW_GAMENAME;
 
-    if (FileBuffer::FindFileEverywhere(m_ConfigFilePath.m_Str))
+    if (FileBuffer::FindFileEverywhere(m_ConfigFilePath.m_Str, 0))
     {
         LogDump::LogA("Initialising engine with '%s'\n", m_ConfigFilePath.m_Str);
 
@@ -165,7 +165,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
         m_ConfigurationVariables = new ConfigVariables(0);
 
     ConfigVariables* profileVariables = nullptr;
-    if (FileBuffer::FindFileEverywhere(CONFIG_PROFILEFILE))
+    if (FileBuffer::FindFileEverywhere(CONFIG_PROFILEFILE, 0))
         profileVariables = new ConfigVariables(CONFIG_PROFILEFILE, 0);
 
     if (m_ConfigurationVariables->IsVariableSet("filecheck"))
@@ -1158,7 +1158,7 @@ void EnumMaterialsInCollmat()
     char collmatFilename[] = "/CollMat.txt";
 
 #ifdef INCLUDE_FIXES
-    if (!FileBuffer::FindFileEverywhere(collmatFilename))
+    if (!FileBuffer::FindFileEverywhere(collmatFilename, 0))
         return;
 #else
     // NOTE: original code doesn't check the result.
@@ -1218,7 +1218,7 @@ void EnumFaceColMaterials()
 {
     char filename[] = "/FaceColl.mat";
     if (FaceCollList.size() > 0 ||
-        !FileBuffer::FindFileEverywhere(filename))
+        !FileBuffer::FindFileEverywhere(filename, 0))
         return;
 
     FileBuffer faceColFile(filename, 1, true);
