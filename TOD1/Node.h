@@ -124,7 +124,7 @@ public:
     virtual void        ExecuteScript();                        //  @88C610
     virtual void        nullsub_4(int);                         //  @883EC0
     virtual void        DestroyFrameBuffers();                  //  @8CB190
-    virtual void        nullsub_6(const std::vector<Node*>);    //  @883EC0
+    virtual void        nullsub_6(const std::vector<void*>&);    //  @883EC0
     virtual String*     GetResourceName(String* unk);           //  @484E80
     virtual Vector4f*   GetBounds(Vector4f& outBounds);         //  @484DC0
 

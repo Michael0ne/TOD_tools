@@ -6,10 +6,15 @@
 #include "FrameBasedSubAllocator.h"
 #include "Node.h"
 #include "File.h"
+#include "Timer.h"
 
 EntityType* tFolder;
 
 int Folder_::CurrentBlockId = -1;
+int Folder_::_A11B84[9] =
+{
+    0, 1, 0, 0, 0, -1, -1, -1
+};
 
 void Folder_::DestroyAllChildren()
 {
@@ -30,12 +35,72 @@ void Folder_::DestroyAllChildren()
 void Folder_::ReadAssetBlockFile(AssetInfo::ActualAssetInfo* assinfo, const char* const assfname) const
 {
     FileBuffer assfile(assfname, 161, true);
-    assinfo->m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assfile, (int*)assinfo->m_ResourceAllocatedAlignedBufferPtr, &assinfo->m_ResourceDataBufferSize, (m_BlockId * 8) >> 3);
+    assinfo->m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assfile, (int*)assinfo->m_ResourceAllocatedAlignedBufferPtr, &assinfo->m_ResourceDataBufferSize, m_BlockId);
 
     if (assinfo->m_ResourceDataBufferPtr)
         LogDump::LogA("Read asset block file: %s\n", assfname);
     else
         LogDump::LogA("Could not read the asset block file; probably due to checksums: %s\n", assfname);
+}
+
+void Folder_::FixDanglingAssets(AssetInfo::ActualAssetInfo* assinfo)
+{
+    g_AssetManager->DestroyDanglingAssets((char*)assinfo->m_ResourceDataBufferPtr, (char*)assinfo->m_ResourceDataBufferPtr + assinfo->m_ResourceDataBufferSize);
+    uint32_t assetIndex = g_AssetManager->FindFirstLoadedAsset(0);
+    Asset* assetInstance = nullptr;
+
+    std::vector<Asset*> danglingAssets;
+
+    if (assetIndex)
+        assetInstance = g_AssetManager->m_ResourcesInstancesList[assetIndex];
+
+    for (Asset* i = assetInstance; i; i = g_AssetManager->GetNextLoadedAsset(i))
+    {
+        if ((char*)i >= (char*)assinfo->m_ResourceDataBufferPtr && (char*)i < ((char*)assinfo->m_ResourceDataBufferPtr + assinfo->m_ResourceDataBufferSize))
+            danglingAssets.push_back(i);
+    }
+
+    LogDump::LogA("\n*****************  Number of dangling assets : %d\n\n", danglingAssets.size());
+    DWORD64 timeStart = __rdtsc();
+
+    for (Node* entity = (Node*)g_AssetManager->FindFirstEntity(); entity; entity = (Node*)g_AssetManager->FindNextEntity(entity))
+    {
+        if (!entity->m_ScriptEntity)
+            continue;
+
+        EntityType* entityScript = entity->m_ScriptEntity;
+        while (tNode != entityScript)
+        {
+            entityScript = entityScript->m_Parent;
+            if (!entityScript)
+                break;
+        }
+
+        if (entityScript)
+            entity->nullsub_6((const std::vector<void*>&)danglingAssets);
+    }
+
+    DWORD64 timeEnd = __rdtsc();
+    LogDump::LogA("time: %d\n", (timeEnd - timeStart) / Timer::ClockGetCyclesMilliseconds());
+
+    g_AssetManager->DestroyDanglingAssets((char*)assinfo->m_ResourceDataBufferPtr, (char*)assinfo->m_ResourceDataBufferPtr + assinfo->m_ResourceDataBufferSize);
+
+    assetIndex = g_AssetManager->FindFirstLoadedAsset(0);
+    assetInstance = nullptr;
+
+    if (assetIndex)
+        assetInstance = g_AssetManager->m_ResourcesInstancesList[assetIndex];
+
+    for (Asset* i = assetInstance; i; i = g_AssetManager->GetNextLoadedAsset(i))
+    {
+        if ((char*)i >= (char*)assinfo->m_ResourceDataBufferPtr && (char*)i < ((char*)assinfo->m_ResourceDataBufferPtr + assinfo->m_ResourceDataBufferSize))
+            i->GetName();   //  NOTE: this was probably intended for some debugging purposes.
+    }
+
+    assinfo->m_ResourceDataBufferPtr = nullptr;
+    MemoryManager::ReleaseMemory(assinfo->m_ResourceAllocatedAlignedBufferPtr, true);
+    assinfo->m_ResourceAllocatedAlignedBufferPtr = nullptr;
+    assinfo->m_ResourceDataBufferSize = 0;
 }
 
 void Folder_::GetResourcePathRelative(String& outPath, String resourceName, Asset::BlockTypeNumber blockType, const char* languageCode)
@@ -106,7 +171,7 @@ void Folder_::UnloadBlocks()
         CurrentBlockId = -1;
     }
 
-    FrameBasedSubAllocator* framealloc = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType((8 * m_BlockId) >> 3)];
+    FrameBasedSubAllocator* framealloc = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType(m_BlockId)];
     if (Scene::SceneInstance->m_PlayMode != 1)
     {
         LogDump::LogA("*** checking for dangling nodes ***\n");
@@ -117,7 +182,7 @@ void Folder_::UnloadBlocks()
             if (!loadednode)
                 break;
 
-            while ( loadednode->m_Id.BlockId - 1 != ((8 * m_BlockId) >> 3))
+            while ( loadednode->m_Id.BlockId - 1 != (m_BlockId) )
             {
                 loadednode = (Node*)g_AssetManager->FindNextEntity(loadednode);
                 if (!loadednode)
@@ -157,6 +222,24 @@ void Folder_::SetBlockId(unsigned int blockid)
         delete m_AssetBlockInfo;
 }
 
+void Folder_::UnloadAssets()
+{
+    if (m_BlockId >= 0)
+    {
+        _31 = 0;
+        return;
+    }
+
+    FixDanglingAssets(&m_AssetBlockInfo->m_AssetInfo_Shared);
+    FixDanglingAssets(&m_AssetBlockInfo->m_AssetInfo_Localised);
+
+    FrameBasedSubAllocator* allocator = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType(m_BlockId)];
+    if (strcmp(allocator->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+        allocator->RemoveLast();
+
+    _31 = 0;
+}
+
 void Folder_::LoadAssetBlock()
 {
     char fragmentPlatformPath[512] = {};
@@ -191,6 +274,70 @@ void Folder_::LoadAssetBlock()
 
     _31 = 1;
     AssetManager::_A3D7C0 = false;
+}
+
+void Folder_::LoadFragment()
+{
+    FrameBasedSubAllocator* allocator = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType(m_BlockId)];
+    if (strcmp(allocator->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+        allocator->MakeNew();
+
+    m_Flags.HasFragment = true;
+
+    Node* parent = this;
+    do
+    {
+        parent = parent->m_Parent;
+    } while (!parent->GetFragment());
+
+    if (m_Fragment)
+    {
+        g_AssetManager->AddLoadedAssetName((const char*)ALIGN_4BYTES((unsigned int)(parent->m_Fragment->m_FragmentRes.m_AssetPtr->m_ResourcePath)));
+        m_Fragment->LoadResourceFile(m_Fragment->m_Name);
+
+        g_AssetManager->m_LoadedAssetsNames.pop_back();
+        delete[] m_Fragment->m_Name;
+
+        m_Fragment->ApplyFragment();
+
+        InstantiateAllChildren();
+    }
+}
+
+Node* Folder_::_87E640() const
+{
+    if (this == Scene::SceneInstance)
+        return nullptr;
+
+    const int32_t goodBlockId = _A11B84[m_BlockId];
+    if (!goodBlockId)
+        return nullptr;
+
+    Node* child = m_Parent->m_FirstChild;
+    if (!child)
+        return nullptr;
+
+    while (true)
+    {
+        EntityType* entityScript = child->m_ScriptEntity;
+        if (entityScript)
+        {
+            while (tFolder != entityScript)
+            {
+                entityScript = entityScript->m_Parent;
+                if (!entityScript)
+                    break;
+            }
+
+            if (entityScript)
+                if (((Folder_*)child)->m_BlockId == goodBlockId)
+                    return child;
+        }
+
+        child = child->m_NextSibling;
+        if (!child)
+            return nullptr;
+    }
 }
 
 void Folder_::Register()

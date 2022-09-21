@@ -1718,7 +1718,7 @@ void Node::DestroyFrameBuffers()
     return;
 }
 
-void Node::nullsub_6(const std::vector<Node*>)
+void Node::nullsub_6(const std::vector<void*>&)
 {
     return;
 }

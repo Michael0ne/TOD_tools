@@ -31,10 +31,6 @@ unsigned int Scene::QuadTreesAllocated;
 Scene::QuadTreeNode* Scene::QuadTrees;
 short Scene::_A120E8 = -1;
 int Scene::_A3DD40;
-int Scene::_A11B84[9] =
-{
-    0, 1, 0, 0, 0, -1, -1, -1
-};
 
 int Scene::RealTimeMs;
 int Scene::GameTimeMs;
