@@ -350,7 +350,7 @@
     <ClInclude Include="Light.h">
       <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="LoadScreen.h">
+    <ClInclude Include="LoadScreenNode.h">
       <Filter>Header files\KapowSystems\Scripting\Entity</Filter>
     </ClInclude>
     <ClInclude Include="MemoryCards.h">
@@ -868,7 +868,7 @@
     <ClCompile Include="Fragment.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="LoadScreen.cpp">
+    <ClCompile Include="LoadScreenNode.cpp">
       <Filter>Source files\KapowSystems\Scripting\Entity</Filter>
     </ClCompile>
     <ClCompile Include="MemoryCards.cpp">

@@ -7,6 +7,7 @@
 #include "ScriptDatabase.h"
 #include "GfxInternal.h"
 #include "Scene.h"
+#include "Model.h"
 
 AssetManager* g_AssetManager;
 bool AssetManager::ChecksumChecked;
@@ -160,19 +161,52 @@ void AssetManager::DeleteFastFindNodeVector()
     m_FastFindNodeVector.clear();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void AssetManager::FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi)
 {
     Node* child = baseNode->m_FirstChild;
-
     while (child)
     {
-        //  ...
-        if (!child->m_Name || !*child->m_Name)
+        String childName(child->GetName());
+        if (childName.Empty())
         {
+            EntityType* scriptEntity = child->m_ScriptEntity;
 
+            while (tModel != scriptEntity)
+            {
+                scriptEntity = scriptEntity->m_Parent;
+                if (!scriptEntity)
+                {
+                    break;
+                }
+            }
+
+            if (!scriptEntity || !((Model*)child)->m_ModelRes)
+            {
+                if (child->m_FirstChild)
+                    FillFastFindNodeVector(baseNode, ffi);
+
+                child = child->m_NextSibling;
+                continue;
+            }
+
+            ModelAsset* modelAsset = ((Model*)child)->m_ModelRes.GetAsset<ModelAsset>();
+            FileBuffer::ExtractFileName(childName, modelAsset->GetName());
+        }
+        else
+        {
+            childName.ToLowerCase();
         }
 
+        const int32_t nameChecksum = Utils::CalcCRC32(childName.m_Str, childName.m_Length);
+
+        FastFindInfo ffiTemp;
+        ffiTemp.m_Index = ffi->m_Index;
+        ffiTemp.m_Node = child;
+        ffiTemp.m_NodeNameCRC = nameChecksum;
+
+        m_FastFindNodeVector.push_back(ffiTemp);
+
+        ffi->m_Index++;
 
         if (child->m_FirstChild)
             FillFastFindNodeVector(child, ffi);

@@ -42,6 +42,8 @@ enum class eSizeMode
 
 class Sprite : public Node
 {
+    friend class Progress;
+
     struct ColorBits
     {
         union

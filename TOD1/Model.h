@@ -10,6 +10,7 @@ class Model : public Node
 {
     friend class Node;
     friend class Entity;
+    friend class AssetManager;
 
     struct AttachedEffect
     {

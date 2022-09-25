@@ -25,7 +25,7 @@
 #include "Model.h"
 #include "CollisionProbe.h"
 #include "VirtualHud.h"
-#include "LoadScreen.h"
+#include "LoadScreenNode.h"
 #include "SkyBox.h"
 #include "FontAsset.h"
 #include "TextAsset.h"

@@ -1,4 +1,4 @@
-#include "LoadScreen.h"
+#include "LoadScreenNode.h"
 #include "AssetManager.h"
 #include "LoadScreenInfo.h"
 #include "Progress.h"

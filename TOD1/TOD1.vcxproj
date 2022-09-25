@@ -382,7 +382,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="HavocPlaceHolder.h" />
     <ClInclude Include="LensFlare.h" />
     <ClInclude Include="LensFlareManager.h" />
-    <ClInclude Include="LoadScreen.h" />
+    <ClInclude Include="LoadScreenNode.h" />
     <ClInclude Include="LoadScreenInfo.h" />
     <ClInclude Include="LogDump.h" />
     <ClInclude Include="MemoryCards.h" />
@@ -545,7 +545,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClCompile Include="HavocPlaceHolder.cpp" />
     <ClCompile Include="LensFlare.cpp" />
     <ClCompile Include="LensFlareManager.cpp" />
-    <ClCompile Include="LoadScreen.cpp" />
+    <ClCompile Include="LoadScreenNode.cpp" />
     <ClCompile Include="LoadScreenInfo.cpp" />
     <ClCompile Include="LogDump.cpp" />
     <ClCompile Include="MemoryCards.cpp" />
