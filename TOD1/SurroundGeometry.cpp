@@ -3,6 +3,7 @@
 #include "IntegerType.h"
 #include "NumberType.h"
 #include "StringType.h"
+#include "Scene.h"
 
 EntityType* tSurroundGeometry;
 
@@ -17,6 +18,30 @@ SurroundGeometry::SurroundGeometry() : Node(NODE_MASK_QUADTREE)
 SurroundGeometry::~SurroundGeometry()
 {
     MESSAGE_CLASS_DESTROYED(SurroundGeometry);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void SurroundGeometry::Instantiate()
+{
+
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void SurroundGeometry::Render()
+{
+    if (!m_OverallProperbility)
+        return;
+
+    DirectX::XMMATRIX cameraMat;
+    Scene::SceneInstance->m_ActiveCamera->GetMatrix(cameraMat);
+}
+
+void SurroundGeometry::DestroyFrameBuffers()
+{
+    for (uint32_t i = 8; i; i--)
+        delete m_FrameBuffers[i];
+
+    m_Id._3 = 1;
 }
 
 const int SurroundGeometry::GetCategory() const
@@ -75,7 +100,7 @@ void SurroundGeometry::SetVariation(const float variation)
 
 const char* const SurroundGeometry::GetModel1() const
 {
-    return m_Model1 ? m_Model1.m_AssetPtr->GetName() : nullptr;
+    return m_Model[0] ? m_Model[0].m_AssetPtr->GetName() : nullptr;
 }
 
 void SurroundGeometry::SetModel1(const char* const model)
@@ -83,7 +108,7 @@ void SurroundGeometry::SetModel1(const char* const model)
     if (!model)
         return;
 
-    m_Model1 = AssetLoader(model);
+    m_Model[0] = AssetLoader(model);
     TryInstantiate();
 }
 
@@ -100,7 +125,7 @@ void SurroundGeometry::SetProperbility1(const float properbil)
 
 const char* const SurroundGeometry::GetModel2() const
 {
-    return m_Model2 ? m_Model2.m_AssetPtr->GetName() : nullptr;
+    return m_Model[1] ? m_Model[1].m_AssetPtr->GetName() : nullptr;
 }
 
 void SurroundGeometry::SetModel2(const char* const model)
@@ -108,7 +133,7 @@ void SurroundGeometry::SetModel2(const char* const model)
     if (!model)
         return;
 
-    m_Model2 = AssetLoader(model);
+    m_Model[1] = AssetLoader(model);
     TryInstantiate();
 }
 
@@ -125,7 +150,7 @@ void SurroundGeometry::SetProperbility2(const float properbil)
 
 const char* const SurroundGeometry::GetModel3() const
 {
-    return m_Model3 ? m_Model3.m_AssetPtr->GetName() : nullptr;
+    return m_Model[2] ? m_Model[2].m_AssetPtr->GetName() : nullptr;
 }
 
 void SurroundGeometry::SetModel3(const char* const model)
@@ -133,7 +158,7 @@ void SurroundGeometry::SetModel3(const char* const model)
     if (!model)
         return;
 
-    m_Model3 = AssetLoader(model);
+    m_Model[2] = AssetLoader(model);
     TryInstantiate();
 }
 
@@ -150,7 +175,7 @@ void SurroundGeometry::SetProperbility3(const float properbil)
 
 const char* const SurroundGeometry::GetModel4() const
 {
-    return m_Model4 ? m_Model4.m_AssetPtr->GetName() : nullptr;
+    return m_Model[3] ? m_Model[3].m_AssetPtr->GetName() : nullptr;
 }
 
 void SurroundGeometry::SetModel4(const char* const model)
@@ -158,7 +183,7 @@ void SurroundGeometry::SetModel4(const char* const model)
     if (!model)
         return;
 
-    m_Model4 = AssetLoader(model);
+    m_Model[3] = AssetLoader(model);
     TryInstantiate();
 }
 
