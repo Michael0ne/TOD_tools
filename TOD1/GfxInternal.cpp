@@ -416,6 +416,39 @@ const ScreenResolution& GfxInternal::GetViewportResolution() const
     return g_GfxInternal_Dx9->m_ViewportResolution;
 }
 
+void GfxInternal::SetBufferProjectionMatrixParams(const float fov, const float ratio, const float nearClip, const float farClip, const int32_t bufferIndex)
+{
+    if (bufferIndex == -1)
+    {
+        for (uint32_t i = 0; i < m_RenderBufferTotal; ++i)
+            m_RenderBufferArray[i].m_ProjectionMatrixParams = Vector4f(fov, ratio, nearClip, farClip);
+    }
+    else
+    {
+        m_RenderBufferArray[bufferIndex].m_ProjectionMatrixParams = Vector4f(fov, ratio, nearClip, farClip);
+    }
+}
+
+void GfxInternal::SetBufferViewMatrixByIndex(const DirectX::XMMATRIX& mat, const int32_t bufferIndex)
+{
+    if (bufferIndex == -1)
+    {
+        for (uint32_t i = 0; i < m_RenderBufferTotal; ++i)
+        {
+            m_RenderBufferArray[i].m_ViewMatrix = mat;
+        }
+    }
+    else
+    {
+        m_RenderBufferArray[bufferIndex].m_ViewMatrix = mat;
+    }
+}
+
+void GfxInternal::SetGameCameraMatrix(CameraMatrix* mat)
+{
+    g_GfxInternal_Dx9->m_GameCameraMatrix = mat;
+}
+
 AssetManager::RegionCode GfxInternal::GetRegion()
 {
     return AssetManager::REGION_EUROPE;

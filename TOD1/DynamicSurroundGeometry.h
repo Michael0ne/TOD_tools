@@ -135,8 +135,10 @@ public:
 
     static void         Register(); //  @8DCF50
     static DynamicSurroundGeometry* Create(AllocatorIndex); //  @8DD9E0
+    static void         _8FA270(int32_t* _this);    //  @8FA270
 
     static int          TotalCreated; // @A3E0E0
+    static int32_t*     _A3E0DC;    //  @A3E0DC
 
 private:
     void                CalculateWindAffection(GeometryNode*);  //  @8D51E0

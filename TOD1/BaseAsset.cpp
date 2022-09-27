@@ -187,7 +187,7 @@ void Asset::AllocateResourceForBlockLoad(const unsigned int size, int** bufalign
 {
     int* bufblock = (int*)MemoryManager::AllocateByType(AllocatorIndexByBlockType(blockid), AssetInstance::AssetAlignment[0] + size);
 
-    buf = bufblock;
+    *buf = (int32_t)bufblock;
     *bufaligned = (int*)( ~(AssetInstance::AssetAlignment[0] - 1) & ((int)bufblock + AssetInstance::AssetAlignment[0] - 1) );
 }
 

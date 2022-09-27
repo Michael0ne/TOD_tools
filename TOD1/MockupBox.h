@@ -47,8 +47,13 @@ private:
 public:
     MockupBox(); // @8CF870
     virtual            ~MockupBox();   //  @8D1170
+    virtual void        Instantiate() override; //  @8D0420
+    virtual void        Render() override;  //  @8CE930
+    virtual char        ProcessCollision(int, int) override;    //  @8CF6A0
+    virtual float       _8F8650(int, int) override; //  @8CE380
+    virtual void        DestroyFrameBuffers() override; //  @8CE2F0
+    virtual void        nullsub_3(int) override;    //  @8D1670
     virtual Vector4f*   GetBounds(Vector4f& bounds) override;   //  @8CE330
-    virtual void        Render();   //  @8CE930
 
     const float         GetLeft() const;    //  @89A880
     void                SetLeft(const float left);  //  @8CE050

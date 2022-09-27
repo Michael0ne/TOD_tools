@@ -20,6 +20,10 @@
 #include "ScriptThread.h"
 #include "Control.h"
 #include "EditorCamera.h"
+#include "LoadScreenInfo.h"
+#include "MoviePlayer.h"
+#include "DynamicSurroundGeometry.h"
+#include "SoundSlot.h"
 
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
@@ -177,9 +181,41 @@ Scene::~Scene()
     _A3DD40 = NULL;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Scene::Destroy()
 {
+    ResetRewindBuffer(true);
+    g_SceneSaveLoad->ResetSavedPlayMode();
+    SoundSlot::DeallocateStreams(nullptr);
+
+    if (GetFragment())
+    {
+        if (g_AssetManager->m_LoadBlocks)
+        {
+            m_PlayMode = MODE_STOP;
+            UnloadLoadedFolders();
+        }
+
+        SetFragment(nullptr);
+
+        FrameBasedSubAllocator* allocator = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType(0)];
+        if (strcmp(allocator->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+            allocator->RemoveLast();
+    }
+
+    ((Folder_*)this)->Destroy();
+
+    g_AssetManager->m_BlocksUnloaded = false;
+
+    g_AssetManager->_8794B0(nullptr);
+
+    int32_t assetIndex = g_AssetManager->FindFirstLoadedAsset(0);
+    if (assetIndex)
+    {
+        for (Asset* asset = g_AssetManager->m_ResourcesInstancesList[assetIndex]; asset; asset = g_AssetManager->GetNextLoadedAsset(asset))
+        {
+            LogDump::LogA("UNFREED ASSET: %s, refcount=%d\n", asset->GetName(), asset->m_Flags.ReferenceCount);
+        }
+    }
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -187,9 +223,76 @@ void Scene::Update()
 {
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Scene::Render()
 {
+    const DWORD64 startTime = __rdtsc();
+
+    for (uint32_t i = 0; i < 31; ++i)
+    {
+        FrameBuffer* fb = m_FrameBuffers[i];
+
+        fb->Reset();
+        fb->SubmitEnableLightingCommand(0);
+
+        if (i == 0 || i == 2 || i == 19)
+        {
+            fb->SubmitEnableAlphaChannelCommand(false);
+            fb->SubmitEnableAlphaTestCommand(false);
+        }
+        else
+        {
+            fb->SubmitEnableAlphaChannelCommand(true);
+            fb->SubmitEnableAlphaTestCommand(true);
+        }
+
+        if (i == 16 || i == 15)
+            fb->SubmitSetBlendModeCommand(true);
+        else
+            fb->SubmitSetBlendModeCommand(false);
+    }
+
+    m_FrameBuffers[4]->SubmitSetZBiasCommand(1);
+    m_FrameBuffers[5]->SubmitSetZBiasCommand(2);
+    m_FrameBuffers[19]->SubmitEnableZTestCommand(true);
+
+    g_GfxInternal->SetClearFlagsForBufferIndex(2, 27);
+
+    m_ActiveCamera->UpdateCameraMatrix();
+    Camera::StoreActiveCameraPosition();
+
+    DirectX::XMMATRIX cameraMatrix;
+    m_ActiveCamera->GetMatrix(cameraMatrix);
+
+    if (!g_LoadScreenInfo->m_Enabled)
+    {
+        if (!MoviePlayer::Instance)
+        {
+            if (DynamicSurroundGeometry::_A3E0DC)
+                DynamicSurroundGeometry::_8FA270(DynamicSurroundGeometry::_A3E0DC); //  TODO: convert to object method once complete.
+            g_GfxInternal->SetGameCameraMatrix(&Scene::SceneInstance->m_ActiveCamera->m_CameraMatrix);
+        }
+
+        MoviePlayer::Instance->Render();
+    }
+
+    for (uint32_t i = 30; i; i--)
+        m_FrameBuffers[i]->_436BF0();
+
+    if (m_CollisionListList.size())
+    {
+        void* scratchpadMemory = MemoryManager::AllocatorsList[SCRATCHPAD]->AllocateAligned(ALIGN_4BYTES(4 * m_CollisionListList.size() + 127), 64, __FILE__, __LINE__);
+        for (uint32_t i = m_CollisionListList.size(); i; --i)
+        {
+            if (m_CollisionListList[i]->m_Owner && ((Node*)m_CollisionListList[i]->m_Owner)->m_QuadTree)
+                m_CollisionListList[i]->CommitCollision();
+        }
+
+        MemoryManager::ReleaseMemory(scratchpadMemory, true);
+    }
+
+    NewFrameNumber++;
+
+    const DWORD64 endTime = __rdtsc();
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -214,19 +317,20 @@ void Scene::ReleaseQuadTreeAndRenderlist()
     _895F50();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::ActualAssetInfo* assetinfo)
 {
     FileBuffer assetfile(assetname, 161, true);
 
     assetinfo->m_ResourceDataBufferPtr = g_AssetManager->LoadResourceBlock(&assetfile, (int*)&assetinfo->m_ResourceAllocatedAlignedBufferPtr, &assetinfo->m_ResourceDataBufferSize, Asset::BlockTypeNumber::NONE);
-    DWORD64 starttick = __rdtsc();
+    const DWORD64 startTime = __rdtsc();
 
-    //g_Blocks->_878030();
-    //g_Blocks->_875EB0();
-    //g_Blocks->MakeSpaceForAssetsList();
+    g_AssetManager->_878030();
+    g_AssetManager->InstantiateAssetsAndClearAssetsList();
+    g_AssetManager->MakeSpaceForAssetsList();
 
-    LogDump::LogA("Timings: FixupAssetRefsInLoadedAssetBlocks: %f\n", (__rdtsc() - starttick) / Timer::ClockGetCycles());
+    const DWORD64 endTime = __rdtsc();
+
+    LogDump::LogA("Timings: FixupAssetRefsInLoadedAssetBlocks: %f\n", (endTime - startTime) / Timer::ClockGetCycles());
 
     if (assetinfo->m_ResourceDataBufferPtr)
         LogDump::LogA("read asset block file: %s\n", assetname);
@@ -809,11 +913,12 @@ void Scene::Load(const char* sceneName)
         int mainAssetAllocMem = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
         LogDump::LogA("asset block before: %0.1f Kb\n", mainAssetAllocMem * 0.0009765625f);
 
-        //if (strcmp(MemoryManager::AllocatorsList[Asset::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
-         //((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->MakeNew();
+        FrameBasedSubAllocator* allocator = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType(0)];
+        if (strcmp(allocator->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+            allocator->MakeNew();
 
         LoadingAssetBlock = true;
-        //Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = false;
+        ((Defragmentator*)MemoryManager::AllocatorsList[DEFRAGMENTING])->field_20 = false;
         LoadResourceBlockIntoSceneBuffer(block_path_shared.m_Str, &m_AssetBlockInfo->m_AssetInfo_Shared);
         LoadResourceBlockIntoSceneBuffer(block_path_localised.m_Str, &m_AssetBlockInfo->m_AssetInfo_Localised);
 
@@ -830,8 +935,9 @@ void Scene::Load(const char* sceneName)
     g_AssetManager->m_ActiveBlockId = (8 * m_BlockId) >> 3;
     _A3D858 = 1;
 
-    //if (strcmp(MemoryManager::AllocatorsList[Asset::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)]->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
-      //((FrameBasedSubAllocator*)MemoryManager::AllocatorsList[ResType::ResourceBase::GetResourceBlockTypeNumber(ResType::BlockTypeNumber::NONE)])->MakeNew();
+    FrameBasedSubAllocator* allocator = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType(0)];
+    if (strcmp(allocator->GetAllocatorName(), "FrameBasedSubAllocator") == NULL)
+        allocator->MakeNew();
 
     UINT64 fragmentloadstarttime = __rdtsc();
     g_AssetManager->_878030();
@@ -866,7 +972,7 @@ void Scene::Load(const char* sceneName)
         }
     }
 
-    //Allocators::AllocatorsList[DEFRAGMENTING]->field_1C->field_20 = true;
+    ((Defragmentator*)MemoryManager::AllocatorsList[DEFRAGMENTING])->field_20 = true;
     _A3D858 = false;
     g_AssetManager->m_ActiveBlockId = -1;
     _896BA0();

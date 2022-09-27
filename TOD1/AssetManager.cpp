@@ -617,7 +617,7 @@ void* AssetManager::LoadResourceBlock(FileBuffer* file, int* resbufferptr, unsig
 
     *resdatasize = resourcesInfoSize;
     Asset::AllocateResourceForBlockLoad(resourcesInfoSize, (int**)&resourcesInfoBuffer, resbufferptr, resblockid);
-    //  resourceDataBuffer = (char*)MemoryManager::AllocateByType(RENDERLIST, maximumAssetSize);
+    //resourceDataBuffer = (char*)MemoryManager::AllocateByType(RENDERLIST, maximumAssetSize);    //  TODO: uncomment, once BestFit allocator is done.
     resourceDataBuffer = (char*)MemoryManager::AllocateByType(DEFAULT, maximumAssetSize);
     g_Progress->UpdateProgressTime(NULL, __rdtsc());
 
@@ -651,7 +651,7 @@ void* AssetManager::LoadResourceBlock(FileBuffer* file, int* resbufferptr, unsig
             }
 
             CompiledAssetInfo compasset(CompiledAssetInfo::AssetType::THREE, resourcesInfoBuffer, resourceDataBuffer, 0, 2, -1);
-            Asset::Instantiate(&compasset, (Asset*)resourcesInfoBuffer);
+            Asset::Instantiate(&compasset, (Asset*)resourcesInfoBuffer);    //  TODO: this needs more reversing so as below calls.
 
             Asset* currasset = (Asset*)resourcesInfoBuffer;
             *it = currasset;
@@ -774,6 +774,49 @@ void AssetManager::_878030()
 {
     if (!m_LoadBlocks)
         return;
+
+    Asset* loadedAsset = FindFirstLoadedAsset();
+    if (loadedAsset)
+    {
+        do
+        {
+            const char* assetPath = (const char*)ALIGN_4BYTES(loadedAsset->m_ResourcePath);
+            String loadedAssetName(!assetPath ? nullptr : assetPath);
+            loadedAssetName.ToLowerCase();
+
+            const int32_t loadedAssetNameChecksum = Utils::CalcCRC32(loadedAssetName.m_Str, loadedAssetName.m_Length);
+            AssetInfo assetInfoTemp;
+            assetInfoTemp.m_AssetNameCRC = loadedAssetNameChecksum;
+            assetInfoTemp.m_Asset = loadedAsset;
+
+            m_DefragmentatorList.push_back(assetInfoTemp);
+
+            uint32_t nextAssetIndex = loadedAsset->m_GlobalResourceId + 1;
+            if (nextAssetIndex >= m_ResourcesInstancesList.size())
+            {
+                nextAssetIndex = 0;
+            }
+            else
+            {
+                Asset** freeAssetPtr = &m_ResourcesInstancesList[nextAssetIndex];
+                while (!*freeAssetPtr)
+                {
+                    nextAssetIndex++;
+                    freeAssetPtr++;
+
+                    if (nextAssetIndex >= m_ResourcesInstancesList.size())
+                    {
+                        nextAssetIndex = 0;
+                        break;
+                    }
+                }
+            }
+
+            loadedAsset = m_ResourcesInstancesList[nextAssetIndex];
+        } while (loadedAsset);
+    }
+
+    //  TODO: another call here, with unknown purpose for now.
 }
 
 void AssetManager::MakeSpaceForAssetsList()

@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "BuiltinType.h"
 #include "NumberType.h"
+#include "GfxInternal.h"
 
 EntityType* tCamera;
 Vector4f Camera::ActiveCameraPosition;
@@ -166,6 +167,52 @@ void Camera::Project_Impl(Vector2f& projectedPos, const Vector4f& inpos) const
         projectedPos = { -10000, -10000 };
         return;
     }
+}
+
+void Camera::UpdateCameraMatrix()
+{
+    g_GfxInternal->SetBufferProjectionMatrixParams(m_Fov, GfxInternal::RatioXY, m_NearClip, m_FarClip, -1);
+    g_GfxInternal->SetBufferProjectionMatrixParams(70.f, GfxInternal::RatioXY, 0.1f, 100.f, 21);
+    g_GfxInternal->SetBufferProjectionMatrixParams(70.f, GfxInternal::RatioXY, 0.1f, 100.f, 22);
+    g_GfxInternal->SetBufferProjectionMatrixParams(70.f, GfxInternal::RatioXY, 0.1f, 100.f, 27);
+
+    DirectX::XMMATRIX sceneMatrix;
+    GetMatrix(sceneMatrix);
+
+    g_GfxInternal->SetBufferViewMatrixByIndex(sceneMatrix, -1);
+
+    sceneMatrix.r[0].m128_f32[3] = 0;
+    sceneMatrix.r[1].m128_f32[3] = 0;
+    sceneMatrix.r[2].m128_f32[3] = 0;
+    sceneMatrix.r[3].m128_f32[3] = 0;
+
+    g_GfxInternal->SetBufferViewMatrixByIndex(GfxInternal_Dx9::IdentityMatrix, 27);
+    g_GfxInternal->SetBufferViewMatrixByIndex(sceneMatrix, 21);
+    g_GfxInternal->SetBufferViewMatrixByIndex(sceneMatrix, 22);
+
+    DirectX::XMVECTOR rotationVector = DirectX::XMQuaternionRotationMatrix(sceneMatrix);
+    const float aspectRatio = GfxInternal::IsWideScreen() ? 1.7777778f : 1.3333334f;
+    ScreenResolution screenRes;
+    g_GfxInternal->GetScreenResolution(screenRes);
+
+    const float clipATan = atanf(tanf(((m_Fov * 0.017453292f) * 0.5f) * 0.75f));
+    const float nearClip = 2 * (clipATan * 57.295776f);
+
+    const float clipFATan = atanf(tanf(((nearClip * 0.017453292f) * 0.5f) * aspectRatio));
+    const float fov = 2 * (clipFATan * 57.295776f);
+
+    GetMatrix(sceneMatrix);
+    const DirectX::XMVECTOR rotationLengthVector = DirectX::XMVector4Length(rotationVector);
+    const float rotInvNormalised = 1.f / rotationLengthVector.m128_f32[0];
+
+    rotationVector.m128_f32[0] *= rotInvNormalised;
+    rotationVector.m128_f32[1] *= rotInvNormalised;
+    rotationVector.m128_f32[2] *= rotInvNormalised;
+    rotationVector.m128_f32[3] *= rotInvNormalised;
+
+    const Vector4f cameraPos(sceneMatrix.r[3].m128_f32[0], sceneMatrix.r[3].m128_f32[1], sceneMatrix.r[3].m128_f32[2], sceneMatrix.r[3].m128_f32[3]);
+
+    m_CameraMatrix.SetupMatrix(cameraPos, *(Orientation*)&rotationVector, fov, nearClip, m_FarClip);
 }
 
 void Camera::Register()

@@ -5,6 +5,7 @@
 
 EntityType* tDynamicSurroundGeometry;
 int DynamicSurroundGeometry::TotalCreated;
+int32_t* DynamicSurroundGeometry::_A3E0DC;
 
 #pragma message(TODO_IMPLEMENTATION)
 DynamicSurroundGeometry::DynamicSurroundGeometry() : Node(NODE_MASK_QUADTREE)
@@ -256,6 +257,11 @@ const float DynamicSurroundGeometry::GetForceRotate() const
 void DynamicSurroundGeometry::SetForceRotate(const float rotate)
 {
     m_ForceRotate = rotate;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void DynamicSurroundGeometry::_8FA270(int32_t* _this)
+{
 }
 
 void DynamicSurroundGeometry::Register()

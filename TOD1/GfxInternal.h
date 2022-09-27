@@ -94,6 +94,9 @@ public:
     void                            _420390();  //  @420390
     void                            GetBackBufferResolution(ScreenResolution& outResolution, const unsigned int bufferindex) const; //  @41FD20
     const ScreenResolution&         GetViewportResolution() const;  //  @41FD50
+    void                            SetBufferProjectionMatrixParams(const float fov, const float ratio, const float nearClip, const float farClip, const int32_t bufferIndex);  //  @41FB20
+    void                            SetBufferViewMatrixByIndex(const DirectX::XMMATRIX& mat, const int32_t bufferIndex);    //  @41F9D0
+    void                            SetGameCameraMatrix(CameraMatrix* mat);   //  @41F9A0
 
     static AssetManager::RegionCode  GetRegion(); // @420160
     static bool                     IsWideScreen(); // @420120

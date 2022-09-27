@@ -46,6 +46,8 @@ public:
     void            Project(float* params); // @87E4F0
     void            Project_Impl(Vector2f& projectedPos, const Vector4f& inpos) const;  //  @87DA10
 
+    void            UpdateCameraMatrix();   //  @87DE40
+
     static Vector4f ActiveCameraPosition; // @A3D898
 
     static void  StoreActiveCameraPosition(); // @87E160
