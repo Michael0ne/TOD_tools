@@ -57,7 +57,7 @@ public:
     virtual void    Dump() const override; // @478BE0
     virtual int     stub24(int, int, const char* const fileName, const unsigned int fileLineNumber) override; // @478C90
     virtual int     stub25(int, int, const char* const fileName, const unsigned int fileLineNumber, int alignment) override; // @479350
-    virtual int* stub26() const override; // @478CF0
+    virtual int* GetMemoryContents() const override; // @478CF0
     virtual const int   stub27() const override; // @478D00
     virtual int     stub28(int*) const override; // @478D10
     virtual const int   stub29(int*) const override; // @478D30

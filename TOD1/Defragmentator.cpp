@@ -182,6 +182,16 @@ void Defragmentator::Defragment()
 #pragma message(TODO_IMPLEMENTATION)
 void Defragmentator::DefragmentMemory()
 {
+    m_LastDefragmentationTime = Timer::GetMilliseconds();
+    LogDump::LogA("Phase 1\n");
+
+    int32_t elementsTotal = m_SpilledAllocs + m_Allocator->GetAllocatedElementsTotal();
+    if (MemoryManager::GetAllocatorByMemoryPointer(m_AllocatedSpace) == m_Allocator)
+        elementsTotal--;
+
+    LogDump::LogA("Phase 1.1\n");
+
+    LogDump::LogA("Phase 1.2\n");
 }
 
 int Defragmentator::Allocate(int size, int a2, int a3, int a4, int alignment, char a6)

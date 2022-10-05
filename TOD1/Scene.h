@@ -2,7 +2,13 @@
 #include "Folder.h"
 #include "MeshColorAsset.h"
 #include "Camera.h"
+#include "QuadTree.h"
+
 #include <vector>
+
+class Character;
+class Model;
+class SoundEmitter;
 
 #define EDITOR_SESSION_FILE_VERSION 3
 
@@ -40,6 +46,7 @@ public:
     PlayMode        m_PlayMode;
     Camera*         m_GameCamera;
     class EditorCamera* m_EditorCamera;
+    char            field_68;
     char            m_QuadTreesAllocated;
     Camera*         m_ActiveCamera;
     Node*           m_ClosestNode;
@@ -170,6 +177,7 @@ public:
     void            AnnotateLine_Impl(const Vector4f& lineStart, const Vector4f& lineEnd, const int a3, const int a4) const;    //  @8935D0
     void            AnnotatePoint_Impl(const Vector4f& point, const int a2, const int a3) const;    //  @8935C0
     void            SetParticleSystemUsed(const int particleSystemIndex, const bool used);  //  @8947D0
+    void            CreateQuadTrees();  //  @894880
 
     static int      RealTimeMs; // @A3DCCC
     static int      GameTimeMs; // @A3DCD4
@@ -193,8 +201,8 @@ public:
     static bool     _A3D858;    //  @A3D858
 
     static Scene   *SceneInstance;      // @A3DCBC
-    static AuxQuadTree* MainQuadTree;   // @A3DCE8
-    static AuxQuadTree* AuxQuadTree;    //  @A3DCEC
+    static QuadTree* MainQuadTree;   // @A3DCE8
+    static QuadTree* AuxQuadTree;    //  @A3DCEC
 
     struct QuadTreeNode
     {
@@ -213,12 +221,17 @@ public:
         int            *m_AddressRegionEndPtr;
     };
 
-    static unsigned int QuadTreesAllocated; //  @A3DD70
-    static QuadTreeNode*    QuadTrees;  //  @A3B580
+    static uint32_t         QuadTreeNodesAllocated; //  @A3DD70
+    static QuadTreeNode*    MainQuadTreeNodes;  //  @A3B580
+    static QuadTreeNode*    AuxQuadTreeNodes;  //  @A3BE38
+
     static short    _A120E8;    //  @A120E8
     static int      _A3DD40;    //  @A3DD40
     static std::vector<EntityReference>    *DanglingEntityReferences;  //  @A3CEEC
     static std::map<int*, int>             *DanglingEntityReferencesMap;    //  @A3CEF0
+    static std::vector<Character*>          CharactersList; //  @A3DD5C
+    static std::vector<Model*>              ModelsList; //  @A3DD2C
+    static std::vector<SoundEmitter*>       SoundEmittersList;  //  @A3DD1C
 
     static int      PreBlocksUnloadedCommand; // @A3DCF8
     static int      BlocksUnloadedCommand; // @A3DCFC
@@ -233,8 +246,10 @@ private:
     static const int    RewindCollectInterval = 2000;   //  @A12084 //  NOTE: interval when rewind buffer is updated.
 
 public:
-    static void     CreateQuadTrees(const unsigned int num, const AllocatorIndex allocind); //  @89A370
+    static void     AllocateMainQuadTreeNodes(const unsigned int num, const AllocatorIndex allocind); //  @89A370
+    static void     AllocateAuxQuadTreeNodes(const uint32_t num, const AllocatorIndex allocIndex);  //  @89A2F0
     static void     TriggerScriptForAllChildren(int scriptId, Node* node, int* args); // @892F10
+    static void     RefreshChildrenQuadTrees(Node* node);   //  @892DE0
     static void     Register(); // @899CC0
     static Scene*   Create(AllocatorIndex); // @89A7A0
 };

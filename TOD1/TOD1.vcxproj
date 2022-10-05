@@ -291,7 +291,9 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="FontAsset.h" />
     <ClInclude Include="FragmentAsset.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="scripts\cache.h" />
     <ClInclude Include="scripts\common.h" />
     <ClInclude Include="scripts\common_animslot.h" />
@@ -472,6 +474,7 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PhysSystem.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="GfxInternal_OGL.cpp" />
     <ClCompile Include="MeshBuffer.cpp" />

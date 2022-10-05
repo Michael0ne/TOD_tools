@@ -24,15 +24,23 @@
 #include "MoviePlayer.h"
 #include "DynamicSurroundGeometry.h"
 #include "SoundSlot.h"
+#include "Model.h"
+#include "Character.h"
+#include "SoundEmitter.h"
 
 EntityType* tScene = nullptr;
 Scene* Scene::SceneInstance = nullptr;
-AuxQuadTree* Scene::MainQuadTree;
+QuadTree* Scene::MainQuadTree;
+QuadTree* Scene::AuxQuadTree;
 std::vector<Scene::EntityReference>* Scene::DanglingEntityReferences;
 std::map<int*, int>* Scene::DanglingEntityReferencesMap;
+std::vector<Character*>     Scene::CharactersList;
+std::vector<Model*>         Scene::ModelsList;
+std::vector<SoundEmitter*>  Scene::SoundEmittersList;
 
-unsigned int Scene::QuadTreesAllocated;
-Scene::QuadTreeNode* Scene::QuadTrees;
+uint32_t Scene::QuadTreeNodesAllocated;
+Scene::QuadTreeNode* Scene::MainQuadTreeNodes;
+Scene::QuadTreeNode* Scene::AuxQuadTreeNodes;
 short Scene::_A120E8 = -1;
 int Scene::_A3DD40;
 
@@ -63,19 +71,34 @@ int Scene::BlocksUnloadedCommand;
 int Scene::InvalidatePlaceholderModelCommand = -1;
 int Scene::RewindOrRetryFinishedCommand = -1;
 
-void Scene::CreateQuadTrees(const unsigned int num, const AllocatorIndex allocind)
+void Scene::AllocateMainQuadTreeNodes(const unsigned int num, const AllocatorIndex allocind)
 {
-    if (QuadTrees)
+    if (MainQuadTreeNodes)
         return;
 
-    QuadTreesAllocated = num;
-    QuadTrees = new QuadTreeNode[num];
+    QuadTreeNodesAllocated = num;
+    MainQuadTreeNodes = new QuadTreeNode[num];
 
-    for (unsigned int i = 0; i < num - 1; ++i)
-        QuadTrees[i].field_0[0] = i;
+    for (uint32_t i = 0; i < num - 1; ++i)
+        MainQuadTreeNodes[i].field_0[0] = i;
 
-    QuadTrees[num - 1].field_0[0] = -1;
+    MainQuadTreeNodes[num - 1].field_0[0] = -1;
     _A120E8 = 0;
+}
+
+void Scene::AllocateAuxQuadTreeNodes(const uint32_t num, const AllocatorIndex allocIndex)
+{
+    if (AuxQuadTreeNodes)
+        return;
+
+    AuxQuadTreeNodes = new QuadTreeNode[num];
+    if (num - 1 > 0)
+    {
+        for (uint32_t i = 0; i < num - 1; ++i)
+            AuxQuadTreeNodes[i].field_8[2] = i;
+    }
+
+    AuxQuadTreeNodes[num - 1].field_8[2] = -1;
 }
 
 Scene::Scene() : Folder_()
@@ -341,18 +364,20 @@ void Scene::LoadResourceBlockIntoSceneBuffer(const char* assetname, AssetInfo::A
 void Scene::CreateSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, unsigned int savesize)
 {
     LogDump::LogA("save point creation pending!\n");
-    if (savesize)
+
+    if (!savesize)
     {
-        m_SaveSlotIndex = slotind;
-        m_SaveLoadState = STATE_SAVE;
-        m_MemoryCardIndex = memcardind;
-        m_SavePointOperationError = STATUS_OK;
-        m_SaveDir = savedirectory;
-        m_SaveGameSize = savesize;
-        m_SaveData = summarynode;
-    }
-    else
         LogDump::LogA("Trying to create empty savepoint??? Bailing out.\n");
+        return;
+    }
+
+    m_SaveSlotIndex = slotind;
+    m_SaveLoadState = STATE_SAVE;
+    m_MemoryCardIndex = memcardind;
+    m_SavePointOperationError = STATUS_OK;
+    m_SaveDir = savedirectory;
+    m_SaveGameSize = savesize;
+    m_SaveData = summarynode;
 }
 
 void Scene::RestoreSavePoint(unsigned int memcardind, unsigned int slotind, const char* const savedirectory, Node* summarynode, MemoryCards* memcards)
@@ -375,7 +400,7 @@ void Scene::LoadSavePointSummary(unsigned int memcardind, unsigned int slotind, 
     m_SaveDir = savedirectory;
     m_SaveData = summarynode;
 
-    char slotstr[10] = {};
+    char slotstr[16] = {};
     sprintf(slotstr, "Slot%02d", m_SaveSlotIndex);
     SavePoint savepoint(MemoryCardInfo[m_MemoryCardIndex], m_SaveDir.m_Str, slotstr, SAVEPOINT_SAVE_SIZE);
 
@@ -541,6 +566,98 @@ void Scene::LoadSceneSession(void) const
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::InstantiateAssetsToLists()
 {
+    m_QuadTreesList.clear();
+    m_ParticleSystemsList.clear();
+    CharactersList.clear();
+    ModelsList.clear();
+    TimePassed = 0.f;
+
+    for (Node* node = (Node*)g_AssetManager->FindFirstEntity(); node; node = (Node*)g_AssetManager->FindNextEntity(node))
+    {
+        EntityType* scriptEntity = node->m_ScriptEntity;
+        if (!scriptEntity)
+            continue;
+
+        while (tNode != scriptEntity)
+        {
+            scriptEntity = scriptEntity->m_Parent;
+            if (!scriptEntity)
+                break;
+        }
+
+        if (!scriptEntity)
+            continue;
+
+        if (m_PlayMode != MODE_STOP)
+        {
+            scriptEntity = node->m_ScriptEntity;
+            if (scriptEntity)
+            {
+                while (tCharacter != scriptEntity)
+                {
+                    scriptEntity = scriptEntity->m_Parent;
+                    if (!scriptEntity)
+                        break;
+                }
+
+                if (scriptEntity)
+                    CharactersList.push_back((Character*)node);
+            }
+
+            scriptEntity = node->m_ScriptEntity;
+            if (scriptEntity)
+            {
+                while (tModel != scriptEntity)
+                {
+                    scriptEntity = scriptEntity->m_Parent;
+                    if (!scriptEntity)
+                        break;
+                }
+
+                if (scriptEntity)
+                {
+                    ((Model*)node)->m_AlphaFlags.m_FlagBits.GlobalId = ModelsList.size();
+                    ModelsList.push_back((Model*)node);
+                }
+            }
+        }
+
+        if (node->m_QuadTree)
+        {
+            node->m_QuadTree->field_4D &= ~0x20;
+            if (node->m_QuadTree->m_UserType < 0)
+                node->m_QuadTree->Refresh();
+        }
+
+        scriptEntity = node->m_ScriptEntity;
+        if (scriptEntity)
+        {
+            while (tSoundEmitter != scriptEntity)
+            {
+                scriptEntity = scriptEntity->m_Parent;
+                if (!scriptEntity)
+                    break;
+            }
+
+            if (scriptEntity)
+                SoundEmittersList.push_back((SoundEmitter*)node);
+        }
+    }
+
+    for (uint32_t i = 0; i < CollisionProbe::ProbesList.size(); ++i)
+    {
+        CollisionProbe* probe = CollisionProbe::ProbesList[i];
+        probe->m_Updated = false;
+        probe->m_HintNode = nullptr;
+        probe->m_RealNode = nullptr;
+        probe->m_ClosestNode = nullptr;
+        probe->m_ClosestCollisionVolume = NULL;
+
+        probe->ClearCache_Impl();
+    }
+
+    for (uint32_t i = 0; i < m_ParticleSystemsList.size(); ++i)
+        m_ParticleSystemsList[i] |= 1;
 }
 
 void Scene::AddCollisionList(CollisionInfo* list)
@@ -830,6 +947,23 @@ void Scene::SetParticleSystemUsed(const int particleSystemIndex, const bool used
     m_ParticleSystemsList[particleSystemIndex] = used;
 }
 
+void Scene::CreateQuadTrees()
+{
+    AllocateMainQuadTreeNodes(10000,    RENDERLIST);
+    AllocateAuxQuadTreeNodes(12200,     RENDERLIST);
+
+    MainQuadTree    = new QuadTree(0x4000, 4);
+    AuxQuadTree     = new QuadTree(0x4000, 8);
+
+    if (m_QuadTree)
+        m_QuadTree->Refresh();
+
+    for (Node* node = m_FirstChild; node; node = node->m_NextSibling)
+        RefreshChildrenQuadTrees(node);
+
+    m_QuadTreesAllocated = true;
+}
+
 void Scene::Start()
 {
     if (m_PlayMode != MODE_STOP)
@@ -1117,6 +1251,12 @@ void Scene::ResetRewindBuffer(bool)
 #pragma message(TODO_IMPLEMENTATION)
 void Scene::_896BA0()
 {
+    if (MainQuadTree)
+        return;
+
+    g_AssetManager->DestroySceneNodesFrameBuffers(1);
+    CreateQuadTrees();
+
 }
 
 void Scene::TriggerScriptForAllChildren(int scriptId, Node* node, int* args)
@@ -1125,6 +1265,15 @@ void Scene::TriggerScriptForAllChildren(int scriptId, Node* node, int* args)
 
     for (Node* n = node->m_FirstChild; n; n = n->m_NextSibling)
         TriggerScriptForAllChildren(scriptId, n, args);
+}
+
+void Scene::RefreshChildrenQuadTrees(Node* node)
+{
+    if (node->m_QuadTree)
+        node->m_QuadTree->Refresh();
+
+    for (Node* node_ = node->m_FirstChild; node_; node_ = node_->m_NextSibling)
+        RefreshChildrenQuadTrees(node_);
 }
 
 void Scene::Register()

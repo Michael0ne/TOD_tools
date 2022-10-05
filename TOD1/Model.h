@@ -11,6 +11,7 @@ class Model : public Node
     friend class Node;
     friend class Entity;
     friend class AssetManager;
+    friend class Scene;
 
     struct AttachedEffect
     {
@@ -64,7 +65,8 @@ protected:
     {
         struct
         {
-            unsigned    _0 : 19;    //  NOTE: unused?
+            unsigned    GlobalId : 15;
+            unsigned    _16 : 4;
             unsigned    HardAlphaFactor : 8;
             unsigned    _28 : 4;
         }               m_FlagBits;

@@ -629,6 +629,12 @@
     <ClInclude Include="BinkWrapper.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
+    <ClInclude Include="QuadTree.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header files\KapowSystems\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1080,6 +1086,9 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>Source files\KapowSystems\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadTree.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

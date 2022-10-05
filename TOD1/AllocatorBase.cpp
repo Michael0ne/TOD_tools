@@ -117,7 +117,7 @@ int Allocator::stub25(int, int, const char* const fileName, const unsigned int f
     return NULL;
 }
 
-int* Allocator::stub26() const
+int* Allocator::GetMemoryContents() const
 {
     return nullptr;
 }

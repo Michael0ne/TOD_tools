@@ -7,6 +7,8 @@ class Probe;
 
 class CollisionProbe : public Node
 {
+    friend class Scene;
+
     struct ProbeInfo
     {
         std::vector<Probe*>*m_HintVolumesList;

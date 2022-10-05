@@ -77,7 +77,7 @@ public:
     virtual void        Dump() const;
     virtual int         stub24(int, int, const char* const fileName, const unsigned int fileLineNumber);
     virtual int         stub25(int, int, const char* const fileName, const unsigned int fileLineNumber, int alignment);
-    virtual int*        stub26() const;
+    virtual int*        GetMemoryContents() const;
     virtual const int   stub27() const;
     virtual int         stub28(int*) const;
     virtual const int   stub29(int*) const;

@@ -222,7 +222,7 @@ int BestFitAllocator::stub25(int, int, const char* const fileName, const unsigne
     return NULL;
 }
 
-int* BestFitAllocator::stub26() const
+int* BestFitAllocator::GetMemoryContents() const
 {
     return m_Contents;
 }
