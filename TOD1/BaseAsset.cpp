@@ -193,6 +193,7 @@ void Asset::AllocateResourceForBlockLoad(const unsigned int size, int** bufalign
 
 void Asset::Instantiate(CompiledAssetInfo* assetBuffer, Asset* assetPtr)
 {
+    //  NOTE: first instantiate call will fill basic asset structure fields: vmt pointer, name pointer and global id.
     if (assetBuffer->m_AssetType == CompiledAssetInfo::AssetType::THREE)
         *(uint32_t*)assetPtr = (uint32_t)AssetInstance::Assets[*(uint32_t*)assetPtr]->m_ResourceTypeMethods;
 
@@ -201,6 +202,7 @@ void Asset::Instantiate(CompiledAssetInfo* assetBuffer, Asset* assetPtr)
     if (assetBuffer->m_AssetType == CompiledAssetInfo::AssetType::THREE)
         assetPtr->m_GlobalResourceId = g_AssetManager->AddAssetReference(assetPtr);
 
+    //  NOTE: depending on what asset this is, go further and parse rest of the data.
     assetPtr->ApplyAssetData(assetBuffer);
 }
 

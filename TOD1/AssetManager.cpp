@@ -1357,23 +1357,26 @@ void CompiledAssetInfo::AlignDataOrSize(unsigned int alignment, unsigned char fl
 
 void CompiledAssetInfo::_40CB20(const uint8_t** dataptr, char flags) const
 {
-    if (flags & 1 || !*dataptr)
-        return;
-
-    if (*dataptr == (uint8_t*)0x80000000)
-        *dataptr = nullptr;
-
-    const uint8_t* readDataPtr = &(*dataptr)[(uint32_t)dataptr];
-    *dataptr = readDataPtr;
-
-    if ((flags & 2) != 0)
+    if ((flags & 1) == 0)
     {
-        if ((flags & 4) == 0)
-            *dataptr = &readDataPtr[field_2C - field_28];
+        if (*dataptr)
+        {
+            if ((uint32_t)*dataptr == (uint32_t)0x80000000)
+                *dataptr = NULL;
+
+            const uint8_t* actualData = (*dataptr + **dataptr);
+            *dataptr = actualData;
+
+            if ((flags & 2) != 0)
+            {
+                if ((flags & 4) == 0)
+                    *dataptr = &actualData[field_2C - field_28];
+            }
+            else
+                if ((flags & 4) != 0)
+                    *dataptr = &actualData[field_28 - field_2C];
+        }
     }
-    else
-        if ((flags & 4) != 0)
-            *dataptr = &readDataPtr[field_28 - field_2C];
 }
 
 #pragma message(TODO_IMPLEMENTATION)

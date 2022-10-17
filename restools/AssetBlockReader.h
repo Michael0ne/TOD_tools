@@ -4,6 +4,29 @@
 #define RESTORE_POINTER(type, ptr, field) \
     ptr->field = (type*)((int)ptr + offsetof(type, field) + (int)ptr->field)
 
+#define READ_FIELD_VALUE(field, fieldType, ptr) \
+    field = **(fieldType**)ptr; \
+    *ptr += sizeof(fieldType)
+
+#define READ_FIELD_VALUE_POINTER(field, fieldType, ptr) \
+    field = (fieldType*)(*ptr + **(uint32_t**)ptr); \
+    *ptr += sizeof(uint32_t)
+
+#define READ_LIST_VALUE(field, ptr) \
+    *(uint32_t*)field = (uint32_t)(*ptr + **(uint32_t**)ptr); \
+    *ptr += sizeof(uint32_t); \
+    *(uint32_t*)((uint32_t)field + 4) = **(uint32_t**)ptr; \
+    *ptr += sizeof(uint32_t); \
+    *(uint32_t*)((uint32_t)field + 8) = **(uint32_t**)ptr; \
+    *ptr += sizeof(uint32_t); \
+    *(uint32_t*)((uint32_t)field + 12) = **(uint32_t**)ptr; \
+    *ptr += sizeof(uint32_t); \
+
+#define ALIGN_4BYTES(x) ((uint32_t)(x) & 0xFFFFFFFC)
+#define ALIGN_4BYTESUP(x) ((uint32_t)(x + 3) & 0xFFFFFFFC)
+#define ALIGN_8BYTESUP(x) ((uint32_t)(x + 7) & 0xFFFFFFF8)
+#define ALIGN_16BYTESUP(x) ((uint32_t)(x + 15) & 0xFFFFFFF8)
+
 class AssetBlockReader : public GenericResourceReader
 {
 public:
@@ -71,8 +94,8 @@ public:
         
         virtual void    PrintInfo() const;
         virtual void    SkipNameRead(unsigned char** infobuffer);
-        virtual void    SkipAlignment(unsigned char** infobuffer);
         virtual void    SkipSpecificData(unsigned char** infobuffer) = 0;
+        virtual void    SkipEndAlignment(uint8_t** infobuffer);
         virtual void    DumpData(const AssetBlockReader* reader) = 0;
     };
 
@@ -252,7 +275,6 @@ public:
         CompiledFontAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
-        virtual void    SkipAlignment(unsigned char** infobuffer) override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
         virtual void    DumpData(const AssetBlockReader* reader);
     };
@@ -292,7 +314,6 @@ public:
         void            GetGameString(const unsigned short indicieslistindex, unsigned char* outString, unsigned int* maxlength, const bool contents) const;
 
         virtual void    PrintInfo() const override;
-        virtual void    SkipAlignment(unsigned char** infobuffer) override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
         virtual void    DumpData(const AssetBlockReader* reader);
     };
@@ -453,14 +474,13 @@ public:
 
         uint32_t           *PhysAttachmentsList;
         vec4                BoundingRadius;
-        uint32_t            field_54;
+        uint32_t           *field_54;
         uint32_t           *field_58;
         uint8_t             field_5C;
 
         CompiledModelAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
-        virtual void    SkipAlignment(unsigned char** infobuffer) override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
         virtual void    DumpData(const AssetBlockReader* reader);
     };
@@ -543,7 +563,6 @@ public:
 
         virtual void    PrintInfo() const override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
-        virtual void    SkipAlignment(unsigned char** infobuffer) override;
         virtual void    DumpData(const AssetBlockReader* reader);
     };
 
@@ -575,36 +594,69 @@ public:
 
         virtual void    PrintInfo() const override;
         virtual void    SkipSpecificData(unsigned char** infobuffer) override;
-        virtual void    SkipAlignment(unsigned char** infobuffer) override;
         virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledAnimationAsset : CompiledAsset
     {
-        unsigned int        field_1C;
-        unsigned int        field_20;
-        unsigned int        field_24;
-        unsigned int        field_28;
+        struct AnimationPivotData
+        {
+            uint32_t        field_0;
+            uint32_t        field_4;
+            uint32_t        field_8;
+        };
 
-        char               *m_List_1_Elements;
-        unsigned int        m_List_1_Size;
-        unsigned int        field_34;
-        unsigned int        field_38;
+        struct List1Data
+        {
+            uint32_t        field_0;
+            uint32_t        field_4;
+            uint32_t        field_8;
+            uint32_t        field_C;
+            uint32_t        field_10;
+            uint32_t        field_14;
+        };
 
-        char               *m_List_2_Elements;
-        unsigned int        m_List_2_Size;
-        unsigned int        field_44;
-        unsigned int        field_48;
+        struct List2Data
+        {
+            uint32_t        field_0;
+            uint32_t        field_4;
+            uint32_t        field_8;
+            uint32_t        field_C;
+            uint32_t        field_10;
+            uint32_t        field_14;
+            uint32_t        field_18;
+            uint32_t        field_1C;
+            uint32_t        field_20;
+            uint32_t        field_24;
+            uint32_t        field_28;
+            uint32_t        field_2C;
+            uint32_t        field_30;
+        };
 
-        char               *m_List_3_Elements;
-        unsigned int        m_List_3_Size;
-        unsigned int        field_54;
-        unsigned int        field_58;
+        uint32_t            field_1C;
+        uint32_t            field_20;
+        uint32_t            LoopMode;
+        uint32_t            field_28;
 
-        unsigned int        field_5C;
-        unsigned int        field_60;
-        unsigned short      field_64;
-        unsigned short      field_66;
+        List1Data          *List_1;
+        uint32_t            List1_Size;
+        uint32_t            field_34;
+        uint32_t            field_38;
+
+        List2Data          *List_2;
+        uint32_t            List2_Size;
+        uint32_t            field_44;
+        uint32_t            field_48;
+
+        uint8_t            *List_3;
+        uint32_t            List3_Size;
+        uint32_t            field_54;
+        uint32_t            field_58;
+
+        AnimationPivotData *field_5C;
+        uint32_t            field_60;
+        uint16_t            field_64;
+        uint16_t            field_66;
 
         CompiledAnimationAsset(unsigned char** infobuffer);
 
