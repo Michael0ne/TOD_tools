@@ -157,10 +157,10 @@ void AssetBlockReader::PrintInfo() const
             asset = new CompiledFragmentAsset(&infobuffer);
             break;
         case MOVIE:
-            //asset = new CompiledMovieAsset(&infobuffer);
+            asset = new CompiledMovieAsset(&infobuffer);
             break;
         case CUTSCENE:
-            //asset = new CompiledCutsceneAsset(&infobuffer);
+            asset = new CompiledCutsceneAsset(&infobuffer);
             break;
         case SOUND:
             asset = new CompiledSoundAsset(&infobuffer);
@@ -172,7 +172,7 @@ void AssetBlockReader::PrintInfo() const
             asset = new CompiledAnimationAsset(&infobuffer);
             break;
         case MESHCOLOR:
-            //asset = new CompiledMeshColorAsset(&infobuffer);
+            asset = new CompiledMeshColorAsset(&infobuffer);
             break;
         }
 
@@ -338,14 +338,9 @@ void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* re
 
 AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
 {
-    field_1C = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
-
-    field_20 = (unsigned int*)(*(unsigned int*)infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(unsigned int);
-
-    field_24 = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    READ_FIELD_VALUE(field_1C, uint32_t, infobuffer);
+    READ_FIELD_VALUE_POINTER(field_20, uint32_t, infobuffer);
+    READ_FIELD_VALUE(field_24, uint32_t, infobuffer);
 
     SkipNameRead(infobuffer);
     SkipEndAlignment(infobuffer);
@@ -373,14 +368,9 @@ void AssetBlockReader::CompiledFragmentAsset::DumpData(const AssetBlockReader* r
 
 AssetBlockReader::CompiledStreamedSoundInfoAsset::CompiledStreamedSoundInfoAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
 {
-    field_1C = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
-
-    m_SoundFile = (SoundFile*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(unsigned int);
-
-    field_24 = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    READ_FIELD_VALUE(field_1C, uint32_t, infobuffer);
+    READ_FIELD_VALUE_POINTER(m_SoundFile, SoundFile, infobuffer);
+    READ_FIELD_VALUE(field_24, uint32_t, infobuffer);
 
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
@@ -411,8 +401,6 @@ void AssetBlockReader::CompiledStreamedSoundInfoAsset::SkipSpecificData(unsigned
 {
     *infobuffer += sizeof(SoundFile);
     *infobuffer += m_SoundFile->m_FileName.m_Length + 1;
-
-    SkipEndAlignment(infobuffer);
 }
 
 void AssetBlockReader::CompiledStreamedSoundInfoAsset::DumpData(const AssetBlockReader* reader)
@@ -422,16 +410,12 @@ void AssetBlockReader::CompiledStreamedSoundInfoAsset::DumpData(const AssetBlock
 
 AssetBlockReader::CompiledFontAsset::CompiledFontAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
 {
-    field_1C = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    READ_FIELD_VALUE(field_1C, uint32_t, infobuffer);
+    READ_FIELD_VALUE_POINTER(field_20, uint32_t, infobuffer);
+    READ_FIELD_VALUE_POINTER(m_FontInfo, Font, infobuffer);
 
-    field_20 = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(unsigned int);
-
-    m_FontInfo = (Font*)(*infobuffer + **infobuffer);
-    m_FontInfo->m_FontTexture = (CompiledTextureAsset::GfxTexture*)((unsigned int)m_FontInfo + offsetof(Font, m_FontTexture) + (unsigned int)m_FontInfo->m_FontTexture);
-    m_FontInfo->m_GlyphsList = (Glyph*)((unsigned int)m_FontInfo + offsetof(Font, m_GlyphsList) + (unsigned int)m_FontInfo->m_GlyphsList);
-    *infobuffer += sizeof(Font*);
+    m_FontInfo->m_FontTexture = (CompiledTextureAsset::GfxTexture*)((uint32_t)m_FontInfo + offsetof(Font, m_FontTexture) + (uint32_t)m_FontInfo->m_FontTexture);
+    m_FontInfo->m_GlyphsList = (Glyph*)((uint32_t)m_FontInfo + offsetof(Font, m_GlyphsList) + (uint32_t)m_FontInfo->m_GlyphsList);
 
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
@@ -528,41 +512,12 @@ void AssetBlockReader::CompiledFontAsset::DumpData(const AssetBlockReader* reade
 
 AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
 {
-    field_1C = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
-
-    m_List_1_Elements = (unsigned int*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(int);
-    m_List_1_Size = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-    field_28[0] = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-    field_28[1] = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-
-    m_TextIndicies_Elements = (unsigned short*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(int);
-    m_TextIndicies_Size = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-    field_38[0] = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-    field_38[1] = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-
-    m_List_3_Elements = (unsigned char*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(int);
-    m_List_3_Size = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-    field_48[0] = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-    field_48[1] = **(int**)infobuffer;
-    *infobuffer += sizeof(int);
-
-    m_CharactersMap = (Dictionary*)(*infobuffer + **(unsigned int**)infobuffer);
-    *infobuffer += sizeof(unsigned int);
-
-    field_54 = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    READ_FIELD_VALUE(field_1C, uint32_t, infobuffer);
+    READ_LIST_VALUE(&m_List_1_Elements, infobuffer);
+    READ_LIST_VALUE(&m_TextIndicies_Elements, infobuffer);
+    READ_LIST_VALUE(&m_List_3_Elements, infobuffer);
+    READ_FIELD_VALUE_POINTER(m_CharactersMap, Dictionary, infobuffer);
+    READ_FIELD_VALUE(field_54, uint32_t, infobuffer);
 
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
@@ -656,18 +611,15 @@ void AssetBlockReader::CompiledTextAsset::DumpData(const AssetBlockReader* reade
 
 AssetBlockReader::CompiledSoundAsset::CompiledSoundAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
 {
-    field_1C = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
+    READ_FIELD_VALUE(field_1C, uint32_t, infobuffer);
+    READ_FIELD_VALUE_POINTER(m_StreamBuffer, StreamBuffer, infobuffer);
 
-    m_StreamBuffer = (StreamBuffer*)(*infobuffer + **(unsigned int**)infobuffer);
-    m_StreamBuffer->m_SampledData = (char*)((unsigned int)m_StreamBuffer + offsetof(StreamBuffer, m_SampledData) + (unsigned int)m_StreamBuffer->m_SampledData);
-    m_StreamBuffer->m_SoundName = (String*)((unsigned int)m_StreamBuffer + offsetof(StreamBuffer, m_SoundName) + (unsigned int)m_StreamBuffer->m_SoundName);
-    m_StreamBuffer->m_SoundName->m_String = (char*)((unsigned int)m_StreamBuffer->m_SoundName + offsetof(String, m_String) + (unsigned int)m_StreamBuffer->m_SoundName->m_String);
-    *infobuffer += sizeof(StreamBuffer*);
+    m_StreamBuffer->m_SampledData = (char*)((uint32_t)m_StreamBuffer + offsetof(StreamBuffer, m_SampledData) + (uint32_t)m_StreamBuffer->m_SampledData);
+    m_StreamBuffer->m_SoundName = (String*)((uint32_t)m_StreamBuffer + offsetof(StreamBuffer, m_SoundName) + (uint32_t)m_StreamBuffer->m_SoundName);
+    m_StreamBuffer->m_SoundName->m_String = (char*)((uint32_t)m_StreamBuffer->m_SoundName + offsetof(String, m_String) + (uint32_t)m_StreamBuffer->m_SoundName->m_String);
 
-    field_24 = **(unsigned int**)infobuffer;
-    *infobuffer += sizeof(unsigned int);
-
+    READ_FIELD_VALUE(field_24, uint32_t, infobuffer);
+    
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
     SkipEndAlignment(infobuffer);
@@ -712,8 +664,6 @@ AssetBlockReader::CompiledModelAsset::CompiledModelAsset(unsigned char** infobuf
     READ_FIELD_VALUE_POINTER(field_54, uint32_t, infobuffer);
     READ_FIELD_VALUE_POINTER(field_58, uint32_t, infobuffer);
     READ_FIELD_VALUE(field_5C, uint32_t, infobuffer);
-
-    *infobuffer = (uint8_t*)ALIGN_4BYTES(*infobuffer);
 
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);

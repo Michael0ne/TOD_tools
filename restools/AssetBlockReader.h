@@ -293,21 +293,21 @@ public:
             static unsigned char* Indicy;   //  @A3CE80
         };
 
-        unsigned int    field_1C;
-        unsigned int   *m_List_1_Elements;
-        unsigned int    m_List_1_Size;
-        unsigned int    field_28[2];
+        uint32_t        field_1C;
+        uint32_t       *m_List_1_Elements;
+        uint32_t        m_List_1_Size;
+        uint32_t        field_28[2];
 
-        unsigned short *m_TextIndicies_Elements;
-        unsigned int    m_TextIndicies_Size;
-        unsigned int    field_38[2];
+        uint16_t       *m_TextIndicies_Elements;
+        uint32_t        m_TextIndicies_Size;
+        uint32_t        field_38[2];
 
-        unsigned char  *m_List_3_Elements;
-        unsigned int    m_List_3_Size;
-        unsigned int    field_48[2];
+        uint8_t        *m_List_3_Elements;
+        uint32_t        m_List_3_Size;
+        uint32_t        field_48[2];
 
         Dictionary     *m_CharactersMap;
-        unsigned int    field_54;
+        uint32_t        field_54;
 
         CompiledTextAsset(unsigned char** infobuffer);
 
@@ -507,23 +507,25 @@ public:
         CompiledMovieAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
+        virtual void    SkipSpecificData(uint8_t** infobuffer) override;
         virtual void    DumpData(const AssetBlockReader* reader);
     };
 
     struct CompiledCutsceneAsset : CompiledAsset
     {
-        unsigned int    field_1C;
-        std::vector<int>    m_List_1;
-        std::vector<int>    m_List_2;
-        unsigned int        field_40;
-        unsigned int        field_44;
-        unsigned int        field_48;
-        unsigned int        m_String_1[4];
-        unsigned int        field_5C;
+        uint32_t            field_1C;
+        std::vector<int>    AnimationResources;
+        std::vector<int>    AnimationResourcesInfo;
+        uint32_t            field_40;
+        uint32_t            field_44;
+        uint32_t            field_48;
+        String              CutscenePath;
+        uint32_t            field_5C;
 
         CompiledCutsceneAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
+        virtual void    SkipSpecificData(uint8_t** infobuffer) override;
         virtual void    DumpData(const AssetBlockReader* reader);
     };
 
@@ -678,6 +680,7 @@ public:
         CompiledMeshColorAsset(unsigned char** infobuffer);
 
         virtual void    PrintInfo() const override;
+        virtual void    SkipSpecificData(uint8_t** infobuffer) override;
         virtual void    DumpData(const AssetBlockReader* reader);
     };
 

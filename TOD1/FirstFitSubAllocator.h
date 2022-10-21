@@ -3,44 +3,42 @@
 
 class FirstFitSubAllocator : public Allocator
 {
-    //  NOTE: single linked list.
-    struct FirstFitElement
-    {
-        FirstFitElement* m_Next;
-        void* m_SpacePtr;
-    };
-
 protected:
-    int       field_24;
-    FirstFitElement* m_Space;
-    int       m_SpaceOccupied;
-    int       m_FreeRegions;
-    int       m_UsedRegions;
-    FirstFitElement* m_Space_1;
+    uint32_t        PointerDataSize;  //  NOTE: how much space is reserved to store information about pointer.
+    uint32_t       *SpacePtr;   //  NOTE: this points to a big allocated chunk of space initially. The mapping is: [0] -> pointer to the next 'chunk 'block' inside this chunk, [1] -> is it being used or not, ... -> the next space up to the address pointed at by [0] is occupied for actual object.
+    uint32_t        SpaceOccupied;
+    uint32_t        FreeRegions;
+    uint32_t        UsedRegions;
+    uint32_t       *SpacePtr_1;
 
 private:
-    bool        _4798D0(FirstFitElement* element);  //  @4798D0
+    bool            _4798D0(uint32_t* ptr);  //  @4798D0    //  NOTE: is pointer within allocated memory block?
+    void            FreeBlockIfSmall(uint32_t* ptr, const uint32_t sizeAvailable, const int32_t sizeRequested);    //  @479C00
 
     static const size_t AlignmentDefault = 8;
 
 public:
     FirstFitSubAllocator(); // @4797F0
+    ~FirstFitSubAllocator()
+    {
+        MESSAGE_CLASS_DESTROYED(FirstFitSubAllocator);
+    }
 
-    virtual void*   Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber) override; // @479830
-    virtual void*   AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber) override; // @479C40
-    virtual void    Free(void* ptr) override; // @479A10
-    virtual void    FreeAligned(void* ptr) override; // @479850
-    virtual void*   Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber) override; // @479DA0
-    virtual int     stub8(int* unk) override; // @479AA0
-    virtual void    stub9() override;
-    virtual void    SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size) override; // @479990
+    virtual void*       Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber) override; // @479830
+    virtual void*       AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber) override; // @479C40
+    virtual void        Free(void* ptr) override; // @479A10
+    virtual void        FreeAligned(void* ptr) override; // @479850
+    virtual void*       Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber) override; // @479DA0
+    virtual int         stub8(int* unk) override; // @479AA0
+    virtual void        stub9() override;
+    virtual void        SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size) override; // @479990
     virtual const int   GetTotalAllocations() const override; // @479860
     virtual const char* const GetAllocatorName() const override; // @479980
     virtual const int   stub19() const override; // @479880
     virtual const int   stub20() const override; // @479890
     virtual const int   stub21() const override; // @479BB0
     virtual const int   GetAvailableMemory() const override; // @479B70
-    virtual void    Dump() const override; // @479AE0
+    virtual void        Dump() const override; // @479AE0
 };
 
 ASSERT_CLASS_SIZE(FirstFitSubAllocator, 60);
