@@ -8,7 +8,7 @@ StackBasedSubAllocator::StackBasedSubAllocator()
     StackCopy = nullptr;
     StackDataEndPtr = nullptr;
     ElementsInStack = NULL;
-    field_34 = 8;
+    DataSize = 8;
 }
 
 void* StackBasedSubAllocator::Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber)
@@ -84,9 +84,9 @@ void* StackBasedSubAllocator::Realloc(void* oldptr, size_t newsize, const char* 
     return newelementptr->Previous->DataPtr;
 }
 
-int StackBasedSubAllocator::stub8(int* unk)
+uint32_t StackBasedSubAllocator::stub8(uint32_t* ptr)
 {
-    return (unk - field_34 + 4) - (unk - field_34) - 12;
+    return (ptr - DataSize + 4) - (ptr - DataSize) - 12;
 }
 
 void StackBasedSubAllocator::stub9()
@@ -110,7 +110,7 @@ void StackBasedSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, con
     Stack->Next = nullptr;
 }
 
-const int StackBasedSubAllocator::GetTotalAllocations() const
+const int StackBasedSubAllocator::GetFreeMemory() const
 {
     return (int)Stack - (int)StackCopy->DataPtr;
 }
@@ -120,7 +120,7 @@ const char* const StackBasedSubAllocator::GetAllocatorName() const
     return "StackBasedSubAllocator";
 }
 
-const int StackBasedSubAllocator::stub19() const
+const int StackBasedSubAllocator::GetAllocationsMadeTotal() const
 {
     return ElementsInStack;
 }
@@ -137,5 +137,5 @@ const int StackBasedSubAllocator::stub21() const
 
 const int StackBasedSubAllocator::GetAvailableMemory() const
 {
-    return (int)StackDataEndPtr - ((int)((char*)Stack + 15) & 0xFFFFFFF8);
+    return (uint32_t)StackDataEndPtr - ALIGN_16BYTESUP((uint32_t)Stack);
 }

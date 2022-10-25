@@ -57,7 +57,7 @@ void SequentialSubAllocator::Free(void* ptr)
 
     //  NOTE: if no more allocations, reset everything.
     if (!AllocationsTotal)
-        stub35();
+        GetMemoryReserved();
 }
 
 void SequentialSubAllocator::FreeAligned(void* ptr)
@@ -83,7 +83,7 @@ void* SequentialSubAllocator::Realloc(void* oldptr, size_t newsize, const char* 
     }
 }
 
-int SequentialSubAllocator::stub8(int* unk)
+uint32_t SequentialSubAllocator::stub8(uint32_t* ptr)
 {
     return NULL;
 }
@@ -103,7 +103,7 @@ void SequentialSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, con
     stub36();
 }
 
-const int SequentialSubAllocator::GetTotalAllocations() const
+const int SequentialSubAllocator::GetFreeMemory() const
 {
     return RegionBegin - RegionBegin_1;
 }
@@ -118,12 +118,12 @@ const char* const SequentialSubAllocator::GetAllocatorName() const
     return "SequentialSubAllocator";
 }
 
-const int SequentialSubAllocator::stub19() const
+const int SequentialSubAllocator::GetAllocationsMadeTotal() const
 {
     return AllocationsTotal;
 }
 
-int SequentialSubAllocator::stub35()
+int SequentialSubAllocator::GetMemoryReserved()
 {
     RegionBegin_1 = (uint8_t*)AllocatedSpacePtr;
     RegionBegin = (uint8_t*)AllocatedSpacePtr;
@@ -132,7 +132,6 @@ int SequentialSubAllocator::stub35()
     field_24 = NULL;
     AllocationsTotal = NULL;
 
-    // FIXME: original code doesn't return anything, but this virtual function SHOULD return something.
     return NULL;
 }
 

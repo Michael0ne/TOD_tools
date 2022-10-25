@@ -62,7 +62,7 @@ const int Allocator::GetAllocatedSpaceSize() const
     return AllocatedSpaceSize;
 }
 
-const int Allocator::GetTotalAllocations() const
+const int Allocator::GetFreeMemory() const
 {
     return NULL;
 }
@@ -82,7 +82,7 @@ void Allocator::SetProfilerEnabled(bool enabled)
     ProfilerEnabled = enabled;
 }
 
-const int Allocator::stub19() const
+const int Allocator::GetAllocationsMadeTotal() const
 {
     return -1;
 }
@@ -107,12 +107,12 @@ void Allocator::Dump() const
     return;
 }
 
-int Allocator::stub24(int, int, const char* const fileName, const unsigned int fileLineNumber)
+int Allocator::stub24(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
     return NULL;
 }
 
-int Allocator::stub25(int, int, const char* const fileName, const unsigned int fileLineNumber, int alignment)
+int Allocator::stub25(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber, int alignment)
 {
     return NULL;
 }
@@ -137,12 +137,12 @@ const int Allocator::stub29(int*) const
     return NULL;
 }
 
-char Allocator::stub30(int*) const
+char Allocator::OwnsPointer(int*) const
 {
     return NULL;
 }
 
-char Allocator::stub31(int*, int, int) const
+char Allocator::stub31(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const
 {
     return NULL;
 }
@@ -157,12 +157,12 @@ int Allocator::stub33(int) const
     return NULL;
 }
 
-char Allocator::stub34(int*, int)
+char Allocator::TryExpandBy(int*, int)
 {
     return NULL;
 }
 
-int Allocator::stub35()
+int Allocator::GetMemoryReserved()
 {
     return NULL;
 }

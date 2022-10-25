@@ -159,7 +159,7 @@ char MemoryManager::CheckIfCanExpandMemoryBySize(void* ptr, int a2)
     if (a2 <= NULL)
         return 1;
 
-    return GetAllocatorByMemoryPointer(ptr)->stub34((int*)ptr, a2);
+    return GetAllocatorByMemoryPointer(ptr)->TryExpandBy((int*)ptr, a2);
 }
 
 DefragmentatorBase* MemoryManager::GetDefragmentator(AllocatorIndex allocind)

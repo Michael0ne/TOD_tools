@@ -1044,7 +1044,7 @@ void Scene::Load(const char* sceneName)
         FileBuffer::FindFileEverywhere(block_path_localised.m_Str);
 #endif
 
-        int mainAssetAllocMem = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
+        int mainAssetAllocMem = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetFreeMemory();
         LogDump::LogA("asset block before: %0.1f Kb\n", mainAssetAllocMem * 0.0009765625f);
 
         FrameBasedSubAllocator* allocator = (FrameBasedSubAllocator*)MemoryManager::AllocatorsList[Asset::AllocatorIndexByBlockType(0)];
@@ -1058,8 +1058,8 @@ void Scene::Load(const char* sceneName)
 
         m_BlockId = m_BlockId | 0x80000000;
         LoadingAssetBlock = false;
-        alloctotalbefore = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
-        LogDump::LogA("asset block took %0.1f Kb\n", (mainAssetAllocMem - MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations()) * 0.0009765625f);
+        alloctotalbefore = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetFreeMemory();
+        LogDump::LogA("asset block took %0.1f Kb\n", (mainAssetAllocMem - MemoryManager::AllocatorsList[MAIN_ASSETS]->GetFreeMemory()) * 0.0009765625f);
     }
 
     LogDump::LogA("Load Time: '%s'. %dms of %dms.\n", "Load main asset block", Timer::GetMilliseconds() - m_StartTimeMs, Timer::GetMilliseconds() - m_StartTimeMs);
@@ -1078,7 +1078,7 @@ void Scene::Load(const char* sceneName)
     SetFragment(sceneName);
     g_AssetManager->MakeSpaceForAssetsList();
     LogDump::LogA("Timings: SetFragment: %f\n", (__rdtsc() - fragmentloadstarttime) / Timer::ClockGetCycles());
-    const int alloctotal = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetTotalAllocations();
+    const int alloctotal = MemoryManager::AllocatorsList[MAIN_ASSETS]->GetFreeMemory();
     LogDump::LogA("Scene graph took %0.1f KB\n", (alloctotal - alloctotalbefore) * 0.0009765625f);
     LogDump::LogA("Asset block after: %0.1f KB\n", alloctotal * 0.0009765625f);
 
@@ -1197,7 +1197,7 @@ void Scene::AllocateRewindBuffer()
 {
     if (IsRewindBufferInUse && !m_RewindBuffer1)
     {
-        if (MemoryManager::AllocatorsList[CUTSCENE_OR_REWIND]->stub19() > 0)
+        if (MemoryManager::AllocatorsList[CUTSCENE_OR_REWIND]->GetAllocationsMadeTotal() > 0)
         {
             LogDump::LogA("cannot allocate rewind buffer - memory block is in use!\n");
             return;

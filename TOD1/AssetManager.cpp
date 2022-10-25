@@ -705,8 +705,8 @@ Entity* AssetManager::FindNextEntity(Entity* node)
 void AssetManager::DestroySceneNodesFrameBuffers(const int)
 {
     g_GfxInternal->Render(nullptr, false, -1, -1);
-    MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->stub19();
-    MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->GetTotalAllocations();
+    MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->GetAllocationsMadeTotal();
+    MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->GetFreeMemory();
 
     if (Scene::SceneInstance)
     {
@@ -717,8 +717,8 @@ void AssetManager::DestroySceneNodesFrameBuffers(const int)
         }
     }
 
-    int alloc = MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->stub19();
-    MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->GetTotalAllocations();
+    int alloc = MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->GetAllocationsMadeTotal();
+    MemoryManager::AllocatorsList[AllocatorIndex::RENDERLIST]->GetFreeMemory();
 
     if (alloc > 4 && Scene::SceneInstance)
         Scene::SceneInstance->ProfileMemory(0);

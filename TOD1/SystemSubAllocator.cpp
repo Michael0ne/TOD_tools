@@ -78,7 +78,7 @@ void* SystemSubAllocator::Realloc(void* oldptr, size_t newsize, const char* cons
     }
 }
 
-int SystemSubAllocator::stub8(int* unk)
+uint32_t SystemSubAllocator::stub8(uint32_t* ptr)
 {
     return NULL;
 }
@@ -101,7 +101,7 @@ const int SystemSubAllocator::GetAllocatedSpaceSize() const
     return (int)memoryStatus.ullAvailPhys;
 }
 
-const int SystemSubAllocator::GetTotalAllocations() const
+const int SystemSubAllocator::GetFreeMemory() const
 {
     MEMORYSTATUSEX memoryStatus;
     GlobalMemoryStatusEx(&memoryStatus);
@@ -114,7 +114,7 @@ const char* const SystemSubAllocator::GetAllocatorName() const
     return "SystemSubAllocator";
 }
 
-const int SystemSubAllocator::stub19() const
+const int SystemSubAllocator::GetAllocationsMadeTotal() const
 {
     return AllocationsTotal;
 }
@@ -137,7 +137,7 @@ const int SystemSubAllocator::GetAvailableMemory() const
     return (int)memoryStatus.ullAvailPhys;
 }
 
-int SystemSubAllocator::stub35()
+int SystemSubAllocator::GetMemoryReserved()
 {
     // TODO: original code doesn't put anything to EAX. Is return type correct?
     return NULL;

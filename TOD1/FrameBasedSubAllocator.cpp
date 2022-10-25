@@ -74,7 +74,7 @@ void* FrameBasedSubAllocator::Realloc(void* oldptr, size_t newsize, const char* 
     return SequentialSubAllocator::Realloc(oldptr, newsize, fileName, fileLineNumber);
 }
 
-int FrameBasedSubAllocator::stub8(int* unk)
+uint32_t FrameBasedSubAllocator::stub8(uint32_t* ptr)
 {
     return NULL;
 }
@@ -108,7 +108,7 @@ const int FrameBasedSubAllocator::GetAvailableMemory() const
     return stub21();
 }
 
-int FrameBasedSubAllocator::stub35()
+int FrameBasedSubAllocator::GetMemoryReserved()
 {
     SpaceInfo* objectSpace = ObjectSpace;
     if (objectSpace)
@@ -123,7 +123,7 @@ int FrameBasedSubAllocator::stub35()
         }
     }
 
-    SequentialSubAllocator::stub35();
+    SequentialSubAllocator::GetMemoryReserved();
 
     ObjectSpace->field_0 = NULL;
     ObjectSpace->PreviousElement = nullptr;

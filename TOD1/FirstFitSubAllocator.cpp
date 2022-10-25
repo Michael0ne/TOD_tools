@@ -260,20 +260,20 @@ void* FirstFitSubAllocator::Realloc(void* oldptr, size_t newsize, const char* co
     return oldptr;
 }
 
-int FirstFitSubAllocator::stub8(int* unk)
+uint32_t FirstFitSubAllocator::stub8(uint32_t* ptr)
 {
-    if (!unk)
+    if (!ptr)
         return NULL;
 
-    int32_t* pointerInfo = (unk - PointerDataSize);
-    int32_t actualPointer = *pointerInfo;
-    if (*pointerInfo <= (int32_t)pointerInfo)
-        actualPointer = (int32_t)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+    uint32_t* dataPtr = (uint32_t*)(ptr - PointerDataSize);
+    uint32_t* nextDataPtr = (uint32_t*)*dataPtr;
+    if (*dataPtr <= (int32_t)dataPtr)
+        nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
 
     if (ProfilerEnabled)
         stub9();
 
-    return actualPointer - (int32_t)unk;
+    return nextDataPtr - ptr;
 }
 
 void FirstFitSubAllocator::stub9()
@@ -299,7 +299,7 @@ void FirstFitSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const
         memset(SpacePtr + 2, 0xAB, (uint32_t)AllocatedSpacePtr + AllocatedSpaceSize - (uint32_t)(SpacePtr + 2));
 }
 
-const int FirstFitSubAllocator::GetTotalAllocations() const
+const int FirstFitSubAllocator::GetFreeMemory() const
 {
     return SpaceOccupied;
 }
@@ -309,7 +309,7 @@ const char* const FirstFitSubAllocator::GetAllocatorName() const
     return "FirstFitSubAllocator";
 }
 
-const int FirstFitSubAllocator::stub19() const
+const int FirstFitSubAllocator::GetAllocationsMadeTotal() const
 {
     return UsedRegions;
 }

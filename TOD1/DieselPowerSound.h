@@ -75,7 +75,7 @@ public:
     virtual int* stub16(DWORD, signed int, LPWAVEFORMATEX*) { return nullptr; };
     virtual void stub17() {};
     virtual void stub18() {};
-    virtual void stub19() {};
+    virtual void GetAllocationsMadeTotal() {};
     virtual void stub20() {};
     virtual const float GetVolume() { return 0; };
     virtual void stub22() {};

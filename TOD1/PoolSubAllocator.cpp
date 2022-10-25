@@ -70,7 +70,7 @@ void* PoolSubAllocator::Realloc(void* oldptr, size_t newsize, const char* const 
     return oldptr;
 }
 
-int PoolSubAllocator::stub8(int* unk)
+uint32_t PoolSubAllocator::stub8(uint32_t* ptr)
 {
     return ObjectSizeAligned;
 }
@@ -119,7 +119,7 @@ void PoolSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const cha
     stub9();
 }
 
-const int PoolSubAllocator::GetTotalAllocations() const
+const int PoolSubAllocator::GetFreeMemory() const
 {
     return OccupiedSpaceSize;
 }
@@ -134,7 +134,7 @@ const char* const PoolSubAllocator::GetAllocatorName() const
     return "PoolSubAllocator";
 }
 
-const int PoolSubAllocator::stub19() const
+const int PoolSubAllocator::GetAllocationsMadeTotal() const
 {
     return ObjectsCount;
 }

@@ -3,41 +3,143 @@
 
 unsigned int BestFitAllocator::MinimumSize;
 
-const int BestFitAllocator::_479780(const int* const a1) const
+uint32_t BestFitAllocator::FindSuitableBlock(const uint32_t size) const
 {
-    unsigned int i = 19, j = 0;
-    for (; i > (j + 1);)
+    uint32_t j = 0;
+    uint32_t i = 19;
+
+    do
     {
-        int t = j + (i - j) / 2;
-        if (a1 <= field_24[t].field_0)
+        const uint32_t blockIndex = j + (i - j) / 2;
+        if (size <= field_24[blockIndex].field_4)
             i = j + (i - j) / 2;
-        if (a1 > field_24[t].field_0)
-            j = t;
+
+        if (size > field_24[blockIndex].field_4)
+            j = blockIndex;
+    } while (i > j + 1);
+
+    if (size > field_24[j].field_4)
+        return i;
+    else
+        return j;
+}
+
+uint32_t* BestFitAllocator::_479290(uint32_t* ptr, const uint32_t a2, const uint32_t requestedSize)
+{
+    const uint32_t requestedSizeAligned = ALIGN_16BYTESUP(requestedSize) - 8;
+    if (a2 <= requestedSizeAligned - 24)
+        return nullptr;
+
+    if ((*(ptr + 1) & 0x40000000) == 0)
+        _478E80(ptr);
+
+    uint32_t* dataPtr = ptr + ALIGN_16BYTESUP(requestedSize);
+    uint32_t* nextDataPtr = (uint32_t*)*ptr;
+
+    dataPtr[0] = *ptr;
+
+    *(nextDataPtr + 4) ^= ( *(nextDataPtr + 4) ^ ((uint32_t)dataPtr >> 2) ) ^ 0x3FFFFFFF;
+
+    dataPtr[1] = (uint32_t)(ptr + ALIGN_16BYTESUP(requestedSize) + 12) & 0x3FFFFFFF | 0x80000000;
+    dataPtr[1] = (dataPtr[1] ^ ((uint32_t)ptr >> 2)) & 0x3FFFFFFF;
+    dataPtr[4] = 0;
+    dataPtr[5] = 0;
+
+    const bool _b0 = (*(ptr + 1) & 0x40000000) == 0;
+
+    *ptr = (uint32_t)dataPtr;
+
+    if (_b0)
+        _478F70(ptr);
+
+    _478F70(dataPtr);
+
+    BlocksFree++;
+
+    return ptr + ALIGN_16BYTESUP(requestedSize);
+}
+
+uint32_t* BestFitAllocator::_478E80(uint32_t* ptr)
+{
+    uint32_t* nextDataPtr = (uint32_t*)*ptr;
+    if (*ptr <= (uint32_t)ptr)
+        nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+    const uint32_t blockId = FindSuitableBlock(nextDataPtr - ptr - 8);
+    uint32_t* dataPtr = (uint32_t*)*(ptr + 5);
+    if (dataPtr)
+    {
+        dataPtr[4] = *(ptr + 4);
+        uint32_t* _ptr = (uint32_t*)*(ptr + 4);
+        if (_ptr)
+            _ptr[5] = *(ptr + 5);
+
+        return _478910(blockId);
     }
 
-    return a1 > field_24[j].field_0 ? i : j;
+    dataPtr = (uint32_t*)*(ptr + 4);
+    if (!dataPtr)
+    {
+        field_24[blockId].field_8--;
+
+        uint32_t* _ptr = (uint32_t*)*(ptr + 2);
+        if (_ptr)
+            _ptr[3] = *(ptr + 3);
+
+        _ptr = (uint32_t*)*(ptr + 3);
+        if (_ptr)
+            _ptr[2] = *(ptr + 2);
+
+        uint32_t* blockPtr = field_24[blockId].DataPtr;
+        if (ptr == blockPtr)
+        {
+            blockPtr = (uint32_t*)*(ptr + 2);
+            return _478910(blockId);
+        }
+
+        return _478910(blockId);
+    }
+
+    dataPtr[2] = *(ptr + 2);
+    dataPtr[3] = *(ptr + 3);
+
+    uint32_t* _ptr = (uint32_t*)*(ptr + 2);
+    if (_ptr)
+        _ptr[3] = (uint32_t)dataPtr;
+
+    _ptr = (uint32_t*)*(ptr + 3);
+    if (_ptr)
+        _ptr[2] = (uint32_t)dataPtr;
+
+    uint32_t* blockPtr = field_24[blockId].DataPtr;
+    if (ptr == blockPtr)
+        blockPtr = dataPtr;
+
+    dataPtr[5] = 0;
+
+    return _478910(blockId);
 }
 
 BestFitAllocator::BestFitAllocator()
 {
     MESSAGE_CLASS_CREATED(BestFitAllocator);
 
-    unsigned int f0 = 32;
-
-    for (unsigned int i = 0; i < 20; ++i)
+    uint32_t k = 32;
+    for (uint32_t i = 20; i; i--)
     {
-        field_24[i].field_0 = nullptr;
-        field_24[i].field_4 = f0;
-        field_24[i].field_8 = NULL;
+        field_24[i].DataPtr = nullptr;
+        field_24[i].field_4 = k;
+        field_24[i].field_8 = 0;
 
-        f0 = (int)((float)f0 * 1.5f);
+        k = (uint32_t)((float)k * 1.5f);
     }
 
-    field_24[19].field_4 = 0x7FFFFFFF;
-    m_Contents = nullptr;
-    field_118 = NULL;
-    field_11C = NULL;
-    field_120 = NULL;
+    field_24[19].field_4 = 0x7FFFFFFF;  //  NOTE: NaN.
+
+    DataPtr = nullptr;
+    BytesAvailable = NULL;
+    BlocksFree = NULL;
+    BlocksUsed = NULL;
 
     MinimumSize = 16;
 }
@@ -47,67 +149,91 @@ void* BestFitAllocator::Allocate_A(size_t size, const char* const fileName, cons
     return AllocateAligned(size, 8, fileName, fileLineNumber);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void* BestFitAllocator::AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber)
 {
     stub9();
 
-    alignment = alignment < 8 ? 8 : alignment;
-    size = size < MinimumSize ? MinimumSize : size;
-    int v = _479780((int*)((size + 3) & 0xFFFFFFFC)); // NOTE: align size by 4 bytes.
-    int v_ = v;
+    if (alignment < 8)
+        alignment = 8;
 
-    if (v >= 20)
+    if (size < MinimumSize)
+        size = MinimumSize;
+
+    const uint32_t sizeAligned = ALIGN_4BYTESUP(size);
+    uint32_t suitableBlockIndex = FindSuitableBlock(sizeAligned);
+
+    if (suitableBlockIndex >= 20)
     {
         stub9();
-        return NULL;
+        return nullptr;
     }
 
-    BestFitAllocInfo* allocinfo = &field_24[v];
-    int* al = nullptr, *al2 = nullptr;
+    BlockInfo* block = &field_24[suitableBlockIndex];
+    uint32_t* dataPtr;
+    void* newDataPtr;
 
     while (true)
     {
-        al = allocinfo->field_0;
-        if (allocinfo->field_0)
+        dataPtr = block->DataPtr;
+        if (block->DataPtr)
             break;
 
-        v_ = ++v;
-        ++allocinfo;
+        suitableBlockIndex++;
+        block++;
 
-        if (v >= 20)
+        if (suitableBlockIndex >= 20)
         {
             stub9();
-            return NULL;
+            return nullptr;
         }
-    }
 
-    while (true)
-    {
-        al2 = (int*)stub25((int)al, (size + 3) & 0xFFFFFFFC, fileName, fileLineNumber, alignment);
-        if (al2)
+        newDataPtr = (void*)stub25(dataPtr, sizeAligned, fileName, fileLineNumber, alignment);
+        if (newDataPtr)
             break;
 
-        al = (int*)al[2];
-        if (!al)
+        dataPtr = (uint32_t*)dataPtr[2];
+        if (!dataPtr)
         {
-            ++allocinfo;
-            if (++v_ >= 20)
+            suitableBlockIndex++;
+            block++;
+
+            if (suitableBlockIndex >= 20)
             {
                 stub9();
-                return NULL;
+                return nullptr;
             }
         }
     }
 
     stub9();
-
-    return al2;
+    return newDataPtr;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BestFitAllocator::Free(void* ptr)
 {
+    stub9();
+
+    if (!ptr)
+        return;
+
+    uint32_t* dataPtr = (uint32_t*)ptr - 2;
+    *((uint32_t*)ptr - 1) &= ~0x40000000;
+
+    _478F70((uint8_t*)ptr - 8);
+
+    uint32_t* dataPtrCopy = (uint32_t*)*dataPtr;
+    if (*dataPtr <= (uint32_t)dataPtr)
+        dataPtrCopy = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+    BlocksFree++;
+    BytesAvailable += dataPtr - dataPtrCopy;
+    BlocksUsed--;
+
+    _4790C0(dataPtr, 0);
+    _479180(dataPtr);
+
+    stub9();
+
 }
 
 void BestFitAllocator::FreeAligned(void* ptr)
@@ -118,18 +244,50 @@ void BestFitAllocator::FreeAligned(void* ptr)
 #pragma message(TODO_IMPLEMENTATION)
 void* BestFitAllocator::Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber)
 {
-    return nullptr;
+    uint32_t sizeAligned = newsize;
+    if (newsize < MinimumSize)
+        if (newsize)
+            sizeAligned = MinimumSize;
+
+    sizeAligned = ALIGN_4BYTESUP(sizeAligned);
+
+    if (!oldptr)
+        return Allocate_A(sizeAligned, fileName, fileLineNumber);
+
+    if (!sizeAligned)
+    {
+        Free(oldptr);
+
+        return nullptr;
+    }
+
+    uint32_t* nextDataPtr = (uint32_t*)((uint32_t*)oldptr - 2);
+    const uint32_t* nextDataPtrCopy = (uint32_t*)((uint32_t*)oldptr - 2);
+    if (nextDataPtr <= (uint32_t*)((uint32_t*)oldptr - 2))
+        nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+    const uint32_t dataSize = (uint8_t*)nextDataPtr - (uint8_t*)oldptr;
+    if (sizeAligned > dataSize)
+    {
+        _4790C0(nextDataPtrCopy);   //  NOTE: this WILL modify the pointer data!
+
+        nextDataPtr = (uint32_t*)*nextDataPtr;
+        if (*nextDataPtrCopy <= (uint32_t)nextDataPtrCopy)
+            nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+    }
 }
 
-int BestFitAllocator::stub8(int* unk)
+uint32_t BestFitAllocator::stub8(uint32_t* ptr)
 {
-    if (!unk)
-        return (int)unk;
+    if (!ptr)
+        return (uint32_t)ptr;
 
-    if ((int*)(unk - 2) <= unk - 2)
-        return ((int*)((char*)AllocatedSpacePtr + AllocatedSpaceSize) - unk);
-    else
-        return ((int*)(unk - 2) - unk);
+    uint32_t* nextDataPtr = (uint32_t*)(ptr - 2);
+    if (nextDataPtr <= (uint32_t*)(ptr - 2))
+        nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+    return nextDataPtr - ptr;
 }
 
 void BestFitAllocator::stub9()
@@ -146,42 +304,46 @@ void BestFitAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const cha
 {
     Allocator::SetNameAndAllocatedSpaceParams(bufferptr, name, size);
 
-    int* uninitspaceptr = (int*)((char*)((int)((char*)AllocatedSpacePtr + 15) & 0xFFFFFFF8) - 8); // NOTE: this is obnoxious.
-    *uninitspaceptr = (int)uninitspaceptr;
-    uninitspaceptr[1] = ((int)uninitspaceptr >> 2) & 0x3FFFFFFF | 0x80000000;
-    uninitspaceptr[2] = NULL;
-    uninitspaceptr[3] = NULL;
-    uninitspaceptr[4] = NULL;
-    uninitspaceptr[5] = NULL;
+    uint32_t* dataBlockPtr = (uint32_t*)(ALIGN_16BYTESUP((uint32_t)AllocatedSpacePtr) - 8);
+    dataBlockPtr[0] = (uint32_t)dataBlockPtr;
+    dataBlockPtr[1] = ((uint32_t)dataBlockPtr >> 2) & 0x3FFFFFFF | 0x80000000;  //  NOTE: bits: [30] -> is being used, [31] -> ? (set to 1 here).
+    //  NOTE: neat trick to store additional info in the pointer without wasting space for additional member variable:
+    //      since we know that all pointers are aligned by 16 bytes (lowest 2 bits) we can drop them and store that
+    //      additional info in the highest 2 bits.
+    dataBlockPtr[2] = 0;
+    dataBlockPtr[3] = 0;
+    dataBlockPtr[4] = 0;
+    dataBlockPtr[5] = 0;
 
-    int v = _479780((int*)((char*)AllocatedSpacePtr + AllocatedSpaceSize - (char*)uninitspaceptr - 8));
-    field_24[v].field_0 = uninitspaceptr;
-    field_24[v].field_8 = 1;
+    const uint32_t bestBlock = FindSuitableBlock((uint32_t)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize - (uint8_t*)dataBlockPtr - 8));
 
-    field_118 = NULL;
-    field_120 = NULL;
-    m_Contents = uninitspaceptr;
-    field_11C = 1;
+    field_24[bestBlock].DataPtr = dataBlockPtr;
+    field_24[bestBlock].field_8 = 1;
+
+    BytesAvailable = 0;
+    BlocksUsed = 0;
+    DataPtr = dataBlockPtr;
+    BlocksFree = 1;
 }
 
-const int BestFitAllocator::GetTotalAllocations() const
+const int BestFitAllocator::GetFreeMemory() const
 {
-    return field_118;
+    return BytesAvailable;
 }
 
 const int BestFitAllocator::GetAllocatedElementsTotal() const
 {
-    return field_120;
+    return BlocksUsed;
 }
 
-const int BestFitAllocator::stub19() const
+const int BestFitAllocator::GetAllocationsMadeTotal() const
 {
-    return field_120;
+    return BlocksUsed;
 }
 
 const int BestFitAllocator::stub20() const
 {
-    return field_11C;
+    return BlocksFree;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -190,10 +352,30 @@ const int BestFitAllocator::stub21() const
     return NULL;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 const int BestFitAllocator::GetAvailableMemory() const
 {
-    return NULL;
+    int32_t memoryAvailable = 0;
+
+    for (uint32_t i = 20; i; i--)
+    {
+        for (uint32_t* dataPtr = field_24[i].DataPtr; dataPtr; dataPtr = (uint32_t*)dataPtr[2])
+        {
+            uint32_t* nextDataPtr = (uint32_t*)*dataPtr;
+            if (*dataPtr <= (uint32_t)dataPtr)
+                nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+            const uint32_t dataBlockSize = nextDataPtr - dataPtr - 8;
+            uint32_t* nextBlockPtr = (uint32_t*)dataPtr[4];
+
+            while (nextBlockPtr)
+            {
+                memoryAvailable += dataBlockSize;
+                nextBlockPtr = (uint32_t*)nextBlockPtr[4];
+            }
+        }
+    }
+
+    return memoryAvailable;
 }
 
 void BestFitAllocator::Dump() const
@@ -201,56 +383,86 @@ void BestFitAllocator::Dump() const
     LogDump::LogA("BestFitAllocator contents:\n");
     LogDump::LogA("-----------------------------\n");
 
-    int* cont = m_Contents;
-    for (int i = 0; i < (field_11C + field_120); ++i)
+    uint32_t* dataPtr = DataPtr;
+    for (uint32_t i = 0; i < BlocksFree + BlocksUsed; ++i)
     {
-        LogDump::LogA("%d\t: %x\t : %s\t : %d\n", i, m_Contents, cont[1] & 0x40000000 ? "used" : "free", (int*)*cont <= cont ? ((char*)AllocatedSpacePtr + AllocatedSpaceSize - (char*)cont - 8) : ((char*)*cont - (char*)cont - 8));
-        cont = (int*)*cont;
+        uint32_t* nextDataPtr = (uint32_t*)*dataPtr;
+        if (*dataPtr <= (uint32_t)dataPtr)
+            nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+        const uint32_t dataSize = nextDataPtr - dataPtr - 8;
+        const bool isUsed = dataPtr[1] & 0x40000000;
+
+        LogDump::LogA("%d\t: %x\t : %s\t : %d\n",
+            i,
+            dataPtr,
+            isUsed ? "used" : "free",
+            dataSize
+        );
+
+        dataPtr = (uint32_t*)*dataPtr;
     }
 
     LogDump::LogA("-----------------------------\n");
 }
 
-int BestFitAllocator::stub24(int a1, int a2, const char* const fileName, const unsigned int fileLineNumber)
+int BestFitAllocator::stub24(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
-    return stub25(a1, a2, fileName, fileLineNumber, 8);
+    return stub25(ptr, size, fileName, fileLineNumber, 8);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int BestFitAllocator::stub25(int, int, const char* const fileName, const unsigned int fileLineNumber, int alignment)
+int BestFitAllocator::stub25(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber, int alignment)
 {
     return NULL;
 }
 
 int* BestFitAllocator::GetMemoryContents() const
 {
-    return m_Contents;
+    return (int32_t*)DataPtr;
 }
 
 const int BestFitAllocator::stub27() const
 {
-    return m_Contents[1] * 4;
+    return DataPtr[1] * 4;
 }
 
 int BestFitAllocator::stub28(int* a1) const
 {
-    return (int*)*a1 == m_Contents ? NULL : *a1;
+    return (uint32_t*)*a1 == DataPtr ? NULL : *a1;
 }
 
 const int BestFitAllocator::stub29(int* a1) const
 {
-    return m_Contents ? NULL : (4 * a1[1]);
+    return DataPtr ? NULL : (4 * a1[1]);
 }
 
-char BestFitAllocator::stub30(int* a1) const
+char BestFitAllocator::OwnsPointer(int* a1) const
 {
     return (a1[1] >> 30) & 1;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-char BestFitAllocator::stub31(int* a1, int a2, int a3) const
+char BestFitAllocator::stub31(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const
 {
-    return NULL;
+    uint32_t* nextDataPtr = (uint32_t*)*ptr;
+    if (*ptr <= (uint32_t)ptr)
+        nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+    const uint32_t dataBlockSize = nextDataPtr - ptr - 8;
+    const uint32_t dataPtrModulo = (uint32_t)(ptr + 8) % alignment;
+    uint32_t closestAlignedSize = alignment - dataPtrModulo + 24;
+
+    uint32_t possibleSize = alignment - dataPtrModulo - 8;
+    while (possibleSize < MinimumSize)
+    {
+        possibleSize += alignment;
+        closestAlignedSize += alignment;
+    }
+
+    if (dataPtrModulo)
+        return dataBlockSize >= (closestAlignedSize + size);
+    else
+        return dataBlockSize >= size;
 }
 
 int BestFitAllocator::stub32(int a1) const
@@ -264,12 +476,12 @@ int BestFitAllocator::stub33(int a1) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-char BestFitAllocator::stub34(int*, int)
+char BestFitAllocator::TryExpandBy(int*, int)
 {
     return NULL;
 }
 
-int BestFitAllocator::stub35()
+int BestFitAllocator::GetMemoryReserved()
 {
-    return field_11C + field_120;
+    return BlocksFree + BlocksUsed;
 }
