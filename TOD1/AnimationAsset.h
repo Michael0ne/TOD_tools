@@ -48,13 +48,16 @@ private:
     AnimationAsset(); // @900080
 
     static AssetInstance*   Instance; //  @A3E0FC
+    static const char* const    Bones[];    //  @A12FF0
 
 public:
     virtual ~AnimationAsset();  //  @900F40
-    virtual AssetInstance* GetInstancePtr() const override;
+    virtual AssetInstance*  GetInstancePtr() const override;
 
-    static void            CreateInstance(); // @900980
-    static AnimationAsset* Create(); // @900EF0
+    const char*             GetBoneName(const uint32_t boneIndex) const;    //  @8FFF50
+
+    static void             CreateInstance(); // @900980
+    static AnimationAsset*  Create(); // @900EF0
 };
 
 ASSERT_CLASS_SIZE(AnimationAsset, 104);

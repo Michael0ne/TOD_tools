@@ -476,9 +476,37 @@ int BestFitAllocator::stub33(int a1) const
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-char BestFitAllocator::TryExpandBy(int*, int)
+char BestFitAllocator::TryExpandBy(uint8_t* ptr, uint32_t size)
 {
-    return NULL;
+    if (!size)
+        return true;
+
+    if (size < MinimumSize)
+        size = MinimumSize;
+
+    const uint32_t sizeAligned = ALIGN_4BYTESUP(size);
+    if (!ptr)
+    {
+        void* newPtr = Allocate_A(sizeAligned, __FILE__, __LINE__);
+        if (!newPtr)
+            return false;
+
+        Free(newPtr);
+        return true;
+    }
+
+    const uint32_t* nextDataPtr = (uint32_t*)(ptr - 8);
+    uint32_t* nextData = (uint32_t*)*(ptr - 8);
+
+    while (true)
+    {
+        if (nextData <= nextDataPtr)
+            nextData = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+        const uint32_t dataSize = nextData - (uint32_t*)ptr;
+        const uint32_t dataSizeCopy = dataSize;
+        if (sizeAligned <= dataSize)
+            break;
+    }
 }
 
 int BestFitAllocator::GetMemoryReserved()

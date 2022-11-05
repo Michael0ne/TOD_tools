@@ -85,7 +85,7 @@ public:
     virtual char        stub31(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const;
     virtual int         stub32(int) const;
     virtual int         stub33(int) const;
-    virtual char        TryExpandBy(int*, int);
+    virtual char        TryExpandBy(uint8_t* ptr, uint32_t size);
     virtual int         GetMemoryReserved();
     virtual void        stub36();
 };

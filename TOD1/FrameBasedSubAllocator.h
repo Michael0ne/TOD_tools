@@ -13,6 +13,8 @@ class FrameBasedSubAllocator : public SequentialSubAllocator
 protected:
     SpaceInfo      *ObjectSpace;
 
+    SpaceInfo*      _479FB0(uint8_t* ptr);  //  @479FB0 //  NOTE: unused.
+
 public:
     FrameBasedSubAllocator(); // @479EE0
 

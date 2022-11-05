@@ -1,6 +1,31 @@
 #include "FrameBasedSubAllocator.h"
 #include "LogDump.h"
 
+FrameBasedSubAllocator::SpaceInfo* FrameBasedSubAllocator::_479FB0(uint8_t* ptr)
+{
+    SpaceInfo* dataPtr = ObjectSpace;
+    if (ptr > dataPtr->DataPtr)
+        return dataPtr;
+
+    if (!dataPtr)
+        return nullptr;
+
+    while (true)
+    {
+        if (ptr < dataPtr->DataPtr)
+        {
+            if (dataPtr->PreviousElement && ptr >= dataPtr->PreviousElement->DataPtr)
+                break;
+        }
+
+        dataPtr = dataPtr->PreviousElement;
+        if (!dataPtr)
+            return nullptr;
+    }
+
+    return dataPtr->PreviousElement;
+}
+
 FrameBasedSubAllocator::FrameBasedSubAllocator()
 {
     MESSAGE_CLASS_CREATED(FrameBasedSubAllocator);

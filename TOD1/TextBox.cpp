@@ -136,9 +136,116 @@ void TextBox::SetFont(const char* fontName)
         m_QuadTree->Refresh();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void TextBox::ParseFormatting(char* key, float* linescale, int* colorindex, eHorizontalAlign* alignment)
 {
+    if (!key)
+        return;
+
+    char* keyStartPos = key;
+    const size_t keyLength = strlen(key);
+    uint32_t charIndex = 0;
+    char currentChar;
+
+    while (true)
+    {
+        currentChar = key[charIndex];
+        if (currentChar == ' ')
+        {
+            do
+            {
+                currentChar = key[++charIndex];
+            } while (currentChar == ' ');
+
+            if (charIndex >= keyLength)
+                return;
+
+            continue;
+        }
+
+        if (currentChar == 's')
+        {
+            char* numberEnd;
+            const ULONG scaling = strtoul(&key[++charIndex], &numberEnd, 10);
+            const int32_t numberLength = numberEnd - charIndex - keyStartPos;
+
+            if (numberLength <= 0)
+            {
+                LogDump::LogA("Could not parse textslot key \"%s\" (char %d)\n", keyStartPos, charIndex);
+                return;
+            }
+
+            const float_t scaleActual = (float_t)scaling * 0.01f;
+            *linescale = scaleActual;
+
+            if (scaleActual > 4.f)
+            {
+                LogDump::LogA("Line scale specified in textslot key is too large (%d), clamping to 400\n", (scaleActual * 100.f));
+                *linescale = 4.f;
+            }
+
+            charIndex += numberLength;
+
+            if (charIndex >= keyLength)
+                return;
+
+            continue;
+        }
+
+        if (currentChar == 'c')
+        {
+
+            char* numberEnd;
+            const ULONG colorIndex = strtoul(&key[++charIndex], &numberEnd, 10);
+            const int32_t numberLength = numberEnd - charIndex - keyStartPos;
+
+            if (numberLength <= 0)
+            {
+                LogDump::LogA("Could not parse textslot key \"%s\" (char %d)\n", keyStartPos, charIndex);
+                return;
+            }
+
+            *colorindex = colorIndex;
+            if (colorIndex < 1 || colorIndex > 2)
+            {
+                LogDump::LogA("Color index out of range in textslot key, must be 1 or 2\n");
+                *colorindex = 1;
+            }
+
+            charIndex += numberLength;
+            if (charIndex >= keyLength)
+                return;
+        }
+
+        if (currentChar == 'a')
+        {
+            char alignmentLetter = key[++charIndex];
+            switch (alignmentLetter)
+            {
+            case 'l':
+                *alignment = LEFT;
+                break;
+            case 'r':
+                *alignment = RIGHT;
+                break;
+            case 'c':
+                *alignment = CENTER;
+                break;
+            default:
+                LogDump::LogA("Illegal alignment in textslot key\n");
+                return;
+            }
+
+            charIndex++;
+
+            if (charIndex >= keyLength)
+                return;
+        }
+    }
+
+    if (currentChar == 'x')
+        return;
+
+    LogDump::LogA("Could not parse textslot key \"%s\" (char %d)\n", key, charIndex);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

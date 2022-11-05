@@ -157,7 +157,7 @@ int Allocator::stub33(int) const
     return NULL;
 }
 
-char Allocator::TryExpandBy(int*, int)
+char Allocator::TryExpandBy(uint8_t* ptr, uint32_t size)
 {
     return NULL;
 }

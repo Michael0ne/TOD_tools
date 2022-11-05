@@ -35,6 +35,13 @@ Vector4f* Character::GetBounds(Vector4f& outBounds)
     return &outBounds;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void Character::Animate()
+{
+    if (m_Id.HasPosition)
+        return;
+}
+
 void Character::AttachNode(const unsigned int index, Node* node, const String& nodeName1, const String& nodeName2)
 {
     StoreProperty(16, GetAttachment(), tSTRING);

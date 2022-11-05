@@ -55,7 +55,7 @@ public:
     virtual char        stub31(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const override; // @478D60
     virtual int         stub32(int) const override; // @478DD0
     virtual int         stub33(int) const override; // @478DE0
-    virtual char        TryExpandBy(int*, int) override; // @479490
+    virtual char        TryExpandBy(uint8_t* ptr, uint32_t size) override; // @479490
     virtual int         GetMemoryReserved() override; // @478B60
 };
 
