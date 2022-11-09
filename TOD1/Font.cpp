@@ -116,6 +116,16 @@ void Font::GetTextDimensions(Vector4f& outDimensions, const char* const text, co
 }
 
 #pragma message(TODO_IMPLEMENTATION)
+void Font::GetTextDimensions_A(Vector4f& outDimensions, const uint16_t* text, const float_t scaleX) const
+{
+}
+
+const float Font::_41A9D0() const
+{
+    return ((float_t)field_4 + m_VerticalSpacing) * m_ScaleY;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
 void Font::MakeCharactersMap(GlyphInfo& GlyphsInfo)
 {
     GlyphsInfo.m_GlyphsInfoArray[0] = { 'a', 1, 4, 10.854492, 0, 0, 0.066405997, 0 };

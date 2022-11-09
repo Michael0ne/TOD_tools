@@ -86,7 +86,7 @@ struct CompiledAssetInfo
     char*               GetDataPtr(const int flags);    //  @4062E0
     void                _40CB90(const uint32_t dataptr, const int8_t a2, const int32_t a3);  //  @40CB90
     void                _40CBD0(const uint32_t dataptr, const int8_t a2, const int32_t a3);  //  @40CBD0
-    void                _40CB20(const uint8_t** dataptr, char flags) const;   //  @40CB20
+    void                OffsetToPtr(const uint8_t** dataptr, char flags) const;   //  @40CB20
     void                _85E160(uint8_t** dataptr, uint8_t** a2, uint32_t flags, uint32_t a4);    //  @85E160
 };
 

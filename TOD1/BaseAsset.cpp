@@ -174,9 +174,9 @@ Asset* Asset::CreateInstance(size_t classsize)
 {
     Asset* asset = nullptr;
     if (AssetInstance::AssetAlignment[0])
-        asset = (Asset*)MemoryManager::AllocatorsList[TextureAssetAllocatorId]->AllocateAligned(classsize, AssetInstance::AssetAlignment[0], NULL, NULL);
+        asset = (Asset*)MemoryManager::AllocatorsList[TextureAssetAllocatorId]->AllocateAligned(classsize, AssetInstance::AssetAlignment[0], __FILE__, __LINE__);
     else
-        asset = (Asset*)MemoryManager::AllocatorsList[TextureAssetAllocatorId]->Allocate(classsize, NULL, NULL);
+        asset = (Asset*)MemoryManager::AllocatorsList[TextureAssetAllocatorId]->Allocate(classsize, __FILE__, __LINE__);
 
     asset->m_Flags.NotUsed = 1;
 

@@ -1,4 +1,5 @@
 #include "AnimationAsset.h"
+#include "BuiltinType.h"
 
 AssetInstance* AnimationAsset::Instance;
 const char* const AnimationAsset::Bones[] =
@@ -34,11 +35,61 @@ AssetInstance* AnimationAsset::GetInstancePtr() const
 const char* AnimationAsset::GetBoneName(const uint32_t boneIndex) const
 {
     const PivotData* pivotData = (PivotData*)ALIGN_4BYTES(field_5C);
-    const uint32_t boneNameIndex = (uint32_t)pivotData[boneIndex + 1].field_0 & 0xFFF;
-    if (pivotData[boneIndex + 1].field_0 & 0x4000)
+    const uint32_t boneNameIndex = pivotData[boneIndex + 1].Data.BoneIndexOrOffset;
+    const bool isBoneIndex = pivotData[boneIndex + 1].Data.IsBoneIndex;
+    if (isBoneIndex)
         return Bones[boneNameIndex];
     else
-        return (const char* const)pivotData + boneNameIndex;
+        return (const char* const)(((uint32_t*)&pivotData) + 1) + boneNameIndex;
+}
+
+void AnimationAsset::GetPivotOrient(Orientation& orient, const uint32_t pivotIndex, const uint32_t frameNumber) const
+{
+    orient = BuiltinType::Orient;
+    const PivotData* pivotData = (PivotData*)ALIGN_4BYTES(field_5C);
+    uint32_t pivotOrientOffset = pivotData[pivotIndex].field_8 & 0xFFFFFF;
+
+    if (!pivotOrientOffset)
+        return;
+
+    if (!pivotData[pivotIndex + 1].Data._13)
+        pivotOrientOffset += 2 * frameNumber * field_66;
+
+    pivotOrientOffset <<= 1;
+
+    orient.x = (float)(*((uint16_t*)pivotData + pivotOrientOffset + 1)) * 0.000030518509f;
+    orient.y = (float)(*((uint16_t*)pivotData + pivotOrientOffset + 3)) * 0.000030518509f;
+    orient.z = (float)(*((uint16_t*)pivotData + pivotOrientOffset + 4)) * 0.000030518509f;
+    orient.w = (float)(*((uint16_t*)pivotData + pivotOrientOffset + 2)) * 0.000030518509f;
+}
+
+const uint32_t AnimationAsset::GetPivotEndFrame(const uint32_t pivotIndex) const
+{
+    uint32_t frame1 = field_5C[pivotIndex].field_4 & 0xFFFFFF;
+    frame1 = frame1 != 0 ? FramesTotal : 0;
+
+    uint32_t frame2 = field_5C[pivotIndex].field_8 & 0xFFFFFF;
+    frame2 = frame2 != 0 ? FramesTotal : 0;
+
+    return frame1 <= frame2 ? frame2 : frame1;
+}
+
+void AnimationAsset::GetPivotPos(Vector4f& pos, const uint32_t pivotIndex, const uint32_t frameNumber) const
+{
+    pos = BuiltinType::ZeroVector;
+    const PivotData* pivotData = (PivotData*)ALIGN_4BYTES(field_5C);
+    uint32_t pivotDataOffset = pivotData[pivotIndex].field_4 & 0xFFFFFF;
+
+    if (!pivotDataOffset)
+        return;
+
+    if (!pivotData[pivotIndex + 1].Data._12)
+        pivotDataOffset += (frameNumber * field_64 * 2) + (frameNumber * field_64);
+
+    pos.x = *((float*)pivotData + pivotDataOffset);
+    pos.y = *((float*)pivotData + pivotDataOffset);
+    pos.z = *((float*)pivotData + pivotDataOffset);
+    pos.a = 0.f;
 }
 
 void AnimationAsset::CreateInstance()
@@ -56,4 +107,16 @@ void AnimationAsset::CreateInstance()
 AnimationAsset* AnimationAsset::Create()
 {
     return new AnimationAsset;
+}
+
+int32_t AnimationAsset::BoneIndexByName(const char* const boneName)
+{
+    uint32_t i = 0;
+    const size_t bonesTotal = ARRAYSIZE(Bones);
+
+    while (strcmp(Bones[i], boneName) == NULL)
+        if (i >= bonesTotal)
+            return -1;
+
+    return i;
 }

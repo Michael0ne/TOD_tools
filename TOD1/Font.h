@@ -72,6 +72,8 @@ public:
     const float         GetGameTextWidth(const unsigned short* const text) const;  //  @41B170
     const Glyph*        GetGlyph(const short letter) const; //  @41AE90
     void                GetTextDimensions(Vector4f& outDimensions, const char* const text, const float spriteSizeX) const;   //  @41E200
+    void                GetTextDimensions_A(Vector4f& outDimensions, const uint16_t* text, const float_t scaleX) const; //  @41D310
+    const float         _41A9D0() const;    //  @41A9D0
 
     static void         MakeCharactersMap(GlyphInfo& GlyphsInfo);   //  @938E10
 

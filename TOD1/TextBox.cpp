@@ -85,7 +85,6 @@ void TextBox::SetTextScale(const float* args)
         m_QuadTree->Refresh();
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
 {
     if (!m_FontAsset)
@@ -94,16 +93,85 @@ Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
         return &outSize;
     }
 
+    Font* font = m_FontAsset.GetAsset<FontAsset>()->m_Font;
     if (m_Text)
     {
-        Font* font = m_FontAsset.GetAsset<FontAsset>()->m_Font;
-
         font->m_ScaleX = m_ScaleX;
         font->m_ScaleY = m_ScaleY;
         font->m_HorizontalSpacing = m_HorizontalSpacing;
         font->m_VerticalSpacing = m_VerticalSpacing;
 
         String textBoxText(*m_Text);
+
+        font->GetTextDimensions(outSize, textBoxText.m_Str, m_SpriteSize_X);
+        return &outSize;
+    }
+
+    if (!m_TextSlot)
+    {
+        outSize = BuiltinType::ZeroVector;
+        return &outSize;
+    }
+
+    font->m_ScaleX = m_ScaleX;
+    font->m_ScaleY = m_ScaleY;
+    font->m_HorizontalSpacing = m_HorizontalSpacing;
+    font->m_VerticalSpacing = m_VerticalSpacing;
+
+    if (m_Flags.ViewAllSlotIndices)
+    {
+        outSize.x = m_SpriteSize_X;
+        uint32_t lettersCount;
+        if (m_TextSlot->m_TextAsset.GetAsset<TextAsset>())
+            lettersCount = m_TextSlot->m_TextAsset.GetAsset<TextAsset>()->m_TextIndicies.size();
+        else
+            lettersCount = 0;
+
+        outSize.y = font->_41A9D0() * lettersCount;
+        outSize.z = 0.f;
+        outSize.a = 0.f;
+
+        return &outSize;
+    }
+    else
+    {
+        uint16_t* text = nullptr;
+        if (m_TextSlotIndexList)
+        {
+            text = m_TextSlotIndexList;
+        }
+        else
+        {
+            uint16_t textBuffer[1024] = {};
+            text = textBuffer;
+
+            if (m_Flags.UseSlotIndex)
+            {
+                m_TextSlot->GetCurrentLoadedText(textBuffer, sizeof(textBuffer));
+            }
+            else
+            {
+                if (m_Flags.TextSlotIndex == -1)
+                    textBuffer[0] = NULL;
+                else
+                    m_TextSlot->GetTextByIndex(m_Flags.TextSlotIndex, textBuffer, sizeof(textBuffer));
+            }
+        }
+
+        uint32_t textLength = TextAsset::GetGameStringLength(text);
+        if (textLength > 1023)
+            textLength = 1023;
+
+        uint16_t textBufferSecond[1024] = {};
+        memcpy(textBufferSecond, text, 2 * textLength + 2);
+        for (uint32_t i = 0; i < textLength; ++i)
+            textBufferSecond[i] = textBufferSecond[i] + text - textBufferSecond;
+
+        uint16_t finalText[1024];
+        ParseFormattedText(textBufferSecond, finalText, sizeof(finalText));
+        font->GetTextDimensions_A(outSize, finalText, m_SpriteSize_X);
+
+        return &outSize;
     }
 
     return nullptr;

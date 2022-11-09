@@ -6,14 +6,14 @@ class AnimSlot : public Node
 {
     friend class AnimLayer;
 
-    enum LoopMode
+    enum LoopMode_t
     {
         LOOP = 0,
         ONESHOT,
         RANDOM
     };
 
-    enum AnimFlags
+    enum AnimFlags_t
     {
         FREEZE_ROOT_NODE = 0,
         OVERRIDE_AVERAGE_Z = 1,
@@ -25,22 +25,24 @@ class AnimSlot : public Node
     };
 
 protected:
-    AnimationAsset *m_TargetAnimation;
-    int             field_54;
-    LoopMode        m_LoopMode;
-    float           m_Speed;
-    float           m_CrossBlendSpeed;
-    Vector4f        m_OverrideAverage;
-    Vector4f        m_OverrideEscape;
-    AnimFlags       m_AnimFlags;
+    AnimationAsset     *TargetAnimation;
+    int                 field_54;
+    LoopMode_t          LoopMode;
+    float               Speed;
+    float               CrossBlendSpeed;
+    Vector4f            OverrideAverage;
+    Vector4f            OverrideEscape;
+    AnimFlags_t         AnimFlags;
     union
     {
         struct
         {
             unsigned    StallFirstFrame : 1;
-            unsigned    _1 : 1;
+            unsigned    GamePivotIndex : 12;    //  NOTE: not sure how much bits is reserved for this.
         };
-    }               m_Flags;
+    }                   Flags;
+
+    void                GetGamePivotStartOrient(Orientation& orient) const; //  @9051E0
 
 public:
     AnimSlot(); // @905D90
@@ -49,8 +51,8 @@ public:
     const char* const   GetTarget1() const; //  @9058A0
     void                SetTarget1(const char* const target1);  //  @906380
     const float         GetSpeedReal() const;   //  @9058C0
-    LoopMode            GetLoopmode1() const;   //  @900F90
-    void                SetLoopmode1(const LoopMode loopmode); //  @9057D0
+    LoopMode_t          GetLoopmode1() const;   //  @900F90
+    void                SetLoopmode1(const LoopMode_t loopmode); //  @9057D0
     const float         GetSpeed() const;   //  @905800
     void                SetSpeed(const float speed);    //  @8E3730
     const float         GetCrossBlendSpeed() const; //  @8A6D40
@@ -71,8 +73,8 @@ public:
     void                SetOverrideEscapeY(const float escapey);    //  @916E20
     const float         GetOverrideEscapeZ() const; //  @905880
     void                SetOverrideEscapeZ(const float escapez);    //  @905890
-    const AnimFlags     GetAnimFlags() const;   //  @4A66A0
-    void                SetAnimFlags(const AnimFlags flags); //  @9057C0
+    const AnimFlags_t   GetAnimFlags() const;   //  @4A66A0
+    void                SetAnimFlags(const AnimFlags_t flags); //  @9057C0
 
     void                GetGamePivotStartPos(int *args) const;    //  @905990
     void                GetGamePivotEndPos(int *args) const;  //  @9059E0

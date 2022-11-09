@@ -7,19 +7,27 @@
 
 EntityType* tAnimSlot;
 
+void AnimSlot::GetGamePivotStartOrient(Orientation& orient) const
+{
+    if (TargetAnimation && Flags.GamePivotIndex >= 0)
+        TargetAnimation->GetPivotOrient(orient, Flags.GamePivotIndex, 0);
+    else
+        orient = BuiltinType::Orient;
+}
+
 AnimSlot::AnimSlot() : Node(NODE_MASK_EMPTY)
 {
     MESSAGE_CLASS_CREATED(AnimSlot);
 
-    m_TargetAnimation = nullptr;
+    TargetAnimation = nullptr;
     field_54 = 1;
-    m_Flags.StallFirstFrame = true;
-    m_Speed = m_CrossBlendSpeed = 1.0f;
-    m_LoopMode = LOOP;
-    m_AnimFlags = FREEZE_ROOT_NODE;
+    Flags.StallFirstFrame = true;
+    Speed = CrossBlendSpeed = 1.0f;
+    LoopMode = LOOP;
+    AnimFlags = FREEZE_ROOT_NODE;
 
-    m_OverrideAverage = {};
-    m_OverrideEscape = {};
+    OverrideAverage = {};
+    OverrideEscape = {};
 }
 
 AnimSlot::~AnimSlot()
@@ -29,139 +37,139 @@ AnimSlot::~AnimSlot()
 
 const char* const AnimSlot::GetTarget1() const
 {
-    return m_TargetAnimation ? m_TargetAnimation->GetName() : nullptr;
+    return TargetAnimation ? TargetAnimation->GetName() : nullptr;
 }
 
 void AnimSlot::SetTarget1(const char* const target1)
 {
     AssetLoader assload(target1);
-    m_TargetAnimation = (AnimationAsset*)assload.m_AssetPtr;
+    TargetAnimation = (AnimationAsset*)assload.m_AssetPtr;
 
-    if (m_TargetAnimation->m_ResourceTimestamp)
+    if (TargetAnimation->m_ResourceTimestamp)
     {
-        m_LoopMode = (LoopMode)m_TargetAnimation->m_LoopMode;
-        m_Speed = GetSpeed();
+        LoopMode = (LoopMode_t)TargetAnimation->m_LoopMode;
+        Speed = GetSpeed();
     }
 }
 
-AnimSlot::LoopMode AnimSlot::GetLoopmode1() const
+AnimSlot::LoopMode_t AnimSlot::GetLoopmode1() const
 {
-    return m_LoopMode;
+    return LoopMode;
 }
 
-void AnimSlot::SetLoopmode1(const LoopMode loopmode)
+void AnimSlot::SetLoopmode1(const LoopMode_t loopmode)
 {
-    m_LoopMode = loopmode;
+    LoopMode = loopmode;
 }
 
 const float AnimSlot::GetSpeed() const
 {
-    return m_Speed;
+    return Speed;
 }
 
 void AnimSlot::SetSpeed(const float speed)
 {
-    m_Speed = speed;
+    Speed = speed;
 }
 
 const float AnimSlot::GetCrossBlendSpeed() const
 {
-    return m_CrossBlendSpeed;
+    return CrossBlendSpeed;
 }
 
 void AnimSlot::SetCrossBlendSpeed(const float speed)
 {
-    m_CrossBlendSpeed = speed;
+    CrossBlendSpeed = speed;
 }
 
 const float AnimSlot::GetCrossBlendFrames() const
 {
-    return m_CrossBlendSpeed;
+    return CrossBlendSpeed;
 }
 
 void AnimSlot::SetCrossBlendFrames(const int frames)
 {
-    m_CrossBlendSpeed = 25.f / frames;
+    CrossBlendSpeed = 25.f / frames;
 }
 
 const bool AnimSlot::GetShouldStallFirstFrame() const
 {
-    return m_Flags.StallFirstFrame;
+    return Flags.StallFirstFrame;
 }
 
 void AnimSlot::SetShouldStallFirstFrame(const bool stallff)
 {
-    m_Flags.StallFirstFrame = stallff;
+    Flags.StallFirstFrame = stallff;
 }
 
 const float AnimSlot::GetOverrideAverageX() const
 {
-    return m_OverrideAverage.x;
+    return OverrideAverage.x;
 }
 
 void AnimSlot::SetOverrideAverageX(const float averagex)
 {
-    m_OverrideAverage.x = averagex;
+    OverrideAverage.x = averagex;
 }
 
 const float AnimSlot::GetOverrideAverageY() const
 {
-    return m_OverrideAverage.y;
+    return OverrideAverage.y;
 }
 
 void AnimSlot::SetOverrideAverageY(const float averagey)
 {
-    m_OverrideAverage.y = averagey;
+    OverrideAverage.y = averagey;
 }
 
 const float AnimSlot::GetOverrideAverageZ() const
 {
-    return m_OverrideAverage.z;
+    return OverrideAverage.z;
 }
 
 void AnimSlot::SetOverrideAverageZ(const float averagez)
 {
-    m_OverrideAverage.z = averagez;
+    OverrideAverage.z = averagez;
 }
 
 const float AnimSlot::GetOverrideEscapeX() const
 {
-    return m_OverrideEscape.x;
+    return OverrideEscape.x;
 }
 
 void AnimSlot::SetOverrideEscapeX(const float escapex)
 {
-    m_OverrideEscape.x = escapex;
+    OverrideEscape.x = escapex;
 }
 
 const float AnimSlot::GetOverrideEscapeY() const
 {
-    return m_OverrideEscape.y;
+    return OverrideEscape.y;
 }
 
 void AnimSlot::SetOverrideEscapeY(const float escapey)
 {
-    m_OverrideEscape.y = escapey;
+    OverrideEscape.y = escapey;
 }
 
 const float AnimSlot::GetOverrideEscapeZ() const
 {
-    return m_OverrideEscape.z;
+    return OverrideEscape.z;
 }
 
 void AnimSlot::SetOverrideEscapeZ(const float escapez)
 {
-    m_OverrideEscape.z = escapez;
+    OverrideEscape.z = escapez;
 }
 
-const AnimSlot::AnimFlags AnimSlot::GetAnimFlags() const
+const AnimSlot::AnimFlags_t AnimSlot::GetAnimFlags() const
 {
-    return m_AnimFlags;
+    return AnimFlags;
 }
 
-void AnimSlot::SetAnimFlags(const AnimFlags flags)
+void AnimSlot::SetAnimFlags(const AnimFlags_t flags)
 {
-    m_AnimFlags = flags;
+    AnimFlags = flags;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

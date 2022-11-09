@@ -1252,7 +1252,7 @@ void CompiledAssetInfo::ParseInfo(const uint8_t** assetPtr, CompiledAssetInfo** 
                 AddAssetToList(assetPtr, a4);
                 break;
             case THREE:
-                _40CB20(assetPtr, a4);
+                OffsetToPtr(assetPtr, a4);
                 *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
                 break;
             case FOUR:
@@ -1318,7 +1318,7 @@ void CompiledAssetInfo::ParseAssetData(const uint8_t** assetdataptr, int* datapt
             AddAssetToList(assetdataptr, flags);
         break;
     case THREE:
-        _40CB20(assetdataptr, flags);
+        OffsetToPtr(assetdataptr, flags);
         *assetdataptr = (uint8_t*)ALIGN_4BYTES(*assetdataptr);
         break;
     default:
@@ -1355,7 +1355,7 @@ void CompiledAssetInfo::AlignDataOrSize(unsigned int alignment, unsigned char fl
     }
 }
 
-void CompiledAssetInfo::_40CB20(const uint8_t** dataptr, char flags) const
+void CompiledAssetInfo::OffsetToPtr(const uint8_t** dataptr, char flags) const
 {
     if ((flags & 1) == 0)
     {

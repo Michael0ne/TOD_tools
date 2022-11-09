@@ -121,7 +121,7 @@ void AnimLayer::GetGamePivotOrient(Orientation& outOrient) const
 
 void AnimLayer::GetLoopMode(int& outLoopMode) const
 {
-    outLoopMode = m_TargetAnim == 1 ? m_TargetAnim_Entity->m_LoopMode : m_TargetAnim_Entity_2->m_LoopMode;
+    outLoopMode = m_TargetAnim == 1 ? m_TargetAnim_Entity->LoopMode : m_TargetAnim_Entity_2->LoopMode;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
