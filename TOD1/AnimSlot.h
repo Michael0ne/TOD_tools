@@ -25,8 +25,7 @@ class AnimSlot : public Node
     };
 
 protected:
-    AnimationAsset     *TargetAnimation;
-    int                 field_54;
+    AssetLoader         TargetAnimation;
     LoopMode_t          LoopMode;
     float               Speed;
     float               CrossBlendSpeed;
@@ -43,6 +42,7 @@ protected:
     }                   Flags;
 
     void                GetGamePivotStartOrient(Orientation& orient) const; //  @9051E0
+    void                GetGamePivotEndOrient(Orientation& orient) const;   //  @905240
 
 public:
     AnimSlot(); // @905D90
@@ -79,12 +79,13 @@ public:
     void                GetGamePivotStartPos(int *args) const;    //  @905990
     void                GetGamePivotEndPos(int *args) const;  //  @9059E0
     void                GetGamePivotPos(int *args) const; //  @905A40
+    void                GetGamePivotOrient(Orientation& orient, const float_t playPos) const;   //  @9052B0
 
     static void         Register(); //  @905EA0
     static AnimSlot*    Create(AllocatorIndex); //  @905E60
 
 private:
-    Vector4f            GetGamePivotPos_Impl(Vector4f& outPos, const float pivotindex) const;    //  @905100
+    void                GetGamePivotPos_Impl(Vector4f& outPos, const float playPos) const;    //  @905100
 };
 
 extern EntityType* tAnimSlot;   //  @A3E120

@@ -123,6 +123,14 @@ struct Vector4 {
             (z == rhs.z) &&
             (a == rhs.a);
     }
+    const bool operator!=(const Vector4<T>& rhs) const
+    {
+        return
+            (x != rhs.x) ||
+            (y != rhs.y) ||
+            (z != rhs.z) ||
+            (a != rhs.a);
+    }
 
     const bool operator==(Vector4<T>& rhs) const
     {
@@ -131,6 +139,14 @@ struct Vector4 {
             (y == rhs.y) &&
             (z == rhs.z) &&
             (a == rhs.a);
+    }
+    const bool operator!=(Vector4<T>& rhs) const
+    {
+        return
+            (x != rhs.x) ||
+            (y != rhs.y) ||
+            (z != rhs.z) ||
+            (a != rhs.a);
     }
 
     Vector4<T> operator-(const Vector4<T>& rhs) const

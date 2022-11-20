@@ -32,6 +32,11 @@ AssetInstance* AnimationAsset::GetInstancePtr() const
     return Instance;
 }
 
+void AnimationAsset::DestroyResource()
+{
+    FramesTotal = 0;
+}
+
 const char* AnimationAsset::GetBoneName(const uint32_t boneIndex) const
 {
     const PivotData* pivotData = (PivotData*)ALIGN_4BYTES(field_5C);
@@ -90,6 +95,63 @@ void AnimationAsset::GetPivotPos(Vector4f& pos, const uint32_t pivotIndex, const
     pos.y = *((float*)pivotData + pivotDataOffset);
     pos.z = *((float*)pivotData + pivotDataOffset);
     pos.a = 0.f;
+}
+
+const float_t AnimationAsset::GetFOVForFrame(const float_t frame) const
+{
+    if (!FOVList.size())
+        return 0.f;
+
+    const int32_t frameNumber = (int32_t)(((float_t)FramesTotal - 1.f) * frame);
+    if (frameNumber < FOVList.size())
+        return FOVList[frameNumber];
+
+    char errorMessage[32];
+    sprintf(errorMessage, "No FOV found for frame (%d)\n", frameNumber);
+
+    return 0.f;
+}
+
+void AnimationAsset::GetPivotInformation(const uint32_t pivotIndex, const float_t playPos, Orientation& pivotOrientation, const bool looped, const uint32_t a5, const uint32_t a6) const
+{
+    uint32_t endFrame, endFrame_1;
+    if ((field_5C[pivotIndex].field_4 & 0xFFFFFF) != 0)
+        endFrame = FramesTotal;
+    else
+        endFrame = 0;
+
+    if ((field_5C[pivotIndex].field_8 & 0xFFFFFF) != 0)
+        endFrame_1 = FramesTotal;
+    else
+        endFrame_1 = 0;
+
+    if (endFrame <= endFrame_1)
+        endFrame = endFrame_1;
+
+    const float_t startFramePos = ((float_t)endFrame - 1.f) * playPos;
+    const uint32_t startFramePosInt = (uint32_t)startFramePos;
+    float_t frameDelta = 0.f;
+
+    if ((a6 & (a5 != startFramePosInt)) != 0)
+        frameDelta = startFramePos - startFramePosInt;
+
+    uint32_t startFrameNumber, startNextFrameNumber;
+    if (looped)
+    {
+        startFrameNumber = startFramePosInt % endFrame;
+        startNextFrameNumber = (startFramePosInt + 1) % endFrame;
+    }
+    else
+    {
+        startFrameNumber = startFramePosInt;
+        if (startFramePosInt >= endFrame)
+            startFrameNumber = endFrame - 1;
+        startNextFrameNumber = startFramePosInt + 1;
+        if (startNextFrameNumber >= endFrame)
+            startNextFrameNumber = endFrame - 1;
+    }
+
+    GetPivotInformation_Impl(pivotIndex, startFrameNumber, startNextFrameNumber, frameDelta, pivotOrientation);
 }
 
 void AnimationAsset::CreateInstance()

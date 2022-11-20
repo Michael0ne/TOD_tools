@@ -4,6 +4,7 @@
 class AnimationAsset : public Asset
 {
     friend class AnimSlot;
+    friend class AnimLayer;
 
     struct List1Struct
     {
@@ -54,10 +55,10 @@ class AnimationAsset : public Asset
 protected:
     int                     field_1C;
     int                     field_20;
-    int                     m_LoopMode;
+    int                     LoopMode;
     int                     FramesTotal;
     std::vector<List1Struct>    m_List_1;
-    std::vector<int>        m_List_2;
+    std::vector<float_t>    FOVList;
     std::vector<List3Struct>        m_List_3;
     PivotData              *field_5C;   //  NOTE: there are exactly Data.FramesTotal frames in this array. The size of this data buffer is (_f60 * 4);
     int                     field_60;
@@ -67,17 +68,22 @@ protected:
 private:
     AnimationAsset(); // @900080
 
+    void                    GetPivotInformation_Impl(const uint32_t pivotIndex, const uint32_t startFrame, const uint32_t startNextFrame, const float_t frameDelta, Orientation& orientation) const; //  @904D80
+
     static AssetInstance*   Instance; //  @A3E0FC
     static const char* const    Bones[];    //  @A12FF0
 
 public:
     virtual ~AnimationAsset();  //  @900F40
     virtual AssetInstance*  GetInstancePtr() const override;
+    virtual void            DestroyResource() override; //  @900130
 
     const char*             GetBoneName(const uint32_t boneIndex) const;    //  @8FFF50
     void                    GetPivotOrient(Orientation& orient, const uint32_t pivotIndex, const uint32_t frameNumber) const; //  @904CC0
     const uint32_t          GetPivotEndFrame(const uint32_t pivotIndex) const;  //  @904BF0
     void                    GetPivotPos(Vector4f& pos, const uint32_t pivotIndex, const uint32_t frameNumber) const;    //  @904C30
+    const float_t           GetFOVForFrame(const float_t frame) const;  //  @8FFF80 //  NOTE: unused.
+    void                    GetPivotInformation(const uint32_t pivotIndex, const float_t playPos, Orientation& pivotOrientation, const bool looped, const uint32_t a5, const uint32_t a6) const; //  @905040
 
     static void             CreateInstance(); // @900980
     static AnimationAsset*  Create(); // @900EF0

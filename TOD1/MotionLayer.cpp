@@ -84,11 +84,11 @@ void MotionLayer::Motion_Impl(Node* animation, const int val)
     }
 
     BlendTo((MotionAnimSlot*)animation, val);
-    if (!m_Flags.Playing)
+    if (!Flags.Playing)
     {
-        m_Flags.Playing = true;
+        Flags.Playing = true;
         SetWeight(1.f);
-        m_Flags.Playing = false;
+        Flags.Playing = false;
     }
 
     UpdatePivotValues();
