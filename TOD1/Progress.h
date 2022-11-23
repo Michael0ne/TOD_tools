@@ -74,7 +74,7 @@ public:
     }
 
     void   Complete(); // @40E790
-    void   _40E7F0(unsigned int, UINT64); // @40E7F0
+    void   BeginPhase(unsigned int, UINT64); // @40E7F0
     void   Reset(); // @40E8C0
     void   AddLoadbarPhase(const char* phaseName, UINT64 timeToLoad, bool); // @40E970
     void   Enable(); // @87B5F0

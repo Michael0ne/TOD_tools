@@ -1009,7 +1009,7 @@ void Scene::Load(const char* sceneName)
 
     g_Progress->Reset();
     g_Progress->AddLoadbarPhase("load scene", 25 * Timer::ClockGetCycles(), true);
-    g_Progress->_40E7F0(1, __rdtsc());
+    g_Progress->BeginPhase(1, __rdtsc());
 
     if (g_AssetManager->m_LoadBlocks)
     {

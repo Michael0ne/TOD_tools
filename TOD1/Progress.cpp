@@ -99,7 +99,7 @@ void Progress::Complete()
     LogDump::LogA("PROGRESS COMPLETE.\n");
 }
 
-void Progress::_40E7F0(unsigned int unk1, UINT64 unk2)
+void Progress::BeginPhase(unsigned int unk1, UINT64 unk2)
 {
     if (field_20 + 1 < m_LoadBarPhases.size())
     {

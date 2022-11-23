@@ -37,7 +37,6 @@ public:
 
     bool operator<(const char* const _r) const
     {
-        //return m_Str < _r;
         return strcmp(m_Str, _r) < 0;
     }
 
@@ -124,7 +123,7 @@ public:
 
         m_Length = NULL;
         m_Flags = STRING_BITMASK_DEFAULT;
-        delete m_Str;
+        MemoryManager::ReleaseMemory(m_Str, false);
         m_Str = &m_ShortStr;
         memset(&m_ShortStr, 0, sizeof(m_ShortStr));
     }

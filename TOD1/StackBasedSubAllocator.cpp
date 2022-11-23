@@ -106,7 +106,7 @@ void StackBasedSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, con
     Stack = (StackElement*)AllocatedSpacePtr;
     StackCopy = (StackElement*)AllocatedSpacePtr;
     StackDataEndPtr = (uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize;
-    *(char*)AllocatedSpacePtr = NULL;
+    *((uint32_t*)AllocatedSpacePtr) = NULL;
     Stack->Next = nullptr;
 }
 

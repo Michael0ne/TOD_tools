@@ -799,8 +799,8 @@ void AnimLayer::Play_Impl(AnimSlot* animSlot, const uint32_t event)
 
     Flags.StallFirstFrame = true;
 
-    AnimSlot* animSlot = TargetAnimationNodeIndex == 1 ? TargetAnimNode_1 : TargetAnimNode_2;
-    AnimationAsset* animationAsset = animSlot->TargetAnimation.GetAsset<AnimationAsset>();
+    AnimSlot* animSlot_ = TargetAnimationNodeIndex == 1 ? TargetAnimNode_1 : TargetAnimNode_2;
+    AnimationAsset* animationAsset = animSlot_->TargetAnimation.GetAsset<AnimationAsset>();
 
     if (animationAsset->m_List_1.size())
     {

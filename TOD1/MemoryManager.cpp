@@ -11,13 +11,13 @@
 void* MemoryManager::BufferPtr;
 void* MemoryManager::BuffersPtr[TOTAL];
 float MemoryManager::_A3B0C8;
-int MemoryManager::TotalAllocators;
+int MemoryManager::AllocatorsBuffersTotal;
 int MemoryManager::_A3AFB8;
 RTL_CRITICAL_SECTION MemoryManager::AllocatorsCriticalSection;
 bool MemoryManager::Released;
 Allocator* MemoryManager::AllocatorsList[TOTAL];
-MemoryManager::Allocator_Struct2 MemoryManager::_A3AFE8[22];
-MemoryManager MemoryManager::g_MemoryManager;
+MemoryManager::AllocatorBufferData MemoryManager::AllocatorsBuffersData[22];
+MemoryManager MemoryManager::Instance;
 
 void MemoryManager::CreateAllocators()
 {
@@ -51,53 +51,65 @@ void MemoryManager::CreateAllocators()
 
 void MemoryManager::InitAllocator(Allocator& alloc, AllocatorIndex allocind, const char* const allocname, unsigned int allocsize)
 {
+    const uint32_t alignedSize = ALIGN_64BYTESUP(allocsize);
     alloc.LowLevelAllocators = alloc.GetSystemAllocatorsTable();
 
     AllocatorsList[allocind] = &alloc;
     alloc.AllocatorIndex = allocind;
-    BuffersPtr[allocind] = alloc.LowLevelAllocators._malloc((allocsize + 64) & 0xFFFFFFC0);
+    BuffersPtr[allocind] = alloc.LowLevelAllocators._malloc(alignedSize);
+
+#ifdef INCLUDE_FIXES
+    memset(BuffersPtr[allocind], NULL, alignedSize);
+#endif
+
     alloc.SetNameAndAllocatedSpaceParams(BuffersPtr[allocind], allocname, allocsize);
 }
 
 void MemoryManager::InitAllocatorsBuffers()
 {
-    TotalAllocators = 0;
-    unsigned char v19[12] = {};
-    char* v0 = nullptr;
+    bool allocatorChecked[TOTAL] = {};
+    uint32_t* spacePtr = nullptr;
+    uint32_t allocatorIndex = 9;
 
-    for (int ind = DEFRAGMENTING; ind != 1; --ind)
+    AllocatorsBuffersTotal = 0;
+
+    do
     {
-        void* v1 = (void*)-1;
-        int v2 = -1;
-        for (int currallocator = 1; currallocator < TOTAL; ++currallocator)
+        uint32_t* lowestPtr = (uint32_t*)-1;
+        int32_t index = -1;
+
+        for (uint32_t i = 1; i < TOTAL; ++i)
         {
-            void* v4 = AllocatorsList[currallocator]->GetAllocatedSpacePtr();
-            if (!v19[currallocator] && v4 < v1)
+            uint32_t* allocatorBufferPtr = (uint32_t*)AllocatorsList[i]->GetAllocatedSpacePtr();
+            if (!allocatorChecked[i] && allocatorBufferPtr < lowestPtr)
             {
-                v1 = v4;
-                v2 = currallocator;
+                lowestPtr = allocatorBufferPtr;
+                index = i;
             }
         }
 
-        if (v1 > (void*)(((unsigned int)v0 + 7) & 0xFFFFFFF8))
+        if ((uint32_t)lowestPtr > ALIGN_8BYTESUP(spacePtr))
         {
-            _A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
-            _A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
-            TotalAllocators++;
+            AllocatorsBuffersData[AllocatorsBuffersTotal].m_AllocatedSpacePtr = spacePtr;
+            AllocatorsBuffersData[AllocatorsBuffersTotal].m_Allocator = AllocatorsList[DEFAULT];
+
+            AllocatorsBuffersTotal++;
         }
 
-        _A3AFE8[TotalAllocators].m_AllocatedSpacePtr = AllocatorsList[v2]->GetAllocatedSpacePtr();
-        _A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[v2];
-        TotalAllocators++;
+        AllocatorsBuffersData[AllocatorsBuffersTotal].m_AllocatedSpacePtr = AllocatorsList[index]->GetAllocatedSpacePtr();
+        AllocatorsBuffersData[AllocatorsBuffersTotal].m_Allocator = AllocatorsList[index];
 
-        v0 = (char*)AllocatorsList[v2]->GetAllocatedSpacePtr() + AllocatorsList[v2]->GetAllocatedSpaceSize();
+        AllocatorsBuffersTotal++;
 
-        v19[v2] = 1;
-    }
+        spacePtr = (uint32_t*)((uint8_t*)AllocatorsList[index]->GetAllocatedSpacePtr() + AllocatorsList[index]->GetAllocatedSpaceSize());
 
-    _A3AFE8[TotalAllocators].m_AllocatedSpacePtr = v0;
-    _A3AFE8[TotalAllocators].m_Allocator = AllocatorsList[DEFAULT];
-    TotalAllocators++;
+        allocatorChecked[index] = true;
+    } while (allocatorIndex-- != 1);
+
+    AllocatorsBuffersData[AllocatorsBuffersTotal].m_AllocatedSpacePtr = spacePtr;
+    AllocatorsBuffersData[AllocatorsBuffersTotal].m_Allocator = AllocatorsList[DEFAULT];
+
+    AllocatorsBuffersTotal++;
 }
 
 MemoryManager::MemoryManager()
@@ -159,7 +171,7 @@ char MemoryManager::CheckIfCanExpandMemoryBySize(void* ptr, int a2)
     if (a2 <= NULL)
         return 1;
 
-    return GetAllocatorByMemoryPointer(ptr)->TryExpandBy((int*)ptr, a2);
+    return GetAllocatorByMemoryPointer(ptr)->TryExpandBy((uint8_t*)ptr, a2);
 }
 
 DefragmentatorBase* MemoryManager::GetDefragmentator(AllocatorIndex allocind)
@@ -181,38 +193,38 @@ void MemoryManager::ReleaseMemory(void* ptr, bool aligned)
     EnterCriticalSection(&AllocatorsCriticalSection);
 
     // NOTE: figure out which allocator has allocated this memory and use it's method to free memory.
-    int ind = TotalAllocators - 1;
+    int ind = AllocatorsBuffersTotal - 1;
     void* _allocspace = nullptr;
-    if (ptr < _A3AFE8[TotalAllocators].m_AllocatedSpacePtr)
+    if (ptr < AllocatorsBuffersData[ind].m_AllocatedSpacePtr)
     {
         do
         {
-            _allocspace = _A3AFE8[ind--].m_AllocatedSpacePtr;
+            _allocspace = AllocatorsBuffersData[--ind].m_AllocatedSpacePtr;
         } while (ptr < _allocspace);
     }
 
     if (aligned)
-        _A3AFE8[ind].m_Allocator->FreeAligned(ptr);
+        AllocatorsBuffersData[ind].m_Allocator->FreeAligned(ptr);
     else
-        _A3AFE8[ind].m_Allocator->Free(ptr);
+        AllocatorsBuffersData[ind].m_Allocator->Free(ptr);
 
     LeaveCriticalSection(&AllocatorsCriticalSection);
 }
 
 Allocator* MemoryManager::GetAllocatorByMemoryPointer(void* ptr)
 {
-    int allocInd = TotalAllocators - 1;
+    int allocInd = AllocatorsBuffersTotal - 1;
     void* _spaceptr = nullptr;
 
-    if (ptr < _A3AFE8[TotalAllocators].m_AllocatedSpacePtr)
+    if (ptr < AllocatorsBuffersData[AllocatorsBuffersTotal].m_AllocatedSpacePtr)
     {
         do
         {
-            _spaceptr = _A3AFE8[allocInd--].m_AllocatedSpacePtr;
+            _spaceptr = AllocatorsBuffersData[allocInd--].m_AllocatedSpacePtr;
         } while (ptr < _spaceptr);
     }
 
-    return _A3AFE8[allocInd].m_Allocator;
+    return AllocatorsBuffersData[allocInd].m_Allocator;
 }
 
 void* MemoryManager::Realloc(void* oldptr, size_t newsize, bool a3)

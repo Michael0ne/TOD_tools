@@ -102,15 +102,18 @@ bool Navigator::UpdateTarget(const float maxLookAhead)
     StoreProperty(15, &m_TargetPoint, tVECTOR);
     m_TargetPoint = m_NextTargetPoint;
     StoreProperty(16, &m_NextTargetPoint, tVECTOR);
-    m_NextTargetPoint = GetNextTarget(targetDistanceVec);
+    GetNextTarget(m_NextTargetPoint);
 
     return true;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-Vector4f& Navigator::GetNextTarget(const Vector4f& position)
+void Navigator::GetNextTarget(Vector4f& position)
 {
-    return Vector4f();
+    position = m_TargetPoint;
+
+    if (!m_Flags.Looping || m_PathPoint + 1 >= m_PathList.size())
+        return;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

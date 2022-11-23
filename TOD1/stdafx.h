@@ -58,6 +58,7 @@
 #define ALIGN_4BYTESUP(x) ((int)(x + 3) & 0xFFFFFFFC)
 #define ALIGN_8BYTESUP(x) ((int)(x + 7) & 0xFFFFFFF8)
 #define ALIGN_16BYTESUP(x) ((uint32_t)(x + 15) & 0xFFFFFFF8)
+#define ALIGN_64BYTESUP(x) ((uint32_t)(x + 64) & 0xFFFFFFC0)
 #define D3DCOLOR_DWORD(r, g, b, a) (DWORD)((unsigned char)(b * 255.f) | (((unsigned char)(g * 255.f) | (((unsigned char)(r * 255.f) | ((unsigned char)(a * 255.f) << 8)) << 8)) << 8))
 #define DEG2RAD(deg) (0.017453292f * deg)
 

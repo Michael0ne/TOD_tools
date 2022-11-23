@@ -22,6 +22,11 @@ AnimationAsset::AnimationAsset() : Asset(false)
     MESSAGE_CLASS_CREATED(AnimationAsset);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void AnimationAsset::GetPivotInformation_Impl(const uint32_t pivotIndex, const uint32_t startFrame, const uint32_t startNextFrame, const float_t frameDelta, Orientation& orientation) const
+{
+}
+
 AnimationAsset::~AnimationAsset()
 {
     MESSAGE_CLASS_DESTROYED(AnimationAsset);
@@ -102,7 +107,7 @@ const float_t AnimationAsset::GetFOVForFrame(const float_t frame) const
     if (!FOVList.size())
         return 0.f;
 
-    const int32_t frameNumber = (int32_t)(((float_t)FramesTotal - 1.f) * frame);
+    const uint32_t frameNumber = (int32_t)(((float_t)FramesTotal - 1.f) * frame);
     if (frameNumber < FOVList.size())
         return FOVList[frameNumber];
 
@@ -176,8 +181,8 @@ int32_t AnimationAsset::BoneIndexByName(const char* const boneName)
     uint32_t i = 0;
     const size_t bonesTotal = ARRAYSIZE(Bones);
 
-    while (strcmp(Bones[i], boneName) == NULL)
-        if (i >= bonesTotal)
+    while (strcmp(Bones[i], boneName))
+        if (i++ >= bonesTotal)
             return -1;
 
     return i;

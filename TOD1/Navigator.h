@@ -41,7 +41,7 @@ public:
 
 private:
     bool                UpdateTarget(const float maxLookAhead);    //  @91D9A0
-    Vector4f&           GetNextTarget(const Vector4f& position); //  @91D610
+    void                GetNextTarget(Vector4f& position); //  @91D610
     const Vector4f&     CheckObstacle(const Vector4f& position);    //  @91DD40
     bool                ShouldTurn(const Vector4f& position) const; //  @91D3C0
     bool                IsPointOccluded(const Vector4f& pos1, const Vector4f& pos2) const;  //  @91D020

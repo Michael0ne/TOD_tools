@@ -4,18 +4,18 @@
 class MotionLayer : public AnimLayer
 {
 protected:
-    Vector4f        m_WorldStartPos;
-    Orientation     m_WorldStartOrient;
-    Vector4f        m_WorldEndPos;
-    Orientation     m_WorldEndOrient;
-    char            m_UpdateAbsolute;
+    Vector4f        WorldStartPos;
+    Orientation     WorldStartOrient;
+    Vector4f        WorldEndPos;
+    Orientation     WorldEndOrient;
+    bool            UpdateAbsolute;
 public:
     inline MotionLayer() : AnimLayer()
     {
-        m_WorldStartOrient = Orientation(0.0f, 0.0f, 0.0f, 1.0f);
-        m_WorldEndOrient = Orientation(0.0f, 0.0f, 0.0f, 1.0f);
+        WorldStartOrient = Orientation(0.0f, 0.0f, 0.0f, 1.0f);
+        WorldEndOrient = Orientation(0.0f, 0.0f, 0.0f, 1.0f);
 
-        m_UpdateAbsolute = false;
+        UpdateAbsolute = false;
     }
 
     void                Motion(int* args);  //  @91CC40
@@ -27,14 +27,14 @@ public:
     void                SetWorldEndPos(const Vector4f& endPos); //  @543B40
     void                GetWorldEndOrient(Orientation& outEndOrient) const; //  @4CF710
     void                SetWorldEndOrient(const Orientation& endOrient);    //  @543B80
-    const bool          UpdateAbsolute() const; //  @919CE0
+    const bool          GetUpdateAbsolute() const; //  @919CE0
     void                SetUpdateAbsolute(const bool update);   //  @5230B0
 
     void                UseAbsoluteEndValues(int* args);    //  @91CC30
     void                UseAbsoluteStartValues(int* args);  //  @91CC20
 
 private:
-    void                Motion_Impl(Node* node, const int val); //  @91C870
+    void                Motion_Impl(AnimSlot* animation, const int val); //  @91C870
     void                UpdatePivotValues();    //  @919CF0
     void                UseAbsoluteEndValues_Impl();    //  @91B100
     void                UseAbsoluteStartValues_Impl();  //  @91A770

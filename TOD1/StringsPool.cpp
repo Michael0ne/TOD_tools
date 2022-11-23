@@ -12,7 +12,7 @@ String::String(const char* const str)
 
     if (m_Length >= 4)
     {
-        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
         strcpy_s(m_Str, m_Length + 1, str);
     }
     else
@@ -31,7 +31,7 @@ String::String(const String& rhs)
 
     if (m_Length >= 4)
     {
-        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
         strcpy_s(m_Str, m_Length + 1, rhs.m_Str);
     }
     else
@@ -50,7 +50,7 @@ String::String(String& rhs)
 
     if (m_Length >= 4)
     {
-        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
         strcpy_s(m_Str, m_Length + 1, rhs.m_Str);
     }
     else
@@ -75,7 +75,7 @@ String& String::operator=(const String& _r)
 
     if (m_Length >= 4)
     {
-        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
         strcpy_s(m_Str, m_Length + 1, _r.m_Str);
     }
     else
@@ -99,7 +99,7 @@ String* String::Substring(String* outStr, unsigned int posStart, unsigned int le
         outStr->m_Length = length;
         outStr->m_Flags = (STRING_BITMASK_DEFAULT ^ (length + (length >> 2))) & STRING_BITMASK_ONLY_SIZE ^ STRING_BITMASK_DEFAULT;
         outStr->m_ShortStr = NULL;
-        outStr->m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(outStr->m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+        outStr->m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(outStr->m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
         strncpy(outStr->m_Str, &m_Str[posStart], length);
     }
     else
@@ -107,7 +107,7 @@ String* String::Substring(String* outStr, unsigned int posStart, unsigned int le
         outStr->m_Length = m_Length - posStart;
         outStr->m_Flags = (STRING_BITMASK_DEFAULT ^ ((m_Length - posStart) + ((m_Length - posStart) >> 2))) & STRING_BITMASK_ONLY_SIZE ^ STRING_BITMASK_DEFAULT;
         outStr->m_ShortStr = NULL;
-        outStr->m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(outStr->m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+        outStr->m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(outStr->m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
         strncpy(outStr->m_Str, &m_Str[posStart], m_Length - posStart);
     }
 
@@ -147,7 +147,7 @@ void String::AllocateSpaceForString()
     if (m_Length >= 4)
     {
         m_Flags = (m_Flags ^ (m_Length + (m_Length >> 2))) & STRING_BITMASK_ONLY_SIZE ^ m_Flags;
-        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+        m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
     }
     else
     {
@@ -165,12 +165,12 @@ void String::AdjustBufferSize()
 
         if (m_Str == &m_ShortStr)
         {
-            m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+            m_Str = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
             memcpy(m_Str, &m_ShortStr, sizeof(m_ShortStr));
         }
         else
         {
-            char* str_ = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, NULL, NULL);
+            char* str_ = (char*)MemoryManager::AllocatorsList[TEMP]->Allocate(m_Flags & STRING_BITMASK_ONLY_SIZE, __FILE__, __LINE__);
             memcpy(str_, m_Str, lenOld);
 
             if (m_Flags & STRING_BITMASK_DEFAULT)

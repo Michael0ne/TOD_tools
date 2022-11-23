@@ -20,9 +20,13 @@ protected:
 private:
     uint32_t        FindSuitableBlock(const uint32_t size) const;   //  @479780
     uint32_t*       _479290(uint32_t* ptr, const uint32_t a2, const uint32_t requestedSize);   //  @479290
-    uint32_t*       _478E80(uint32_t* ptr);   //  @478E80
+    void            _478E80(uint32_t* ptr);   //  @478E80
+    void            _478F70(uint32_t* ptr); //  @478F70
+    void            _478910(const uint32_t blockIndex); //  @478910
+    void            _4790C0(uint32_t* ptr, uint32_t* ptr1); //  @4790C0
+    void            _479180(uint32_t* ptr); //  @479180
 
-    static unsigned int   MinimumSize; // @A3B550
+    static uint32_t MinimumSize; // @A3B550
 
 public:
     BestFitAllocator(); // @478740
@@ -41,6 +45,9 @@ public:
     virtual const int   GetFreeMemory() const override; //  @478AD0
     virtual const int   GetAllocatedElementsTotal() const override; // @478DC0
     virtual const int   GetAllocationsMadeTotal() const override; // @478B70
+#ifdef INCLUDE_FIXES
+    virtual const char* const GetAllocatorName() const override; //  NOTE: not in original code.
+#endif
     virtual const int   stub20() const override; // @478B80
     virtual const int   stub21() const override; // @478AE0
     virtual const int   GetAvailableMemory() const override; // @478B90

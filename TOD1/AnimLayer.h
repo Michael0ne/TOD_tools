@@ -128,6 +128,9 @@ protected:
     float                       field_13C;
     float                       field_140;
 
+protected:
+    void                        BlendTo_Impl(AnimSlot* animSlot, const uint32_t event); //  @903C20
+
 public:
     AnimLayer();    //  @902F90
     virtual ~AnimLayer();   //  @905670
@@ -219,7 +222,6 @@ private:
     void                        GetVelocity_Impl(Vector4f& velocity) const; //  @901B30
     void                        GetGamePivotEndPos_Impl(Vector4f& pivotPos) const;    //  @9053D0
     void                        Play_Impl(AnimSlot* animSlot, const uint32_t event);    //  @903A80
-    void                        BlendTo_Impl(AnimSlot* animSlot, const uint32_t event); //  @903C20
 
 public:
     static void                 Register(); //  @903E60

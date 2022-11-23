@@ -4,7 +4,7 @@
 // NOTE: not an actual class since no methods present.
 class MemoryManager
 {
-    struct Allocator_Struct2
+    struct AllocatorBufferData
     {
         void* m_AllocatedSpacePtr;
         Allocator* m_Allocator;
@@ -19,7 +19,7 @@ protected:
     static void* BufferPtr; // @A3B09C
     static void* BuffersPtr[TOTAL]; // @A3B0A0
     static float    _A3B0C8; // @A3B0C8
-    static int     TotalAllocators; // @A3B098
+    static int     AllocatorsBuffersTotal; // @A3B098
     static int     _A3AFB8; // @A3AFB8
     static RTL_CRITICAL_SECTION AllocatorsCriticalSection; // @A3AFA0
 
@@ -36,7 +36,7 @@ public:
 
     static bool     Released; // @A3AFBC
     static Allocator* AllocatorsList[TOTAL]; // @A3AFC0
-    static Allocator_Struct2 _A3AFE8[22]; // @A3AFE8
+    static AllocatorBufferData AllocatorsBuffersData[22]; // @A3AFE8
 
-    static MemoryManager  g_MemoryManager; // @A3B0CC
+    static MemoryManager  Instance; // @A3B0CC
 };

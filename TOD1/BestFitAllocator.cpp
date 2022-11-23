@@ -1,7 +1,7 @@
 #include "BestFitAllocator.h"
 #include "LogDump.h"
 
-unsigned int BestFitAllocator::MinimumSize;
+uint32_t BestFitAllocator::MinimumSize;
 
 uint32_t BestFitAllocator::FindSuitableBlock(const uint32_t size) const
 {
@@ -59,7 +59,7 @@ uint32_t* BestFitAllocator::_479290(uint32_t* ptr, const uint32_t a2, const uint
     return ptr + ALIGN_16BYTESUP(requestedSize);
 }
 
-uint32_t* BestFitAllocator::_478E80(uint32_t* ptr)
+void BestFitAllocator::_478E80(uint32_t* ptr)
 {
     uint32_t* nextDataPtr = (uint32_t*)*ptr;
     if (*ptr <= (uint32_t)ptr)
@@ -74,7 +74,8 @@ uint32_t* BestFitAllocator::_478E80(uint32_t* ptr)
         if (_ptr)
             _ptr[5] = *(ptr + 5);
 
-        return _478910(blockId);
+        _478910(blockId);
+        return;
     }
 
     dataPtr = (uint32_t*)*(ptr + 4);
@@ -94,10 +95,14 @@ uint32_t* BestFitAllocator::_478E80(uint32_t* ptr)
         if (ptr == blockPtr)
         {
             blockPtr = (uint32_t*)*(ptr + 2);
-            return _478910(blockId);
+            _478910(blockId);
+
+            return;
         }
 
-        return _478910(blockId);
+        _478910(blockId);
+
+        return;
     }
 
     dataPtr[2] = *(ptr + 2);
@@ -117,7 +122,88 @@ uint32_t* BestFitAllocator::_478E80(uint32_t* ptr)
 
     dataPtr[5] = 0;
 
-    return _478910(blockId);
+    _478910(blockId);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void BestFitAllocator::_478F70(uint32_t* ptr)
+{
+    uint32_t* nextDataPtr = (uint32_t*)*ptr;
+    if (*ptr <= (uint32_t)ptr)
+        nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+
+    uint32_t dataSize = nextDataPtr - ptr - 8;
+    const uint32_t blockIndex = FindSuitableBlock(dataSize);
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void BestFitAllocator::_478910(const uint32_t blockIndex)
+{
+    const uint32_t blockSize = field_24[blockIndex].field_8;
+    if (blockSize < 8)
+        return;
+}
+
+void BestFitAllocator::_4790C0(uint32_t* ptr, uint32_t* ptr1)
+{
+    while (true)
+    {
+        const bool flagSet = (ptr[1] & 0x40000000) == 0x40000000;
+        if ((*(uint32_t*)(*ptr + 4) & 0x40000000) == 0)
+        {
+            while ((uint32_t)ptr < *ptr)
+            {
+                if (ptr1 && (uint32_t*)*ptr == ptr1)
+                    return;
+
+                if (!flagSet)
+                    _478E80(ptr);
+
+                _478E80((uint32_t*)*ptr);
+
+                *(uint32_t*)(*(uint32_t*)*ptr + 4) ^= (*(uint32_t*)(*(uint32_t*)*ptr + 4) ^ ((uint32_t)ptr >> 2)) & 0x3FFFFFFF;
+                *ptr = *(uint32_t*)*ptr;
+
+                if (!flagSet)
+                    _478F70(ptr);
+
+                --BlocksFree;
+
+                if ((*(uint32_t*)(*ptr + 4) & 0x40000000) != 0)
+                    break;
+            }
+        }
+
+        if (DataPtr != (uint32_t*)*ptr || (ptr[1] & 0x40000000) != 0 || ptr == DataPtr)
+            break;
+
+        ptr1 = ptr;
+        ptr = DataPtr;
+    }
+}
+
+void BestFitAllocator::_479180(uint32_t* ptr)
+{
+    if ((ptr[1] & 0x40000000) == 0 && ptr != DataPtr)
+    {
+        do
+        {
+            if (((*(uint32_t*)(4 * ptr[1] + 4)) & 0x40000000) != 0)
+                break;
+
+            _478E80(ptr);
+            _478E80((uint32_t*)(4 * ptr[1]));
+
+            *(uint32_t*)(4 * ptr[1]) = *ptr;
+            *(uint32_t*)(4 * ptr[0]) ^= (*(uint32_t*)(4 + ptr[0]) ^ ((uint32_t)(4 * ptr[1]) >> 2)) & 0x3FFFFFFF;
+
+            ptr = (uint32_t*)(4 * ptr[1]);
+
+            _478F70(ptr);
+
+            --BlocksFree;
+        } while (ptr != DataPtr);
+    }
 }
 
 BestFitAllocator::BestFitAllocator()
@@ -219,7 +305,7 @@ void BestFitAllocator::Free(void* ptr)
     uint32_t* dataPtr = (uint32_t*)ptr - 2;
     *((uint32_t*)ptr - 1) &= ~0x40000000;
 
-    _478F70((uint8_t*)ptr - 8);
+    _478F70((uint32_t*)ptr - 8);
 
     uint32_t* dataPtrCopy = (uint32_t*)*dataPtr;
     if (*dataPtr <= (uint32_t)dataPtr)
@@ -262,19 +348,18 @@ void* BestFitAllocator::Realloc(void* oldptr, size_t newsize, const char* const 
     }
 
     uint32_t* nextDataPtr = (uint32_t*)((uint32_t*)oldptr - 2);
-    const uint32_t* nextDataPtrCopy = (uint32_t*)((uint32_t*)oldptr - 2);
+    uint32_t* nextDataPtrCopy = (uint32_t*)((uint32_t*)oldptr - 2);
     if (nextDataPtr <= (uint32_t*)((uint32_t*)oldptr - 2))
         nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
 
     const uint32_t dataSize = (uint8_t*)nextDataPtr - (uint8_t*)oldptr;
     if (sizeAligned > dataSize)
     {
-        _4790C0(nextDataPtrCopy);   //  NOTE: this WILL modify the pointer data!
+        _4790C0(nextDataPtrCopy, nullptr);   //  NOTE: this WILL modify the pointer data!
 
         nextDataPtr = (uint32_t*)*nextDataPtr;
         if (*nextDataPtrCopy <= (uint32_t)nextDataPtrCopy)
             nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
-
     }
 }
 
@@ -340,6 +425,13 @@ const int BestFitAllocator::GetAllocationsMadeTotal() const
 {
     return BlocksUsed;
 }
+
+#ifdef INCLUDE_FIXES
+const char* const BestFitAllocator::GetAllocatorName() const
+{
+    return "BestFitAllocator";
+}
+#endif
 
 const int BestFitAllocator::stub20() const
 {

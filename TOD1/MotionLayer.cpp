@@ -7,40 +7,40 @@ EntityType* tMotionLayer;
 
 void MotionLayer::Motion(int* args)
 {
-    Motion_Impl((Node*)args[0], args[1]);
+    Motion_Impl((AnimSlot*)args[0], args[1]);
 }
 
 void MotionLayer::GetWorldStartPos(Vector4f& outStartPos) const
 {
-    outStartPos = m_WorldStartPos;
+    outStartPos = WorldStartPos;
 }
 
 void MotionLayer::SetWorldStartPos(const Vector4f& startPos)
 {
-    StoreProperty(32, &m_WorldStartPos, tVECTOR);
-    m_WorldStartPos = startPos;
+    StoreProperty(32, &WorldStartPos, tVECTOR);
+    WorldStartPos = startPos;
 }
 
 void MotionLayer::GetWorldStartOrient(Orientation& outStartOrient) const
 {
-    outStartOrient = m_WorldStartOrient;
+    outStartOrient = WorldStartOrient;
 }
 
 void MotionLayer::SetWorldStartOrient(const Orientation& startOrient)
 {
-    StoreProperty(33, &m_WorldStartOrient, tQUATERNION);
-    m_WorldStartOrient = startOrient;
+    StoreProperty(33, &WorldStartOrient, tQUATERNION);
+    WorldStartOrient = startOrient;
 }
 
 void MotionLayer::GetWorldEndPos(Vector4f& outEndPos) const
 {
-    outEndPos = m_WorldEndPos;
+    outEndPos = WorldEndPos;
 }
 
 void MotionLayer::SetWorldEndPos(const Vector4f& endPos)
 {
-    StoreProperty(34, &m_WorldEndPos, tVECTOR);
-    m_WorldEndPos = endPos;
+    StoreProperty(34, &WorldEndPos, tVECTOR);
+    WorldEndPos = endPos;
 }
 
 void MotionLayer::GetWorldEndOrient(Orientation& outEndOrient) const
@@ -50,19 +50,19 @@ void MotionLayer::GetWorldEndOrient(Orientation& outEndOrient) const
 
 void MotionLayer::SetWorldEndOrient(const Orientation& endOrient)
 {
-    StoreProperty(35, &m_WorldEndOrient, tQUATERNION);
-    m_WorldEndOrient = endOrient;
+    StoreProperty(35, &WorldEndOrient, tQUATERNION);
+    WorldEndOrient = endOrient;
 }
 
-const bool MotionLayer::UpdateAbsolute() const
+const bool MotionLayer::GetUpdateAbsolute() const
 {
-    return m_UpdateAbsolute;
+    return UpdateAbsolute;
 }
 
 void MotionLayer::SetUpdateAbsolute(const bool update)
 {
-    StoreProperty(36, &m_UpdateAbsolute, tTRUTH);
-    m_UpdateAbsolute = update;
+    StoreProperty(36, &UpdateAbsolute, tTRUTH);
+    UpdateAbsolute = update;
 }
 
 void MotionLayer::UseAbsoluteEndValues(int* args)
@@ -75,7 +75,7 @@ void MotionLayer::UseAbsoluteStartValues(int* args)
     UseAbsoluteStartValues_Impl();
 }
 
-void MotionLayer::Motion_Impl(Node* animation, const int val)
+void MotionLayer::Motion_Impl(AnimSlot* animation, const int val)
 {
     if (!animation)
     {
@@ -83,7 +83,7 @@ void MotionLayer::Motion_Impl(Node* animation, const int val)
         return;
     }
 
-    BlendTo((MotionAnimSlot*)animation, val);
+    BlendTo_Impl(animation, val);
     if (!Flags.Playing)
     {
         Flags.Playing = true;
@@ -124,7 +124,7 @@ void MotionLayer::Register()
 
     tMotionLayer->RegisterScript("useabsoluteendvalues", (EntityFunctionMember)&UseAbsoluteEndValues);
     tMotionLayer->RegisterScript("useabsolutestartvalues", (EntityFunctionMember)&UseAbsoluteStartValues);
-    tMotionLayer->RegisterProperty(tTRUTH, "updateabsolute", (EntityGetterFunction)&UpdateAbsolute, (EntitySetterFunction)&SetUpdateAbsolute, nullptr, 36);
+    tMotionLayer->RegisterProperty(tTRUTH, "updateabsolute", (EntityGetterFunction)&GetUpdateAbsolute, (EntitySetterFunction)&SetUpdateAbsolute, nullptr, 36);
 
     tMotionLayer->PropagateProperties();
 }
