@@ -38,30 +38,30 @@ public:
     virtual void        FreeAligned(void* ptr) override; // @4788E0
 
     virtual void*       Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber) override; // @4795C0
-    virtual uint32_t    stub8(uint32_t* ptr) override; // @478AA0
+    virtual uint32_t    GetDataSize(uint32_t* ptr) override; // @478AA0
     virtual void        stub9();
     virtual void        CallMethodAtOffset20() override; // @478A90
     virtual void        SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size) override; // @478DF0
     virtual const int   GetFreeMemory() const override; //  @478AD0
     virtual const int   GetAllocatedElementsTotal() const override; // @478DC0
-    virtual const int   GetAllocationsMadeTotal() const override; // @478B70
+    virtual const int   GetUsedBlocksTotal() const override; // @478B70
 #ifdef INCLUDE_FIXES
     virtual const char* const GetAllocatorName() const override; //  NOTE: not in original code.
 #endif
-    virtual const int   stub20() const override; // @478B80
-    virtual const int   stub21() const override; // @478AE0
+    virtual const int   GetFreeBlocksTotal() const override; // @478B80
+    virtual const int   GetBiggestUsedMemoryBlock() const override; // @478AE0
     virtual const int   GetAvailableMemory() const override; // @478B90
     virtual void        Dump() const override; // @478BE0
-    virtual int         stub24(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber) override; // @478C90
-    virtual int         stub25(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber, int alignment) override; // @479350
+    virtual int         PlacementNew(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber) override; // @478C90
+    virtual int         PlacementNewAligned(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber, int alignment) override; // @479350
     virtual int*        GetMemoryContents() const override; // @478CF0
     virtual const int   stub27() const override; // @478D00
-    virtual int         stub28(int*) const override; // @478D10
+    virtual uint32_t*   GetNextDataPtr(int*) const override; // @478D10
     virtual const int   stub29(int*) const override; // @478D30
     virtual char        OwnsPointer(int*) const override; // @478D50
-    virtual char        stub31(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const override; // @478D60
-    virtual int         stub32(int) const override; // @478DD0
-    virtual int         stub33(int) const override; // @478DE0
+    virtual char        CanExpandData(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const override; // @478D60
+    virtual uint32_t*   GetObjectDataPtr(void* ptr) const override; // @478DD0
+    virtual uint32_t*   GetHeaderDataPtr(void* ptr) const override; // @478DE0
     virtual char        TryExpandBy(uint8_t* ptr, uint32_t size) override; // @479490
     virtual int         GetMemoryReserved() override; // @478B60
 };

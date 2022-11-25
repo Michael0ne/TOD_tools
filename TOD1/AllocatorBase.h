@@ -59,8 +59,8 @@ public:
     virtual void        FreeAligned(void* ptr) = 0;
 
     virtual void*       Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber) = 0;
-    virtual uint32_t    stub8(uint32_t* ptr) = 0;
-    virtual void        stub9() = 0;
+    virtual uint32_t    GetDataSize(uint32_t* ptr) = 0;
+    virtual void        stub9() = 0;    //  NOTE: something like 'ProfileMemory'.
     virtual void        CallMethodAtOffset20(); // @478350
     virtual void        SetField21(char); // @478360
     virtual void        SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size); // @47AB60
@@ -70,21 +70,21 @@ public:
     virtual const int   GetAllocatedElementsTotal() const;
     virtual const char* const GetAllocatorName() const; // @47AB80
     virtual void        SetProfilerEnabled(bool); // @478380
-    virtual const int   GetAllocationsMadeTotal() const;
-    virtual const int   stub20() const;
-    virtual const int   stub21() const;
+    virtual const int   GetUsedBlocksTotal() const;
+    virtual const int   GetFreeBlocksTotal() const;
+    virtual const int   GetBiggestUsedMemoryBlock() const;
     virtual const int   GetAvailableMemory() const;
     virtual void        Dump() const;
-    virtual int         stub24(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber);
-    virtual int         stub25(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber, int alignment);
+    virtual int         PlacementNew(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber);
+    virtual int         PlacementNewAligned(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber, int alignment);
     virtual int*        GetMemoryContents() const;
     virtual const int   stub27() const;
-    virtual int         stub28(int*) const;
+    virtual uint32_t*   GetNextDataPtr(int*) const;
     virtual const int   stub29(int*) const;
     virtual char        OwnsPointer(int*) const;
-    virtual char        stub31(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const;
-    virtual int         stub32(int) const;
-    virtual int         stub33(int) const;
+    virtual char        CanExpandData(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const;
+    virtual uint32_t*   GetObjectDataPtr(void* ptr) const;
+    virtual uint32_t*   GetHeaderDataPtr(void* ptr) const;
     virtual char        TryExpandBy(uint8_t* ptr, uint32_t size);
     virtual int         GetMemoryReserved();
     virtual void        stub36();

@@ -273,7 +273,7 @@ void* BestFitAllocator::AllocateAligned(size_t size, size_t alignment, const cha
             return nullptr;
         }
 
-        newDataPtr = (void*)stub25(dataPtr, sizeAligned, fileName, fileLineNumber, alignment);
+        newDataPtr = (void*)PlacementNewAligned(dataPtr, sizeAligned, fileName, fileLineNumber, alignment);
         if (newDataPtr)
             break;
 
@@ -361,9 +361,11 @@ void* BestFitAllocator::Realloc(void* oldptr, size_t newsize, const char* const 
         if (*nextDataPtrCopy <= (uint32_t)nextDataPtrCopy)
             nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
     }
+
+    return nullptr;
 }
 
-uint32_t BestFitAllocator::stub8(uint32_t* ptr)
+uint32_t BestFitAllocator::GetDataSize(uint32_t* ptr)
 {
     if (!ptr)
         return (uint32_t)ptr;
@@ -421,7 +423,7 @@ const int BestFitAllocator::GetAllocatedElementsTotal() const
     return BlocksUsed;
 }
 
-const int BestFitAllocator::GetAllocationsMadeTotal() const
+const int BestFitAllocator::GetUsedBlocksTotal() const
 {
     return BlocksUsed;
 }
@@ -433,13 +435,13 @@ const char* const BestFitAllocator::GetAllocatorName() const
 }
 #endif
 
-const int BestFitAllocator::stub20() const
+const int BestFitAllocator::GetFreeBlocksTotal() const
 {
     return BlocksFree;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-const int BestFitAllocator::stub21() const
+const int BestFitAllocator::GetBiggestUsedMemoryBlock() const
 {
     return NULL;
 }
@@ -498,13 +500,13 @@ void BestFitAllocator::Dump() const
     LogDump::LogA("-----------------------------\n");
 }
 
-int BestFitAllocator::stub24(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber)
+int BestFitAllocator::PlacementNew(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber)
 {
-    return stub25(ptr, size, fileName, fileLineNumber, 8);
+    return PlacementNewAligned(ptr, size, fileName, fileLineNumber, 8);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int BestFitAllocator::stub25(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber, int alignment)
+int BestFitAllocator::PlacementNewAligned(uint32_t* ptr, const uint32_t size, const char* const fileName, const unsigned int fileLineNumber, int alignment)
 {
     return NULL;
 }
@@ -519,9 +521,9 @@ const int BestFitAllocator::stub27() const
     return DataPtr[1] * 4;
 }
 
-int BestFitAllocator::stub28(int* a1) const
+uint32_t* BestFitAllocator::GetNextDataPtr(int* a1) const
 {
-    return (uint32_t*)*a1 == DataPtr ? NULL : *a1;
+    return (uint32_t*)*a1 == DataPtr ? nullptr : (uint32_t*)*a1;
 }
 
 const int BestFitAllocator::stub29(int* a1) const
@@ -534,7 +536,7 @@ char BestFitAllocator::OwnsPointer(int* a1) const
     return (a1[1] >> 30) & 1;
 }
 
-char BestFitAllocator::stub31(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const
+char BestFitAllocator::CanExpandData(uint32_t* ptr, const uint32_t size, const uint32_t alignment) const
 {
     uint32_t* nextDataPtr = (uint32_t*)*ptr;
     if (*ptr <= (uint32_t)ptr)
@@ -557,14 +559,14 @@ char BestFitAllocator::stub31(uint32_t* ptr, const uint32_t size, const uint32_t
         return dataBlockSize >= size;
 }
 
-int BestFitAllocator::stub32(int a1) const
+uint32_t* BestFitAllocator::GetObjectDataPtr(void* ptr) const
 {
-    return a1 + 8;
+    return (uint32_t*)((uint8_t*)ptr + 8);
 }
 
-int BestFitAllocator::stub33(int a1) const
+uint32_t* BestFitAllocator::GetHeaderDataPtr(void* ptr) const
 {
-    return a1 - 8;
+    return (uint32_t*)((uint8_t*)ptr - 8);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -599,6 +601,8 @@ char BestFitAllocator::TryExpandBy(uint8_t* ptr, uint32_t size)
         if (sizeAligned <= dataSize)
             break;
     }
+
+    return false;
 }
 
 int BestFitAllocator::GetMemoryReserved()

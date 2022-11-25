@@ -78,7 +78,7 @@ void* SystemSubAllocator::Realloc(void* oldptr, size_t newsize, const char* cons
     }
 }
 
-uint32_t SystemSubAllocator::stub8(uint32_t* ptr)
+uint32_t SystemSubAllocator::GetDataSize(uint32_t* ptr)
 {
     return NULL;
 }
@@ -114,17 +114,17 @@ const char* const SystemSubAllocator::GetAllocatorName() const
     return "SystemSubAllocator";
 }
 
-const int SystemSubAllocator::GetAllocationsMadeTotal() const
+const int SystemSubAllocator::GetUsedBlocksTotal() const
 {
     return AllocationsTotal;
 }
 
-const int SystemSubAllocator::stub20() const
+const int SystemSubAllocator::GetFreeBlocksTotal() const
 {
     return -1;
 }
 
-const int SystemSubAllocator::stub21() const
+const int SystemSubAllocator::GetBiggestUsedMemoryBlock() const
 {
     return -1;
 }

@@ -23,13 +23,13 @@ public:
     virtual void    Free(void* ptr) override; // @47A610
     virtual void    FreeAligned(void* ptr) override; // @47A070
     virtual void*   Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber) override; // @47A640
-    virtual uint32_t    stub8(uint32_t* ptr) override; // @47A4E0
+    virtual uint32_t    GetDataSize(uint32_t* ptr) override; // @47A4E0
     virtual void    stub9() override;
     virtual void    SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size) override; // @47A500
     virtual const int   GetFreeMemory() const override; // @47A540
     virtual const int   GetAllocatedElementsTotal() const override; // @47A550
     virtual const char* const GetAllocatorName() const override; // @47A5A0
-    virtual const int   GetAllocationsMadeTotal() const override; // @47A560
+    virtual const int   GetUsedBlocksTotal() const override; // @47A560
     virtual int     GetMemoryReserved() override; // @47A570
     virtual void    stub36() override;
 };

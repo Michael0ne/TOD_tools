@@ -99,7 +99,7 @@ void* FrameBasedSubAllocator::Realloc(void* oldptr, size_t newsize, const char* 
     return SequentialSubAllocator::Realloc(oldptr, newsize, fileName, fileLineNumber);
 }
 
-uint32_t FrameBasedSubAllocator::stub8(uint32_t* ptr)
+uint32_t FrameBasedSubAllocator::GetDataSize(uint32_t* ptr)
 {
     return NULL;
 }
@@ -123,14 +123,14 @@ const char* const FrameBasedSubAllocator::GetAllocatorName() const
     return "FrameBasedSubAllocator";
 }
 
-const int FrameBasedSubAllocator::stub21() const
+const int FrameBasedSubAllocator::GetBiggestUsedMemoryBlock() const
 {
     return ValidRegionEnd - RegionBegin;
 }
 
 const int FrameBasedSubAllocator::GetAvailableMemory() const
 {
-    return stub21();
+    return GetBiggestUsedMemoryBlock();
 }
 
 int FrameBasedSubAllocator::GetMemoryReserved()

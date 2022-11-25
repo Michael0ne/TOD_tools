@@ -171,11 +171,11 @@ void Defragmentator::Defragment()
 {
     stub6();
     LogDump::LogA("Defragmenting memory...\n");
-    LogDump::LogA("Before: Largest block: %d, Free mem: %d, Spilled allocs: %d\n", m_Allocator->stub21(), m_Allocator->GetAvailableMemory(), m_SpilledAllocs);
+    LogDump::LogA("Before: Largest block: %d, Free mem: %d, Spilled allocs: %d\n", m_Allocator->GetBiggestUsedMemoryBlock(), m_Allocator->GetAvailableMemory(), m_SpilledAllocs);
 
     DefragmentMemory();
 
-    LogDump::LogA("After: Largest block: %d, Free mem: %d, Spilled allocs: %d\n", m_Allocator->stub21(), m_Allocator->GetAvailableMemory(), m_SpilledAllocs);
+    LogDump::LogA("After: Largest block: %d, Free mem: %d, Spilled allocs: %d\n", m_Allocator->GetBiggestUsedMemoryBlock(), m_Allocator->GetAvailableMemory(), m_SpilledAllocs);
     stub6();
 }
 

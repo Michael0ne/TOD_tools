@@ -1197,7 +1197,7 @@ void Scene::AllocateRewindBuffer()
 {
     if (IsRewindBufferInUse && !m_RewindBuffer1)
     {
-        if (MemoryManager::AllocatorsList[CUTSCENE_OR_REWIND]->GetAllocationsMadeTotal() > 0)
+        if (MemoryManager::AllocatorsList[CUTSCENE_OR_REWIND]->GetUsedBlocksTotal() > 0)
         {
             LogDump::LogA("cannot allocate rewind buffer - memory block is in use!\n");
             return;

@@ -45,16 +45,16 @@ AllocatorIndex FragmentAsset::GetAllocatorForAsset(size_t size, FragmentAsset* a
 {
     const int32_t biggerSize = size + 1024;
 
-    if (biggerSize <= MemoryManager::AllocatorsList[CUTSCENE_OR_REWIND]->stub21())
+    if (biggerSize <= MemoryManager::AllocatorsList[CUTSCENE_OR_REWIND]->GetBiggestUsedMemoryBlock())
         return CUTSCENE_OR_REWIND;
 
-    if (Scene::LoadingAssetBlock && biggerSize <= MemoryManager::AllocatorsList[DEFRAGMENTING]->stub21())
+    if (Scene::LoadingAssetBlock && biggerSize <= MemoryManager::AllocatorsList[DEFRAGMENTING]->GetBiggestUsedMemoryBlock())
         return DEFRAGMENTING;
 
-    if (Scene::LoadingAssetBlock && biggerSize <= MemoryManager::AllocatorsList[MISSION_ASSETS]->stub21())
+    if (Scene::LoadingAssetBlock && biggerSize <= MemoryManager::AllocatorsList[MISSION_ASSETS]->GetBiggestUsedMemoryBlock())
         return MISSION_ASSETS;
 
-    if (biggerSize <= MemoryManager::AllocatorsList[RENDERLIST]->stub21())
+    if (biggerSize <= MemoryManager::AllocatorsList[RENDERLIST]->GetBiggestUsedMemoryBlock())
         return RENDERLIST;
 
     return DEFAULT;

@@ -83,7 +83,7 @@ void* SequentialSubAllocator::Realloc(void* oldptr, size_t newsize, const char* 
     }
 }
 
-uint32_t SequentialSubAllocator::stub8(uint32_t* ptr)
+uint32_t SequentialSubAllocator::GetDataSize(uint32_t* ptr)
 {
     return NULL;
 }
@@ -118,7 +118,7 @@ const char* const SequentialSubAllocator::GetAllocatorName() const
     return "SequentialSubAllocator";
 }
 
-const int SequentialSubAllocator::GetAllocationsMadeTotal() const
+const int SequentialSubAllocator::GetUsedBlocksTotal() const
 {
     return AllocationsTotal;
 }

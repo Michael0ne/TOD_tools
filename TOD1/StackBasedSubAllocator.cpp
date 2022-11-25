@@ -4,8 +4,8 @@ StackBasedSubAllocator::StackBasedSubAllocator()
 {
     MESSAGE_CLASS_CREATED(StackBasedSubAllocator);
 
-    Stack = nullptr;
-    StackCopy = nullptr;
+    StackCurrentPtr = nullptr;
+    StackBeginPtr = nullptr;
     StackDataEndPtr = nullptr;
     ElementsInStack = NULL;
     DataSize = 8;
@@ -18,26 +18,26 @@ void* StackBasedSubAllocator::Allocate_A(size_t size, const char* const fileName
 
 void* StackBasedSubAllocator::AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber)
 {
-    uint8_t* alignedspace = (uint8_t*)((~(alignment - 1) & (uint32_t)(Stack->DataPtr + alignment - 1)));
+    uint8_t* alignedspace = (uint8_t*)((~(alignment - 1) & (uint32_t)(StackCurrentPtr->DataPtr + alignment - 1)));
     if ((size_t)(StackDataEndPtr - alignedspace) < size)
         return nullptr;
 
-    StackElement* newelement = (StackElement*)(alignedspace + (uint32_t)Stack - Stack->DataPtr);
-    newelement->Previous = Stack->Previous;
-    newelement->Next = Stack->Next;
-    newelement->DataPtr = Stack->DataPtr;
-    Stack = newelement;
+    StackElement* newelement = (StackElement*)(alignedspace + (uint32_t)StackCurrentPtr - StackCurrentPtr->DataPtr);
+    newelement->Previous = StackCurrentPtr->Previous;
+    newelement->Next = StackCurrentPtr->Next;
+    newelement->DataPtr = StackCurrentPtr->DataPtr;
+    StackCurrentPtr = newelement;
 
-    if (Stack->Previous)
-        Stack->Previous->Next = Stack;
+    if (StackCurrentPtr->Previous)
+        StackCurrentPtr->Previous->Next = StackCurrentPtr;
     else
-        StackCopy = Stack;
+        StackBeginPtr = StackCurrentPtr;
 
-    newelement = (StackElement*)(Stack->DataPtr + ALIGN_4BYTESUP(size));
+    newelement = (StackElement*)(StackCurrentPtr->DataPtr + ALIGN_4BYTESUP(size));
     newelement->Next = nullptr;
-    newelement->Previous = Stack;
-    Stack->Next = newelement;
-    Stack = newelement;
+    newelement->Previous = StackCurrentPtr;
+    StackCurrentPtr->Next = newelement;
+    StackCurrentPtr = newelement;
 
     ElementsInStack++;
 
@@ -50,8 +50,8 @@ void StackBasedSubAllocator::Free(void* ptr)
         return;
 
     --ElementsInStack;
-    Stack->Next = nullptr;
-    Stack = Stack->Previous;
+    StackCurrentPtr->Next = nullptr;
+    StackCurrentPtr = StackCurrentPtr->Previous;
 }
 
 void StackBasedSubAllocator::FreeAligned(void* ptr)
@@ -71,31 +71,31 @@ void* StackBasedSubAllocator::Realloc(void* oldptr, size_t newsize, const char* 
     }
 
     --ElementsInStack;
-    Stack->Previous->Next = nullptr;
-    Stack = Stack->Previous;
+    StackCurrentPtr->Previous->Next = nullptr;
+    StackCurrentPtr = StackCurrentPtr->Previous;
 
-    StackElement* newelementptr = (StackElement*)(Stack->DataPtr + ALIGN_4BYTESUP(newsize));
+    StackElement* newelementptr = (StackElement*)(StackCurrentPtr->DataPtr + ALIGN_4BYTESUP(newsize));
     newelementptr->Next = nullptr;
-    newelementptr->Previous = Stack;
-    Stack->Next = newelementptr;
-    Stack = newelementptr;
+    newelementptr->Previous = StackCurrentPtr;
+    StackCurrentPtr->Next = newelementptr;
+    StackCurrentPtr = newelementptr;
     ElementsInStack++;
 
     return newelementptr->Previous->DataPtr;
 }
 
-uint32_t StackBasedSubAllocator::stub8(uint32_t* ptr)
+uint32_t StackBasedSubAllocator::GetDataSize(uint32_t* ptr)
 {
     return (ptr - DataSize + 4) - (ptr - DataSize) - 12;
 }
 
 void StackBasedSubAllocator::stub9()
 {
-    if (!StackCopy)
+    if (!StackBeginPtr)
         return;
 
     // TODO: maybe this function should have return type?
-    StackElement* prevelement = StackCopy;
+    StackElement* prevelement = StackBeginPtr;
     for (prevelement = prevelement->Previous; prevelement; prevelement = prevelement->Previous);
 }
 
@@ -103,16 +103,16 @@ void StackBasedSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, con
 {
     Allocator::SetNameAndAllocatedSpaceParams(bufferptr, name, size);
 
-    Stack = (StackElement*)AllocatedSpacePtr;
-    StackCopy = (StackElement*)AllocatedSpacePtr;
+    StackCurrentPtr = (StackElement*)AllocatedSpacePtr;
+    StackBeginPtr = (StackElement*)AllocatedSpacePtr;
     StackDataEndPtr = (uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize;
     *((uint32_t*)AllocatedSpacePtr) = NULL;
-    Stack->Next = nullptr;
+    StackCurrentPtr->Next = nullptr;
 }
 
 const int StackBasedSubAllocator::GetFreeMemory() const
 {
-    return (int)Stack - (int)StackCopy->DataPtr;
+    return (uint32_t)StackCurrentPtr - (uint32_t)StackBeginPtr + DataSize;
 }
 
 const char* const StackBasedSubAllocator::GetAllocatorName() const
@@ -120,22 +120,22 @@ const char* const StackBasedSubAllocator::GetAllocatorName() const
     return "StackBasedSubAllocator";
 }
 
-const int StackBasedSubAllocator::GetAllocationsMadeTotal() const
+const int StackBasedSubAllocator::GetUsedBlocksTotal() const
 {
     return ElementsInStack;
 }
 
-const int StackBasedSubAllocator::stub20() const
+const int StackBasedSubAllocator::GetFreeBlocksTotal() const
 {
     return 1;
 }
 
-const int StackBasedSubAllocator::stub21() const
+const int StackBasedSubAllocator::GetBiggestUsedMemoryBlock() const
 {
     return GetAvailableMemory();
 }
 
 const int StackBasedSubAllocator::GetAvailableMemory() const
 {
-    return (uint32_t)StackDataEndPtr - ALIGN_16BYTESUP((uint32_t)Stack);
+    return (uint32_t)StackDataEndPtr - ALIGN_16BYTESUP((uint32_t)StackCurrentPtr);
 }

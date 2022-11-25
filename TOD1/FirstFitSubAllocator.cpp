@@ -1,7 +1,7 @@
 #include "FirstFitSubAllocator.h"
 #include "LogDump.h"
 
-bool FirstFitSubAllocator::_4798D0(uint32_t* ptr)
+bool FirstFitSubAllocator::UpdateUsedBlocks(uint32_t* ptr)
 {
     bool result = false;
 
@@ -25,9 +25,19 @@ bool FirstFitSubAllocator::_4798D0(uint32_t* ptr)
     } while (!*(uint32_t*)(*ptr + 4));
 
     if (SpacePtr == (uint32_t*)*ptr && !SpacePtr[1] && ptr != SpacePtr)
-        _4798D0(SpacePtr);
+        UpdateUsedBlocks(SpacePtr);
 
     return result;
+}
+
+uint32_t* FirstFitSubAllocator::GetHeaderDataPtr(void* ptr) const
+{
+    return (uint32_t*)ptr - PointerDataSize;
+}
+
+uint32_t* FirstFitSubAllocator::AlignPointer(const uint32_t* ptr, const uint32_t size) const
+{
+    return (uint32_t*)((~(size - 1) & ((uint32_t)ptr + PointerDataSize + size - 1)) - PointerDataSize);
 }
 
 void FirstFitSubAllocator::FreeBlockIfSmall(uint32_t* ptr, const uint32_t sizeAvailable, const int32_t sizeRequested)
@@ -49,7 +59,7 @@ FirstFitSubAllocator::FirstFitSubAllocator()
 {
     MESSAGE_CLASS_CREATED(FirstFitSubAllocator);
 
-    PointerDataSize = 8;
+    PointerDataSize = sizeof(HeaderData);
     SpacePtr = NULL;
     SpaceOccupied = NULL;
     FreeRegions = NULL;
@@ -79,7 +89,7 @@ void* FirstFitSubAllocator::AllocateAligned(size_t size, size_t alignment, const
         uint32_t* dataBlockPtr = SpacePtr_1;
         if (!dataBlockPtr[1])
         {
-            if (_4798D0(SpacePtr_1))
+            if (UpdateUsedBlocks(SpacePtr_1))
             {
                 uint32_t* nextDatablockPtr = SpacePtr_1;
                 if (*nextDatablockPtr <= (uint32_t)nextDatablockPtr)
@@ -172,23 +182,23 @@ void FirstFitSubAllocator::Free(void* ptr)
     if (!ptr)
         return;
 
-    uint32_t* blockStartPtr = ((uint32_t*)ptr - PointerDataSize);
-    uint32_t* blockPointer = (uint32_t*)*blockStartPtr;
+    uint32_t* blockDataPtr = (uint32_t*)((uint8_t*)ptr - PointerDataSize);
+    uint32_t* nextDataPtr = (uint32_t*)*blockDataPtr;
 
-    blockStartPtr[1] = NULL;
+    blockDataPtr[1] = NULL;
 
-    if (blockPointer <= blockStartPtr)
-        blockPointer = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
+    if (nextDataPtr <= blockDataPtr)
+        nextDataPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
 
-    SpaceOccupied += blockStartPtr - blockPointer;
+    SpaceOccupied += blockDataPtr - nextDataPtr;
 
     FreeRegions++;
     UsedRegions--;
 
     if (ProfilerEnabled)
-        memset(ptr, 0xAB, blockPointer - PointerDataSize - blockStartPtr);
+        memset(ptr, 0xAB, nextDataPtr - PointerDataSize - blockDataPtr);
 
-    _4798D0(blockStartPtr);
+    UpdateUsedBlocks(blockDataPtr);
 }
 
 void FirstFitSubAllocator::FreeAligned(void* ptr)
@@ -225,7 +235,7 @@ void* FirstFitSubAllocator::Realloc(void* oldptr, size_t newsize, const char* co
         if (newsize <= fitSize)
             break;
 
-        if (!_4798D0(dataBlockPtr))
+        if (!UpdateUsedBlocks(dataBlockPtr))
         {
             void* newDataPtr = Allocate_A(newsize, fileName, fileLineNumber);
             void* newDataPtrCopy = newDataPtr;
@@ -260,7 +270,7 @@ void* FirstFitSubAllocator::Realloc(void* oldptr, size_t newsize, const char* co
     return oldptr;
 }
 
-uint32_t FirstFitSubAllocator::stub8(uint32_t* ptr)
+uint32_t FirstFitSubAllocator::GetDataSize(uint32_t* ptr)
 {
     if (!ptr)
         return NULL;
@@ -309,17 +319,17 @@ const char* const FirstFitSubAllocator::GetAllocatorName() const
     return "FirstFitSubAllocator";
 }
 
-const int FirstFitSubAllocator::GetAllocationsMadeTotal() const
+const int FirstFitSubAllocator::GetUsedBlocksTotal() const
 {
     return UsedRegions;
 }
 
-const int FirstFitSubAllocator::stub20() const
+const int FirstFitSubAllocator::GetFreeBlocksTotal() const
 {
     return FreeRegions;
 }
 
-const int FirstFitSubAllocator::stub21() const
+const int FirstFitSubAllocator::GetBiggestUsedMemoryBlock() const
 {
     uint32_t biggestFreeBlock = 0;
     uint32_t* dataBlockPtr = SpacePtr;

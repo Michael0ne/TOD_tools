@@ -57,7 +57,7 @@ void* SingletonSubAllocator::Realloc(void* oldptr, size_t newsize, const char* c
     return DataPtr;
 }
 
-uint32_t SingletonSubAllocator::stub8(uint32_t* ptr)
+uint32_t SingletonSubAllocator::GetDataSize(uint32_t* ptr)
 {
     return AllocatedSpaceSize;
 }
@@ -77,17 +77,17 @@ const char* const SingletonSubAllocator::GetAllocatorName() const
     return "SingletonSubAllocator";
 }
 
-const int SingletonSubAllocator::GetAllocationsMadeTotal() const
+const int SingletonSubAllocator::GetUsedBlocksTotal() const
 {
     return Created;
 }
 
-const int SingletonSubAllocator::stub20() const
+const int SingletonSubAllocator::GetFreeBlocksTotal() const
 {
     return !Created;
 }
 
-const int SingletonSubAllocator::stub21() const
+const int SingletonSubAllocator::GetBiggestUsedMemoryBlock() const
 {
     return Created ? NULL : AllocatedSpaceSize;
 }

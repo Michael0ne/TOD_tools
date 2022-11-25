@@ -21,13 +21,13 @@ public:
     virtual void    Free(void* ptr) override; // @47A260
     virtual void    FreeAligned(void* ptr) override; // @47A2C0
     virtual void*   Realloc(void* oldptr, size_t newsize, const char* const fileName, const unsigned int fileLineNumber) override; // @47A2D0
-    virtual uint32_t stub8(uint32_t* ptr) override; // @47A300
+    virtual uint32_t GetDataSize(uint32_t* ptr) override; // @47A300
     virtual void    stub9() override;
     virtual void    SetNameAndAllocatedSpaceParams(void* bufferptr, const char* const name, int size) override; // @47A320
     virtual const int   GetFreeMemory() const override; // @47A3D0
     virtual const int   GetAllocatedElementsTotal() const override; // @47A3E0
     virtual const char* const GetAllocatorName() const override; // @47A410
-    virtual const int   GetAllocationsMadeTotal() const override; // @47A3F0
+    virtual const int   GetUsedBlocksTotal() const override; // @47A3F0
 };
 
 ASSERT_CLASS_SIZE(PoolSubAllocator, 64);
