@@ -58,8 +58,8 @@ public:
         SPEAKER_CONFIG_STEREO = -1
     }       m_SpeakerConfig;
     LPDIRECTSOUNDBUFFER   m_DirectSoundBuffer;
-    int*      field_24; // NOTE: this and one below are something related to Diesel Power sound buffers. The 3D and 2D ones.
-    int*      field_28;
+    DieselPower*    DieselPower2DStream; // NOTE: this and one below are something related to Diesel Power sound buffers. The 3D and 2D ones.
+    DieselPower*    DieselPower3DStream;
     int       m_DirectSoundChannels;
     int       m_DirectSoundSampleRate;
     int       m_DirectSoundBits;

@@ -4,6 +4,7 @@
 #include "StreamedWAV.h"
 #include "BuiltinType.h"
 #include "Timer.h"
+#include "Scene.h"
 
 StreamedSoundBuffer::~StreamedSoundBuffer()
 {
@@ -39,15 +40,15 @@ void StreamedSoundBuffer::SetSampledData(void*)
 {
 }
 
-bool StreamedSoundBuffer::Is3DSound(int slot)
+bool StreamedSoundBuffer::Is3DSound(const uint32_t streamIndex) const
 {
     if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
-        return m_DieselPowerStream != nullptr;
+        return DieselPower3DStream != nullptr;
 
-    if (m_DirectSound3DBuffer)
+    if (DirectSound3DBuffer)
     {
         DWORD sound3DMode;
-        m_DirectSound3DBuffer->GetMode(&sound3DMode);
+        DirectSound3DBuffer->GetMode(&sound3DMode);
         return sound3DMode != DS3DMODE_DISABLE;
     }
 
@@ -56,38 +57,38 @@ bool StreamedSoundBuffer::Is3DSound(int slot)
 
 void StreamedSoundBuffer::Get3DMode(unsigned char mode3d)
 {
-    if (mode3d && m_DirectSound3DBuffer)
-        m_DirectSound3DBuffer->GetMode((LPDWORD)&mode3d);
+    if (mode3d && DirectSound3DBuffer)
+        DirectSound3DBuffer->GetMode((LPDWORD)&mode3d);
 
     field_1C ^= (field_1C ^ (mode3d << 24)) & 0x1000000;
 }
 
-bool StreamedSoundBuffer::IsLooped(int)
+bool StreamedSoundBuffer::IsLooped(const uint32_t streamIndex) const
 {
-    return m_Flags.Looped;
+    return Flags.Looped;
 }
 
-int StreamedSoundBuffer::Play(int slot, bool looped, int)
+int StreamedSoundBuffer::Play(const uint32_t streamIndex, bool looped, int)
 {
-    m_Flags._4 = 0;
-    g_StreamedSoundBuffers->_43D200(m_DirectSoundBuffer, field_20, (field_1C >> 20) & 0xFFFFFF01, (field_1C >> 30) & 0xFFFFFF01, Is3DSound(0));
+    Flags._4 = 0;
+    g_StreamedSoundBuffers->_43D200(DirectSoundBuffer, field_20, (field_1C >> 20) & 0xFFFFFF01, (field_1C >> 30) & 0xFFFFFF01, Is3DSound(0));
     field_54 = field_54 & 0xFFFF00FF | (((field_54 >> 8) + 1) << 8);
 
-    if (!m_Flags.PreLoaded)
-        LogDump::LogA("Play called on (%s), but has not yet finished pre-loading.\n", m_StreamedWAV->m_FileName.m_Str);
+    if (!Flags.PreLoaded)
+        LogDump::LogA("Play called on (%s), but has not yet finished pre-loading.\n", StreamedWAVSound->m_FileName.m_Str);
 
-    if (!m_Flags.PlayRequest)
+    if (!Flags.PlayRequest)
     {
-        m_Flags.Looped = looped;
-        m_Flags.PlayRequest = true;
+        Flags.Looped = looped;
+        Flags.PlayRequest = true;
     }
 
     return 0;
 }
 
-bool StreamedSoundBuffer::IsPlaying(int slot) const
+bool StreamedSoundBuffer::IsPlaying(const uint32_t streamIndex) const
 {
-    return (m_Flags.PlayRequest && m_Flags._7);
+    return (Flags.PlayRequest && Flags._7);
 }
 
 bool StreamedSoundBuffer::IsFirstChannelPlaying() const
@@ -100,125 +101,204 @@ void StreamedSoundBuffer::_440850(int)
 {
 }
 
-void StreamedSoundBuffer::Stop(int)
+void StreamedSoundBuffer::Stop(const uint32_t streamIndex)
 {
     field_54 = field_54 & 0xFF00FFFF | (((unsigned short)field_54 + 1) << 16) & 0xFF0000;
-    m_Flags.StopRequest = true;
-    m_Flags._4 = true;
+    Flags.StopRequest = true;
+    Flags._4 = true;
 
-    if (m_StreamedWAV)
+    if (StreamedWAVSound)
     {
-        m_StoppingFinished = !m_DirectSoundBuffer && !m_DieselPowerSoundBuffer;
+        StoppingFinished = !DirectSoundBuffer && !DieselPowerSoundBuffer;
 
         if (field_A0)
             ResetEvent(field_A0);
         if (field_B0)
             SetEvent(field_B0);
-        if (m_EventNotify)
-            ResetEvent(m_EventNotify);
+        if (EventNotify)
+            ResetEvent(EventNotify);
         if (m_EvHandle_2)
             ResetEvent(m_EvHandle_2);
 
-        m_Flags.LastChunkPlaying = false;
+        Flags.LastChunkPlaying = false;
         field_5C = NULL;
     }
 }
 
-void StreamedSoundBuffer::SetPause(int slot, bool hardpause)
+void StreamedSoundBuffer::SetPause(const uint32_t streamIndex, bool hardpause)
 {
-    m_Flags.HardPause = hardpause;
-    m_Flags.Paused = true;
+    Flags.HardPause = hardpause;
+    Flags.Paused = true;
 }
 
-void StreamedSoundBuffer::UnPause(int slot, bool hardpause)
+void StreamedSoundBuffer::UnPause(const uint32_t streamIndex, bool hardpause)
 {
-    m_Flags.HardPause = hardpause;
+    Flags.HardPause = hardpause;
     g_StreamedSoundBuffers->m_GlobalPauseCalled = true;
 }
 
-bool StreamedSoundBuffer::IsPaused(int slot) const
+bool StreamedSoundBuffer::IsPaused(const uint32_t streamIndex) const
 {
-    return m_CurrentAudioPosition >= 0;
+    return CurrentAudioPosition >= 0;
 }
 
 bool StreamedSoundBuffer::IsCreated() const
 {
-    return m_StreamedWAV && m_ThreadId;
+    return StreamedWAVSound && ThreadId;
 }
 
-char* StreamedSoundBuffer::GetBufferDataPtr()
+uint8_t* StreamedSoundBuffer::GetBufferDataPtr()
 {
-    return (char*)m_SoundBufferBlockStartPtr;
+    return SoundBufferBlockStartPtr;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetVolume(int, float)
+void StreamedSoundBuffer::SetVolume(const uint32_t streamIndex, const float_t volume)
 {
+    if (!g_StreamedSoundBuffers->m_Sound || volume <= 0.f)
+        Volume = 0.0000099999997;
+    else
+        Volume = clamp<float_t>(volume, 0.0000099999997, 1.f);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-float StreamedSoundBuffer::GetVolume(int)
+float_t StreamedSoundBuffer::GetVolume(const uint32_t streamIndex) const
 {
-    return 0.0f;
+    return Volume;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetFrequencyMultiplier(int, float mul)
+void StreamedSoundBuffer::SetFrequency(const uint32_t streamIndex, const float_t frequency)
 {
-}
+    Frequency = SamplesPerSec * frequency < 100 ? 100 : SamplesPerSec * frequency;
 
-#pragma message(TODO_IMPLEMENTATION)
-float StreamedSoundBuffer::GetFrequencyMultiplier(int)
-{
-    return 0.0f;
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-int StreamedSoundBuffer::SetPan(int slot, const float pan)
-{
-    return 0;
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-float StreamedSoundBuffer::GetPan(int slot)
-{
-    return 0.0f;
-}
-
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetSoundPosition(int, const Vector4f*)
-{
-}
-
-void StreamedSoundBuffer::GetPosition(Vector4f& outPos, const int)
-{
     if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
     {
-        if (m_DieselPowerSoundBuffer)
+        if (DieselPowerSoundBuffer)
         {
-            float x, y, z;
-            m_DieselPowerSoundBuffer->GetPosition(x, y, z);
-            outPos = { x, y, z, 0 };
-
-            return;
+            DieselPowerSoundBuffer->SetFrequency(Frequency);
+            DieselPowerSoundBuffer->stub27();
         }
-        else
-        {
-            outPos = BuiltinType::ZeroVector;
-            return;
-        }
-    }
-
-    if (m_DirectSound3DBuffer)
-    {
-        m_DirectSound3DBuffer->GetPosition((LPD3DVECTOR)&m_Position);
-        outPos = m_Position;
     }
     else
     {
-        outPos = BuiltinType::ZeroVector;
-        return;
+        if (DirectSoundBuffer)
+            DirectSoundBuffer->SetFrequency(Frequency);
     }
+}
+
+float_t StreamedSoundBuffer::GetFrequency(const uint32_t streamIndex) const
+{
+    double_t frequency = Frequency;
+
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER && DieselPowerSoundBuffer)
+    {
+        frequency = DieselPowerSoundBuffer->GetFrequency();
+    }
+    else
+    {
+        if (DirectSoundBuffer)
+            DirectSoundBuffer->GetFrequency((LPDWORD)&Frequency);
+
+        frequency = Frequency;
+    }
+
+    if (frequency < 0)
+        frequency += 4294967300.0;
+
+    return frequency / SamplesPerSec;
+}
+
+int StreamedSoundBuffer::SetPan(const uint32_t streamIndex, const float_t pan)
+{
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+    {
+        if (!DieselPower3DStream)
+        {
+            Pan = pan * 20.f;   //  TODO: __FYL2X__(pan, lg10(2)) * 20
+            if (DieselPowerSoundBuffer)
+                DieselPowerSoundBuffer->SetPan(pan);
+        }
+    }
+    else
+    {
+        if (!DirectSound3DBuffer)
+        {
+            Pan = pan * 20.f;   //  TODO: __FYL2X__(pan, lg10(2)) * 20
+            DirectSoundBuffer->SetPan(Pan);
+        }
+    }
+}
+
+float StreamedSoundBuffer::GetPan(const uint32_t streamIndex)
+{
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+        if (!DieselPower3DStream)
+            return DieselPowerSoundBuffer->GetPan();
+        else
+            return 0.f;
+
+    if (DirectSound3DBuffer)
+        return 0.f;
+
+    DirectSoundBuffer->GetPan((LPLONG)&Pan);
+
+    return pow(10.0f, Pan * 0.05f);
+}
+
+void StreamedSoundBuffer::SetSoundPosition(const uint32_t streamIndex, const Vector4f& position)
+{
+    const float_t frameDelta = Scene::TimePassed > 0.0000099999997 ? 0.0000099999997 : Scene::TimePassed;
+    const float_t invFrameDelta = 1.f / frameDelta;
+    Vector4f currentPosition;
+    GetPosition(currentPosition, 0);
+
+    Position = position;
+
+    Vector4f velocity = position - currentPosition;
+
+    if (DopplerFactor == 0.f)
+        velocity = BuiltinType::ZeroVector;
+    else
+        velocity = velocity * invFrameDelta;
+
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+    {
+        if (DieselPower3DStream)
+        {
+            DieselPower3DStream->SetPosition(position.x, position.y, position.z);
+            DieselPower3DStream->SetVelocity(velocity.x, velocity.y, velocity.z);
+        }
+    }
+    else
+    {
+        if (DirectSound3DBuffer)
+        {
+            DirectSound3DBuffer->SetPosition(position.x, position.y, position.z, DS3D_DEFERRED);
+            HRESULT velocitySetResult = DirectSound3DBuffer->SetVelocity(velocity.x, velocity.y, velocity.z, DS3D_DEFERRED);
+            if (FAILED(velocitySetResult))
+                LogDump::LogA("Failed to set 3D sound position (%d)", velocitySetResult);
+        }
+    }
+}
+
+void StreamedSoundBuffer::GetPosition(Vector4f& outPos, const uint32_t streamIndex) const
+{
+    outPos = BuiltinType::ZeroVector;
+
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+    {
+        if (DieselPowerSoundBuffer)
+        {
+            DieselPowerSoundBuffer->GetPosition(outPos.x, outPos.y, outPos.z);
+            return;
+        }
+        else
+            return;
+    }
+
+    if (!DirectSound3DBuffer)
+        return;
+
+    DirectSound3DBuffer->GetPosition((D3DVECTOR*)&Position);
+    outPos = Position;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -232,67 +312,155 @@ Vector4f* StreamedSoundBuffer::_4439E0(Vector4f*, int)
     return nullptr;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetMaxDistance(int, float)
-{
-}
-
-float StreamedSoundBuffer::GetMaxDistance(int)
+void StreamedSoundBuffer::SetMaxDistance(const uint32_t streamIndex, const float_t maxdistance)
 {
     if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
-        if (m_DieselPowerSoundBuffer)
-            return m_DieselPowerSoundBuffer->GetPan();
+    {
+        if (DieselPower3DStream)
+        {
+            MaxDistance = maxdistance;
+            DieselPower3DStream->SetAudioEnvironmentParams(MinDistance, MaxDistance, RollOff);
+            DieselPower3DStream->stub27();
+        }
+    }
+    else
+    {
+        if (DirectSound3DBuffer)
+        {
+            MaxDistance = maxdistance;
+            DirectSound3DBuffer->SetMaxDistance(maxdistance, DS3D_DEFERRED);
+        }
+    }
+}
+
+float_t StreamedSoundBuffer::GetMaxDistance(const uint32_t streamIndex) const
+{
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+        if (DieselPowerSoundBuffer)
+            return DieselPowerSoundBuffer->GetMaxDistance();
         else
             return NULL;
 
-    if (!m_DirectSound3DBuffer)
+    if (!DirectSound3DBuffer)
         return NULL;
 
-    m_DirectSound3DBuffer->GetMaxDistance(&m_MaxDistance);
-    return m_MaxDistance;
+    DirectSound3DBuffer->GetMaxDistance((D3DVALUE*)&MaxDistance);
+    return MaxDistance;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetFrequency(int, float)
+void StreamedSoundBuffer::SetMinDistance(const uint32_t streamIndex, const float_t minDistance)
 {
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+    {
+        if (DieselPower3DStream)
+        {
+            MinDistance = minDistance;
+            DieselPower3DStream->SetAudioEnvironmentParams(minDistance, MaxDistance, RollOff);
+            DieselPower3DStream->stub27();
+        }
+    }
+    else
+    {
+        if (DirectSound3DBuffer)
+        {
+            MinDistance = minDistance;
+            DirectSound3DBuffer->SetMinDistance(minDistance, DS3D_DEFERRED);
+        }
+    }
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-float StreamedSoundBuffer::GetFrequency(int)
+float_t StreamedSoundBuffer::GetMinDistance(const uint32_t streamIndex) const
 {
-    return 0.0f;
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+        if (DieselPower3DStream)
+            return DieselPower3DStream->GetMinDistance();
+        else
+            return 0.f;
+
+    D3DVALUE minDistance = 0.f;
+    if (!DirectSound3DBuffer)
+        return 0.f;
+    else
+        DirectSound3DBuffer->GetMinDistance(&minDistance);
+
+    return minDistance;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::_443C20(int, float)
+void StreamedSoundBuffer::SetRollOff(const uint32_t streamIndex, const float_t rollOff)
 {
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+    {
+        if (DieselPower3DStream)
+        {
+            RollOff = rollOff;
+            DieselPower3DStream->SetAudioEnvironmentParams(MinDistance, MaxDistance, rollOff);
+            DieselPower3DStream->stub27();
+        }
+    }
+    else
+        if (DirectSound3DBuffer)
+            RollOff = rollOff;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-float StreamedSoundBuffer::_443C90(int)
+float_t StreamedSoundBuffer::GetRollOff(const uint32_t streamIndex) const
 {
-    return 0.0f;
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+        if (DieselPower3DStream)
+            return DieselPower3DStream->GetRollOff();
+        else
+            return 0.f;
+
+    if (!DirectSound3DBuffer)
+        return 0.f;
+    else
+        return RollOff;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::_443CD0(int, float)
+void StreamedSoundBuffer::SetDopplerFactor(const uint32_t streamIndex, const float_t factor)
 {
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+    {
+        if (DieselPower3DStream)
+        {
+            DopplerFactor = factor;
+            DieselPower3DStream->SetDopplerFactor(factor);
+            DieselPower3DStream->stub27();
+        }
+    }
+    else
+        if (DirectSound3DBuffer)
+            DopplerFactor = factor;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-float StreamedSoundBuffer::_443D30(int)
+float_t StreamedSoundBuffer::GetDopplerFactor(const uint32_t streamIndex) const
 {
-    return 0.0f;
+    return DopplerFactor;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void StreamedSoundBuffer::SetSoundProperties(int, float, float, float)
+void StreamedSoundBuffer::SetSoundProperties(const uint32_t streamIndex, const float_t minDistance, const float_t maxDistance, const float_t rollOff)
 {
+    if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
+    {
+        if (DieselPower3DStream)
+        {
+            DieselPower3DStream->SetAudioEnvironmentParams(minDistance, maxDistance, rollOff);
+            DieselPower3DStream->stub27();
+        }
+    }
+    else
+    {
+        if (DirectSound3DBuffer)
+        {
+            RollOff = rollOff;
+            MinDistance = minDistance;
+            MaxDistance = maxDistance;
+        }
+    }
 }
 
 int StreamedSoundBuffer::GetChannelsNumber() const
 {
-    return m_Channels;
+    return Channels;
 }
 
 void StreamedSoundBuffer::DumpInfo()
@@ -304,7 +472,7 @@ void StreamedSoundBuffer::DumpInfo()
         Is3DSound(0)  ? "3d" : "2d",
         GetVolume(0),
         IsPlaying(0),
-        m_Flags.Looped,
+        Flags.Looped,
         sndpos.x, sndpos.y, sndpos.z);
 }
 
@@ -320,8 +488,8 @@ void StreamedSoundBuffer::FillSoundData(const bool overwrite)
 
     if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
     {
-        soundbufferptr = m_DieselPowerSoundBuffer->GetSoundBufferPtr();
-        soundbuffersize = m_DieselPowerSoundBuffer->stub9();
+        soundbufferptr = DieselPowerSoundBuffer->GetSoundBufferPtr();
+        soundbuffersize = DieselPowerSoundBuffer->stub9();
     }
     else
     {
@@ -330,7 +498,7 @@ void StreamedSoundBuffer::FillSoundData(const bool overwrite)
 
         for (; i < 100; ++i)
         {
-            hr = m_DirectSoundBuffer->Lock(NULL, m_SoundBufferBlockSize, (LPVOID*)&soundbufferptr, (LPDWORD)&soundbuffersize, nullptr, nullptr, DSBLOCK_ENTIREBUFFER);
+            hr = DirectSoundBuffer->Lock(NULL, SoundBufferBlockSize, (LPVOID*)&soundbufferptr, (LPDWORD)&soundbuffersize, nullptr, nullptr, DSBLOCK_ENTIREBUFFER);
 
             if (SUCCEEDED(hr))
                 break;
@@ -338,8 +506,8 @@ void StreamedSoundBuffer::FillSoundData(const bool overwrite)
             // NOTE: this method is executed from another thread, so SoundSystem MAY change at any moment.
             if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
             {
-                soundbufferptr = m_DieselPowerSoundBuffer->GetSoundBufferPtr();
-                soundbuffersize = m_DieselPowerSoundBuffer->stub9();
+                soundbufferptr = DieselPowerSoundBuffer->GetSoundBufferPtr();
+                soundbuffersize = DieselPowerSoundBuffer->stub9();
             }
         }
 
@@ -353,20 +521,20 @@ void StreamedSoundBuffer::FillSoundData(const bool overwrite)
 
     if (overwrite)
     {
-        if (m_StreamedWAV->m_SoundBufferPtr)
+        if (StreamedWAVSound->m_SoundBufferPtr)
         {
-            memcpy(soundbufferptr, m_StreamedWAV->m_SoundBufferPtr, 4 * (m_SoundBufferBlockSize >> 2));
-            memcpy(&soundbufferptr[4 * (m_SoundBufferBlockSize >> 2)], &m_StreamedWAV->m_SoundBufferPtr[4 * (m_SoundBufferBlockSize >> 2)], m_SoundBufferBlockSize & 3);
+            memcpy(soundbufferptr, StreamedWAVSound->m_SoundBufferPtr, 4 * (SoundBufferBlockSize >> 2));
+            memcpy(&soundbufferptr[4 * (SoundBufferBlockSize >> 2)], &StreamedWAVSound->m_SoundBufferPtr[4 * (SoundBufferBlockSize >> 2)], SoundBufferBlockSize & 3);
         }
         else
-            memset(soundbufferptr, NULL, 4 * (m_SoundBufferBlockSize >> 2) + (m_SoundBufferBlockSize & 3));
+            memset(soundbufferptr, NULL, 4 * (SoundBufferBlockSize >> 2) + (SoundBufferBlockSize & 3));
     }
     else
     {
-        if (m_StreamedWAV->m_SoundBufferPtr)
-            memcpy(soundbufferptr + m_SoundBufferBlockSize, m_StreamedWAV->m_SoundBufferPtr, m_SoundBufferBlockSize);
+        if (StreamedWAVSound->m_SoundBufferPtr)
+            memcpy(soundbufferptr + SoundBufferBlockSize, StreamedWAVSound->m_SoundBufferPtr, SoundBufferBlockSize);
         else
-            memset(soundbufferptr + m_SoundBufferBlockSize, NULL, 4 * (m_SoundBufferBlockSize >> 2) + (m_SoundBufferBlockSize & 3));
+            memset(soundbufferptr + SoundBufferBlockSize, NULL, 4 * (SoundBufferBlockSize >> 2) + (SoundBufferBlockSize & 3));
     }
 
     if (g_StreamedSoundBuffers->m_SoundSystem != SOUND_SYSTEM_DIESELPOWER)
@@ -376,7 +544,7 @@ void StreamedSoundBuffer::FillSoundData(const bool overwrite)
 
         for (; i < 100; ++i)
         {
-            hr = m_DirectSoundBuffer->Unlock(soundbufferptr, soundbuffersize, nullptr, NULL);
+            hr = DirectSoundBuffer->Unlock(soundbufferptr, soundbuffersize, nullptr, NULL);
 
             if (SUCCEEDED(hr))
                 break;
@@ -395,12 +563,12 @@ void StreamedSoundBuffer::ShutdownThread()
 {
     Stop(NULL);
 
-    if (m_TerminateThreadEvent)
-        SetEvent(m_TerminateThreadEvent);
+    if (TerminateThreadEvent)
+        SetEvent(TerminateThreadEvent);
 
     if (m_StreamThread)
     {
-        LogDump::LogA("Shutting down thread - hTerminateThreadEvent = %i\n", this->m_TerminateThreadEvent);
+        LogDump::LogA("Shutting down thread - hTerminateThreadEvent = %i\n", this->TerminateThreadEvent);
 
         const unsigned int currtime = Timer::GetMilliseconds();
         constexpr unsigned int timeouttime = 5000;
@@ -420,20 +588,20 @@ void StreamedSoundBuffer::ShutdownThread()
         LogDump::LogA("Thread closed...\n");
     }
 
-    if (m_StreamedWAV)
-        m_StreamedWAV->field_34 = -1;
+    if (StreamedWAVSound)
+        StreamedWAVSound->field_34 = -1;
 
-    RELEASE_SAFE(m_DirectSoundBuffer);
-    RELEASE_SAFE(m_DirectSound3DBuffer);
+    RELEASE_SAFE(DirectSoundBuffer);
+    RELEASE_SAFE(DirectSound3DBuffer);
 
-    if (m_DieselPowerSoundBuffer)
+    if (DieselPowerSoundBuffer)
     {
-        m_DieselPowerSoundBuffer->stub24();
-        m_DieselPowerSoundBuffer->stub27();
-        m_DieselPowerSoundBuffer->stub28();
+        DieselPowerSoundBuffer->stub24();
+        DieselPowerSoundBuffer->stub27();
+        DieselPowerSoundBuffer->stub28();
 
-        m_DieselPowerSoundBuffer = nullptr;
-        m_DieselPowerStream = nullptr;
+        DieselPowerSoundBuffer = nullptr;
+        DieselPower3DStream = nullptr;
     }
 
     field_58 = 0xDEA110CA;
@@ -444,14 +612,14 @@ void StreamedSoundBuffer::ShutdownThread()
     if (m_StreamThread)
         CloseHandle(m_StreamThread);
 
-    if (m_EventNotify)
-        CloseHandle(m_EventNotify);
+    if (EventNotify)
+        CloseHandle(EventNotify);
 
     if (m_EvHandle_2)
         CloseHandle(m_EvHandle_2);
 
-    if (m_TerminateThreadEvent)
-        CloseHandle(m_TerminateThreadEvent);
+    if (TerminateThreadEvent)
+        CloseHandle(TerminateThreadEvent);
 
     if (field_9C)
         CloseHandle(field_9C);
@@ -462,19 +630,19 @@ void StreamedSoundBuffer::ShutdownThread()
     if (field_B0)
         CloseHandle(field_B0);
 
-    if (field_61 && m_StreamedWAV)
-        delete m_StreamedWAV;
+    if (field_61 && StreamedWAVSound)
+        delete StreamedWAVSound;
     else
-        if (m_StreamedWAV)
-            m_StreamedWAV->RemoveSoundBuffer();
+        if (StreamedWAVSound)
+            StreamedWAVSound->RemoveSoundBuffer();
 
-    m_StreamedWAV = nullptr;
+    StreamedWAVSound = nullptr;
 
     SoundBufferStatus& sbs = StreamedSoundBuffers::FindSoundBufferInBuffersList(field_8C);
     if (sbs.m_StreamBufferPtr)
         sbs.m_InUse;
 
-    m_ThreadId = NULL;
+    ThreadId = NULL;
 }
 
 IStreamBuffer::~IStreamBuffer()
@@ -492,6 +660,6 @@ StreamBuffer::StreamBuffer()
 {
     MESSAGE_CLASS_CREATED(StreamBuffer);
 
-    m_SampledData = nullptr;
-    m_AuxMonoStream_1 = nullptr;
+    SampledData = nullptr;
+    AuxMonoStream_1 = nullptr;
 }

@@ -141,8 +141,8 @@ StreamedSoundBuffers::StreamedSoundBuffers(char channels, int sampleRate)
     m_MaxConcurrentSounds = STREAMEDSOUNDBUFFERS_MAX_CONCURRENT_SOUNDS;
     m_CurrentlyPlaying = NULL;
     m_DirectSoundBuffer = nullptr;
-    field_24 = nullptr;
-    field_28 = nullptr;
+    DieselPower2DStream = nullptr;
+    DieselPower3DStream = nullptr;
     m_DieselPower = nullptr;
 
     if (FAILED(DirectSoundCreate(NULL, &directSound, NULL)))
@@ -321,8 +321,8 @@ void StreamedSoundBuffers::GetMaxDistance(Vector4f& outVec) const
 HRESULT StreamedSoundBuffers::CreateSoundBuffer(DSBUFFERDESC* bufferDesc)
 {
     m_DirectSoundBuffer = nullptr;
-    field_24 = NULL;
-    field_28 = NULL;
+    DieselPower2DStream = NULL;
+    DieselPower3DStream = NULL;
 
     if (m_SoundSystem != SOUND_SYSTEM_DIESELPOWER)
         return m_DirectSound->CreateSoundBuffer(bufferDesc, &m_DirectSoundBuffer, NULL);
@@ -589,10 +589,10 @@ void StreamedSoundBuffers::RemoveSoundBufferFromList(StreamedSoundBuffer* soundb
 
     if (sndbuffound)
     {
-        if (soundbuffer->m_Channels <= 1)
+        if (soundbuffer->Channels <= 1)
         {
-            if (soundbuffer->m_Channels == 1)
-                if (soundbuffer->m_Flags.Started)
+            if (soundbuffer->Channels == 1)
+                if (soundbuffer->Flags.Started)
                     m_PlayingMonoStreamsNumber--;
                 else
                     m_MonoStreamsNumber--;

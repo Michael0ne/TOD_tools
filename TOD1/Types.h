@@ -154,6 +154,11 @@ struct Vector4 {
         return Vector4<T>(rhs.x - x, rhs.y - y, rhs.z - z, rhs.a - a);
     }
 
+    Vector4<T> operator*(const float_t scalar) const
+    {
+        return Vector4<T>(x * scalar, y * scalar, z * scalar, a * scalar);
+    }
+
     const float Magnitude() const
     {
         return sqrtf((x * x) + (y * y) + (z * z) + (a * a));

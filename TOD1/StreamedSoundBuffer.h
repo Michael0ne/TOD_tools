@@ -17,21 +17,21 @@ public:
 class StreamBuffer : public IStreamBuffer
 {
 public:
-    unsigned int        m_SamplesPerSec;
-    char                m_Channels;
-    char                field_9;
-    char                field_A;
-    char                field_B;
-    unsigned int        m_TotalChunks;
-    unsigned int        m_SampledDataSize;
-    float               field_14;
-    float               m_BytesPerSec;
+    uint32_t            SamplesPerSec;
+    uint8_t             Channels;
+    uint8_t             field_9;
+    uint8_t             field_A;
+    uint8_t             field_B;
+    uint32_t            TotalChunks;
+    uint32_t            SampledDataSize;
+    float               DopplerFactor;
+    float_t             BytesPerSec;
     int                 field_1C;   //  NOTE: flags for soundbuffer?
-    float               field_20;
-    void               *m_SampledData;
+    float_t             field_20;
+    uint8_t            *SampledData;
     std::map<int, int>  field_28;
     int                 field_34;
-    StreamedWAV*        m_AuxMonoStream_1;
+    StreamedWAV*        AuxMonoStream_1;
     std::vector<int>    m_List;
 
 public:
@@ -44,7 +44,7 @@ class StreamedSoundBuffer : public StreamBuffer
     friend class StreamedSoundBuffers;
     friend class SoundSlot;
 protected:
-    int* field_4C;
+    uint32_t   *field_4C;
 
     union
     {
@@ -82,45 +82,45 @@ protected:
             unsigned _29 : 1;
             unsigned StartEvent : 1;
         };
-    }           m_Flags;
+    }           Flags;
 
-    int      field_54;
-    int      field_58;
-    int      field_5C;
-    char     m_StoppingFinished;
-    char                    field_61;
-    void* m_SoundBufferBlockStartPtr;
-    int      m_SoundBufferBlockSize;
-    int      field_6C;
-    int      field_70;
-    class StreamedWAV* m_StreamedWAV;
-    int      field_78;
-    int      field_7C;
-    LPDWORD     m_ThreadId;
-    int      field_84;
-    LPDIRECTSOUNDBUFFER  m_DirectSoundBuffer;
-    StreamedSoundBuffer* field_8C;
-    LPDIRECTSOUND3DBUFFER m_DirectSound3DBuffer;
-    int* m_DieselPowerStream;
-    DieselPower* m_DieselPowerSoundBuffer;
-    HANDLE     field_9C;
-    HANDLE     field_A0;
-    HANDLE     m_EventNotify;
-    HANDLE     m_EvHandle_2;
-    HANDLE     m_TerminateThreadEvent;
-    HANDLE     field_B0;
-    HANDLE     m_StreamThread;
-    int      m_CurrentAudioPosition;
-    float     field_BC;
-    int      m_FrequencyMultiplied;
-    int      field_C4;
-    Vector4f    m_Position;
-    float     m_MaxDistance;
-    float     m_Frequency;
-    float     field_E0;
-    float     m_Volume;
-    int      field_E8;
-    int      field_EC;
+    uint32_t    field_54;
+    uint32_t    field_58;
+    uint32_t    field_5C;
+    bool        StoppingFinished;
+    bool        field_61;
+    uint8_t    *SoundBufferBlockStartPtr;
+    uint32_t    SoundBufferBlockSize;
+    uint32_t    field_6C;
+    uint32_t    field_70;
+    StreamedWAV*StreamedWAVSound;
+    uint32_t    field_78;
+    uint32_t    field_7C;
+    LPDWORD     ThreadId;
+    uint32_t    field_84;
+    LPDIRECTSOUNDBUFFER     DirectSoundBuffer;
+    StreamedSoundBuffer    *field_8C;
+    LPDIRECTSOUND3DBUFFER   DirectSound3DBuffer;
+    DieselPower* DieselPower3DStream;
+    DieselPower* DieselPowerSoundBuffer;
+    HANDLE      field_9C;
+    HANDLE      field_A0;
+    HANDLE      EventNotify;
+    HANDLE      m_EvHandle_2;
+    HANDLE      TerminateThreadEvent;
+    HANDLE      field_B0;
+    HANDLE      m_StreamThread;
+    uint32_t    CurrentAudioPosition;
+    float_t     field_BC;
+    float_t     Frequency;
+    uint32_t    Pan;
+    Vector4f    Position;
+    float_t     MaxDistance;
+    float_t     MinDistance;
+    float_t     RollOff;
+    float_t     Volume;
+    uint32_t    field_E8;
+    uint32_t    field_EC;
 
 public:
     StreamedSoundBuffer(class SoundFile* sndfile, int, int, int, char, char); // @445770
@@ -141,38 +141,38 @@ public:
     virtual void        stub2();
     virtual void        stub3();
     virtual void        SetSampledData(void*);
-    virtual bool        Is3DSound(int);  //  @443350
+    virtual bool        Is3DSound(const uint32_t streamIndex) const;  //  @443350
     virtual void        Get3DMode(unsigned char mode3d);  //  @4433A0
-    virtual bool        IsLooped(int slot);   //  @4433E0
-    virtual int         Play(int slot, bool looped, int);    //  @444B40
-    virtual bool        IsPlaying(int slot) const;  //  @4433F0
+    virtual bool        IsLooped(const uint32_t streamIndex) const;   //  @4433E0
+    virtual int         Play(const uint32_t streamIndex, bool looped, int);    //  @444B40
+    virtual bool        IsPlaying(const uint32_t streamIndex) const;  //  @4433F0
     virtual bool        IsFirstChannelPlaying() const;  //  @443DF0
-    virtual void        _440850(int);
-    virtual void        Stop(int slot);
-    virtual void        SetPause(int slot, bool hardpause); //  @443410
-    virtual void        UnPause(int slot, bool hardpause);  //  @443440
-    virtual bool        IsPaused(int slot) const;
-    virtual bool        IsCreated() const;
-    virtual char*       GetBufferDataPtr();
-    virtual void        SetVolume(int, float);
-    virtual float       GetVolume(int);
-    virtual void        SetFrequencyMultiplier(int, float mul);
-    virtual float       GetFrequencyMultiplier(int);
-    virtual int         SetPan(int slot, const float pan);   //  @4435C0
-    virtual float       GetPan(int slot);    //  @443650
-    virtual void        SetSoundPosition(int, const Vector4f*);
-    virtual void        GetPosition(Vector4f& outPos, const int);
+    virtual void        _440850(int);   //  @440850
+    virtual void        Stop(const uint32_t streamIndex);   //  @4431D0
+    virtual void        SetPause(const uint32_t streamIndex, bool hardpause); //  @443410
+    virtual void        UnPause(const uint32_t streamIndex, bool hardpause);  //  @443440
+    virtual bool        IsPaused(const uint32_t streamIndex) const; //  @443470
+    virtual bool        IsCreated() const;  //  @443150
+    virtual uint8_t*    GetBufferDataPtr(); //  @443480
+    virtual void        SetVolume(const uint32_t streamIndex, const float_t volume);    //  @443490
+    virtual float_t     GetVolume(const uint32_t streamIndex) const; //  @4434E0
+    virtual void        SetFrequency(const uint32_t streamIndex, const float_t frequency); //  @4434F0
+    virtual float_t     GetFrequency(const uint32_t streamIndex) const;    //  @443560
+    virtual int         SetPan(const uint32_t streamIndex, const float_t pan);   //  @4435C0
+    virtual float       GetPan(const uint32_t streamIndex);    //  @443650
+    virtual void        SetSoundPosition(const uint32_t streamIndex, const Vector4f& position); //  @4436C0
+    virtual void        GetPosition(Vector4f& outPos, const uint32_t streamIndex) const;   //  @4438B0
     virtual void        _443990(int, int*);
     virtual Vector4f*   _4439E0(Vector4f*, int);
-    virtual void        SetMaxDistance(int, float);
-    virtual float       GetMaxDistance(int);
-    virtual void        SetFrequency(int, float);
-    virtual float       GetFrequency(int);
-    virtual void        _443C20(int, float);
-    virtual float       _443C90(int);
-    virtual void        _443CD0(int, float);
-    virtual float       _443D30(int);
-    virtual void        SetSoundProperties(int slot, float frequency, float pan, float);   //  @443D40
+    virtual void        SetMaxDistance(const uint32_t streamIndex, const float_t maxdistance); //  @443A80
+    virtual float_t     GetMaxDistance(const uint32_t streamIndex) const;    //  @443B00
+    virtual void        SetMinDistance(const uint32_t streamIndex, const float_t frequency);   //  @443B50
+    virtual float_t     GetMinDistance(const uint32_t streamIndex) const; //  @443BD0
+    virtual void        SetRollOff(const uint32_t streamIndex, const float_t rollOff);  //  @443C20
+    virtual float_t     GetRollOff(const uint32_t streamIndex) const;   //  @443C90
+    virtual void        SetDopplerFactor(const uint32_t streamIndex, const float_t factor);    //  @443CD0
+    virtual float_t     GetDopplerFactor(const uint32_t streamIndex) const; //  @443D30
+    virtual void        SetSoundProperties(const uint32_t streamIndex, const float_t minDistance, const float_t maxDistance, const float_t rollOff);   //  @443D40
     virtual int         GetChannelsNumber() const;   //  @442810
     virtual void        DumpInfo();  //  @444C00
     virtual void        StopFirstChannelSound(); //  @443E00

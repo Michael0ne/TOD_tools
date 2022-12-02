@@ -72,7 +72,7 @@ void SoundSlot::Update()
     if (!m_Parameters && !m_Flags.HasStreamedSound)
         Scene::_A3D890 = true;
 
-    if (m_StreamAllocationCallback && m_StreamBuffer && m_StreamBuffer->m_Flags.PreLoaded)
+    if (m_StreamAllocationCallback && m_StreamBuffer && m_StreamBuffer->Flags.PreLoaded)
     {
         m_StreamAllocationCallback->TriggerGlobalScript(StreamAllocateFinishedCommand, nullptr);
         m_StreamAllocationCallback = nullptr;
@@ -892,7 +892,7 @@ bool SoundSlot::PlayGlobalStreamedSound()
     GlobalStreamedSound->field_1C &= ~0x4000000;
 
     GlobalStreamedSound->SetVolume(0, 1.f);
-    GlobalStreamedSound->SetFrequencyMultiplier(0, 1.f);
+    GlobalStreamedSound->SetFrequency(0, 1.f);
     GlobalStreamedSound->Play(0, GlobalSoundLooped, 0);
 
     return true;
@@ -922,7 +922,7 @@ bool SoundSlot::SetVolumePitchGlobalStreamedSound(const float volume, const floa
     volumeModifier = g_StreamedSoundBuffers->GetDefaultVolumeForType(2) * volumeModifier * volume;
 
     GlobalStreamedSound->SetVolume(0, volumeModifier);
-    GlobalStreamedSound->SetFrequencyMultiplier(0, pitch);
+    GlobalStreamedSound->SetFrequency(0, pitch);
 
     return true;
 }
