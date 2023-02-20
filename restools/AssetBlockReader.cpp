@@ -32,7 +32,7 @@ unsigned int AssetBlockReader::AssetInstanceSize[] =
     96,	//	cutscene
     40,	//	sound
     40,	//	streamedsoundinfo
-    104,	//	animation
+    104,//	animation
     80	//	meshcolor
 };
 
@@ -124,9 +124,11 @@ void AssetBlockReader::PrintInfo() const
         return;
 
     unsigned char* infobuffer = (unsigned char*)m_AssetsInfoBuffer;
+    uint32_t offsetInFile = sizeof(m_SharedHeader);
     for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
     {
-        printf("\t\t#%i\n", i);
+        printf("\n\tFile offset:\t0x%x\n", offsetInFile);
+        const uint8_t* infobufferStart = infobuffer;
 
         CompiledAsset* asset = nullptr;
         const tAssetType assettype = *(tAssetType*)infobuffer;
@@ -157,10 +159,10 @@ void AssetBlockReader::PrintInfo() const
             asset = new CompiledFragmentAsset(&infobuffer);
             break;
         case MOVIE:
-            asset = new CompiledMovieAsset(&infobuffer);
+            //asset = new CompiledMovieAsset(&infobuffer);
             break;
         case CUTSCENE:
-            asset = new CompiledCutsceneAsset(&infobuffer);
+            //asset = new CompiledCutsceneAsset(&infobuffer);
             break;
         case SOUND:
             asset = new CompiledSoundAsset(&infobuffer);
@@ -172,14 +174,14 @@ void AssetBlockReader::PrintInfo() const
             asset = new CompiledAnimationAsset(&infobuffer);
             break;
         case MESHCOLOR:
-            asset = new CompiledMeshColorAsset(&infobuffer);
+            //asset = new CompiledMeshColorAsset(&infobuffer);
             break;
         }
 
         if (asset == nullptr)
         {
             printf("\tERROR: unsupported asset type: %d!\n", assettype);
-            throw;
+            throw std::bad_typeid();
         }
 
         asset->PrintInfo();
@@ -188,6 +190,12 @@ void AssetBlockReader::PrintInfo() const
         strcpy(m_AssetsNames[i], asset->Name);
 
         m_AssetsList.push_back(asset);
+
+        offsetInFile += infobuffer - infobufferStart;
+
+        //  Dump this data right away if flag was set.
+        if (m_ShouldDumpData)
+            asset->DumpData(this);
     }
 }
 
@@ -333,7 +341,7 @@ void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* re
 
     fclose(f);
 
-    printf("\tDone!\n");
+    printf("\tTexture asset dump done!\n");
 }
 
 AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -399,13 +407,22 @@ void AssetBlockReader::CompiledStreamedSoundInfoAsset::PrintInfo() const
 
 void AssetBlockReader::CompiledStreamedSoundInfoAsset::SkipSpecificData(unsigned char** infobuffer)
 {
+    if (*infobuffer != (uint8_t*)m_SoundFile)
+        SkipEndAlignment(infobuffer);
+
     *infobuffer += sizeof(SoundFile);
-    *infobuffer += m_SoundFile->m_FileName.m_Length + 1;
+    *infobuffer += m_SoundFile->m_FileName.m_Length;
 }
 
 void AssetBlockReader::CompiledStreamedSoundInfoAsset::DumpData(const AssetBlockReader* reader)
 {
-    printf("\tNOT IMPLEMENTED!\n");
+    if (!m_SoundFile->m_StreamedWAV)
+    {
+        printf("\tSound file is not in this archive! Check 'sounds'.\n");
+        return;
+    }
+    else
+        printf("\tNOT IMPLEMENTED!\n");
 }
 
 AssetBlockReader::CompiledFontAsset::CompiledFontAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -416,6 +433,7 @@ AssetBlockReader::CompiledFontAsset::CompiledFontAsset(unsigned char** infobuffe
 
     m_FontInfo->m_FontTexture = (CompiledTextureAsset::GfxTexture*)((uint32_t)m_FontInfo + offsetof(Font, m_FontTexture) + (uint32_t)m_FontInfo->m_FontTexture);
     m_FontInfo->m_GlyphsList = (Glyph*)((uint32_t)m_FontInfo + offsetof(Font, m_GlyphsList) + (uint32_t)m_FontInfo->m_GlyphsList);
+    m_FontInfo->m_GlyphsMap = (int*)((uint32_t)m_FontInfo + offsetof(Font, m_GlyphsMap) + (uint32_t)m_FontInfo->m_GlyphsMap);
 
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
@@ -441,20 +459,12 @@ void AssetBlockReader::CompiledFontAsset::PrintInfo() const
 void AssetBlockReader::CompiledFontAsset::SkipSpecificData(unsigned char** infobuffer)
 {
     *infobuffer += sizeof(Font);
-
-    do
-    {
-        if (*infobuffer == (unsigned char*)m_FontInfo->m_FontTexture)
-            break;
-
-        *infobuffer += (char)1;
-    } while (**infobuffer == 0xBA || **infobuffer == 0xAD || **infobuffer == 0xF0 || **infobuffer == 0x0D);
-
     *infobuffer += sizeof(CompiledTextureAsset::GfxTexture);
     *infobuffer += sizeof(Glyph) * m_FontInfo->m_GlyphsInList;
-    *infobuffer += 12;	//	TODO: what is this?
+    *infobuffer += 20;
 }
 
+//  TODO: this is exactly same as Texture asset, maybe remove redundancy?
 void AssetBlockReader::CompiledFontAsset::DumpData(const AssetBlockReader* reader)
 {
     CompiledTextureAsset::DDS_HEADER ddsheader;
@@ -507,7 +517,7 @@ void AssetBlockReader::CompiledFontAsset::DumpData(const AssetBlockReader* reade
 
     fclose(f);
 
-    printf("\tDone!\n");
+    printf("\tFont asset dump done!\n");
 }
 
 AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -521,7 +531,9 @@ AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffe
 
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
-    SkipEndAlignment(infobuffer);
+
+    if ((uint32_t)*infobuffer % 16 != 0)
+        SkipEndAlignment(infobuffer);
 }
 
 void AssetBlockReader::CompiledTextAsset::PrintInfo() const
@@ -531,7 +543,7 @@ void AssetBlockReader::CompiledTextAsset::PrintInfo() const
     printf("\tfield_1C:\t%d\n", field_1C);
     printf("\tList 1 size:\t%d\n", m_List_1_Size);
     printf("\tText indicies list size:\t%d\n", m_TextIndicies_Size);
-    printf("\tText 3 size:\t%d\n", m_List_3_Size);
+    printf("\tList 3 size:\t%d\n", m_List_3_Size);
     printf("\tCharacters map:\t%p\n", m_CharactersMap);
     printf("\tfield_54:\t%x\n", field_54);
 }
@@ -606,7 +618,7 @@ void AssetBlockReader::CompiledTextAsset::DumpData(const AssetBlockReader* reade
 
     fclose(textFile);
 
-    printf("\tDone!\n");
+    printf("\tText asset dump done!\n");
 }
 
 AssetBlockReader::CompiledSoundAsset::CompiledSoundAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)

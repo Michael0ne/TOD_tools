@@ -80,7 +80,7 @@ void TextureResourceReader::PrintInfo() const
     info += 4;
     printf("\tGlobal ID:\t%d\n", *(int*)info);
     info += 4;
-    printf("\tfield_C:\t%d\n", *(int*)info);
+    printf("\tfield_C:\t%x\n", *(int*)info);
     info += 4;
     printf("\tEngine timestamp:\t%lld\n", *(UINT64*)info);
     info += sizeof(UINT64);

@@ -513,9 +513,25 @@ public:
 
     struct CompiledCutsceneAsset : CompiledAsset
     {
+        enum eAnimType
+        {
+            ANIM_CAMERA = 1,
+            ANIM_MODEL = 2,
+            ANIM_CHARACTER_BIPED = 3,
+        };
+
+        struct CutsceneAnimationData
+        {
+            eAnimType       AnimationType;
+            uint32_t        field_4;
+            char*           AnimationName;
+            uint32_t        field_C;
+            uint32_t        field_10;
+        };
+
         uint32_t            field_1C;
         std::vector<int>    AnimationResources;
-        std::vector<int>    AnimationResourcesInfo;
+        std::vector<CutsceneAnimationData>    AnimationResourcesInfo;
         uint32_t            field_40;
         uint32_t            field_44;
         uint32_t            field_48;

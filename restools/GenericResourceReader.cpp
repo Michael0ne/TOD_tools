@@ -89,6 +89,11 @@ inline errno_t GenericResourceReader::GetLastErrorCode() const
 void GenericResourceReader::SetCurrentWorkingDir(const char* const dir)
 {
     m_LastErrorCode = _chdir(dir);
+
+    if (m_LastErrorCode)
+        return;
+
+    m_CurrentWorkingDirectory = dir;
 }
 
 void GenericResourceReader::PrintError() const
@@ -105,4 +110,9 @@ void GenericResourceReader::PrintError() const
 void GenericResourceReader::SetPlatform(PlatformDefinition platform)
 {
     m_WorkingPlatform = platform;
+}
+
+void GenericResourceReader::SetDumpFlag(const bool dumpFlag)
+{
+    m_ShouldDumpData = dumpFlag;
 }

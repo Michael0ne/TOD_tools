@@ -32,6 +32,7 @@ protected:
 	long				m_ResourceFileSizeKb = NULL;
 	std::vector<std::string>	m_LastOpenFiles;
 	PlatformDefinition	m_WorkingPlatform = PC;
+	bool				m_ShouldDumpData = false;
 
 	bool				OpenFirstResourceFile();
 
@@ -50,4 +51,5 @@ public:
 	void				SetCurrentWorkingDir(const char* const dir);
 	void				PrintError() const;
 	void				SetPlatform(PlatformDefinition);
+	void				SetDumpFlag(const bool dumpFlag);
 };

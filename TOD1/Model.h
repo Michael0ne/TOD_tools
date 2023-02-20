@@ -22,11 +22,14 @@ class Model : public Node
 protected:
     AssetLoader         m_ModelRes;
     MeshColorAsset     *m_ModelLighting;
-    int                 field_5C;
+    uint32_t            field_5C;
     Folder_            *m_AssocFolder;
-    short               m_ActiveTextureSet;
-    short               m_SoloPivot;
-    char                field_68[4];
+    uint16_t            m_ActiveTextureSet;
+    uint16_t            m_SoloPivot;
+    uint8_t             field_68;
+    uint8_t             field_69;
+    uint8_t             ModelOpacity;
+    uint8_t             QuadTreeLodValue;
 
     union
     {
@@ -157,6 +160,8 @@ private:
     void                SetMsep2() const;   //  @883EC0
     void                GetMsep3() const;   //  @42F4F0
     void                SetMsep3() const;   //  @883EC0
+
+    void                RenderIndexedPivot(const uint32_t pivotIndex);  //  @884980
 
     void                SetLightingFromAsset(AssetLoader* assload, Folder_* associatedFolderPtr);   //  @888DE0
 

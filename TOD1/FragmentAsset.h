@@ -7,10 +7,10 @@ class FragmentAsset : public Asset
 
     struct FragmentInfo
     {
-        int     field_0;
-        int    *field_4;
-        int     field_8;
-        int     field_C;
+        uint32_t    field_0;
+        uint32_t   *field_4;
+        uint32_t    field_8;
+        uint32_t    field_C;
 
         AllocatorIndexForSize   field_10;
         FragmentAsset          *field_14;
@@ -30,8 +30,10 @@ class FragmentAsset : public Asset
         }
         ~FragmentInfo(); //  @85E0A0
 
-        int     _406450();  //  @406450
-        void    _406490();  //  @406490
+        uint32_t*   _406450();  //  @406450
+        void        _406490();  //  @406490
+        void        _4069F0();  //  @4069F0
+        uint32_t*   _406320(uint32_t* data);    //  @406320
     };
 
 public:

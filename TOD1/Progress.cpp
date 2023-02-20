@@ -99,31 +99,31 @@ void Progress::Complete()
     LogDump::LogA("PROGRESS COMPLETE.\n");
 }
 
-void Progress::BeginPhase(unsigned int unk1, UINT64 unk2)
+void Progress::BeginPhase(uint32_t a1, uint64_t timeStart)
 {
     if (field_20 + 1 < m_LoadBarPhases.size())
     {
         field_20++;
-        field_28 = unk1;
+        field_28 = a1;
         field_2C = field_30;
         field_24 = NULL;
         field_30 += m_LoadBarPhases[field_20].m_Time / m_TotalTimeToLoad;
 
         stub1(m_LoadBarPhases[field_20].m_Status.m_Str);
 
-        field_38 = m_TimeStart + unk2;
+        field_38 = m_TimeStart + timeStart;
 
         if (m_LoadBarPhases[field_20].field_18)
         {
             field_48 = m_LoadBarPhases[field_20].m_Time;
-            field_50 = unk2;
+            field_50 = timeStart;
         }
         else
             field_48 = field_50 = NULL;
     }
 }
 
-void Progress::Reset()
+void ProgressBase::Reset()
 {
     LogDump::LogA("PROGRESS RESET.\n");
 
@@ -233,11 +233,5 @@ ProgressBase::ProgressBase(UINT64 timeStart)
 
     m_TimeStart = timeStart;
 
-    LogDump::LogA("PROGRESS RESET.\n");
-
-    m_TotalTimeToLoad = NULL;
-    field_20 = -1;
-    field_30 = NULL;
-
-    m_LoadBarPhases.clear();
+    Reset();
 }

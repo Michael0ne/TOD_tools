@@ -2461,8 +2461,7 @@ void GfxInternal_Dx9::DumpScreenShot(Surface* surf)
     }
 
     backBufferSurface->UnlockRect();
-    if (backBufferSurface)
-        backBufferSurface->Release();
+    RELEASE_SAFE(backBufferSurface);
 }
 
 void GfxInternal_Dx9::SetTextureAddressMode(const unsigned int mode, const unsigned int ind)

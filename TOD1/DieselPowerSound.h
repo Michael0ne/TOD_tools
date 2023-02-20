@@ -76,9 +76,9 @@ public:
     virtual void SetPan(const float_t pan) {};
     virtual void stub18() {};
     virtual void stub19() {};
-    virtual float_t GetFrequency() const {};
-    virtual const float_t GetVolume() { return 0; };
-    virtual float_t GetPan() { return 0.f; };
+    virtual const float_t GetFrequency() const { return 0.f; };
+    virtual const float_t GetVolume() { return 0.f; };
+    virtual const float_t GetPan() { return 0.f; };
     virtual int* stub23() { return nullptr; };
     virtual int* stub24() { return nullptr; };
     virtual void stub25(signed int) {};

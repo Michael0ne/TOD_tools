@@ -41,11 +41,13 @@ public:
     virtual void UpdateProgress(float time, bool unk); // @40E7E0
 
     ProgressBase(UINT64 timeStart); // @40E900
+
+    void            Reset(); // @40E8C0
 };
 
 ASSERT_CLASS_SIZE(ProgressBase, 72);
 
-class Progress : ProgressBase
+class Progress : public ProgressBase
 {
 protected:
     UINT64          field_48;
@@ -74,8 +76,7 @@ public:
     }
 
     void   Complete(); // @40E790
-    void   BeginPhase(unsigned int, UINT64); // @40E7F0
-    void   Reset(); // @40E8C0
+    void   BeginPhase(uint32_t a1, uint64_t timeStart); // @40E7F0
     void   AddLoadbarPhase(const char* phaseName, UINT64 timeToLoad, bool); // @40E970
     void   Enable(); // @87B5F0
     void   Disable(); // @87B690

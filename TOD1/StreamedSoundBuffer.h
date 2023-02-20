@@ -158,7 +158,7 @@ public:
     virtual float_t     GetVolume(const uint32_t streamIndex) const; //  @4434E0
     virtual void        SetFrequency(const uint32_t streamIndex, const float_t frequency); //  @4434F0
     virtual float_t     GetFrequency(const uint32_t streamIndex) const;    //  @443560
-    virtual int         SetPan(const uint32_t streamIndex, const float_t pan);   //  @4435C0
+    virtual void        SetPan(const uint32_t streamIndex, const float_t pan);   //  @4435C0
     virtual float       GetPan(const uint32_t streamIndex);    //  @443650
     virtual void        SetSoundPosition(const uint32_t streamIndex, const Vector4f& position); //  @4436C0
     virtual void        GetPosition(Vector4f& outPos, const uint32_t streamIndex) const;   //  @4438B0

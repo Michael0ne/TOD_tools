@@ -142,6 +142,7 @@ public:
     void                    SetObjectInherit(int* args);    //  @917AC0
     void                    SetObjectInherit_Impl(Node* node, const bool inherit);  //  @916FF0
     void                    GetObjectInherit(int* args);    //  @917AE0
+    void                    TogglePause();  //  @916F60 //  NOTE: unused.
 
     static void             Register(); //  @9171F0
     static CutscenePlayer*  Create(AllocatorIndex);  //  @917C70

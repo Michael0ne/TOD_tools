@@ -123,10 +123,10 @@ protected:
     TargetData                  CrossTargets[2];
 
     std::vector<GamePivotInfo>  GamePivotList;
-    float                       field_134;
-    int                         field_138;
-    float                       field_13C;
-    float                       field_140;
+    float_t                     field_134;
+    float_t                     field_138;
+    float_t                     field_13C;
+    float_t                     field_140;
 
 protected:
     void                        BlendTo_Impl(AnimSlot* animSlot, const uint32_t event); //  @903C20

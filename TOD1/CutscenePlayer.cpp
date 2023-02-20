@@ -273,3 +273,8 @@ void CutscenePlayer::GetObjectInherit(int* args)
 
     args[0] = m_CutsceneObjects[i].m_Inherit;
 }
+
+void CutscenePlayer::TogglePause()
+{
+    m_Flags.Paused = !(m_Flags.Paused);
+}

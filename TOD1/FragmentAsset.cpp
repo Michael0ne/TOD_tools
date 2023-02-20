@@ -14,8 +14,8 @@ FragmentAsset::FragmentInfo::FragmentInfo(FragmentInfo** rhs, AllocatorIndex(*Fi
     field_14 = owner;
     field_C = (*rhs)->field_C;
 
-    //if (field_4)
-        //field_4 = (field_8 & 0x7FFFFFFF);   //  NOTE: useless, but compiled didn't optimize it away?
+    /*if (field_4)
+        field_4->_406350(field_8 & 0x7FFFFFFF);*/
 
     field_4 = nullptr;
     field_8 = 0x80000000;
@@ -137,16 +137,55 @@ void FragmentAsset::ApplyFragmentResource(const int32_t entityId, bool)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-int FragmentAsset::FragmentInfo::_406450()
+uint32_t* FragmentAsset::FragmentInfo::_406450()
 {
-    return NULL;
+    if (field_8 >= 0)
+    {
+        /*if (field_4)
+            field_4->_406350(field_8 & 0x7FFFFFFF);*/
+
+        field_4 = nullptr;
+        field_8 = 0x80000000;
+    }
+
+    field_4 = (uint32_t*)ALIGN_4BYTES(field_0);
+    if (field_4)
+        return (uint32_t*)ALIGN_4BYTES(field_4[2]);
+    else
+        return nullptr;
 }
 
 void FragmentAsset::FragmentInfo::_406490()
 {
-    if (ALIGN_4BYTES(field_0) != NULL);
+    if (ALIGN_4BYTES(field_0) != NULL)
+        _4069F0();
 
     field_0 = NULL;
     field_4 = NULL;
     field_8 = NULL;
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void FragmentAsset::FragmentInfo::_4069F0()
+{
+    if (field_0 && (field_0 & 1) == 0)
+    {
+        if (ALIGN_4BYTES(field_0) != NULL && (field_0 & 2) != NULL);
+    }
+    else
+    {
+        if (ALIGN_4BYTES(field_0));
+    }
+}
+
+uint32_t* FragmentAsset::FragmentInfo::_406320(uint32_t* data)
+{
+    if (data != (uint32_t*)(field_4[1] + ALIGN_4BYTES(field_4[2])))
+        return data;
+
+    field_4 = (uint32_t*)(ALIGN_4BYTES(field_4[0]));
+    if (field_4)
+        return (uint32_t*)(ALIGN_4BYTES(field_4[2]));
+    else
+        return nullptr;
 }

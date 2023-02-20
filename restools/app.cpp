@@ -28,7 +28,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
     const char* const lastslashpos = strrchr(argv[2], '/');
     const char* const dotpos = strrchr(argv[2], '.');
     char workingdir[1024] = {};
-    strncpy_s(workingdir, sizeof(workingdir), argv[2], lastslashpos - argv[2]);
+    strncpy_s(workingdir, sizeof(workingdir), argv[2], lastslashpos - argv[2] + 1);
 
     if (lastslashpos == nullptr || (dotpos != nullptr && dotpos > lastslashpos))
     {
@@ -61,6 +61,9 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
     if (strcmp(argv[1], "submap") == NULL)
         resreader = new AssetBlockReader(lastslashpos + 1, ".submap");
 
+    if (strcmp(argv[1], "map") == NULL)
+        resreader = new AssetBlockReader(lastslashpos + 1, ".map");
+
     if (strcmp(argv[1], "playerdata") == NULL)
         resreader = new AssetBlockReader(lastslashpos + 1, ".playerdata");
 
@@ -85,13 +88,10 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
     }
 
     //	NOTE: file is o.k. so read and process data, then output (and dump, if possible).
+    resreader->SetDumpFlag(argv[3] && _stricmp(argv[3], "dumpdata") == NULL);
     resreader->ReadInfo();
     resreader->PrintFileInfo();
     resreader->PrintInfo();
-
-    if (argv[3] != nullptr &&
-        (*argv[3] == 'd' && strcmp(argv[3], "dumpdata") == NULL))
-        resreader->DumpData();
 
     delete resreader;
 

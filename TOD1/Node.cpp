@@ -248,7 +248,7 @@ void Node::_86B4B0(const int propertyId)
 
     if ((slot & 3) != 3)
     {
-        if ((slot & 1) == 0 && Scene::_A3CEE8)
+        if ((slot & 1) == 0 && Scene::RewindBuffer2DataPtr)
             _86A930(propertyId, paramValuePtr, propertyParamValue, 1 << block);
         if ((slot & 2) == 0)
             _86AA10(propertyId, paramValuePtr, propertyParamValue, 2 * (1 << block));
@@ -258,12 +258,12 @@ void Node::_86B4B0(const int propertyId)
 void Node::_86A930(const int size, const int* value, int* const outval, const int a4)
 {
     EntityType* ent = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
-    *Scene::_A3CEE8++ =
+    *Scene::RewindBuffer2DataPtr++ =
         ((m_Id.Id << 8) | ((*(short*)&m_Id & 0x7000) - 1) & 0xF000) |
         ((short)size + (short)ent->m_LocalPropertiesList.size() + (short)ent->m_TotalLocalProperties) & 0xFFF;
-    Scene::_A3CEE8 += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->CopyNoAllocate((char*)value, (char*)Scene::_A3CEE8);
-    if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::_A3CEE8) < 0x4000)
-        Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::_A3CEE8);
+    Scene::RewindBuffer2DataPtr += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->CopyNoAllocate((char*)value, (char*)Scene::RewindBuffer2DataPtr);
+    if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::RewindBuffer2DataPtr) < 0x4000)
+        Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::RewindBuffer2DataPtr);
 
     *outval |= a4;
 }
@@ -1343,7 +1343,7 @@ void Node::_86B560(const unsigned int propertyId, const void* data)
 
     if ((param[0] & index) == 0 || (param[0] & (2 * index)) == 0)
     {
-        if (Scene::_A3CEE8 && (param[0] & index) == 0)
+        if (Scene::RewindBuffer2DataPtr && (param[0] & index) == 0)
             _86A930(propertyId, (const int*)data, param, index);
 
         if ((param[0] & (2 * index)) == 0)
@@ -1791,23 +1791,23 @@ unsigned int Node::GetFlags() const
 
 void Node::SaveScriptThreadData()
 {
-    if (!Scene::_A3CEE8)
+    if (!Scene::RewindBuffer2DataPtr)
         return;
 
-    *Scene::_A3CEE8++ = (m_Id.Id << 15) | ((m_Id.BlockId & 0x7000) - 1) & 0xF000;
+    *Scene::RewindBuffer2DataPtr++ = (m_Id.Id << 15) | ((m_Id.BlockId & 0x7000) - 1) & 0xF000;
     if (m_ScriptData && m_ScriptData->m_ScriptThread)
     {
-        *Scene::_A3CEE8++ = 1;
-        Scene::_A3CEE8 += m_ScriptData->m_ScriptThread->WriteScriptInformation(Scene::_A3CEE8);
+        *Scene::RewindBuffer2DataPtr++ = 1;
+        Scene::RewindBuffer2DataPtr += m_ScriptData->m_ScriptThread->WriteScriptInformation(Scene::RewindBuffer2DataPtr);
     }
     else
     {
-        *Scene::_A3CEE8++ = 0;
+        *Scene::RewindBuffer2DataPtr++ = 0;
     }
 
     TransactionBuffer* sceneRewBuffer = Scene::SceneInstance->m_RewindBuffer2;
-    if (ALIGN_4BYTES(sceneRewBuffer->m_Buffer + 4 * sceneRewBuffer->m_Chunks - Scene::_A3CEE8) < 0x4000)
-        sceneRewBuffer->_8AA1F0(&Scene::_A3CEE8);
+    if (ALIGN_4BYTES(sceneRewBuffer->m_Buffer + 4 * sceneRewBuffer->m_Chunks - Scene::RewindBuffer2DataPtr) < 0x4000)
+        sceneRewBuffer->_8AA1F0(&Scene::RewindBuffer2DataPtr);
 
     m_ScriptSlots[0] |= 1;
 }
@@ -2091,15 +2091,15 @@ AuxQuadTree* Node::GetEntityQuadTreeOrParentQuadTree() const
 
 void Node::_869EC0(const unsigned int paramind, const void* paramptr, DataType& paramtype)
 {
-    if (!Scene::_A3CEE4)
+    if (!Scene::RewindBuffer1DataPtr)
         return;
 
-    *Scene::_A3CEE4++ = paramind & 0xFFF | (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000;
-    Scene::_A3CEE4 += paramtype.CopyNoAllocate((char*)paramptr, (char*)Scene::_A3CEE4);
+    *Scene::RewindBuffer1DataPtr++ = paramind & 0xFFF | (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000;
+    Scene::RewindBuffer1DataPtr += paramtype.CopyNoAllocate((char*)paramptr, (char*)Scene::RewindBuffer1DataPtr);
 
     TransactionBuffer* tb = Scene::SceneInstance->m_RewindBuffer1;
-    if (tb->m_Buffer[tb->m_Chunks - (int)Scene::_A3CEE4] < 1024)
-        tb->_8AA1F0(&Scene::_A3CEE4);
+    if (tb->m_Buffer[tb->m_Chunks - (int)Scene::RewindBuffer1DataPtr] < 1024)
+        tb->_8AA1F0(&Scene::RewindBuffer1DataPtr);
 
     m_ScriptSlots[paramind / 8] |= 1 << (paramind & 7);
 }

@@ -180,7 +180,7 @@ void StreamedSoundBuffer::SetFrequency(const uint32_t streamIndex, const float_t
     else
     {
         if (DirectSoundBuffer)
-            DirectSoundBuffer->SetFrequency(Frequency);
+            DirectSoundBuffer->SetFrequency((DWORD)Frequency);
     }
 }
 
@@ -203,16 +203,16 @@ float_t StreamedSoundBuffer::GetFrequency(const uint32_t streamIndex) const
     if (frequency < 0)
         frequency += 4294967300.0;
 
-    return frequency / SamplesPerSec;
+    return (float_t)frequency / SamplesPerSec;
 }
 
-int StreamedSoundBuffer::SetPan(const uint32_t streamIndex, const float_t pan)
+void StreamedSoundBuffer::SetPan(const uint32_t streamIndex, const float_t pan)
 {
     if (g_StreamedSoundBuffers->m_SoundSystem == SOUND_SYSTEM_DIESELPOWER)
     {
         if (!DieselPower3DStream)
         {
-            Pan = pan * 20.f;   //  TODO: __FYL2X__(pan, lg10(2)) * 20
+            Pan = (uint32_t)(pan * 20.f);   //  TODO: __FYL2X__(pan, lg10(2)) * 20
             if (DieselPowerSoundBuffer)
                 DieselPowerSoundBuffer->SetPan(pan);
         }
@@ -221,7 +221,7 @@ int StreamedSoundBuffer::SetPan(const uint32_t streamIndex, const float_t pan)
     {
         if (!DirectSound3DBuffer)
         {
-            Pan = pan * 20.f;   //  TODO: __FYL2X__(pan, lg10(2)) * 20
+            Pan = (uint32_t)(pan * 20.f);   //  TODO: __FYL2X__(pan, lg10(2)) * 20
             DirectSoundBuffer->SetPan(Pan);
         }
     }
@@ -240,12 +240,12 @@ float StreamedSoundBuffer::GetPan(const uint32_t streamIndex)
 
     DirectSoundBuffer->GetPan((LPLONG)&Pan);
 
-    return pow(10.0f, Pan * 0.05f);
+    return powf(10.0f, Pan * 0.05f);
 }
 
 void StreamedSoundBuffer::SetSoundPosition(const uint32_t streamIndex, const Vector4f& position)
 {
-    const float_t frameDelta = Scene::TimePassed > 0.0000099999997 ? 0.0000099999997 : Scene::TimePassed;
+    const float_t frameDelta = Scene::TimePassed > 0.0000099999997f ? 0.0000099999997f : Scene::TimePassed;
     const float_t invFrameDelta = 1.f / frameDelta;
     Vector4f currentPosition;
     GetPosition(currentPosition, 0);
