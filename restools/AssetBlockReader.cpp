@@ -180,7 +180,8 @@ void AssetBlockReader::PrintInfo() const
 
         if (asset == nullptr)
         {
-            printf("\tERROR: unsupported asset type: %d!\n", assettype);
+            //  If we got here, then no need to proceed reading the file.
+            printf("\tFATAL ERROR: unsupported asset type: 0x%x!\n", assettype);
             throw std::bad_typeid();
         }
 
@@ -243,19 +244,20 @@ void AssetBlockReader::CompiledAsset::PrintInfo() const
 
 void AssetBlockReader::CompiledAsset::SkipNameRead(unsigned char** infobuffer)
 {
-    *infobuffer += strlen(Name) + 1;
-
-    if (**infobuffer != 0xAB)
-        return;
-
-    while (**infobuffer == 0xAB)
-        *infobuffer += (char)1;
+    const size_t nameLength = strlen(Name) + 1;
+    *infobuffer += ALIGN_4BYTESUP(nameLength);
 }
 
 void AssetBlockReader::CompiledAsset::SkipEndAlignment(uint8_t** infobuffer)
 {
     const uint32_t alignment = ~(AssetTypeAlignment[AssetType][0] - 1) & ((uint32_t)*infobuffer + AssetTypeAlignment[AssetType][0]);
     *infobuffer = (uint8_t*)alignment;
+}
+
+const bool AssetBlockReader::CompiledAsset::IsAligned(uint8_t** infobuffer) const
+{
+    const uint32_t alignment = ~(AssetTypeAlignment[AssetType][0] - 1) & ((uint32_t)*infobuffer + AssetTypeAlignment[AssetType][0]);
+    return (uint32_t)*infobuffer == alignment;
 }
 
 AssetBlockReader::CompiledTextureAsset::CompiledTextureAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -626,15 +628,25 @@ AssetBlockReader::CompiledSoundAsset::CompiledSoundAsset(unsigned char** infobuf
     READ_FIELD_VALUE(field_1C, uint32_t, infobuffer);
     READ_FIELD_VALUE_POINTER(m_StreamBuffer, StreamBuffer, infobuffer);
 
-    m_StreamBuffer->m_SampledData = (char*)((uint32_t)m_StreamBuffer + offsetof(StreamBuffer, m_SampledData) + (uint32_t)m_StreamBuffer->m_SampledData);
-    m_StreamBuffer->m_SoundName = (String*)((uint32_t)m_StreamBuffer + offsetof(StreamBuffer, m_SoundName) + (uint32_t)m_StreamBuffer->m_SoundName);
-    m_StreamBuffer->m_SoundName->m_String = (char*)((uint32_t)m_StreamBuffer->m_SoundName + offsetof(String, m_String) + (uint32_t)m_StreamBuffer->m_SoundName->m_String);
+    m_StreamBuffer->SampledData = (uint8_t*)((uint32_t)m_StreamBuffer + offsetof(StreamBuffer, SampledData) + (uint32_t)m_StreamBuffer->SampledData);
+    m_StreamBuffer->SoundName = (String*)((uint32_t)m_StreamBuffer + offsetof(StreamBuffer, SoundName) + (uint32_t)m_StreamBuffer->SoundName);
+    m_StreamBuffer->SoundName->m_String = (char*)((uint32_t)m_StreamBuffer->SoundName + offsetof(String, m_String) + (uint32_t)m_StreamBuffer->SoundName->m_String);
 
     READ_FIELD_VALUE(field_24, uint32_t, infobuffer);
-    
+
+    RIFFData.NumChannels = m_StreamBuffer->Channels;
+    RIFFData.SampleRate = m_StreamBuffer->SamplesPerSec;
+    RIFFData.ByteRate = (uint32_t)m_StreamBuffer->BytesPerSample;
+    RIFFData.BlockAlign = (uint16_t)m_StreamBuffer->BytesPerSample;
+    RIFFData.BitsPerSample = (uint32_t)m_StreamBuffer->BytesPerSample * 8;
+    RIFFData.Subchunk2Size = m_StreamBuffer->SampledDataSize;
+    RIFFData.ChunkSize = RIFFData.Subchunk2Size - 44 - 8;
+
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
-    SkipEndAlignment(infobuffer);
+
+    if (!IsAligned(infobuffer))
+        SkipEndAlignment(infobuffer);
 }
 
 void AssetBlockReader::CompiledSoundAsset::PrintInfo() const
@@ -643,27 +655,42 @@ void AssetBlockReader::CompiledSoundAsset::PrintInfo() const
 
     printf("\tfield_1C:\t%d\n", field_1C);
     printf("\tStreamBuffer:\n");
-    printf("\t\tSamples per sec.:\t%d\n", m_StreamBuffer->m_SamplesPerSec);
-    printf("\t\tChannels:\t%d\n", m_StreamBuffer->m_Channels);
-    printf("\t\tTotal chunks:\t%d\n", m_StreamBuffer->m_TotalChunks);
-    printf("\t\tSampled data size:\t%d\n", m_StreamBuffer->m_SampledDataSize);
-    printf("\t\tBytes per sec.:\t%f\n", m_StreamBuffer->m_BytesPerSec);
-    printf("\t\tSound name:\t\"%s\"\n", m_StreamBuffer->m_SoundName->m_String);
-    printf("\t\tAuxMonoStream:\t%p\n", m_StreamBuffer->m_AuxMonoStream);
+    printf("\t\tSamples per sec.:\t%d\n", m_StreamBuffer->SamplesPerSec);
+    printf("\t\tChannels:\t%d\n", m_StreamBuffer->Channels);
+    printf("\t\tTotal chunks:\t%d\n", m_StreamBuffer->TotalChunks);
+    printf("\t\tSampled data size:\t%d\n", m_StreamBuffer->SampledDataSize);
+    printf("\t\tBytes per sample.:\t%f\n", m_StreamBuffer->BytesPerSample);
+    printf("\t\tSound name:\t\"%s\"\n", m_StreamBuffer->SoundName->m_String);
+    printf("\t\tAuxMonoStream:\t%p\n", m_StreamBuffer->AuxMonoStream);
 }
 
 void AssetBlockReader::CompiledSoundAsset::SkipSpecificData(unsigned char** infobuffer)
 {
-    *infobuffer += sizeof(StreamBuffer);
-    *infobuffer += (char)4;
-    *infobuffer += m_StreamBuffer->m_SampledDataSize;
+    *infobuffer = (uint8_t*)(m_StreamBuffer->SoundName);
     *infobuffer += sizeof(String);
-    *infobuffer += m_StreamBuffer->m_SoundName->m_Length + 1;
+    *infobuffer += m_StreamBuffer->SoundName->m_Length;
 }
 
 void AssetBlockReader::CompiledSoundAsset::DumpData(const AssetBlockReader* reader)
 {
-    printf("\tNOT IMPLEMENTED!\n");
+    FILE* f = nullptr;
+
+    std::string assetFileName(strrchr(m_StreamBuffer->SoundName->m_String, '/') + 1);
+    assetFileName += ".wav";
+    errno_t err = fopen_s(&f, assetFileName.c_str(), "wb");
+    //  TODO: generate missing folders or give choice to user.
+    if (!f)
+    {
+        printf("Failed to create sound file '%s'! fopen returned error %d\n", assetFileName.c_str(), err);
+        return;
+    }
+
+    fwrite((const void*)&RIFFData, sizeof(RIFFData), 1, f);
+    fwrite((const void*)m_StreamBuffer->SampledData, m_StreamBuffer->SampledDataSize, 1, f);
+
+    fclose(f);
+
+    printf("\tSound asset dump done!\n");
 }
 
 AssetBlockReader::CompiledModelAsset::CompiledModelAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)

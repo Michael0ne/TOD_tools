@@ -77,6 +77,9 @@ void ScriptDatabaseReader::PrintInfo() const
     printf("\tTotal commands:\t%u\n", m_TotalCommands);
     printf("\tRead actual properties:\t%u\n", m_PropertiesList.size());
     printf("\tRead actual commands:\t%u\n", m_CommandsList.size());
+
+    if (m_ShouldDumpData)
+        DumpData();
 }
 
 void ScriptDatabaseReader::DumpData() const

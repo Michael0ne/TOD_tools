@@ -132,6 +132,9 @@ void TextureResourceReader::PrintInfo() const
     } while (level < (unsigned char)(m_GfxTexture->m_Levels >> 1));
 
     printf("\tMip map levels:\t%d\n", m_GfxTexture->m_MipMapLevels);
+
+    if (m_ShouldDumpData)
+        DumpData();
 }
 
 void TextureResourceReader::DumpData() const

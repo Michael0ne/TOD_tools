@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <array>
 
+#include "resource.h"
+
 static void PrintHex(unsigned int number)
 {
     printf("%X %X %X %X | %u",
@@ -20,10 +22,10 @@ static void PrintUsage()
     char* usagestrptr = usagestr;
     int charcopied = 0;
 
-    charcopied += LoadString(modulehandle, 101, usagestrptr, sizeof(usagestr));
-    charcopied += LoadString(modulehandle, 102, usagestrptr + charcopied, sizeof(usagestr));
-    charcopied += LoadString(modulehandle, 103, usagestrptr + charcopied, sizeof(usagestr));
-    charcopied += LoadString(modulehandle, 107, usagestrptr + charcopied, sizeof(usagestr));
+    charcopied += LoadString(modulehandle, IDS_USAGESTRING1, usagestrptr, sizeof(usagestr));
+    charcopied += LoadString(modulehandle, IDS_USAGESTRING2, usagestrptr + charcopied, sizeof(usagestr));
+    charcopied += LoadString(modulehandle, IDS_USAGESTRING3, usagestrptr + charcopied, sizeof(usagestr));
+    charcopied += LoadString(modulehandle, IDS_USAGESTRING4, usagestrptr + charcopied, sizeof(usagestr));
 
     printf(usagestr);
 }

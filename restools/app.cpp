@@ -1,11 +1,16 @@
+#include "resource.h"
 #include "AssetBlockReader.h"
 #include "TextureResourceReader.h"
 #include "SaveResourceReader.h"
 #include "ScriptDatabaseReader.h"
 #include <iostream>
 
+static HINSTANCE appHInstance;
+
 int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp)
 {
+    appHInstance = GetModuleHandle(nullptr);
+
     //	NOTE: not enough arguments specified.
     if (argc < 3)
     {
@@ -17,7 +22,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
     if (!argv[1] || !argv[2])
     {
         char errmessage[32] = {};
-        LoadString(GetModuleHandle(nullptr), 106, errmessage, sizeof(errmessage));
+        LoadString(appHInstance, IDS_INVALIDPARAMS, errmessage, sizeof(errmessage));
         std::cout << errmessage << std::endl;
 
         return NULL;
@@ -33,7 +38,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
     if (lastslashpos == nullptr || (dotpos != nullptr && dotpos > lastslashpos))
     {
         char errmessage[32] = {};
-        LoadString(GetModuleHandle(nullptr), 105, errmessage, sizeof(errmessage));
+        LoadString(appHInstance, IDS_INVALIDRESPATH, errmessage, sizeof(errmessage));
         std::cout << errmessage << std::endl;
 
         return NULL;
@@ -70,7 +75,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
     if (resreader == nullptr)
     {
         char errmessage[32] = {};
-        LoadString(GetModuleHandle(nullptr), 104, errmessage, sizeof(errmessage));
+        LoadString(appHInstance, IDS_UNKNOWNRESTYPE, errmessage, sizeof(errmessage));
         printf(errmessage, argv[1]);
 
         return NULL;

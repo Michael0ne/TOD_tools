@@ -97,6 +97,7 @@ public:
         virtual void    SkipSpecificData(unsigned char** infobuffer) = 0;
         virtual void    SkipEndAlignment(uint8_t** infobuffer);
         virtual void    DumpData(const AssetBlockReader* reader) = 0;
+        virtual const bool  IsAligned(uint8_t** infobuffer) const;
     };
 
     struct CompiledTextureAsset : CompiledAsset
@@ -549,33 +550,57 @@ public:
     {
         struct StreamedWAV;
 
+        //  sizeof = 80 (0x50)
         struct StreamBuffer
         {
-            unsigned int            field_0;
-            unsigned int			m_SamplesPerSec;
-            char					m_Channels;
-            char					field_9;
-            char					field_A;
-            char					field_B;
-            unsigned int			m_TotalChunks;
-            unsigned int			m_SampledDataSize;
-            float					field_14;
-            float					m_BytesPerSec;
-            int						field_1C;
-            float					field_20;
-            char                   *m_SampledData;
-            String                 *m_SoundName;
-            int                     field_2C[2];
-            int						field_34;
-            StreamedWAV            *m_AuxMonoStream;
-            int                    *m_List_Elements;
-            int                     m_List_Size;
-            int                     field_44[2];
+            uint32_t                VMT;
+            uint32_t                SamplesPerSec;
+            uint8_t                 Channels;
+            uint8_t                 field_9;
+            uint8_t                 field_A;
+            uint8_t                 field_B;
+            uint32_t                TotalChunks;
+            uint32_t                SampledDataSize;
+            float_t                 DopplerFactor;
+            float_t                 BytesPerSample;
+            uint32_t                field_1C;
+            float_t                 field_20;
+            uint8_t                *SampledData;
+            String                 *SoundName;    //  NOTE: this is also a hashmap in the game. But asset file uses this as a string pointer.
+            uint32_t                field_2C;
+            uint32_t                field_30;
+            uint32_t                field_34;
+            StreamedWAV            *AuxMonoStream;
+            uint32_t               *ListUnknown;
+            size_t                  ListSize;
+            uint32_t                field_44;
+            uint32_t                field_48;
+            uint32_t                field_4C;
         };
 
         unsigned int        field_1C;
         StreamBuffer       *m_StreamBuffer;
         unsigned int        field_24;
+
+        //  For dump purposes.
+        struct RIFF
+        {
+            uint32_t        ChunkId = 0x46464952;   //  "RIFF"
+            uint32_t        ChunkSize;  //  FileSize - 8
+            uint32_t        Format = 0x45564157;    //  "WAVE"
+
+            uint32_t        Subchunk1Id = 0x20746D66;    //  "fmt "
+            uint32_t        Subchunk1Size = 16;
+            uint16_t        AudioFormat = WAVE_FORMAT_PCM;  //  0x1
+            uint16_t        NumChannels;
+            uint32_t        SampleRate;
+            uint32_t        ByteRate;
+            uint16_t        BlockAlign;
+            uint16_t        BitsPerSample;
+
+            uint32_t        Subchunk2Id = 0x61746164;   //  "data"
+            uint32_t        Subchunk2Size;
+        }                   RIFFData;
 
         CompiledSoundAsset(unsigned char** infobuffer);
 

@@ -104,6 +104,9 @@ void SaveResourceReader::PrintInfo() const
         PrintHex(*(UINT*)(&m_DeflateUncompressed[i]));
         printf("\n");
     }
+
+    if (m_ShouldDumpData)
+        DumpData();
 }
 
 void SaveResourceReader::DumpData() const
