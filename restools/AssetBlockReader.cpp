@@ -77,12 +77,12 @@ AssetBlockReader::AssetBlockReader(LPCSTR filename, LPCSTR ext)
 AssetBlockReader::~AssetBlockReader()
 {
     delete[] m_AssetsInfoBuffer;
-    for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
+    for (int i = 0; i < m_SharedHeader.ResourcesTotal; ++i)
         delete[] m_AssetsDataBuffer[i];
     delete[] m_AssetsSizes;
-    for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
+    for (int i = 0; i < m_SharedHeader.ResourcesTotal; ++i)
         delete[] m_AssetsNames[i];
-    for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
+    for (int i = 0; i < m_SharedHeader.ResourcesTotal; ++i)
         if (m_AssetsList[i])
             delete m_AssetsList[i];
     m_AssetsList.clear();
@@ -96,15 +96,15 @@ void AssetBlockReader::ReadInfo()
 
     fread(&m_SharedHeader, sizeof(m_SharedHeader), 1, m_FilePtr);
 
-    m_AssetsInfoBuffer = new char[m_SharedHeader.m_AssetsHeaderSize];
-    fread(m_AssetsInfoBuffer, m_SharedHeader.m_AssetsHeaderSize, 1, m_FilePtr);
+    m_AssetsInfoBuffer = new char[m_SharedHeader.AssetsHeaderSize];
+    fread(m_AssetsInfoBuffer, m_SharedHeader.AssetsHeaderSize, 1, m_FilePtr);
 
-    m_AssetsSizes = new int[m_SharedHeader.m_ResourcesTotal];
-    fread(m_AssetsSizes, sizeof(m_AssetsSizes), m_SharedHeader.m_ResourcesTotal, m_FilePtr);
+    m_AssetsSizes = new int[m_SharedHeader.ResourcesTotal];
+    fread(m_AssetsSizes, sizeof(m_AssetsSizes), m_SharedHeader.ResourcesTotal, m_FilePtr);
 
-    m_AssetsDataBuffer = (char**)new char[m_SharedHeader.m_ResourcesTotal * 4];
-    m_AssetsNames = (char**)new char[m_SharedHeader.m_ResourcesTotal * 4];
-    for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
+    m_AssetsDataBuffer = (char**)new char[m_SharedHeader.ResourcesTotal * 4];
+    m_AssetsNames = (char**)new char[m_SharedHeader.ResourcesTotal * 4];
+    for (int i = 0; i < m_SharedHeader.ResourcesTotal; ++i)
     {
         m_AssetsDataBuffer[i] = new char[m_AssetsSizes[i]];
         fread(m_AssetsDataBuffer[i], m_AssetsSizes[i], 1, m_FilePtr);
@@ -113,19 +113,19 @@ void AssetBlockReader::ReadInfo()
 
 void AssetBlockReader::PrintInfo() const
 {
-    printf("\tEngine timestamp:\t%X\n", m_SharedHeader.m_EngineTimestamp);
-    printf("\tProperties checksum:\t%X\n", m_SharedHeader.m_PropertyChecksum);
-    printf("\tCommands checksum:\t%X\n", m_SharedHeader.m_CommandsChecksum);
-    printf("\tResources in block:\t%d\n", m_SharedHeader.m_ResourcesTotal);
-    printf("\tResources info header size:\t%d\n", m_SharedHeader.m_AssetsHeaderSize);
-    printf("\tResources data buffer size:\t%d\n", m_SharedHeader.m_MaxBufferSize);
+    printf("\tEngine timestamp:\t%X\n", m_SharedHeader.EngineTimestamp);
+    printf("\tProperties checksum:\t%X\n", m_SharedHeader.PropertyChecksum);
+    printf("\tCommands checksum:\t%X\n", m_SharedHeader.CommandsChecksum);
+    printf("\tResources in block:\t%d\n", m_SharedHeader.ResourcesTotal);
+    printf("\tResources info header size:\t%d\n", m_SharedHeader.AssetsHeaderSize);
+    printf("\tResources data buffer size:\t%d\n", m_SharedHeader.MaxBufferSize);
 
-    if (m_SharedHeader.m_ResourcesTotal == -1)
+    if (m_SharedHeader.ResourcesTotal == -1)
         return;
 
     unsigned char* infobuffer = (unsigned char*)m_AssetsInfoBuffer;
     uint32_t offsetInFile = sizeof(m_SharedHeader);
-    for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
+    for (int i = 0; i < m_SharedHeader.ResourcesTotal; ++i)
     {
         printf("\n\tFile offset:\t0x%x\n", offsetInFile);
         const uint8_t* infobufferStart = infobuffer;
@@ -156,8 +156,12 @@ void AssetBlockReader::PrintInfo() const
             asset = new CompiledModelAsset(&infobuffer);
             break;
         case FRAGMENT:
+        {
             asset = new CompiledFragmentAsset(&infobuffer);
+            ((CompiledFragmentAsset*)asset)->FileSize = m_AssetsSizes[i];
+            ((CompiledFragmentAsset*)asset)->DataBuffer = (uint8_t*)m_AssetsDataBuffer[i];
             break;
+        }
         case MOVIE:
             //asset = new CompiledMovieAsset(&infobuffer);
             break;
@@ -202,15 +206,15 @@ void AssetBlockReader::PrintInfo() const
 
 void AssetBlockReader::DumpData() const
 {
-    if (m_SharedHeader.m_ResourcesTotal <= 0)
+    if (m_SharedHeader.ResourcesTotal <= 0)
     {
         printf("\tSorry, but this asset block has no assets in it!\n");
         return;
     }
 
-    printf("\tDumping \"%s\" (%d assets):\n", m_ResourceName.c_str(), m_SharedHeader.m_ResourcesTotal);
+    printf("\tDumping \"%s\" (%d assets):\n", m_ResourceName.c_str(), m_SharedHeader.ResourcesTotal);
 
-    for (int i = 0; i < m_SharedHeader.m_ResourcesTotal; ++i)
+    for (int i = 0; i < m_SharedHeader.ResourcesTotal; ++i)
     {
         char assname[512] = {};
         strcpy(assname, strrchr(m_AssetsNames[i], '/') + 1);
@@ -270,7 +274,9 @@ AssetBlockReader::CompiledTextureAsset::CompiledTextureAsset(unsigned char** inf
 
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
-    SkipEndAlignment(infobuffer);
+
+    if (((uint32_t)*infobuffer & 0xFFFFFFFC) != (uint32_t)*infobuffer)
+        SkipEndAlignment(infobuffer);
 }
 
 void AssetBlockReader::CompiledTextureAsset::PrintInfo() const
@@ -288,7 +294,10 @@ void AssetBlockReader::CompiledTextureAsset::PrintInfo() const
 
 void AssetBlockReader::CompiledTextureAsset::SkipSpecificData(unsigned char** infobuffer)
 {
-    *infobuffer += sizeof(TextureInfo) + sizeof(GfxTexture);
+    if ((uint32_t)m_TextureInfo > (uint32_t)m_GfxTexture)
+        *infobuffer = (uint8_t*)m_TextureInfo + sizeof(TextureInfo);
+    else
+        *infobuffer = (uint8_t*)m_GfxTexture + sizeof(GfxTexture);
 }
 
 void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* reader)
@@ -349,11 +358,14 @@ void AssetBlockReader::CompiledTextureAsset::DumpData(const AssetBlockReader* re
 AssetBlockReader::CompiledFragmentAsset::CompiledFragmentAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
 {
     READ_FIELD_VALUE(field_1C, uint32_t, infobuffer);
-    READ_FIELD_VALUE_POINTER(field_20, uint32_t, infobuffer);
+    READ_FIELD_VALUE_POINTER(FragmentInfo, FragmentData, infobuffer);
     READ_FIELD_VALUE(field_24, uint32_t, infobuffer);
 
     SkipNameRead(infobuffer);
-    SkipEndAlignment(infobuffer);
+    SkipSpecificData(infobuffer);
+
+    if (((uint32_t)*infobuffer & 0xFFFFFFFC) != (uint32_t)*infobuffer)
+        SkipEndAlignment(infobuffer);
 }
 
 void AssetBlockReader::CompiledFragmentAsset::PrintInfo() const
@@ -361,19 +373,32 @@ void AssetBlockReader::CompiledFragmentAsset::PrintInfo() const
     CompiledAsset::PrintInfo();
 
     printf("\tfield_1C:\t%d\n", field_1C);
-    printf("\tfield_20:\t%p\n", field_20);
+    printf("\tFragment Info:\t%p\n", FragmentInfo);
     printf("\tfield_24:\t%d\n", field_24);
 }
 
 void AssetBlockReader::CompiledFragmentAsset::SkipSpecificData(unsigned char** infobuffer)
 {
-    while (**infobuffer == NULL)
-        *infobuffer += 1;
+    *infobuffer += sizeof(FragmentData);
 }
 
 void AssetBlockReader::CompiledFragmentAsset::DumpData(const AssetBlockReader* reader)
 {
-    printf("\tNOT IMPLEMENTED!\n");
+    FILE* filePtr = nullptr;
+
+    char* fragmentName = strrchr(Name, '/') + 1;
+    errno_t openStatus = fopen_s(&filePtr, fragmentName, "wb");
+    if (!filePtr)
+    {
+        printf("\tFailed to create output file! Error %d\n", openStatus);
+        return;
+    }
+
+    fwrite((const void*)DataBuffer, FileSize, 1, filePtr);
+
+    fclose(filePtr);
+
+    printf("\tFragment asset dump done!\n");
 }
 
 AssetBlockReader::CompiledStreamedSoundInfoAsset::CompiledStreamedSoundInfoAsset(unsigned char** infobuffer) : CompiledAsset(infobuffer)
@@ -534,6 +559,7 @@ AssetBlockReader::CompiledTextAsset::CompiledTextAsset(unsigned char** infobuffe
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
 
+    //  TODO: replace this absurd.
     if ((uint32_t)*infobuffer % 16 != 0)
         SkipEndAlignment(infobuffer);
 }
@@ -676,7 +702,6 @@ void AssetBlockReader::CompiledSoundAsset::DumpData(const AssetBlockReader* read
     FILE* f = nullptr;
 
     std::string assetFileName(strrchr(m_StreamBuffer->SoundName->m_String, '/') + 1);
-    assetFileName += ".wav";
     errno_t err = fopen_s(&f, assetFileName.c_str(), "wb");
     //  TODO: generate missing folders or give choice to user.
     if (!f)

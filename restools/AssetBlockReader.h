@@ -488,9 +488,19 @@ public:
 
     struct CompiledFragmentAsset : CompiledAsset
     {
-        unsigned int    field_1C;
-        unsigned int   *field_20;   //  NOTE: some dictionary...
-        unsigned int    field_24;
+        struct FragmentData
+        {
+            uint32_t    field_0;
+            uint32_t    field_4;
+            uint32_t    field_8;
+        };
+
+        uint32_t        field_1C;
+        FragmentData   *FragmentInfo;
+        uint32_t        field_24;
+
+        uint32_t        FileSize;
+        uint8_t        *DataBuffer;
 
         CompiledFragmentAsset(unsigned char** infobuffer);
 
@@ -550,7 +560,6 @@ public:
     {
         struct StreamedWAV;
 
-        //  sizeof = 80 (0x50)
         struct StreamBuffer
         {
             uint32_t                VMT;
@@ -728,12 +737,12 @@ public:
     //  NOTE: this header is shared between all asset blocks (localised/non-localised).
     struct AssetHeaderShared
     {
-        unsigned int	m_EngineTimestamp;
-        unsigned int	m_PropertyChecksum;
-        unsigned int	m_CommandsChecksum;
-        int				m_ResourcesTotal;
-        unsigned int	m_AssetsHeaderSize;
-        unsigned int	m_MaxBufferSize;
+        uint32_t        EngineTimestamp;
+        uint32_t        PropertyChecksum;
+        uint32_t        CommandsChecksum;
+        int32_t         ResourcesTotal;
+        uint32_t        AssetsHeaderSize;
+        uint32_t        MaxBufferSize;
     };
 
     AssetHeaderShared	m_SharedHeader;
