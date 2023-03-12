@@ -1,6 +1,7 @@
 #include "FirstFitSubAllocator.h"
 #include "LogDump.h"
 
+//  TODO: does not work! Check if code is correctly translated from disassembly.
 bool FirstFitSubAllocator::UpdateUsedBlocks(uint32_t* ptr)
 {
     bool result = false;

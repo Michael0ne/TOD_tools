@@ -34,6 +34,8 @@ class FragmentAsset : public Asset
         void        _406490();  //  @406490
         void        _4069F0();  //  @4069F0
         uint32_t*   _406320(uint32_t* data);    //  @406320
+
+        static void _4069C0(FragmentInfo* fragmentInfo);    //  @4069C0
     };
 
 public:

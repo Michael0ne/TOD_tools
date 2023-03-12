@@ -165,16 +165,25 @@ void FragmentAsset::FragmentInfo::_406490()
     field_8 = NULL;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void FragmentAsset::FragmentInfo::_4069F0()
 {
     if (field_0 && (field_0 & 1) == 0)
     {
-        if (ALIGN_4BYTES(field_0) != NULL && (field_0 & 2) != NULL);
+        if (ALIGN_4BYTES(field_0) != NULL && (field_0 & 2) != NULL)
+            _4069C0((FragmentInfo*)(ALIGN_4BYTES(field_0)));
     }
     else
     {
-        if (ALIGN_4BYTES(field_0));
+        FragmentInfo* fragmentInfo = (FragmentInfo*)(ALIGN_4BYTES(field_0));
+        if (!fragmentInfo)
+            return;
+
+        uint32_t unk = *(uint32_t*)(field_0 + 8);
+        if (!unk || (unk & 1) != 0)
+            MemoryManager::ReleaseMemory((void*)(ALIGN_4BYTES(unk)), false);
+
+        fragmentInfo->_4069F0();
+        MemoryManager::ReleaseMemory(fragmentInfo, false);
     }
 }
 
@@ -188,4 +197,13 @@ uint32_t* FragmentAsset::FragmentInfo::_406320(uint32_t* data)
         return (uint32_t*)(ALIGN_4BYTES(field_4[2]));
     else
         return nullptr;
+}
+
+void FragmentAsset::FragmentInfo::_4069C0(FragmentInfo* fragmentInfo)
+{
+    uint32_t unk = fragmentInfo->field_8;
+    if (!unk || (unk & 1) != 0)
+        MemoryManager::ReleaseMemory((void*)(ALIGN_4BYTES(unk)), false);
+
+    fragmentInfo->_4069F0();
 }

@@ -130,9 +130,9 @@
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "C:\Program Files\Eidos\Total Overdose\$(TargetFileName)"
-copy "$(TargetDir)$(TargetName).pdb" "C:\Program Files\Eidos\Total Overdose\$(TargetName).pdb"
-copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(TargetName).map"</Command>
+      <Command>copy "$(TargetPath)" "G:\Games\Eidos\Total Overdose\$(TargetFileName)"
+copy "$(TargetDir)$(TargetName).pdb" "G:\Games\Eidos\Total Overdose\$(TargetName).pdb"
+copy "$(TargetDir)$(TargetName).map" "G:\Games\Eidos\Total Overdose\$(TargetName).map"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>

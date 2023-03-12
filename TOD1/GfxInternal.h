@@ -5,29 +5,41 @@
 #include "MeshBuffer_Dx9.h"
 #include "Mesh.h"
 
-//  TODO: move this out here.
-//  TODO: possible name 'RenderLayer'.
-class Buffer276
+using Matrix = DirectX::XMMATRIX;
+
+//  TODO: move this somewhere else.
+class RenderLayer
 {
 public:
-    Vector3f            m_BufferSize;
-    FrameBuffer        *m_RenderBuffer;
-    FrameBuffer        *field_10;
-    char                field_14[4];
-    DirectX::XMMATRIX   m_ViewMatrix;
-    DirectX::XMMATRIX   m_MatrixUnknown_1;
-    int                 field_98;
-    DirectX::XMMATRIX   m_MatrixUnknown_2;
-    char                field_DC[4];
-    Vector4f            m_ProjectionMatrixParams; // NOTE: fov, xy_ratio, near_clip, far_clip.
-    ScreenResolution    m_ViewportDimensions_1;
-    ScreenResolution    m_ViewportDimensions_2;
-    int                 m_ClearFlags;
-    ColorRGB            m_ClearColor;
+    Vector3f            FrameResolution;
+    FrameBuffer        *FrameBufferPtr;
+    FrameBuffer        *_f10;
+    uint32_t            _f14;
+    Matrix              ViewMatrix;
+    Matrix              MatrixUnk;
+    uint32_t            _f98;
+    Matrix              MatrixUnk_1;
+    uint32_t            _fDC;
+    union
+    {
+        struct
+        {
+            float_t         Fov;
+            float_t         XYRatio;
+            float_t         NearClip;
+            float_t         FarClip;
+        }                   ProjectionMatrixParams;
+
+        Vector4f            ProjectionMatrixParamsVector;
+    };
+    ScreenResolution    ViewportResolution_1;
+    ScreenResolution    ViewportResolution_2;
+    uint32_t            ClearFlags;
+    ColorRGB            ClearColor;
 
 public:
-    Buffer276() {};
-    Buffer276(const Vector3f& bufferSize); // @41FE80
+    RenderLayer() = default;
+    RenderLayer(const Vector3f& bufferSize); // @41FE80
 
     void* operator new(size_t size)
     {
@@ -41,6 +53,10 @@ public:
     }
 };
 
+//  NOTE: old class size with old 'D3DMATRIX' structs.
+//ASSERT_CLASS_SIZE(RenderLayer, 276);
+ASSERT_CLASS_SIZE(RenderLayer, 304);
+
 //  NOTE: possible name 'gfx2d'. Has layers that can have 3d stuff in it. Can draw textures.
 class GfxInternal
 {
@@ -51,7 +67,7 @@ public:
     Mesh                           *m_Mesh;
     unsigned int                    m_RenderBufferTotal;
     int                             field_20;
-    Buffer276                      *m_RenderBufferArray;
+    RenderLayer                    *m_RenderLayers;
     float                           m_TimeDelta;
     int                             m_TimeStart;
     int                             m_FramesRendered;

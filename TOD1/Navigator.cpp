@@ -198,6 +198,8 @@ const Vector4f& Navigator::CheckObstacle(const Vector4f& position)
 
         }
     }
+
+    return position;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

@@ -31,16 +31,20 @@ GfxInternal::GfxInternal(const Vector2<unsigned int>& resolution, unsigned int u
     field_20 = unk1;
     m_RenderBufferTotal = buffersCount;
 
-    m_RenderBufferArray = new Buffer276[buffersCount];
+    m_RenderLayers = (RenderLayer*)MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(sizeof(RenderLayer) * buffersCount, __FILE__, __LINE__);
 
     if (buffersCount > 0)
     {
-        for (unsigned int i = 0; buffersCount--; i++)
+        for (uint32_t i = 0; i < buffersCount; i++)
         {
-            m_RenderBufferArray[i] = Buffer276(*buffersDimens++);
+            RenderLayer* layer = &m_RenderLayers[i];
+            if (layer)
+                layer = new RenderLayer(*buffersDimens);
 
-            m_RenderBufferArray[i].m_ViewportDimensions_1 = { 0, 0 };
-            m_RenderBufferArray[i].m_ViewportDimensions_2 = { g_GfxInternal_Dx9->m_ViewportResolution.x, g_GfxInternal_Dx9->m_ViewportResolution.y };
+            layer->ViewportResolution_1 = { 0, 0 };
+            layer->ViewportResolution_2 = { g_GfxInternal_Dx9->m_ViewportResolution.x, g_GfxInternal_Dx9->m_ViewportResolution.y };
+
+            buffersDimens++;
         }
     }
 
@@ -70,7 +74,7 @@ GfxInternal::~GfxInternal()
 
     delete g_GfxInternal_Dx9;
 
-    delete m_RenderBufferArray;
+    delete m_RenderLayers;
 }
 
 void GfxInternal::Render(Surface* screenshotDumpSurface, const bool shouldRender, int a3, int a4)
@@ -94,7 +98,7 @@ void GfxInternal::Render(Surface* screenshotDumpSurface, const bool shouldRender
                 }
                 else
                 {
-                    FrameBuffer** fb = &m_RenderBufferArray->field_10;
+                    FrameBuffer** fb = &m_RenderLayers->_f10;
                     int j = 0;
                     bool bdis = false;
                     while (!fb)
@@ -161,21 +165,21 @@ void GfxInternal::CallSceneCallback()
 void GfxInternal::SetClearColorForBufferIndex(const ColorRGB& color, int index)
 {
     if (index != -1)
-        m_RenderBufferArray[index].m_ClearColor = color;
+        m_RenderLayers[index].ClearColor = color;
     else
         if (m_RenderBufferTotal > NULL)
             for (unsigned int i = NULL; i < m_RenderBufferTotal; i++)
-                m_RenderBufferArray[i].m_ClearColor = color;
+                m_RenderLayers[i].ClearColor = color;
 }
 
 void GfxInternal::SetClearFlagsForBufferIndex(const unsigned int flags, const int index)
 {
     if (index != -1)
-        m_RenderBufferArray[index].m_ClearFlags = flags;
+        m_RenderLayers[index].ClearFlags = flags;
     else
         if (m_RenderBufferTotal > NULL)
             for (unsigned int i = NULL; i < m_RenderBufferTotal; i++)
-                m_RenderBufferArray[i].m_ClearFlags = flags;
+                m_RenderLayers[i].ClearFlags = flags;
 }
 
 void GfxInternal::SetRenderBufferIsEmpty(bool _empty)
@@ -222,7 +226,7 @@ bool GfxInternal::IsScreenResolutionAvailable(unsigned int width, unsigned int h
 
 void GfxInternal::SetBufferRenderBufferPointerByIndex(unsigned int index, FrameBuffer* buf)
 {
-    m_RenderBufferArray[index].m_RenderBuffer = buf;
+    m_RenderLayers[index].FrameBufferPtr = buf;
 }
 
 void GfxInternal::_41F950()
@@ -232,7 +236,7 @@ void GfxInternal::_41F950()
 
     for (size_t i = 0; i < m_RenderBufferTotal; ++i)
     {
-        FrameBuffer* fb = m_RenderBufferArray[i].field_10;
+        FrameBuffer* fb = m_RenderLayers[i]._f10;
         while (fb)
         {
             fb->m_Flags.m_FlagBits._5 = false;
@@ -243,7 +247,7 @@ void GfxInternal::_41F950()
             fb_ = nullptr;
         }
 
-        m_RenderBufferArray[i].field_10 = nullptr;
+        m_RenderLayers[i]._f10 = nullptr;
     }
 }
 
@@ -256,42 +260,20 @@ void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
     DirectX::XMMATRIX mat = _A3A268;
     for (int i = 0; i < a1; ++i)
     {
-        Buffer276* buff = &m_RenderBufferArray[i];
-        if (buff->field_10 || buff->m_ClearFlags)
+        RenderLayer* layer = &m_RenderLayers[i];
+        if (layer->_f10 || layer->ClearFlags)
         {
-            if (buff->m_ViewportDimensions_1.x != g_GfxInternal_Dx9->m_ViewportResolution_1.x ||
-                buff->m_ViewportDimensions_1.y != g_GfxInternal_Dx9->m_ViewportResolution_1.y ||
-                buff->m_ViewportDimensions_2.x != g_GfxInternal_Dx9->m_ViewportResolution.x ||
-                buff->m_ViewportDimensions_2.y != g_GfxInternal_Dx9->m_ViewportResolution.y)
-                g_GfxInternal_Dx9->SetViewport(buff->m_ViewportDimensions_1, buff->m_ViewportDimensions_2);
+            //  NOTE: update renderer resolution if it's changed.
+            if (layer->ViewportResolution_1.x != g_GfxInternal_Dx9->m_ViewportResolution_1.x ||
+                layer->ViewportResolution_1.y != g_GfxInternal_Dx9->m_ViewportResolution_1.y ||
+                layer->ViewportResolution_2.x != g_GfxInternal_Dx9->m_ViewportResolution.x ||
+                layer->ViewportResolution_2.y != g_GfxInternal_Dx9->m_ViewportResolution.y)
+                g_GfxInternal_Dx9->SetViewport(layer->ViewportResolution_1, layer->ViewportResolution_2);
 
-            if (buff->m_ClearFlags)
-                g_GfxInternal_Dx9->Clear(buff->m_ClearFlags, buff->m_ClearColor);
+            if (layer->ClearFlags)
+                g_GfxInternal_Dx9->Clear(layer->ClearFlags, layer->ClearColor);
 
-            g_GfxInternal_Dx9->SetProjection(buff->m_ProjectionMatrixParams.x, buff->m_ProjectionMatrixParams.y, buff->m_ProjectionMatrixParams.z, buff->m_ProjectionMatrixParams.a);
-
-            //  TODO: something to with matricies, copy view matrix?
-
-            /*
-            if (_A3A064 < )
-            {
-                g_GfxInternal_Dx9->TransformStateView(&buff->m_ViewMatrix);
-                g_GfxInternal_Dx9->field_A = buff->field_14;
-
-                //  TODO: updates cached view matrix?
-            }
-
-            if (buff->m_RenderBuffer)
-            {
-                buff->m_RenderBuffer->ExecuteRenderCommand(buff->m_RenderBuffer->m_RenderBuffer[1]);
-                buff->m_RenderBuffer->ExecuteRenderCommand(buff->m_RenderBuffer->m_RenderBuffer[0]);
-            }
-
-            //  TODO: make temp list with something...
-
-            if (buff->m_RenderBuffer)
-                buff->m_RenderBuffer->ExecuteRenderCommand(buff->m_RenderBuffer->m_RenderBuffer[2]);
-            */
+            g_GfxInternal_Dx9->SetProjection(layer->ProjectionMatrixParams.Fov, layer->ProjectionMatrixParams.XYRatio, layer->ProjectionMatrixParams.NearClip, layer->ProjectionMatrixParams.FarClip);
         }
     }
 }
@@ -299,8 +281,8 @@ void GfxInternal::ExecuteRenderBuffer(int a1, int a2, int a3)
 #pragma message(TODO_IMPLEMENTATION)
 FrameBuffer* GfxInternal::_41F8F0(FrameBuffer* fb, unsigned int index)
 {
-    FrameBuffer* ret = (FrameBuffer*)m_RenderBufferArray[index].field_10;
-    m_RenderBufferArray[index].field_10 = fb;
+    FrameBuffer* ret = (FrameBuffer*)m_RenderLayers[index]._f10;
+    m_RenderLayers[index]._f10 = fb;
 
     return ret;
 }
@@ -337,7 +319,7 @@ void GfxInternal::CreateCheckerboardTextures()
 
 void GfxInternal::GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsigned int ind) const
 {
-    mat = m_RenderBufferArray[ind].m_ViewMatrix;
+    mat = m_RenderLayers[ind].ViewMatrix;
 }
 
 void GfxInternal::_420390()
@@ -408,7 +390,7 @@ void GfxInternal::_420390()
 
 void GfxInternal::GetBackBufferResolution(ScreenResolution& outResolution, const unsigned int bufferindex) const
 {
-    outResolution = m_RenderBufferArray[bufferindex].m_ViewportDimensions_1;
+    outResolution = m_RenderLayers[bufferindex].ViewportResolution_1;
 }
 
 const ScreenResolution& GfxInternal::GetViewportResolution() const
@@ -421,11 +403,11 @@ void GfxInternal::SetBufferProjectionMatrixParams(const float fov, const float r
     if (bufferIndex == -1)
     {
         for (uint32_t i = 0; i < m_RenderBufferTotal; ++i)
-            m_RenderBufferArray[i].m_ProjectionMatrixParams = Vector4f(fov, ratio, nearClip, farClip);
+            m_RenderLayers[i].ProjectionMatrixParamsVector = Vector4f(fov, ratio, nearClip, farClip);
     }
     else
     {
-        m_RenderBufferArray[bufferIndex].m_ProjectionMatrixParams = Vector4f(fov, ratio, nearClip, farClip);
+        m_RenderLayers[bufferIndex].ProjectionMatrixParamsVector = Vector4f(fov, ratio, nearClip, farClip);
     }
 }
 
@@ -435,12 +417,12 @@ void GfxInternal::SetBufferViewMatrixByIndex(const DirectX::XMMATRIX& mat, const
     {
         for (uint32_t i = 0; i < m_RenderBufferTotal; ++i)
         {
-            m_RenderBufferArray[i].m_ViewMatrix = mat;
+            m_RenderLayers[i].ViewMatrix = mat;
         }
     }
     else
     {
-        m_RenderBufferArray[bufferIndex].m_ViewMatrix = mat;
+        m_RenderLayers[bufferIndex].ViewMatrix = mat;
     }
 }
 
@@ -459,19 +441,24 @@ bool GfxInternal::IsWideScreen()
     return WideScreen;
 }
 
-Buffer276::Buffer276(const Vector3f& bufferSize)
+RenderLayer::RenderLayer(const Vector3f& bufferSize)
 {
-    m_BufferSize = bufferSize;
-    field_14[0] = 1;
-    field_10 = NULL;
-    m_RenderBuffer = NULL;
-    field_DC[0] = NULL;
-    m_ClearFlags = NULL;
-    
-    m_ViewMatrix = DirectX::XMMatrixIdentity();
-    m_MatrixUnknown_1 = DirectX::XMMatrixIdentity();
-    m_MatrixUnknown_2 =DirectX::XMMatrixIdentity();
+    MESSAGE_CLASS_CREATED(RenderLayer);
 
-    m_ProjectionMatrixParams = { 70.f, 1.f, 1.f, 1000.f };
-    m_ClearColor = { 0.f, 0.f, 0.f, 1.f };
+    FrameResolution = bufferSize;
+    _f14 = 1;
+    _f10 = nullptr;
+    FrameBufferPtr = nullptr;
+    _fDC = 0;
+    ClearFlags = 0;
+    ClearColor = BuiltinType::ColorBlack;
+
+    ViewMatrix = DirectX::XMMatrixIdentity();
+    MatrixUnk = DirectX::XMMatrixIdentity();
+    MatrixUnk_1 = DirectX::XMMatrixIdentity();
+
+    ProjectionMatrixParams.Fov = 70.0f;
+    ProjectionMatrixParams.XYRatio = 1.f;
+    ProjectionMatrixParams.NearClip = 1.f;
+    ProjectionMatrixParams.FarClip = 1000.f;
 }

@@ -409,7 +409,10 @@ AssetBlockReader::CompiledStreamedSoundInfoAsset::CompiledStreamedSoundInfoAsset
 
     SkipNameRead(infobuffer);
     SkipSpecificData(infobuffer);
-    SkipEndAlignment(infobuffer);
+
+    //  TODO: alignment?
+    if (!IsAligned(infobuffer))
+        SkipEndAlignment(infobuffer);
 }
 
 void AssetBlockReader::CompiledStreamedSoundInfoAsset::PrintInfo() const
