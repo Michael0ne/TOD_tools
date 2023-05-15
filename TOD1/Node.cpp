@@ -188,6 +188,24 @@ void Node::GetScriptEntityPropertyValue(const int propertyId, int* outPropertyVa
     m_ScriptEntity->GetPropertyValue(this, m_Parameters, propertyId, outPropertyValue);
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void Node::TriggerScript(const uint16_t scriptId, const uint16_t scriptIdA, const uint8_t* scriptParams) const
+{
+    const bool isBaseEntity = m_ScriptEntity->IsBaseEntity;
+    const EntityType* entity = isBaseEntity ? m_ScriptEntity->Parent : m_ScriptEntity;
+    const size_t scriptsListSize = entity->ScriptsList.size();
+
+    if (scriptId >= scriptsListSize)
+        return;
+
+    /*if (scriptIdA != entity->ScriptsList.at(scriptId))
+        return;*/
+
+    const EntityType::ScriptInfo* scriptInfo = entity->ScriptsList.at(scriptId);
+    if (scriptInfo->VirtualFunctionOffset);
+        //  TODO: 'this' adjustment shenanigans here!
+}
+
 void Node::FindNode_Impl(int* args)
 {
     *args = (int)FindNode((const char*)args[1]);
@@ -236,7 +254,7 @@ void Node::SetWorldOrient(const Orientation& orientation)
     SetOrient(finalRotationVector);
 }
 
-void Node::_86B4B0(const int propertyId)
+void Node::_86B4B0(const uint32_t propertyId)
 {
     if (m_Flags.HasFragment || m_Flags.Volatile)
         return;
@@ -244,24 +262,25 @@ void Node::_86B4B0(const int propertyId)
     const unsigned int block = 2 * (propertyId & 15);
     int* propertyParamValue = &m_Parameters[propertyId / 16];
     const unsigned int slot = *propertyParamValue >> block;
-    const int* paramValuePtr = &m_Parameters[m_ScriptEntity->m_Script->m_PropertiesList[propertyId].m_Offset];
+    const int* scriptPropertyValue = &m_Parameters[m_ScriptEntity->Script->m_PropertiesList[propertyId].m_Offset];
 
+    //  NOTE: check if this property should be saved/added to rewind?
     if ((slot & 3) != 3)
     {
         if ((slot & 1) == 0 && Scene::RewindBuffer2DataPtr)
-            _86A930(propertyId, paramValuePtr, propertyParamValue, 1 << block);
+            _86A930(propertyId, scriptPropertyValue, propertyParamValue, 1 << block);
         if ((slot & 2) == 0)
-            _86AA10(propertyId, paramValuePtr, propertyParamValue, 2 * (1 << block));
+            _86AA10(propertyId, scriptPropertyValue, propertyParamValue, 2 * (1 << block));
     }
 }
 
 void Node::_86A930(const int size, const int* value, int* const outval, const int a4)
 {
-    EntityType* ent = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
+    EntityType* ent = m_ScriptEntity->IsBaseEntity ? m_ScriptEntity->Parent : m_ScriptEntity;
     *Scene::RewindBuffer2DataPtr++ =
         ((m_Id.Id << 8) | ((*(short*)&m_Id & 0x7000) - 1) & 0xF000) |
-        ((short)size + (short)ent->m_LocalPropertiesList.size() + (short)ent->m_TotalLocalProperties) & 0xFFF;
-    Scene::RewindBuffer2DataPtr += ent->m_Script->m_PropertiesList[size].m_Info->m_PropertyType->CopyNoAllocate((char*)value, (char*)Scene::RewindBuffer2DataPtr);
+        ((short)size + (short)ent->LocalPropertiesList.size() + (short)ent->TotalLocalProperties) & 0xFFF;
+    Scene::RewindBuffer2DataPtr += ent->Script->m_PropertiesList[size].m_Info->m_PropertyType->CopyNoAllocate((char*)value, (char*)Scene::RewindBuffer2DataPtr);
     if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::RewindBuffer2DataPtr) < 0x4000)
         Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::RewindBuffer2DataPtr);
 
@@ -273,10 +292,10 @@ void Node::_86AA10(const int propertyId, const int* value, int* const outval, co
     int* buffptr = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
     if (buffptr)
     {
-        DataType* propertyType = m_ScriptEntity->m_Script->m_PropertiesList[propertyId].m_Info->m_PropertyType;
-        EntityType* entityType = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent : m_ScriptEntity;
+        DataType* propertyType = m_ScriptEntity->Script->m_PropertiesList[propertyId].m_Info->m_PropertyType;
+        EntityType* entityType = m_ScriptEntity->IsBaseEntity ? m_ScriptEntity->Parent : m_ScriptEntity;
 
-        buffptr++[0] = (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000 | ((short)propertyId + (short)entityType->m_LocalPropertiesList.size() + (short)entityType->m_TotalLocalProperties) & 0xFFF;
+        buffptr++[0] = (m_Id.Id << 8) | (m_Id.BlockId - 1) & 0xF000 | ((short)propertyId + (short)entityType->LocalPropertiesList.size() + (short)entityType->TotalLocalProperties) & 0xFFF;
         const int propertynewsize = propertyType->CopyNoAllocate((const char*)value, (char*)(++buffptr));
         g_SceneSaveLoad->SaveEntityToDataBuffer(m_Id.Id, &buffptr[4 * propertynewsize]);
     }
@@ -636,7 +655,7 @@ void Node::UpdateModelFadeThreshold()
     EntityType* script = m_ScriptEntity;
     while (tModel != script)
     {
-        script = script->m_Parent;
+        script = script->Parent;
         if (!script)
             return;
     }
@@ -742,7 +761,7 @@ Folder_* Node::FindParentFolder() const
 
         while (folderscript != tFolder)
         {
-            folderscript = folderscript->m_Parent;
+            folderscript = folderscript->Parent;
             if (!folderscript)
             {
                 node = node->m_Parent;
@@ -814,7 +833,24 @@ const char* const Node::GetIgnoreList() const
     return IgnoredCollisionNodes.m_Str;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
+//  Helper utility function to convert number string into actual number compatible with entity ID.
+static inline uint32_t NumberStringToNumber(const char* str)
+{
+    return (
+        1'000'000'000 * (*str - 8) +
+        100'000'000 * (*str - 7) +
+        10'000'000 * ((*str - 6) - 48) +
+        1'000'000 * ((*str - 5) - 48) +
+        100'000 * ((*str - 4) - 48) +
+        10'000 * ((*str - 3) - 48) +
+        1'000 * ((*str - 2) - 48) +
+        100 * ((*str - 1) - 48) +
+        10 * (*str - 48) +
+        str[1] - 48 -
+        0x1E1A3000
+    );
+}
+
 void Node::SetIgnoreList(const char* list)
 {
     if (!m_Collision || !list)
@@ -827,12 +863,14 @@ void Node::SetIgnoreList(const char* list)
     if (listlen < blocksize)
         return;
 
-    for (unsigned int i = listlen / blocksize; i; --i)
+    auto listMutable = const_cast<char*>(list);
+    listMutable += 8;
+    for (uint32_t i = listlen / blocksize; i; --i)
     {
-        //  TODO: find probe by it's id and add it to the list.
-        CollisionProbe* colprobe;
-        m_Collision->m_CollisionProbesList.push_back(colprobe);
-        list += blocksize;
+        const uint32_t entityId = NumberStringToNumber(listMutable);
+        if (entityId != 0x2D05E000)
+            m_Collision->AddNode(g_AssetManager->FindEntityById(entityId - 0x2D05E000));
+        listMutable += 11;
     }
 }
 
@@ -866,16 +904,17 @@ void Node::GetBlockIdBelow(int* outBlockId) const
     if (!m_ScriptEntity)
         return;
 
-    EntityType* folderent = (EntityType*)m_ScriptEntity;
+    EntityType* folderent = m_ScriptEntity;
     while (tFolder != folderent)
     {
-        folderent = folderent->m_Parent;
+        folderent = folderent->Parent;
         if (!folderent)
             return;
     }
 
-    if (((Folder_*)this)->GetBlockId())
-        *outBlockId = ((Folder_*)this)->GetBlockId();
+    const int32_t folderBlockId = reinterpret_cast<const Folder_*>(this)->GetBlockId();
+    if (folderBlockId)
+        *outBlockId = folderBlockId;
 }
 
 void Node::GetBlockId(int* outBlockId) const
@@ -1281,9 +1320,9 @@ void Node::ConvertDirectionToWorldSpace(int* args) const
 
 void Node::CallPropertySetter(const unsigned short propertyId, const void* data)
 {
-    std::map<unsigned short, unsigned short>::const_iterator propertyIndex = m_ScriptEntity->m_IsBaseEntity
-        ? m_ScriptEntity->m_Parent->m_PropertiesMappings.find(propertyId)
-        : m_ScriptEntity->m_PropertiesMappings.find(propertyId);
+    std::map<unsigned short, unsigned short>::const_iterator propertyIndex = m_ScriptEntity->IsBaseEntity
+        ? m_ScriptEntity->Parent->PropertiesMappings.find(propertyId)
+        : m_ScriptEntity->PropertiesMappings.find(propertyId);
 
     if (propertyIndex->first)
     {
@@ -1293,43 +1332,43 @@ void Node::CallPropertySetter(const unsigned short propertyId, const void* data)
 
         if (propargind >= 0)
         {
-            if (propargind < m_ScriptEntity->m_TotalLocalProperties)
+            if (propargind < m_ScriptEntity->TotalLocalProperties)
             {
                 do
                 {
-                    script = script->m_Parent;
-                } while (propargind < script->m_TotalLocalProperties);
+                    script = script->Parent;
+                } while (propargind < script->TotalLocalProperties);
             }
 
-            scriptpropertyinfo = &script->m_LocalPropertiesList[propargind - script->m_TotalLocalProperties];
+            scriptpropertyinfo = &script->LocalPropertiesList[propargind - script->TotalLocalProperties];
         }
         else
         {
             propargind = -propargind;
-            if (propargind < m_ScriptEntity->m_TotalGlobalProperties)
+            if (propargind < m_ScriptEntity->TotalGlobalProperties)
             {
                 do
                 {
-                    script = script->m_Parent;
-                } while (propargind < script->m_TotalGlobalProperties);
+                    script = script->Parent;
+                } while (propargind < script->TotalGlobalProperties);
             }
 
-            scriptpropertyinfo = &script->m_GlobalPropertiesList[propargind - script->m_TotalGlobalProperties];
+            scriptpropertyinfo = &script->GlobalPropertiesList[propargind - script->TotalGlobalProperties];
         }
 
-        if (scriptpropertyinfo && scriptpropertyinfo->m_SetterPtr)
-            scriptpropertyinfo->m_ReturnType->CallSetterFunction(
+        if (scriptpropertyinfo && scriptpropertyinfo->Setter)
+            scriptpropertyinfo->ReturnType->CallSetterFunction(
                 data,
                 this,
-                scriptpropertyinfo->m_SetterPtr,
-                scriptpropertyinfo->field_1C,
-                scriptpropertyinfo->field_20,
-                scriptpropertyinfo->field_24);
+                scriptpropertyinfo->Setter,
+                scriptpropertyinfo->_f1C,
+                scriptpropertyinfo->_f20,
+                scriptpropertyinfo->_f24);
     }
     else
     {
-        if (m_ScriptEntity->m_Script)
-            m_ScriptEntity->m_Script->AddPropertyByReference(this, propertyId, data);
+        if (m_ScriptEntity->Script)
+            m_ScriptEntity->Script->AddPropertyByReference(this, propertyId, data);
     }
 }
 
@@ -1455,7 +1494,7 @@ void Node::GetBlockIDBelow(int* args) const
 
     while (tFolder != script)
     {
-        script = script->m_Parent;
+        script = script->Parent;
         if (!script)
         {
             args[0] = blockId;
@@ -1776,12 +1815,12 @@ Node::~Node()
 
 const char* Node::GetTypename() const
 {
-    return m_ScriptEntity->m_TypeName.m_Str;
+    return m_ScriptEntity->TypeName.m_Str;
 }
 
 const char* Node::GetScript() const
 {
-    return m_ScriptEntity->m_Script ? m_ScriptEntity->m_Script->m_Name.m_Str : nullptr;
+    return m_ScriptEntity->Script ? m_ScriptEntity->Script->m_Name.m_Str : nullptr;
 }
 
 unsigned int Node::GetFlags() const
@@ -2120,19 +2159,19 @@ void Node::_869F80(const unsigned int paramind, const void* paramptr, DataType& 
 #pragma message(TODO_IMPLEMENTATION)
 void Node::TriggerGlobalScript(int scriptId, void* args)
 {
-    if (!m_ScriptEntity->m_Script || !m_ScriptEntity->m_Script->_48A7E0(this, scriptId, args))
+    if (!m_ScriptEntity->Script || !m_ScriptEntity->Script->_48A7E0(this, scriptId, args))
     {
-        EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->m_IsBaseEntity ? m_ScriptEntity->m_Parent->m_ScriptsList[scriptId] : m_ScriptEntity->m_ScriptsList[scriptId];
+        EntityType::ScriptInfo* scriptinfo = m_ScriptEntity->IsBaseEntity ? m_ScriptEntity->Parent->ScriptsList[scriptId] : m_ScriptEntity->ScriptsList[scriptId];
         if (scriptinfo)
 #ifdef INCLUDE_FIXES
             //  TODO: THIS IS VERY UGLY! I don't think original code had something like this!
-            ((Entity*)(this + (int)scriptinfo->field_4)->*(scriptinfo->m_ScriptPtr))(args);
+            ((Entity*)(this + (int)scriptinfo->_f4)->*(scriptinfo->ScriptPtr))(args);
 #else
             //  NOTE: this code is probably bugged so don't use it.
-            if (scriptinfo->field_C)
-                scriptinfo->m_ScriptPtr((void*)(this + (int)scriptinfo->field_4 + (int)scriptinfo->field_8), args);    //  NOTE: never used, since field_C is usually 0, same as field_4.
+            if (scriptinfo->VirtualFunctionOffset)
+                scriptinfo->ScriptPtr((void*)(this + (int)scriptinfo->_f4 + (int)scriptinfo->_f8), args);    //  NOTE: never used, since _fC is usually 0, same as _f4.
             else
-                scriptinfo->m_ScriptPtr((void*)(this + (int)scriptinfo->field_4), args);
+                scriptinfo->ScriptPtr((void*)(this + (int)scriptinfo->_f4), args);
 #endif
     }
 }

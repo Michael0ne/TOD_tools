@@ -792,9 +792,9 @@ void SoundSlot::Register()
     tSoundSlot->RegisterScript("global_dealloc_allstreams(list(entity))", (EntityFunctionMember)&GlobalDeallocateAllStreams);
     tSoundSlot->RegisterScript("dump_streamed_sounds_to_console", (EntityFunctionMember)&DumpStreamedSoundsToConsole, 0, 0, 0, "control=button|text=console_dump_stream_sounds");
 
-    GetMessage("subtitle_update", true);
-    StreamAllocateFailedCommand = GetMessage("stream_allocate_failed", true);
-    StreamAllocateFinishedCommand = GetMessage("stream_allocate_finished", true);
+    GetCommand("subtitle_update", true);
+    StreamAllocateFailedCommand = GetCommand("stream_allocate_failed", true);
+    StreamAllocateFinishedCommand = GetCommand("stream_allocate_finished", true);
 
     tSoundSlot->PropagateProperties();
 }
@@ -814,7 +814,7 @@ void SoundSlot::DeallocateStreams(std::vector<SoundSlot*>* soundSlotsList)
 
         while (tSoundSlot != entScript)
         {
-            entScript = entScript->m_Parent;
+            entScript = entScript->Parent;
             if (!entScript)
                 break;
         }

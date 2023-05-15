@@ -139,7 +139,7 @@ short GetProperty(const char* const propertyname, bool existing)
     const char* proptype = ddotpos + 1;
     if (existing && propid >= 0)
     {
-        if (strncmp(GlobalPropertiesList[propid].m_PropertyType->m_TypeName.m_Str, proptype, strlen(proptype)) == NULL)
+        if (strncmp(GlobalPropertiesList[propid].m_PropertyType->TypeName.m_Str, proptype, strlen(proptype)) == NULL)
         {
 #if defined INCLUDE_FIXES && defined VERBOSELOG
             LogDump::LogA("Property \"%s\" was already registered with id=%d!\n", propertyname, propid);
@@ -171,7 +171,7 @@ short GetProperty(const char* const propertyname, bool existing)
     }
 }
 
-int GetMessage(const char* const commandname, bool existing)
+int32_t GetCommand(const char* const commandname, bool existing)
 {
     if (!GlobalCommandsList.size())
         GlobalCommandsList.reserve(3000);
@@ -240,15 +240,15 @@ void ReadDatabaseFile(const char* path)
     dbfile.Read(&totalMessages, sizeof(totalMessages));
     GlobalCommandsList.reserve(totalMessages);
 
-    for (unsigned int i = 0; i < totalMessages; i++)
+    for (uint32_t i = 0; i < totalMessages; i++)
     {
         char messageName[128] = {};
-        unsigned int messageNameLen = NULL;
+        size_t messageNameLen = NULL;
 
         dbfile.Read(&messageNameLen, sizeof(messageNameLen));
         dbfile.Read(messageName, messageNameLen);
 
-        GetMessage(messageName, false);
+        GetCommand(messageName, false);
     }
 
     LogDump::LogA("Done loading script database (%dms)\n", Timer::GetMilliseconds() - timeStart);
@@ -1216,7 +1216,7 @@ void GlobalProperty::GetNameAndType(String& outStr) const
         char buf[256] = {};
         strncpy(buf, m_PropertyName, strlen(m_PropertyName));
         buf[strlen(m_PropertyName)] = ':';
-        strcat(buf, m_PropertyType->m_TypeName.m_Str);
+        strcat(buf, m_PropertyType->TypeName.m_Str);
 
         outStr = buf;
         return;
@@ -1267,7 +1267,7 @@ void GlobalCommand::AddArgumentType(DataType* argtype)
 #endif
     String emptystr;
     m_Arguments.m_ArgumentsList.emplace_back(emptystr, argtype, m_Arguments.m_TotalSizeBytes);
-    m_Arguments.m_TotalSizeBytes += argtype->m_Size;
+    m_Arguments.m_TotalSizeBytes += argtype->Size;
     m_Arguments.m_TotalSize += argtype->GetTypeSize();
 }
 
@@ -1275,13 +1275,13 @@ void GlobalCommand::GetReturnTypeString(String& outStr)
 {
     outStr = m_ArgumentsString;
 
-    if (m_Arguments.m_ArgumentsList[0].m_ScriptType->m_Size)
+    if (m_Arguments.m_ArgumentsList[0].m_ScriptType->Size)
     {
         char buf[256] = {};
 
         strcpy(buf, m_ArgumentsString);
         strcat(buf, ":");
-        strcat(buf, m_Arguments.m_ArgumentsList[0].m_ScriptType->m_TypeName.m_Str);
+        strcat(buf, m_Arguments.m_ArgumentsList[0].m_ScriptType->TypeName.m_Str);
 
         size_t buflen = strlen(buf);
 
@@ -1425,7 +1425,7 @@ void Scriptbaked::CalculateSize()
         for (unsigned int i = m_PropertiesList.size(); i > 0; --i)
         {
             m_PropertiesList[j].m_Offset = m_ScriptSize;
-            m_ScriptSize += m_PropertiesList[j++].m_Info->m_PropertyType->m_Size;
+            m_ScriptSize += m_PropertiesList[j++].m_Info->m_PropertyType->Size;
         }
     }
 
@@ -1482,7 +1482,7 @@ bool Scriptbaked::GetMappedPropertyValue(const int* const nodeParameters, const 
 
     const Property& scriptPropertyRef = m_PropertiesList[it->first];
     size_t j = 0;
-    for (size_t i = scriptPropertyRef.m_Info->m_PropertyType->m_Size; i; --i)
+    for (size_t i = scriptPropertyRef.m_Info->m_PropertyType->Size; i; --i)
         outPropertyValue[j++] = nodeParameters[scriptPropertyRef.m_Offset + j++];
 
     return true;
@@ -1563,7 +1563,7 @@ void Scriptbaked::ClearEntityProperties(Entity* ent)
 class EntityType* Scriptbaked::GetAttachedScript() const
 {
     char buf[256] = {};
-    sprintf(buf, "%s(%s)", m_Name.m_Str, m_BaseEntity->m_TypeName.m_Str);
+    sprintf(buf, "%s(%s)", m_Name.m_Str, m_BaseEntity->TypeName.m_Str);
 
     return DataType::GetScriptEntityByName(buf);
 }
@@ -1575,7 +1575,7 @@ const int Scriptbaked::GetPropertiesListSize() const
 
 void Scriptbaked::GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue)
 {
-    unsigned int propertyvaluesize = m_PropertiesList[propertyindex].m_Info->m_PropertyType->m_Size;
+    unsigned int propertyvaluesize = m_PropertiesList[propertyindex].m_Info->m_PropertyType->Size;
     int* entpropertyvalue = &ent->m_Parameters[m_PropertiesList[propertyindex].m_Offset];
 
     if (propertyvaluesize > 0)
@@ -1663,7 +1663,7 @@ void Scriptbaked::AddProperty(Node* scriptNode, const unsigned int propertyIndex
 
     if (DataType::IsSimpleType(propertyType))
     {
-        DataType::CopyValue(nodePropertyPtr, propertyValue, propertyType->m_Size);
+        DataType::CopyValue(nodePropertyPtr, propertyValue, propertyType->Size);
     }
     else
     {
@@ -1701,14 +1701,14 @@ EntityType* Scriptbaked::AssignScriptToEntity(EntityType* parent)
 #ifdef INCLUDE_FIXES
             "(null)",
 #else
-            parent->m_TypeName.m_Str,
+            parent->TypeName.m_Str,
 #endif
-            m_BaseEntity->m_TypeName.m_Str,
+            m_BaseEntity->TypeName.m_Str,
             m_Name.m_Str,
 #ifdef INCLUDE_FIXES
             "(null)");
 #else
-            parent->m_TypeName.m_Str);
+            parent->TypeName.m_Str);
 #endif
 
         return nullptr;
@@ -1717,25 +1717,25 @@ EntityType* Scriptbaked::AssignScriptToEntity(EntityType* parent)
     EntityType* parentent = parent;
     while (m_BaseEntity != parentent)
     {
-        parentent = parent->m_Parent;
+        parentent = parent->Parent;
         if (!parentent)
         {
             LogDump::LogA("'%s' do not descent from '%s', script '%s' cannot be used on a '%s'\n",
-                parent->m_TypeName.m_Str,
-                m_BaseEntity->m_TypeName.m_Str,
+                parent->TypeName.m_Str,
+                m_BaseEntity->TypeName.m_Str,
                 m_Name.m_Str,
-                parent->m_TypeName.m_Str);
+                parent->TypeName.m_Str);
 
             return nullptr;
         }
     }
 
     char entname[128] = {};
-    sprintf(entname, "%s(%s)", m_Name.m_Str, parent->m_TypeName.m_Str);
+    sprintf(entname, "%s(%s)", m_Name.m_Str, parent->TypeName.m_Str);
 
     EntityType* ent = new EntityType(entname);
     ent->InheritFrom(parent);
-    ent->m_Script = this;
+    ent->Script = this;
     ent->PropagateProperties();
 
     return ent;
@@ -1806,7 +1806,7 @@ void Scriptbaked::InstantiateGlobalScripts()
             while (!foundScript)
             {
                 if (script->GetAttachedScript() == child->m_ScriptEntity &&
-                    String::EqualIgnoreCase(script->GetAttachedScript()->m_TypeName.m_Str, child->m_Name, strlen(child->m_Name)))
+                    String::EqualIgnoreCase(script->GetAttachedScript()->TypeName.m_Str, child->m_Name, strlen(child->m_Name)))
                         foundScript = true;
 
                 child = child->m_NextSibling;
@@ -1823,7 +1823,7 @@ void Scriptbaked::InstantiateGlobalScripts()
                         {
                             while (tNode != nnEnt)
                             {
-                                nnEnt = nnEnt->m_Parent;
+                                nnEnt = nnEnt->Parent;
                                 if (!nnEnt)
                                 {
                                     newNode = nullptr;
@@ -1832,7 +1832,7 @@ void Scriptbaked::InstantiateGlobalScripts()
                             }
                         }
 
-                        newNode->SetName(script->GetAttachedScript()->m_TypeName.m_Str);
+                        newNode->SetName(script->GetAttachedScript()->TypeName.m_Str);
                         newNode->SetParent(Scene::SceneInstance);
                     }
                 }
@@ -1848,7 +1848,7 @@ void Scriptbaked::InstantiateGlobalScripts()
                 {
                     while (tNode != nnEnt)
                     {
-                        nnEnt = nnEnt->m_Parent;
+                        nnEnt = nnEnt->Parent;
                         if (!nnEnt)
                         {
                             newNode = nullptr;
@@ -1857,7 +1857,7 @@ void Scriptbaked::InstantiateGlobalScripts()
                     }
                 }
 
-                newNode->SetName(script->GetAttachedScript()->m_TypeName.m_Str);
+                newNode->SetName(script->GetAttachedScript()->TypeName.m_Str);
                 newNode->SetParent(Scene::SceneInstance);
             }
         }
@@ -1880,7 +1880,7 @@ void Scriptbaked::AssignCommonNodes()
         if (!sc->m_Flags.IsCompiled)
             continue;
 
-        Node* scriptnode = (Node*)Scene::SceneInstance->FindNode(sc->GetAttachedScript()->m_TypeName.m_Str);
+        Node* scriptnode = (Node*)Scene::SceneInstance->FindNode(sc->GetAttachedScript()->TypeName.m_Str);
         SceneScriptEntitiesList[i] = scriptnode;
 
         if (_stricmp(sc->m_Name.m_Str, "cache") == NULL)

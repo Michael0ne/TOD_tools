@@ -71,7 +71,7 @@ void Folder_::FixDanglingAssets(AssetInfo::ActualAssetInfo* assinfo)
         EntityType* entityScript = entity->m_ScriptEntity;
         while (tNode != entityScript)
         {
-            entityScript = entityScript->m_Parent;
+            entityScript = entityScript->Parent;
             if (!entityScript)
                 break;
         }
@@ -324,7 +324,7 @@ Node* Folder_::_87E640() const
         {
             while (tFolder != entityScript)
             {
-                entityScript = entityScript->m_Parent;
+                entityScript = entityScript->Parent;
                 if (!entityScript)
                     break;
             }

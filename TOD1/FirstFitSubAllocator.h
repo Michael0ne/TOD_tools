@@ -15,7 +15,7 @@ protected:
     uint32_t        SpaceOccupied;
     uint32_t        FreeRegions;
     uint32_t        UsedRegions;
-    uint32_t       *SpacePtr_1;
+    uint32_t       *CurrentDataBlockPtr;
 
 private:
     bool            UpdateUsedBlocks(uint32_t* ptr);  //  @4798D0

@@ -180,7 +180,7 @@ void NumberType::PerformOperation(int operationId, void* params) const
         break;
     case 5:
     {
-        int vecsize = tVECTOR->m_Size;
+        int vecsize = tVECTOR->Size;
 
         *(float*)params = ((float*)params)[vecsize] * ((float*)params)[vecsize * 2];
         *(float*)((float*)params + 1) = ((float*)params)[vecsize + 1] * ((float*)params)[vecsize * 2];

@@ -58,6 +58,36 @@ int16_t QuadTree::_89A3E0()
     }
 }
 
+Node* QuadTree::GetFirstNode() const
+{
+    const uint32_t depth = clamp(QuadTreeInfo::Instance->field_30, 0, 64);
+    if (!depth)
+    {
+        QuadTreeInfo::Instance->field_0 = 0;
+        QuadTreeInfo::Instance->field_20 = -1;
+        QuadTreeInfo::Instance->field_24 = 0;
+
+        return nullptr;
+    }
+
+    QuadTreeInfo::Instance->field_2C = -1;
+    QuadTreeInfo::Instance->field_28++;
+    QuadTreeInfo::Instance->field_38 = 1;
+
+    uint8_t* oldRef = QuadTreeInfo::Instance->field_4;
+    if (QuadTreeInfo::Instance->field_30 > 64)
+        memcpy(QuadTreeInfo::Instance->field_4, QuadTreeInfo::Instance->field_8, 4 * depth);
+
+    QuadTreeInfo::Instance->field_0 = oldRef;
+
+    return GetNextNode(nullptr);
+}
+
+Node* QuadTree::GetNextNode(const Node* node) const
+{
+    return nullptr;
+}
+
 QuadTreeInfo::QuadTreeInfo()
 {
     field_C = 0.f;

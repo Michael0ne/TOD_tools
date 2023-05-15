@@ -586,7 +586,7 @@ void KapowEngineClass::Init(LPSTR, int, const char* configFileName, signed int i
                     bool noparent = false;
                     while (tEditorCamera != editorCamera)
                     {
-                        editorCamera = editorCamera->m_Parent;
+                        editorCamera = editorCamera->Parent;
                         if (!editorCamera)
                         {
                             noparent = true;

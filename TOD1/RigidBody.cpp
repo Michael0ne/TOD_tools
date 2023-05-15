@@ -113,7 +113,7 @@ void RigidBody::SetLinearVelocity(Vector4f& speed)
     {
         String str;
         tVECTOR->PrintFormattedValue(str, &speed, 0);
-        debug("SetLinearVelocity: '%s' values out of range: %s\n", tVECTOR->m_TypeName.m_Str, str.m_Str);
+        debug("SetLinearVelocity: '%s' values out of range: %s\n", tVECTOR->TypeName.m_Str, str.m_Str);
     }
 
     m_LinearSpeed.x = speed.x * m_CollMass;
@@ -210,8 +210,8 @@ void RigidBody::Register()
     tRigidBody->RegisterScript("SetBoxInertiaMatrix(vector)", (EntityFunctionMember)&SetBoxInertialMatrix);
     tRigidBody->RegisterScript("SetEllipsoidInertiaMatrix(vector)", (EntityFunctionMember)&SetEllipsoidInertialMatrix);
 
-    CommandDoCollisionGameLogic = GetMessage("command_do_collision_game_logic", true);
-    CommandGetContactAction = GetMessage("command_get_contact_action(integer):integer", true);
+    CommandDoCollisionGameLogic = GetCommand("command_do_collision_game_logic", true);
+    CommandGetContactAction = GetCommand("command_get_contact_action(integer):integer", true);
 
     tRigidBody->PropagateProperties();
 }

@@ -212,8 +212,8 @@ void VectorType::PerformOperation(int operationId, void* params) const
     {
     case 0:
     {
-        float* firstvec = &((float*)params)[tVECTOR->m_Size];
-        float* secondvec = &((float*)params)[tVECTOR->m_Size + tVECTOR->m_Size];
+        float* firstvec = &((float*)params)[tVECTOR->Size];
+        float* secondvec = &((float*)params)[tVECTOR->Size + tVECTOR->Size];
 
         *(float*)params = *firstvec + *secondvec;
         *((float*)params + 1) = firstvec[1] + secondvec[1];
@@ -222,8 +222,8 @@ void VectorType::PerformOperation(int operationId, void* params) const
     break;
     case 1:
     {
-        float* firstvec = &((float*)params)[tVECTOR->m_Size];
-        float* secondvec = &((float*)params)[tVECTOR->m_Size + tVECTOR->m_Size];
+        float* firstvec = &((float*)params)[tVECTOR->Size];
+        float* secondvec = &((float*)params)[tVECTOR->Size + tVECTOR->Size];
 
         *(float*)params = *secondvec - *firstvec;
         *((float*)params + 1) = secondvec[1] - firstvec[1];
@@ -232,16 +232,16 @@ void VectorType::PerformOperation(int operationId, void* params) const
     break;
     case 2:
     {
-        float* firstvec = &((float*)params)[tNUMBER->m_Size];
-        float* secondvec = &((float*)params)[tNUMBER->m_Size + tVECTOR->m_Size];
+        float* firstvec = &((float*)params)[tNUMBER->Size];
+        float* secondvec = &((float*)params)[tNUMBER->Size + tVECTOR->Size];
 
         *(float*)params = (*firstvec * *secondvec) + (firstvec[2] * secondvec[2]) + (firstvec[1] * secondvec[1]);
     }
     break;
     case 3:
     {
-        float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
-        float mult = ((float*)params)[tVECTOR->m_Size];
+        float* secondvec = &((float*)params)[tVECTOR->Size + tNUMBER->Size];
+        float mult = ((float*)params)[tVECTOR->Size];
 
         *(float*)params = *secondvec * mult;
         *((float*)params + 1) = secondvec[1] * mult;
@@ -250,8 +250,8 @@ void VectorType::PerformOperation(int operationId, void* params) const
     break;
     case 4:
     {
-        float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
-        float delim = 1.f / *((float*)params + tVECTOR->m_Size);
+        float* secondvec = &((float*)params)[tVECTOR->Size + tNUMBER->Size];
+        float delim = 1.f / *((float*)params + tVECTOR->Size);
 
         *(float*)params = delim * *secondvec;
         *((float*)params + 1) = delim * secondvec[1];
@@ -260,8 +260,8 @@ void VectorType::PerformOperation(int operationId, void* params) const
     break;
     case 5:
     {
-        float* secondvec = &((float*)params)[tVECTOR->m_Size];
-        float* thirdvec = &((float*)params)[tVECTOR->m_Size * 2];
+        float* secondvec = &((float*)params)[tVECTOR->Size];
+        float* thirdvec = &((float*)params)[tVECTOR->Size * 2];
 
         *(float*)params = (secondvec[2] * thirdvec[1]) - (thirdvec[2] * secondvec[1]);
         *((float*)params + 1) = (thirdvec[2] * *secondvec) - (secondvec[2] * *thirdvec);
@@ -276,7 +276,7 @@ void VectorType::PerformOperation(int operationId, void* params) const
         break;
     case 12:
     {
-        float* secondvec = &((float*)params)[tVECTOR->m_Size];
+        float* secondvec = &((float*)params)[tVECTOR->Size];
 
         *(float*)params = 0.f - *secondvec;
         *((float*)params + 1) = 0.f - secondvec[1];
@@ -285,19 +285,19 @@ void VectorType::PerformOperation(int operationId, void* params) const
     break;
     case 13:
     {
-        float* secondvec = &((float*)params)[tNUMBER->m_Size];
+        float* secondvec = &((float*)params)[tNUMBER->Size];
         *(float*)params = sqrtf(*secondvec * *secondvec + secondvec[2] * secondvec[2] + secondvec[1] * secondvec[1]);
     }
     break;
     case 14:
     {
-        float* secondvec = &((float*)params)[tNUMBER->m_Size];
+        float* secondvec = &((float*)params)[tNUMBER->Size];
         *(float*)params = ((*secondvec * *secondvec) + (secondvec[2] * secondvec[2])) + (secondvec[1] * secondvec[1]);
     }
     break;
     case 15:
     {
-        float* secondvec = &((float*)params)[tVECTOR->m_Size];
+        float* secondvec = &((float*)params)[tVECTOR->Size];
 
         if (((*secondvec * *secondvec) + (secondvec[1] * secondvec[1])) + (secondvec[2] * secondvec[2]) == 0.f)
         {
@@ -315,12 +315,12 @@ void VectorType::PerformOperation(int operationId, void* params) const
     }
     break;
     case 16:
-        *(float*)params = ((float*)params)[tNUMBER->m_Size];
+        *(float*)params = ((float*)params)[tNUMBER->Size];
         break;
     case 17:
     {
-        float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
-        *secondvec = ((float*)params)[tVECTOR->m_Size];
+        float* secondvec = &((float*)params)[tVECTOR->Size + tNUMBER->Size];
+        *secondvec = ((float*)params)[tVECTOR->Size];
 
         *(float*)params = *secondvec;
         *((float*)params + 1) = secondvec[1];
@@ -328,12 +328,12 @@ void VectorType::PerformOperation(int operationId, void* params) const
     }
     break;
     case 18:
-        *(float*)params = ((float*)params)[tNUMBER->m_Size + 1];
+        *(float*)params = ((float*)params)[tNUMBER->Size + 1];
         break;
     case 19:
     {
-        float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
-        secondvec[1] = ((float*)params)[tVECTOR->m_Size];
+        float* secondvec = &((float*)params)[tVECTOR->Size + tNUMBER->Size];
+        secondvec[1] = ((float*)params)[tVECTOR->Size];
 
         *(float*)params = *secondvec;
         *((float*)params + 1) = secondvec[1];
@@ -341,12 +341,12 @@ void VectorType::PerformOperation(int operationId, void* params) const
     }
     break;
     case 20:
-        *(float*)params = ((float*)params)[tNUMBER->m_Size + 2];
+        *(float*)params = ((float*)params)[tNUMBER->Size + 2];
         break;
     case 21:
     {
-        float* secondvec = &((float*)params)[tVECTOR->m_Size + tNUMBER->m_Size];
-        secondvec[2] = ((float*)params)[tVECTOR->m_Size];
+        float* secondvec = &((float*)params)[tVECTOR->Size + tNUMBER->Size];
+        secondvec[2] = ((float*)params)[tVECTOR->Size];
 
         *(float*)params = *secondvec;
         *((float*)params + 1) = secondvec[1];

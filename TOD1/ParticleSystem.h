@@ -178,7 +178,7 @@ public:
     void            TriggerWithEntity(int* args);   //  @8E98B0
     void            TriggerWithEntityPosition(int* args);   //  @8E9A10
     void            TriggerDefault(int* args);  //  @8EB5C0
-    void            KillEmitters(int* args);    //  @8EB540
+    void            sKillEmitters(int* args);    //  @8EB540
     void            StopEmitters(int* args);    //  @8EB580
     void            SpawnParticles(int* args);  //  @8E6C10
     void            KillDefault(int* args); //  @8EB500
@@ -190,6 +190,7 @@ public:
     static float    ShortToFloatLimited(const unsigned short valueFrom, const float limitValue);    //  @424D60
     static char     FloatToChar(float value);   //  @424C60
     static void     KillNewEffects(const float gameTime);   //  @8E7280
+    static void     KillEmitters(const bool onlyUnloaded, const bool onlyEffects);  //  @8E7160
 
     static bool     LodAndFade; // @A08944
     static Vector4f CameraOrigin;   //  @A35E18

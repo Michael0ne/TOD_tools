@@ -30,7 +30,7 @@ int StructType::GetSize(int* dummy, int* list) const
 void StructType::ScriptFieldsList::Add(const char* const fieldname, DataType* fieldtype, unsigned int)
 {
     m_List.push_back({ fieldname, fieldtype, m_TotalSizeBytes });
-    m_TotalSizeBytes += fieldtype->m_Size;
+    m_TotalSizeBytes += fieldtype->Size;
     m_TotalSize += fieldtype->GetTypeSize();
 }
 

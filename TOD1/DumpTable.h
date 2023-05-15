@@ -27,6 +27,10 @@ struct DumpTableDescription
             MESSAGE_CLASS_CREATED(Column);
 
             m_IsVisible = true;
+#ifdef INCLUDE_FIXES
+            field_1C = {};
+            field_2C = 0;
+#endif
         }
         virtual ~Column();
     };
@@ -72,7 +76,7 @@ public:
     void                SetIntegerValue(const int rowindex, const int columnindex, const int val); // @401570
     void                SetNumberValue(const int rowindex, const int columnindex, const float val); // @4015B0
     void                SetStringValue(const int rowindex, const int columnindex, const char* str); // @401630
-    void    DumpContents(String& outstr, const int a2, const int a3, const int a4, const int a5); // @485A00
+    void                DumpContents(String& outstr, const int a2, const int a3, const int a4, const int a5); // @4041D0
 };
 
 extern std::vector<DumpTableDescription*>  DumpTable; // @A0B3A4

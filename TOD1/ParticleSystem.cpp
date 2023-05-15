@@ -232,7 +232,7 @@ void ParticleSystem::TriggerDefault(int* args)
 {
 }
 
-void ParticleSystem::KillEmitters(int* args)
+void ParticleSystem::sKillEmitters(int* args)
 {
 }
 
@@ -252,6 +252,25 @@ void ParticleSystem::KillDefault(int* args)
 void ParticleSystem::KillAll(int* args)
 {
     m_Properties.KillAll();
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void ParticleSystem::KillEmitters(const bool onlyUnloaded, const bool onlyEffects)
+{
+    auto entity = (ParticleSystem*)g_AssetManager->FindFirstEntity();
+    if (!entity)
+        return;
+
+    while (true)
+    {
+        EntityType* scriptEntity = entity->m_ScriptEntity;
+        if (!scriptEntity)
+        {
+            entity = (ParticleSystem*)g_AssetManager->FindNextEntity(entity);
+            if (!entity)
+                return;
+        }
+    }
 }
 
 void ParticleSystem::Register()
@@ -330,7 +349,7 @@ void ParticleSystem::Register()
     tParticleSystem->RegisterScript("Trigger(entity)", (EntityFunctionMember)&TriggerWithEntity);
     tParticleSystem->RegisterScript("Trigger(entity,vector,quaternion)", (EntityFunctionMember)&TriggerWithEntityPosition);
     tParticleSystem->RegisterScript("TriggerDefault", (EntityFunctionMember)&TriggerDefault, 0, 0, 0, "control=button|text=Trigger");
-    tParticleSystem->RegisterScript("KillEmitters(entity)", (EntityFunctionMember)&KillEmitters);
+    tParticleSystem->RegisterScript("KillEmitters(entity)", (EntityFunctionMember)&sKillEmitters);
     tParticleSystem->RegisterScript("StopEmitters(entity)", (EntityFunctionMember)&StopEmitters);
     tParticleSystem->RegisterScript("SpawnParticles(entity,integer)", (EntityFunctionMember)&SpawnParticles);
     tParticleSystem->RegisterScript("KillDefault", (EntityFunctionMember)&KillDefault);
@@ -397,7 +416,7 @@ void ParticleSystem::KillNewEffects(const float gameTime)
             EntityType* entScript = effectEntity->m_ScriptEntity;
             while (tParticleSystem != entScript)
             {
-                entScript = entScript->m_Parent;
+                entScript = entScript->Parent;
                 if (!entScript)
                     break;
             }
@@ -417,7 +436,7 @@ void ParticleSystem::KillNewEffects(const float gameTime)
             entScript = effectEntity->m_ScriptEntity;
             while (tGeometryEffect != entScript)
             {
-                entScript = entScript->m_Parent;
+                entScript = entScript->Parent;
                 if (!entScript)
                     break;
             }

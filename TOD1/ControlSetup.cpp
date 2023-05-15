@@ -229,7 +229,7 @@ void ControlSetup::SetWaitForControllerText(int* args) const
     EntityType* argtextslot = ((Node*)args[0])->m_ScriptEntity;
     while (tTextSlot != argtextslot)
     {
-        argtextslot = argtextslot->m_Parent;
+        argtextslot = argtextslot->Parent;
         if (!argtextslot)
         {
             SetWaitForControllerText_Impl(nullptr, args[1]);
@@ -266,7 +266,7 @@ void ControlSetup::Start_Impl(Node* node)
         {
             while (tControl != script)
             {
-                script = script->m_Parent;
+                script = script->Parent;
                 if (!script)
                     break;
             }

@@ -106,7 +106,7 @@ public:
     void                            ExecuteRenderBuffer(int a1, int a2, int a3);    //  @421530
     FrameBuffer*                    _41F8F0(FrameBuffer* fb, unsigned int index);   //  @41F8F0
     void                            CreateCheckerboardTextures();    //  @4210E0
-    void                            GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsigned int ind) const;  //  @45EE30
+    void                            GetRenderLayerViewMatrix(DirectX::XMMATRIX& mat, const unsigned int ind) const;  //  @45EE30
     void                            _420390();  //  @420390
     void                            GetBackBufferResolution(ScreenResolution& outResolution, const unsigned int bufferindex) const; //  @41FD20
     const ScreenResolution&         GetViewportResolution() const;  //  @41FD50

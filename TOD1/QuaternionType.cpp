@@ -300,8 +300,8 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     {
     case 0:
     {
-        Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
-        Orientation* secondvec = (Orientation*)((float*)params + (tQUATERNION->m_Size * 2));
+        Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->Size);
+        Orientation* secondvec = (Orientation*)((float*)params + (tQUATERNION->Size * 2));
 
         *((Orientation*)params) =
         {
@@ -320,15 +320,15 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
         break;
     case 3:
     {
-        Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+        Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->Size);
         *((Orientation*)params) = { 0.f - secondvec->w, 0.f - secondvec->x, 0.f - secondvec->y, 0.f - secondvec->z };
     }
     break;
     case 4:
     {
         // NOTE: this was painful :( .
-        Orientation* firstvec = (Orientation*)((float*)params + tVECTOR->m_Size);
-        Orientation* secondvec = (Orientation*)((float*)params + tVECTOR->m_Size);
+        Orientation* firstvec = (Orientation*)((float*)params + tVECTOR->Size);
+        Orientation* secondvec = (Orientation*)((float*)params + tVECTOR->Size);
         float delim = 1.f / sqrtf((secondvec->w * secondvec->w + secondvec->z * secondvec->z) + (secondvec->y * secondvec->y + secondvec->x * secondvec->x));
         Orientation thirdvec =
         {
@@ -348,7 +348,7 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     break;
     case 5:
     {
-        Orientation* firstvec = (Orientation*)((float*)params + tNUMBER->m_Size);
+        Orientation* firstvec = (Orientation*)((float*)params + tNUMBER->Size);
 
         if (firstvec->z >= 1.f || firstvec->z <= -1.f)
             *(float*)params = 0.f;
@@ -358,7 +358,7 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     break;
     case 6:
     {
-        Orientation* firstvec = (Orientation*)((float*)params + tVECTOR->m_Size);
+        Orientation* firstvec = (Orientation*)((float*)params + tVECTOR->Size);
         float inv = 1.f / sqrtf(1.f - firstvec->z * firstvec->z);
 
         if (firstvec->z >= 1.f || firstvec->z <= -1.f)
@@ -369,16 +369,16 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     break;
     case 7:
     {
-        Orientation* firstvec = (Orientation*)((float*)params + tNUMBER->m_Size);
+        Orientation* firstvec = (Orientation*)((float*)params + tNUMBER->Size);
 
         *(float*)params = sqrtf(firstvec->w * firstvec->w + firstvec->z * firstvec->z + firstvec->y * firstvec->y + firstvec->x * firstvec->x);
     }
     break;
     case 8:
     {
-        DirectX::FXMVECTOR* firstvec = (DirectX::FXMVECTOR*)((float*)params + tNUMBER->m_Size + 2 * tQUATERNION->m_Size);
-        DirectX::FXMVECTOR* secondvec = (DirectX::FXMVECTOR*)((float*)params + tQUATERNION->m_Size);
-        float t = *((float*)params + tQUATERNION->m_Size * 2);
+        DirectX::FXMVECTOR* firstvec = (DirectX::FXMVECTOR*)((float*)params + tNUMBER->Size + 2 * tQUATERNION->Size);
+        DirectX::FXMVECTOR* secondvec = (DirectX::FXMVECTOR*)((float*)params + tQUATERNION->Size);
+        float t = *((float*)params + tQUATERNION->Size * 2);
         DirectX::XMVECTOR outquat = DirectX::XMQuaternionSlerp(*firstvec, *secondvec, t);
 
         *(Orientation*)params = { outquat.m128_f32[0], outquat.m128_f32[1], outquat.m128_f32[2], outquat.m128_f32[3] };
@@ -386,7 +386,7 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     break;
     case 9:
     {
-        Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+        Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->Size);
         float delim = 1.f / sqrtf(secondvec->w * secondvec->w + secondvec->z * secondvec->z + secondvec->y * secondvec->y + secondvec->x * secondvec->x);
 
         *(Orientation*)params = { secondvec->w * delim, secondvec->x * delim, secondvec->y * delim, secondvec->z * delim };
@@ -394,8 +394,8 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     break;
     case 10:
     {
-        Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size);
-        float t = *((float*)params + tQUATERNION->m_Size) * -0.5f;
+        Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->Size + tNUMBER->Size);
+        float t = *((float*)params + tQUATERNION->Size) * -0.5f;
         float tcosf = cosf(t);
         float tsinf = sinf(t);
         float mul = fabsf(tsinf) >= std::numeric_limits<float>::epsilon() ? tsinf : 0.f;
@@ -411,9 +411,9 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     break;
     case 11:
     {
-        Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
-        Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->m_Size + tVECTOR->m_Size);
-        Orientation* thirdvec = (Orientation*)((float*)params + (tVECTOR->m_Size * 2) + tQUATERNION->m_Size);
+        Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->Size);
+        Orientation* secondvec = (Orientation*)((float*)params + tQUATERNION->Size + tVECTOR->Size);
+        Orientation* thirdvec = (Orientation*)((float*)params + (tVECTOR->Size * 2) + tQUATERNION->Size);
         DirectX::XMMATRIX mat =
         {
          { firstvec->w, firstvec->x, firstvec->y, 0 },
@@ -426,17 +426,17 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
     }
     break;
     case 12:
-        *(Orientation*)params = { sinf(*((float*)params + tQUATERNION->m_Size) * -0.5f), 0.f, 0.f, cosf(*((float*)params + tQUATERNION->m_Size) * -0.5f) };
+        *(Orientation*)params = { sinf(*((float*)params + tQUATERNION->Size) * -0.5f), 0.f, 0.f, cosf(*((float*)params + tQUATERNION->Size) * -0.5f) };
         break;
     case 13:
-        *(Orientation*)params = { 0.f, sinf(*((float*)params + tQUATERNION->m_Size) * -0.5f), 0.f, cosf(*((float*)params + tQUATERNION->m_Size) * -0.5f) };
+        *(Orientation*)params = { 0.f, sinf(*((float*)params + tQUATERNION->Size) * -0.5f), 0.f, cosf(*((float*)params + tQUATERNION->Size) * -0.5f) };
         break;
     case 14:
-        *(Orientation*)params = { 0.f, 0.f, sinf(*((float*)params + tQUATERNION->m_Size) * -0.5f), cosf(*((float*)params + tQUATERNION->m_Size) * -0.5f) };
+        *(Orientation*)params = { 0.f, 0.f, sinf(*((float*)params + tQUATERNION->Size) * -0.5f), cosf(*((float*)params + tQUATERNION->Size) * -0.5f) };
         break;
     case 15:
     {
-        Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->m_Size);
+        Orientation* firstvec = (Orientation*)((float*)params + tQUATERNION->Size);
         float delim = 1.f / sqrtf(firstvec->w * firstvec->w + firstvec->y * firstvec->y + firstvec->x * firstvec->x);
 
         if (delim * firstvec->x >= 0.99999899f || delim * firstvec->x <= -0.99999899f)
@@ -451,51 +451,51 @@ void QuaternionType::PerformOperation(int operationId, void* params) const
         // TODO: ...
         break;
     case 17:
-        *(float*)params = *((float*)params + tNUMBER->m_Size + 3);
+        *(float*)params = *((float*)params + tNUMBER->Size + 3);
         break;
     case 18:
         *(Orientation*)params =
         {
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 1),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 2),
-         *((float*)params + tQUATERNION->m_Size)
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 1),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 2),
+         *((float*)params + tQUATERNION->Size)
         };
         break;
     case 19:
-        *(float*)params = *((float*)params + tNUMBER->m_Size);
+        *(float*)params = *((float*)params + tNUMBER->Size);
         break;
     case 20:
         *(Orientation*)params =
         {
-         *((float*)params + tQUATERNION->m_Size),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 1),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 2),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 3)
+         *((float*)params + tQUATERNION->Size),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 1),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 2),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 3)
         };
         break;
     case 21:
-        *(float*)params = *((float*)params + tNUMBER->m_Size + 1);
+        *(float*)params = *((float*)params + tNUMBER->Size + 1);
         break;
     case 22:
         *(Orientation*)params =
         {
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size),
-         *((float*)params + tQUATERNION->m_Size),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 2),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 3)
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size),
+         *((float*)params + tQUATERNION->Size),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 2),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 3)
         };
         break;
     case 23:
-        *(float*)params = *((float*)params + tNUMBER->m_Size + 2);
+        *(float*)params = *((float*)params + tNUMBER->Size + 2);
         break;
     case 24:
         *(Orientation*)params =
         {
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 1),
-         *((float*)params + tQUATERNION->m_Size),
-         *((float*)params + tQUATERNION->m_Size + tNUMBER->m_Size + 3),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 1),
+         *((float*)params + tQUATERNION->Size),
+         *((float*)params + tQUATERNION->Size + tNUMBER->Size + 3),
         };
         break;
     }

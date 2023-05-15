@@ -145,6 +145,66 @@ void LensFlare::SetInverseFlareAngle(const bool inverse)
     m_InverseFlareAngle = inverse;
 }
 
+#pragma message(TODO_IMPLEMENTATION)
+void LensFlare::Render(FrameBuffer* fb, const Vector2f& leftTop, const Vector2f& bottomRight, const LensFlareManager& manager) const
+{
+    const auto v21 = leftTop.x - ((bottomRight.x - leftTop.x) * m_Offset);
+    const auto v22 = leftTop.y - (bottomRight.y - leftTop.y) * m_Offset;
+    auto v10 = 1.0;
+    float v16 = 0.f;
+
+    if (m_FadeFlareAngle < 170.f)
+    {
+        if (m_InverseFlareAngle)
+        {
+            v10 = 0.0;
+            auto v13 = 1.f - fabs(manager.field_94) / (1.f - m_FadeFlareAngleCos);
+            if (v13 >= 0.0)
+                v10 = v13;
+        }
+        else
+        {
+            const auto v11 = manager.field_94 < 0.f ? 0.f : manager.field_94;
+            auto v12 = (1.f - v11) / (1.f - m_FadeFlareAngleCos);
+            if ((1.f - v12) >= 0.0)
+                v10 = 1.f - v12;
+            else
+                v10 = 0.f;
+        }
+    }
+
+    if (m_FadeCameraAngleCos1 > 0.99000001 || m_FadeCameraAngleCos1 >= manager.field_90)
+    {
+        const float v17 = manager.field_90 < 0.f ? 0.f : manager.field_90;
+
+        const float v18 = 1.0 / (float)(this->m_FadeCameraAngleCos1 - this->m_FadeCameraAngleCos2);
+        auto v16 = ((1.f - m_FadeCameraAngleCos2) * v18) - ((1.f - v17) * v18);
+        v16 = clamp(v16, 0.f, 1.f);
+    }
+    else
+    {
+        auto v15 = 0.0;
+        if ((1.f - manager.field_90) >= 0.0)
+            v15 = 1.f - manager.field_90;
+        v16 = (((1.f - m_FadeCamBlindDiming) / (1.f - m_FadeCameraAngleCos1)) * v15) + m_FadeCamBlindDiming;
+    }
+
+    if ((v16 * v10) != 0.0)
+    {
+        fb->SubmitSetOpacityCommand((manager.field_A4 * m_Opacity) * v16 * v10, 0);
+        if (m_BlendMode != 1)
+            fb->SubmitSetBlendModeCommand(m_BlendMode);
+
+        auto texture = m_Texture.GetAsset<TextureAsset>();
+        Vector2f a4 = { manager.field_8C * m_Size, manager.field_8C * m_Size };
+        const Vector2f a3 = { v21 - (a4.x * 0.5f), v22 - (a4.y * 0.5f) };
+        fb->SubmitRenderTexturedQuad2D_1Command((Texture*)ALIGN_4BYTES(texture->m_Texture_1), a3, a4, m_Color);
+
+        if (m_BlendMode != 1)
+            fb->SubmitSetBlendModeCommand(1);
+    }
+}
+
 void LensFlare::Register()
 {
     tLensFlare = new EntityType("LensFlare");

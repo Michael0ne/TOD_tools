@@ -160,7 +160,7 @@ public:
 
 private:
     void                        AddTypesListItemAtPos(Asset* element, unsigned int index); // @8760C0
-    unsigned int                FindNodeById(unsigned int ); // @875570
+    unsigned int                FindNodeById(uint32_t id); // @875570
 
 public:
     AssetManager(bool loadBlocks); // @876E20

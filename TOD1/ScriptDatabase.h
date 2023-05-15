@@ -224,7 +224,7 @@ extern int GetPropertyIdByName(const char* const propertyname); // @8732C0
 extern int GetCommandByName_Impl(const char* const commandname); // @872360
 extern int GetCommandByName(const char* const commandname); // @872410
 extern short GetProperty(const char* const propertyname, bool existingProperty); // @8736B0
-extern int GetMessage(const char* const commandname, bool existingCommand); // @872590
+extern int32_t GetCommand(const char* const commandname, bool existingCommand); // @872590
 
 extern void ReadDatabaseFile(const char* path); // @48C400
 extern void LoadScripts(); // @7A1F60

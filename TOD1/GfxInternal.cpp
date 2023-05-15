@@ -317,7 +317,7 @@ void GfxInternal::CreateCheckerboardTextures()
     delete pytexsurfmut;
 }
 
-void GfxInternal::GetViewMatrixForBufferIndex(DirectX::XMMATRIX& mat, const unsigned int ind) const
+void GfxInternal::GetRenderLayerViewMatrix(DirectX::XMMATRIX& mat, const unsigned int ind) const
 {
     mat = m_RenderLayers[ind].ViewMatrix;
 }

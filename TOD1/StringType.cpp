@@ -12,7 +12,7 @@ StringType::~StringType()
 
 int StringType::GetSize(int* a1, int* a2)
 {
-    int retsize = m_Size * 4;
+    int retsize = Size * 4;
 
     if (*a1)
         retsize += strlen((const char*)*a1) + 1;

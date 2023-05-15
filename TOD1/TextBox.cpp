@@ -96,10 +96,10 @@ Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
     Font* font = m_FontAsset.GetAsset<FontAsset>()->m_Font;
     if (m_Text)
     {
-        font->m_ScaleX = m_ScaleX;
-        font->m_ScaleY = m_ScaleY;
-        font->m_HorizontalSpacing = m_HorizontalSpacing;
-        font->m_VerticalSpacing = m_VerticalSpacing;
+        font->ScaleX = m_ScaleX;
+        font->ScaleY = m_ScaleY;
+        font->HorizontalSpacing = m_HorizontalSpacing;
+        font->VerticalSpacing = m_VerticalSpacing;
 
         String textBoxText(*m_Text);
 
@@ -113,10 +113,10 @@ Vector4f* TextBox::GetActualBoxSize(Vector4f& outSize) const
         return &outSize;
     }
 
-    font->m_ScaleX = m_ScaleX;
-    font->m_ScaleY = m_ScaleY;
-    font->m_HorizontalSpacing = m_HorizontalSpacing;
-    font->m_VerticalSpacing = m_VerticalSpacing;
+    font->ScaleX = m_ScaleX;
+    font->ScaleY = m_ScaleY;
+    font->HorizontalSpacing = m_HorizontalSpacing;
+    font->VerticalSpacing = m_VerticalSpacing;
 
     if (m_Flags.ViewAllSlotIndices)
     {
@@ -572,10 +572,10 @@ const int TextBox::GetStringWidth() const
     Font* asFont = ((FontAsset*)m_FontAsset.m_AssetPtr)->m_Font;
     if (m_Text)
     {
-        asFont->m_ScaleX = m_ScaleX;
-        asFont->m_ScaleY = m_ScaleY;
-        asFont->m_HorizontalSpacing = m_HorizontalSpacing;
-        asFont->m_VerticalSpacing = m_VerticalSpacing;
+        asFont->ScaleX = m_ScaleX;
+        asFont->ScaleY = m_ScaleY;
+        asFont->HorizontalSpacing = m_HorizontalSpacing;
+        asFont->VerticalSpacing = m_VerticalSpacing;
 
         return (int)asFont->GetTextWidth(m_Text->m_Str);
     }
@@ -583,10 +583,10 @@ const int TextBox::GetStringWidth() const
     if (!m_TextSlot)
         return 0;
 
-    asFont->m_ScaleX = m_ScaleX;
-    asFont->m_ScaleY = m_ScaleY;
-    asFont->m_HorizontalSpacing = m_HorizontalSpacing;
-    asFont->m_VerticalSpacing = m_VerticalSpacing;
+    asFont->ScaleX = m_ScaleX;
+    asFont->ScaleY = m_ScaleY;
+    asFont->HorizontalSpacing = m_HorizontalSpacing;
+    asFont->VerticalSpacing = m_VerticalSpacing;
 
     unsigned short textBuffer[1024];
     unsigned short* textBufferPtr;
@@ -634,7 +634,7 @@ void TextBox::SetTextSlot(int* args)
     {
         while (tTextSlot != txSlotEntity)
         {
-            txSlotEntity = txSlotEntity->m_Parent;
+            txSlotEntity = txSlotEntity->Parent;
             if (!txSlotEntity)
                 txSlot = nullptr;
         }

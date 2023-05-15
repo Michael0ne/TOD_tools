@@ -88,7 +88,7 @@ void PlaceHolder::Register()
     tPlaceholder->RegisterProperty(tTRUTH, "createcollisionnode", (EntityGetterFunction)&ShouldCreateCollisionNode, (EntitySetterFunction)&CreateCollisionNode, "control=truth|name=");
     tPlaceholder->RegisterProperty(tINTEGER, "collisionpivot", (EntityGetterFunction)&GetCollisionPivot, (EntitySetterFunction)&SetCollisionPivot, "control=slider|min=0|max=60|step=1", 13);
 
-    GetPlaceholderModelCommand = GetMessage("get_placeholder_model:entity", true);
+    GetPlaceholderModelCommand = GetCommand("get_placeholder_model:entity", true);
 
     tPlaceholder->PropagateProperties();
 }

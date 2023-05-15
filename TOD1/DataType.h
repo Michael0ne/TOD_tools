@@ -48,10 +48,10 @@ public:
     };
 
 public:
-    String          m_TypeName;
-    ScriptTypeId    m_TypeId;
-    unsigned int    m_Size;
-    unsigned int    m_GlobalId;
+    String          TypeName;
+    ScriptTypeId    TypeId;
+    uint32_t        Size;
+    uint32_t        GlobalId;
 
     virtual         ~DataType(); // @867A70
     virtual int     GetSize(int* dummy, int* list) const; // @489370  //  NOTE: increments the second argument's array value with index being this type's ID by type size.
@@ -106,8 +106,10 @@ public:
     static bool         ParseVariableString(const char* variable, String& variableName, String& variableType); // @862F70
     static void         InitScriptTypes(); // @8634E0
     static void         ClearScriptLists(); // @863380
+
 private:
     static void         ClearGlobalScriptList(); // @48CAA0
+
 public:
     static unsigned int GetTypesListChecksum(); // @862CF0
     static unsigned int GetTypesListSize(); // @862B30

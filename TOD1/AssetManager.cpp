@@ -173,7 +173,7 @@ void AssetManager::FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi)
 
             while (tModel != scriptEntity)
             {
-                scriptEntity = scriptEntity->m_Parent;
+                scriptEntity = scriptEntity->Parent;
                 if (!scriptEntity)
                 {
                     break;
@@ -1058,27 +1058,29 @@ void AssetManager::AddTypesListItemAtPos(Asset* element, unsigned int index)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-unsigned int AssetManager::FindNodeById(unsigned int id)
+unsigned int AssetManager::FindNodeById(uint32_t id)
 {
-    unsigned int block_id;
+    //uint32_t blockId, nextBlockId;
 
-    while (true)
-    {
-        block_id = ((id >> 20) & 7) - 1;
+    //while (true)
+    //{
+    //    blockId = ((id >> 20) & 7) - 1;
+    //    nextBlockId = (id & 0xFF8FFFFF) + 1;
 
-        if (((id & 0xFF8FFFFF) + 1) < m_NodesList[block_id].size())
-            break;
+    //    if (nextBlockId < m_NodesList[blockId].size())
+    //        break;
 
-        if (block_id >= 6)
-            return NULL;
+    //    if ((blockId + 1) >= 6)
+    //        return 0;
 
-        id = (block_id + 1) << 20;
-    };
+    //    id = (blockId + 2) << 20;
+    //};
 
-    unsigned int i = (id & 0xFF8FFFFF) + 1;
-    for (; i < m_NodesList[block_id].size(); ++i);
+    //unsigned int i = (id & 0xFF8FFFFF) + 1;
+    //for (; i < m_NodesList[block_id].size(); ++i);
 
-    return i | ((block_id + 1) << 20);
+    //return i | ((block_id + 1) << 20);
+    return NULL;
 }
 
 AssetManager::AssetManager(bool loadBlocks)

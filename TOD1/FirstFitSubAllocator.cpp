@@ -1,29 +1,58 @@
 #include "FirstFitSubAllocator.h"
 #include "LogDump.h"
 
-//  TODO: does not work! Check if code is correctly translated from disassembly.
 bool FirstFitSubAllocator::UpdateUsedBlocks(uint32_t* ptr)
 {
     bool result = false;
 
-    do
+    /*
+    * New code
+    */
+    /*HeaderData* blockPtr = (HeaderData*)ptr;
+    while (!blockPtr->Flags)
     {
-        if (ptr >= (uint32_t*)*ptr)
+        if (blockPtr >= blockPtr->Next)
             break;
 
         result = true;
 
-        if (SpacePtr_1 == (uint32_t*)*ptr)
-            SpacePtr_1 = ptr;
+        if ((HeaderData*)CurrentDataBlockPtr == blockPtr->Next)
+            CurrentDataBlockPtr = blockPtr;
 
-        uint32_t* nextDataBlock = (uint32_t*)*ptr;
-        *ptr = ptr[0];
+        auto nextBlockPtr = blockPtr->Next;
+        blockPtr->Next = blockPtr->Next->Next;
 
         if (ProfilerEnabled)
-            memset(nextDataBlock, 0xAB, PointerDataSize);
+            memset(nextBlockPtr, 0xAB, PointerDataSize);
 
-        FreeRegions--;
-    } while (!*(uint32_t*)(*ptr + 4));
+        --FreeRegions;
+    }
+
+    if ((HeaderData*)SpacePtr == blockPtr->Next && !((HeaderData*)SpacePtr)->Flags && blockPtr != (HeaderData*)SpacePtr)
+        UpdateUsedBlocks(SpacePtr);
+
+    return result;*/
+
+    /*
+    * Old code
+    */
+
+    for (; !*(uint32_t*)(*ptr + 4); --FreeRegions)
+    {
+        if ((uint32_t)ptr >= *ptr)
+            break;
+
+        result = true;
+
+        if (CurrentDataBlockPtr == (uint32_t*)*ptr)
+            CurrentDataBlockPtr = ptr;
+
+        uint32_t* v3 = (uint32_t*)*ptr;
+        *ptr = *(uint32_t*)*ptr;
+
+        if (ProfilerEnabled)
+            memset(v3, 0xAB, PointerDataSize);
+    }
 
     if (SpacePtr == (uint32_t*)*ptr && !SpacePtr[1] && ptr != SpacePtr)
         UpdateUsedBlocks(SpacePtr);
@@ -65,7 +94,7 @@ FirstFitSubAllocator::FirstFitSubAllocator()
     SpaceOccupied = NULL;
     FreeRegions = NULL;
     UsedRegions = NULL;
-    SpacePtr_1 = NULL;
+    CurrentDataBlockPtr = NULL;
 }
 
 void* FirstFitSubAllocator::Allocate_A(size_t size, const char* const fileName, const unsigned int fileLineNumber)
@@ -81,34 +110,32 @@ void* FirstFitSubAllocator::AllocateAligned(size_t size, size_t alignment, const
     if (alignment < AlignmentDefault)
         alignment = AlignmentDefault;
 
-    uint32_t* dataBlockStartPtr = SpacePtr_1;
+    uint32_t* dataBlockStartPtr = CurrentDataBlockPtr;
     uint32_t dataBlockPtrModulo = 0;
     uint32_t nextDataBlockSize;
 
     while (true)
     {
-        uint32_t* dataBlockPtr = SpacePtr_1;
-        if (!dataBlockPtr[1])
+        if (!CurrentDataBlockPtr[1])
         {
-            if (UpdateUsedBlocks(SpacePtr_1))
+            if (UpdateUsedBlocks(CurrentDataBlockPtr))
             {
-                uint32_t* nextDatablockPtr = SpacePtr_1;
-                if (*nextDatablockPtr <= (uint32_t)nextDatablockPtr)
+                if (*CurrentDataBlockPtr <= (uint32_t)CurrentDataBlockPtr)
                 {
-                    if (dataBlockStartPtr > nextDatablockPtr)
+                    if (dataBlockStartPtr > CurrentDataBlockPtr)
                         dataBlockStartPtr = SpacePtr;
                 }
-                else
-                    if (dataBlockStartPtr > nextDatablockPtr && dataBlockStartPtr < (uint32_t*)*nextDatablockPtr)
-                        dataBlockStartPtr = SpacePtr_1;
+                else if (dataBlockStartPtr > CurrentDataBlockPtr && (uint32_t)dataBlockStartPtr < *CurrentDataBlockPtr)
+                    dataBlockStartPtr = CurrentDataBlockPtr;
             }
 
-            dataBlockPtr = SpacePtr_1;
-            uint32_t* nextDataBlockPtr = (uint32_t*)*dataBlockPtr;
-            if (*dataBlockPtr <= (uint32_t)dataBlockPtr)
+            uint32_t* nextDataBlockPtr = (uint32_t*)*CurrentDataBlockPtr;
+            if (*CurrentDataBlockPtr <= (uint32_t)CurrentDataBlockPtr)
                 nextDataBlockPtr = (uint32_t*)((uint8_t*)AllocatedSpacePtr + AllocatedSpaceSize);
-            nextDataBlockSize = nextDataBlockPtr - PointerDataSize - dataBlockPtr;
-            dataBlockPtrModulo = (uint32_t)(dataBlockPtr + 2) % alignment;
+
+            nextDataBlockSize = (uint8_t*)nextDataBlockPtr - PointerDataSize - (uint8_t*)CurrentDataBlockPtr;
+            dataBlockPtrModulo = (uint32_t)(CurrentDataBlockPtr + 2) % alignment;
+
             uint32_t closestAvailableSize = size;
             if (dataBlockPtrModulo)
                 closestAvailableSize = alignment + size - dataBlockPtrModulo;
@@ -117,16 +144,16 @@ void* FirstFitSubAllocator::AllocateAligned(size_t size, size_t alignment, const
                 break;
         }
 
-        SpacePtr_1 = (uint32_t*)*dataBlockPtr;
+        CurrentDataBlockPtr = (uint32_t*)*CurrentDataBlockPtr;
         //  NOTE: if the next free block pointer is same as what we started with, then there's no fit.
-        if (SpacePtr_1 == dataBlockStartPtr)
+        if (CurrentDataBlockPtr == dataBlockStartPtr)
             return nullptr;
     }
 
     if (dataBlockPtrModulo)
     {
-        uint32_t* currentDataBlockPtr = SpacePtr_1;
-        const uint32_t closestAlignedAvailableSize = ALIGN_8BYTESUP(dataBlockPtrModulo + alignment - PointerDataSize);
+        uint32_t* currentDataBlockPtr = CurrentDataBlockPtr;
+        const uint32_t closestAlignedAvailableSize = ALIGN_8BYTESUP(PointerDataSize - dataBlockPtrModulo + alignment);
         uint32_t* blockPtr = nullptr;
 
         if (nextDataBlockSize > closestAlignedAvailableSize)
@@ -140,7 +167,15 @@ void* FirstFitSubAllocator::AllocateAligned(size_t size, size_t alignment, const
             FreeRegions++;
         }
 
-        SpacePtr_1 = blockPtr;
+#ifdef INCLUDE_FIXES
+        if (!blockPtr)
+        {
+            debug("FirstFit::Allocate: blockPtr is NULL!");
+            return nullptr;
+        }
+#endif
+
+        CurrentDataBlockPtr = blockPtr;
 
         uint32_t* nextDataBlockPtr = (uint32_t*)*blockPtr;
         if (*blockPtr <= (uint32_t)blockPtr)
@@ -149,19 +184,19 @@ void* FirstFitSubAllocator::AllocateAligned(size_t size, size_t alignment, const
         nextDataBlockSize = nextDataBlockPtr - blockPtr - PointerDataSize;
     }
 
-    uint32_t* currentDataBlockPtr = SpacePtr_1;
+    uint32_t* currentDataBlockPtr = CurrentDataBlockPtr;
     const uint32_t alignedSize = ALIGN_8BYTESUP(size + PointerDataSize);
 
     if (nextDataBlockSize > alignedSize)
     {
         uint32_t* blockPtr = (uint32_t*)((uint8_t*)currentDataBlockPtr + alignedSize);
-        blockPtr[0] = currentDataBlockPtr[0];
         blockPtr[1] = 0;
+        *blockPtr = *currentDataBlockPtr;
 
         *currentDataBlockPtr = (uint32_t)blockPtr;
-        currentDataBlockPtr = SpacePtr_1;
+        currentDataBlockPtr = CurrentDataBlockPtr;
 
-        nextDataBlockSize = blockPtr - currentDataBlockPtr - PointerDataSize;
+        nextDataBlockSize = (uint8_t*)blockPtr - (uint8_t*)currentDataBlockPtr - PointerDataSize;
 
         FreeRegions++;
     }
@@ -172,7 +207,7 @@ void* FirstFitSubAllocator::AllocateAligned(size_t size, size_t alignment, const
     UsedRegions++;
     SpaceOccupied += nextDataBlockSize + PointerDataSize;
 
-    return SpacePtr_1 + 2;
+    return CurrentDataBlockPtr + 2;
 }
 
 void FirstFitSubAllocator::Free(void* ptr)
@@ -297,10 +332,10 @@ void FirstFitSubAllocator::SetNameAndAllocatedSpaceParams(void* bufferptr, const
     Allocator::SetNameAndAllocatedSpaceParams(bufferptr, name, size);
 
     uint32_t* blockStartPtr = (uint32_t*)(ALIGN_8BYTESUP((uint32_t)AllocatedSpacePtr + PointerDataSize) - PointerDataSize);
-    *blockStartPtr = NULL;
+    blockStartPtr[1] = NULL;
     SpacePtr = blockStartPtr;
     *SpacePtr = (uint32_t)SpacePtr;
-    SpacePtr_1 = SpacePtr;
+    CurrentDataBlockPtr = SpacePtr;
 
     SpaceOccupied = 0;
     FreeRegions = 1;

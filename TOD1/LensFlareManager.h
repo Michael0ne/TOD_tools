@@ -6,6 +6,7 @@ class CollisionProbe;
 
 class LensFlareManager : public Node
 {
+    friend class LensFlare;
 protected:
     int             field_50;
     int             field_54;

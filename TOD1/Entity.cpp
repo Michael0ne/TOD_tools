@@ -27,7 +27,7 @@ Entity::~Entity()
     }
 
     if (m_Parameters)
-        m_ScriptEntity->m_Script->ClearEntityProperties(this);
+        m_ScriptEntity->Script->ClearEntityProperties(this);
 
     g_AssetManager->m_NodesList[m_Id.BlockId - 1][m_Id.Id] = nullptr;
 
@@ -57,7 +57,7 @@ Entity::Entity()
 
 int Entity::SaveScriptDataToFile_Impl(MemoryCards * memcard, int memcardindex, int savegameslot, const char* a4)
 {
-    if (!m_ScriptEntity->m_Script)
+    if (!m_ScriptEntity->Script)
         return -1;
 
     String saveslotstring;
@@ -76,7 +76,7 @@ int Entity::SaveScriptDataToFile_Impl(MemoryCards * memcard, int memcardindex, i
 
 unsigned char Entity::LoadScriptDataFromFile_Impl(MemoryCards* memcard, const int memoryCardIndex, const int saveSlotIndex)
 {
-    if (!m_ScriptEntity->m_Script)
+    if (!m_ScriptEntity->Script)
         return 4;
 
     const char* const saveDirectory = memcard->GetSaveDirectory(saveSlotIndex);
@@ -106,7 +106,7 @@ unsigned char Entity::LoadScriptDataFromFile_Impl(MemoryCards* memcard, const in
 
 int Entity::ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize)
 {
-    if (!m_ScriptEntity->m_Script)
+    if (!m_ScriptEntity->Script)
         return 4;
 
     *outsize = 0;
@@ -117,7 +117,7 @@ int Entity::ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize)
 
     *outsize += 4;
 
-    if (m_ScriptEntity->m_Script->GetPropertiesListSize() != proplistsize)
+    if (m_ScriptEntity->Script->GetPropertiesListSize() != proplistsize)
         return 4;
 
     if (proplistsize <= 0)
@@ -145,8 +145,8 @@ int Entity::ReadScriptDataFromSavePoint(SavePoint* sp, int* const outsize)
         *outsize += propertysizeints;
 
         char newpropertydata[16] = {};
-        m_ScriptEntity->m_Script->m_PropertiesList[i].m_Info->m_PropertyType->CopyAndAllocate(propertydata, newpropertydata);
-        m_ScriptEntity->m_Script->AddProperty((Node*)this, i, (const int* const)newpropertydata);
+        m_ScriptEntity->Script->m_PropertiesList[i].m_Info->m_PropertyType->CopyAndAllocate(propertydata, newpropertydata);
+        m_ScriptEntity->Script->AddProperty((Node*)this, i, (const int* const)newpropertydata);
     }
 
     return 4;
@@ -204,7 +204,7 @@ void Entity::SaveScriptDataToFile(int* params)
 
     while (tMemoryCards != memcard)
     {
-        if (!(memcard = memcard->m_Parent))
+        if (!(memcard = memcard->Parent))
         {
             *params = NULL;
             return;
@@ -225,7 +225,7 @@ void Entity::LoadScriptDataFromFile(int* params)
     EntityType* memoryCardScript = memoryCardInstance->m_ScriptEntity;
     while (tMemoryCards != memoryCardScript)
     {
-        memoryCardScript = memoryCardScript->m_Parent;
+        memoryCardScript = memoryCardScript->Parent;
         if (!memoryCardScript)
             return;
     }
@@ -236,20 +236,20 @@ void Entity::LoadScriptDataFromFile(int* params)
 void Entity::SetScript(EntityType* script)
 {
     if (m_Parameters && m_ScriptEntity)
-        m_ScriptEntity->m_Script->ClearEntityProperties(this);
+        m_ScriptEntity->Script->ClearEntityProperties(this);
 
     m_ScriptEntity = script;
 
-    if (script->m_Script)
-        script->m_Script->CopyScriptParameters(this);
+    if (script->Script)
+        script->Script->CopyScriptParameters(this);
 }
 
 const int Entity::SaveScriptData(SavePoint * savefilehelper)
 {
-    if (!m_ScriptEntity->m_Script)
+    if (!m_ScriptEntity->Script)
         return -1;
 
-    const unsigned int propertiessize = m_ScriptEntity->m_Script->GetPropertiesListSize();
+    const unsigned int propertiessize = m_ScriptEntity->Script->GetPropertiesListSize();
     unsigned int writtendatasize = savefilehelper->WriteBufferWithSize((const char*)&propertiessize, sizeof(propertiessize));
 
     if (propertiessize > 0)
@@ -264,8 +264,8 @@ const int Entity::SaveScriptData(SavePoint * savefilehelper)
 
         for (unsigned int propindex = 0; propindex < propertiessize; ++propindex)
         {
-            m_ScriptEntity->m_Script->GetEntityPropertyValue(this, propindex, propval);
-            const unsigned int entvalsize = m_ScriptEntity->m_Script->m_PropertiesList[propindex].m_Info->m_PropertyType->CopyNoAllocate((char*)propval, buf);
+            m_ScriptEntity->Script->GetEntityPropertyValue(this, propindex, propval);
+            const unsigned int entvalsize = m_ScriptEntity->Script->m_PropertiesList[propindex].m_Info->m_PropertyType->CopyNoAllocate((char*)propval, buf);
 
             writtendatasize += savefilehelper->WriteBufferWithSize((const char*)&entvalsize, sizeof(entvalsize));
             writtendatasize += savefilehelper->WriteBufferWithSize(buf, entvalsize * sizeof(entvalsize));

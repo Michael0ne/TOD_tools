@@ -1,5 +1,6 @@
 #pragma once
 #include "Node.h"
+#include "LensFlareManager.h"
 
 class LensFlare : public Node
 {
@@ -51,6 +52,8 @@ public:
     void                SetFadeFlareAngle(const float angle);   //  @8E37B0
     const bool          InverseFlareAngle() const;  //  @8E3800
     void                SetInverseFlareAngle(const bool inverse);   //  @8E37F0
+
+    void                Render(FrameBuffer* fb, const Vector2f& leftTop, const Vector2f& bottomRight, const LensFlareManager& manager) const;   //  @8E3CF0
 
     static void         Register(); //  @8E5180
     static LensFlare*   Create(AllocatorIndex); //  @8E56B0

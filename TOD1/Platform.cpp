@@ -688,7 +688,7 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     char exedir[1024] = {};
     char exeext[8] = {};
     char fname[16] = {};
-    DWORD procIdArr[1024];
+    DWORD procIdArr[1024] = {};
     DWORD procIdRetnSize = NULL;
 
     GetModuleFileName(GetModuleHandle(nullptr), exefname, sizeof(exefname));
@@ -702,7 +702,7 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     if (EnumProcesses(procIdArr, sizeof(procIdArr), &procIdRetnSize))
     {
-        unsigned int copiesRunning = NULL;
+        unsigned int copiesRunning = 0;
 
         if (procIdRetnSize >> 2)
         {

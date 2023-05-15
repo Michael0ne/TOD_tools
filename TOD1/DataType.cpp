@@ -32,15 +32,15 @@ DataType::~DataType()
 {
     MESSAGE_CLASS_DESTROYED(DataType);
 
-    RemoveTypeFromList(m_TypeName.m_Str);
+    RemoveTypeFromList(TypeName.m_Str);
 }
 
 int DataType::GetSize(int* dummy, int* list) const
 {
     if (list)
-        list[m_TypeId] += m_Size * 4;
+        list[TypeId] += Size * 4;
 
-    return m_Size * 4;
+    return Size * 4;
 }
 
 void* DataType::ReturnNew(void*) const
@@ -55,7 +55,7 @@ void DataType::Delete(char*)
 
 void DataType::Clone(const int* from, int* to)
 {
-    CopyValue(to, from, m_Size);
+    CopyValue(to, from, Size);
 }
 
 String& DataType::PrintFormattedValue(String& outstr, void*, int) const
@@ -82,35 +82,35 @@ int DataType::MakeCopy(char* a1)
 int DataType::CopyNoAllocate(const char* const from, char* to)
 {
     if (to == from)
-        return m_Size;
+        return Size;
 
     if (from >= to)
     {
-        char* lastsym = &to[m_Size - 1];
-        if (m_Size - 1 >= 0)
+        char* lastsym = &to[Size - 1];
+        if (Size - 1 >= 0)
         {
-            int len = &from[m_Size] - &to[m_Size];
-            for (int _size = m_Size; _size; --_size)
+            int len = &from[Size] - &to[Size];
+            for (int _size = Size; _size; --_size)
             {
                 *(lastsym + len) = *lastsym;
                 --lastsym;
             }
 
-            return m_Size;
+            return Size;
         }
     }
 
-    if (m_Size <= 0)
-        return m_Size;
+    if (Size <= 0)
+        return Size;
 
     char* firstsym = to;
-    for (int _size = m_Size; _size; --_size)
+    for (int _size = Size; _size; --_size)
     {
         *(firstsym + (from - to)) = *to;
         firstsym++;
     }
 
-    return m_Size;
+    return Size;
 }
 
 int DataType::CopyAndAllocate(const char* const from, char* to)
@@ -217,7 +217,7 @@ void DataType::RemoveTypeFromList(const char* const name)
 
 unsigned int DataType::GetTypeSize_Impl(const DataType* type)
 {
-    switch (type->m_TypeId)
+    switch (type->TypeId)
     {
     case TYPE_NOTHING:
         return 0;
@@ -331,11 +331,11 @@ DataType::DataType(ScriptTypeId typeId, const char* const typeName, ScriptTypeSi
 {
     MESSAGE_CLASS_CREATED(DataType);
 
-    m_TypeName = typeName;
-    m_TypeId = typeId;
-    m_Size = typeSize;
+    TypeName = typeName;
+    TypeId = typeId;
+    Size = typeSize;
 
-    m_GlobalId = TypesList.size();
+    GlobalId = TypesList.size();
     TypesList.push_back(this);
     TypesListCRCCalculated = false;
 }
@@ -349,10 +349,10 @@ unsigned int DataType::GetTypeSize() const
 const bool DataType::IsSimpleType(const DataType* t)
 {
     return
-        t->m_TypeId != TYPE_STRING &&
-        t->m_TypeId != TYPE_LIST &&
-        t->m_TypeId != TYPE_DICT &&
-        t->m_TypeId != TYPE_STRUCT;
+        t->TypeId != TYPE_STRING &&
+        t->TypeId != TYPE_LIST &&
+        t->TypeId != TYPE_DICT &&
+        t->TypeId != TYPE_STRUCT;
 }
 
 DataType* DataType::GetTypeByName(const char* name)
@@ -366,10 +366,10 @@ DataType* DataType::GetTypeByName(const char* name)
         int j = 0;
         while (true)
         {
-            if (j == TypesList[i]->m_TypeName.m_Length)
+            if (j == TypesList[i]->TypeName.m_Length)
                 break;
 
-            if (tolower(TypesList[i]->m_TypeName.m_Str[j]) == tolower(name[j]))
+            if (tolower(TypesList[i]->TypeName.m_Str[j]) == tolower(name[j]))
                 j++;
             else
                 break;
@@ -454,7 +454,7 @@ EntityType* DataType::GetScriptEntityByName(const char* name)
         return nullptr;
 
     for (std::vector<DataType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
-        if ((*it)->m_TypeId == TYPE_ENTITY && strncmp((*it)->m_TypeName.m_Str, name, strlen(name)) == NULL)
+        if ((*it)->TypeId == TYPE_ENTITY && strncmp((*it)->TypeName.m_Str, name, strlen(name)) == NULL)
             return (EntityType*)(*it);
 
     return nullptr;
@@ -531,18 +531,18 @@ unsigned int DataType::GetTypesListChecksum()
     {
         for (std::vector<DataType*>::iterator it = TypesList.begin(); it != TypesList.end(); ++it)
         {
-            if ((*it)->m_TypeId != DataType::ScriptTypeId::TYPE_ENTITY)
+            if ((*it)->TypeId != DataType::ScriptTypeId::TYPE_ENTITY)
                 continue;
 
-            if (checksum_str_len + strlen((*it)->m_TypeName.m_Str) > sizeof(checksum_str))
+            if (checksum_str_len + strlen((*it)->TypeName.m_Str) > sizeof(checksum_str))
                 break;
             else
-                checksum_str_len += strlen((*it)->m_TypeName.m_Str);
+                checksum_str_len += strlen((*it)->TypeName.m_Str);
 
             if (*checksum_str == NULL)
-                strcpy(checksum_str, (*it)->m_TypeName.m_Str);
+                strcpy(checksum_str, (*it)->TypeName.m_Str);
             else
-                strcat(checksum_str, (*it)->m_TypeName.m_Str);
+                strcat(checksum_str, (*it)->TypeName.m_Str);
         }
     }
 

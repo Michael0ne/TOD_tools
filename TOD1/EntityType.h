@@ -11,37 +11,37 @@ class EntityType : public DataType
 
     struct ScriptInfo
     {
-        EntityFunctionMember    m_ScriptPtr = nullptr;
-        int                     field_4 = 0;
-        int                     field_8 = 0;
-        int                     field_C = 0;
+        EntityFunctionMember    ScriptPtr = nullptr;
+        uint32_t                _f4 = 0;    //  NOTE: this one and below are related to virtual function offset.
+        uint32_t                _f8 = 0;
+        uint32_t                VirtualFunctionOffset = 0;
 
         ScriptInfo()
         {};
 
-        ScriptInfo(EntityFunctionMember scriptptr, int _f4, int _f8, int _fC)
+        ScriptInfo(const EntityFunctionMember scriptptr, const uint32_t a2, const uint32_t a3, const uint32_t vmtoffset)
         {
-            m_ScriptPtr = scriptptr;
-            field_4 = _f4;
-            field_8 = _f8;
-            field_C = _fC;
+            ScriptPtr = scriptptr;
+            _f4 = a2;
+            _f8 = a3;
+            VirtualFunctionOffset = vmtoffset;
         }
     };
 
     struct PropertyInfo
     {
-        DataType* m_ReturnType = nullptr;
-        int* field_4 = nullptr;
-        EntityGetterFunction    m_GetterPtr = nullptr;
-        int                     field_C = 0;
-        int                     field_10 = 0;
-        int                     field_14 = 0;
-        EntitySetterFunction    m_SetterPtr = nullptr;
-        int                     field_1C = 0;
-        int                     field_20 = 0;
-        int                     field_24 = 0;
-        unsigned short          m_GlobalIndex = 0;
-        unsigned short          m_LocalIndex = 0;
+        DataType*               ReturnType = nullptr;
+        int*                    _f4 = nullptr;
+        EntityGetterFunction    Getter = nullptr;
+        int                     _fC = 0;
+        int                     _f10 = 0;
+        int                     _f14 = 0;
+        EntitySetterFunction    Setter = nullptr;
+        int                     _f1C = 0;
+        int                     _f20 = 0;
+        int                     _f24 = 0;
+        uint16_t                GlobalIndex = 0;
+        uint16_t                LocalIndex = 0;
         int                     field_2C = 0;
 
         PropertyInfo()
@@ -49,33 +49,33 @@ class EntityType : public DataType
 
         inline PropertyInfo(EntityGetterFunction getter, int _fC, int _f10, int _f14, EntitySetterFunction setter, DataType* rettype, int _f1C, int _f20, int _f24)
         {
-            m_GetterPtr = getter;
-            field_C = _fC;
-            field_10 = _f10;
-            field_14 = _f14;
-            m_SetterPtr = setter;
-            m_ReturnType = rettype;
-            field_1C = _f1C;
-            field_20 = _f20;
-            field_24 = _f24;
+            Getter = getter;
+            _fC = _fC;
+            _f10 = _f10;
+            _f14 = _f14;
+            Setter = setter;
+            ReturnType = rettype;
+            _f1C = _f1C;
+            _f20 = _f20;
+            _f24 = _f24;
         }
     };
 
 public:
-    CREATOR                                     m_Creator;
-    EntityType                                 *m_Parent;
-    Scriptbaked                                *m_Script;
+    CREATOR                                     Creator;
+    EntityType                                 *Parent;
+    Scriptbaked                                *Script;
 
 protected:
-    std::map<unsigned short, ScriptInfo*>       m_ScriptsList; // NOTE: each 'derived' script derives it's parent scripts.
-    int                                         field_38;
-    std::map<unsigned short, unsigned short>    m_PropertiesMappings;
-    int                                         field_48;
-    std::vector<PropertyInfo>                   m_LocalPropertiesList;
-    std::vector<PropertyInfo>                   m_GlobalPropertiesList;
-    int                                         m_TotalLocalProperties;
-    int                                         m_TotalGlobalProperties;
-    bool                                        m_IsBaseEntity;
+    std::map<uint16_t, ScriptInfo*> ScriptsList; // NOTE: each 'derived' script derives it's parent scripts.
+    uint32_t                        _f38;
+    std::map<uint16_t, uint16_t>    PropertiesMappings;
+    uint32_t                        _f48;
+    std::vector<PropertyInfo>       LocalPropertiesList;
+    std::vector<PropertyInfo>       GlobalPropertiesList;
+    int32_t                         TotalLocalProperties;
+    uint32_t                        TotalGlobalProperties;
+    bool                            IsBaseEntity;
 
 public:
     EntityType(const char* const entityname); // @86CC00
@@ -86,7 +86,7 @@ public:
     void                InheritFrom(EntityType* from); // @86CB40
     inline void         SetCreator(CREATOR creator)
     {
-        m_Creator = creator;
+        Creator = creator;
     };
 
     void RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3 = 0, const int a4 = 0, const int a5 = 0, const char* const editorcontrolstr = nullptr, const char* const a7 = nullptr); // @86EC70

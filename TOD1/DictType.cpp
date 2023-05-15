@@ -7,8 +7,8 @@ DictType::DictType(DataType* elementsType) : DataType(TYPE_DICT, "dict", TYPE_DI
     m_ElementsType = elementsType;
 
     char dtname[64] = {};
-    sprintf(dtname, "dict(%s)", elementsType->m_TypeName.m_Str);
-    m_TypeName = dtname;
+    sprintf(dtname, "dict(%s)", elementsType->TypeName.m_Str);
+    TypeName = dtname;
 }
 
 DictType::~DictType()

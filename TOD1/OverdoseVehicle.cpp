@@ -536,8 +536,8 @@ void OverdoseVehicle::Register()
     tOverdoseVehicle->RegisterScript("check_ground_contact", (EntityFunctionMember)&CheckGroundContact);
     tOverdoseVehicle->RegisterScript("StoreOldUpVector", (EntityFunctionMember)&StoreOldUpVector);
 
-    UpdateAccelerationCommand = GetMessage("update_acceleration(vector,number)", true);
-    IsPlayerCarCommand = GetMessage("command_IsPlayer_car:truth", true);
+    UpdateAccelerationCommand = GetCommand("update_acceleration(vector,number)", true);
+    IsPlayerCarCommand = GetCommand("command_IsPlayer_car:truth", true);
 
     tOverdoseVehicle->PropagateProperties();
 }

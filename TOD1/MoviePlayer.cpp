@@ -290,8 +290,8 @@ void MoviePlayer::Register()
 
     tMoviePlayer->PropagateProperties();
 
-    StopPressedCommand = GetMessage("stop_pressed", true);
-    PlayPressedCommand = GetMessage("play_command", true);
+    StopPressedCommand = GetCommand("stop_pressed", true);
+    PlayPressedCommand = GetCommand("play_command", true);
 }
 
 MoviePlayer::FrameInfo::FrameInfo()
@@ -389,6 +389,14 @@ void MoviePlayer::FrameInfo::OpenMovie()
         if (!BinkHandle)
             BinkWrapper::BinkGetError();
     }
+    //  NOTE: lolwhat, just casually ignoring fileHandle being NULL.
+#ifdef INCLUDE_FIXES
+    else
+    {
+        debug("OpenMovie: MovieFile handle is NULL!");
+        return;
+    }
+#endif
 
     m_FrameTexture = new Texture({ *(unsigned int*)BinkHandle, *(unsigned int*)((int)BinkHandle + 4) }, 1, 4);
 }

@@ -854,7 +854,7 @@ void Character::Register()
     tCharacter->RegisterScript("setmodelresfrommodel(entity)", (EntityFunctionMember)&SetModelResFromModel);
     tCharacter->RegisterScript("forceanimationupdate", (EntityFunctionMember)&ForceAnimationUpdate);
 
-    UpdateBoneCtrlCommand = GetMessage("update_bone_ctrl", true);
+    UpdateBoneCtrlCommand = GetCommand("update_bone_ctrl", true);
 
     tCharacter->PropagateProperties();
 }

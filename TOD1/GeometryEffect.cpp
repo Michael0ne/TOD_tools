@@ -234,7 +234,7 @@ void GeometryEffect::Start(int* args)
         {
             while (tGEKeyFrame != tEnt)
             {
-                tEnt = tEnt->m_Parent;
+                tEnt = tEnt->Parent;
                 if (!tEnt)
                 {
                     child = child->m_NextSibling;

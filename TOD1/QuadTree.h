@@ -2,12 +2,14 @@
 #include "MemoryManager.h"
 #include "Math.h"
 
+class Node;
+
 class QuadTreeInfo
 {
     friend class QuadTree;
 
 protected:
-    float       field_0;
+    uint8_t*    field_0;
     uint8_t*    field_4;
     uint8_t*    field_8;
     float       field_C;
@@ -50,6 +52,8 @@ private:
 public:
     QuadTree(const uint32_t nodes, const uint32_t a2);  //  @89A610
     int16_t     _89A3E0();  //  @89A3E0
+    Node*       GetFirstNode() const; //  @488880
+    Node*       GetNextNode(const Node* node) const;    //  @488360
 
     static uint32_t     TreesCreated;   //  @A3DD74
 };

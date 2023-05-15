@@ -176,7 +176,7 @@ public:
     void                FindNode_Impl(int* args);  //  @88EB60
     void                ConvertFromWorldSpace(Vector4f& outPos, const Vector4f& inPos); //  @88BC90
     void                SetWorldOrient(const Orientation& orientation);   //  @87F240
-    void                _86B4B0(const int size);    //  @86B4B0 //  NOTE: make space for field?
+    void                _86B4B0(const uint32_t propertyId);    //  @86B4B0 //  NOTE: make space for field?
     void                _86A930(const int size, const int* value, int* const outval, const int a4);   //  @86A930
     void                _86AA10(const int size, const int* value, int* const outval, const int a4);   //  @86AA10
     void                RotateLocalX(const float x);    //  @483DE0
@@ -285,6 +285,7 @@ public:
     Node*               FindNodeSlowRecursive(const char* const nodeName); //  @88DFF0
     void                StorePropertyData(const int propertyIndex, const int* const propertyValue, const DataType* propertyType);   //  @86A020
     void                GetScriptEntityPropertyValue(const int propertyId, int* outPropertyValue) const;  //  @86A6A0
+    void                TriggerScript(const uint16_t scriptId, const uint16_t scriptIdA, const uint8_t* scriptParams) const;    //  @86A2B0
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

@@ -526,7 +526,7 @@ void Scene::LoadSceneSession(void) const
                 bool noparent = false;
                 while (tFolder != folderscript)
                 {
-                    folderscript = folderscript->m_Parent;
+                    folderscript = folderscript->Parent;
                     if (!folderscript)
                     {
                         noparent = true;
@@ -580,7 +580,7 @@ void Scene::InstantiateAssetsToLists()
 
         while (tNode != scriptEntity)
         {
-            scriptEntity = scriptEntity->m_Parent;
+            scriptEntity = scriptEntity->Parent;
             if (!scriptEntity)
                 break;
         }
@@ -595,7 +595,7 @@ void Scene::InstantiateAssetsToLists()
             {
                 while (tCharacter != scriptEntity)
                 {
-                    scriptEntity = scriptEntity->m_Parent;
+                    scriptEntity = scriptEntity->Parent;
                     if (!scriptEntity)
                         break;
                 }
@@ -609,7 +609,7 @@ void Scene::InstantiateAssetsToLists()
             {
                 while (tModel != scriptEntity)
                 {
-                    scriptEntity = scriptEntity->m_Parent;
+                    scriptEntity = scriptEntity->Parent;
                     if (!scriptEntity)
                         break;
                 }
@@ -634,7 +634,7 @@ void Scene::InstantiateAssetsToLists()
         {
             while (tSoundEmitter != scriptEntity)
             {
-                scriptEntity = scriptEntity->m_Parent;
+                scriptEntity = scriptEntity->Parent;
                 if (!scriptEntity)
                     break;
             }
@@ -1177,7 +1177,7 @@ void Scene::EnumSceneCamerasAndUpdate()
 
         while (tCamera != scent)
         {
-            scent = scent->m_Parent;
+            scent = scent->Parent;
             if (!scent)
                 break;
         }
@@ -1301,9 +1301,9 @@ void Scene::Register()
     tScene->RegisterScript("buildfastfindnodevector", (EntityFunctionMember)&BuildFastFindNodeVector, NULL, NULL, NULL, nullptr, nullptr);
     tScene->RegisterScript("deletefastfindnodevector", (EntityFunctionMember)&DeleteFastFindNodeVector, NULL, NULL, NULL, nullptr, nullptr);
 
-    PreBlocksUnloadedCommand = GetMessage("pre_blocks_unloaded", true);
-    BlocksUnloadedCommand = GetMessage("blocks_unloaded", true);
-    InvalidatePlaceholderModelCommand = GetMessage("invalidate_placeholder_model", true);
+    PreBlocksUnloadedCommand = GetCommand("pre_blocks_unloaded", true);
+    BlocksUnloadedCommand = GetCommand("blocks_unloaded", true);
+    InvalidatePlaceholderModelCommand = GetCommand("invalidate_placeholder_model", true);
 
     tScene->PropagateProperties();
 }

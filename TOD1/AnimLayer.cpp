@@ -143,7 +143,7 @@ void AnimLayer::SetCrossTarget1(AnimSlot* target)
         {
             while (tCharacter != scriptEntity)
             {
-                scriptEntity = scriptEntity->m_Parent;
+                scriptEntity = scriptEntity->Parent;
                 if (!scriptEntity)
                     break;
             }
@@ -197,7 +197,7 @@ void AnimLayer::SetCrossTarget2(AnimSlot* target)
         {
             while (tCharacter != scriptEntity)
             {
-                scriptEntity = scriptEntity->m_Parent;
+                scriptEntity = scriptEntity->Parent;
                 if (!scriptEntity)
                     break;
             }

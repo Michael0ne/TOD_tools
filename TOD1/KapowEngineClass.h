@@ -5,8 +5,6 @@
 #include "File.h"
 #include <map>
 
-#define KAPOW_CLASS_SIZE 156
-
 #define KAPOW_GAMENAME "Total Overdose"
 #define CONFIG_SAVEDIR "/Total Overdose/"
 #define CONFIG_CONFIGFILE "/configpc.txt"

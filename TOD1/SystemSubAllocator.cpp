@@ -106,7 +106,7 @@ const int SystemSubAllocator::GetFreeMemory() const
     MEMORYSTATUSEX memoryStatus;
     GlobalMemoryStatusEx(&memoryStatus);
 
-    return memoryStatus.dwMemoryLoad * (memoryStatus.ullAvailPhys / 100UL);
+    return memoryStatus.dwMemoryLoad * ((uint32_t)memoryStatus.ullAvailPhys / 100);
 }
 
 const char* const SystemSubAllocator::GetAllocatorName() const

@@ -5,13 +5,13 @@ ListType::ListType(DataType* elementsType) : DataType(TYPE_LIST, "list", TYPE_LI
     MESSAGE_CLASS_CREATED(ListType);
 
     m_ListElementsType = elementsType;
-    m_ListElementSize = elementsType->m_Size;
+    m_ListElementSize = elementsType->Size;
 
     char str[128] = {};
-    sprintf(str, "list(%s)", elementsType->m_TypeName.m_Str);
-    m_TypeName = str;
+    sprintf(str, "list(%s)", elementsType->TypeName.m_Str);
+    TypeName = str;
 
-    m_ComplexType = (elementsType->m_TypeId == TYPE_STRING || elementsType->m_TypeId == TYPE_LIST || elementsType->m_TypeId == TYPE_DICT || elementsType->m_TypeId == TYPE_STRUCT);
+    m_ComplexType = (elementsType->TypeId == TYPE_STRING || elementsType->TypeId == TYPE_LIST || elementsType->TypeId == TYPE_DICT || elementsType->TypeId == TYPE_STRUCT);
 }
 
 ListType::~ListType()

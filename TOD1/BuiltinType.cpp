@@ -20,6 +20,7 @@
 #include "Scene.h"
 #include "TruthType.h"
 #include "ScriptThread.h"
+#include "ParticleSystem.h"
 
 BuiltinType* tBuiltin;
 
@@ -56,7 +57,7 @@ BuiltinType::~BuiltinType()
 void BuiltinType::RegisterMemberFunction(DataType* returntype, const char* membername, Getter getter, Setter setter, const char* memberproto, const char* a6)
 {
     char funcproto[128] = {};
-    sprintf(funcproto, "%s:%s", membername, returntype->m_TypeName.m_Str);
+    sprintf(funcproto, "%s:%s", membername, returntype->TypeName.m_Str);
     const int registeredtype = GetProperty(funcproto, true);
 
     BuiltinMember member(returntype, getter, setter, memberproto, a6);
@@ -377,15 +378,14 @@ void BuiltinType::DebugConsolePrint(int* arg)
 #endif
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void BuiltinType::GlobalKillAllEmmiters(int* arg)
 {
-    //ParticleSystem::KillEmmiters(false, false);
+    ParticleSystem::KillEmitters(false, false);
 }
 
 void BuiltinType::GetVersionNumber(char** arg)
 {
-    char procname[64] = {};
+    char procname[16] = {};
     HANDLE prochnd = NULL;
 
     sprintf(procname, "v7_%04d", GetCurrentProcessId() ^ 0x19EA3FD3);

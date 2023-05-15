@@ -338,7 +338,7 @@ void ScriptThread::AdjustAndPopStack()
 int ScriptThread::WriteScriptInformation(int* outInformation) const
 {
     int* outInformationBasePtr = outInformation;
-    Scriptbaked* script = m_ScriptNode->m_ScriptEntity->m_Script;
+    Scriptbaked* script = m_ScriptNode->m_ScriptEntity->Script;
     outInformation[1] = m_CallStack.size();
     int* stackInfoPtr = &outInformation[2];
 
@@ -368,7 +368,7 @@ int ScriptThread::WriteScriptInformation(int* outInformation) const
                 {
                     int newTypeSize = argumentsList[j]->CopyNoAllocate((const char*)m_Stack[stackOffset].m_Contents, (char*)++outInformation);
                     outInformation += newTypeSize;
-                    stackOffset += argumentsList[j]->m_Size;
+                    stackOffset += argumentsList[j]->Size;
                     dataOffset += newTypeSize;
                 }
             }
@@ -454,7 +454,7 @@ const bool ScriptThread::IsReferenced(const bool fixDangling) const
         std::vector<DataType*> params(100);
         if (m_CallStack[i].m_OnParameterOffset < 0)
         {
-            m_CallStack[i].m_NodePtr->m_ScriptEntity->m_Script->GetMethodParams(m_CallStack[i].m_FuncPtr, params);
+            m_CallStack[i].m_NodePtr->m_ScriptEntity->Script->GetMethodParams(m_CallStack[i].m_FuncPtr, params);
             if (params.size())
             {
                 do
@@ -465,7 +465,7 @@ const bool ScriptThread::IsReferenced(const bool fixDangling) const
                         referenceFound = false;
                     }
 
-                    argOffset += params[paramInd]->m_Size;
+                    argOffset += params[paramInd]->Size;
                 } while (paramInd < params.size());
             }
         }

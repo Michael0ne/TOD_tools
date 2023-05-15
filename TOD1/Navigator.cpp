@@ -146,7 +146,7 @@ const Vector4f& Navigator::CheckObstacle(const Vector4f& position)
         {
             while (tNode != grandParentScript)
             {
-                grandParentScript = grandParentScript->m_Parent;
+                grandParentScript = grandParentScript->Parent;
                 if (!grandParentScript)
                 {
                     grandParent = nullptr;
@@ -530,12 +530,12 @@ void Navigator::Register()
     tNavigator->RegisterScript("pathfind(vector,integer):truth", (EntityFunctionMember)&PathFind);
     tNavigator->RegisterScript("findnearestsignpost(vector,number):entity", (EntityFunctionMember)&FindNearestSignPost);
 
-    TurnCommand = GetMessage("command_turn(number)", true);
-    StopTurningCommand = GetMessage("command_stop_turning", true);
-    GetMessage("command_run", true);
-    StopCommand = GetMessage("command_stop", true);
-    StopMovingCommand = GetMessage("command_stop_moving", true);
-    StopTurningCommand = GetMessage("command_stop_turning", true);
+    TurnCommand = GetCommand("command_turn(number)", true);
+    StopTurningCommand = GetCommand("command_stop_turning", true);
+    GetCommand("command_run", true);
+    StopCommand = GetCommand("command_stop", true);
+    StopMovingCommand = GetCommand("command_stop_moving", true);
+    StopTurningCommand = GetCommand("command_stop_turning", true);
 
     tNavigator->PropagateProperties();
 }

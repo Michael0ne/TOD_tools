@@ -135,7 +135,7 @@ void Model::SetModelRes(const char* const arg)
         EntityType* placeholderEntity = m_ScriptEntity;
         while (tPlaceholder != placeholderEntity)
         {
-            placeholderEntity = placeholderEntity->m_Parent;
+            placeholderEntity = placeholderEntity->Parent;
             if (!placeholderEntity)
                 break;
         }

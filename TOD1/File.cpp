@@ -39,8 +39,7 @@ void FileBufferImpl::DeleteFileFromGameDir(const char* const filename)
 
 void FileBufferImpl::FindGameDir()
 {
-    char currdir[1024];
-    memset(currdir, NULL, sizeof(currdir));
+    char currdir[1024] = {};
 
     GetCurrentDirectory(sizeof(currdir), currdir);
     SetWorkingDir(currdir);
@@ -61,7 +60,7 @@ void FileBufferImpl::FindGameDir()
             if (GetDriveType(RootPathName) == DRIVE_CDROM)
 #endif
             {
-                char buffer[64];
+                char buffer[256] = {};
                 strcpy(buffer, RootPathName);
                 strcat(buffer, "/Program Files/Eidos/Total Overdose/TotalOverdose.exe");
 
