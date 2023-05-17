@@ -23,7 +23,7 @@ public:
     char            m_PropertiesSlots[5];   //  NOTE: same as above, but for properties.
     short           m_Order;
     EntityId        m_Id;
-    int            *m_Parameters; // NOTE: an array of properties values.
+    uint32_t       *m_Parameters; // NOTE: an array of properties values.
     Defragmentator *m_Defragmentator;
 
     EntityScriptData   *m_ScriptData;

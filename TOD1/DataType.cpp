@@ -79,7 +79,7 @@ int DataType::MakeCopy(char* a1)
     return result;
 }
 
-int DataType::CopyNoAllocate(const char* const from, char* to)
+int DataType::CopyNoAllocate(const char* const from, char* to) const
 {
     if (to == from)
         return Size;
@@ -141,7 +141,7 @@ int DataType::MakeFromString_A(const char* const inputstr, char* outtype, int* c
     return result;
 }
 
-void DataType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void DataType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, uint8_t* const outResult) const
 {
     return;
 }

@@ -83,19 +83,17 @@ int QuaternionType::MakeFromString(const char* const input, char* const outdata)
     return digitsread + digitsread_2 + digitsread_3 + digitsread_4;
 }
 
-void QuaternionType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void QuaternionType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, uint8_t* const outResult) const
 {
-    float* result;
+    float_t* result = nullptr;
 
     //  TODO: this is ridiculous!
     if (a5)
-        result = (float*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
+        result = (float_t*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
     else
-        result = (float*)((Node*)(callerNode + a3)->*(getterPtr))();
+        result = (float_t*)((Node*)(callerNode + a3)->*(getterPtr))();
 
-    outResult[0] = (int)result[0];
-    outResult[1] = (int)result[1];
-    outResult[2] = (int)result[2];
+    memcpy(outResult, result, sizeof(result) * Size);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

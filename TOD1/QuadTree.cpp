@@ -112,3 +112,64 @@ QuadTreeInfo::QuadTreeInfo()
     field_54 = 0;
     field_58 = 0;
 }
+
+const uint8_t QuadTreeNode::SetLodLevel(const Vector4f&, const uint32_t factor)
+{
+    const double lodDistanceSqrt = sqrt((double)((uint32_t)LodDistance));
+    const uint32_t lodThresholdAdjusted = lodDistanceSqrt * 64 * LodThreshold;
+    const uint32_t lodFactorAdjusted = (uint32_t)(float)((float)(factor << 12) * Script::LodFactor);
+
+    Lod = 0;
+    if (lodFactorAdjusted < lodThresholdAdjusted)
+    {
+        Lod = 1;
+        if (lodFactorAdjusted < (lodThresholdAdjusted / 4))
+            Lod = 2;
+    }
+
+    const uint32_t lodFadeAdjusted = 64 * (FadeThreshold & 127) * (lodDistanceSqrt - Script::MinFadeDist);
+    const uint32_t lodFadeFactorAdjusted = (uint32_t)(float)((float)(factor << 11) * Script::LodFactor);
+    const uint32_t lodFadeThresholdAdjusted = lodFadeAdjusted - (lodFadeAdjusted >> (2 - (FadeThreshold >> 7)));
+
+    LodFade = -1;
+    if (lodFadeFactorAdjusted < lodFadeAdjusted)
+    {
+        if (lodFadeFactorAdjusted >= lodFadeThresholdAdjusted)
+        {
+            LodFade = (1.0 - (double)(lodFadeAdjusted - lodFadeFactorAdjusted) / (double)(lodFadeAdjusted - lodFadeThresholdAdjusted)) * 255.0;
+            return Lod;
+        }
+
+        LodFade = 0;
+        Lod = 6;
+    }
+
+    return Lod;
+}
+
+void QuadTreeNode::UpdateSiblings()
+{
+    if (Parent->FirstSibling == this)
+    {
+        Parent->FirstSibling = NextSibling;
+        Parent = nullptr;
+    }
+    else
+    {
+        auto firstSibling = Parent->FirstSibling;
+        auto nextSibling = firstSibling->NextSibling;
+        if (nextSibling)
+        {
+            while (nextSibling != this)
+            {
+                firstSibling = nextSibling;
+                nextSibling = nextSibling->NextSibling;
+                if (!nextSibling)
+                    return;
+            }
+
+            firstSibling->NextSibling = nextSibling->NextSibling;
+            Parent = nullptr;
+        }
+    }
+}

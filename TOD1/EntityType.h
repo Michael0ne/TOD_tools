@@ -91,16 +91,16 @@ public:
 
     void RegisterScript(const char* const scriptname, EntityFunctionMember scriptptr, const int a3 = 0, const int a4 = 0, const int a5 = 0, const char* const editorcontrolstr = nullptr, const char* const a7 = nullptr); // @86EC70
     void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, const int a4, const int a5, const int a6, EntitySetterFunction setterptr, const int a8, const int a9, const int a10, const char* const editorcontrolstring, const int a12, const int a13, const int propertyind); // @86D370
-    void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, EntitySetterFunction setterptr, const char* const editorcontrolstring, const int propertyind = -1)
+    inline void RegisterProperty(DataType* returntype, const char* const propertyname, EntityGetterFunction getterptr, EntitySetterFunction setterptr, const char* const editorcontrolstring, const int propertyind = -1)
     {
         RegisterProperty(returntype, propertyname, getterptr, NULL, NULL, NULL, setterptr, NULL, NULL, NULL, editorcontrolstring, NULL, NULL, propertyind);
     }
 
-    void                GetPropertyValue(const Node* callerNode, int* nodeParameters, const int propertyId, int* outPropertyValue) const; //  @86C020
+    void                GetPropertyValue(const Node* callerNode, uint32_t* nodeParameters, const uint32_t propertyIndex, uint8_t* outPropertyValue) const; //  @86C020
     void                PropagateProperties(); // @86E9B0
     bool                HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
     DataType*           PropertyByIndex(const int index) const; //  @86CCB0
-    void                ExecuteScript(Node* node) const;  //  @86CFF0
+    void                SaveData(Node* node) const;  //  @86CFF0
 
     static Entity*      IsParentOf(EntityType* ett, Entity* ent);   //  @48C3B0
 };

@@ -121,7 +121,7 @@ public:
     virtual char        ProcessCollision(int, int);             //  @484DB0 //  NOTE: char _484DB0(int, int) { return 0; }
     virtual float       _8F8650(int, int);                      //  @8F8650 //  NOTE: float _8F8650(int, int) { return -1.0f; }
     virtual void        nullsub_3(int);                         //  @88C600
-    virtual void        ExecuteScript();                        //  @88C610
+    virtual void        SaveData();                             //  @88C610 //  NOTE: this is called when a save is initiated.
     virtual void        nullsub_4(int);                         //  @883EC0
     virtual void        DestroyFrameBuffers();                  //  @8CB190
     virtual void        nullsub_6(const std::vector<void*>&);    //  @883EC0
@@ -177,8 +177,8 @@ public:
     void                ConvertFromWorldSpace(Vector4f& outPos, const Vector4f& inPos); //  @88BC90
     void                SetWorldOrient(const Orientation& orientation);   //  @87F240
     void                _86B4B0(const uint32_t propertyId);    //  @86B4B0 //  NOTE: make space for field?
-    void                _86A930(const int size, const int* value, int* const outval, const int a4);   //  @86A930
-    void                _86AA10(const int size, const int* value, int* const outval, const int a4);   //  @86AA10
+    void                _86A930(const int size, const uint32_t* value, uint32_t* const outval, const int a4);   //  @86A930
+    void                _86AA10(const int size, const uint32_t* value, uint32_t* const outval, const int a4);   //  @86AA10
     void                RotateLocalX(const float x);    //  @483DE0
     void                RotateLocalY(const float y);    //  @891A50
     void                RotateLocalZ(const float z);    //  @484050
@@ -283,9 +283,11 @@ public:
     void                CallPropertySetter(const unsigned short propertyId, const void* data);  //  @86A6C0
     void                _86B560(const unsigned int propertyId, const void* data); //  @86B560
     Node*               FindNodeSlowRecursive(const char* const nodeName); //  @88DFF0
-    void                StorePropertyData(const int propertyIndex, const int* const propertyValue, const DataType* propertyType);   //  @86A020
-    void                GetScriptEntityPropertyValue(const int propertyId, int* outPropertyValue) const;  //  @86A6A0
+    void                StorePropertyData(const uint32_t propertyIndex, const uint32_t* const propertyValue, const DataType* propertyType);   //  @86A020
+    void                GetScriptEntityPropertyValue(const int propertyId, uint8_t* outPropertyValue) const;  //  @86A6A0
     void                TriggerScript(const uint16_t scriptId, const uint16_t scriptIdA, const uint8_t* scriptParams) const;    //  @86A2B0
+    void                _86AED0() const;  //  @86AED0
+    void                _86ABD0(const uint32_t propertyIndex, const uint32_t* param) const; //  @86ABD0
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

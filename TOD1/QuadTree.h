@@ -1,6 +1,7 @@
 #pragma once
 #include "MemoryManager.h"
 #include "Math.h"
+#include "Types.h"
 
 class Node;
 
@@ -58,5 +59,38 @@ public:
     static uint32_t     TreesCreated;   //  @A3DD74
 };
 
+class QuadTreeNode
+{
+private:
+    Node*               Owner;
+    QuadTreeNode*       Parent;
+    QuadTreeNode*       NextSibling;
+    QuadTreeNode*       FirstSibling;
+    int16_t             _f10[4];
+    uint32_t            _f18;
+    uint32_t            UserType;
+    uint32_t            _f20;
+    uint32_t            _f24;
+    uint32_t            _f28;
+    uint32_t            _f2C;
+    uint32_t            _f30;
+    QuadTreeNode*       ContactNode;
+    uint32_t*           _f38;
+    uint8_t             LodThreshold;
+    uint8_t             FadeThreshold;
+    int16_t             TraverseDistance;
+    Vector4f            Bounds;
+    uint8_t             field_4D;
+    uint8_t             Lod;
+    int8_t              LodFade;
+    uint8_t             ContactFilter;
+    int32_t             LodDistance;
+
+private:
+    const uint8_t       SetLodLevel(const Vector4f&, const uint32_t factor);   //  @89FAE0
+    void                UpdateSiblings();   //  @89F540
+};
+
+ASSERT_CLASS_SIZE(QuadTreeNode, 88);
 ASSERT_CLASS_SIZE(QuadTree, 24);
 ASSERT_CLASS_SIZE(QuadTreeInfo, 92);

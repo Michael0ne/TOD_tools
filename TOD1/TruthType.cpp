@@ -41,9 +41,9 @@ int TruthType::MakeFromString(const char* const input, char* const outdata) cons
     return -1;
 }
 
-void TruthType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void TruthType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, uint8_t* const outResult) const
 {
-    bool result;
+    bool result = 0;
 
     //  TODO: this is ridiculous!
     if (a5)

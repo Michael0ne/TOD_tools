@@ -1474,9 +1474,9 @@ bool Scriptbaked::_48A1B0(Node* node, const int32_t scriptId, uint8_t* args)
     }
 }
 
-bool Scriptbaked::GetMappedPropertyValue(const int* const nodeParameters, const int propertyId, int* outPropertyValue) const
+bool Scriptbaked::GetMappedPropertyValue(const uint32_t* const nodeParameters, const uint32_t propertyIndex, uint8_t* outPropertyValue) const
 {
-    auto it = m_PropertiesValues.find(propertyId);
+    const auto it = m_PropertiesValues.find(propertyIndex);
     if (it == m_PropertiesValues.end())
         return false;
 
@@ -1576,7 +1576,7 @@ const int Scriptbaked::GetPropertiesListSize() const
 void Scriptbaked::GetEntityPropertyValue(Entity* ent, const unsigned int propertyindex, int* outPropValue)
 {
     unsigned int propertyvaluesize = m_PropertiesList[propertyindex].m_Info->m_PropertyType->Size;
-    int* entpropertyvalue = &ent->m_Parameters[m_PropertiesList[propertyindex].m_Offset];
+    uint32_t* entpropertyvalue = &ent->m_Parameters[m_PropertiesList[propertyindex].m_Offset];
 
     if (propertyvaluesize > 0)
         for (; propertyvaluesize; --propertyvaluesize)
@@ -1590,7 +1590,7 @@ bool Scriptbaked::HasPropertyId(const unsigned int propertyid) const
 
 void Scriptbaked::CopyScriptParameters(Entity* entity)
 {
-    int* parameters = new int[m_ScriptSize];
+    uint32_t* parameters = new uint32_t[m_ScriptSize];
 
     for (unsigned int i = 0; i < m_PropertiesList.size(); ++i)
         if (m_PropertiesList[i].m_DefaultValue)
@@ -1654,21 +1654,22 @@ void Scriptbaked::AddLocal(void(*procPtr)(ScriptThread*), DataType* localType)
 void Scriptbaked::AddProperty(Node* scriptNode, const unsigned int propertyIndex, const int* const propertyValue)
 {
     DataType* propertyType = m_PropertiesList[propertyIndex].m_Info->m_PropertyType;
-    int* nodePropertyPtr = &scriptNode->m_Parameters[m_PropertiesList[propertyIndex].m_Offset];
-    const unsigned int slot = scriptNode->m_Parameters[propertyIndex / 16];
-    const unsigned int index = 1 << (2 * (propertyIndex & 15));
+    uint32_t* nodePropertyPtr = &scriptNode->m_Parameters[m_PropertiesList[propertyIndex].m_Offset];
+    const uint32_t slot = scriptNode->m_Parameters[propertyIndex / 16];
+    const uint32_t index = 1 << (2 * (propertyIndex & 15));
 
     if ( ((slot & index) == 0 || ((2 * index) & slot) == 0) && !propertyType->AreEqual(nodePropertyPtr, propertyValue) )
         scriptNode->_86B560(propertyIndex, nodePropertyPtr);
 
+    //  TODO: int32_t -> uint32_t!
     if (DataType::IsSimpleType(propertyType))
     {
-        DataType::CopyValue(nodePropertyPtr, propertyValue, propertyType->Size);
+        DataType::CopyValue((int32_t*)nodePropertyPtr, propertyValue, propertyType->Size);
     }
     else
     {
         propertyType->Delete((char*)nodePropertyPtr);
-        propertyType->Clone(propertyValue, nodePropertyPtr);
+        propertyType->Clone(propertyValue, (int32_t*)nodePropertyPtr);
     }
 }
 
@@ -1687,6 +1688,17 @@ void Scriptbaked::AddPropertyByReference(Node* callerNode, const int propertyInd
         //  NOTE: editor/debug leftover?
         debug("AddPropertyByReference: script does not have this propety! id=%d, type=%s", propertyInd, buf.m_Str);
 #endif
+    }
+}
+
+void Scriptbaked::_48A070(Node* node)
+{
+    node->_86AED0();
+
+    if (m_PropertiesList.size())
+    {
+        for (uint32_t i = 0; i < m_PropertiesList.size(); i++)
+            node->_86ABD0(i, &node->m_Parameters[m_PropertiesList[i].m_Offset]);
     }
 }
 

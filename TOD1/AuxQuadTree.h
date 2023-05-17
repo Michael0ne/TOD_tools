@@ -4,6 +4,7 @@
 
 class Node;
 
+//  TODO: merge this class into 'QuadTree.h'! This is a mess!
 class AuxQuadTree
 {
 public:

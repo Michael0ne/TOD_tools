@@ -108,13 +108,13 @@ void EntityType::RegisterProperty(DataType* returntype, const char* const proper
     }
 }
 
-void EntityType::GetPropertyValue(const Node* callerNode, int* nodeParameters, const int propertyId, int* outPropertyValue) const
+void EntityType::GetPropertyValue(const Node* callerNode, uint32_t* nodeParameters, const uint32_t propertyIndex, uint8_t* outPropertyValue) const
 {
     *outPropertyValue = 0;
 
-    if (!Script || !Script->GetMappedPropertyValue(nodeParameters, propertyId, outPropertyValue))
+    if (!Script || !Script->GetMappedPropertyValue(nodeParameters, propertyIndex, outPropertyValue))
     {
-        const auto it = IsBaseEntity ? Parent->PropertiesMappings.find(propertyId) : PropertiesMappings.find(propertyId);
+        const auto it = IsBaseEntity ? Parent->PropertiesMappings.find(propertyIndex) : PropertiesMappings.find(propertyIndex);
 
         EntityType* ent = (EntityType*)this;
         unsigned short mappedPropertyId = it->first;
@@ -254,22 +254,55 @@ DataType* EntityType::PropertyByIndex(const int index) const
     }
 }
 
-#pragma message(TODO_IMPLEMENTATION)
-void EntityType::ExecuteScript(Node* node) const
+void EntityType::SaveData(Node* node) const
 {
-    unsigned int localPropertyTotal = IsBaseEntity
-        ? (Parent->LocalPropertiesList.size() + Parent->TotalLocalProperties)
-        : (LocalPropertiesList.size() + TotalLocalProperties);
+    uint32_t localPropertiesTotal = IsBaseEntity ? Parent->LocalPropertiesList.size() + Parent->TotalLocalProperties : LocalPropertiesList.size() + TotalLocalProperties;
+    localPropertiesTotal = clamp(localPropertiesTotal, (uint32_t)0, (uint32_t)40);
 
-    localPropertyTotal = localPropertyTotal > 40 ? 40 : localPropertyTotal;
-
-    if (localPropertyTotal > 1)
+    if (localPropertiesTotal > 1)
     {
-        for (unsigned int i = 0; i < localPropertyTotal; ++i)
+        int32_t propertyIndex = -1;
+        for (uint32_t i = 1; i < localPropertiesTotal; i++, propertyIndex--)
         {
+            const bool propertyUsed = (node->m_PropertiesSlots[i / 8] & (1 << (i & 7))) != 0;
+            if (!propertyUsed)
+                continue;
 
+            EntityType* parent = const_cast<EntityType*>(this);
+            EntityType::PropertyInfo* propertyInfo = nullptr;
+            if (propertyIndex <= 0)
+            {
+                if (i < TotalLocalProperties)
+                {
+                    do
+                    {
+                        parent = parent->Parent;
+                    } while (i < parent->TotalLocalProperties);
+                }
+
+                propertyInfo = &(parent->LocalPropertiesList[i - parent->TotalLocalProperties]);
+            }
+            else
+            {
+                if (propertyIndex < TotalGlobalProperties)
+                {
+                    do
+                    {
+                        parent = parent->Parent;
+                    } while (i < parent->TotalGlobalProperties);
+                }
+
+                propertyInfo = &(parent->GlobalPropertiesList[propertyIndex - parent->TotalGlobalProperties]);
+            }
+
+            uint8_t getterResult[4] = {};
+            propertyInfo->ReturnType->CallGetterFunction(node, propertyInfo->Getter, propertyInfo->_fC, propertyInfo->_f10, propertyInfo->_f14, getterResult);
+            node->StorePropertyData(i, (uint32_t*)getterResult, propertyInfo->ReturnType);
         }
     }
+
+    if (Script)
+        Script->_48A070(node);
 }
 
 Entity* EntityType::IsParentOf(EntityType* ett, Entity* ent)

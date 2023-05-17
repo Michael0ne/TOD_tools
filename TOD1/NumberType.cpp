@@ -47,17 +47,17 @@ int NumberType::MakeFromString(const char* const input, char* const outdata) con
     return ParseFloatNumberString(input, (float*)outdata);
 }
 
-void NumberType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void NumberType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, uint8_t* const outResult) const
 {
-    int result;
+    float_t result = 0.f;
 
     //  TODO: this is ridiculous!
     if (a5)
-        result = *(int*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
+        result = *(float_t*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
     else
-        result = *(int*)((Node*)(callerNode + a3)->*(getterPtr))();
+        result = *(float_t*)((Node*)(callerNode + a3)->*(getterPtr))();
 
-    *outResult = result;
+    memcpy(outResult, &result, sizeof(result));
 }
 
 void NumberType::CallSetterFunction(const void* data, Node* callerNode, EntitySetterFunction setterPtr, int a4, int virtualMethodIndex, int a6) const

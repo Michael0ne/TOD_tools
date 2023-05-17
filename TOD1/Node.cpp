@@ -183,7 +183,30 @@ Node* Node::FindNodeSlowRecursive(const char* const nodeName)
     }
 }
 
-void Node::GetScriptEntityPropertyValue(const int propertyId, int* outPropertyValue) const
+void Node::StorePropertyData(const uint32_t propertyIndex, const uint32_t* const propertyValue, const DataType* propertyType)
+{
+    if (!m_ScriptEntity)
+        return;
+
+    if (m_Flags.Volatile || m_Flags._29)
+        return;
+
+    int32_t* dataBuffer = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
+    if (!dataBuffer)
+        return;
+
+    const bool propertyInUse = ((1 << (propertyIndex & 7)) & m_PropertiesSlots[propertyIndex / 8]) != 0;
+    if (!propertyInUse)
+        return;
+
+    *dataBuffer = propertyIndex & 0xFFF | (m_Id.Id << 8) | ((*(uint32_t*)&m_Id >> 16) & 0x7000);
+    int32_t* nextDataPtr = dataBuffer + 1;
+
+    const uint32_t bytesCopied = propertyType->CopyNoAllocate((const char*)propertyValue, (char*)nextDataPtr);
+    g_SceneSaveLoad->SaveEntityToDataBuffer(m_Id.Id, nextDataPtr + bytesCopied);
+}
+
+void Node::GetScriptEntityPropertyValue(const int propertyId, uint8_t* outPropertyValue) const
 {
     m_ScriptEntity->GetPropertyValue(this, m_Parameters, propertyId, outPropertyValue);
 }
@@ -260,9 +283,9 @@ void Node::_86B4B0(const uint32_t propertyId)
         return;
 
     const unsigned int block = 2 * (propertyId & 15);
-    int* propertyParamValue = &m_Parameters[propertyId / 16];
+    uint32_t* propertyParamValue = &m_Parameters[propertyId / 16];
     const unsigned int slot = *propertyParamValue >> block;
-    const int* scriptPropertyValue = &m_Parameters[m_ScriptEntity->Script->m_PropertiesList[propertyId].m_Offset];
+    const uint32_t* scriptPropertyValue = &m_Parameters[m_ScriptEntity->Script->m_PropertiesList[propertyId].m_Offset];
 
     //  NOTE: check if this property should be saved/added to rewind?
     if ((slot & 3) != 3)
@@ -274,7 +297,7 @@ void Node::_86B4B0(const uint32_t propertyId)
     }
 }
 
-void Node::_86A930(const int size, const int* value, int* const outval, const int a4)
+void Node::_86A930(const int size, const uint32_t* value, uint32_t* const outval, const int a4)
 {
     EntityType* ent = m_ScriptEntity->IsBaseEntity ? m_ScriptEntity->Parent : m_ScriptEntity;
     *Scene::RewindBuffer2DataPtr++ =
@@ -287,7 +310,7 @@ void Node::_86A930(const int size, const int* value, int* const outval, const in
     *outval |= a4;
 }
 
-void Node::_86AA10(const int propertyId, const int* value, int* const outval, const int a4)
+void Node::_86AA10(const int propertyId, const uint32_t* value, uint32_t* const outval, const int a4)
 {
     int* buffptr = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
     if (buffptr)
@@ -1377,16 +1400,16 @@ void Node::_86B560(const unsigned int propertyId, const void* data)
     if (!m_ScriptEntity || m_Flags._29 || m_Flags.Volatile)
         return;
 
-    int* param = &m_Parameters[propertyId / 16];
+    uint32_t* param = &m_Parameters[propertyId / 16];
     const unsigned int index = 1 << (2 * (propertyId & 15));
 
     if ((param[0] & index) == 0 || (param[0] & (2 * index)) == 0)
     {
         if (Scene::RewindBuffer2DataPtr && (param[0] & index) == 0)
-            _86A930(propertyId, (const int*)data, param, index);
+            _86A930(propertyId, (uint32_t*)data, param, index);
 
         if ((param[0] & (2 * index)) == 0)
-            _86AA10(propertyId, (const int*)data, param, 2 * index);
+            _86AA10(propertyId, (uint32_t*)data, param, 2 * index);
     }
 }
 
@@ -1742,9 +1765,9 @@ void Node::nullsub_3(int)
     return;
 }
 
-void Node::ExecuteScript()
+void Node::SaveData()
 {
-    m_ScriptEntity->ExecuteScript(this);
+    m_ScriptEntity->SaveData(this);
 }
 
 void Node::nullsub_4(int)

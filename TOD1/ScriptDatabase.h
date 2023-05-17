@@ -175,7 +175,7 @@ private:
 
 public:
 
-    bool                        GetMappedPropertyValue(const int* const nodeParameters, const int propertyId, int* outPropertyValue) const;   //  @48B6A0
+    bool                        GetMappedPropertyValue(const uint32_t* const nodeParameters, const uint32_t propertyIndex, uint8_t* outPropertyValue) const;   //  @48B6A0
     bool                        _48A7E0(Node* node, int scriptId, void* args); // @48A7E0
     void                        ClearEntityProperties(Entity* ent); //  @489C90
     EntityType*                 GetAttachedScript() const;  //  @489AE0
@@ -187,6 +187,7 @@ public:
     int                         GetParameterProcedureIndex(void (*procedure)(ScriptThread*)) const; //  @489F50
     const int                   GetPropertyValueByIndex(const int index) const; //  @489A70
     void                        AddPropertyByReference(Node* callerNode, const int propertyInd, const void* data); //  @489D40
+    void                        _48A070(Node* node);    //  @48A070
 
     EntityType*                 AssignScriptToEntity(EntityType * parent); // @48A3F0
 

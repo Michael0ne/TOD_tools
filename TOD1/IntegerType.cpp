@@ -47,17 +47,17 @@ int IntegerType::MakeFromString(const char* const input, char* const outdata) co
     return ParseNumberString(input, (int*)outdata);
 }
 
-void IntegerType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, int* const outResult) const
+void IntegerType::CallGetterFunction(const Node* callerNode, EntityGetterFunction getterPtr, int a3, int virtualMethodIndex, int a5, uint8_t* const outResult) const
 {
-    int result;
+    int32_t result = 0;
 
     //  TODO: this is ridiculous!
     if (a5)
-        result = *(int*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
+        result = *(int32_t*)((Node*)(callerNode + a3 + virtualMethodIndex + *(int*)(*(int*)callerNode + virtualMethodIndex) + a5)->*(getterPtr))();
     else
-        result = *(int*)((Node*)(callerNode + a3)->*(getterPtr))();
+        result = *(int32_t*)((Node*)(callerNode + a3)->*(getterPtr))();
 
-    *outResult = result;
+    memcpy(outResult, &result, sizeof(result));
 }
 
 bool IntegerType::NotEqualTo(const void* const arg1, const void* const arg2) const
