@@ -101,6 +101,12 @@ public:
     bool                HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
     DataType*           PropertyByIndex(const int index) const; //  @86CCB0
     void                SaveData(Node* node) const;  //  @86CFF0
+    const inline uint32_t   GetTotalProperties() const //  @86BF00
+    {
+        return IsBaseEntity
+            ? Parent->LocalPropertiesList.size() + Parent->TotalLocalProperties
+            : LocalPropertiesList.size() + TotalLocalProperties;
+    }
 
     static Entity*      IsParentOf(EntityType* ett, Entity* ent);   //  @48C3B0
 };

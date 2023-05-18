@@ -229,6 +229,66 @@ void Node::TriggerScript(const uint16_t scriptId, const uint16_t scriptIdA, cons
         //  TODO: 'this' adjustment shenanigans here!
 }
 
+void Node::SaveScriptData() const
+{
+    if (!m_ScriptEntity)
+        return;
+
+    if (m_Flags._29 || m_Flags.Volatile)
+        return;
+
+    auto dataBuffer = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
+    if (!dataBuffer)
+        return;
+
+    if ((m_PropertiesSlots[0] & 1) == 0)
+        return;
+
+    *dataBuffer = (m_Id.Id << 8) | (((*(uint32_t*)&m_Id >> 16) & 0x7000) - 1) & 0xF000;
+    dataBuffer++;
+
+    if (m_ScriptData && m_ScriptData->m_ScriptThread)
+    {
+        *dataBuffer = 1;
+
+        const auto scriptDataSize = m_ScriptData->m_ScriptThread->WriteScriptInformation(++dataBuffer);
+        dataBuffer += scriptDataSize;
+    }
+    else
+    {
+        *dataBuffer = 0;
+        dataBuffer++;
+    }
+
+    g_SceneSaveLoad->SaveEntityToDataBuffer(m_Id.Id, dataBuffer);
+}
+
+void Node::SaveScriptPropertyData(const uint32_t propertyIndex, const uint32_t* param) const
+{
+    if (!m_ScriptEntity)
+        return;
+
+    if (m_Flags._29 || m_Flags.Volatile)
+        return;
+
+    auto dataBuffer = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
+    if (!dataBuffer)
+        return;
+
+    const bool isUsed = (m_Parameters[propertyIndex / 16] & (2 * (1 << (2 * propertyIndex & 15)))) != 0;
+    if (!isUsed)
+        return;
+
+    const auto propertyType = m_ScriptEntity->Script->m_PropertiesList[propertyIndex].m_Info->m_PropertyType;
+    *dataBuffer = (m_Id.Id << 8) | (((m_Id.BlockId - 1) << 12) & 0xF000) | ((int16_t)propertyIndex + (uint16_t)m_ScriptEntity->GetTotalProperties()) & 0xFFF;
+    dataBuffer++;
+
+    const auto propertyDataSize = propertyType->CopyNoAllocate((char*)param, (char*)dataBuffer);
+    dataBuffer += propertyDataSize;
+
+    g_SceneSaveLoad->SaveEntityToDataBuffer(m_Id.Id, dataBuffer);
+}
+
 void Node::FindNode_Impl(int* args)
 {
     *args = (int)FindNode((const char*)args[1]);

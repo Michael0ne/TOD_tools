@@ -63,7 +63,7 @@ public:
 
     void            SetScript(EntityType* script); // @869E20
 
-    const int       SaveScriptData(SavePoint * savefilehelper); // @86B110
+    const int       SaveScriptDataToSavePoint(SavePoint * savefilehelper); // @86B110
     void            ClearPropertiesSlots(); //  @86A190
     void            ClearScriptsSlots();    //  @86A150
 

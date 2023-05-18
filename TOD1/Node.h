@@ -286,8 +286,8 @@ public:
     void                StorePropertyData(const uint32_t propertyIndex, const uint32_t* const propertyValue, const DataType* propertyType);   //  @86A020
     void                GetScriptEntityPropertyValue(const int propertyId, uint8_t* outPropertyValue) const;  //  @86A6A0
     void                TriggerScript(const uint16_t scriptId, const uint16_t scriptIdA, const uint8_t* scriptParams) const;    //  @86A2B0
-    void                _86AED0() const;  //  @86AED0
-    void                _86ABD0(const uint32_t propertyIndex, const uint32_t* param) const; //  @86ABD0
+    void                SaveScriptData() const;  //  @86AED0
+    void                SaveScriptPropertyData(const uint32_t propertyIndex, const uint32_t* param) const; //  @86ABD0
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

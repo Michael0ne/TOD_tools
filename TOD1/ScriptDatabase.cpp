@@ -1691,14 +1691,14 @@ void Scriptbaked::AddPropertyByReference(Node* callerNode, const int propertyInd
     }
 }
 
-void Scriptbaked::_48A070(Node* node)
+void Scriptbaked::SaveNodeProperties(Node* node)
 {
-    node->_86AED0();
+    node->SaveScriptData();
 
     if (m_PropertiesList.size())
     {
         for (uint32_t i = 0; i < m_PropertiesList.size(); i++)
-            node->_86ABD0(i, &node->m_Parameters[m_PropertiesList[i].m_Offset]);
+            node->SaveScriptPropertyData(i, &node->m_Parameters[m_PropertiesList[i].m_Offset]);
     }
 }
 

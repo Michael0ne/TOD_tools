@@ -272,7 +272,7 @@ bool SceneSaveLoad::WriteSavePointFileData(class SavePoint* savepoint, SaveInfo*
         if (savefilehelper.WriteBufferWithSize((const char*)&dummynull, sizeof(dummynull)) == sizeof(dummynull))
         {
             //  TODO: not sure if this is correct way.
-            const unsigned int propertiessize = savedata->m_MemorySummaryNode->SaveScriptData((SavePoint*)&savefilehelper);
+            const unsigned int propertiessize = savedata->m_MemorySummaryNode->SaveScriptDataToSavePoint((SavePoint*)&savefilehelper);
             if (propertiessize >= 0)
             {
                 savefilehelper._WriteBufferAndSetToStart();

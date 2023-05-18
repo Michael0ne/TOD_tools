@@ -67,7 +67,7 @@ int Entity::SaveScriptDataToFile_Impl(MemoryCards * memcard, int memcardindex, i
     if (!sp.Open(STATUS_1))
         return -1;
 
-    const int writtendatasize = SaveScriptData(&sp);
+    const int writtendatasize = SaveScriptDataToSavePoint(&sp);
     if (writtendatasize >= NULL && !SavePoint::GenerateAndWriteCRC(&sp, sp.GetPosition()))
         return -1;
 
@@ -244,7 +244,7 @@ void Entity::SetScript(EntityType* script)
         script->Script->CopyScriptParameters(this);
 }
 
-const int Entity::SaveScriptData(SavePoint * savefilehelper)
+const int Entity::SaveScriptDataToSavePoint(SavePoint * savefilehelper)
 {
     if (!m_ScriptEntity->Script)
         return -1;

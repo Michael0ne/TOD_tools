@@ -302,7 +302,7 @@ void EntityType::SaveData(Node* node) const
     }
 
     if (Script)
-        Script->_48A070(node);
+        Script->SaveNodeProperties(node);
 }
 
 Entity* EntityType::IsParentOf(EntityType* ett, Entity* ent)

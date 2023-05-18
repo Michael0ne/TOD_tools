@@ -187,7 +187,7 @@ public:
     int                         GetParameterProcedureIndex(void (*procedure)(ScriptThread*)) const; //  @489F50
     const int                   GetPropertyValueByIndex(const int index) const; //  @489A70
     void                        AddPropertyByReference(Node* callerNode, const int propertyInd, const void* data); //  @489D40
-    void                        _48A070(Node* node);    //  @48A070
+    void                        SaveNodeProperties(Node* node);    //  @48A070
 
     EntityType*                 AssignScriptToEntity(EntityType * parent); // @48A3F0
 
