@@ -305,6 +305,17 @@ void EntityType::SaveData(Node* node) const
         Script->SaveNodeProperties(node);
 }
 
+const uint32_t EntityType::_86CAC0(const uint16_t propertyIndex) const
+{
+    const auto propertiesMappings = IsBaseEntity ? Parent->PropertiesMappings : PropertiesMappings;
+    const auto mappedPropertyIndex = propertiesMappings.find(propertyIndex);
+    if (mappedPropertyIndex != propertiesMappings.cend())
+        return mappedPropertyIndex->first;
+
+    const uint32_t localPropertiesTotal = IsBaseEntity ? Parent->LocalPropertiesList.size() + Parent->TotalLocalProperties : LocalPropertiesList.size() + TotalLocalProperties;
+    return localPropertiesTotal + Script->GetPropertyValueByIndex(propertyIndex);
+}
+
 Entity* EntityType::IsParentOf(EntityType* ett, Entity* ent)
 {
     if (!ent)

@@ -1537,7 +1537,7 @@ void FileBuffer::OpenZip(const char* const zipName)
     int slotId = ZipArch::SlotId++;
     LogDump::LogA("Opening zip <%s> into slot %i\n", zipName, slotId);
 
-    // ZipArch::SlotInfo[slotId].field_4 = 15; // TODO: reserve space?
+    // ZipArch::SlotInfo[slotId]._f4 = 15; // TODO: reserve space?
     ZipArch::ZipNames[slotId] = zipName;
 
     FileBufferImpl::ZipFilesArray[slotId] = new FileBufferImpl(zipName, 33, true);

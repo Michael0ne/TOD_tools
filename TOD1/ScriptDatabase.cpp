@@ -1631,7 +1631,7 @@ int Scriptbaked::GetParameterProcedureIndex(void(*procedure)(ScriptThread*)) con
     if (!m_ParametersList.size())
         return -1;
 
-    unsigned int index = 0;
+    size_t index = 0;
     for (std::vector<Parameter>::const_iterator it = m_ParametersList.cbegin(); it->m_ProcPtr != procedure; it++, ++index);
 
     return index >= m_ParametersList.size() ? -1 : index;
@@ -1639,9 +1639,9 @@ int Scriptbaked::GetParameterProcedureIndex(void(*procedure)(ScriptThread*)) con
 
 const int Scriptbaked::GetPropertyValueByIndex(const int index) const
 {
-    auto& it = m_PropertiesValues.find(index);
+    const auto it = m_PropertiesValues.find(index);
     if (it != m_PropertiesValues.end())
-        return (*it).first;
+        return it->first;
     else
         return -1;
 }

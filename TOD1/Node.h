@@ -133,7 +133,7 @@ public:
 
     void* operator new (size_t size)
     {
-        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, __FILE__, __LINE__);
     }
     void operator delete(void* ptr)
     {
@@ -150,7 +150,7 @@ public:
     void                StoreScriptData();  //  @86B610
     void                SetScriptData(Defragmentator* defrag, EntityScriptData* data);  //  @48B700
     void                GetWorldPos(Vector4f& pos) const; //  @484370
-    void                StoreProperty(const int index, const void* param, DataType* type);   //  @86A3C0 //  NOTE: probably it's 'SetScriptParam'.
+    void                StoreProperty(const int index, const void* param, DataType* type);   //  @86A3C0
     void                SetOrient(const Orientation& orient);   //  @88DB20
     Vector4f*           GetPos(Vector4f& outVec);   //  @483620
     void                GetWorldMatrix(DirectX::XMMATRIX& outMat) const;    //  @4842C0
@@ -177,8 +177,8 @@ public:
     void                ConvertFromWorldSpace(Vector4f& outPos, const Vector4f& inPos); //  @88BC90
     void                SetWorldOrient(const Orientation& orientation);   //  @87F240
     void                _86B4B0(const uint32_t propertyId);    //  @86B4B0 //  NOTE: make space for field?
-    void                _86A930(const int size, const uint32_t* value, uint32_t* const outval, const int a4);   //  @86A930
-    void                _86AA10(const int size, const uint32_t* value, uint32_t* const outval, const int a4);   //  @86AA10
+    void                _86A930(const int size, const uint32_t* value, uint32_t* const outval, const int a4) const;   //  @86A930
+    void                _86AA10(const int size, const uint32_t* value, uint32_t* const outval, const int a4) const;   //  @86AA10
     void                RotateLocalX(const float x);    //  @483DE0
     void                RotateLocalY(const float y);    //  @891A50
     void                RotateLocalZ(const float z);    //  @484050
@@ -281,13 +281,14 @@ public:
     void                ConvertDirectionFromWorldSpace(int* args) const;    //  @88CA20
     void                ConvertDirectionToWorldSpace(int* args) const;  //  @88C9C0
     void                CallPropertySetter(const unsigned short propertyId, const void* data);  //  @86A6C0
-    void                _86B560(const unsigned int propertyId, const void* data); //  @86B560
+    void                _86B560(const uint32_t propertyIndex, const uint32_t* param) const; //  @86B560
     Node*               FindNodeSlowRecursive(const char* const nodeName); //  @88DFF0
     void                StorePropertyData(const uint32_t propertyIndex, const uint32_t* const propertyValue, const DataType* propertyType);   //  @86A020
     void                GetScriptEntityPropertyValue(const int propertyId, uint8_t* outPropertyValue) const;  //  @86A6A0
     void                TriggerScript(const uint16_t scriptId, const uint16_t scriptIdA, const uint8_t* scriptParams) const;    //  @86A2B0
     void                SaveScriptData() const;  //  @86AED0
     void                SaveScriptPropertyData(const uint32_t propertyIndex, const uint32_t* param) const; //  @86ABD0
+    void                _86BB80(const uint32_t propertyIndex, const uint32_t* param) const; //  @86BB80
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

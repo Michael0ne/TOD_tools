@@ -727,8 +727,8 @@ float Scene::GetWindSize() const
     if (!m_RewindBuffer1 || !m_RewindBuffer2)
         return 0.f;
 
-    int windsize1 = m_RewindBuffer1->m_List_1.size() ? m_RewindBuffer1->m_List_1.end()->m_GameTimeMs : NULL;
-    int windsize2 = m_RewindBuffer2->m_List_1.size() ? m_RewindBuffer2->m_List_1.end()->m_GameTimeMs : NULL;
+    int windsize1 = m_RewindBuffer1->List_1.size() ? m_RewindBuffer1->List_1.end()->GameTimeMs : NULL;
+    int windsize2 = m_RewindBuffer2->List_1.size() ? m_RewindBuffer2->List_1.end()->GameTimeMs : NULL;
 
     if (!windsize1 || !windsize2)
         return 0.f;
@@ -1209,15 +1209,15 @@ void Scene::AllocateRewindBuffer()
         field_268 = NULL;
     }
 
-    m_RewindBuffer1->m_List_1.resize(1);
-    m_RewindBuffer1->m_ListHead = (void*)&(m_RewindBuffer1->m_List_1.begin());
-    m_RewindBuffer1->m_Size = NULL;
-    m_RewindBuffer1->field_20 = NULL;
+    m_RewindBuffer1->List_1.resize(1);
+    m_RewindBuffer1->ListHeadPtr = &m_RewindBuffer1->List_1.begin();
+    m_RewindBuffer1->Size = NULL;
+    m_RewindBuffer1->_f20 = NULL;
 
-    m_RewindBuffer2->m_List_1.resize(1);
-    m_RewindBuffer2->m_ListHead = (void*)&(m_RewindBuffer2->m_List_1.begin());
-    m_RewindBuffer2->m_Size = NULL;
-    m_RewindBuffer2->field_20 = NULL;
+    m_RewindBuffer2->List_1.resize(1);
+    m_RewindBuffer2->ListHeadPtr = &m_RewindBuffer2->List_1.begin();
+    m_RewindBuffer2->Size = NULL;
+    m_RewindBuffer2->_f20 = NULL;
 }
 
 #pragma message(TODO_IMPLEMENTATION)

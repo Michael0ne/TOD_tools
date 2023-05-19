@@ -143,7 +143,7 @@ int* SceneSaveLoad::GetEntityDataBuffer(const unsigned int nodeid)
         case 3:
             return (int*)&m_RewindDataBuffer[m_RewindDataBufferSize];
         case 4:
-            return (int*)&m_SaveInfo_1.m_TransactionBuffer->m_Buffer[m_SaveInfo_1.m_TransactionBuffer->m_Size + m_TransactionBufferSize];
+            return (int*)&m_SaveInfo_1.m_TransactionBuffer->BufferData[m_SaveInfo_1.m_TransactionBuffer->Size + m_TransactionBufferSize];
         }
     }
 
@@ -176,7 +176,7 @@ void SceneSaveLoad::SaveEntityToDataBuffer(const unsigned int, const int* a2)
         break;
     }
     case Scene::PlayMode::MODE_4:
-        m_TransactionBufferSize += (int*)&a2[-m_TransactionBufferSize - m_SaveInfo_1.m_TransactionBuffer->m_Size] - m_SaveInfo_1.m_TransactionBuffer->m_Buffer;
+        m_TransactionBufferSize += (int*)&a2[-m_TransactionBufferSize - m_SaveInfo_1.m_TransactionBuffer->Size] - (int*)m_SaveInfo_1.m_TransactionBuffer->BufferData;
         break;
     default:
         field_0 = (int*)a2;

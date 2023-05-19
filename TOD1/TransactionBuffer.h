@@ -8,30 +8,30 @@ class TransactionBuffer
 {
     struct BufferList
     {
-        int         m_DataBufferSize;
-        int         field_4;
-        int         m_TransactionBufferSize;
-        EntityType *m_Script;
-        int         m_GameTimeMs;
-        int         m_RealTimeMs;
+        int         DataBufferSize;
+        int         _f4;
+        int         TransactionBufferSize;
+        EntityType *ScriptEntity;
+        int         GameTimeMs;
+        int         RealTimeMs;
     };
 
 public:
-    int            *m_Buffer;   //  NOTE: This holds all entities information. Probably, it was a struct or two structs.
-    int             m_Chunks;
-    int             m_Size;
-    int             (*m_ReadCompressedBufferData)(char* outBuffer, int size);
-    std::list<BufferList>  m_List_1;
-    void           *m_ListHead;
-    int             field_20;
+    uint32_t       *BufferData;   //  NOTE: This holds all entities information. Probably, it was a struct or two structs.
+    uint32_t        ChunksTotal;
+    size_t          Size;
+    int32_t         (*ReadCompressedBufferData)(char* outBuffer, int size);
+    std::list<BufferList>  List_1;
+    std::list<BufferList>::iterator* ListHeadPtr;
+    int             _f20;
 
 public:
-    TransactionBuffer(unsigned int bufferSize); // @8AADA0
+    TransactionBuffer(const uint32_t bufferSize); // @8AADA0
     ~TransactionBuffer(); // @875210
 
     void* operator new(size_t size)
     {
-        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, __FILE__, __LINE__);
     }
     void operator delete(void* ptr)
     {

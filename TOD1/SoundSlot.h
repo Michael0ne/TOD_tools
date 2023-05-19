@@ -69,7 +69,7 @@ public:
 
     void* operator new (size_t size)
     {
-        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, NULL, NULL);
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate(size, __FILE__, __LINE__);
     }
     void operator delete(void* ptr)
     {

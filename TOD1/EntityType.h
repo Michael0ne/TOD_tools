@@ -101,6 +101,7 @@ public:
     bool                HasPropertyId(const unsigned int propertyId) const;  //  @86C9E0
     DataType*           PropertyByIndex(const int index) const; //  @86CCB0
     void                SaveData(Node* node) const;  //  @86CFF0
+    const uint32_t      _86CAC0(const uint16_t propertyIndex) const;    //  @86CAC0
     const inline uint32_t   GetTotalProperties() const //  @86BF00
     {
         return IsBaseEntity

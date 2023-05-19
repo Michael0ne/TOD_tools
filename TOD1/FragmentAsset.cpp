@@ -14,8 +14,8 @@ FragmentAsset::FragmentInfo::FragmentInfo(FragmentInfo** rhs, AllocatorIndex(*Fi
     field_14 = owner;
     field_C = (*rhs)->field_C;
 
-    /*if (field_4)
-        field_4->_406350(field_8 & 0x7FFFFFFF);*/
+    /*if (_f4)
+        _f4->_406350(field_8 & 0x7FFFFFFF);*/
 
     field_4 = nullptr;
     field_8 = 0x80000000;
@@ -141,8 +141,8 @@ uint32_t* FragmentAsset::FragmentInfo::_406450()
 {
     if (field_8 >= 0)
     {
-        /*if (field_4)
-            field_4->_406350(field_8 & 0x7FFFFFFF);*/
+        /*if (_f4)
+            _f4->_406350(field_8 & 0x7FFFFFFF);*/
 
         field_4 = nullptr;
         field_8 = 0x80000000;

@@ -289,6 +289,17 @@ void Node::SaveScriptPropertyData(const uint32_t propertyIndex, const uint32_t* 
     g_SceneSaveLoad->SaveEntityToDataBuffer(m_Id.Id, dataBuffer);
 }
 
+void Node::_86BB80(const uint32_t propertyIndex, const uint32_t* param) const
+{
+    const auto propertyOffset = m_ScriptEntity->_86CAC0(propertyIndex);
+    const uint32_t localPropertiesTotal = m_ScriptEntity->IsBaseEntity
+        ? m_ScriptEntity->Parent->LocalPropertiesList.size() + m_ScriptEntity->Parent->TotalLocalProperties
+        : m_ScriptEntity->LocalPropertiesList.size() + m_ScriptEntity->TotalLocalProperties;
+
+    if (propertyOffset >= localPropertiesTotal)
+        _86B560(propertyOffset - localPropertiesTotal, param);
+}
+
 void Node::FindNode_Impl(int* args)
 {
     *args = (int)FindNode((const char*)args[1]);
@@ -357,20 +368,20 @@ void Node::_86B4B0(const uint32_t propertyId)
     }
 }
 
-void Node::_86A930(const int size, const uint32_t* value, uint32_t* const outval, const int a4)
+void Node::_86A930(const int size, const uint32_t* value, uint32_t* const outval, const int a4) const
 {
     EntityType* ent = m_ScriptEntity->IsBaseEntity ? m_ScriptEntity->Parent : m_ScriptEntity;
     *Scene::RewindBuffer2DataPtr++ =
         ((m_Id.Id << 8) | ((*(short*)&m_Id & 0x7000) - 1) & 0xF000) |
         ((short)size + (short)ent->LocalPropertiesList.size() + (short)ent->TotalLocalProperties) & 0xFFF;
     Scene::RewindBuffer2DataPtr += ent->Script->m_PropertiesList[size].m_Info->m_PropertyType->CopyNoAllocate((char*)value, (char*)Scene::RewindBuffer2DataPtr);
-    if (((int)Scene::SceneInstance->m_RewindBuffer2->m_Buffer + 4 * Scene::SceneInstance->m_RewindBuffer2->m_Chunks - (int)Scene::RewindBuffer2DataPtr) < 0x4000)
+    if (((int)Scene::SceneInstance->m_RewindBuffer2->BufferData + 4 * Scene::SceneInstance->m_RewindBuffer2->ChunksTotal - (int)Scene::RewindBuffer2DataPtr) < 0x4000)
         Scene::SceneInstance->m_RewindBuffer2->_8AA1F0(&Scene::RewindBuffer2DataPtr);
 
     *outval |= a4;
 }
 
-void Node::_86AA10(const int propertyId, const uint32_t* value, uint32_t* const outval, const int a4)
+void Node::_86AA10(const int propertyId, const uint32_t* value, uint32_t* const outval, const int a4) const
 {
     int* buffptr = g_SceneSaveLoad->GetEntityDataBuffer(m_Id.Id);
     if (buffptr)
@@ -1455,21 +1466,21 @@ void Node::CallPropertySetter(const unsigned short propertyId, const void* data)
     }
 }
 
-void Node::_86B560(const unsigned int propertyId, const void* data)
+void Node::_86B560(const uint32_t propertyIndex, const uint32_t* param) const
 {
     if (!m_ScriptEntity || m_Flags._29 || m_Flags.Volatile)
         return;
 
-    uint32_t* param = &m_Parameters[propertyId / 16];
-    const unsigned int index = 1 << (2 * (propertyId & 15));
+    uint32_t* parameterValue = &m_Parameters[propertyIndex / 16];
+    const size_t index = 1 << (2 * (propertyIndex & 15));
 
-    if ((param[0] & index) == 0 || (param[0] & (2 * index)) == 0)
+    if ((parameterValue[0] & index) == 0 || (parameterValue[0] & (2 * index)) == 0)
     {
-        if (Scene::RewindBuffer2DataPtr && (param[0] & index) == 0)
-            _86A930(propertyId, (uint32_t*)data, param, index);
+        if (Scene::RewindBuffer2DataPtr && (parameterValue[0] & index) == 0)
+            _86A930(propertyIndex, param, parameterValue, index);
 
-        if ((param[0] & (2 * index)) == 0)
-            _86AA10(propertyId, (uint32_t*)data, param, 2 * index);
+        if ((parameterValue[0] & (2 * index)) == 0)
+            _86AA10(propertyIndex, param, parameterValue, 2 * index);
     }
 }
 
@@ -1928,7 +1939,7 @@ void Node::SaveScriptThreadData()
     }
 
     TransactionBuffer* sceneRewBuffer = Scene::SceneInstance->m_RewindBuffer2;
-    if (ALIGN_4BYTES(sceneRewBuffer->m_Buffer + 4 * sceneRewBuffer->m_Chunks - Scene::RewindBuffer2DataPtr) < 0x4000)
+    if (ALIGN_4BYTES(sceneRewBuffer->BufferData + 4 * sceneRewBuffer->ChunksTotal - (uint32_t*)Scene::RewindBuffer2DataPtr) < 0x4000)
         sceneRewBuffer->_8AA1F0(&Scene::RewindBuffer2DataPtr);
 
     m_ScriptSlots[0] |= 1;
@@ -2220,7 +2231,7 @@ void Node::_869EC0(const unsigned int paramind, const void* paramptr, DataType& 
     Scene::RewindBuffer1DataPtr += paramtype.CopyNoAllocate((char*)paramptr, (char*)Scene::RewindBuffer1DataPtr);
 
     TransactionBuffer* tb = Scene::SceneInstance->m_RewindBuffer1;
-    if (tb->m_Buffer[tb->m_Chunks - (int)Scene::RewindBuffer1DataPtr] < 1024)
+    if (tb->BufferData[tb->ChunksTotal - (int)Scene::RewindBuffer1DataPtr] < 1024)
         tb->_8AA1F0(&Scene::RewindBuffer1DataPtr);
 
     m_ScriptSlots[paramind / 8] |= 1 << (paramind & 7);
