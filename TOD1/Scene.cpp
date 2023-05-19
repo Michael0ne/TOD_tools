@@ -1095,13 +1095,13 @@ void Scene::Load(const char* sceneName)
                     continue;
                 }
 
-                if (!frgm->field_20)
+                if (!frgm->FragmentData)
                 {
-                    frgm->field_20 = nullptr;
+                    frgm->FragmentData = nullptr;
                     continue;
                 }
 
-                delete frgm->field_20;
+                delete frgm->FragmentData;
             }
         }
     }

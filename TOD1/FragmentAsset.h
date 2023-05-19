@@ -30,17 +30,17 @@ class FragmentAsset : public Asset
         }
         ~FragmentInfo(); //  @85E0A0
 
-        uint32_t*   _406450();  //  @406450
+        uint32_t*   FindFirstNode();  //  @406450
         void        _406490();  //  @406490
         void        _4069F0();  //  @4069F0
-        uint32_t*   _406320(uint32_t* data);    //  @406320
+        uint32_t*   FindNextNode(uint32_t* data);    //  @406320
 
         static void _4069C0(FragmentInfo* fragmentInfo);    //  @4069C0
     };
 
 public:
     int                     field_1C;
-    FragmentInfo           *field_20;
+    FragmentInfo           *FragmentData;
     int                     field_24;
 
 private:

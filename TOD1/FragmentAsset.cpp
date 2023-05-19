@@ -1,5 +1,7 @@
 #include "FragmentAsset.h"
 #include "Scene.h"
+#include "Progress.h"
+#include "StringType.h"
 
 AssetInstance* FragmentAsset::Instance;
 
@@ -30,7 +32,7 @@ FragmentAsset::FragmentAsset(char a1) : Asset(a1)
 {
     MESSAGE_CLASS_CREATED(FragmentAsset);
 
-    field_20 = new FragmentInfo;
+    FragmentData = new FragmentInfo;
     field_24 &= ~2u;
 }
 
@@ -38,7 +40,7 @@ FragmentAsset::~FragmentAsset()
 {
     MESSAGE_CLASS_DESTROYED(FragmentAsset);
 
-    MemoryManager::ReleaseMemory(field_20, false);
+    MemoryManager::ReleaseMemory(FragmentData, false);
 }
 
 AllocatorIndex FragmentAsset::GetAllocatorForAsset(size_t size, FragmentAsset* asset)
@@ -76,7 +78,7 @@ void FragmentAsset::ApplyAssetData(CompiledAssetInfo* assetInfoPtr)
         assetInfoPtr->m_AssetType == CompiledAssetInfo::AssetType::TWO)
         _851430(assetInfoPtr, &assetInfoPtr);
 
-    assetInfoPtr->_85E160((uint8_t**)&field_20, (uint8_t**)&assetInfoPtr, 2, -1);
+    assetInfoPtr->_85E160((uint8_t**)&FragmentData, (uint8_t**)&assetInfoPtr, 2, -1);
 
     if (assetInfoPtr->m_AssetType != CompiledAssetInfo::AssetType::THREE)
         return;
@@ -90,8 +92,8 @@ void FragmentAsset::ApplyAssetData(CompiledAssetInfo* assetInfoPtr)
     if (GetAllocatorIndex)
         suitableAllocatorIndex = GetAllocatorIndex(sizeof(FragmentInfo), this);
 
-    field_20 = (FragmentInfo*)MemoryManager::AllocatorsList[suitableAllocatorIndex]->Allocate_A(sizeof(FragmentInfo), nullptr, NULL);
-    *field_20 = FragmentInfo(&field_20, GetAllocatorIndex, this);
+    FragmentData = (FragmentInfo*)MemoryManager::AllocatorsList[suitableAllocatorIndex]->Allocate_A(sizeof(FragmentInfo), nullptr, NULL);
+    *FragmentData = FragmentInfo(&FragmentData, GetAllocatorIndex, this);
 }
 
 void FragmentAsset::CreateInstance()
@@ -111,33 +113,96 @@ FragmentAsset* FragmentAsset::Create()
     return new FragmentAsset(0);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void FragmentAsset::ApplyFragmentResource(const int32_t entityId, bool)
 {
     if ((field_24 & 2) == 0)
         return;
 
-    if (ALIGN_4BYTES(field_20) != NULL && field_20->_406450())
+    FragmentInfo* fragmentData = (FragmentInfo*)ALIGN_4BYTES(FragmentData);
+    const auto firstFragmentNode = fragmentData ? fragmentData->FindFirstNode() : nullptr;
+    if (!fragmentData || !firstFragmentNode)
     {
-        static uint32_t uniqueId0 = GetPropertyIdByName("unique_id0:integer");
-        static uint32_t uniqueId1 = GetPropertyIdByName("unique_id1:integer");
-        static uint32_t uniqueId2 = GetPropertyIdByName("unique_id2:integer");
-        static uint32_t uniqueId3 = GetPropertyIdByName("unique_id3:integer");
+        LogDump::LogA("WARNING! Tried to apply free'd fragment '%s' - stuff may be missing; FIXME\n", GetName());
+        return;
+    }
 
-        std::map<int, int> entitiesIdsMap;
-        entitiesIdsMap[0] = entityId;
+    static uint32_t uniqueId0 = GetPropertyIdByName("unique_id0:integer");
+    static uint32_t uniqueId1 = GetPropertyIdByName("unique_id1:integer");
+    static uint32_t uniqueId2 = GetPropertyIdByName("unique_id2:integer");
+    static uint32_t uniqueId3 = GetPropertyIdByName("unique_id3:integer");
 
-        if (entityId <= 0)
-            g_AssetManager->m_EntityIdsMap = nullptr;
-        else
-            g_AssetManager->m_EntityIdsMap = new std::map<int, int>(entitiesIdsMap);
+    auto currentEntitiesIdsMap = g_AssetManager->m_EntityIdsMap;
+    std::map<int, int> entitiesIdsMap;
+    entitiesIdsMap[0] = entityId;
+
+    bool recordUnused;
+    if (entityId <= 0)
+    {
+        g_AssetManager->m_EntityIdsMap = nullptr;
+        recordUnused = false;
     }
     else
-        LogDump::LogA("WARNING! Tried to apply free'd fragment '%s' - stuff may be missing; FIXME\n", GetName());
+    {
+        g_AssetManager->m_EntityIdsMap = new std::map<int, int>(entitiesIdsMap);
+        recordUnused = true;
+    }
+
+    g_Progress->UpdateProgressTime(NULL, __rdtsc());
+
+    char nodePropertyData[128] = {};
+    uint32_t* nextFragmentNodePtr = nullptr;
+    for (auto fragmentNode = fragmentData->FindNextNode(firstFragmentNode); fragmentNode; fragmentNode = fragmentData->FindNextNode(nextFragmentNodePtr))
+    {
+        nextFragmentNodePtr = fragmentNode + 2;
+        const auto nodeId = fragmentNode[0];
+        const auto propertyIndex = fragmentNode[1] & 0xFFFFFF;
+        const auto nodeType = (fragmentNode[1] >> 24) - 254;
+
+        if (nodeType)
+        {
+            if (nodeType == 1)
+            {
+                nextFragmentNodePtr += tSTRING->CopyAndAllocate((char*)nextFragmentNodePtr, nodePropertyData);
+                auto script = (EntityType*)DataType::LoadScript(nodePropertyData);
+                tSTRING->Delete(nodePropertyData);
+
+                if (!recordUnused)
+                    g_AssetManager->m_FragmentMainNodeId = nodeId;
+
+                auto scriptEntity = (Entity*)script->CreateNode();
+                if (recordUnused)
+                    entitiesIdsMap[nodeId] = scriptEntity->m_Id.Id;
+            }
+            else
+            {
+                const auto existingNode = g_AssetManager->FindEntityById(nodeId);
+                auto nodeProperty = GlobalProperty::GetById(propertyIndex)->m_PropertyType;
+                nextFragmentNodePtr += nodeProperty->CopyAndAllocate((char*)nextFragmentNodePtr, nodePropertyData);
+
+                if (existingNode && !(*(Entity::EntityId*)&nodeId).BlockId)
+                    existingNode->CallPropertySetter(propertyIndex, nodePropertyData + 4);
+
+                nodeProperty->Delete(nodePropertyData + 4);
+            }
+        }
+        else
+        {
+            auto existingNode = g_AssetManager->FindEntityById(nodeId);
+            if (existingNode)
+            {
+                existingNode->Destroy();
+                if (recordUnused)
+                    entitiesIdsMap[nodeId] = 0;
+            }
+        }
+    }
+
+    g_AssetManager->m_EntityIdsMap = currentEntitiesIdsMap;
+    entitiesIdsMap.clear();
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-uint32_t* FragmentAsset::FragmentInfo::_406450()
+uint32_t* FragmentAsset::FragmentInfo::FindFirstNode()
 {
     if (field_8 >= 0)
     {
@@ -187,7 +252,7 @@ void FragmentAsset::FragmentInfo::_4069F0()
     }
 }
 
-uint32_t* FragmentAsset::FragmentInfo::_406320(uint32_t* data)
+uint32_t* FragmentAsset::FragmentInfo::FindNextNode(uint32_t* data)
 {
     if (data != (uint32_t*)(field_4[1] + ALIGN_4BYTES(field_4[2])))
         return data;
