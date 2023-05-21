@@ -232,10 +232,10 @@ namespace Input
 
     void Gamepad::EnumGameControllers()
     {
-        DirectInputGamepadsFound = NULL;
+        DirectInputGamepadsFound = 0;
         DirectInput8Interface->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACK)DIEnumDevicesCallback, NULL, NULL);
 
-        //g_InputGamepad = (Gamepad**)(new unsigned int[DirectInputGamepadsFound]);
+        *(uint32_t**)&g_InputGamepad = (uint32_t*)malloc(sizeof(uint32_t*) * DirectInputGamepadsFound);
     }
 
     int Gamepad::NumberDirectInputDevices()

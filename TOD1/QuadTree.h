@@ -4,6 +4,7 @@
 #include "Types.h"
 
 class Node;
+class QuadTreeNode;
 
 class QuadTreeInfo
 {
@@ -59,6 +60,16 @@ public:
     static uint32_t     TreesCreated;   //  @A3DD74
 };
 
+struct ProbeContactNode
+{
+    QuadTreeNode*       _f0;
+    QuadTreeNode*       _f4;
+    ProbeContactNode*   _f8;    //  NOTE: might be 'NextContact', or 'PreviousContact'.
+    ProbeContactNode*   _fC;
+    uint32_t*           _f10;
+    uint8_t             _f14;
+};
+
 class QuadTreeNode
 {
 private:
@@ -74,7 +85,7 @@ private:
     uint32_t            _f28;
     uint32_t            _f2C;
     uint32_t            _f30;
-    QuadTreeNode*       ContactNode;
+    ProbeContactNode*   ContactNode;
     uint32_t*           _f38;
     uint8_t             LodThreshold;
     uint8_t             FadeThreshold;

@@ -52,7 +52,7 @@ private:
 public:
     void* operator new(size_t size)
     {
-        return MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(size, nullptr, NULL);
+        return MemoryManager::AllocatorsList[DEFAULT]->Allocate_A(size, __FILE__, NULL);
     }
     void operator delete(void* ptr)
     {

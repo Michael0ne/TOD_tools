@@ -211,7 +211,6 @@ void Node::GetScriptEntityPropertyValue(const int propertyId, uint8_t* outProper
     m_ScriptEntity->GetPropertyValue(this, m_Parameters, propertyId, outPropertyValue);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Node::TriggerScript(const uint16_t scriptId, const uint16_t scriptIdA, const uint8_t* scriptParams) const
 {
     const bool isBaseEntity = m_ScriptEntity->IsBaseEntity;
@@ -221,12 +220,20 @@ void Node::TriggerScript(const uint16_t scriptId, const uint16_t scriptIdA, cons
     if (scriptId >= scriptsListSize)
         return;
 
-    /*if (scriptIdA != entity->ScriptsList.at(scriptId))
-        return;*/
+    if (entity->ScriptsList.find(scriptId)->first != scriptIdA)
+        return;
 
     const EntityType::ScriptInfo* scriptInfo = entity->ScriptsList.at(scriptId);
-    if (scriptInfo->VirtualFunctionOffset);
-        //  TODO: 'this' adjustment shenanigans here!
+#ifdef INCLUDE_FIXES
+    //  TODO: THIS IS VERY UGLY! I don't think original code had something like this!
+    ((Entity*)(this + (int)scriptInfo->_f4)->*(scriptInfo->ScriptPtr))((void*)scriptParams);
+#else
+    //  NOTE: this code is probably bugged so don't use it.
+    if (scriptInfo->VirtualFunctionOffset)
+        scriptInfo->ScriptPtr((void*)(this + (int)scriptInfo->_f4 + (int)scriptInfo->_f8), scriptParams);    //  NOTE: never used, since _fC is usually 0, same as _f4.
+    else
+        scriptInfo->ScriptPtr((void*)(this + (int)scriptInfo->_f4), scriptParams);
+#endif
 }
 
 void Node::SaveScriptData() const

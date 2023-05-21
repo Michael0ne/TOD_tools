@@ -12,7 +12,7 @@ class EntityType : public DataType
     struct ScriptInfo
     {
         EntityFunctionMember    ScriptPtr = nullptr;
-        uint32_t                _f4 = 0;    //  NOTE: this one and below are related to virtual function offset.
+        uint32_t                _f4 = 0;    //  NOTE: this one and below are related to virtual function offset. They are usually zeroes.
         uint32_t                _f8 = 0;
         uint32_t                VirtualFunctionOffset = 0;
 
