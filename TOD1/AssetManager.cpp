@@ -305,195 +305,193 @@ const char* AssetManager::GetResourcePathSceneRelative(const char* const path)
         return &path[scenename.m_Length];
 }
 
-AssetHeaderStruct_t::Header_t::Header_t()
+AssetHeaderStruct_t::FingerprintDecoder::FingerprintDecoder()
 {
-    field_20 = 0x13579BDF;
-    field_24 = 0x2468ACE0;
-    field_28 = 0xFDB97531;
-    field_2C = 0x80000062;
-    field_30 = 0x40000020;
-    field_34 = 0x10000002;
-    field_38 = 0x7FFFFFFF;
-    field_3C = 0x3FFFFFFF;
-    field_40 = 0xFFFFFFF;
-    field_44 = 0x80000000;
-    field_48 = 0xC0000000;
-    field_4C = 0xF0000000;
-
-    memset(m_OriginalKey, NULL, sizeof(m_OriginalKey));
+    MESSAGE_CLASS_CREATED(FingerprintDecoder);
 }
 
-void AssetHeaderStruct_t::Header_t::DecodeFingerprintKey(char* key, char* keydata)
+void AssetHeaderStruct_t::FingerprintDecoder::DecodeFingerprintKey(const char* const privateKey, char* text)
 {
-    _4010C0(key);
+    PrepareKey(privateKey);
 
-    for (unsigned int i = 0; i < strlen(keydata); i++)
+    const size_t textSize = strlen(text);
+    for (size_t i = 0; i < textSize; ++i)
     {
-        *key = keydata[i];
-        _4011A0(key);
-        keydata[i] = *key;
+        char ch = text[i];
+        DecodeInternal(&ch);
+        text[i] = ch;
     }
 }
 
-void AssetHeaderStruct_t::Header_t::_4010C0(const char* key)
+void AssetHeaderStruct_t::FingerprintDecoder::PrepareKey(const char* key)
 {
-    strcpy(m_OriginalKey, key);
+    strcpy(OriginalKey, key);
 
-    field_20 = key[3] | ((key[2] | ((key[1] | (0x0000 | (key[0] << 8))) << 8)) << 8);
-    if (!field_20)
-        field_20 = 0x13579BDF;
+    _f20 = (uint8_t)key[3] | (((uint8_t)key[2] | (((uint8_t)key[1] | (0x00 | (key[0] << 8))) << 8)) << 8);
+    if (!_f20)
+        _f20 = 0x13579BDF;
 
-    field_24 = key[7] | ((key[6] | ((key[5] | (key[4] << 8)) << 8)) << 8);
-    if (!field_24)
-        field_24 = 0x2468ACE0;
+    _f24 = (uint8_t)key[7] | (((uint8_t)key[6] | (((uint8_t)key[5] | ((uint8_t)key[4] << 8)) << 8)) << 8);
+    if (!_f24)
+        _f24 = 0x2468ACE0;
 
-    field_28 = key[11] | ((key[10] | ((key[9] | (key[8] << 8)) << 8)) << 8);
-    if (!field_28)
-        field_28 = 0xFDB97531;
+    _f28 = (uint8_t)key[11] | (((uint8_t)key[10] | (((uint8_t)key[9] | ((uint8_t)key[8] << 8)) << 8)) << 8);
+    if (!_f28)
+        _f28 = 0xFDB97531;
 }
 
-void AssetHeaderStruct_t::Header_t::_4011A0(char* key)
+void AssetHeaderStruct_t::FingerprintDecoder::DecodeInternal(char* key)
 {
-    // NOTE: this routine reverses bytes
-    unsigned int rounds = 2;
-    unsigned char v3 = field_24 & 1,
-        v7 = 0,
-        v9 = 0,
-        v12 = 0,
-        v17 = 0,
-        v19 = 0,
-        v20 = 0,
-        v21 = 0,
-        v22 = 0,
-        v23 = field_24 & 1,
-        v24 = field_28 & 1,
-        fld20 = field_20;
+    uint32_t uVar1;
+    byte bVar2;
+    uint32_t uVar3;
+    byte bVar4;
+    byte bVar5;
+    uint32_t uVar6;
+    size_t round;
+    byte local_9;
+    uint32_t local_8;
+    uint32_t local_4;
 
+    uVar6 = _f20;
+    local_8 = _f24 & 1;
+    local_4 = _f28 & 1;
+    local_9 = 0;
+    round = 2;
     do
     {
-        if (fld20 & 1)
+        bVar4 = (byte)local_8;
+        if ((uVar6 & 1) == 0)
         {
-            v7 = field_44 | ((fld20 ^ field_2C) >> 1);
-            if (field_24 & 1)
+            uVar3 = uVar6 >> 1 & _f38;
+            uVar1 = _f28;
+            if ((uVar1 & 1) == 0)
             {
-                v3 = v23 = 1;
-                field_24 = field_48 | ((field_24 ^ field_30) >> 1);
+                _f28 = uVar1 >> 1 & _f40;
+                local_4 = 0;
             }
             else
             {
-                v3 = v23 = 0;
-                field_24 = field_3C & (field_24 >> 1);
+                _f28 = (_f34 ^ uVar1) >> 1 | _f4C;
+                local_4 = 1;
             }
         }
         else
         {
-            v7 = field_38 & (fld20 >> 1);
-            if (field_28 & 1)
-            {
-                v24 = 1;
-                field_28 = field_4C | ((field_28 ^ field_34) >> 1);
+            uVar1 = _f24;
+            uVar3 = (_f2C ^ uVar6) >> 1 | _f44;
+            if ((uVar1 & 1) == 0) {
+                bVar4 = 0;
+                _f24 = uVar1 >> 1 & _f3C;
+                local_8 = 0;
             }
             else
             {
-                v24 = 0;
-                field_28 = field_40 & (field_28 >> 1);
+                bVar4 = 1;
+                _f24 = (_f30 ^ uVar1) >> 1 | _f48;
+                local_8 = 1;
             }
         }
-
-        v20 = (2 * v19) | v24 ^ v3;
-        if (v7 & 1)
+        bVar4 = bVar4 ^ (byte)local_4;
+        if ((uVar3 & 1) == 0)
         {
-            v9 = field_44 | ((v7 ^ field_2C) >> 1);
-            if (field_24 & 1)
-            {
-                v23 = 1;
-                field_24 = field_48 | ((field_24 ^ field_30) >> 1);
+            uVar3 = uVar3 >> 1 & _f38;
+            uVar1 = _f28;
+            if ((uVar1 & 1) == 0) {
+                _f28 = uVar1 >> 1 & _f40;
+                local_4 = 0;
             }
             else
             {
-                v23 = 0;
-                field_24 = field_3C & (field_24 >> 1);
+                _f28 = (_f34 ^ uVar1) >> 1 | _f4C;
+                local_4 = 1;
             }
         }
         else
         {
-            v9 = field_38 & (v7 >> 1);
-            if (field_28 & 1)
-            {
-                v24 = 1;
-                field_28 = field_4C | ((field_28 ^ field_34) >> 1);
+            uVar3 = (_f2C ^ uVar3) >> 1 | _f44;
+            uVar1 = _f24;
+            if ((uVar1 & 1) == 0) {
+                _f24 = uVar1 >> 1 & _f3C;
+                local_8 = 0;
             }
             else
             {
-                v24 = 0;
-                field_28 = field_40 & (field_28 >> 1);
+                _f24 = (_f30 ^ uVar1) >> 1 | _f48;
+                local_8 = 1;
             }
         }
-
-        v21 = (2 * v20) | v24 ^ v23;
-        if (v9 & 1)
+        bVar2 = (byte)local_8 ^ (byte)local_4;
+        if ((uVar3 & 1) == 0)
         {
-            v12 = field_44 | ((v9 ^ field_2C) >> 1);
-            if (field_24 & 1)
+            uVar3 = uVar3 >> 1 & _f38;
+            uVar1 = _f28;
+            if ((uVar1 & 1) == 0)
             {
-                v23 = 1;
-                field_24 = field_48 | ((field_24 ^ field_30) >> 1);
+                _f28 = uVar1 >> 1 & _f40;
+                local_4 = 0;
+            }
+            else
+            {
+                _f28 = (_f34 ^ uVar1) >> 1 | _f4C;
+                local_4 = 1;
             }
         }
         else
         {
-            v12 = field_38 & (v9 >> 1);
-            if (field_28 & 1)
+            uVar3 = (_f2C ^ uVar3) >> 1 | _f44;
+            uVar1 = _f24;
+            if ((uVar1 & 1) == 0)
             {
-                v24 = 1;
-                field_28 = field_4C | ((field_28 ^ field_34) >> 1);
+                _f24 = uVar1 >> 1 & _f3C;
+                local_8 = 0;
             }
             else
             {
-                v24 = 0;
-                field_28 = field_40 & (field_28 >> 1);
+                _f24 = (_f30 ^ uVar1) >> 1 | _f48;
+                local_8 = 1;
             }
         }
-
-        v22 = (2 * v21) | v24 & v23;
-        if (v12 & 1)
+        bVar5 = (byte)local_8 ^ (byte)local_4;
+        if ((uVar3 & 1) == 0)
         {
-            fld20 = field_44 | ((v12 ^ field_2C) >> 1);
-            if (field_24 & 1)
+            uVar6 = uVar3 >> 1 & _f38;
+            uVar1 = _f28;
+            if ((uVar1 & 1) == 0)
             {
-                v23 = 1;
-                field_24 = field_48 | ((field_24 ^ field_30) >> 1);
+                _f28 = uVar1 >> 1 & _f40;
+                local_4 = 0;
             }
             else
             {
-                v23 = 0;
-                field_24 = field_3C & (field_24 >> 1);
+                _f28 = (_f34 ^ uVar1) >> 1 | _f4C;
+                local_4 = 1;
             }
         }
         else
         {
-            fld20 = field_38 & (v12 >> 1);
-            if (field_28 & 1)
+            uVar6 = (_f2C ^ uVar3) >> 1 | _f44;
+            uVar1 = _f24;
+            if ((uVar1 & 1) == 0)
             {
-                v24 = 1;
-                field_28 = field_4C | ((field_28 ^ field_34) >> 1);
+                _f24 = uVar1 >> 1 & _f3C;
+                local_8 = 0;
             }
             else
             {
-                v24 = 0;
-                field_28 = field_40 & (field_28 >> 1);
+                _f24 = (_f30 ^ uVar1) >> 1 | _f48;
+                local_8 = 1;
             }
         }
 
-        v19 = v17 = (2 * v22) | v24 ^ v23;
-        v3 = v23;
+        local_9 = (byte)local_8 ^ (byte)local_4 | (bVar5 | (bVar2 | (bVar4 | local_9 << 1) << 1) << 1) << 1;
+    } while (--round > 0);
 
-    } while (--rounds);
+    _f20 = uVar6;
 
-    field_20 = fld20;
-    *key ^= v17;
-    if (v17 == *key)
-        *key = v17;
+    *key ^= local_9;
+    if (!*key)
+        *key = local_9;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -559,7 +557,7 @@ void* AssetManager::LoadResourceBlock(FileBuffer* file, int* resbufferptr, unsig
         for (unsigned int i = 0; i < 255; i++)
             keydatabuf[i] = file->ReadBlock();
 
-        assetHeaderStruct.field_38.DecodeFingerprintKey("1E564E3B-D243-4ec5-AFB7", keydatabuf);
+        assetHeaderStruct.FingerprintKey.DecodeFingerprintKey("1E564E3B-D243-4ec5-AFB7", keydatabuf);
         strcpy(m_FingerprintKey, keydatabuf);
 
         int dummy = NULL;
@@ -650,13 +648,13 @@ void* AssetManager::LoadResourceBlock(FileBuffer* file, int* resbufferptr, unsig
                 file->Read(resourceDataBuffer, assetSize);
             }
 
-            CompiledAssetInfo compasset(CompiledAssetInfo::AssetType::THREE, resourcesInfoBuffer, resourceDataBuffer, 0, 2, -1);
+            CompiledAssetInfo compasset(CompiledAssetInfo::tAssetType::THREE, resourcesInfoBuffer, resourceDataBuffer, 0, 2, -1);
             Asset::Instantiate(&compasset, (Asset*)resourcesInfoBuffer);    //  TODO: this needs more reversing so as below calls.
 
             Asset* currasset = (Asset*)resourcesInfoBuffer;
             *it = currasset;
 
-            CompiledAssetInfo readyasset(CompiledAssetInfo::AssetType::ZERO, nullptr, nullptr, 0, 2, -1);
+            CompiledAssetInfo readyasset(CompiledAssetInfo::tAssetType::ZERO, nullptr, nullptr, 0, 2, -1);
             currasset->ApplyAssetData(&readyasset);
 
             resourcesInfoBuffer += readyasset.GetAssetSize() + AssetInstance::AssetAlignment[0] - 1 & (~(AssetInstance::AssetAlignment[0] - 1));
@@ -896,7 +894,7 @@ void AssetManager::InstantiateAssetsAndClearAssetsList()
 {
     for (unsigned int i = 0; i < m_AssetsList.size(); ++i)
     {
-        CompiledAssetInfo cmpassinf(CompiledAssetInfo::AssetType::FOUR, (char*)m_AssetsList[i], nullptr, NULL, NULL, -1);
+        CompiledAssetInfo cmpassinf(CompiledAssetInfo::tAssetType::FOUR, (char*)m_AssetsList[i], nullptr, NULL, NULL, -1);
         Asset::Instantiate(&cmpassinf, m_AssetsList[i]);
     }
 
@@ -1213,41 +1211,41 @@ void AssetManager::SetRegion(RegionCode id)
     m_RegionId = id;
 }
 
-CompiledAssetInfo::CompiledAssetInfo(const AssetType assettype, const char* assetinstanceinfo, const char* assetdata, const int alignment, const int a5, const int a6)
+CompiledAssetInfo::CompiledAssetInfo(const tAssetType assettype, const char* assetinstanceinfo, const char* assetdata, const int alignment, const int a5, const int a6)
 {
     MESSAGE_CLASS_CREATED(CompiledAssetInfo);
 
-    m_AssetType = assettype;
-    m_AssetSize = 0;
-    field_8 = 0;
-    m_Alignment = alignment;
+    AssetType = assettype;
+    InstanceDataSize = 0;
+    DataSize = 0;
+    AlignmentIndex = alignment;
 
-    field_24 = (char*)assetdata;
-    field_2C = (char*)assetdata;
-    field_20 = (char*)assetinstanceinfo;
-    field_28 = (char*)assetinstanceinfo;
+    AssetDataPtr = (char*)assetdata;
+    AssetDataPtr_1 = (char*)assetdata;
+    AssetInstanceDataPtr = (char*)assetinstanceinfo;
+    AssetInstanceDataPtr_1 = (char*)assetinstanceinfo;
 
-    field_30 = a6;
-    field_34 = a5 & 1;
-    field_35 = (a5 & 2) != 0;
+    _f30 = a6;
+    _f34 = a5 & 1;
+    _f35 = (a5 & 2) != 0;
 }
 
 void CompiledAssetInfo::ParseInfo(const uint8_t** assetPtr, CompiledAssetInfo** assetBufferPtr, const size_t assetClassSize, const int32_t a4, const int32_t a5)
 {
-    if (field_30 == -1 || a5 != -1 && field_30 == a5)
+    if (_f30 == -1 || a5 != -1 && _f30 == a5)
     {
         if (*assetPtr)
         {
-            switch (m_AssetType)
+            switch (AssetType)
             {
             case ZERO:
-                _40CB90(assetClassSize, a4, -1);
+                IncreaseSize(assetClassSize, a4, -1);
                 *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
                 break;
             case ONE:
                 memcpy(GetDataPtr(a4), *assetPtr, assetClassSize);
                 *assetBufferPtr = (CompiledAssetInfo*)GetDataPtr(a4);
-                _40CBD0(assetClassSize, a4, -1);
+                IncreaseBufferPtr(assetClassSize, a4, -1);
                 break;
             case TWO:
                 *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
@@ -1277,22 +1275,22 @@ void CompiledAssetInfo::ParseInfo(const uint8_t** assetPtr, CompiledAssetInfo** 
 
 void CompiledAssetInfo::ParseAssetData(const uint8_t** assetdataptr, int* dataptr, int flags, int a4)
 {
-    if (field_30 != -1 || a4 != -1 && field_30 != a4)
+    if (_f30 != -1 || a4 != -1 && _f30 != a4)
         return;
 
-    switch (m_AssetType)
+    switch (AssetType)
     {
     case ZERO:
     {
-        if (field_30 != -1)
+        if (_f30 != -1)
             break;
 
         size_t slen = ALIGN_4BYTES(*assetdataptr) ? strlen((const char*)ALIGN_4BYTES(*assetdataptr)) + 1 : NULL;
         slen = ALIGN_4BYTES(slen + 3);
         if ((flags & 2) != 0)
-            field_8 += slen;
+            DataSize += slen;
         else
-            m_AssetSize += slen;
+            InstanceDataSize += slen;
         break;
     }
     case ONE:
@@ -1308,11 +1306,11 @@ void CompiledAssetInfo::ParseAssetData(const uint8_t** assetdataptr, int* datapt
         *dataptr = (int)GetDataPtr(flags);
         *dataptr = ALIGN_4BYTES(*dataptr);
 
-        if (field_30 == -1)
+        if (_f30 == -1)
             if (flags & 2)
-                field_24 += ALIGN_4BYTES(slen + 3);
+                AssetDataPtr += ALIGN_4BYTES(slen + 3);
             else
-                field_20 += ALIGN_4BYTES(slen + 3);
+                AssetInstanceDataPtr += ALIGN_4BYTES(slen + 3);
         break;
     }
     case TWO:
@@ -1330,26 +1328,26 @@ void CompiledAssetInfo::ParseAssetData(const uint8_t** assetdataptr, int* datapt
 
 int CompiledAssetInfo::GetAssetSize() const
 {
-    return m_AssetSize;
+    return InstanceDataSize;
 }
 
 void CompiledAssetInfo::AlignDataOrSize(unsigned int alignment, unsigned char flags, int a3)
 {
-    if (field_30 == -1 || a3 != -1 && field_30 == a3)
+    if (_f30 == -1 || a3 != -1 && _f30 == a3)
     {
-        switch (m_AssetType)
+        switch (AssetType)
         {
         case ZERO:
             if ((a3 & 2) != 0)
-                field_8 = ALIGN_4BYTES( ((~(alignment - 1) & (alignment + this->field_8 - 1)) + 3) );
+                DataSize = ALIGN_4BYTES( ((~(alignment - 1) & (alignment + DataSize - 1)) + 3) );
             else
-                m_AssetSize = ALIGN_4BYTES( ((~(alignment - 1) & (this->m_AssetSize + alignment - 1)) + 3) );
+                InstanceDataSize = ALIGN_4BYTES( ((~(alignment - 1) & (InstanceDataSize + alignment - 1)) + 3) );
             break;
         case ONE:
             if ((a3 & 2) != 0)
-                field_24 = (char*)ALIGN_4BYTES( ((~(alignment - 1) & (unsigned int)&field_24[alignment - 1]) + 3) );
+                AssetDataPtr = (char*)ALIGN_4BYTES( ((~(alignment - 1) & (unsigned int)&AssetDataPtr[alignment - 1]) + 3) );
             else
-                field_20 = (char*)ALIGN_4BYTES( ((~(alignment - 1) & (unsigned int)&field_20[alignment - 1]) + 3) );
+                AssetInstanceDataPtr = (char*)ALIGN_4BYTES( ((~(alignment - 1) & (unsigned int)&AssetInstanceDataPtr[alignment - 1]) + 3) );
             break;
         default:
             break;
@@ -1366,17 +1364,17 @@ void CompiledAssetInfo::OffsetToPtr(const uint8_t** dataptr, char flags) const
             if ((uint32_t)*dataptr == (uint32_t)0x80000000)
                 *dataptr = NULL;
 
-            const uint8_t* actualData = (*dataptr + **dataptr);
+            const uint8_t* actualData = (*dataptr + (uint32_t)dataptr);
             *dataptr = actualData;
 
             if ((flags & 2) != 0)
             {
                 if ((flags & 4) == 0)
-                    *dataptr = &actualData[field_2C - field_28];
+                    *dataptr = &actualData[AssetDataPtr_1 - AssetInstanceDataPtr_1];
             }
             else
                 if ((flags & 4) != 0)
-                    *dataptr = &actualData[field_28 - field_2C];
+                    *dataptr = &actualData[AssetInstanceDataPtr_1 - AssetDataPtr_1];
         }
     }
 }
@@ -1386,37 +1384,42 @@ void CompiledAssetInfo::_85E160(uint8_t** dataptr, uint8_t** a2, uint32_t flags,
 {
 }
 
+const size_t CompiledAssetInfo::GetDataSize() const
+{
+    return DataSize;
+}
+
 void CompiledAssetInfo::AddAssetToList(const uint8_t** dataptr, const int32_t flags)
 {
     if (flags & 1)
         return;
 
-    field_10.push_back({ const_cast<uint8_t**>(dataptr), flags });
+    _f10.push_back({ const_cast<uint8_t**>(dataptr), flags });
 }
 
 char* CompiledAssetInfo::GetDataPtr(const int flags)
 {
-    return flags & 2 ? field_24 : field_20;
+    return flags & 2 ? AssetDataPtr : AssetInstanceDataPtr;
 }
 
-void CompiledAssetInfo::_40CB90(const uint32_t a1, const int8_t a2, const int32_t a3)
+void CompiledAssetInfo::IncreaseSize(const size_t amount, const int8_t flags, const int32_t a3)
 {
-    if (field_30 == -1 || a3 != -1 && field_30 == a3)
+    if (_f30 == -1 || a3 != -1 && _f30 == a3)
     {
-        if ((a2 & 2) != 0)
-            field_8 += ALIGN_4BYTESUP(a1);
+        if ((flags & 2) != 0)
+            DataSize += ALIGN_4BYTESUP(amount);
         else
-            m_AssetSize += ALIGN_4BYTESUP(a1);
+            InstanceDataSize += ALIGN_4BYTESUP(amount);
     }
 }
 
-void CompiledAssetInfo::_40CBD0(const uint32_t a1, const int8_t a2, const int32_t a3)
+void CompiledAssetInfo::IncreaseBufferPtr(const size_t amount, const int8_t flags, const int32_t a3)
 {
-    if (field_30 == -1 || a3 != -1 && field_30 == a3)
+    if (_f30 == -1 || a3 != -1 && _f30 == a3)
     {
-        if ((a2 & 2) != 0)
-            field_24 += ALIGN_4BYTESUP(a1);
+        if ((flags & 2) != 0)
+            AssetDataPtr += ALIGN_4BYTESUP(amount);
         else
-            field_20 += ALIGN_4BYTESUP(a1);
+            AssetInstanceDataPtr += ALIGN_4BYTESUP(amount);
     }
 }

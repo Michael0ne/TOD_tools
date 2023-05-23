@@ -3,6 +3,7 @@
 #include "TextureResourceReader.h"
 #include "SaveResourceReader.h"
 #include "ScriptDatabaseReader.h"
+#include "MapBlockReader.h"
 #include <iostream>
 
 static HINSTANCE appHInstance;
@@ -67,7 +68,7 @@ int main(_In_ int argc, _In_reads_(argc) _Pre_z_ char** argv, _In_z_ char** envp
         resreader = new AssetBlockReader(lastslashpos + 1, ".submap");
 
     if (strcmp(argv[1], "map") == NULL)
-        resreader = new AssetBlockReader(lastslashpos + 1, ".map");
+        resreader = new MapBlockReader(lastslashpos + 1, ".map");
 
     if (strcmp(argv[1], "playerdata") == NULL)
         resreader = new AssetBlockReader(lastslashpos + 1, ".playerdata");

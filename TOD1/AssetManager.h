@@ -16,30 +16,28 @@ struct AssetHeaderStruct_t
     int                         field_30;
     int                         field_34;
 
-    struct Header_t
+    struct FingerprintDecoder
     {
-        char                    m_OriginalKey[32];
-        
-        int                     field_20;
-        int                     field_24;
-        int                     field_28;
+        char        OriginalKey[32] = {};
+        uint32_t    _f20 = 0x13579BDF;
+        uint32_t    _f24 = 0x2468ACE0;
+        uint32_t    _f28 = 0xFDB97531;
+        uint32_t    _f2C = 0x80000062;
+        uint32_t    _f30 = 0x40000020;
+        uint32_t    _f34 = 0x10000002;
+        uint32_t    _f38 = 0x7FFFFFFF;
+        uint32_t    _f3C = 0x3FFFFFFF;
+        uint32_t    _f40 = 0xFFFFFFF;
+        uint32_t    _f44 = 0x80000000;
+        uint32_t    _f48 = 0xC0000000;
+        uint32_t    _f4C = 0xF0000000;
 
-        int                     field_2C;
-        int                     field_30;
-        int                     field_34;
-        int                     field_38;
-        int                     field_3C;
-        int                     field_40;
-        int                     field_44;
-        int                     field_48;
-        int                     field_4C;
+        FingerprintDecoder(); // @401050
 
-        Header_t(); // @401050
-
-        void                    DecodeFingerprintKey(char* key, char* keydata); // @401450
-        void                    _4010C0(const char* key); // @4010C0
-        void                    _4011A0(char* key); // @4011A0
-    } field_38;
+        void                    DecodeFingerprintKey(const char* const privateKey, char* text); // @401450
+        void                    PrepareKey(const char* key); // @4010C0
+        void                    DecodeInternal(char* key); // @4011A0
+    } FingerprintKey;
 };
 
 //  NOTE: It looks like the purpose of this is just to fix raw compiled data that is inside an asset into game-ready data. Fix pointers, instantiate necessary classes etc. Could be templated.
@@ -52,27 +50,27 @@ struct CompiledAssetInfo
         int32_t         m_Flags;
     };
 
-    enum AssetType
+    enum tAssetType
     {
         ZERO = 0,
         ONE,
         TWO,
         THREE,
         FOUR
-    }                   m_AssetType;    //  NOTE: more likely it's a 'block' number. Like 'header', 'data', ...
-    int                 m_AssetSize;
-    int                 field_8;
-    int                 m_Alignment;
-    std::vector<ListAssetInfo>    field_10;
-    char               *field_20;
-    char               *field_24;
-    char               *field_28;
-    char               *field_2C;
-    int                 field_30;
-    bool                field_34;
-    bool                field_35;
+    }                   AssetType;    //  NOTE: more likely it's a 'block' number. Like 'header', 'data', ...
+    int                 InstanceDataSize;
+    int                 DataSize;
+    int                 AlignmentIndex;
+    std::vector<ListAssetInfo>    _f10;
+    char               *AssetInstanceDataPtr;
+    char               *AssetDataPtr;
+    char               *AssetInstanceDataPtr_1;
+    char               *AssetDataPtr_1;
+    int                 _f30;
+    bool                _f34;
+    bool                _f35;
 
-    CompiledAssetInfo(const AssetType asstype, const char* assetinstanceinfo, const char* assetdata, const int alignment, const int a5, const int a6); //  @40CCD0
+    CompiledAssetInfo(const tAssetType asstype, const char* assetinstanceinfo, const char* assetdata, const int alignment, const int a5, const int a6); //  @40CCD0
     inline ~CompiledAssetInfo() //  NOTE: always inlined.
     {
         MESSAGE_CLASS_DESTROYED(CompiledAssetInfo);
@@ -84,10 +82,11 @@ struct CompiledAssetInfo
     void                AlignDataOrSize(unsigned int alignment, unsigned char flags, int a3);  //  @40CC10
     void                AddAssetToList(const uint8_t** dataptr, const int32_t flags);  //  @40CDA0
     char*               GetDataPtr(const int flags);    //  @4062E0
-    void                _40CB90(const uint32_t dataptr, const int8_t a2, const int32_t a3);  //  @40CB90
-    void                _40CBD0(const uint32_t dataptr, const int8_t a2, const int32_t a3);  //  @40CBD0
+    void                IncreaseSize(const size_t amount, const int8_t flags, const int32_t a3);  //  @40CB90
+    void                IncreaseBufferPtr(const size_t amount, const int8_t flags, const int32_t a3);  //  @40CBD0
     void                OffsetToPtr(const uint8_t** dataptr, char flags) const;   //  @40CB20
     void                _85E160(uint8_t** dataptr, uint8_t** a2, uint32_t flags, uint32_t a4);    //  @85E160
+    const size_t        GetDataSize() const;    //  @40CB10
 };
 
 ASSERT_CLASS_SIZE(CompiledAssetInfo, 56);

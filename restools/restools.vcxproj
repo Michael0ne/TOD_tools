@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClInclude Include="GenericResourceReader.h" />
     <ClInclude Include="AssetBlockReader.h" />
+    <ClInclude Include="MapBlockReader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SaveResourceReader.h" />
     <ClInclude Include="ScriptDatabaseReader.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="GenericResourceReader.cpp" />
     <ClCompile Include="AssetBlockReader.cpp" />
+    <ClCompile Include="MapBlockReader.cpp" />
     <ClCompile Include="SaveResourceReader.cpp" />
     <ClCompile Include="ScriptDatabaseReader.cpp" />
     <ClCompile Include="TextureResourceReader.cpp" />

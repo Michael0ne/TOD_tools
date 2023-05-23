@@ -194,12 +194,12 @@ void Asset::AllocateResourceForBlockLoad(const unsigned int size, int** bufalign
 void Asset::Instantiate(CompiledAssetInfo* assetBuffer, Asset* assetPtr)
 {
     //  NOTE: first instantiate call will fill basic asset structure fields: vmt pointer, name pointer and global id.
-    if (assetBuffer->m_AssetType == CompiledAssetInfo::AssetType::THREE)
+    if (assetBuffer->AssetType == CompiledAssetInfo::tAssetType::THREE)
         *(uint32_t*)assetPtr = (uint32_t)AssetInstance::Assets[*(uint32_t*)assetPtr]->m_ResourceTypeMethods;
 
     assetBuffer->ParseAssetData((const uint8_t**)((uint32_t*)assetPtr + 4), 0, 0, -1);
 
-    if (assetBuffer->m_AssetType == CompiledAssetInfo::AssetType::THREE)
+    if (assetBuffer->AssetType == CompiledAssetInfo::tAssetType::THREE)
         assetPtr->m_GlobalResourceId = g_AssetManager->AddAssetReference(assetPtr);
 
     //  NOTE: depending on what asset this is, go further and parse rest of the data.
@@ -321,9 +321,9 @@ void Asset::SetResourcePath(const char* const respath)
 
 void Asset::_851430(CompiledAssetInfo* assetInfoPtr, CompiledAssetInfo** assetInfoDataPtr)
 {
-    assetInfoPtr->ParseAssetData((const uint8_t**)&m_ResourcePath, &((*assetInfoDataPtr)->m_AssetSize), 0, -1);
+    assetInfoPtr->ParseAssetData((const uint8_t**)&m_ResourcePath, &((*assetInfoDataPtr)->InstanceDataSize), 0, -1);
 
-    if (assetInfoPtr->m_AssetType == CompiledAssetInfo::AssetType::TWO)
+    if (assetInfoPtr->AssetType == CompiledAssetInfo::tAssetType::TWO)
     {
         m_Flags.ReferenceCount = NULL;
         m_Flags.NotUsed = true;

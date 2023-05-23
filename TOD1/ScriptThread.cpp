@@ -195,7 +195,7 @@ void ScriptThread::SetSleepTime(const float sleepfor, const bool sleepRealTime)
         m_SleepUntil = -1;
 }
 
-int ScriptThread::_48E770()
+int ScriptThread::EnqueueScriptMethod()
 {
     if (!m_MethodInfo)
         return 0;
@@ -249,7 +249,7 @@ void ScriptThread::_48E8A0()
         return;
 
     StoreMethodInformation(nullptr, -1, nullptr, nullptr, nullptr);
-    _48E770();
+    EnqueueScriptMethod();
     _48E390();
 
     if (m_StackSize != m_CallStack[0].m_LocalOffset)
@@ -403,7 +403,7 @@ int ScriptThread::_48E8F0(const int stackIndex)
 #endif
     }
 
-    return _48E770();
+    return EnqueueScriptMethod();
 }
 
 void ScriptThread::_48EDA0()

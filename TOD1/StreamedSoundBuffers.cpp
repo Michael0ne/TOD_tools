@@ -328,9 +328,9 @@ HRESULT StreamedSoundBuffers::CreateSoundBuffer(DSBUFFERDESC* bufferDesc)
         return m_DirectSound->CreateSoundBuffer(bufferDesc, &m_DirectSoundBuffer, NULL);
 
     //if (bufferDesc->dwFlags & DSBCAPS_CTRL3D)
-     //field_24 = field_28 = m_DieselPower->stub21(bufferDesc->dwBufferBytes, bufferDesc->lpwfxFormat);
+     //AssetDataPtr = AssetInstanceDataPtr_1 = m_DieselPower->stub21(bufferDesc->dwBufferBytes, bufferDesc->lpwfxFormat);
     //else
-     //field_24 = m_DieselPower->stub16(bufferDesc->dwBufferBytes, 11, &bufferDesc->lpwfxFormat);
+     //AssetDataPtr = m_DieselPower->stub16(bufferDesc->dwBufferBytes, 11, &bufferDesc->lpwfxFormat);
 
     return S_OK;
 }

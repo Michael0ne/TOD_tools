@@ -17,7 +17,7 @@ FragmentAsset::FragmentInfo::FragmentInfo(FragmentInfo** rhs, AllocatorIndex(*Fi
     field_C = (*rhs)->field_C;
 
     /*if (_f4)
-        _f4->_406350(field_8 & 0x7FFFFFFF);*/
+        _f4->_406350(DataSize & 0x7FFFFFFF);*/
 
     field_4 = nullptr;
     field_8 = 0x80000000;
@@ -73,14 +73,14 @@ void FragmentAsset::ApplyAssetData(CompiledAssetInfo* assetInfoPtr)
     const uint8_t* assetPtr = (uint8_t*)this;
     assetInfoPtr->ParseInfo(&assetPtr, &assetInfoPtr, sizeof(FragmentAsset), 1, -1);
 
-    if (assetInfoPtr->m_AssetType == CompiledAssetInfo::AssetType::ZERO ||
-        assetInfoPtr->m_AssetType == CompiledAssetInfo::AssetType::ONE ||
-        assetInfoPtr->m_AssetType == CompiledAssetInfo::AssetType::TWO)
+    if (assetInfoPtr->AssetType == CompiledAssetInfo::tAssetType::ZERO ||
+        assetInfoPtr->AssetType == CompiledAssetInfo::tAssetType::ONE ||
+        assetInfoPtr->AssetType == CompiledAssetInfo::tAssetType::TWO)
         _851430(assetInfoPtr, &assetInfoPtr);
 
     assetInfoPtr->_85E160((uint8_t**)&FragmentData, (uint8_t**)&assetInfoPtr, 2, -1);
 
-    if (assetInfoPtr->m_AssetType != CompiledAssetInfo::AssetType::THREE)
+    if (assetInfoPtr->AssetType != CompiledAssetInfo::tAssetType::THREE)
         return;
 
     AllocatorIndexForSize GetAllocatorIndex = nullptr;
@@ -207,7 +207,7 @@ uint32_t* FragmentAsset::FragmentInfo::FindFirstNode()
     if (field_8 >= 0)
     {
         /*if (_f4)
-            _f4->_406350(field_8 & 0x7FFFFFFF);*/
+            _f4->_406350(DataSize & 0x7FFFFFFF);*/
 
         field_4 = nullptr;
         field_8 = 0x80000000;

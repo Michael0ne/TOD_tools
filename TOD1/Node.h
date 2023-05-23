@@ -289,6 +289,10 @@ public:
     void                SaveScriptData() const;  //  @86AED0
     void                SaveScriptPropertyData(const uint32_t propertyIndex, const uint32_t* param) const; //  @86ABD0
     void                _86BB80(const uint32_t propertyIndex, const uint32_t* param) const; //  @86BB80
+    inline void         AddScriptProperty(const uint32_t propertyIndex, const uint32_t* value) //  @869EA0
+    {
+        m_ScriptEntity->Script->AddProperty(this, propertyIndex, (const int*)value);
+    }
 
 private:
     void                Rotate_Impl(const Orientation& orient); //  @891420

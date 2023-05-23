@@ -129,7 +129,7 @@ public:
     const bool                  IsReferenced(const bool fixDangling) const; //  @48DFF0
 
 private:
-    int                         _48E770();  //  @48E770
+    int                         EnqueueScriptMethod();  //  @48E770
     void                        _48E8A0();  //  @48E8A0
 
 public:
