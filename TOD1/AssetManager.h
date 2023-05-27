@@ -57,7 +57,7 @@ struct CompiledAssetInfo
         TWO,
         THREE,
         FOUR
-    }                   AssetType;    //  NOTE: more likely it's a 'block' number. Like 'header', 'data', ...
+    }                   AssetType;
     int                 InstanceDataSize;
     int                 DataSize;
     int                 AlignmentIndex;
@@ -206,7 +206,7 @@ public:
     void                        BuildFastFindNodeVector(); // @877DA0
     void                        DeleteFastFindNodeVector(); //  @876340
     void                        FillFastFindNodeVector(Node* baseNode, FastFindInfo* ffi); // @877B00 // NOTE: this goes through 'baseNode' children and fills vector.
-    Asset*                      LoadResourceFile(const char* const respath); // @878AB0
+    Asset*                      LoadNativeResource(const char* const respath); // @878AB0
     void*                       LoadResourceBlock(class FileBuffer*, int* resbufferptr, unsigned int* resdatasize, unsigned int resblockid); // @8759E0
     Entity*                     FindFirstEntity(); // @8755E0
     Entity*                     FindNextEntity(Entity*); // @875610

@@ -39,6 +39,9 @@
     <ClInclude Include="MapBlockReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MultiPartReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GenericResourceReader.cpp">

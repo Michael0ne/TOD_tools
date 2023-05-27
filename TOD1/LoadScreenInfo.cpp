@@ -23,7 +23,7 @@ void LoadScreenInfo::LoadTexture()
     AssetManager::CorrectTextureResourcePath(respath, m_TexturePath.m_Str, GfxInternal::GetRegion(), AssetManager::PlatformId::PC);
 
     LogDump::LogA("LoadScreen:%s\n", respath.m_Str);
-    m_TextureResource = (TextureAsset*)g_AssetManager->LoadResourceFile(respath.m_Str);
+    m_TextureResource = (TextureAsset*)g_AssetManager->LoadNativeResource(respath.m_Str);
 
     if (g_GfxInternal->m_CheckerboardTextures[0] == m_TextureResource->m_Texture_1)
         LogDump::LogA("TEXTURE NOT FOUND!!!!!\n");

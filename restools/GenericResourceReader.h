@@ -9,6 +9,7 @@
 #include <map>
 
 #include "Utils.h"
+#include "MultiPartReader.h"
 
 //	NOTE: abstract reader. Doesn't do anything and relies on implementations of derived classes.
 class GenericResourceReader

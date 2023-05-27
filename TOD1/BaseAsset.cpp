@@ -342,7 +342,7 @@ void AssetLoader::LoadAssetByName(const char* const name)
     g_AssetManager->GetResourcePath(respath, name);
     m_AssetPtr = g_AssetManager->FindLoadedAsset(respath.m_Str);
     if (!m_AssetPtr)
-        m_AssetPtr = g_AssetManager->LoadResourceFile(respath.m_Str);
+        m_AssetPtr = g_AssetManager->LoadNativeResource(respath.m_Str);
 
     g_AssetManager->IncreaseResourceReferenceCount(m_AssetPtr);
 }

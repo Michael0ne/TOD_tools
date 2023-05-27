@@ -149,6 +149,7 @@
     <ClInclude Include="GenericResourceReader.h" />
     <ClInclude Include="AssetBlockReader.h" />
     <ClInclude Include="MapBlockReader.h" />
+    <ClInclude Include="MultiPartReader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SaveResourceReader.h" />
     <ClInclude Include="ScriptDatabaseReader.h" />

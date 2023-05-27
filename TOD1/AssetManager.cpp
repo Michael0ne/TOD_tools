@@ -495,7 +495,7 @@ void AssetHeaderStruct_t::FingerprintDecoder::DecodeInternal(char* key)
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-Asset* AssetManager::LoadResourceFile(const char* const respath)
+Asset* AssetManager::LoadNativeResource(const char* const respath)
 {
     const size_t respathlen = strlen(respath);
 #ifdef INCLUDE_FIXES

@@ -24,6 +24,10 @@ public:
     void        Decode(const char* const privateKey, char* text);
 };
 
+//  Assets.
+class AssetResource;
+class AssetBuilder;
+
 enum class AssetType
 {
     Texture = 0,
@@ -40,67 +44,239 @@ enum class AssetType
     Undefined
 };
 
-struct BaseAsset
+class Asset
 {
+protected:
     AssetType   Type = AssetType::Undefined;
     char*       Name = nullptr;
     uint32_t    GlobalId = 0;
     uint32_t    _fC = 0;
     UINT64      EngineTimestamp = 0;
-    uint32_t    Flags = 0;
-};
+    uint16_t    Flags = 0;
+    union
+    {
+        struct
+        {
+            unsigned    ReferenceCount : 4;
+        };
+    };
 
-class MultiPartReader
-{
-private:
-    uint8_t*        PosCurrent = nullptr;
-    uint8_t*        PosStart = nullptr;
-    uint8_t*        Buffer = nullptr;
-    size_t          BufferSize = 0;
+    static uint32_t Total;
 
 public:
-    inline MultiPartReader(FILE* filePtr, const size_t bufferSize, const bool rememberStart = true)
+    void operator delete(void* ptr)
     {
-        if (!filePtr || !bufferSize)
+        ((Asset*)ptr)->~Asset();
+
+        if (!((Asset*)ptr)->ReferenceCount)
+            delete ptr;
+    }
+
+    Asset();
+
+    virtual ~Asset() { delete[] Name; };
+    virtual AssetResource*  GetInstance() = 0;
+    virtual uint8_t         stub3(bool, uint32_t, uint32_t) { return 0; };
+    virtual uint32_t        stub4() { return -1; };
+    virtual void            stub5(uint32_t) {};
+    virtual void            GetResourceDirectory(std::string& dir, uint32_t platform) const = 0;
+    virtual void            Apply(AssetBuilder& from) = 0;
+    virtual bool            SetPlaceholder() = 0;
+    virtual uint32_t        stub9() { return 0; };
+    virtual void            GetName(std::string& name, uint32_t) const = 0;
+    virtual uint32_t        Load(const char* const) = 0;
+    virtual void            Delete() = 0;
+
+    inline void             SetReferencedStatus(const bool referenced)
+    {
+        ReferenceCount = referenced;
+    }
+
+    static void             Destroy(Asset* asset);
+};
+
+class AssetResource
+{
+public:
+    Asset* (*Create)(void) = nullptr;
+    std::string TypeName = {};
+    void* AssetVMT = nullptr;
+    uint32_t    ResourceIndex = 0;
+    std::vector<std::string>    Extensions = {};
+    uint8_t     _f2C = 0;
+    bool        VerifyChecksum = false;
+    uint32_t    Alignment[3] = {};
+
+public:
+    AssetResource(const char* const type, Asset* (*creator)(void));
+};
+
+static std::vector<AssetResource*> AssetTypes;
+static void CreateAssetInstances();
+
+//  Asset types.
+class TextureAsset : public Asset
+{
+    struct Texture
+    {
+
+    };
+
+    struct Texture_1
+    {
+
+    };
+
+protected:
+    uint32_t    _f1C = 0;
+    Texture*    TextureData = nullptr;
+    uint8_t     _f24[4] = {};
+    Texture_1*  TextureData_1 = nullptr;
+    uint32_t    _f2C = 0;
+
+public:
+    TextureAsset();
+    virtual ~TextureAsset()
+    {
+        if (TextureData_1 && ((uint8_t)TextureData_1 & 1) == 0)
+            delete TextureData_1;
+        if (TextureData && ((uint8_t)TextureData & 1) == 0)
+            delete TextureData;
+    }
+
+    virtual AssetResource* GetInstance() override
+    {
+        return ResourceInstance;
+    }
+    virtual void            GetResourceDirectory(std::string& dir, uint32_t platform) const override
+    {
+        switch (platform)
+        {
+        case 1:
+            dir = "texture_ps2";
+            break;
+        case 2:
+            dir = "texture_x";
+            break;
+        case 0:
+            dir = "texture_pc";
+            break;
+        default:
+            break;
+        }
+    }
+    virtual void            Apply(AssetBuilder& from) override;
+    virtual bool            SetPlaceholder() override
+    {
+        const auto isPlaceholderTexture = strstr(Name, "pinkyellowcheckers.bmp") == 0;
+        //  TODO: then, get this texture pointer from GfxInternal 'CheckerboardTextures' list and set it to 'Texture_1' member.
+        return true;
+    }
+    virtual void            GetName(std::string& name, uint32_t) const override
+    {
+        //  TODO: lots of stuff here. Don't care right now.
+    }
+    virtual uint32_t        Load(const char* const) override { return 0; };
+    virtual void            Delete() override
+    {
+        if (TextureData_1 && ((uint8_t)TextureData_1 & 1) == 0)
+            delete TextureData_1;
+        EngineTimestamp = 0;
+    }
+
+    static inline Asset*    Create()
+    {
+        return (Asset*)(new TextureAsset);
+    }
+    static AssetResource* ResourceInstance;
+};
+
+class AssetBuilder
+{
+    friend class Asset;
+    friend class TextureAsset;
+
+public:
+    enum class PartType
+    {
+        ZERO = 0,
+        ONE,
+        TWO,
+        THREE,
+        FOUR
+    };
+
+private:
+#ifdef USING_READER
+    typedef MultiPartReader BufferType;
+    typedef BufferType* BufferTypePtr;
+#else
+    typedef uint8_t     BufferType;
+    typedef BufferType* BufferTypePtr;
+#endif
+
+    struct BufferPositionData
+    {
+        BufferTypePtr*  DataPtr;
+        uint32_t        Flags;
+
+        BufferPositionData(BufferTypePtr* dataPtr, const uint32_t flags)
+            :DataPtr(dataPtr), Flags(flags)
+        {}
+    };
+
+    PartType            Type;
+    uint32_t            HeaderDataSize;
+    uint32_t            DataSize;
+    uint32_t            AlignmentIndex;
+    std::vector<BufferPositionData>    _f10;
+    BufferTypePtr       HeaderDataPtr;  //  NOTE: header part.
+    BufferTypePtr       DataPtr;        //  NOTE: actual data part.
+    BufferTypePtr       HeaderDataStartPtr;
+    BufferTypePtr       DataStartPtr;
+    uint32_t            _f30;
+    bool                _f34;
+    bool                _f35;
+
+public:
+    AssetBuilder(const PartType type, BufferTypePtr headerDataReader, BufferTypePtr dataReader, const uint32_t alignmentIndex, const uint32_t a5, const uint32_t a6);
+    void                ParseData(BufferTypePtr* dataPtr, BufferTypePtr bufferPtr, const uint32_t flags, const int32_t a4);
+    void                ParseInfo(BufferTypePtr* assetInstancePtr, BufferTypePtr* bufferPtr, const size_t instanceSize, const uint32_t flags, const uint32_t a5);
+    void                OffsetToPointer(BufferTypePtr* bufferPtr, const uint32_t flags);
+
+    inline void         IncreaseBufferPtr(const int32_t amount, const char what, const uint32_t flags)
+    {
+        if (_f30 == -1 || flags != -1 && _f30 == flags)
+        {
+            if ((what & 2) != 0)
+                DataPtr += ((amount + 3) & 0xFFFFFFFC);
+            else
+                HeaderDataPtr += ((amount + 3) & 0xFFFFFFFC);
+        }
+    }
+    inline void         IncreaseSize(const int32_t amount, const char what, const uint32_t flags)
+    {
+        if (_f30 == -1 || flags != -1 && _f30 == flags)
+        {
+            if ((what & 2) != 0)
+                DataSize += ((amount + 3) & 0xFFFFFFFC);
+            else
+                HeaderDataSize += ((amount + 3) & 0xFFFFFFFC);
+        }
+    }
+    inline void         RememberBufferPosition(BufferTypePtr* bufferPtr, const uint32_t flags)
+    {
+        if ((flags & 1) != 0)
             return;
 
-        Buffer = new uint8_t[bufferSize];
-        const auto fileOffsetCurrent = rememberStart ? ftell(filePtr) : -1;
-        const size_t bytesRead = fread(Buffer, sizeof(uint8_t), bufferSize, filePtr);
-        BufferSize = bufferSize;
-
-        if (bytesRead != bufferSize)
-            throw new std::exception("Bytes read from file buffer differs from the requested size!");
-
-        if (fileOffsetCurrent > 0)
-            fseek(filePtr, fileOffsetCurrent, SEEK_SET);
-
-        PosCurrent = Buffer;
-        PosStart = PosCurrent;
+        _f10.push_back({ bufferPtr, flags });
     }
-
-    inline ~MultiPartReader()
+    inline BufferTypePtr    GetBufferPtr(const char what) const
     {
-        delete[] Buffer;
+        return what & 2 ? DataPtr : HeaderDataPtr;
     }
 
-    template <typename T>
-    inline void Read(T& dest)
-    {
-        dest = *((T*)PosCurrent);
-        PosCurrent += sizeof(T);
-    }
-
-    template <typename T>
-    inline void ReadNoAdvance(T& dest)
-    {
-        dest = *((T*)PosCurrent);
-    }
-
-    inline void Skip(int32_t size)
-    {
-        PosCurrent += size;
-    }
+    static void         Instantiate(AssetBuilder& builder, BufferTypePtr buffer);
 };
 
 class MapBlockReader : public GenericResourceReader
@@ -130,9 +306,12 @@ private:
     AssetSharedHeader       SharedHeader;
     char                    FingerprintKey[256] = {};
     char                    Identifier[37] = {};
+    uint8_t*                HeadersBuffer = nullptr;
+    uint8_t*                DataBuffer = nullptr;
+    uint8_t*                SizesBuffer = nullptr;
 
     //  Assets.
-    std::vector<BaseAsset*> Assets;
+    std::vector<Asset*> Assets;
     std::vector<uint32_t> AssetsSizes;
 
 public:
