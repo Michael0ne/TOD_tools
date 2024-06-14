@@ -24,8 +24,8 @@ public:
     short           m_Order;
     EntityId        m_Id;
     uint32_t       *m_Parameters; // NOTE: an array of properties values.
-    Defragmentator *m_Defragmentator;
 
+    Defragmentator     *m_Defragmentator;
     EntityScriptData   *m_ScriptData;
 
     int             SaveScriptDataToFile_Impl(MemoryCards* memcard, int memcardindex, int savegameslot, const char* a4); // @86B650

@@ -2,6 +2,10 @@
 
 uint32_t Asset::Total = 0;
 AssetResource* TextureAsset::ResourceInstance;
+AssetResource* FontAsset::ResourceInstance;
+AssetResource* TextAsset::ResourceInstance;
+AssetResource* ModelAsset::ResourceInstance;
+AssetResource* FragmentAsset::ResourceInstance;
 
 void CreateAssetInstances()
 {
@@ -16,42 +20,99 @@ void CreateAssetInstances()
 
     //  Font
     {
+        FontAsset::ResourceInstance = new AssetResource("font", FontAsset::Create);
+        FontAsset::ResourceInstance->Extensions.push_back("ttf");
+        FontAsset::ResourceInstance->Extensions.push_back("font");
+        FontAsset::ResourceInstance->Alignment[1] = 16;
+        FontAsset::ResourceInstance->Alignment[2] = 128;
+        FontAsset::ResourceInstance->Alignment[0] = 0;
+        FontAsset::ResourceInstance->_f2C = 1;
     }
 
     //  Text
     {
+        TextAsset::ResourceInstance = new AssetResource("text", TextAsset::Create);
+        TextAsset::ResourceInstance->Extensions.push_back("txt");
+        TextAsset::ResourceInstance->Alignment[1] = 16;
+        TextAsset::ResourceInstance->Alignment[2] = 16;
+        TextAsset::ResourceInstance->Alignment[0] = 16;
+        TextAsset::ResourceInstance->_f2C = 1;
     }
 
     //  Model
     {
+        ModelAsset::ResourceInstance = new AssetResource("modelres", ModelAsset::Create);
+        ModelAsset::ResourceInstance->Extensions.push_back("model");
+        ModelAsset::ResourceInstance->Alignment[1] = 16;
+        ModelAsset::ResourceInstance->Alignment[2] = 16;
+        ModelAsset::ResourceInstance->Alignment[0] = 16;
     }
 
     //  Fragment
     {
+        FragmentAsset::ResourceInstance = new AssetResource("fragment", FragmentAsset::Create);
+        FragmentAsset::ResourceInstance->Extensions.push_back("fragment");
+        FragmentAsset::ResourceInstance->Extensions.push_back("scene");
+        FragmentAsset::ResourceInstance->Alignment[1] = 16;
+        FragmentAsset::ResourceInstance->Alignment[2] = 16;
+        FragmentAsset::ResourceInstance->Alignment[0] = 16;
+        FragmentAsset::ResourceInstance->VerifyChecksum = true;
     }
 
     //  Movie
     {
+        /*MovieAsset::ResourceInstance = new AssetResource("movie", MovieAsset::Create);
+        MovieAsset::ResourceInstance->Extensions.push_back("wmv");
+        MovieAsset::ResourceInstance->Extensions.push_back("bik");
+        MovieAsset::ResourceInstance->Alignment[1] = 16;
+        MovieAsset::ResourceInstance->Alignment[2] = 16;
+        MovieAsset::ResourceInstance->Alignment[0] = 16;*/
     }
 
     //  Cutscene
     {
+        /*CutsceneAsset::ResourceInstance = new AssetResource("cutscene", CutsceneAsset::Create);
+        CutsceneAsset::ResourceInstance->Extensions.push_back("cutscene");
+        CutsceneAsset::ResourceInstance->Alignment[1] = 16;
+        CutsceneAsset::ResourceInstance->Alignment[2] = 16;
+        CutsceneAsset::ResourceInstance->Alignment[0] = 16;*/
     }
 
     //  Sound
     {
+        /*SoundAsset::ResourceInstance = new AssetResource("sound", SoundAsset::Create);
+        SoundAsset::ResourceInstance->Extensions.push_back("wav");
+        SoundAsset::ResourceInstance->Alignment[1] = 16;
+        SoundAsset::ResourceInstance->Alignment[2] = 16;
+        SoundAsset::ResourceInstance->Alignment[0] = 16;
+        SoundAsset::ResourceInstance->_f2C = 1;*/
     }
 
     //  StreamedSound
     {
+        /*StreamedSoundAsset::ResourceInstance = new AssetResource("streamedsoundinfo", StreamedSoundAsset::Create);
+        StreamedSoundAsset::ResourceInstance->Extensions.push_back("stream");
+        StreamedSoundAsset::ResourceInstance->Extensions.push_back("ogg");
+        StreamedSoundAsset::ResourceInstance->Alignment[1] = 16;
+        StreamedSoundAsset::ResourceInstance->Alignment[2] = 16;
+        StreamedSoundAsset::ResourceInstance->Alignment[0] = 16;
+        StreamedSoundAsset::ResourceInstance->_f2C = 1;*/
     }
 
     //  Animation
     {
+        /*AnimationAsset::ResourceInstance = new AssetResource("animation", AnimationAsset::Create);
+        AnimationAsset::ResourceInstance->Extensions.push_back("animation");
+        AnimationAsset::ResourceInstance->Alignment[1] = 16;
+        AnimationAsset::ResourceInstance->Alignment[2] = 16;
+        AnimationAsset::ResourceInstance->Alignment[0] = 16;*/
     }
 
     //  MeshColor
     {
+        /*MeshColorAsset::ResourceInstance = new AssetResource("meshcolor", MeshColorAsset::Create);
+        MeshColorAsset::ResourceInstance->Extensions.push_back("meshcolor");
+        MeshColorAsset::ResourceInstance->Extensions.push_back("lighting");*/
     }
 }
 
@@ -81,6 +142,19 @@ Asset::Asset()
     ReferenceCount = 1;
 }
 
+void Asset::ParseAdditional(AssetBuilder* from, AssetBuilder** to)
+{
+    from->ParseData((AssetBuilder::BufferTypePtr*)&Name, (AssetBuilder::BufferTypePtr) & ((*to)->HeaderDataSize), 0, -1);
+
+    if (from->Type == AssetBuilder::PartType::TWO)
+    {
+        Flags = 0;
+        GlobalId = 0;
+        EngineTimestamp = 0;
+        *((uint32_t*)this) = GetInstance()->ResourceIndex;
+    }
+}
+
 void Asset::Destroy(Asset* asset)
 {
     delete asset;
@@ -107,6 +181,58 @@ void TextureAsset::Apply(AssetBuilder& from)
     uint8_t* instancePtr = (uint8_t*)this;
     from.ParseInfo(&instancePtr, &buffer, 48, 1, -1);
 }
+
+FontAsset::FontAsset()
+{
+    _f20 = (uint32_t*)1;
+    FontData = nullptr;
+
+    SetReferencedStatus(true);
+}
+
+void FontAsset::Apply(AssetBuilder& from)
+{
+
+}
+
+TextAsset::TextAsset()
+{
+}
+
+void TextAsset::Apply(AssetBuilder& from)
+{
+}
+
+ModelAsset::ModelAsset()
+{
+    SetReferencedStatus(true);
+}
+
+void ModelAsset::Apply(AssetBuilder& from)
+{
+}
+
+FragmentAsset::FragmentAsset()
+{
+    Fragment = new FragmentData;
+    *(uint32_t*)&Fragment &= 1;
+
+    _f24 = 0;
+    _f24 &= ~2;
+}
+
+void FragmentAsset::Apply(AssetBuilder& from)
+{
+    uint8_t* buffer = (uint8_t*)&from;
+    uint8_t* instancePtr = (uint8_t*)this;
+    from.ParseInfo(&instancePtr, &buffer, 40, 1, -1);
+
+    AssetBuilder* builder = &from;
+    if (from.Type == AssetBuilder::PartType::ZERO || from.Type == AssetBuilder::PartType::ONE || from.Type == AssetBuilder::PartType::THREE)
+        ParseAdditional(builder, &builder);
+}
+
+//  MAP BLOCK READER
 
 MapBlockReader::MapBlockReader(LPCSTR filename, LPCSTR ext)
 {

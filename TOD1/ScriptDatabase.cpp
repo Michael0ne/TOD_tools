@@ -885,6 +885,9 @@ void LoadScripts()
 #include "scripts/Magnet.h"
 #include "scripts/MarcoDist.h"
 #include "scripts/Pathtype.h"
+#include "scripts/database_road_folder.h"
+#include "scripts/AI_track.h"
+#include "scripts/barrel_catapult.h"
 // TODO: much much more.
 
     if (GetGlobalPropertyListChecksum() == SCRIPT_PROPERTIES_LOADED_CRC)
@@ -1409,9 +1412,9 @@ void Scriptbaked::AddMember(const int fieldId, char* defaultValue, const int a3)
     m_PropertiesList.push_back(prop);
 }
 
-void Scriptbaked::AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(ScriptThread*, void*))
+void Scriptbaked::AddMethod(short id, void (*methodHandler)(ScriptThread*), void (*stateHandler)(ScriptThread*, void*))
 {
-    m_MethodsList.push_back({ methodid, 0, scriptthreadhandler, methodptr });
+    m_MethodsList.push_back({ id, 0, methodHandler, stateHandler });
 }
 
 void Scriptbaked::CalculateSize()
@@ -1448,30 +1451,184 @@ void Scriptbaked::CalculateSize()
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-bool Scriptbaked::_48A1B0(Node* node, const int32_t scriptId, uint8_t* args)
+bool Scriptbaked::_48A1B0(Node* a2, const int32_t scriptId, uint8_t* args)
 {
-    Method* methodInfo = &m_MethodsList[scriptId];
-    const short methodPropBlockId = methodInfo->m_PropertyBlockId;
-    if (!methodPropBlockId)
+    //m_Elements = this->m_MethodsList.m_Elements;
+    //m_PropertyBlockId = m_Elements[scriptId].m_PropertyBlockId;
+    //v7 = &m_Elements[scriptId];
+    //v8 = 0;
+    //v33 = v7;
+    //v32 = m_PropertyBlockId;
+    if (!m_MethodsList[scriptId].m_PropertyBlockId)
         return false;
 
-    int16_t i = 0;
-    while (methodInfo->m_ThreadHandler != field_60)
+    auto propertyRef = &m_MethodsList[scriptId];
+    const auto propertyBlockId = propertyRef->m_PropertyBlockId;
+    short blockId = 0;
+
+    while (propertyRef->m_ThreadHandler != field_60) // constructor?
     {
-        methodInfo++;
-        if (i++ >= methodPropBlockId)
+        //++v8;
+        //++v7;
+        propertyRef++;
+        //if (v8 >= propertyBlockId)
+        if (blockId++ >= propertyBlockId)
             return false;
     }
 
-    if (!methodInfo->m_MethodPtr)
+    //scriptIda = v7->m_MethodPtr;
+    if (!propertyRef->m_MethodPtr)
         return false;
 
-    node->StoreScriptData();
+    //v10 = a2;
+    a2->StoreScriptData();  //  Make node properties available to this script thread (copy).
 
+    Defragmentator* defragAllocatorPtr = (Defragmentator*)MemoryManager::GetDefragmentator(AllocatorIndex::DEFRAGMENTING);
+    EntityScriptData* scriptDataPtr = nullptr;
     if (ScriptThread::LatestScriptDataCacheIndex)
     {
-        //ScriptThread::ScriptDataCache[ScriptThread::LatestScriptDataCacheIndex].m_ScriptData
+        //scriptDataPtr = ScriptThread::ScriptDataCache._f0[ScriptThread::LatestScriptDataCacheIndex].m_ScriptData;
+        //defragAllocatorPtr = ScriptThread::ScriptCacheInstance._f0[ScriptThread::LatestScriptDataCacheIndex--].Defragmentator;
+        //ScriptThread::SetScriptNode(scriptDataPtr->m_ScriptThread, a2);
+        auto scriptCacheRef = ScriptThread::ScriptDataCache._f0[ScriptThread::LatestScriptDataCacheIndex--];
+
+        scriptCacheRef.m_ScriptData->m_ScriptThread->SetScriptNode(a2);
+        defragAllocatorPtr = scriptCacheRef.m_Defragmentator;
     }
+    else
+    {
+        //  This below is an overloaded 'new' for defragmentator.
+        /*v13 = MemoryManager::GetDefragmentator(ALLOCATOR_DEFRAGMENTING);
+        v14 = v13->lpVtbl->Allocate(v13, 68, 48, (int)Empty, 792, 0, 0);
+        DataPtr = (ScriptThread*)MemoryManager::GetDefragmentator(ALLOCATOR_DEFRAGMENTING)->m_AllocatedSpace[v14].DataPtr;
+        if (DataPtr)
+            v16 = ScriptThread::ScriptThread(DataPtr, a2);
+        else
+            v16 = 0;
+
+        v28 = v16;
+        v17 = MemoryManager::GetDefragmentator(ALLOCATOR_DEFRAGMENTING);
+        ScriptThreadSpaceIndex = Defragmentator::FindScriptThreadSpaceIndex(v17, v28);
+        v19 = MemoryManager::GetDefragmentator(ALLOCATOR_DEFRAGMENTING);
+        scriptDataPtr = (EntityScriptData*)&v19->m_AllocatedSpace[ScriptThreadSpaceIndex];
+        defragAllocatorPtr = v19;*/
+
+        auto newScriptThread = new ScriptThread(a2);
+        scriptDataPtr = (EntityScriptData*)&defragAllocatorPtr->m_AllocatedSpace[defragAllocatorPtr->FindScriptThreadSpaceIndex(newScriptThread)];
+    }
+
+    a2->SetScriptData(defragAllocatorPtr, scriptDataPtr);
+
+    //m_ScriptThread = scriptDataPtr->m_ScriptThread;
+    auto scriptThread = scriptDataPtr->m_ScriptThread;
+
+    scriptThread->PushToCallStack(field_60, 0, a2, this);
+    scriptThread->RunActiveThreadFunction();
+
+    //v29 = 0;
+    //m_ParameterOffset = 0;
+    //m_LocalOffset = 0;
+    uint32_t paramOffset = 0;
+    uint32_t localOffset = 0;
+    uint32_t i = 0;
+    while (true)
+    {
+        ScriptThread::CurrentParameterOffset = paramOffset;
+        ScriptThread::CurrentLocalOffset = localOffset;
+        ScriptThread::CurrentScriptNode = a2;
+        //++BYTE2(scriptThread->m_ThreadFlags);
+        scriptThread->m_StateMessageCount++;
+
+        ScriptThread::Threads[ScriptThread::CurrentThread++] = scriptThread;
+        propertyRef->m_MethodPtr(scriptThread, args);
+        --ScriptThread::CurrentThread;
+
+        if (scriptThread->m_CallStackRef)
+        {
+            scriptThread->RunRestAndReset();
+            return true;
+        }
+
+        //v22 = v29 + 1;
+        uint32_t ii = i + 1;
+        //scriptIda = 0;
+        Scriptbaked::Method::ScriptMethodType foundMethodPtr = 0;
+
+        //if (v29 + 1 >= scriptThread->m_CallStack.size())
+        if (i + 1 >= scriptThread->m_CallStack.size())
+            break;
+
+        //v23 = v22;
+        uint32_t outerIndex = ii;
+
+        //p_m_FuncPtr = (CallStackElement*)&scriptThread->m_CallStack.m_Elements->m_Elements[v22].m_FuncPtr;
+        auto threadStackCurrElement = &scriptThread->m_CallStack[ii].m_FuncPtr;
+
+        bool handlerNotFound = false;
+        do
+        {
+            //v25 = v33;
+            auto threadPropertyRef = propertyRef;
+
+            //v26 = 0;
+            short j = 0;
+
+            //while (v25->m_ThreadHandler != (void(__cdecl*)(ScriptThread*))p_m_FuncPtr->m_NodePtr)
+            while (threadPropertyRef->m_ThreadHandler != *threadStackCurrElement)
+            {
+                //++v26;
+                ++j;
+                
+                //++v25;
+                threadPropertyRef++;
+
+                //if (v26 >= v32)
+                if (j >= propertyBlockId)
+                {
+                    //goto LABEL_23;
+                    handlerNotFound = true;
+                    break;
+                }
+            }
+
+            if (!handlerNotFound)
+            {
+                //foundMethodPtr = v25->m_MethodPtr;
+                foundMethodPtr = threadPropertyRef->m_MethodPtr;
+
+                //v27 = scriptThread->m_CallStack.m_Elements->m_Elements;
+
+                i = ii;
+
+                //m_ParameterOffset = v27[v23].m_ParameterOffset;
+                paramOffset = scriptThread->m_CallStack[outerIndex].m_ParameterOffset;
+
+                //m_LocalOffset = v27[v23].m_LocalOffset;
+                localOffset = scriptThread->m_CallStack[outerIndex].m_LocalOffset;
+            }
+
+            //if (v26 != v32)
+            if (j != propertyBlockId)
+                break;
+
+            //++v22;
+            ++ii;
+
+            //++v23;
+            outerIndex++;
+
+            //++p_m_FuncPtr;
+            threadStackCurrElement++;
+        } while (i < scriptThread->m_CallStack.size());
+
+        if (!foundMethodPtr)
+            break;
+    }
+
+    if (scriptThread->m_CallStackRef || scriptThread->m_ThreadFlags.SceneTimeSynced || scriptThread->m_CallStack.size() <= 1)
+        scriptThread->RunRestAndReset();
+
+    return true;
 }
 
 bool Scriptbaked::GetMappedPropertyValue(const uint32_t* const nodeParameters, const uint32_t propertyIndex, uint8_t* outPropertyValue) const
@@ -1658,7 +1815,7 @@ void Scriptbaked::AddProperty(Node* scriptNode, const unsigned int propertyIndex
     const uint32_t slot = scriptNode->m_Parameters[propertyIndex / 16];
     const uint32_t index = 1 << (2 * (propertyIndex & 15));
 
-    if ( ((slot & index) == 0 || ((2 * index) & slot) == 0) && !propertyType->AreEqual(nodePropertyPtr, propertyValue) )
+    if (((slot & index) == 0 || ((2 * index) & slot) == 0) && !propertyType->AreEqual(nodePropertyPtr, propertyValue))
         scriptNode->_86B560(propertyIndex, nodePropertyPtr);
 
     //  TODO: int32_t -> uint32_t!
@@ -1689,7 +1846,7 @@ void Scriptbaked::AddPropertyByReference(Node* callerNode, const int propertyInd
         debug("AddPropertyByReference: script does not have this propety! id=%d, type=%s", propertyInd, buf.m_Str);
 #endif
     }
-}
+    }
 
 void Scriptbaked::SaveNodeProperties(Node* node)
 {
@@ -1819,7 +1976,7 @@ void Scriptbaked::InstantiateGlobalScripts()
             {
                 if (script->GetAttachedScript() == child->m_ScriptEntity &&
                     String::EqualIgnoreCase(script->GetAttachedScript()->TypeName.m_Str, child->m_Name, strlen(child->m_Name)))
-                        foundScript = true;
+                    foundScript = true;
 
                 child = child->m_NextSibling;
                 if (!child)

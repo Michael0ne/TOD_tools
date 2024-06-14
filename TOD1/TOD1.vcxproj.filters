@@ -635,6 +635,15 @@
     <ClInclude Include="Math.h">
       <Filter>Header files\KapowSystems\System</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\database_road_folder.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\AI_track.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\barrel_catapult.h">
+      <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

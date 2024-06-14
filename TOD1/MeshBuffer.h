@@ -6,6 +6,7 @@
 
 class MeshBuffer
 {
+    friend class GfxInternal_Dx9;
 protected:
     Mesh           *m_Mesh;
     int             field_4;

@@ -191,9 +191,15 @@ void Camera::UpdateCameraMatrix()
     g_GfxInternal->SetBufferViewMatrixByIndex(sceneMatrix, 22);
 
     DirectX::XMVECTOR rotationVector = DirectX::XMQuaternionRotationMatrix(sceneMatrix);
-    const float aspectRatio = GfxInternal::IsWideScreen() ? 1.7777778f : 1.3333334f;
+
     ScreenResolution screenRes;
     g_GfxInternal->GetScreenResolution(screenRes);
+
+#ifdef INCLUDE_FIXES
+    const auto aspectRatio = (float_t)screenRes.x / (float_t)screenRes.y;    //  Properly set aspect ratio based on viewport width and height. This should properly scale any resolution.
+#else
+    const float aspectRatio = GfxInternal::IsWideScreen() ? 1.7777778f : 1.3333334f;
+#endif
 
     const float clipATan = atanf(tanf(((m_Fov * 0.017453292f) * 0.5f) * 0.75f));
     const float nearClip = 2 * (clipATan * 57.295776f);

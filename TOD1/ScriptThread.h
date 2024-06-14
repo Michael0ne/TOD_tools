@@ -2,6 +2,8 @@
 #include "ScriptDatabase.h"
 #include "Defragmentator.h"
 
+#include <array>
+
 class Node;
 class Scriptbaked;
 
@@ -57,6 +59,11 @@ class ScriptThread : public IScriptThread
         EntityScriptData           *m_ScriptData;
     };
 
+    struct ScriptCacheInstance
+    {
+        NodeScriptDataInfo          _f0[7];
+    };
+
 protected:
     Defragmentator             *m_StackListAllocator;    //  NOTE: allocator for vector below. Same goes for callstack.
     std::vector<StackElement>   m_Stack;
@@ -101,7 +108,7 @@ protected:
     }                           m_ThreadFlags;
 #endif
     Node                       *m_ScriptNode;
-    MethodStruct               *m_MethodInfo;
+    MethodStruct               *m_CallStackRef;
     CallStackElement           *m_CurrentStackElement;
 
 public:
@@ -114,7 +121,7 @@ public:
     const int                   RestoreFromBuffer(int* buffer); //  @48E9E0
     void                        StoreMethodInformation(void (*a1)(ScriptThread*), int a2, void (*a3)(ScriptThread*), Node* a4, Scriptbaked* a5);   //  @48CD70
     void                        Reset();    //  @48E930
-    void                        _48E390();  //  @48E390 //  NOTE: 'Execute'?
+    void                        RunActiveThreadFunction();  //  @48E390
     void                        SetSleepTime(const float sleepfor, const bool sleepRealTime);  //  @48F2E0
     const int                   GetSceneTime() const;    //  @48CD00
     void                        DecreaseStateMessageCount();    //  @48CD50
@@ -124,8 +131,8 @@ public:
     void                        PushToCallStack( void (*funcPtr)(ScriptThread*), const short argNumber, Node* node, void* dummy);   //  @48E700
     void                        AdjustAndPopStack();    //  @48E630
     int                         WriteScriptInformation(int* outInformation) const;  //  @48CF00
-    int                         _48E8F0(const int stackIndex);  //  @48E8F0
-    void                        _48EDA0();  //  @48EDA0
+    int                         PopFromStackAndSetCurrent(const int stackIndex);  //  @48E8F0
+    void                        RunRestAndReset();  //  @48EDA0
     const bool                  IsReferenced(const bool fixDangling) const; //  @48DFF0
 
 private:
@@ -133,20 +140,31 @@ private:
     void                        _48E8A0();  //  @48E8A0
 
 public:
-    static void                 ResetCache();  //  @48CE30
+    static void                 ResetCallStack();  //  @48CE30
     static bool                 IsThreadExists(const ScriptThread* scriptthread);
     static int                  GetCurrentThreadIndex();    //  @48CC40
 
     static int                  CurrentThread;  //  @A3B758
     static ScriptThread*        Threads[100];   //  @A3B5C8
     static bool                 WarnDelayedException;   //  @A3B770
-    static int                  LatestMethodIndex;    //  @A3B76C
-    static MethodStruct        *RecentMethodsArray[5];  //  @A3B5B4
-    static NodeScriptDataInfo   ScriptDataCache[6];    //  @A3B774
+    //static int                  CallStackIndex;    //  @A3B76C
+    static ScriptCacheInstance  ScriptDataCache;    //  @A3B76C
+    static MethodStruct        *CallStack[5];  //  @A3B5B4
     static int                  LatestScriptDataCacheIndex; //  @A3B768
     static int                  CurrentLocalOffset; //  @A3B760
     static int                  CurrentParameterOffset; //  @A3B764
     static Node*                CurrentScriptNode;  //  @A3B75C //  NOTE: used as 'this' for TNT scripts.
 };
+
+static void DummyFunction(ScriptThread* pThread)
+{
+    return;
+}
+
+static std::array<void (*)(ScriptThread*), 1> StaticScriptFunctions = {
+    DummyFunction
+};
+
+#define SCRIPT_ENUM_VALUE v 
 
 ASSERT_CLASS_SIZE(ScriptThread, 68);

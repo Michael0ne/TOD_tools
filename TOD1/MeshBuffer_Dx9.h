@@ -5,6 +5,8 @@
 
 class MeshBuffer_Dx9 : public MeshBuffer
 {
+    friend class GfxInternal_Dx9;
+
     struct Skin
     {
         int field_0;
@@ -34,7 +36,7 @@ class MeshBuffer_Dx9 : public MeshBuffer
         int field_5C;
     };
 
-private:
+protected:
     std::map<Skin, unsigned short> field_44;
     int field_50;
     std::vector<int> field_54;

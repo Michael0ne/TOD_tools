@@ -132,6 +132,8 @@ class Scriptbaked
         short       m_PropertyBlockId;
         void        (*m_ThreadHandler)(ScriptThread*);
         void        (*m_MethodPtr)(ScriptThread*, void* args);
+
+        typedef void (*ScriptMethodType)(ScriptThread* thread, void* args);
     };
 
     struct Parameter
@@ -165,7 +167,7 @@ public:
     Scriptbaked(const char* const scriptName, const char* const parentName, bool a3, bool a4); // @48A530
 
     void                        AddMember(const int fieldId, char* defaultValue, const int); // @48AF10
-    void                        AddMethod(short methodid, void (*scriptthreadhandler)(ScriptThread*), void (*methodptr)(ScriptThread*, void*)); // @48A690
+    void                        AddMethod(short id, void (*methodHandler)(ScriptThread*), void (*stateHandler)(ScriptThread*, void*)); // @48A690
     void                        AddLocal(void (*procPtr)(ScriptThread*), DataType* localType);  //  @48A700 //  NOTE: upon entering the 'procPtr' the stack must be adjusted accordingly to the number of 'localtype' variables 'added'.
     void                        AddProperty(Node* scriptNode, const unsigned int propertyIndex, const int* const propertyValue);    //  @489EA0
     void                        CalculateSize(); // @48AA60

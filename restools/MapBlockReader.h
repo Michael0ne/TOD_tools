@@ -92,6 +92,8 @@ public:
         ReferenceCount = referenced;
     }
 
+    void                    ParseAdditional(AssetBuilder* from, AssetBuilder** to);
+
     static void             Destroy(Asset* asset);
 };
 
@@ -138,13 +140,13 @@ public:
     TextureAsset();
     virtual ~TextureAsset()
     {
-        if (TextureData_1 && ((uint8_t)TextureData_1 & 1) == 0)
+        if (TextureData_1 && ((uint32_t)TextureData_1 & 1) == 0)
             delete TextureData_1;
-        if (TextureData && ((uint8_t)TextureData & 1) == 0)
+        if (TextureData && ((uint32_t)TextureData & 1) == 0)
             delete TextureData;
     }
 
-    virtual AssetResource* GetInstance() override
+    virtual AssetResource*  GetInstance() override
     {
         return ResourceInstance;
     }
@@ -179,7 +181,7 @@ public:
     virtual uint32_t        Load(const char* const) override { return 0; };
     virtual void            Delete() override
     {
-        if (TextureData_1 && ((uint8_t)TextureData_1 & 1) == 0)
+        if (TextureData_1 && ((uint32_t)TextureData_1 & 1) == 0)
             delete TextureData_1;
         EngineTimestamp = 0;
     }
@@ -187,6 +189,279 @@ public:
     static inline Asset*    Create()
     {
         return (Asset*)(new TextureAsset);
+    }
+    static AssetResource* ResourceInstance;
+};
+
+class FontAsset : public Asset
+{
+    struct Font
+    {
+
+    };
+
+private:
+    uint32_t    _f1C = 0;
+    uint32_t*   _f20;
+    Font*       FontData;
+
+public:
+    FontAsset();
+    virtual ~FontAsset()
+    {
+        if (FontData && ((uint32_t)FontData & 1) == 0)
+            delete FontData;
+    }
+
+    virtual AssetResource*  GetInstance() override
+    {
+        return ResourceInstance;
+    }
+    virtual void            GetResourceDirectory(std::string& dir, uint32_t platform) const override
+    {
+        switch (platform)
+        {
+        case 1:
+            dir = "font_ps2";
+            break;
+        case 2:
+            dir = "font_xb";
+            break;
+        case 0:
+            dir = "font_pc";
+            break;
+        default:
+            break;
+        }
+    }
+    virtual void            Apply(AssetBuilder& from) override;
+    virtual bool            SetPlaceholder() override
+    {
+        return true;
+    }
+    virtual void            GetName(std::string& name, uint32_t) const override
+    {
+        //  TODO: lots of stuff here. Don't care right now.
+    }
+    virtual uint32_t        Load(const char* const) override { return 0; };
+    virtual void            Delete() override
+    {
+        if (FontData && ((uint32_t)FontData & 1) == 0)
+            delete FontData;
+        EngineTimestamp = 0;
+    }
+
+    static inline Asset* Create()
+    {
+        return (Asset*)(new FontAsset);
+    }
+    static AssetResource* ResourceInstance;
+};
+
+class TextAsset : public Asset
+{
+private:
+    uint32_t    _f1C = 0;
+    std::vector<uint32_t>   _f20 = {};
+    std::vector<uint32_t>   TextIndicies = {};
+    std::vector<uint32_t>   _f40 = {};
+    std::map<uint16_t, uint16_t>*   Characters = nullptr;
+    uint32_t    _54;
+
+public:
+    TextAsset();
+    virtual ~TextAsset()
+    {
+        if (Characters && ((uint32_t)Characters & 1) == 0)
+            delete Characters;
+    }
+
+    virtual AssetResource* GetInstance() override
+    {
+        return ResourceInstance;
+    }
+    virtual void            GetResourceDirectory(std::string& dir, uint32_t platform) const override
+    {
+        switch (platform)
+        {
+        case 1:
+            dir = "textres_ps2";
+            break;
+        case 2:
+            dir = "textres_xb";
+            break;
+        case 0:
+            dir = "textres_pc";
+            break;
+        default:
+            break;
+        }
+    }
+    virtual void            Apply(AssetBuilder& from) override;
+    virtual bool            SetPlaceholder() override
+    {
+        return true;
+    }
+    virtual void            GetName(std::string& name, uint32_t) const override
+    {
+        //  TODO: lots of stuff here. Don't care right now.
+    }
+    virtual uint32_t        Load(const char* const) override { return 0; };
+    virtual void            Delete() override
+    {
+        if (Characters && ((uint32_t)Characters & 1) == 0)
+            delete Characters;
+        EngineTimestamp = 0;
+    }
+
+    static inline Asset* Create()
+    {
+        return (Asset*)(new TextAsset);
+    }
+    static AssetResource* ResourceInstance;
+};
+
+class ModelAsset : public Asset
+{
+    struct TextureSet
+    {
+    };
+
+    struct Pivot
+    {
+    };
+
+    struct PhysAttachment
+    {
+    };
+private:
+    uint32_t    _f1C = 0;
+    std::vector<TextureSet> TextureResources = {};
+    std::vector<Pivot>      PivotsList = {};
+    std::vector<PhysAttachment>*    PhysAttachmentsList = nullptr;
+    float_t     BoundingRadius[4] = {};
+    uint32_t    _f54 = 0;
+    uint32_t*   _f58 = (uint32_t*)1;
+    uint8_t     _f5C = 0x20;
+
+public:
+    ModelAsset();
+    virtual ~ModelAsset()
+    {
+        if (PhysAttachmentsList && ((uint32_t)PhysAttachmentsList & 1) == 0)
+            delete PhysAttachmentsList;
+
+        if (_f58 && ((uint32_t)_f58 & 1) == 0)
+            delete _f58;
+    }
+
+    virtual AssetResource* GetInstance() override
+    {
+        return ResourceInstance;
+    }
+    virtual void            GetResourceDirectory(std::string& dir, uint32_t platform) const override
+    {
+        switch (platform)
+        {
+        case 1:
+            dir = "modelres_ps2";
+            break;
+        case 2:
+            dir = "modelres_x";
+            break;
+        case 0:
+            dir = "modelres_pc";
+            break;
+        default:
+            break;
+        }
+    }
+    virtual void            Apply(AssetBuilder& from) override;
+    virtual bool            SetPlaceholder() override
+    {
+        return true;
+    }
+    virtual void            GetName(std::string& name, uint32_t) const override
+    {
+        //  TODO: lots of stuff here. Don't care right now.
+    }
+    virtual uint32_t        Load(const char* const) override { return 0; };
+    virtual void            Delete() override
+    {
+        if (PhysAttachmentsList && ((uint32_t)PhysAttachmentsList & 1) == 0)
+            delete PhysAttachmentsList;
+
+        if (_f58 && ((uint32_t)_f58 & 1) == 0)
+            delete _f58;
+        EngineTimestamp = 0;
+    }
+
+    static inline Asset* Create()
+    {
+        return (Asset*)(new ModelAsset);
+    }
+    static AssetResource* ResourceInstance;
+};
+
+class FragmentAsset : public Asset
+{
+    struct FragmentData
+    {
+    };
+private:
+    uint32_t        _f1C = 0;
+    FragmentData*   Fragment;
+    uint32_t        _f24;
+
+public:
+    FragmentAsset();
+    virtual ~FragmentAsset()
+    {
+        if (Fragment && ((uint32_t)Fragment & 1) == 0)
+            delete Fragment;
+    }
+
+    virtual AssetResource* GetInstance() override
+    {
+        return ResourceInstance;
+    }
+    virtual void            GetResourceDirectory(std::string& dir, uint32_t platform) const override
+    {
+        switch (platform)
+        {
+        case 1:
+            dir = "fragment_ps2";
+            break;
+        case 2:
+            dir = "fragment_x";
+            break;
+        case 0:
+            dir = "fragment_pc";
+            break;
+        default:
+            break;
+        }
+    }
+    virtual void            Apply(AssetBuilder& from) override;
+    virtual bool            SetPlaceholder() override
+    {
+        return true;
+    }
+    virtual void            GetName(std::string& name, uint32_t) const override
+    {
+        //  TODO: lots of stuff here. Don't care right now.
+    }
+    virtual uint32_t        Load(const char* const) override { return 0; };
+    virtual void            Delete() override
+    {
+        if (Fragment && ((uint32_t)Fragment & 1) == 0)
+            delete Fragment;
+        EngineTimestamp = 0;
+    }
+
+    static inline Asset* Create()
+    {
+        return (Asset*)(new FragmentAsset);
     }
     static AssetResource* ResourceInstance;
 };
@@ -206,7 +481,7 @@ public:
         FOUR
     };
 
-private:
+public:
 #ifdef USING_READER
     typedef MultiPartReader BufferType;
     typedef BufferType* BufferTypePtr;

@@ -131,9 +131,9 @@
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "G:\Games\Eidos\Total Overdose\$(TargetFileName)"
-copy "$(TargetDir)$(TargetName).pdb" "G:\Games\Eidos\Total Overdose\$(TargetName).pdb"
-copy "$(TargetDir)$(TargetName).map" "G:\Games\Eidos\Total Overdose\$(TargetName).map"</Command>
+      <Command>copy "$(TargetPath)" "D:\Games\Eidos\Total Overdose\$(TargetFileName)"
+copy "$(TargetDir)$(TargetName).pdb" "D:\Games\Eidos\Total Overdose\$(TargetName).pdb"
+copy "$(TargetDir)$(TargetName).map" "D:\Games\Eidos\Total Overdose\$(TargetName).map"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>
@@ -295,10 +295,13 @@ copy "$(TargetDir)$(TargetName).map" "C:\Program Files\Eidos\Total Overdose\$(Ta
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="QuadTree.h" />
+    <ClInclude Include="scripts\AI_track.h" />
+    <ClInclude Include="scripts\barrel_catapult.h" />
     <ClInclude Include="scripts\cache.h" />
     <ClInclude Include="scripts\common.h" />
     <ClInclude Include="scripts\common_animslot.h" />
     <ClInclude Include="scripts\common_trigger.h" />
+    <ClInclude Include="scripts\database_road_folder.h" />
     <ClInclude Include="scripts\HUD_health_bar.h" />
     <ClInclude Include="scripts\Hydrant_Root.h" />
     <ClInclude Include="scripts\Ladder_Root.h" />

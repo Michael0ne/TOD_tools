@@ -10,7 +10,7 @@
 #include "Surface.h"
 #include "BuiltinType.h"
 #include <directxtex\include\DDSTextureLoader9.h>
-#include <DxErr.h>
+//#include <DxErr.h>
 
 GfxInternal_Dx9* g_GfxInternal_Dx9 = nullptr;
 LPDIRECT3DDEVICE9 g_Direct3DDevice = nullptr;
@@ -283,16 +283,16 @@ void GfxInternal_Dx9::SetupRenderer()
     m_TexProperties[1].field_8 = 4;
     m_TexProperties[1].field_18 = 2;
     m_TexProperties[1].field_1C = 2;
-    m_TexProperties[1].field_20 = 3;
+    m_TexProperties[1].AlphaArg2 = 3;
 
-    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].field_0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].field_0, D3DTSS_COLORARG0, D3DTA_TEXTURE);
-    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].field_0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].field_0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].field_0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].field_0, D3DTSS_ALPHAARG0, D3DTA_TEXTURE);
-    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].field_0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].field_0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].TextureStageIndex, D3DTSS_COLOROP, D3DTOP_MODULATE);
+    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].TextureStageIndex, D3DTSS_COLORARG0, D3DTA_TEXTURE);
+    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].TextureStageIndex, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].TextureStageIndex, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].TextureStageIndex, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].TextureStageIndex, D3DTSS_ALPHAARG0, D3DTA_TEXTURE);
+    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].TextureStageIndex, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    g_Direct3DDevice->SetTextureStageState(m_TexProperties[1].TextureStageIndex, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 
     m_TexProperties[1].field_4C = 1;
     m_TexProperties[1].field_2C = 1;
@@ -404,7 +404,7 @@ void GfxInternal_Dx9::SetupRenderer()
     if (m_FlushDirectly)
     {
         g_Direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
         g_Direct3DDevice->SetSamplerState(m_TexProperties[0].m_Sampler[0].m_Sampler, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
         g_Direct3DDevice->SetSamplerState(m_TexProperties[0].m_Sampler[0].m_Sampler, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
     }
@@ -733,9 +733,72 @@ void GfxInternal_Dx9::RenderTriangle2D(const Vector2<float>& top, const Vector2<
     }
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::RenderTriangle_2(const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const ColorRGB& clrtop, const ColorRGB& clrbtml, const ColorRGB& clrbtmr)
 {
+    Triangle3D triangleVertexData;
+    uint32_t color[3];
+
+    color[0] = D3DCOLOR_DWORD(clrtop.r, clrtop.g, clrtop.b, clrtop.a);
+    color[1] = color[0];
+    color[2] = color[0];
+
+    for (size_t i = 0; i < 3; ++i)
+        color[i] |= (uint32_t)((float_t)color[i] * m_EnvironmentMapOpacity) << 24;
+
+    triangleVertexData.m_Top = top;
+    triangleVertexData.m_TopColor = color[0];
+    triangleVertexData.m_BottomLeft = bottomleft;
+    triangleVertexData.m_BottomRight = bottomright;
+    triangleVertexData.m_BottomLeftColor = color[1];
+    triangleVertexData.m_BottomRightColor = color[2];
+
+    const auto dataIndex = m_VertexBuffer[1]->SetData(Triangle3D::VerticesTotal, &triangleVertexData, nullptr);
+    const auto vbMain = m_VertexBuffer[1];
+
+    if (m_TexturesArray_2[0])
+    {
+        m_TextureStageActive[0] = true;
+        m_TexturesArray_2[0] = nullptr;
+    }
+
+    g_GfxInternal_Dx9->m_Direct3DDevice->SetStreamSource(0, vbMain->m_Direct3DVertexBuffer, 0, vbMain->m_Stride);
+
+    if (g_GfxInternal_Dx9->m_FVF != vbMain->m_FVF)
+    {
+        g_GfxInternal_Dx9->m_Direct3DDevice->SetFVF(vbMain->m_FVF);
+        g_GfxInternal_Dx9->m_FVF = vbMain->m_FVF;
+        g_GfxInternal_Dx9->m_Direct3DVertexDeclaration = nullptr;
+    }
+
+    g_GfxInternal_Dx9->m_CurrentVertexBuffer = vbMain;
+
+    m_TexProperties[0].m_LightingEnabled = false;
+    m_TexProperties[0].field_8A = 1;
+
+    if (m_FlushDirectly)
+        g_Direct3DDevice->SetRenderState(D3DRS_LIGHTING, 0);
+
+    m_TexProperties[0].AlphaArg2 = 0;
+    m_TexProperties[0].field_24 = 1;
+
+    if (m_FlushDirectly)
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAARG2, 0);
+
+    ResetTextures();
+
+    m_Direct3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, dataIndex, 1);
+
+    m_TexProperties[0].AlphaArg2 = 3;
+    m_TexProperties[0].field_24 = 1;
+
+    if (m_FlushDirectly)
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAARG2, 3);
+
+    m_TexProperties[0].m_LightingEnabled = m_LightingEnabled;
+    m_TexProperties[0].field_8A = 1;
+
+    if (m_FlushDirectly)
+        g_Direct3DDevice->SetRenderState(D3DRS_LIGHTING, m_LightingEnabled);
 }
 
 void GfxInternal_Dx9::RenderTexturedTriangle(const Texture* tex, const Vector3<float>& top, const Vector3<float>& bottomleft, const Vector3<float>& bottomright, const Vector2<float>& textop, const Vector2<float>& texbottomleft, const Vector2<float>& texbottomright, const ColorRGB& clrtop, const ColorRGB& clrbottomleft, const ColorRGB& clrbottomright)
@@ -780,20 +843,20 @@ void GfxInternal_Dx9::RenderTexturedTriangle(const Texture* tex, const Vector3<f
 
     g_GfxInternal_Dx9->m_CurrentVertexBuffer = m_VertexBuffer[2];
 
-    m_TexProperties[0].field_20 = 0;
+    m_TexProperties[0].AlphaArg2 = 0;
     m_TexProperties[0].field_24 = 1;
 
     if (m_FlushDirectly)
-        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 
     ResetTextures();
     m_Direct3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, vertstart, 1);
 
-    m_TexProperties[0].field_20 = 3;
+    m_TexProperties[0].AlphaArg2 = 3;
     m_TexProperties[0].field_24 = 1;
 
     if (m_FlushDirectly)
-        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 }
 
 void GfxInternal_Dx9::RenderQuad2D(const Vector2<float>& tl, const Vector2<float>& bl, const Vector2<float>& tr, const Vector2<float>& br, const ColorRGB& clr)
@@ -803,7 +866,7 @@ void GfxInternal_Dx9::RenderQuad2D(const Vector2<float>& tl, const Vector2<float
 }
 
 #pragma message(TODO_IMPLEMENTATION)
-void GfxInternal_Dx9::RenderTexturedQuad2D_4(const Texture&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&)
+void GfxInternal_Dx9::RenderTexturedQuad2D_4(const Texture& texure, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const Vector2<float>&, const ColorRGB&, const ColorRGB&, const ColorRGB&, const ColorRGB&)
 {
 }
 
@@ -834,28 +897,28 @@ void GfxInternal_Dx9::EndText()
 
     g_GfxInternal_Dx9->m_CurrentVertexBuffer = m_VertexBuffer[3];
 
-    m_TexProperties[0].field_20 = 0;
+    m_TexProperties[0].AlphaArg2 = 0;
     m_TexProperties[0].field_24 = 1;
     m_TexProperties[0].field_8A = 1;
     m_TexProperties[0].m_ZTest = false;
 
     if (m_FlushDirectly)
     {
-        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
         g_Direct3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
     }
 
     ResetTextures();
     m_Direct3DDevice->DrawPrimitive(D3DPRIMITIVETYPE::D3DPT_TRIANGLELIST, startvert, m_VerticiesToDrawTotal);
 
-    m_TexProperties[0].field_20 = 3;
+    m_TexProperties[0].AlphaArg2 = 3;
     m_TexProperties[0].field_24 = 1;
     m_TexProperties[0].field_8A = 1;
     m_TexProperties[0].m_ZTest = ztest;
 
     if (m_FlushDirectly)
     {
-        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
         g_Direct3DDevice->SetRenderState(D3DRS_ZENABLE, ztest);
     }
 }
@@ -896,6 +959,8 @@ void GfxInternal_Dx9::RenderShadow(const Vector3<float>& top, const Vector3<floa
 #pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::RenderMeshBuffer(const MeshBuffer_Dx9* meshbuffer)
 {
+    if (!meshbuffer->m_VertexBuffer)
+        return;
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -943,6 +1008,13 @@ void GfxInternal_Dx9::EndParticleSystem(bool a1)
 #pragma message(TODO_IMPLEMENTATION)
 void GfxInternal_Dx9::RenderParticle(const Vector3f& pos)
 {
+    //  NOTE: First there goes a shitton of code to transform particle coords into active layer view matrix.
+    if (!ParticlesEnabled)
+        return;
+
+    //  TODO: ...
+    DirectX::XMMATRIX worldMatrix;
+    SetWorldMatrix(&worldMatrix);
 }
 
 void GfxInternal_Dx9::DrawBrightness(const float brightness)
@@ -1514,20 +1586,20 @@ void GfxInternal_Dx9::BeginShadow(Texture* tex)
         m_TexturesArray_2[0] = tex;
     }
 
-    m_TexProperties[0].field_20 = 0;
+    m_TexProperties[0].AlphaArg2 = 0;
     m_TexProperties[0].field_24 = 1;
 
     if (m_FlushDirectly)
-        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 }
 
 void GfxInternal_Dx9::EndShadow()
 {
-    m_TexProperties[0].field_20 = 3;
+    m_TexProperties[0].AlphaArg2 = 3;
     m_TexProperties[0].field_24 = 1;
 
     if (m_FlushDirectly)
-        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+        g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
 }
 
 #pragma message(TODO_IMPLEMENTATION)
@@ -1932,7 +2004,7 @@ void GfxInternal_Dx9::RenderViewport()
         if (m_FlushDirectly)
         {
             g_Direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
         }
 
         _45C790(field_9758);
@@ -1947,7 +2019,7 @@ void GfxInternal_Dx9::RenderViewport()
         if (m_FlushDirectly)
         {
             g_Direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
         }
     }
 
@@ -2220,9 +2292,9 @@ void GfxInternal_Dx9::SetRenderStateWireframe(bool enabled)
 
         if (m_FlushDirectly)
         {
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_COLOROP, 3);
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, 3);
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_COLORARG2, 3);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_COLOROP, 3);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAOP, 3);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_COLORARG2, 3);
         }
 
         m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR, m_WireframeColor);
@@ -2235,9 +2307,9 @@ void GfxInternal_Dx9::SetRenderStateWireframe(bool enabled)
 
         if (m_FlushDirectly)
         {
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_COLOROP, 4);
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, 4);
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_COLORARG2, 0);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_COLOROP, 4);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAOP, 4);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_COLORARG2, 0);
         }
 
         m_Direct3DDevice->SetRenderState(D3DRS_TEXTUREFACTOR, -1);
@@ -2280,7 +2352,7 @@ void GfxInternal_Dx9::EnableAlphaChannel(bool enabled)
         if (m_FlushDirectly)
         {
             g_Direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
         }
     }
     else
@@ -2292,7 +2364,7 @@ void GfxInternal_Dx9::EnableAlphaChannel(bool enabled)
         if (m_FlushDirectly)
         {
             g_Direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
-            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].field_0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+            g_Direct3DDevice->SetTextureStageState(m_TexProperties[0].TextureStageIndex, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
         }
     }
 }
@@ -2477,7 +2549,7 @@ GfxInternal_Dx9::RenderProperties::RenderProperties()
 
     m_Sampler[0].m_Sampler = 0;
     m_Sampler[1].m_Sampler = 1;
-    field_0 = 0;
+    TextureStageIndex = 0;
     field_28 = 1;
 }
 

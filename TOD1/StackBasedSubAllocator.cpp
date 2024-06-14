@@ -16,9 +16,13 @@ void* StackBasedSubAllocator::Allocate_A(size_t size, const char* const fileName
     return AllocateAligned(size, 8, fileName, fileLineNumber);
 }
 
+#define ALIGN_TYPED(ptr, alignment, type) (type*)((~(alignment - 1) & (type)(ptr + alignment - 1)))
+#define ALIGN_TYPED8(ptr) (uint8_t*)((~(8 - 1) & (uint8_t)(ptr + 8 - 1)))
+
 void* StackBasedSubAllocator::AllocateAligned(size_t size, size_t alignment, const char* const fileName, const unsigned int fileLineNumber)
 {
-    uint8_t* alignedspace = (uint8_t*)((~(alignment - 1) & (uint32_t)(StackCurrentPtr->DataPtr + alignment - 1)));
+    //uint8_t* alignedspace = (uint8_t*)((~(alignment - 1) & (uint32_t)(StackCurrentPtr->DataPtr + alignment - 1)));
+    uint8_t* alignedspace = ALIGN_TYPED(StackCurrentPtr->DataPtr, alignment, uint8_t);
     if ((size_t)(StackDataEndPtr - alignedspace) < size)
         return nullptr;
 

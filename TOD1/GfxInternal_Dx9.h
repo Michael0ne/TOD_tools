@@ -93,6 +93,27 @@ class GfxInternal_Dx9
         static const unsigned int   VerticesTotal = 3;
     };
 
+    struct QuadTextured2D
+    {
+        Vector2f                    TopLeft;
+        Vector2f                    TopLeftUV;
+        uint32_t                    TopLeftColor;
+
+        Vector2f                    TopRight;
+        Vector2f                    TopRightUV;
+        uint32_t                    TopRightColor;
+
+        Vector2f                    BottomLeft;
+        Vector2f                    BottomLeftUV;
+        uint32_t                    BottomLeftColor;
+
+        Vector2f                    BottomRight;
+        Vector2f                    BottomRightUV;
+        uint32_t                    BottomRightColor;
+
+        static const uint32_t       VerticesTotal = 4;
+    };
+
     struct DisplayModeInfo
     {
         unsigned int                m_Width;
@@ -133,7 +154,7 @@ class GfxInternal_Dx9
 
     struct RenderProperties
     {
-        int                         field_0;
+        int                         TextureStageIndex;
         int                         field_4;
         int                         field_8;
         int                         field_C;
@@ -141,7 +162,7 @@ class GfxInternal_Dx9
         int                         field_14;
         int                         field_18;
         int                         field_1C;
-        int                         field_20;
+        int                         AlphaArg2;
         char                        field_24;
         int                         field_28;
         int                         field_2C;

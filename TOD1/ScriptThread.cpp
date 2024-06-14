@@ -5,8 +5,8 @@
 int ScriptThread::CurrentThread;
 ScriptThread* ScriptThread::Threads[100];
 bool ScriptThread::WarnDelayedException;
-int ScriptThread::LatestMethodIndex;
-ScriptThread::MethodStruct *ScriptThread::RecentMethodsArray[5];
+int ScriptThread::CallStackIndex;
+ScriptThread::MethodStruct *ScriptThread::CallStack[5];
 ScriptThread::NodeScriptDataInfo ScriptThread::ScriptDataCache[6];
 int ScriptThread::LatestScriptDataCacheIndex;
 int ScriptThread::CurrentLocalOffset;
@@ -24,7 +24,7 @@ int ScriptThread::CopyTo(void* thread)
 
     m_Stack.clear();
     m_CallStack.clear();
-    m_MethodInfo = nullptr;
+    m_CallStackRef = nullptr;
 
     return 0;
 }
@@ -37,7 +37,7 @@ ScriptThread::ScriptThread(Node* node)
     m_CallStack.reserve(9);
     m_ScriptNode = node;
     m_ThreadFlags.SceneTimeSynced = node->m_Flags._29;
-    m_MethodInfo = nullptr;
+    m_CallStackRef = nullptr;
 
     Reset();
 }
@@ -55,35 +55,178 @@ void ScriptThread::PopFromCallstack()
     else
     {
         m_CurrentStackElement = nullptr;
-        if (m_MethodInfo)
+        if (m_CallStackRef)
         {
-            if (LatestMethodIndex == 4)
+            if (CallStackIndex == 4)
             {
-                delete m_MethodInfo;
+                delete m_CallStackRef;
+                m_CallStackRef = nullptr;
                 return;
             }
 
-            RecentMethodsArray[LatestMethodIndex++] = m_MethodInfo;
+            CallStack[CallStackIndex++] = m_CallStackRef;
         }
-        m_MethodInfo = nullptr;
+        m_CallStackRef = nullptr;
     }
+}
+
+const int ScriptThread::RestoreFromBuffer(int* buffer)
+{
+    struct BufferStruct
+    {
+        uint32_t    _f0;
+        uint32_t    CallStackSize;
+        uint32_t    _f8;
+        uint32_t    _fC;
+        uint32_t    _f10;
+    } *sBuffer = reinterpret_cast<BufferStruct*>(buffer);
+
+    Reset();
+
+    /*v3 = buffer[1];
+    if (v3 > this->m_CallStack.m_CurrentIndex && v3 > this->m_CallStack.m_Capacity)
+    {
+        this->m_CallStack.m_Capacity = v3;
+        sub_48EFE0(&this->m_CallStack);
+    }
+
+    this->m_CallStack.m_CurrentIndex = v3;
+    m_CurrentIndex = this->m_CallStack.m_CurrentIndex;*/
+    m_CallStack.resize(sBuffer->CallStackSize);
+
+    /*v5 = 0;
+    v6 = buffer + 2;
+    m_Script = this->m_ScriptNode->m_ScriptEntity->m_Script;*/
+    auto entityScript = m_ScriptNode->m_ScriptEntity->Script;
+
+    //if (m_CurrentIndex > 0)
+    if (m_CallStack.size() > 0)
+    {
+        /*v34 = 0;
+        do
+        {
+            v7 = &this->m_CallStack.m_Elements->m_Elements[v34];
+            v7->m_NodePtr = this->m_ScriptNode;
+            ParameterProcedure = (void(__cdecl*)(ScriptThread*))ScriptBaked::GetParameterProcedure(m_Script, *v6);
+            v9 = (unsigned int*)(v6 + 1);
+            v7->m_FuncPtr = ParameterProcedure;
+            v10 = *v9++;
+            v7->m_Current = v10;
+            LOWORD(ParameterProcedure) = *(_WORD*)v9++;
+            v7->m_ParameterOffset = (unsigned __int16)ParameterProcedure;
+            v7->m_LocalOffset = *(_WORD*)v9;
+            v6 = (int*)(v9 + 1);
+            v7->m_OnParameterOffset = -2;
+            ++v5;
+            ++v34;
+        } while (v5 < this->m_CallStack.m_CurrentIndex);*/
+
+        for (uint32_t i = 0; i < m_CallStack.size(); i++)
+        {
+            auto& callStackElementRef = m_CallStack[i];
+
+            callStackElementRef.m_NodePtr = m_ScriptNode;
+
+        }
+    }
+
+    v11 = *v6;
+    v12 = 4 * this->m_CallStack.m_CurrentIndex + 2;
+    v36 = *v6;
+    if (*v6 > this->Stack.m_CurrentIndex && v11 > this->Stack.m_Capacity)
+    {
+        this->Stack.m_Capacity = v11;
+        sub_921A90((ListWithAllocator*)&this->Stack);
+        v11 = v36;
+    }
+    this->Stack.m_CurrentIndex = v11;
+
+    v13 = this->m_CallStack.m_CurrentIndex;
+    v14 = (const char*)(v6 + 1);
+    v15 = v12 + 1;
+    Flags = 0x4205;
+    Elements = (DataType**)a1;
+    v39 = v15;
+    list.Elements = (int*)a1;
+    list.Size = 0;
+    list.Capacity = 100;
+    list.Flags = list.Flags & 0xFFF80000 | 0x14205;
+    v37 = 0;
+
+    if (v13 > 0)
+    {
+        v35 = 0;
+        do
+        {
+            m_Elements = this->m_CallStack.m_Elements;
+            list.Size = 0;
+            ScriptBaked::GetMethodParams(m_Script, m_Elements->m_Elements[v35].m_FuncPtr, &list);
+            Elements = (DataType**)list.Elements;
+            for (i = 0; i < list.Size; v39 = v15)
+            {
+                v20 = Elements[i]->lpVtbl->CopyAndAllocate(
+                    Elements[i],
+                    v14,
+                    (char*)&this->Stack.Elements->Contents[(unsigned __int16)this->ThreadFlags]);
+                Elements = (DataType**)list.Elements;
+                v21 = v39;
+                LOWORD(this->ThreadFlags) += *(_WORD*)(list.Elements[i] + 24);
+                v15 = v20 + v21;
+                v14 += 4 * v20;
+                ++i;
+            }
+            v22 = ++v37 < this->m_CallStack.m_CurrentIndex;
+            ++v35;
+        } while (v22);
+        Flags = list.Flags;
+    }
+
+    v23 = *(_DWORD*)v14;
+    v24 = (int*)(v14 + 4);
+    this->m_SleepUntil = v23;
+    v25 = *v24++;
+    this->m_WaitForFrame = v25;
+    v26 = *v24++;
+    v27 = (this->ThreadFlags ^ ((v26 != 0) << 24)) & 0x1000000 ^ this->ThreadFlags;
+    this->ThreadFlags = v27;
+    v28 = *v24++;
+    v29 = v27 ^ (v27 ^ ((v28 != 0) << 25)) & 0x2000000;
+    this->ThreadFlags = v29;
+    this->ThreadFlags = (*v24 << 30) | v29 & 0x3FFFFFFF;
+    BYTE2(this->ThreadFlags) = 0;
+    v30 = v15 + 6;
+    this->ThreadFlags = this->ThreadFlags & 0xF3FFFFFF | ((v24[1] != 0) << 26);
+    v31 = this->m_CallStack.m_CurrentIndex;
+    if (v31)
+        v32 = &this->m_CallStack.m_Elements->m_Elements[v31 - 1];
+    else
+        v32 = 0;
+    this->m_CurrentStackElement = v32;
+
+    if (Elements)
+    {
+        if ((Flags & 0x100) != 0)
+            Allocators::FreePointerUnaligned(Elements);
+    }
+
+    return v30;
 }
 
 void ScriptThread::StoreMethodInformation(void(*a1)(ScriptThread*), int a2, void(*a3)(ScriptThread*), Node* a4, Scriptbaked* a5)
 {
-    if (!m_MethodInfo)
+    if (!m_CallStackRef)
     {
-        if (LatestMethodIndex)
-            m_MethodInfo = RecentMethodsArray[--LatestMethodIndex];
+        if (CallStackIndex)
+            m_CallStackRef = CallStack[--CallStackIndex];
         else
-            m_MethodInfo = new MethodStruct;
+            m_CallStackRef = new MethodStruct;
     }
 
-    m_MethodInfo->field_0 = a1;
-    m_MethodInfo->field_8 = a3;
-    m_MethodInfo->field_C = a4;
-    m_MethodInfo->field_10 = a5;
-    m_MethodInfo->field_4 = a2;
+    m_CallStackRef->field_0 = a1;
+    m_CallStackRef->field_8 = a3;
+    m_CallStackRef->field_C = a4;
+    m_CallStackRef->field_10 = a5;
+    m_CallStackRef->field_4 = a2;
 }
 
 void ScriptThread::Reset()
@@ -95,15 +238,15 @@ void ScriptThread::Reset()
         _48E8A0();
     }
 
-    if (m_MethodInfo)
+    if (m_CallStackRef)
     {
-        if (LatestMethodIndex == 4)
-            delete m_MethodInfo;
+        if (CallStackIndex == 4)
+            delete m_CallStackRef;
         else
-            RecentMethodsArray[LatestMethodIndex++] = m_MethodInfo;
+            CallStack[CallStackIndex++] = m_CallStackRef;
     }
 
-    m_MethodInfo = nullptr;
+    m_CallStackRef = nullptr;
     m_Stack.clear();
     m_CallStack.clear();
 
@@ -123,7 +266,7 @@ void ScriptThread::Reset()
         m_ThreadFlags.HasScriptNode = true;
 }
 
-void ScriptThread::_48E390()
+void ScriptThread::RunActiveThreadFunction()
 {
     if (m_ThreadFlags.Suspended)
         return;
@@ -197,45 +340,45 @@ void ScriptThread::SetSleepTime(const float sleepfor, const bool sleepRealTime)
 
 int ScriptThread::EnqueueScriptMethod()
 {
-    if (!m_MethodInfo)
+    if (!m_CallStackRef)
         return 0;
 
     m_CurrentStackElement = m_CallStack.size() ? &m_CallStack[m_CallStack.size() - 1] : nullptr;
 
-    if (!m_MethodInfo->field_4 && m_MethodInfo->field_0 == m_CurrentStackElement->m_FuncPtr)
-        m_MethodInfo->field_4 = 1;
+    if (!m_CallStackRef->field_4 && m_CallStackRef->field_0 == m_CurrentStackElement->m_FuncPtr)
+        m_CallStackRef->field_4 = 1;
 
-    if (m_MethodInfo->field_4 == 1)
+    if (m_CallStackRef->field_4 == 1)
     {
-        if (m_MethodInfo->field_8)
+        if (m_CallStackRef->field_8)
         {
-            PushToCallStack(m_MethodInfo->field_8, 0, m_MethodInfo->field_C, m_MethodInfo->field_10);
+            PushToCallStack(m_CallStackRef->field_8, 0, m_CallStackRef->field_C, m_CallStackRef->field_10);
             m_WaitForFrame = -1;
             m_ThreadFlags.Sleeping = false;
 
-            if (LatestMethodIndex == 4)
-                delete m_MethodInfo;
+            if (CallStackIndex == 4)
+                delete m_CallStackRef;
             else
-                RecentMethodsArray[LatestMethodIndex++] = m_MethodInfo;
+                CallStack[CallStackIndex++] = m_CallStackRef;
 
-            m_MethodInfo = nullptr;
+            m_CallStackRef = nullptr;
             return 1;
         }
         else
         {
-            if (LatestMethodIndex == 4)
-                delete m_MethodInfo;
+            if (CallStackIndex == 4)
+                delete m_CallStackRef;
             else
-                RecentMethodsArray[LatestMethodIndex++] = m_MethodInfo;
+                CallStack[CallStackIndex++] = m_CallStackRef;
 
-            m_MethodInfo = nullptr;
+            m_CallStackRef = nullptr;
             return 0;
         }
     }
     else
     {
-        if (m_MethodInfo->field_4 == -1 && m_MethodInfo->field_0 == m_CurrentStackElement->m_FuncPtr)
-            m_MethodInfo->field_4 = 1;
+        if (m_CallStackRef->field_4 == -1 && m_CallStackRef->field_0 == m_CurrentStackElement->m_FuncPtr)
+            m_CallStackRef->field_4 = 1;
 
         m_ThreadFlags.Sleeping = false;
         m_WaitForFrame = -1;
@@ -250,13 +393,13 @@ void ScriptThread::_48E8A0()
 
     StoreMethodInformation(nullptr, -1, nullptr, nullptr, nullptr);
     EnqueueScriptMethod();
-    _48E390();
+    RunActiveThreadFunction();
 
     if (m_StackSize != m_CallStack[0].m_LocalOffset)
         MemoryManager::AllocatorsList[DEFAULT]->CallMethodAtOffset20();
 }
 
-void ScriptThread::ResetCache()
+void ScriptThread::ResetCallStack()
 {
     if (LatestScriptDataCacheIndex)
     {
@@ -274,8 +417,8 @@ void ScriptThread::ResetCache()
 
     do
     {
-        delete RecentMethodsArray[LatestMethodIndex--];
-    } while (LatestMethodIndex);
+        delete CallStack[CallStackIndex--];
+    } while (CallStackIndex);
 }
 
 const int ScriptThread::GetSceneTime() const
@@ -354,7 +497,10 @@ int ScriptThread::WriteScriptInformation(int* outInformation) const
     outInformation = stackInfoPtr;
     *outInformation = m_StackSize;
 
-    std::vector<DataType*> argumentsList(100);
+    using DataTypesList = std::vector<DataType*>;
+
+    //std::vector<DataType*> argumentsList(100);
+    DataTypesList argumentsList(100);
     unsigned int stackOffset = 0;
     unsigned int dataOffset = (m_CallStack.size() * 10) + 3;
     if (m_CallStack.size())
@@ -387,7 +533,7 @@ int ScriptThread::WriteScriptInformation(int* outInformation) const
     return dataOffset;
 }
 
-int ScriptThread::_48E8F0(const int stackIndex)
+int ScriptThread::PopFromStackAndSetCurrent(const int stackIndex)
 {
     if (m_CallStack.size())
     {
@@ -406,13 +552,13 @@ int ScriptThread::_48E8F0(const int stackIndex)
     return EnqueueScriptMethod();
 }
 
-void ScriptThread::_48EDA0()
+void ScriptThread::RunRestAndReset()
 {
-    while (m_MethodInfo)
+    while (m_CallStackRef)
     {
         m_ThreadFlags.Sleeping = false;
         m_WaitForFrame = -1;
-        _48E390();
+        RunActiveThreadFunction();
     }
 
     if (m_ThreadFlags.MarkedForSuspend)
