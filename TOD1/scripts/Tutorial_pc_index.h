@@ -4,12 +4,11 @@ public:
 	static Scriptbaked* Create()
 	{
 		static Scriptbaked* inst = new Scriptbaked("Tutorial_pc_index", "Node", false, false);
-
-		inst->AddMember(GetScriptIdByFullName("SignIndex:integer"), "-1", 0);
-		inst->AddMember(GetScriptIdByFullName("is_alt_text:truth"), "false", 0);
-
+		
+		//	TODO: add members and methods to Tutorial_pc_index.
+		
 		inst->CalculateSize();
-
+		
 		return inst;
 	};
 };

@@ -5,12 +5,10 @@ public:
 	{
 		static Scriptbaked* inst = new Scriptbaked("master_control_user_properties", "Node", false, false);
 		
-		inst->AddMember(GetScriptIdByFullName("UseForceLOD:truth"), "true", 0);
-		inst->AddMember(GetScriptIdByFullName("ForceLODLevel:number"), "0.400000", 0);
-		inst->AddMember(GetScriptIdByFullName("ForceLODFade:number"), "0.200000", 0);
-
+		//	TODO: add members and methods to master_control_user_properties.
+		
 		inst->CalculateSize();
-
+		
 		return inst;
 	};
 };

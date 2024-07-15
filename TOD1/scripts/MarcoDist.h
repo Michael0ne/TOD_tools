@@ -5,9 +5,10 @@ public:
 	{
 		static Scriptbaked* inst = new Scriptbaked("MarcoDist", "Node", false, false);
 		
-		inst->AddMember(GetScriptIdByFullName("MarcoDist:number"), "10.000000", NULL);
+		//	TODO: add members and methods to MarcoDist.
 		
 		inst->CalculateSize();
+		
 		return inst;
 	};
 };

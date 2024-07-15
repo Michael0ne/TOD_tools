@@ -4,11 +4,11 @@ public:
 	static Scriptbaked* Create()
 	{
 		static Scriptbaked* inst = new Scriptbaked("common_animslot", "Node", false, false);
-
-		inst->AddMember(GetScriptIdByFullName("CurrentAnimSlot:Entity"), nullptr, 0);
-
+		
+		//	TODO: add members and methods to common_animslot.
+		
 		inst->CalculateSize();
-
+		
 		return inst;
 	};
 };

@@ -4,11 +4,11 @@ public:
 	static Scriptbaked* Create()
 	{
 		static Scriptbaked* inst = new Scriptbaked("Gotopath_point", "Node", false, false);
-
-		inst->AddMember(GetScriptIdByFullName("maxlookahead:number"), "2.000000", NULL);
-		inst->AddMember(GetScriptIdByFullName("movetype:integer"), "2", 0);
-
+		
+		//	TODO: add members and methods to Gotopath_point.
+		
 		inst->CalculateSize();
+		
 		return inst;
 	};
 };

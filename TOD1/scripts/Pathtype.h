@@ -4,10 +4,11 @@ public:
 	static Scriptbaked* Create()
 	{
 		static Scriptbaked* inst = new Scriptbaked("Pathtype", "Node", false, false);
-
-		inst->AddMember(GetScriptIdByFullName("PathType:integer"), "0", NULL);
-
+		
+		//	TODO: add members and methods to Pathtype.
+		
 		inst->CalculateSize();
+		
 		return inst;
 	};
 };

@@ -4,12 +4,11 @@ public:
 	static Scriptbaked* Create()
 	{
 		static Scriptbaked* inst = new Scriptbaked("vehicle_sub_part_descriptor", "Node", false, false);
-
-		inst->AddMember(GetScriptIdByFullName("Base_Type:integer"), nullptr, 0);
-		inst->AddMember(GetScriptIdByFullName("Sub_Type:integer"), nullptr, 0);
-
+		
+		//	TODO: add members and methods to vehicle_sub_part_descriptor.
+		
 		inst->CalculateSize();
-
+		
 		return inst;
 	};
 };
