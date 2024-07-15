@@ -177,6 +177,8 @@ private:
 
 public:
 
+    typedef void (*ScriptProcedureType)(ScriptThread* thread);
+
     bool                        GetMappedPropertyValue(const uint32_t* const nodeParameters, const uint32_t propertyIndex, uint8_t* outPropertyValue) const;   //  @48B6A0
     bool                        _48A7E0(Node* node, int scriptId, void* args); // @48A7E0
     void                        ClearEntityProperties(Entity* ent); //  @489C90
@@ -190,6 +192,7 @@ public:
     const int                   GetPropertyValueByIndex(const int index) const; //  @489A70
     void                        AddPropertyByReference(Node* callerNode, const int propertyInd, const void* data); //  @489D40
     void                        SaveNodeProperties(Node* node);    //  @48A070
+    ScriptProcedureType         GetParameterProcedure(const uint32_t parameterIndex);   //  @489F80
 
     EntityType*                 AssignScriptToEntity(EntityType * parent); // @48A3F0
 

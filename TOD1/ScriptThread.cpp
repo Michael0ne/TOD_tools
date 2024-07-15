@@ -72,144 +72,70 @@ void ScriptThread::PopFromCallstack()
 
 const int ScriptThread::RestoreFromBuffer(int* buffer)
 {
-    struct BufferStruct
-    {
-        uint32_t    _f0;
-        uint32_t    CallStackSize;
-        uint32_t    _f8;
-        uint32_t    _fC;
-        uint32_t    _f10;
-    } *sBuffer = reinterpret_cast<BufferStruct*>(buffer);
-
     Reset();
 
-    /*v3 = buffer[1];
-    if (v3 > this->m_CallStack.m_CurrentIndex && v3 > this->m_CallStack.m_Capacity)
-    {
-        this->m_CallStack.m_Capacity = v3;
-        sub_48EFE0(&this->m_CallStack);
-    }
+    m_CallStack.resize(buffer[1]);
 
-    this->m_CallStack.m_CurrentIndex = v3;
-    m_CurrentIndex = this->m_CallStack.m_CurrentIndex;*/
-    m_CallStack.resize(sBuffer->CallStackSize);
-
-    /*v5 = 0;
-    v6 = buffer + 2;
-    m_Script = this->m_ScriptNode->m_ScriptEntity->m_Script;*/
     auto entityScript = m_ScriptNode->m_ScriptEntity->Script;
+    uint32_t* buffDup = (uint32_t*)buffer + 2;
 
-    //if (m_CurrentIndex > 0)
     if (m_CallStack.size() > 0)
     {
-        /*v34 = 0;
-        do
-        {
-            v7 = &this->m_CallStack.m_Elements->m_Elements[v34];
-            v7->m_NodePtr = this->m_ScriptNode;
-            ParameterProcedure = (void(__cdecl*)(ScriptThread*))ScriptBaked::GetParameterProcedure(m_Script, *v6);
-            v9 = (unsigned int*)(v6 + 1);
-            v7->m_FuncPtr = ParameterProcedure;
-            v10 = *v9++;
-            v7->m_Current = v10;
-            LOWORD(ParameterProcedure) = *(_WORD*)v9++;
-            v7->m_ParameterOffset = (unsigned __int16)ParameterProcedure;
-            v7->m_LocalOffset = *(_WORD*)v9;
-            v6 = (int*)(v9 + 1);
-            v7->m_OnParameterOffset = -2;
-            ++v5;
-            ++v34;
-        } while (v5 < this->m_CallStack.m_CurrentIndex);*/
-
         for (uint32_t i = 0; i < m_CallStack.size(); i++)
         {
             auto& callStackElementRef = m_CallStack[i];
 
             callStackElementRef.m_NodePtr = m_ScriptNode;
+            callStackElementRef.m_FuncPtr = entityScript->GetParameterProcedure(buffDup[0]);
+            callStackElementRef.m_Current = buffDup[1];
+            callStackElementRef.m_ParameterOffset = (uint16_t)(buffDup[2] & 0x00FF);
+            callStackElementRef.m_LocalOffset = (uint16_t)( (buffDup[2] & 0xFF00) >> 2 );
+            callStackElementRef.m_OnParameterOffset = -2;
 
+            buffDup = buffDup + 3;
         }
     }
 
-    v11 = *v6;
-    v12 = 4 * this->m_CallStack.m_CurrentIndex + 2;
-    v36 = *v6;
-    if (*v6 > this->Stack.m_CurrentIndex && v11 > this->Stack.m_Capacity)
-    {
-        this->Stack.m_Capacity = v11;
-        sub_921A90((ListWithAllocator*)&this->Stack);
-        v11 = v36;
-    }
-    this->Stack.m_CurrentIndex = v11;
+    const auto stackSize = buffDup[0];
+    m_Stack.resize(stackSize);
 
-    v13 = this->m_CallStack.m_CurrentIndex;
-    v14 = (const char*)(v6 + 1);
-    v15 = v12 + 1;
-    Flags = 0x4205;
-    Elements = (DataType**)a1;
-    v39 = v15;
-    list.Elements = (int*)a1;
-    list.Size = 0;
-    list.Capacity = 100;
-    list.Flags = list.Flags & 0xFFF80000 | 0x14205;
-    v37 = 0;
+    std::vector<DataType*> tempMethodParamsList{};
+    buffDup += 1;
+    const auto maxCallStackSize = 4 * m_CallStack.size() + 2;
+    auto newCallStackSize = maxCallStackSize;
 
-    if (v13 > 0)
+    if (m_CallStack.size() > 0)
     {
-        v35 = 0;
-        do
+
+        for (uint32_t i = 0; i < m_CallStack.size(); i++)
         {
-            m_Elements = this->m_CallStack.m_Elements;
-            list.Size = 0;
-            ScriptBaked::GetMethodParams(m_Script, m_Elements->m_Elements[v35].m_FuncPtr, &list);
-            Elements = (DataType**)list.Elements;
-            for (i = 0; i < list.Size; v39 = v15)
+            tempMethodParamsList.clear();
+
+            entityScript->GetMethodParams(m_CallStack[i].m_FuncPtr, tempMethodParamsList);
+
+            for (uint32_t j = 0; j < tempMethodParamsList.size(); j++)
             {
-                v20 = Elements[i]->lpVtbl->CopyAndAllocate(
-                    Elements[i],
-                    v14,
-                    (char*)&this->Stack.Elements->Contents[(unsigned __int16)this->ThreadFlags]);
-                Elements = (DataType**)list.Elements;
-                v21 = v39;
-                LOWORD(this->ThreadFlags) += *(_WORD*)(list.Elements[i] + 24);
-                v15 = v20 + v21;
-                v14 += 4 * v20;
-                ++i;
+                const auto allocatedSize = tempMethodParamsList[j]->CopyAndAllocate((const char*)buffDup, (char*)m_Stack[m_StackSize].m_Contents);
+                newCallStackSize += allocatedSize;
+                buffDup += allocatedSize;
+                m_StackSize += tempMethodParamsList[j]->GetSize(nullptr, nullptr);
             }
-            v22 = ++v37 < this->m_CallStack.m_CurrentIndex;
-            ++v35;
-        } while (v22);
-        Flags = list.Flags;
+        }
     }
 
-    v23 = *(_DWORD*)v14;
-    v24 = (int*)(v14 + 4);
-    this->m_SleepUntil = v23;
-    v25 = *v24++;
-    this->m_WaitForFrame = v25;
-    v26 = *v24++;
-    v27 = (this->ThreadFlags ^ ((v26 != 0) << 24)) & 0x1000000 ^ this->ThreadFlags;
-    this->ThreadFlags = v27;
-    v28 = *v24++;
-    v29 = v27 ^ (v27 ^ ((v28 != 0) << 25)) & 0x2000000;
-    this->ThreadFlags = v29;
-    this->ThreadFlags = (*v24 << 30) | v29 & 0x3FFFFFFF;
-    BYTE2(this->ThreadFlags) = 0;
-    v30 = v15 + 6;
-    this->ThreadFlags = this->ThreadFlags & 0xF3FFFFFF | ((v24[1] != 0) << 26);
-    v31 = this->m_CallStack.m_CurrentIndex;
-    if (v31)
-        v32 = &this->m_CallStack.m_Elements->m_Elements[v31 - 1];
-    else
-        v32 = 0;
-    this->m_CurrentStackElement = v32;
+    m_SleepUntil = buffDup[0];
+    m_WaitForFrame = buffDup[1];
 
-    if (Elements)
-    {
-        if ((Flags & 0x100) != 0)
-            Allocators::FreePointerUnaligned(Elements);
-    }
+    m_ThreadFlags.Sleeping = buffDup[2];
+    m_ThreadFlags.SleepRealTime = buffDup[3];
+    m_ThreadFlags.Priority = buffDup[4];
+    m_ThreadFlags.Suspended = buffDup[5];
+    m_ThreadFlags.MarkedForSuspend = false;
+    m_StateMessageCount = 0;
 
-    return v30;
+    m_CurrentStackElement = m_CallStack.size() ? &m_CallStack[m_CallStack.size() - 1] : nullptr;
+
+    return *(buffDup + 6);
 }
 
 void ScriptThread::StoreMethodInformation(void(*a1)(ScriptThread*), int a2, void(*a3)(ScriptThread*), Node* a4, Scriptbaked* a5)
