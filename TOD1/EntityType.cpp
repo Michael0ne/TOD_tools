@@ -305,6 +305,7 @@ void EntityType::SaveData(Node* node) const
         Script->SaveNodeProperties(node);
 }
 
+//  GetPropertyAdjustedValue ?
 const uint32_t EntityType::_86CAC0(const uint16_t propertyIndex) const
 {
     const auto propertiesMappings = IsBaseEntity ? Parent->PropertiesMappings : PropertiesMappings;

@@ -33,7 +33,7 @@ public:
     String      m_UserDesktopPath;
     MenuItemClickCallback m_MenuItemClickCallback;
     HWND        m_WindowHandle;
-    int         m_Flags;
+    int         m_Flags;    //  NOTE: that's probably a 'showCmd' value reference, see 'WinUser.h' 'SW_' defines.
     bool        m_Visible;
     bool        m_CursorReleased;
     bool        m_QuitRequested;

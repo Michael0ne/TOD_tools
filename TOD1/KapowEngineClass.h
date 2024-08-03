@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "File.h"
 #include <map>
+#include <string>
 
 #define KAPOW_GAMENAME "Total Overdose"
 #define CONFIG_SAVEDIR "/Total Overdose/"

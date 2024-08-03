@@ -3,7 +3,9 @@
 #include "AssetManager.h"
 #include "ModelAsset.h"
 #include "FrameBuffer.h"
+#include "GfxInternal.h"
 #include "MeshBuffer_Dx9.h"
+#include "Scene.h"
 
 #include "IntegerType.h"
 #include "NumberType.h"
@@ -48,20 +50,53 @@ Cloth::~Cloth()
     g_AssetManager->DecreaseResourceReferenceCount(m_ModelAsset);
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Cloth::Instantiate()
 {
     Node::Instantiate();
+
+    Vector4f boundRadius{};
+
+    if ((m_ModelAsset->GetBoundingRadius(boundRadius).a * 2.f) > m_BoundingRadius.a)
+        m_BoundingRadius.a = boundRadius.a * 2.f;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void Cloth::Update()
 {
+    if (m_QuadTree->m_Lod >= 6 && m_Flags.AllwaysUpdate)
+    {
+        auto iterationsNum = m_Flags.Iterations - 2 * m_QuadTree->m_Lod;
+        if (iterationsNum < 1)
+            iterationsNum = 1;
+
+        m_PhysSystem->m_NumIterations = iterationsNum;
+        m_PhysSystem->Update(Scene::TimePassed);
+    }
 }
 
 #pragma message(TODO_IMPLEMENTATION)
 void Cloth::Render()
 {
+    if (m_QuadTree->m_Lod >= 6)
+    {
+        delete m_FrameBuffer;
+        return;
+    }
+
+    m_FrameBuffer = new FrameBuffer(32, 70, 2);
+    if (!m_FrameBuffer)
+    {
+        g_GfxInternal->SetRenderBufferIsEmpty(true);
+        return;
+    }
+
+    auto iterationsNum = m_Flags.Iterations - 2 * m_QuadTree->m_Lod;
+    if (iterationsNum < 1)
+        iterationsNum = 1;
+
+    m_PhysSystem->m_NumIterations = iterationsNum;
+    m_PhysSystem->Update(Scene::TimePassed);
+
+    //const auto radiosity = Light::GetGlobalList()->CalculateForVertices(this, m_List_1, 1, 0);
 }
 
 #pragma message(TODO_IMPLEMENTATION)

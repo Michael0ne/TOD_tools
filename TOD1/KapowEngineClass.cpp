@@ -791,6 +791,50 @@ void KapowEngineClass::CreateProbes()
 {
 }
 
+void KapowEngineClass::ReloadScripts()
+{
+    auto entity = g_AssetManager->FindFirstEntity();
+    std::vector<std::string> scriptTypeNames(100);
+
+    if (entity)
+    {
+        do
+        {
+            if (entity->m_ScriptEntity)
+                scriptTypeNames.push_back(entity->m_ScriptEntity->TypeName.m_Str);
+            else
+                scriptTypeNames.push_back(std::string{});
+
+            entity->m_ScriptEntity = nullptr;
+
+            entity = g_AssetManager->FindNextEntity(entity);
+        } while (entity);
+    }
+
+    DataType::ClearScriptLists();
+    InitEntitiesDatabase();
+    LoadScripts();
+
+    m_PropertiesLoadedChecksum = GetGlobalPropertyListChecksum();
+    m_CommandsLoadedChecksum = GetGlobalCommandListChecksum();
+    m_TypesLoadedChecksum = DataType::GetTypesListChecksum();
+
+    entity = g_AssetManager->FindFirstEntity();
+    if (entity)
+    {
+        auto it = scriptTypeNames.begin();
+        do
+        {
+            if (it->size())
+                entity->m_ScriptEntity = (EntityType*)DataType::GetTypeByName(it->c_str());
+
+            it++;
+
+            entity = g_AssetManager->FindNextEntity(entity);
+        } while (entity);
+    }
+}
+
 bool KapowEngineClass::CheckAssetChecksum(FileBuffer& file, const unsigned int propertyChecksum, const unsigned int commandChecksum)
 {
     unsigned int chksum;

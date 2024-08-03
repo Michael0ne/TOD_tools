@@ -2,6 +2,15 @@
 #include "Node.h"
 #include "BuiltinType.h"
 
+struct TrackingData
+{
+    int32_t             StartIndex;
+    class TrackPoint*   TrackPointPtr;
+    float_t             LatestTime;
+    Vector4f            LatestPos;
+    Orientation         LatestOrient;
+};
+
 class Track : public Node
 {
 protected:
@@ -106,7 +115,8 @@ private:
     void            SetIsShowExample(const bool showexample);   //  @921CB0
 
     void            UpdateTracking(float* args);  //  @9240B0
-    const float     UpdateTracking_Impl(Node* trackpoint, const float time, const int, const float);    //  @923A70
+    const float     UpdateTracking_Impl(Node* trackpoint, const float time, const int startIndex, const float timeScale);    //  @923A70
+    const float     UpdateTracking_Internal(TrackingData* outData, const float timeScale);  //  @9238E0
 
     void            GetLatestPos(float* args) const;  //  @923F20
 

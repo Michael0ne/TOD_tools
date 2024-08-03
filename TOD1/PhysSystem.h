@@ -53,6 +53,12 @@ public:
 
     void                    SetVertexPos(const unsigned int vertexindex, const Vector4f& pos);   //  @92FB90
     void                    SetNormalPos(const unsigned int vertexindex, const Vector4f& norm); //  @92FC80
+
+    bool                    Update(const float_t timePassed);   //  @931500
+    void                    AccountWindAndGravity();    //  @9304F0
+    void                    AccountForDamping(const float_t timePassed);    //  @930990
+    void                    _930D30();  //  @930D30
+    void                    _930FA0();  //  @930FA0
 };
 
 ASSERT_CLASS_SIZE(PhysSystem, 120);

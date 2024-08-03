@@ -45,3 +45,44 @@ void PhysSystem::SetNormalPos(const unsigned int vertexindex, const Vector4f& no
 {
     m_VerticesList[vertexindex].m_Normal = norm;
 }
+
+bool PhysSystem::Update(const float_t timePassed)
+{
+    if (field_60 < 0.0299f)
+    {
+        field_60 += timePassed;
+        return false;
+    }
+    else
+    {
+        AccountWindAndGravity();
+        AccountForDamping(field_60);
+
+        _930D30();
+        _930FA0();
+
+        field_60 = timePassed;
+
+        return true;
+    }
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void PhysSystem::AccountWindAndGravity()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void PhysSystem::AccountForDamping(const float_t timePassed)
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void PhysSystem::_930D30()
+{
+}
+
+#pragma message(TODO_IMPLEMENTATION)
+void PhysSystem::_930FA0()
+{
+}

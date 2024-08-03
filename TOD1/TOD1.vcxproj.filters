@@ -644,6 +644,9 @@
     <ClInclude Include="scripts\barrel_catapult.h">
       <Filter>Header files\KapowSystems\Scripting\Builtin</Filter>
     </ClInclude>
+    <ClInclude Include="Probes.h">
+      <Filter>Header files\KapowSystems\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1097,6 +1100,9 @@
       <Filter>Source files\KapowSystems\Render</Filter>
     </ClCompile>
     <ClCompile Include="QuadTree.cpp">
+      <Filter>Source files\KapowSystems\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Probes.cpp">
       <Filter>Source files\KapowSystems\Memory</Filter>
     </ClCompile>
   </ItemGroup>

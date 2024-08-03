@@ -178,34 +178,35 @@ void AnimSlot::SetAnimFlags(const AnimFlags_t flags)
     AnimFlags = flags;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void AnimSlot::GetGamePivotStartPos(int* args) const
 {
-/*
-    Vector4f pivotpos;
+    Vector4f pivotPos{};
 
-    if (m_TargetAnimation && m_Flags._1 >= 0)
-        m_TargetAnimation->GetPositionForPivot(pivotpos, m_Flags._1, 0);
+    const auto animAsset = TargetAnimation.GetAsset<AnimationAsset>();
+    if (animAsset)
+    {
+        if (Flags.GamePivotIndex >= 0)
+            animAsset->GetPivotPos(pivotPos, Flags.GamePivotIndex, 0);
+    }
 
-    args[0] = pivotpos.x;
-    args[1] = pivotpos.y;
-    args[2] = pivotpos.z;
-*/
+    *reinterpret_cast<Vector4f*>(args) = pivotPos;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void AnimSlot::GetGamePivotEndPos(int* args) const
 {
-/*
-    Vector4f pivotpos;
+    Vector4f pivotPos{};
 
-    if (m_TargetAnimation && m_Flags._1 >= 0)
-        m_TargetAnimation->GetPositionForPivot(pivotpos, m_Flags._1, m_TargetAnimation->GetNumberOfFrames(m_Flags._1) - 1);
+    const auto animAsset = TargetAnimation.GetAsset<AnimationAsset>();
+    if (animAsset)
+    {
+        if (Flags.GamePivotIndex >= 0)
+        {
+            const auto pivotEndFrame = animAsset->GetPivotEndFrame(Flags.GamePivotIndex);
+            animAsset->GetPivotPos(pivotPos, Flags.GamePivotIndex, pivotEndFrame - 1);
+        }
+    }
 
-    args[0] = pivotpos.x;
-    args[1] = pivotpos.y;
-    args[2] = pivotpos.z;
-*/
+    *reinterpret_cast<Vector4f*>(args) = pivotPos;
 }
 
 void AnimSlot::GetGamePivotPos(int* args) const
@@ -213,9 +214,7 @@ void AnimSlot::GetGamePivotPos(int* args) const
     Vector4f pos;
     GetGamePivotPos_Impl(pos, *(float*)(args + 3));
 
-    args[0] = (int)pos.x;
-    args[1] = (int)pos.y;
-    args[2] = (int)pos.z;
+    *reinterpret_cast<Vector4f*>(args) = pos;
 }
 
 void AnimSlot::GetGamePivotOrient(Orientation& orient, const float_t playPos) const
@@ -262,10 +261,19 @@ AnimSlot* AnimSlot::Create(AllocatorIndex)
     return new AnimSlot;
 }
 
-#pragma message(TODO_IMPLEMENTATION)
 void AnimSlot::GetGamePivotPos_Impl(Vector4f& outPos, const float playPos) const
 {
     outPos = BuiltinType::ZeroVector;
 
-    if (TargetAnimation && Flags.GamePivotIndex >= 0 && playPos >= 0.f);
+    const auto animAsset = TargetAnimation.GetAsset<AnimationAsset>();
+    if (!animAsset)
+        return;
+
+    if (Flags.GamePivotIndex < 0 || playPos < 0.f)
+        return;
+
+    Orientation pivotOrient{};
+    animAsset->GetPivotInformation(Flags.GamePivotIndex, playPos, pivotOrient, LoopMode == LOOP, -1, 1);
+
+    outPos = { pivotOrient.x, pivotOrient.y, pivotOrient.z, 0.f };
 }

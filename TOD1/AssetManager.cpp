@@ -1221,9 +1221,9 @@ CompiledAssetInfo::CompiledAssetInfo(const tAssetType assettype, const char* ass
     AlignmentIndex = alignment;
 
     AssetDataPtr = (char*)assetdata;
-    AssetDataPtr_1 = (char*)assetdata;
+    DataStartPtr = (char*)assetdata;
     AssetInstanceDataPtr = (char*)assetinstanceinfo;
-    AssetInstanceDataPtr_1 = (char*)assetinstanceinfo;
+    HeaderDataStartPtr = (char*)assetinstanceinfo;
 
     _f30 = a6;
     _f34 = a5 & 1;
@@ -1249,10 +1249,10 @@ void CompiledAssetInfo::ParseInfo(const uint8_t** assetPtr, CompiledAssetInfo** 
                 break;
             case TWO:
                 *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
-                AddAssetToList(assetPtr, a4);
+                RememberBufferPosition(assetPtr, a4);
                 break;
             case THREE:
-                OffsetToPtr(assetPtr, a4);
+                OffsetToPtr(assetPtr, (tOffsetType)a4);
                 *assetBufferPtr = (CompiledAssetInfo*)*assetPtr;
                 break;
             case FOUR:
@@ -1280,6 +1280,7 @@ void CompiledAssetInfo::ParseAssetData(const uint8_t** assetdataptr, int* datapt
 
     switch (AssetType)
     {
+    //  READ_SIZED_INCREASE_BUFFER_SIZE
     case ZERO:
     {
         if (_f30 != -1)
@@ -1293,6 +1294,7 @@ void CompiledAssetInfo::ParseAssetData(const uint8_t** assetdataptr, int* datapt
             InstanceDataSize += slen;
         break;
     }
+    //  READ_SIZED_BUFFER_AND_ADVANCE
     case ONE:
     {
         if (!ALIGN_4BYTES(*assetdataptr))
@@ -1313,12 +1315,14 @@ void CompiledAssetInfo::ParseAssetData(const uint8_t** assetdataptr, int* datapt
                 AssetInstanceDataPtr += ALIGN_4BYTES(slen + 3);
         break;
     }
+    //  REMEMBER_POSITION
     case TWO:
         if (ALIGN_4BYTES(*assetdataptr))
-            AddAssetToList(assetdataptr, flags);
+            RememberBufferPosition(assetdataptr, flags);
         break;
+    //  CONVERT_OFFSET_POINTER
     case THREE:
-        OffsetToPtr(assetdataptr, flags);
+        OffsetToPtr(assetdataptr, (tOffsetType)flags);
         *assetdataptr = (uint8_t*)ALIGN_4BYTES(*assetdataptr);
         break;
     default:
@@ -1355,7 +1359,12 @@ void CompiledAssetInfo::AlignDataOrSize(unsigned int alignment, unsigned char fl
     }
 }
 
-void CompiledAssetInfo::OffsetToPtr(const uint8_t** dataptr, char flags) const
+/// <summary>
+/// Convert a number pointed to by a 'dataptr' pointer into an actual data pointer. The 'flags' decides what number that is - an absolute offset, offset from header, etc.
+/// </summary>
+/// <param name="dataptr">A pointer to a pointer that has an actual 'data' to be converted into a pointer</param>
+/// <param name="flags">One of 'tOffsetType' enum value, see enum description</param>
+void CompiledAssetInfo::OffsetToPtr(const uint8_t** dataptr, tOffsetType flags) const
 {
     if ((flags & 1) == 0)
     {
@@ -1370,11 +1379,11 @@ void CompiledAssetInfo::OffsetToPtr(const uint8_t** dataptr, char flags) const
             if ((flags & 2) != 0)
             {
                 if ((flags & 4) == 0)
-                    *dataptr = &actualData[AssetDataPtr_1 - AssetInstanceDataPtr_1];
+                    *dataptr = &actualData[DataStartPtr - HeaderDataStartPtr];
             }
             else
                 if ((flags & 4) != 0)
-                    *dataptr = &actualData[AssetInstanceDataPtr_1 - AssetDataPtr_1];
+                    *dataptr = &actualData[HeaderDataStartPtr - DataStartPtr];
         }
     }
 }
@@ -1389,12 +1398,12 @@ const size_t CompiledAssetInfo::GetDataSize() const
     return DataSize;
 }
 
-void CompiledAssetInfo::AddAssetToList(const uint8_t** dataptr, const int32_t flags)
+void CompiledAssetInfo::RememberBufferPosition(const uint8_t** dataptr, const int32_t flags)
 {
     if (flags & 1)
         return;
 
-    _f10.push_back({ const_cast<uint8_t**>(dataptr), flags });
+    DataPositionBuffer.push_back({ const_cast<uint8_t**>(dataptr), flags });
 }
 
 char* CompiledAssetInfo::GetDataPtr(const int flags)

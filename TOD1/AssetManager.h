@@ -44,10 +44,19 @@ struct AssetHeaderStruct_t
 //  TODO: might be not related to asset exactly, possible name 'MultiPartStream'. This supports multiple 'caret' positions.
 struct CompiledAssetInfo
 {
-    struct ListAssetInfo
+    struct BufferPositionInfo
     {
         uint8_t**       m_AssetDataPtr;
         int32_t         m_Flags;
+    };
+
+    //  Regardless of the offset type, first thing will be done is the pointer address will be added to the number that is at this address.
+    enum tOffsetType : char
+    {
+        _0 = 0,         //  
+        REAL = 1 << 0,    //  Real pointer (seems to be never used).
+        FROM_DATA_START = 1 << 1,    //  Offset from data start to head start.
+        FROM_HEAD_START = 1 << 2,    //  Offset from head start to data start.
     };
 
     enum tAssetType
@@ -61,11 +70,11 @@ struct CompiledAssetInfo
     int                 InstanceDataSize;
     int                 DataSize;
     int                 AlignmentIndex;
-    std::vector<ListAssetInfo>    _f10;
+    std::vector<BufferPositionInfo>    DataPositionBuffer;
     char               *AssetInstanceDataPtr;
     char               *AssetDataPtr;
-    char               *AssetInstanceDataPtr_1;
-    char               *AssetDataPtr_1;
+    char               *HeaderDataStartPtr;
+    char               *DataStartPtr;
     int                 _f30;
     bool                _f34;
     bool                _f35;
@@ -80,11 +89,11 @@ struct CompiledAssetInfo
     void                ParseAssetData(const uint8_t** assetdataptr, int* dataptr, int flags, int a4); //  @40D0C0
     int                 GetAssetSize() const;   //  @40CB00
     void                AlignDataOrSize(unsigned int alignment, unsigned char flags, int a3);  //  @40CC10
-    void                AddAssetToList(const uint8_t** dataptr, const int32_t flags);  //  @40CDA0
+    void                RememberBufferPosition(const uint8_t** dataptr, const int32_t flags);  //  @40CDA0
     char*               GetDataPtr(const int flags);    //  @4062E0
     void                IncreaseSize(const size_t amount, const int8_t flags, const int32_t a3);  //  @40CB90
     void                IncreaseBufferPtr(const size_t amount, const int8_t flags, const int32_t a3);  //  @40CBD0
-    void                OffsetToPtr(const uint8_t** dataptr, char flags) const;   //  @40CB20
+    void                OffsetToPtr(const uint8_t** dataptr, tOffsetType flags) const;   //  @40CB20
     void                _85E160(uint8_t** dataptr, uint8_t** a2, uint32_t flags, uint32_t a4);    //  @85E160
     const size_t        GetDataSize() const;    //  @40CB10
 };

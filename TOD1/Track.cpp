@@ -115,8 +115,27 @@ void Track::UpdateTracking(float* args)
     *args = UpdateTracking_Impl((Node*)((int)args[1]), (const float)args[2], (const int)args[3], (const float)args[4]);
 }
 
+const float Track::UpdateTracking_Impl(Node* trackPoint, const float time, const int startIndex, const float timeScale)
+{
+    TrackingData data;
+
+    data.StartIndex = startIndex;
+    data.LatestTime = time;
+    data.TrackPointPtr = (TrackPoint*)trackPoint;
+    data.LatestOrient = BuiltinType::Orient;
+
+    const auto updateResult = UpdateTracking_Internal(&data, timeScale);
+
+    m_LatestPos = data.LatestPos;
+    m_LatestOrient = data.LatestOrient;
+    m_TrackPoint = (Node*)data.TrackPointPtr;
+    m_LatestTime = data.LatestTime;
+
+    return updateResult;
+}
+
 #pragma message(TODO_IMPLEMENTATION)
-const float Track::UpdateTracking_Impl(Node* node, const float, const int, const float)
+const float Track::UpdateTracking_Internal(TrackingData* outData, const float timeScale)
 {
     return 0.f;
 }

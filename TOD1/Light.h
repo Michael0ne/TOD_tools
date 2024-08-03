@@ -65,9 +65,9 @@ class Light : public Node
     struct LightsList
     {
         std::vector<Light*> m_StaticLights;
-        int                *field_10;   //  NOTE: some QuadTree struct?
+        int                *m_QuadTreeRef;   //  NOTE: some QuadTree struct?
         int                 field_14;
-        int                 m_StaticLightsTotal;
+        int                 m_StaticLightsTotal;    //  NOTE: having doubts about this. Could be 'PointLightsTotal'.
         char                m_LightsOverride;
 
         LightsList();   //  @882AB0
@@ -90,6 +90,7 @@ protected:
         struct
         {
             eLightType  Type : 3;
+
             unsigned    DynamicEmission : 1;
             unsigned    StaticEmission : 1;
             unsigned    NegativeLight : 1;

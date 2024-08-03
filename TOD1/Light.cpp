@@ -109,6 +109,43 @@ Light::Light() : Node(NODE_MASK_POSITION)
 #pragma message(TODO_IMPLEMENTATION)
 void Light::LightsList::AddLightToList(Light* light)
 {
+    if (!AmbientLight)
+        return;
+
+    if (!DirectionalLight)
+        return;
+
+    if (AmbientLight == light || DirectionalLight == light)
+        return;
+
+    if (!StaticLights)
+    {
+        m_StaticLightsTotal += 1;
+        m_StaticLights.clear(); //  TODO: not sure if this will just set 'size' to zero.
+        //  TODO: for all Scene children set some bit value. Don't know what that bit does right now, but seen it being set many times. Could be 'HasLighting' or something.
+    }
+
+    StaticLights++;
+
+    if (!light->m_Flags.DynamicEmission)
+        return;
+
+    if (light->m_Flags.Type == eLightType::AMBIENT || light->m_Flags.Type == eLightType::DIRECTIONAL)
+    {
+        AddStaticLight(light);
+        m_StaticLightsTotal++;
+
+        //  TODO: once again, for all Scene children set some bit value.
+    }
+    else
+    {
+        //  For point light.
+        Vector4f lightPos;
+        light->GetWorldPos(lightPos);
+
+        m_QuadTreeRef->AddLightNode(light, { lightPos.x, lightPos.y, lightPos.z, light->m_LightProperties.m_Range });
+        SetRange(lightPos, light->m_LightProperties.m_Range);
+    }
 }
 
 void Light::SetLightType(const eLightType ltype)
@@ -298,7 +335,7 @@ Light::LightsList::LightsList()
 
     m_StaticLights.clear();
     //  TODO: allocate space for something.
-    field_10 = new int[6];  //  TODO: ctor at 0x882370.
+    m_QuadTreeRef = new int[6];  //  TODO: ctor at 0x882370.
     m_StaticLightsTotal = 0;
 }
 

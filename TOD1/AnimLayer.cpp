@@ -205,6 +205,13 @@ void AnimLayer::SetCrossTarget2(AnimSlot* target)
 
         targetCharacter = (Character*)m_Parent;
     }
+#ifdef INCLUDE_FIXES
+    else
+    {
+        LogDump::LogA("AnimLayer::SetCrossTarget2 has no parent, so can't decide what target character should be! Aborting.");
+        return;
+    }
+#endif
 
     std::vector<uint32_t> physAttachmentsList(64);
     const AnimationAsset* targetAnimationAsset = target->TargetAnimation.GetAsset<AnimationAsset>();

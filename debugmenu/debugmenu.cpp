@@ -3,10 +3,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
-
-//	TODO: potentially, make this a DLL instead of compile-time library dependency.
-HINSTANCE WindowInstance;
-HWND WindowHandle;
+#include <unordered_map>
 
 void PrintDebug(const char* format, ...)
 {
@@ -24,45 +21,42 @@ BOOL CALLBACK NewSceneDialogProc(HWND hwndDlg, UINT message, WPARAM wParam, LPAR
 	return FALSE;
 }
 
-void NewScene_Handler()
+void CALLBACK NewScene_Handler(HWND hWnd, HINSTANCE hInst, WPARAM wItemId)
 {
-	HWND DialogHwnd = CreateDialog(WindowInstance, MAKEINTRESOURCE(151), WindowHandle, (DLGPROC)NewSceneDialogProc);
+	HWND DialogHwnd = CreateDialog(hInst, MAKEINTRESOURCE(151), hWnd, (DLGPROC)NewSceneDialogProc);
 	ShowWindow(DialogHwnd, SW_SHOW);
 }
 
-void OpenScene_Handler()
+void CALLBACK OpenScene_Handler(HWND hWnd, HINSTANCE hInst, WPARAM wItemId)
 {
-
 }
 
-void (*MenuItemHandlers[])(void) =
-{
-	NewScene_Handler,
-	OpenScene_Handler
+static const std::unordered_map<uint64_t, void (__stdcall*)(HWND hWnd, HINSTANCE hInst, WPARAM wItemId)> MenuItemHandlers = {
+	{ (uint64_t)40001, NewScene_Handler },
+	{ (uint64_t)40002, OpenScene_Handler }
 };
 
 void CALLBACK ProcessDebugMenuOption(HWND hwnd, HINSTANCE inst, WPARAM itemid)
 {
-	if (hwnd == NULL ||
-		inst == NULL)
+	if (hwnd == NULL || inst == NULL)
 	{
 		PrintDebug("Empty window handle and/or applcation instance passed!\n");
 		return;
 	}
 
-	WindowInstance = inst;
-
-	//	NOTE: do whatever you want here when someone clicked on debug menu item.
-	switch (itemid)
+	if (!itemid)
 	{
-	case 40001:
-		MenuItemHandlers[0]();
-		break;
-	case 40002:
-		MenuItemHandlers[1]();
-		break;
-	default:
-		PrintDebug("Unhandled menu item (%d)!\n", itemid);
-		break;
+		PrintDebug("Empty itemid passed into a function!\n");
+		return;
 	}
+
+	const auto& handlerRef = MenuItemHandlers.find(itemid);
+	if (handlerRef == MenuItemHandlers.cend())
+	{
+		PrintDebug("Unhandled menu item (%d)!", itemid);
+		return;
+	}
+
+	const auto handler = handlerRef->second;
+	handler(hwnd, inst, itemid);
 }
