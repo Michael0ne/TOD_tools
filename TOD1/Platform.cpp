@@ -9,6 +9,35 @@
 #include "Timer.h"
 #include "LogDump.h"
 
+extern "C" {
+    static void (CALLBACK* _ProcessDebugMenuOption)(HWND, HINSTANCE, WPARAM) = nullptr;
+    __declspec(dllexport) void CALLBACK ProcessDebugMenuOption(HWND hWnd, HINSTANCE hInstance, WPARAM wParam)
+    {
+        if (!_ProcessDebugMenuOption)
+        {
+            debug("Looking up debugmenu library...");
+
+            auto hDebugLib = LoadLibrary("debugmenu.dll");
+            if (hDebugLib)
+            {
+                _ProcessDebugMenuOption = (void (CALLBACK*)(HWND, HINSTANCE, WPARAM))GetProcAddress(hDebugLib, "ProcessDebugMenuOption");
+                if (!_ProcessDebugMenuOption)
+                {
+                    debug("FAILED to hook up debugmenu function!");
+                    return;
+                }
+
+                debug("SUCCESS hooking up debugmenu function!");
+            }
+        }
+
+        if (!_ProcessDebugMenuOption)
+            return;
+        else
+            return _ProcessDebugMenuOption(hWnd, hInstance, wParam);
+    };
+}
+
 Platform* g_Platform = nullptr;
 
 unsigned int Platform::MessageBoxType[] = {

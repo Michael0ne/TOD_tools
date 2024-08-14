@@ -125,7 +125,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>dxguid.lib;d3d9.lib;dinput8.lib;dsound.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;debugmenu.lib;zlib.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d9.lib;dinput8.lib;dsound.lib;ogg_static_d.lib;vorbis_static_d.lib;vorbisfile_static_d.lib;zlib.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <ModuleDefinitionFile>dinput_h.def</ModuleDefinitionFile>
       <AssemblyDebug>true</AssemblyDebug>

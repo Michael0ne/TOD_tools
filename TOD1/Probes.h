@@ -22,18 +22,18 @@ public:
     IProbe();   //  @8C4CD0
 
     //  VMT@0x9D0A08
-    virtual ~IProbe();
-    virtual void    stub2();
-    virtual void    stub3();
-    virtual void    stub4();
-    virtual void    stub5();
-    virtual void    stub6();
-    virtual void    stub7();
-    virtual void    stub8();
-    virtual void    stub9();
-    virtual void    GetInstance();
+    virtual ~IProbe() = default;
+    virtual void    stub2() {};
+    virtual void    stub3() {};
+    virtual void    stub4() {};
+    virtual void    stub5() {};
+    virtual void    stub6() {};
+    virtual void    stub7() {};
+    virtual void    stub8() {};
+    virtual void    stub9() {};
+    virtual void    GetInstance() {};
 
-    virtual void    InstantiateAsset();
+    virtual void    InstantiateAsset() {};
 };
 
 typedef IProbe* (* ProbeConstructorType)();

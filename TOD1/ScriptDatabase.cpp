@@ -1865,7 +1865,7 @@ bool Scriptbaked::_48A1B0(Node* a2, const int32_t scriptId, uint8_t* args)
         //scriptDataPtr = ScriptThread::ScriptDataCache._f0[ScriptThread::LatestScriptDataCacheIndex].m_ScriptData;
         //defragAllocatorPtr = ScriptThread::ScriptCacheInstance._f0[ScriptThread::LatestScriptDataCacheIndex--].Defragmentator;
         //ScriptThread::SetScriptNode(scriptDataPtr->m_ScriptThread, a2);
-        auto scriptCacheRef = ScriptThread::ScriptDataCache._f0[ScriptThread::LatestScriptDataCacheIndex--];
+        auto scriptCacheRef = ScriptThread::ScriptDataCache[ScriptThread::LatestScriptDataCacheIndex--];
 
         scriptCacheRef.m_ScriptData->m_ScriptThread->SetScriptNode(a2);
         defragAllocatorPtr = scriptCacheRef.m_Defragmentator;

@@ -59,11 +59,6 @@ class ScriptThread : public IScriptThread
         EntityScriptData           *m_ScriptData;
     };
 
-    struct ScriptCacheInstance
-    {
-        NodeScriptDataInfo          _f0[7];
-    };
-
 protected:
     Defragmentator             *m_StackListAllocator;    //  NOTE: allocator for vector below. Same goes for callstack.
     std::vector<StackElement>   m_Stack;
@@ -147,8 +142,8 @@ public:
     static int                  CurrentThread;  //  @A3B758
     static ScriptThread*        Threads[100];   //  @A3B5C8
     static bool                 WarnDelayedException;   //  @A3B770
-    //static int                  CallStackIndex;    //  @A3B76C
-    static ScriptCacheInstance  ScriptDataCache;    //  @A3B76C
+    static int                  CallStackIndex;    //  @A3B76C
+    static NodeScriptDataInfo   ScriptDataCache[6];    //  @A3B774
     static MethodStruct        *CallStack[5];  //  @A3B5B4
     static int                  LatestScriptDataCacheIndex; //  @A3B768
     static int                  CurrentLocalOffset; //  @A3B760

@@ -112,8 +112,6 @@ static const char* (*WarningStringProc)() = nullptr; // @A35B80
 
 #ifdef INCLUDE_FIXES
 int CALLBACK  MenuClickCallback(WPARAM wParam);
-
-extern void CALLBACK ProcessDebugMenuOption(HWND, HINSTANCE, WPARAM);
 #endif
 
 ASSERT_CLASS_SIZE(Platform, 68);

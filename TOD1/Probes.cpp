@@ -1,5 +1,7 @@
 #include "Probes.h"
 
+std::vector<Probe*>  Probe::List;
+
 IProbe::IProbe()
 {
     MESSAGE_CLASS_CREATED(IProbe);

@@ -143,7 +143,7 @@ void Light::LightsList::AddLightToList(Light* light)
         Vector4f lightPos;
         light->GetWorldPos(lightPos);
 
-        m_QuadTreeRef->AddLightNode(light, { lightPos.x, lightPos.y, lightPos.z, light->m_LightProperties.m_Range });
+        //m_QuadTreeRef->AddLightNode(light, { lightPos.x, lightPos.y, lightPos.z, light->m_LightProperties.m_Range });
         SetRange(lightPos, light->m_LightProperties.m_Range);
     }
 }
